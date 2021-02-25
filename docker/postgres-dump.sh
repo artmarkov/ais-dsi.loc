@@ -1,0 +1,1 @@
+pg_dump -U fdoc --no-owner fdoc | gzip > docker/dump.gz

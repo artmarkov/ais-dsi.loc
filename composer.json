@@ -1,0 +1,75 @@
+{
+  "name": "yiisoft/yii2-app-advanced",
+  "description": "Yii 2 Advanced Project Template",
+  "keywords": ["yii2", "framework", "advanced", "project template"],
+  "homepage": "http://www.yiiframework.com/",
+  "type": "project",
+  "license": "BSD-3-Clause",
+  "support": {
+    "issues": "https://github.com/yiisoft/yii2/issues?state=open",
+    "forum": "http://www.yiiframework.com/forum/",
+    "wiki": "http://www.yiiframework.com/wiki/",
+    "irc": "irc://irc.freenode.net/yii",
+    "source": "https://github.com/yiisoft/yii2"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=7.0.0",
+    "yiisoft/yii2": "~2.0.13",
+    "yiisoft/yii2-bootstrap": "~2.0.6",
+    "yiisoft/yii2-swiftmailer": "~2.0.6",
+    "vlucas/phpdotenv": "^2.4",
+    "bizley/migration": "^3.1",
+    "yiisoft/yii2-jui": "~2.0",
+    "yiisoft/yii2-authclient": "~2.1.0",
+    "yiisoft/yii2-queue": "^2.3",
+    "yiisoft/yii2-imagine": "^2.3",
+    "yiidoc/yii2-timeago": "dev-master",
+    "dragonmantank/cron-expression": "^2.3",
+    "ikimea/browser": "~1.14",
+    "jisoft/yii2-sypexgeo": "*",
+    "cjtterabytesoft/yii2-jvectormap": "*",
+    "bower-asset/metismenu": "*",
+    "bower-asset/pace": "*",
+    "omgdef/yii2-multilingual-behavior": "~2.0",
+    "rmrevin/yii2-fontawesome": "~2.12",
+    "2amigos/yii2-transliterator-helper": "*",
+    "kartik-v/yii2-widget-datepicker": "@dev",
+    "kartik-v/yii2-widget-datetimepicker": "*",
+    "kartik-v/yii2-field-range": "dev-master",
+    "nex/yii2-chosen": "*",
+    "himiklab/yii2-sortable-grid-view-widget": "*",
+    "yii2mod/yii2-bootstrap-notify": "*",
+    "2amigos/yii2-chartjs-widget" : "~2.0",
+    "antishov/yii2-morrisjs": "^1.1",
+    "asinfotrack/yii2-flagicons": "^1.1",
+    "trntv/yii2-aceeditor": "^2.0.0",
+    "zhuravljov/yii2-queue-monitor": "~0.1",
+    "artsoft/yii2-date-range-picker": "*"
+
+  },
+  "require-dev": {
+        "yiisoft/yii2-debug": "~2.1.0",
+        "yiisoft/yii2-gii": "~2.1.0",
+        "yiisoft/yii2-faker": "~2.0.0",
+        "codeception/base": "^2.4.0",
+        "phpunit/phpunit": "~5.7.27 || ~6.5.5",
+        "codeception/verify": "~0.5.0 || ~1.1.0",
+        "symfony/browser-kit": ">=2.7 <=4.2.4",   
+        "guzzlehttp/guzzle": "^6.2",
+        "flow/jsonpath": "^0.3.4"
+  },
+  "config": {
+    "process-timeout": 1800,
+    "github-oauth": {
+
+    }
+  },
+  "extra": {
+    "asset-installer-paths": {
+      "npm-asset-library": "vendor/npm",
+      "bower-asset-library": "vendor/bower"
+    }
+  }
+}
