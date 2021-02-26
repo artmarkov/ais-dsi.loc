@@ -16,7 +16,7 @@ class ActiveField extends \yii\bootstrap\ActiveField
     /**
      * @var string the template for checkboxes in default layout
      */
-    public $checkboxTemplate = "<div class=\"checkbox\">\n{input}\n{beginLabel}\n{labelTitle}\n{endLabel}\n{error}\n{hint}\n</div>";
+    public $checkboxTemplate = "<div class=\"col-sm-3\"></div><div class=\"col-sm-9\"><div class=\"checkbox\">\n{input}\n{beginLabel}\n{labelTitle}\n{endLabel}\n{error}\n{hint}\n</div></div>";
     
     /**
      * @var string the template for checkboxes in horizontal layout
@@ -26,7 +26,9 @@ class ActiveField extends \yii\bootstrap\ActiveField
 
     public function init()
     {
+
         parent::init();
+        $this->template =   "<div class=\"col-sm-3\">{label}</div><div class=\"col-sm-9\">{input}\n{hint}\n{error}</div>";
 
         $languages = Yii::$app->art->languages;
         $isCurrentLanguage = (Yii::$app->language == $this->language);

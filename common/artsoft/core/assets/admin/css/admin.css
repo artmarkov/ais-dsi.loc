@@ -292,3 +292,17 @@ img.dw-media-image {
         border: 1px solid #888;
         border-radius: 5px;
 }
+
+.control-label {
+    float: right;
+    font-size: smaller;
+}
+
+@media (max-width: 768px ) {
+    .control-label {
+        float: left;
+    }
+}
+.help-block {
+    font-size: smaller;
+}

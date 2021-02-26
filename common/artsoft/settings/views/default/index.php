@@ -27,9 +27,6 @@ SettingsAsset::register($this);
         $form = ActiveForm::begin([
             'id' => 'setting-form',
             'validateOnBlur' => false,
-            'fieldConfig' => [
-                'template' => "<div class=\"settings-group\"><div class=\"settings-label\">{label}</div>\n<div class=\"settings-field\">{input}\n{hint}\n{error}</div></div>"
-            ],
         ])
         ?>
 
@@ -38,9 +35,9 @@ SettingsAsset::register($this);
                 <div class="row">
                     <div class="col-md-12">
 
-                        <?= $form->field($model, 'title', ['multilingual' => true])->textInput(['maxlength' => true]) ?>
+                        <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
-                        <?= $form->field($model, 'description', ['multilingual' => true])->textInput(['maxlength' => true])/*->hint($model->getDescription('description')) */ ?>
+                        <?= $form->field($model, 'description')->textInput(['maxlength' => true])/*->hint($model->getDescription('description')) */ ?>
 
                         <?= $form->field($model, 'email')->textInput(['maxlength' => true])->hint($model->getDescription('email')) ?>
 
