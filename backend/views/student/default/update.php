@@ -1,7 +1,5 @@
 <?php
 
-use yii\helpers\Html;
-
 /* @var $this yii\web\View */
 /* @var $model common\models\student\Student */
 
@@ -10,6 +8,5 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('art/student','Students'), '
 $this->params['breadcrumbs'][] = Yii::t('art','Update');
 ?>
 <div class="student-update">
-    <h3 class="lte-hide-title"><?= Html::encode($this->title) ?></h3>
     <?= $this->render('_form', ['model' => $model, 'modelUser' => $modelUser]) ?>
 </div>

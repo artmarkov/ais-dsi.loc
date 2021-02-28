@@ -2,7 +2,7 @@
 
 namespace artsoft\auth\models\forms;
 
-use artsoft\models\User;
+use common\models\user\User;
 use Yii;
 use yii\base\Model;
 
@@ -13,6 +13,11 @@ class ResetPasswordForm extends Model
      */
     protected $user;
 
+    /**
+     * @var string
+     */
+
+    public $username;
     /**
      * @var string
      */
@@ -29,11 +34,11 @@ class ResetPasswordForm extends Model
     public function rules()
     {
         return [
-            ['captcha', 'captcha', 'captchaAction' => '/auth/default/captcha'],
-            [['email', 'captcha'], 'required'],
-            ['email', 'trim'],
+            [['email', 'username', 'captcha'], 'required'],
+            [['email', 'username'], 'trim'],
             ['email', 'email'],
             ['email', 'validateEmailConfirmedAndUserActive'],
+            ['captcha', 'captcha', 'captchaAction' => '/auth/default/captcha'],
         ];
     }
 
@@ -48,6 +53,7 @@ class ResetPasswordForm extends Model
         }
 
         $user = User::findOne([
+            'username' => $this->username,
             'email' => $this->email,
             'email_confirmed' => 1,
             'status' => User::STATUS_ACTIVE,
@@ -56,7 +62,7 @@ class ResetPasswordForm extends Model
         if ($user) {
             $this->user = $user;
         } else {
-            $this->addError('email', Yii::t('art/auth', 'E-mail is invalid'));
+            $this->addError('email', Yii::t('art/auth', 'A Login and E-mail not found.'));
         }
     }
 
@@ -67,7 +73,8 @@ class ResetPasswordForm extends Model
     {
         return [
             'email' => 'E-mail',
-            'captcha' => Yii::t('art/auth', 'Captcha'),
+            'username' => Yii::t('art/auth', 'Login'),
+            'reCaptcha' => Yii::t('art', 'reCaptcha'),
         ];
     }
 

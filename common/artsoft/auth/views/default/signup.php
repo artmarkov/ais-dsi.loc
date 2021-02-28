@@ -1,6 +1,7 @@
 <?php
 
-use yii\bootstrap\ActiveForm;
+//use yii\bootstrap\ActiveForm;
+use artsoft\widgets\ActiveForm;
 use yii\captcha\Captcha;
 use yii\helpers\Html;
 
@@ -9,6 +10,7 @@ use yii\helpers\Html;
  * @var artsoft\auth\models\forms\RegistrationForm $model
  */
 $this->title = Yii::t('art/auth', 'Signup');
+$this->params['breadcrumbs'][] = $this->title;
 
 $col12 = $this->context->module->gridColumns;
 $col9 = (int) ($col12 * 3 / 4);
@@ -31,20 +33,22 @@ $col3 = (int) ($col12 / 4);
                         'options' => ['autocomplete' => 'off'],
                     ]); ?>
 
-                    <?= $form->field($model, 'username')->textInput(['maxlength' => 50]) ?>
+                    <h4>  <?= Yii::t('art/auth', 'Login')?>: <b><?= $model->username; ?></b></h4>
 
-                    <?= $form->field($model, 'email')->textInput(['maxlength' => 255]) ?>
+                    <?= $form->field($model, 'username')->label(false)->hiddenInput(['value' => $model->username]) ?>
 
-                    <?= $form->field($model, 'password')->passwordInput(['maxlength' => 255]) ?>
+                    <?= $form->field($model, 'id')->label(false)->hiddenInput(['value' => $model->id]) ?>
 
-                    <?= $form->field($model, 'repeat_password')->passwordInput(['maxlength' => 255]) ?>
+                    <?= $form->field($model, 'email')->textInput(['placeholder' => $model->getAttributeLabel('email'), 'autocomplete' => 'off', 'maxlength' => 255]) ?>
 
-                    <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
-                        'template' => '<div class="row"><div class="col-sm-' . $col3 . '">{image}</div><div class="col-sm-' . $col3 . '">{input}</div></div>',
-                        'captchaAction' => [\yii\helpers\Url::to(['/auth/captcha'])]
-                    ]) ?>
+                    <?= $form->field($model, 'password')->passwordInput(['placeholder' => $model->getAttributeLabel('password'),'maxlength' => 255]) ?>
 
-                    <?= Html::submitButton(Yii::t('art/auth', 'Signup'), ['class' => 'btn btn-lg btn-primary btn-block']) ?>
+                    <?= $form->field($model, 'repeat_password')->passwordInput(['placeholder' => $model->getAttributeLabel('repeat_password'),'maxlength' => 255]) ?>
+
+                    <hr>
+
+
+                    <?= Html::submitButton(Yii::t('art/auth', 'Signup'), ['class' => 'btn btn-primary btn-block']) ?>
 
                     <div class="row registration-block">
                         <div class="col-sm-<?= $col6 ?>">
@@ -67,7 +71,7 @@ $css = <<<CSS
 
 #signup-wrapper {
 	position: relative;
-	top: 30%;
+	margin-top: 30px;
 }
 #signup-wrapper .registration-block {
 	margin-top: 15px;

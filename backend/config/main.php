@@ -45,6 +45,9 @@ $config =  [
         'user' => [
             'class' => 'artsoft\user\UserModule',
         ],
+        'logs' => [
+            'class' => 'artsoft\logs\LogsModule',
+        ],
         'settings' => [
             'class' => 'artsoft\settings\SettingsModule',
         ],

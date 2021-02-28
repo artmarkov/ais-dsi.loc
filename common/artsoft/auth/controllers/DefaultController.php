@@ -2,21 +2,26 @@
 
 namespace artsoft\auth\controllers;
 
+
 use artsoft\auth\assets\AvatarAsset;
 use artsoft\auth\AuthModule;
 use artsoft\auth\helpers\AvatarHelper;
 use artsoft\auth\models\Auth;
 use artsoft\auth\models\forms\ConfirmEmailForm;
-use artsoft\auth\models\forms\LoginForm;
+use artsoft\auth\models\forms\FindingForm;
+use artsoft\auth\models\forms\ProfileForm;
 use artsoft\auth\models\forms\ResetPasswordForm;
+use artsoft\auth\models\forms\UpdatePasswordForm;
+use artsoft\auth\models\forms\SignupForm;
+use artsoft\auth\models\forms\LoginForm;
+use artsoft\auth\models\forms\SignupFindForm;
 use artsoft\auth\models\forms\SetEmailForm;
 use artsoft\auth\models\forms\SetPasswordForm;
 use artsoft\auth\models\forms\SetUsernameForm;
-use artsoft\auth\models\forms\SignupForm;
-use artsoft\auth\models\forms\UpdatePasswordForm;
-use artsoft\components\AuthEvent;
 use artsoft\controllers\BaseController;
 use artsoft\models\User;
+use artsoft\components\AuthEvent;
+use artsoft\widgets\ActiveForm;
 use Yii;
 use yii\base\DynamicModel;
 use yii\filters\VerbFilter;
@@ -26,14 +31,14 @@ use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\web\UploadedFile;
-use artsoft\widgets\ActiveForm;
+
 
 class DefaultController extends BaseController
 {
     /**
      * @var array
      */
-    public $freeAccessActions = ['login', 'logout', 'captcha', 'oauth', 'signup',
+    public $freeAccessActions = ['login', 'logout', 'captcha', 'oauth', 'signup','finding',
         'confirm-email', 'confirm-registration-email', 'confirm-email-receive',
         'reset-password', 'reset-password-request', 'update-password', 'set-email',
         'set-username', 'set-password', 'profile', 'upload-avatar', 'remove-avatar',
@@ -282,19 +287,67 @@ class DefaultController extends BaseController
         return $this->redirect(Yii::$app->homeUrl);
     }
 
+  
     /**
-     * Signup page
+     * Finding page before registration
      *
      * @return string
      */
-    public function actionSignup()
+
+    public function actionFinding()
     {
         if (!Yii::$app->user->isGuest) {
-            throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
+            throw new NotFoundHttpException(Yii::t('art', 'Page not found.'));
         }
+        $model = new FindingForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $d_in = explode("-", $model->birth_date);
+            $model->birth_timestamp = mktime(0, 0, 0, $d_in[1], $d_in[0], $d_in[2]);
+            $user = FindingForm::findByFio(
+                $model->last_name,
+                $model->first_name,
+                $model->middle_name,
+                $model->birth_timestamp,
+                User::STATUS_INACTIVE
+            );
+            if ($user) {
+                return $this->redirect(['signup', 'auth_key' => $user->auth_key]);
+            } else {
+                Yii::$app->session->setFlash('error', Yii::t('art/auth', "User not found or blocked in the system."));
+            }
+        }
+        return $this->render('finding', compact('model'));
+    }
 
+    /**
+     * Signup page after finding user params
+     *
+     * @return string
+     */
+
+    public function actionSignup($auth_key)
+    {
+        if (!Yii::$app->user->isGuest) {
+            throw new NotFoundHttpException(Yii::t('art', 'Page not found.'));
+        }
+        $user = User::findByAuthKey($auth_key);
+        if (!$user) {
+            Yii::$app->session->setFlash('error', Yii::t('art/auth', "Token not found. It may be expired"));
+            return $this->goHome();
+        }
         $model = new SignupForm();
 
+        if (empty($user->username)) {
+            $username = FindingForm::generateUsername($user->last_name, $user->first_name, $user->middle_name);
+        } else {
+            $username = $user->username;
+        }
+        $model->setAttributes(
+            [
+                'username' => $username,
+                'id' => $user->id,
+            ]
+        );
         if (Yii::$app->request->isAjax AND $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return $model->validate();
@@ -304,13 +357,14 @@ class DefaultController extends BaseController
             // Trigger event "before registration" and checks if it's valid
             if ($this->triggerModuleEvent(AuthEvent::BEFORE_REGISTRATION, ['model' => $model])) {
 
-                $user = $model->signup(false);
+                $user = $model->signup(false,$model);
 
                 // Trigger event "after registration" and checks if it's valid
                 if ($user && $this->triggerModuleEvent(AuthEvent::AFTER_REGISTRATION, ['model' => $model, 'user' => $user])) {
 
                     if (Yii::$app->art->emailConfirmationRequired) {
-                        return $this->renderIsAjax('signup-confirmation', compact('user'));
+                        Yii::$app->session->setFlash('info', Yii::t('art/auth', 'Check your e-mail {email} for instructions to activate account', ['email' => '<b>' . $user->email . '</b>']));
+                       //return $this->renderIsAjax('signup-confirmation', compact('user'));
                     } else {
                         $user->assignRoles(Yii::$app->art->defaultRoles);
 
@@ -373,7 +427,7 @@ class DefaultController extends BaseController
             return ActiveForm::validate($model);
         }
 
-        if ($model->load(Yii::$app->request->post()) AND $model->updatePassword()) {
+        if ($model->load(Yii::$app->request->post()) AND $model->updatePassword(false)) {
             Yii::$app->user->logout();
             return $this->renderIsAjax('update-password-success');
         }
@@ -442,7 +496,6 @@ class DefaultController extends BaseController
         if ($model->load(Yii::$app->request->post()) AND $model->validate()) {
             if ($this->triggerModuleEvent(AuthEvent::BEFORE_PASSWORD_RECOVERY_COMPLETE, ['model' => $model])) {
                 $model->updatePassword(false);
-
                 if ($this->triggerModuleEvent(AuthEvent::AFTER_PASSWORD_RECOVERY_COMPLETE, ['model' => $model])) {
                     return $this->renderIsAjax('update-password-success');
                 }
@@ -464,7 +517,7 @@ class DefaultController extends BaseController
         $user = User::getCurrentUser();
 
         if ($user->email_confirmed == 1) {
-            return $this->renderIsAjax('confirm-email-success', compact('user'));
+            return $this->renderIsAjax('confirmEmailSuccess', compact('user'));
         }
 
         $model = new ConfirmEmailForm([
@@ -510,7 +563,7 @@ class DefaultController extends BaseController
 
         $user->email_confirmed = 1;
         $user->removeConfirmationToken();
-        $user->save(false);
+        $user->save();
 
         return $this->renderIsAjax('confirm-email-success', compact('user'));
     }
@@ -537,18 +590,18 @@ class DefaultController extends BaseController
      */
     public function actionProfile()
     {
-        if($this->module->profileLayout){
+        if ($this->module->profileLayout) {
             $this->layout = $this->module->profileLayout;
         }
-                
+
         if (Yii::$app->user->isGuest) {
             throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
         }
 
-        $model = User::findIdentity(Yii::$app->user->id);
+        $model = ProfileForm::findIdentity(Yii::$app->user->id);
 
-        if ($model->load(Yii::$app->request->post()) AND $model->save()) {
-            Yii::$app->session->setFlash('success', Yii::t('yii', 'Your item has been updated.'));
+        if ($model->load(Yii::$app->request->post())) {
+            $model->save();
         }
 
         return $this->renderIsAjax('profile', compact('model'));

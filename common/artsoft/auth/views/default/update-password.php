@@ -1,6 +1,7 @@
 <?php
 
-use yii\bootstrap\ActiveForm;
+//use yii\bootstrap\ActiveForm;
+use artsoft\widgets\ActiveForm;
 use yii\helpers\Html;
 
 /**
@@ -8,19 +9,13 @@ use yii\helpers\Html;
  * @var artsoft\auth\models\forms\UpdatePasswordForm $model
  */
 $this->title = Yii::t('art/auth', 'Update Password');
+$this->params['breadcrumbs'][] = $this->title;
 
 $col12 = $this->context->module->gridColumns;
-$col9 = (int) ($col12 * 3 / 4);
-$col6 = (int) ($col12 / 2);
-$col3 = (int) ($col12 / 4);
+$col9 = (int)($col12 * 3 / 4);
+$col6 = (int)($col12 / 2);
+$col3 = (int)($col12 / 4);
 ?>
-
-<?php if (Yii::$app->session->hasFlash('success')): ?>
-    <div class="alert alert-success text-center">
-        <?= Yii::$app->session->getFlash('success') ?>
-    </div>
-<?php endif; ?>
-
     <div id="update-wrapper">
         <div class="row">
             <div class="col-md-<?= $col6 ?> col-md-offset-<?= $col3 ?>">
@@ -44,7 +39,7 @@ $col3 = (int) ($col12 / 4);
 
                         <?= $form->field($model, 'repeat_password')->passwordInput(['maxlength' => 255]) ?>
 
-                        <?= Html::submitButton(Yii::t('art', 'Update'), ['class' => 'btn btn-lg btn-primary btn-block']) ?>
+                        <?= Html::submitButton(Yii::t('art', 'Update'), ['class' => 'btn btn-primary btn-block']) ?>
 
                         <?php ActiveForm::end() ?>
                     </div>
@@ -57,7 +52,7 @@ $col3 = (int) ($col12 / 4);
 $css = <<<CSS
 #update-wrapper {
 	position: relative;
-	top: 30%;
+    margin-top: 30px;
 }
 CSS;
 

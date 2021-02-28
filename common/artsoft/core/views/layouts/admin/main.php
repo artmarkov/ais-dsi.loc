@@ -89,7 +89,7 @@ MetisMenuAsset::register($this);
                     ]);
                     ?>
                     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
-                    <?php if (isset($this->params['tabMenuId']) && $this->params['tabMenuId']): ?>
+                    <?php if (isset($this->params['tabMenu']) && $this->params['tabMenu']): ?>
                         <div class="nav-tabs-custom">
                             <?= \artsoft\widgets\Nav::widget([
                                 'encodeLabels' => false,
@@ -98,7 +98,7 @@ MetisMenuAsset::register($this);
                                     ['class' => 'nav nav-tabs'],
                                     ['class' => 'dropdown-menu'],
                                 ],
-                                'items' => Menu::getMenuItems($this->params['tabMenuId']),
+                                'items'  => $this->params['tabMenu'],
                             ]) ?>
 
                             <div class="tab-content">

@@ -2,7 +2,7 @@
 
 namespace common\models\teachers;
 
-use common\models\service\Department;
+use common\models\own\Department;
 use Yii;
 use yii\helpers\ArrayHelper;
 use common\models\user\User;
@@ -61,7 +61,7 @@ class Teachers extends \yii\db\ActiveRecord
     {
         return [
             [
-                'class' => \common\components\behaviors\ManyHasManyBehavior::className(),
+                'class' => \artsoft\behaviors\ManyHasManyBehavior::className(),
                 'relations' => [
                     'bonusItem' => 'bonus_list',
                     'departmentItem' => 'department_list',

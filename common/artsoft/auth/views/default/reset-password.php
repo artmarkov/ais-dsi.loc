@@ -1,6 +1,7 @@
 <?php
 
-use yii\bootstrap\ActiveForm;
+//use yii\bootstrap\ActiveForm;
+use artsoft\widgets\ActiveForm;
 use yii\captcha\Captcha;
 use yii\helpers\Html;
 
@@ -9,6 +10,7 @@ use yii\helpers\Html;
  * @var artsoft\auth\models\forms\PasswordRecoveryForm $model
  */
 $this->title = Yii::t('art/auth', 'Reset Password');
+$this->params['breadcrumbs'][] = $this->title;
 
 $col12 = $this->context->module->gridColumns;
 $col9 = (int) ($col12 * 3 / 4);
@@ -22,42 +24,46 @@ $col3 = (int) ($col12 / 4);
     </div>
 <?php endif; ?>
 
-    <div id="update-wrapper">
-        <div class="row">
-            <div class="col-md-<?= $col6 ?> col-md-offset-<?= $col3 ?>">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><?= $this->title ?></h3>
-                    </div>
-                    <div class="panel-body">
+<div id="update-wrapper">
+    <div class="row">
+        <div class="col-md-<?= $col6 ?> col-md-offset-<?= $col3 ?>">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><?= $this->title ?></h3>
+                </div>
+                <div class="panel-body">
 
-                        <?php $form = ActiveForm::begin([
-                            'id' => 'reset-form',
-                            'options' => ['autocomplete' => 'off'],
-                            'validateOnBlur' => false,
-                        ]); ?>
+                    <?php
+                    $form = ActiveForm::begin([
+                                'id' => 'reset-form',
+                                'options' => ['autocomplete' => 'off'],
+                                'validateOnBlur' => false,
+                    ]);
+                    ?>
 
-                        <?= $form->field($model, 'email')->textInput(['maxlength' => 255]) ?>
+                    <?= $form->field($model, 'username')->textInput(['maxlength' => 50]) ?>
 
-                        <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
-                            'template' => '<div class="row"><div class="col-sm-' . $col3 . '">{image}</div><div class="col-sm-' . $col3 . '">{input}</div></div>',
-                            'captchaAction' => ['/auth/captcha']
-                        ]) ?>
+                    <?= $form->field($model, 'email')->textInput(['maxlength' => 255]) ?>
 
-                        <?= Html::submitButton(Yii::t('art/auth', 'Reset'), ['class' => 'btn btn-lg btn-primary btn-block']) ?>
+                    <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
+                        'template' => '<div class="row"><div class="col-sm-' . $col3 . '">{image}</div><div class="col-sm-' . $col3 . '">{input}</div></div>',
+                        'captchaAction' => ['/auth/captcha']
+                    ]) ?>
 
-                        <?php ActiveForm::end() ?>
-                    </div>
+                    <?= Html::submitButton(Yii::t('art/auth', 'Reset'), ['class' => 'btn btn-primary btn-block']) ?>
+
+<?php ActiveForm::end() ?>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 <?php
 $css = <<<CSS
 #update-wrapper {
 	position: relative;
-	top: 30%;
+	margin-top: 30px;
 }
 CSS;
 

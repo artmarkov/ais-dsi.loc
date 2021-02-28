@@ -3,7 +3,7 @@
 namespace common\models\creative;
 
 use common\models\user\User;
-use common\models\service\Department;
+use common\models\own\Department;
 Use common\models\user\UserCommon;
 use common\models\service\ImageManager;
 use Yii;
@@ -60,7 +60,7 @@ class CreativeWorks extends \yii\db\ActiveRecord
             TimestampBehavior::className(),
             BlameableBehavior::className(),
             [
-                'class' => \common\components\behaviors\ManyHasManyBehavior::className(),
+                'class' => \artsoft\behaviors\ManyHasManyBehavior::className(),
                 'relations' => [
                    'departmentItem' => 'department_list',
                 ],

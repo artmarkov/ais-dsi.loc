@@ -1,7 +1,7 @@
 <?php
 /**
  * @var $this yii\web\View
- * @var $user yeesoft\models\User
+ * @var $user artsoft\models\User
  */
 use yii\helpers\Html;
 
@@ -9,12 +9,9 @@ $resetLink = Yii::$app->urlManager->createAbsoluteUrl(['/auth/default/reset-pass
 ?>
 
 <div class="password-reset">
-    <p><?= Yii::t('art/auth', 'Hello, {username}.', [
-            'username' => Html::encode($user->username)
-        ])
-        ?></p>
+    <p><?= Yii::t('art/mail', 'Hello:') ?> <?= Html::encode($user->username) ?>.</p>
 
-    <p><?= Yii::t('art/auth', 'Follow the link below to reset your password:') ?></p>
+    <p><?= Yii::t('art/mail', 'Follow the link below to reset your password:') ?></p>
 
     <p><?= Html::a(Html::encode($resetLink), $resetLink) ?></p>
 </div>

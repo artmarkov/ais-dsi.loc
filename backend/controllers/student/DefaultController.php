@@ -11,24 +11,10 @@ use Yii;
 /**
  * DefaultController implements the CRUD actions for common\models\student\Student model.
  */
-class DefaultController extends \backend\controllers\DefaultController 
+class DefaultController extends MainController
 {
     public $modelClass       = 'common\models\student\Student';
     public $modelSearchClass = 'common\models\student\search\StudentSearch';
-
-    protected function getRedirectPage($action, $model = null)
-    {
-        switch ($action) {
-            case 'update':
-                return ['update', 'id' => $model->id];
-                break;
-            case 'create':
-                return ['update', 'id' => $model->id];
-                break;
-            default:
-                return parent::getRedirectPage($action, $model);
-        }
-    }
 
     public function actionCreate() {
 

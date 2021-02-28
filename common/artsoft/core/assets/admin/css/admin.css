@@ -115,7 +115,7 @@ a:focus {
 .grid-view .action-title {
     display: inline-block;
     padding-bottom: 20px;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
 }
 
 .grid-view tbody tr:hover .quick-actions {
@@ -305,4 +305,8 @@ img.dw-media-image {
 }
 .help-block {
     font-size: smaller;
+}
+
+.panel-heading {
+    font-size: large;
 }

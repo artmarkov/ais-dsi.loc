@@ -11,7 +11,7 @@ namespace backend\controllers;
 
 class DefaultController  extends \artsoft\controllers\admin\BaseController {
 
-    public $layout = '@artsoft/views/layouts/main.php';
+    public $layout = '@artsoft/views/layouts/admin/main.php';
 
     public function debug($arr){
         echo '<pre>' . print_r($arr, true) . '</pre>';

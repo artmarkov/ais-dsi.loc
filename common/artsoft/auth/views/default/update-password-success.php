@@ -5,6 +5,7 @@
  */
 
 $this->title = Yii::t('art/auth', 'Update Password');
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="change-own-password-success">
 

@@ -12,6 +12,5 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="bonus-category-create">
-    <h3 class="lte-hide-title"><?=  Html::encode($this->title) ?></h3>
     <?=  $this->render('_form', compact('model')) ?>
 </div>

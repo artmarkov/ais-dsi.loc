@@ -8,83 +8,79 @@ use kartik\select2\Select2;
 ?>
 <?php $form = ActiveForm::begin(); ?>
 
-<div class="parens-view-widget">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-md-6">
+    <div class="parens-view-widget">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="row">
+                    <?php //$categories = \yii\helpers\ArrayHelper::merge(\common\models\user\UserCommon::getUserParentList(), ['0' => Yii::t('art/user', '---Create New Parent---')]) ?>
 
-                            <?php //$categories = \yii\helpers\ArrayHelper::merge(\common\models\user\UserCommon::getUserParentList(), ['0' => Yii::t('art/user', '---Create New Parent---')]) ?>
+                    <?=
+                    $form->field($model, 'user_slave_id')->widget(Select2::classname(), [
 
-                            <?=
-                            $form->field($model, 'user_slave_id')->widget(Select2::classname(), [
-
-                                'data' => \common\models\user\UserCommon::getUserParentList($model->user_id),
-                                'theme' => Select2::THEME_KRAJEE,
-                                'options' => ['placeholder' => Yii::t('art/user', 'Create New Parent...')],
-                                'pluginOptions' => [
-                                    'allowClear' => true,
-                                ],
-                                'addon' => [
-                                    'append' => [
-                                        'content' => Html::a(Yii::t('art', 'Create'), ['#'], [
-                                            'class' => 'btn btn-primary add-to-family',
-                                            'data-id' => $model->user_id,
-                                        ]),
-                                        'asButton' => true,
-                                    ],
-                                ],
-                            ])->label(Yii::t('art/user', 'Parents'));
-                            ?>
-                        </div>
+                        'data' => \common\models\user\UserCommon::getUserParentList($model->user_id),
+                        'theme' => Select2::THEME_KRAJEE,
+                        'options' => ['placeholder' => Yii::t('art/user', 'Create New Parent...')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                        'addon' => [
+                            'append' => [
+                                'content' => Html::a(Yii::t('art', 'Add'), ['#'], [
+                                    'class' => 'btn btn-primary add-to-family',
+                                    'data-id' => $model->user_id,
+                                ]),
+                                'asButton' => true,
+                            ],
+                        ],
+                    ])->label(Yii::t('art/user', 'Parents'));
+                    ?>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label"></label>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
+                    <div class="col-sm-9">
 
-                            <?php $data = Student::getFamilyList($model->user_id); ?>
-<?php if (!empty($data)): ?>
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>№</th>
-                                                <th><?= Yii::t('art', 'Full Name'); ?></th>
-                                                <th><?= Yii::t('art/user', 'Family Relation'); ?></th>
-                                                <th><?= Yii::t('art', 'Phone'); ?></th>
-                                                <th><?= Yii::t('art', 'E-mail'); ?></th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-    <?php foreach ($data as $id => $item): ?>
-                                                <tr>
-                                                    <td><?= ++$id ?></td>
-                                                    <td><?= $item['parent'] ?></td>
-                                                    <td><?= $item['relation'] ?></td>
-                                                    <td><?= $item['phone'] ?></td>
-                                                    <td><?= $item['email'] ?></td>
+                        <?php $data = Student::getFamilyList($model->user_id); ?>
+                        <?php if (!empty($data)): ?>
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>№</th>
+                                        <th><?= Yii::t('art', 'Full Name'); ?></th>
+                                        <th><?= Yii::t('art/user', 'Family Relation'); ?></th>
+                                        <th><?= Yii::t('art', 'Phone'); ?></th>
+                                        <th><?= Yii::t('art', 'E-mail'); ?></th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach ($data as $id => $item): ?>
+                                        <tr>
+                                            <td><?= ++$id ?></td>
+                                            <td><?= $item['parent'] ?></td>
+                                            <td><?= $item['relation'] ?></td>
+                                            <td><?= $item['phone'] ?></td>
+                                            <td><?= $item['email'] ?></td>
 
-                                                    <td><?=
-                                                        Html::a('<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>', ['#'], [
-                                                            'class' => 'remove-family',
-                                                            'data-id' => $item['id'],
-                                                        ]);
-                                                        ?></td>
-                                                </tr>
-    <?php endforeach ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-<?php endif; ?>
-                        </div>
+                                            <td><?=
+                                                Html::a('<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>', ['#'], [
+                                                    'class' => 'remove-family',
+                                                    'data-id' => $item['id'],
+                                                ]);
+                                                ?></td>
+                                        </tr>
+                                    <?php endforeach ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 <?php ActiveForm::end(); ?>
 

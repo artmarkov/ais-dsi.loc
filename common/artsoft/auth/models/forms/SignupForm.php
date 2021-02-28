@@ -2,18 +2,19 @@
 
 namespace artsoft\auth\models\forms;
 
-use artsoft\models\User;
+use common\models\user\User;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Html;
 
 class SignupForm extends Model
 {
+    public $id;
     public $username;
     public $email;
     public $password;
     public $repeat_password;
-    public $captcha;
+//    public $captcha;
 
     /**
      * @inheritdoc
@@ -21,7 +22,8 @@ class SignupForm extends Model
     public function rules()
     {
         $rules = [
-            ['captcha', 'captcha', 'captchaAction' => '/auth/default/captcha'],
+            ['id', 'required'], // делаем update по ключу
+//            ['captcha', 'captcha', 'captchaAction' => '/auth/default/captcha'],
             [['username', 'email', 'password', 'repeat_password', 'captcha'], 'required'],
             [['username', 'email', 'password', 'repeat_password'], 'trim'],
             [['email'], 'email'],
@@ -29,14 +31,15 @@ class SignupForm extends Model
                 'targetClass' => 'artsoft\models\User',
                 'targetAttribute' => 'username',
             ],
-            ['email', 'unique',
+           /* ['email', 'unique',
                 'targetClass' => 'artsoft\models\User',
                 'targetAttribute' => 'email',
-            ],
-            ['username', 'purgeXSS'],
+            ],*/
+//            ['username', 'purgeXSS'],
             ['username', 'string', 'max' => 50],
-            ['username', 'match', 'pattern' => Yii::$app->art->usernameRegexp, 'message' => Yii::t('art/auth', 'The username should contain only Latin letters, numbers and the following characters: "-" and "_".')],
+            /*['username', 'match', 'pattern' => Yii::$app->art->usernameRegexp, 'message' => Yii::t('art/auth', 'The username should contain only Latin letters, numbers and the following characters: "-" and "_".')],
             ['username', 'match', 'not' => true, 'pattern' => Yii::$app->art->usernameBlackRegexp, 'message' => Yii::t('art/auth', 'Username contains not allowed characters or words.')],
+            */
             ['password', 'string', 'max' => 255],
             ['repeat_password', 'compare', 'compareAttribute' => 'password'],
         ];
@@ -64,7 +67,7 @@ class SignupForm extends Model
             'email' => Yii::t('art/auth', 'E-mail'),
             'password' => Yii::t('art/auth', 'Password'),
             'repeat_password' => Yii::t('art/auth', 'Repeat password'),
-            'captcha' => Yii::t('art/auth', 'Captcha'),
+//            'captcha' => Yii::t('art/auth', 'Captcha'),
         ];
     }
 
@@ -73,30 +76,31 @@ class SignupForm extends Model
      *
      * @return bool|User
      */
-    public function signup($performValidation = true)
+    public function signup($performValidation = true, $model)
     {
         if ($performValidation AND !$this->validate()) {
             return false;
         }
+        if (empty($model)) $user = new User();
+        else  $user = User::findOne($model->id);
 
-        $user = new User();
         $user->password = $this->password;
         $user->username = $this->username;
         $user->email = $this->email;
+        $user->generateAuthKey();
 
         if (Yii::$app->art->emailConfirmationRequired) {
             $user->status = User::STATUS_INACTIVE;
             $user->generateConfirmationToken();
             // $user->save(false);
-
-            if (!$this->sendConfirmationEmail($user)) {
-                $this->addError('username', Yii::t('art/auth', 'Could not send confirmation email'));
-            }
         }
 
         if (!$user->save()) {
             $this->addError('username', Yii::t('art/auth', 'Login has been taken'));
         } else {
+            if (!$this->sendConfirmationEmail($user)) {
+                $this->addError('username', Yii::t('art/auth', 'Could not send confirmation email'));
+            }
             return $user;
         }
 
@@ -127,7 +131,7 @@ class SignupForm extends Model
     public function checkConfirmationToken($token)
     {
         $user = User::findInactiveByConfirmationToken($token);
-
+      //  echo '<pre>' . print_r($user, true) . '</pre>';
         if ($user) {
             
             $user->status = User::STATUS_ACTIVE;

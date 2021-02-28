@@ -2,7 +2,7 @@
 
 namespace artsoft\auth\models\forms;
 
-use artsoft\models\User;
+use common\models\user\User;
 use Yii;
 use yii\base\Model;
 

@@ -4,7 +4,7 @@ namespace artsoft\grid;
 /**
  * 
  * SortableGridView extends \himiklab\sortablegrid\SortableGridView
- * and add yeesoft\grid\GridBulkActions
+ * and add artsoft\grid\GridBulkActions
  * 
  */
 

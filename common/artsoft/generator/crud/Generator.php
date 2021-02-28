@@ -1,6 +1,6 @@
 <?php
 /**
- * @link http://www.art-soft.com/
+ * @link http://www.yee-soft.com/
  */
 
 namespace artsoft\generator\crud;

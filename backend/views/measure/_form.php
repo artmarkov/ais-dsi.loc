@@ -1,6 +1,6 @@
 <?php
 
-use common\widgets\ActiveForm;
+use artsoft\widgets\ActiveForm;
 use common\models\Measure;
 use artsoft\helpers\Html;
 

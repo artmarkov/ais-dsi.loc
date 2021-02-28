@@ -4,16 +4,16 @@
  * @var $this yii\web\View
  * @var $model artsoft\auth\models\forms\LoginForm
  */
-use artsoft\auth\widgets\AuthChoice;
-use yii\bootstrap\ActiveForm;
+use artsoft\widgets\ActiveForm;
 use yii\helpers\Html;
 
 $this->title = Yii::t('art/auth', 'Authorization');
+$this->params['breadcrumbs'][] = $this->title;
 
 $col12 = $this->context->module->gridColumns;
-$col9 = (int) ($col12 * 3 / 4);
-$col6 = (int) ($col12 / 2);
-$col3 = (int) ($col12 / 4);
+$col9 = (int)($col12 * 3 / 4);
+$col6 = (int)($col12 / 2);
+$col3 = (int)($col12 / 4);
 ?>
 
     <div id="login-wrapper">
@@ -42,22 +42,11 @@ $col3 = (int) ($col12 / 4);
 
                         <?= $form->field($model, 'rememberMe')->checkbox(['value' => true]) ?>
 
-                        <?= Html::submitButton(Yii::t('art/auth', 'Login'), ['class' => 'btn btn-lg btn-primary btn-block']) ?>
-
-                        <div class="row registration-block">
-                            <div class="col-sm-<?= $col12 ?>">
-                                <?=
-                                AuthChoice::widget([
-                                    'baseAuthUrl' => ['/auth/default/oauth', 'language' => false],
-                                    'popupMode' => false,
-                                ])
-                                ?>
-                            </div>
-                        </div>
+                        <?= Html::submitButton(Yii::t('art/auth', 'Login'), ['class' => 'btn btn-primary btn-block']) ?>
 
                         <div class="row registration-block">
                             <div class="col-sm-<?= $col6 ?>">
-                                <?= Html::a(Yii::t('art/auth', "Registration"), ['default/signup']) ?>
+                                <?= Html::a(Yii::t('art/auth', "Registration"), ['default/finding']) ?>
                             </div>
                             <div class="col-sm-<?= $col6 ?> text-right">
                                 <?= Html::a(Yii::t('art/auth', "Forgot password?"), ['default/reset-password']) ?>
@@ -76,7 +65,7 @@ $css = <<<CSS
 
 #login-wrapper {
 	position: relative;
-	top: 30%;
+	margin-top: 30px;
 }
 #login-wrapper .registration-block {
 	margin-top: 15px;

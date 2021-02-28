@@ -58,7 +58,7 @@ class YandexGetCoordsWidget extends InputWidget
           $zoom_input = Html::input('text', $this->zoom_attribute, '', ['class' => 'form-control','readonly'=> true]);
           $address_input = Html::textarea($this->address_attribute, '', ['class' => 'form-control','readonly'=> true]);
       }
-          $button_input = Html::a(Yii::t('yee', 'Paste address to form'), ['#'], ['class' => 'btn btn-default insert-coords-form']);
+          $button_input = Html::a(Yii::t('art', 'Paste address to form'), ['#'], ['class' => 'btn btn-default insert-coords-form']);
         
         
       $this->view->registerJsFile('https://api-maps.yandex.ru/2.1/?lang=ru', ['position' => 1, 'type' => 'text/javascript']);
@@ -156,13 +156,13 @@ class YandexGetCoordsWidget extends InputWidget
                        </div>
                     </div>
                     <div class="col-xs-5 col-sm-4 col-md-3">
-                             <label class="control-label">' . \Yii::t('yee', 'The coordinates of the place') . '</label>
+                             <label class="control-label">' . \Yii::t('art', 'The coordinates of the place') . '</label>
                                 ' . $coords_input . '
                         <div class="help-block"></div>
-                             <label class="control-label">' . \Yii::t('yee', 'Map Zoom') . '</label>
+                             <label class="control-label">' . \Yii::t('art', 'Map Zoom') . '</label>
                                 ' . $zoom_input . '
                         <div class="help-block"></div>
-                        <label class="control-label">' . \Yii::t('yee', 'Map Address') . '</label>
+                        <label class="control-label">' . \Yii::t('art', 'Map Address') . '</label>
                                 ' . $address_input . '
                         <div class="help-block"></div>
                                 ' . $button_input . '

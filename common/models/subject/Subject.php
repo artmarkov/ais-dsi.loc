@@ -2,7 +2,7 @@
 
 namespace common\models\subject;
 
-use common\models\service\Department;
+use common\models\own\Department;
 use Yii;
 use yii\helpers\ArrayHelper;
 use common\models\subject\SubjectQuery;
@@ -42,7 +42,7 @@ class Subject extends \yii\db\ActiveRecord
     {
         return [
             [
-                'class' => \common\components\behaviors\ManyHasManyBehavior::className(),
+                'class' => \artsoft\behaviors\ManyHasManyBehavior::className(),
                 'relations' => [
                     'subjectCategoryItem' => 'category_list',
                     'departmentItem' => 'department_list',

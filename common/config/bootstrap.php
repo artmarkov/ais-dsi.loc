@@ -10,3 +10,4 @@ Yii::setAlias('artsoft/generator', dirname(__DIR__) . '/artsoft/generator');
 Yii::setAlias('artsoft/queue', dirname(__DIR__) . '/artsoft/queue');
 Yii::setAlias('artsoft/settings', dirname(__DIR__) . '/artsoft/settings');
 Yii::setAlias('artsoft/user', dirname(__DIR__) . '/artsoft/user');
+Yii::setAlias('artsoft/logs', dirname(__DIR__) . '/artsoft/logs');

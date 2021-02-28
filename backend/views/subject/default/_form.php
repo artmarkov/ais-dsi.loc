@@ -19,83 +19,65 @@ use nex\chosen\Chosen;
         'enableAjaxValidation' => true,
         'options' => ['enctype' => 'multipart/form-data'],
     ])
-
     ?>
 
-    <div class="row">
-        <div class="col-md-9">
+    <div class="panel">
+        <div class="panel-heading">
+            <?= Html::encode($this->title) ?>
+        </div>
+        <div class="panel-body">
             <div class="panel panel-default">
                 <div class="panel-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-sm-12">
+
                             <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-                        </div>
-                        <div class="col-md-6">
+
                             <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
-                        </div>
-                        <? //= $form->field($model, 'order')->textInput() ?>
-                    </div>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <?php
-                    echo $form->field($model, 'department_list')->widget(Chosen::className(), [
-                        'items' => Subject::getDepartmentList(),
-                        'multiple' => true,
-                        'placeholder' => Yii::t('art/guide', 'Select Department...'),
-                    ])->label(Yii::t('art/guide', 'Department'));
-                    ?>
-                </div>
-                <div class="col-md-6">
-                    <?php
-                    echo $form->field($model, 'category_list')->widget(Chosen::className(), [
-                        'items' => Subject::getSubjectCategoryList(),
-                        'multiple' => true,
-                        'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
-                    ])->label(Yii::t('art/guide', 'Subject Category'));
-                    ?>
-                </div>
-            </div>
-        </div>
+                            <? //= $form->field($model, 'order')->textInput() ?>
+                            <?php
+                            echo $form->field($model, 'department_list')->widget(Chosen::className(), [
+                                'items' => Subject::getDepartmentList(),
+                                'multiple' => true,
+                                'placeholder' => Yii::t('art/guide', 'Select Department...'),
+                            ])->label(Yii::t('art/guide', 'Department'));
+                            ?>
 
-        <div class="col-md-3">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="record-info">
-                        <div class="form-group clearfix">
-                            <label class="control-label"
-                                   style="float: left; padding-right: 5px;"><?= $model->attributeLabels()['id'] ?>
-                                : </label>
-                            <span><?= $model->id ?></span>
-                        </div>
-                        
-                        <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(Subject::getStatusList()) ?>
-                        
-                        <div class="form-group">
-                            <?php if ($model->isNewRecord): ?>
-                                <?= Html::submitButton(Yii::t('art', 'Create'), ['class' => 'btn btn-primary']) ?>
-                                <?= Html::a(Yii::t('art', 'Cancel'), ['/subject/default/index'], ['class' => 'btn btn-default']) ?>
-                            <?php else: ?>
-                                <?= Html::submitButton(Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
-                                <?= Html::a(Yii::t('art', 'Delete'),
-                                    ['/subject/default/delete', 'id' => $model->id], [
-                                        'class' => 'btn btn-default',
-                                        'data' => [
-                                            'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                            'method' => 'post',
-                                        ],
-                                    ]) ?>
-                            <?php endif; ?>
+                            <?php
+                            echo $form->field($model, 'category_list')->widget(Chosen::className(), [
+                                'items' => Subject::getSubjectCategoryList(),
+                                'multiple' => true,
+                                'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
+                            ])->label(Yii::t('art/guide', 'Subject Category'));
+                            ?>
+
+                            <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(Subject::getStatusList()) ?>
+
                         </div>
                     </div>
                 </div>
+                <div class="panel-footer">
+                    <div class="form-group">
+                        <?= Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'), ['/subject/default/index'], ['class' => 'btn btn-default']) ?>
+                        <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
+                        <?php if (!$model->isNewRecord): ?>
+                            <?= Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'),
+                                ['/subject/default/delete', 'id' => $model->id], [
+                                    'class' => 'btn btn-danger',
+                                    'data' => [
+                                        'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                        'method' => 'post',
+                                    ],
+                                ]) ?>
+                        <?php endif; ?>
+                    </div>
+                    <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
+                </div>
             </div>
+
+            <?php ActiveForm::end(); ?>
 
         </div>
     </div>
-
-    <?php ActiveForm::end(); ?>
-
 </div>
