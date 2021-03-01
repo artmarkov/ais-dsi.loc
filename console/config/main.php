@@ -19,9 +19,9 @@ return [
 //                'artsoft\queue\migrations',
 //            ],
         ],
-//         'migration' => [
-//            'class' => 'bizley\migration\controllers\MigrationController',
-//        ],
+         'migration' => [
+            'class' => 'bizley\migration\controllers\MigrationController',
+        ],
 //        'monitor' => [
 //            'class' => \zhuravljov\yii\queue\monitor\console\GcController::class,
 //            'silent' => false,
