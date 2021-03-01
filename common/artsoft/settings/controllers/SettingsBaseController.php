@@ -10,8 +10,14 @@ use Yii;
  *
  * @author Taras Makitra <makitrataras@gmail.com>
  */
+
 abstract class SettingsBaseController extends BaseController
 {
+
+    public $tabMenu = [
+        ['url' => ['/settings/default/index'], 'label' => 'Основные настройки', 'visible' => 1],
+        ['url' => ['/settings/reading/index'], 'label' => 'Настройки форм'],
+    ];
 
     /**
      * Settings model class.

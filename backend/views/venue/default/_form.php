@@ -74,8 +74,7 @@ use yii\helpers\Url;
                                 ])->label(Yii::t('art/guide', 'Name District'));
                                 ?>
 
-                                <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
-                                <div class="help-block"><?= \Yii::t('art', 'Click on the map to get the address and coordinates, then click the button to insert the address into the form'); ?></div>
+                                <?= $form->field($model, 'address')->textInput(['maxlength' => true])->hint(\Yii::t('art', 'Click on the map to get the address and coordinates, then click the button to insert the address into the form')) ?>
 
                                 <?= $form->field($model, 'coords')->widget(\common\widgets\YandexGetCoordsWidget::className())->label(false) ?>
 
@@ -85,11 +84,11 @@ use yii\helpers\Url;
                     </div>
                     <div class="panel-footer">
                         <div class="form-group">
-                            <?= Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'), ['/venue/defaultct/index'], ['class' => 'btn btn-default']) ?>
+                            <?= Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'), ['/venue/default/index'], ['class' => 'btn btn-default']) ?>
                             <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
                             <?php if (!$model->isNewRecord): ?>
                                 <?= Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'),
-                                    ['/venue/defaultct/delete', 'id' => $model->id], [
+                                    ['/venue/default/delete', 'id' => $model->id], [
                                         'class' => 'btn btn-danger',
                                         'data' => [
                                             'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
