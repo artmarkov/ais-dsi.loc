@@ -58,10 +58,11 @@ $config =  [
             'class' => 'artsoft\queue\Module',
         ],
     ],
-    'components' => [       
+    'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => env('BACKEND_COOKIE_VALIDATION_KEY'),
+//            'enableCsrfValidation' => false,
             'baseUrl' => '/admin',
         ],
         'assetManager' => [

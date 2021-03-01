@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m210301_151055_008_create_table_event_category extends Migration
+class m210301_151102_create_table_event extends Migration
 {
     public function up()
     {
@@ -21,10 +21,24 @@ class m210301_151055_008_create_table_event_category extends Migration
             'description' => $this->string(256),
         ], $tableOptions);
 
+        $this->createTable('{{%event}}', [
+            'id' => $this->primaryKey(),
+            'category_id' => $this->smallInteger(3)->unsigned()->notNull(),
+            'auditory_id' => $this->integer(8)->unsigned()->notNull(),
+            'title' => $this->string(100),
+            'description' => $this->text(),
+            'start_timestamp' => $this->integer()->notNull(),
+            'end_timestamp' => $this->integer(),
+            'all_day' => $this->tinyInteger(1)->defaultValue('0'),
+        ], $tableOptions);
+
+        $this->createIndex('category_id', '{{%event}}', 'category_id');
+        $this->addForeignKey('event_ibfk_1', '{{%event}}', 'category_id', '{{%event_category}}', 'id', 'NO ACTION', 'NO ACTION');
     }
 
     public function down()
     {
+        $this->dropTable('{{%event}}');
         $this->dropTable('{{%event_category}}');
     }
 }

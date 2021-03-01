@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m210301_151103_027_create_table_department extends Migration
+class m210301_151103_create_table_own extends Migration
 {
     public function up()
     {
@@ -10,6 +10,12 @@ class m210301_151103_027_create_table_department extends Migration
         if ($this->db->driverName === 'mysql') {
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
+
+        $this->createTable('{{%division}}', [
+            'id' => $this->tinyInteger(2)->unsigned()->notNull()->append('AUTO_INCREMENT PRIMARY KEY'),
+            'name' => $this->string(127)->notNull(),
+            'slug' => $this->string(32)->notNull(),
+        ], $tableOptions);
 
         $this->createTable('{{%department}}', [
             'id' => $this->tinyInteger(2)->unsigned()->notNull()->append('AUTO_INCREMENT PRIMARY KEY'),
@@ -26,5 +32,6 @@ class m210301_151103_027_create_table_department extends Migration
     public function down()
     {
         $this->dropTable('{{%department}}');
+        $this->dropTable('{{%division}}');
     }
 }

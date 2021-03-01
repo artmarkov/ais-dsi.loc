@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m210301_151104_029_create_table_student extends Migration
+class m210301_151104_create_table_student extends Migration
 {
     public function up()
     {
@@ -10,6 +10,13 @@ class m210301_151104_029_create_table_student extends Migration
         if ($this->db->driverName === 'mysql') {
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
+
+        $this->createTable('{{%student_position}}', [
+            'id' => $this->tinyInteger(2)->unsigned()->notNull()->append('AUTO_INCREMENT PRIMARY KEY'),
+            'name' => $this->string(128),
+            'slug' => $this->string(32),
+            'status' => $this->smallInteger(1)->unsigned()->notNull(),
+        ], $tableOptions);
 
         $this->createTable('{{%student}}', [
             'id' => $this->integer(8)->unsigned()->notNull(),
@@ -26,10 +33,13 @@ class m210301_151104_029_create_table_student extends Migration
         $this->createIndex('position_id', '{{%student}}', 'position_id');
         $this->createIndex('user_id', '{{%student}}', 'user_id');
         $this->addForeignKey('student_ibfk_1', '{{%student}}', 'position_id', '{{%student_position}}', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('student_ibfk_2', '{{%student}}', 'user_id', '{{%user}}', 'id', 'NO ACTION', 'NO ACTION');
+
     }
 
     public function down()
     {
         $this->dropTable('{{%student}}');
+        $this->dropTable('{{%student_position}}');
     }
 }

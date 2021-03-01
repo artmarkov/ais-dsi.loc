@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m210301_151108_035_create_table_venue_place extends Migration
+class m210301_151108_create_table_venue extends Migration
 {
     public function up()
     {
@@ -10,6 +10,36 @@ class m210301_151108_035_create_table_venue_place extends Migration
         if ($this->db->driverName === 'mysql') {
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
+
+        $this->createTable('{{%venue_country}}', [
+            'id' => $this->primaryKey(8),
+            'name' => $this->string(127)->notNull(),
+            'fips' => $this->string(2)->notNull(),
+        ], $tableOptions);
+
+        $this->createTable('{{%venue_sity}}', [
+            'id' => $this->primaryKey(8),
+            'country_id' => $this->integer(8),
+            'name' => $this->string(64)->notNull(),
+            'latitude' => $this->float(),
+            'longitude' => $this->float(),
+        ], $tableOptions);
+
+        $this->createIndex('country_id', '{{%venue_sity}}', 'country_id');
+        $this->createIndex('latitude', '{{%venue_sity}}', 'latitude');
+        $this->createIndex('longitude', '{{%venue_sity}}', 'longitude');
+        $this->addForeignKey('venue_sity_ibfk_1', '{{%venue_sity}}', 'country_id', '{{%venue_country}}', 'id', 'NO ACTION', 'NO ACTION');
+
+        $this->createTable('{{%venue_district}}', [
+            'id' => $this->primaryKey(8),
+            'sity_id' => $this->integer(8)->notNull(),
+            'name' => $this->string()->notNull(),
+            'slug' => $this->string(16)->notNull(),
+        ], $tableOptions);
+
+        $this->createIndex('sity_id', '{{%venue_district}}', 'sity_id');
+        $this->addForeignKey('venue_district_ibfk_1', '{{%venue_district}}', 'sity_id', '{{%venue_sity}}', 'id', 'NO ACTION', 'NO ACTION');
+
 
         $this->createTable('{{%venue_place}}', [
             'id' => $this->primaryKey(8),
@@ -39,10 +69,16 @@ class m210301_151108_035_create_table_venue_place extends Migration
         $this->addForeignKey('venue_place_ibfk_1', '{{%venue_place}}', 'country_id', '{{%venue_country}}', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('venue_place_ibfk_2', '{{%venue_place}}', 'district_id', '{{%venue_district}}', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('venue_place_ibfk_3', '{{%venue_place}}', 'sity_id', '{{%venue_sity}}', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('venue_place_ibfk_4', '{{%venue_place}}', 'created_by', '{{%user}}', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('venue_place_ibfk_5', '{{%venue_place}}', 'updated_by', '{{%user}}', 'id', 'NO ACTION', 'NO ACTION');
+
     }
 
     public function down()
     {
         $this->dropTable('{{%venue_place}}');
+        $this->dropTable('{{%venue_district}}');
+        $this->dropTable('{{%venue_sity}}');
+        $this->dropTable('{{%venue_country}}');
     }
 }
