@@ -18,18 +18,14 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="role-index">
-
-    <div class="row">
-        <div class="col-sm-12">
-            <h3 class="page-title"><?= Html::encode($this->title) ?></h3>
-            <?= Html::a(Yii::t('art', 'Add New'), ['create'], ['class' => 'btn btn-sm btn-success']) ?>
+    <div class="panel">
+        <div class="panel-heading">
+            <?= Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('art', 'Add New'), ['create'], ['class' => 'btn btn-sm btn-default']) ?>
         </div>
-    </div>
-
-    <div class="panel panel-default">
         <div class="panel-body">
-
-            <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
                 <div class="col-sm-12 text-right">
                     <?= GridPageSize::widget(['pjaxId' => 'role-grid-pjax']) ?>
                 </div>

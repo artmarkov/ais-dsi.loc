@@ -2,7 +2,6 @@
 
 namespace artsoft\user\controllers;
 
-use artsoft\controllers\admin\BaseController;
 use artsoft\helpers\AuthHelper;
 use artsoft\models\Permission;
 use artsoft\models\Role;
@@ -10,7 +9,7 @@ use artsoft\user\models\search\RoleSearch;
 use Yii;
 use yii\rbac\DbManager;
 
-class RoleController extends BaseController
+class RoleController extends MainController
 {
     /**
      * @var Role

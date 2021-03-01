@@ -15,7 +15,7 @@ abstract class SettingsBaseController extends BaseController
 {
 
     public $tabMenu = [
-        ['url' => ['/settings/default/index'], 'label' => 'Основные настройки', 'visible' => 1],
+        ['url' => ['/settings/default/index'], 'label' => 'Основные настройки'],
         ['url' => ['/settings/reading/index'], 'label' => 'Настройки форм'],
     ];
 

@@ -13,37 +13,36 @@ $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="user-update">
+    <?php $form = ActiveForm::begin([
+        'id' => 'user',
+        'layout' => 'horizontal',
+    ]); ?>
+    <div class="user-form">
+        <div class="panel">
+            <div class="panel-heading">
+                <?= Html::encode($this->title) ?>
+            </div>
+            <div class="panel-body">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-12">
 
-    <div class="row">
-        <div class="col-sm-12">
-            <h3 class="page-title"><?=  Html::encode($this->title) ?></h3>            
-        </div>
-    </div>
+                                <?= $form->field($model, 'password')->passwordInput(['maxlength' => 255, 'autocomplete' => 'off']) ?>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+                                <?= $form->field($model, 'repeat_password')->passwordInput(['maxlength' => 255, 'autocomplete' => 'off']) ?>
 
-            <div class="user-form">
-
-                <?php $form = ActiveForm::begin([
-                    'id' => 'user',
-                    'layout' => 'horizontal',
-                ]); ?>
-
-                <?= $form->field($model, 'password')->passwordInput(['maxlength' => 255, 'autocomplete' => 'off']) ?>
-
-                <?= $form->field($model, 'repeat_password')->passwordInput(['maxlength' => 255, 'autocomplete' => 'off']) ?>
-
-                <div class="form-group">
-                    <div class="col-sm-offset-3 col-sm-9">
-                        <?= Html::submitButton(Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="form-group">
+                            <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
+                        </div>
                     </div>
                 </div>
-
-                <?php ActiveForm::end(); ?>
-
             </div>
         </div>
     </div>
-
+    <?php ActiveForm::end(); ?>
 </div>

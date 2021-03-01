@@ -11,6 +11,11 @@ use yii\web\NotFoundHttpException;
 
 abstract class BaseController extends Controller
 {
+    /**
+     * TabMenu element
+     * @var bool
+     */
+    public $tabMenu = false;
 
     /**
      * @return array

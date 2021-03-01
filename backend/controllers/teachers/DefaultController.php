@@ -2,8 +2,8 @@
 
 namespace backend\controllers\teachers;
 
-use common\models\teachers\Stake;
-use common\models\teachers\Cost;
+use common\models\guidejob\Stake;
+use common\models\guidejob\Cost;
 use common\models\teachers\Teachers;
 use common\models\user\UserCommon;
 use common\models\user\User;

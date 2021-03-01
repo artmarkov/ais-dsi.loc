@@ -2,14 +2,13 @@
 
 namespace artsoft\user\controllers;
 
-use artsoft\controllers\admin\BaseController;
 use artsoft\models\AuthItemGroup;
 use artsoft\user\models\search\AuthItemGroupSearch;
 
 /**
  * AuthItemGroupController implements the CRUD actions for AuthItemGroup model.
  */
-class PermissionGroupsController extends BaseController
+class PermissionGroupsController extends MainController
 {
     /**
      * @var AuthItemGroup

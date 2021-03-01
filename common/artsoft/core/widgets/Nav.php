@@ -113,9 +113,7 @@ class Nav extends \yii\bootstrap\Nav
         if (!isset($item['label'])) {
             throw new InvalidConfigException("The 'label' option is required.");
         }
-        if (isset($item['icon'])) {
 
-        }
         $encodeLabel = isset($item['encode']) ? $item['encode'] : $this->encodeLabels;
         $label = isset($item['icon']) ? '<i class="' . $item['icon'] . '"></i> ' : null;
         $label .= $encodeLabel ? Html::encode($item['label']) : $item['label'];

@@ -7,7 +7,7 @@ use kartik\date\DatePicker;
 use nex\chosen\Chosen;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-use common\models\teachers\BonusItem;
+use common\models\guidejob\BonusItem;
 use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
@@ -54,14 +54,14 @@ use yii\widgets\MaskedInput;
                             <?= $form->field($modelUser, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
 
                             <?php
-                            echo $form->field($model, 'direction_id_main')->dropDownList(\common\models\teachers\Direction::getDirectionList(), [
+                            echo $form->field($model, 'direction_id_main')->dropDownList(\common\models\guidejob\Direction::getDirectionList(), [
                                 'prompt' => Yii::t('art/teachers', 'Select Direction...'),
                                 'id' => 'direction_id_main'
                             ])->label(Yii::t('art/teachers', 'Name Direction Main'));
                             ?>
                             <?php
                             echo $form->field($model, 'stake_id_main')->widget(\kartik\depdrop\DepDrop::classname(), [
-                                'data' => \common\models\teachers\Stake::getStakeByName($model->direction_id_main),
+                                'data' => \common\models\guidejob\Stake::getStakeByName($model->direction_id_main),
                                 'options' => ['prompt' => Yii::t('art/teachers', 'Select Stake...'), 'id' => 'stake_id_main'],
                                 'pluginOptions' => [
                                     'depends' => ['direction_id_main'],
@@ -72,14 +72,14 @@ use yii\widgets\MaskedInput;
 
                             ?>
                             <?php
-                            echo $form->field($model, 'direction_id_optional')->dropDownList(\common\models\teachers\Direction::getDirectionList(), [
+                            echo $form->field($model, 'direction_id_optional')->dropDownList(\common\models\guidejob\Direction::getDirectionList(), [
                                 'prompt' => Yii::t('art/teachers', 'Select Direction...'),
                                 'id' => 'direction_id_optional'
                             ])->label(Yii::t('art/teachers', 'Name Direction Optional'));
                             ?>
                             <?php
                             echo $form->field($model, 'stake_id_optional')->widget(\kartik\depdrop\DepDrop::classname(), [
-                                'data' => \common\models\teachers\Stake::getStakeByName($model->direction_id_optional),
+                                'data' => \common\models\guidejob\Stake::getStakeByName($model->direction_id_optional),
                                 'options' => ['prompt' => Yii::t('art/teachers', 'Select Stake...'), 'id' => 'stake_id_optional'],
                                 'pluginOptions' => [
                                     'depends' => ['direction_id_optional'],
@@ -118,21 +118,21 @@ use yii\widgets\MaskedInput;
                             ?>
 
                             <?php
-                            echo $form->field($model, 'position_id')->dropDownList(common\models\teachers\Position::getPositionList(), [
+                            echo $form->field($model, 'position_id')->dropDownList(common\models\guidejob\Position::getPositionList(), [
                                 'prompt' => Yii::t('art/teachers', 'Select Position...'),
                                 'id' => 'position_id'
                             ])->label(Yii::t('art/teachers', 'Name Position'));
                             ?>
 
                             <?php
-                            echo $form->field($model, 'work_id')->dropDownList(common\models\teachers\Work::getWorkList(), [
+                            echo $form->field($model, 'work_id')->dropDownList(common\models\guidejob\Work::getWorkList(), [
                                 'prompt' => Yii::t('art/teachers', 'Select Work...'),
                                 'id' => 'work_id'
                             ])->label(Yii::t('art/teachers', 'Name Work'));
                             ?>
 
                             <?php
-                            echo $form->field($model, 'level_id')->dropDownList(common\models\teachers\Level::getLevelList(), [
+                            echo $form->field($model, 'level_id')->dropDownList(common\models\guidejob\Level::getLevelList(), [
                                 'prompt' => Yii::t('art/teachers', 'Select Level...'),
                                 'id' => 'level_id'
                             ])->label(Yii::t('art/teachers', 'Name Level'));

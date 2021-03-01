@@ -16,54 +16,48 @@ $this->params['breadcrumbs'][] = $this->title;
 SettingsAsset::register($this);
 ?>
 <div class="setting-index">
+    <?php
+    $form = ActiveForm::begin([
+        'id' => 'setting-form',
+        'validateOnBlur' => false,
+    ])
+    ?>
+    <div class="panel">
+        <div class="panel-heading">
+            <?= Html::encode($this->title) ?>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
 
-    <div class="row">
-        <div class="col-lg-8"><h3 class="page-title"><?= Html::encode($this->title) ?></h3></div>
-        <div class="col-lg-4"><?= LanguagePills::widget() ?></div>
-    </div>
+                    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
-    <div class="setting-form">
-        <?php
-        $form = ActiveForm::begin([
-            'id' => 'setting-form',
-            'validateOnBlur' => false,
-        ])
-        ?>
+                    <?= $form->field($model, 'description')->textInput(['maxlength' => true])/*->hint($model->getDescription('description')) */ ?>
 
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-12">
+                    <?= $form->field($model, 'email')->textInput(['maxlength' => true])->hint($model->getDescription('email')) ?>
 
-                        <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'phone')->textInput(['maxlength' => true])->hint($model->getDescription('phone')) ?>
 
-                        <?= $form->field($model, 'description')->textInput(['maxlength' => true])/*->hint($model->getDescription('description')) */ ?>
+                    <?= $form->field($model, 'facebook')->textInput(['maxlength' => true])->hint($model->getDescription('facebook')) ?>
 
-                        <?= $form->field($model, 'email')->textInput(['maxlength' => true])->hint($model->getDescription('email')) ?>
+                    <?= $form->field($model, 'instagram')->textInput(['maxlength' => true])->hint($model->getDescription('instagram')) ?>
 
-                        <?= $form->field($model, 'phone')->textInput(['maxlength' => true])->hint($model->getDescription('phone')) ?>
+                    <?= $form->field($model, 'timezone')->dropDownList(GeneralSettings::getTimezones())->hint($model->getDescription('timezone')) ?>
 
-                        <?= $form->field($model, 'facebook')->textInput(['maxlength' => true])->hint($model->getDescription('facebook')) ?>
+                    <?= $form->field($model, 'dateformat')->dropDownList(GeneralSettings::getDateFormats())->hint($model->getDescription('dateformat')) ?>
 
-                        <?= $form->field($model, 'instagram')->textInput(['maxlength' => true])->hint($model->getDescription('instagram')) ?>
-
-                        <?= $form->field($model, 'timezone')->dropDownList(GeneralSettings::getTimezones())->hint($model->getDescription('timezone')) ?>
-
-                        <?= $form->field($model, 'dateformat')->dropDownList(GeneralSettings::getDateFormats())->hint($model->getDescription('dateformat')) ?>
-
-                        <?= $form->field($model, 'timeformat')->dropDownList(GeneralSettings::getTimeFormats())->hint($model->getDescription('timeformat')) ?>
-                    </div>
+                    <?= $form->field($model, 'timeformat')->dropDownList(GeneralSettings::getTimeFormats())->hint($model->getDescription('timeformat')) ?>
                 </div>
             </div>
-            <div class="panel-footer">
-                <div class="form-group">
-                    <?= Html::submitButton(Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
-                </div>
+        </div>
+        <div class="panel-footer">
+            <div class="form-group">
+                <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
             </div>
         </div>
     </div>
 
-    <?php ActiveForm::end(); ?>
+<?php ActiveForm::end(); ?>
 
 </div>
 

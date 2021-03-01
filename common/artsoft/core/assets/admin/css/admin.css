@@ -310,3 +310,7 @@ img.dw-media-image {
 .panel-heading {
     font-size: large;
 }
+
+.unset{
+    font-size: unset;
+}

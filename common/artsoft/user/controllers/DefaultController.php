@@ -3,19 +3,19 @@
 namespace artsoft\user\controllers;
 
 use artsoft\controllers\admin\BaseController;
-use artsoft\models\User;
+use common\models\user\User;
 use Yii;
 use yii\web\NotFoundHttpException;
 
 /**
  * DefaultController implements the CRUD actions for User model.
  */
-class DefaultController extends BaseController
+class DefaultController extends MainController
 {
     /**
      * @var User
      */
-    public $modelClass = 'artsoft\models\User';
+    public $modelClass = 'common\models\user\User';
 
     /**
      * @var UserSearch

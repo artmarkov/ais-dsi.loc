@@ -71,13 +71,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'position_id',
                                 'value' => 'position.name',
                                 'label' => Yii::t('art/teachers', 'Name Position'),
-                                'filter' => common\models\teachers\Position::getPositionList(),
+                                'filter' => \common\models\guidejob\Position::getPositionList(),
                             ],
                             [
                                 'attribute' => 'work_id',
                                 'value' => 'work.name',
                                 'label' => Yii::t('art/teachers', 'Name Work'),
-                                'filter' => common\models\teachers\Work::getWorkList(),
+                                'filter' => \common\models\guidejob\Work::getWorkList(),
                             ],
                             [
                                 'attribute' => 'gridDepartmentSearch',

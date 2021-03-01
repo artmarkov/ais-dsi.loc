@@ -2,7 +2,6 @@
 
 namespace artsoft\user\controllers;
 
-use artsoft\controllers\admin\BaseController;
 use artsoft\helpers\AuthHelper;
 use artsoft\models\AbstractItem;
 use artsoft\models\Permission;
@@ -10,7 +9,7 @@ use artsoft\models\Route;
 use artsoft\user\models\search\PermissionSearch;
 use Yii;
 
-class PermissionController extends BaseController
+class PermissionController extends MainController
 {
     /**
      * @var Permission

@@ -2,6 +2,11 @@
 
 namespace common\models\teachers;
 
+use common\models\guidejob\BonusItem;
+use common\models\guidejob\Cost;
+use common\models\guidejob\Level;
+use common\models\guidejob\Position;
+use common\models\guidejob\Work;
 use common\models\own\Department;
 use Yii;
 use yii\helpers\ArrayHelper;

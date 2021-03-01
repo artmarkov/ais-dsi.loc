@@ -2,14 +2,13 @@
 
 namespace artsoft\user\controllers;
 
-use artsoft\controllers\admin\BaseController;
 use artsoft\models\Permission;
 use artsoft\models\Role;
 use artsoft\models\User;
 use Yii;
 use yii\web\NotFoundHttpException;
 
-class UserPermissionController extends BaseController
+class UserPermissionController extends MainController
 {
 
     /**

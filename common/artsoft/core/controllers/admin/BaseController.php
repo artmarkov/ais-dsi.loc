@@ -91,13 +91,6 @@ abstract class BaseController extends \artsoft\controllers\BaseController
      */
 
     public $updateView = 'update';
-    
-    /**
-     * TabMenu element
-     *
-     * @var bool
-     */
-    public $tabMenu = false;
 
     public function behaviors()
     {

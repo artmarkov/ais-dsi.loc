@@ -18,31 +18,38 @@ use artsoft\widgets\ActiveForm;
         'validateOnBlur' => false,
     ])
     ?>
-
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <?= $form->field($model, 'name')->textInput(['maxlength' => 255, 'autofocus' => $model->isNewRecord ? true : false]) ?>
-                    <?= $form->field($model, 'code')->textInput(['maxlength' => 64]) ?>
-                </div>
-            </div>
+    <div class="panel">
+        <div class="panel-heading">
+            <?= Html::encode($this->title) ?>
         </div>
-        <div class="panel-footer">
-            <div class="record-info">
-                <div class="form-group">
-                        <?= Html::a(Yii::t('art', 'Go to list'), ['/user/permission-groups/index'], ['class' => 'btn btn-default']) ?>
-                        <?= Html::submitButton(Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
-                    <?php if (!$model->isNewRecord): ?>
-                        <?= Html::a(Yii::t('art', 'Delete'), ['delete', 'id' => $model->code], [
-                            'class' => 'btn btn-danger',
-                            'data' => [
-                                'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                'method' => 'post',
-                            ],
-                        ])
-                        ?>
-                    <?php endif; ?>
+        <div class="panel-body">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <?= $form->field($model, 'name')->textInput(['maxlength' => 255, 'autofocus' => $model->isNewRecord ? true : false]) ?>
+
+                            <?= $form->field($model, 'code')->textInput(['maxlength' => 64]) ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="record-info">
+                        <div class="form-group">
+                            <?= Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'), ['/user/permission-groups/index'], ['class' => 'btn btn-default']) ?>
+                            <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
+                            <?php if (!$model->isNewRecord): ?>
+                                <?= Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'), ['delete', 'id' => $model->code], [
+                                    'class' => 'btn btn-danger',
+                                    'data' => [
+                                        'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                        'method' => 'post',
+                                    ],
+                                ])
+                                ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

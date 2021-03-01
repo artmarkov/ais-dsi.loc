@@ -74,6 +74,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Аудитории школы', 'icon' => 'fa fa-minus', 'url' => ['/auditory/default/index']],
                     ['label' => 'Места проведения', 'icon' => 'fa fa-minus', 'url' => ['/venue/default/index']],
                     ['label' => 'Дисциплины', 'icon' => 'fa fa-minus', 'url' => ['/subject/default/index']],
+                    ['label' => 'Должностные характеристики', 'icon' => 'fa fa-minus', 'url' => ['/guidejob/default/index']],
                     ['label' => 'Сведения об организации', 'icon' => 'fa fa-minus', 'url' => ['/own/default/index']],
                 ],
             ],
@@ -84,12 +85,9 @@ use artsoft\widgets\Nav;
                 'items' => [
                     ['label' => 'Лог посещений', 'icon' => 'fa fa-minus', 'url' => ['/logs/default/index']],
                     ['label' => 'Пользователи', 'icon' => 'fa fa-minus', 'url' => ['/user/default/index'],],
-                    ['label' => 'Роли', 'icon' => 'fa fa-minus', 'url' => ['/user/role/index']],
-                    ['label' => 'Права доступа', 'icon' => 'fa fa-minus', 'url' => ['/user/permission/index']],
-                    ['label' => 'Группы прав доступа', 'icon' => 'fa fa-minus', 'url' => ['/user/permission-groups/index']],
                     ['label' => 'Очистить кэш', 'icon' => 'fa fa-minus', 'url' => ['/settings/cache/flush']],
-                    ['label' => 'Общие настройки', 'icon' => 'fa fa-minus', 'url' => ['/settings/default/index']],
-                    ['label' => 'Настройки чтения', 'icon' => 'fa fa-minus', 'url' => ['/settings/reading/index']],
+                    ['label' => 'Настройки', 'icon' => 'fa fa-minus', 'url' => ['/settings/default/index']],
+//                    ['label' => 'Настройки чтения', 'icon' => 'fa fa-minus', 'url' => ['/settings/reading/index']],
                 ],
             ],
             [
