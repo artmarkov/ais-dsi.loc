@@ -52,7 +52,8 @@
     "kartik-v/yii2-widget-switchinput": "*",
     "kartik-v/yii2-widget-touchspin": "*",
     "kartik-v/yii2-widget-depdrop": "@dev",
-    "tecnocen/yii2-bootstrap-year-calendar": "*"
+    "tecnocen/yii2-bootstrap-year-calendar": "*",
+    "kartik-v/yii2-widget-colorinput": "*"
 
   },
   "require-dev": {

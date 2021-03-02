@@ -13,10 +13,12 @@ use Yii;
  */
 class DefaultController extends MainController
 {
-    public $modelClass       = 'common\models\student\Student';
+    public $modelClass = 'common\models\student\Student';
     public $modelSearchClass = 'common\models\student\search\StudentSearch';
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = new $this->modelClass;
         $modelUser = new UserCommon();
@@ -28,7 +30,7 @@ class DefaultController extends MainController
         if ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax) {
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-            return \yii\widgets\ActiveForm::validate($model,$modelUser);
+            return \yii\widgets\ActiveForm::validate($model, $modelUser);
         } elseif ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
             //echo '<pre>' . print_r($model, true) . '</pre>';
@@ -38,7 +40,7 @@ class DefaultController extends MainController
 
             if ($modelUser->save()) {
                 $model->user_id = $modelUser->id;
-                   if ($model->save()) {
+                if ($model->save()) {
                     Yii::$app->session->setFlash('crudMessage', Yii::t('art', 'Your item has been updated.'));
                     return $this->redirect($this->getRedirectPage('update', $model));
                 }
@@ -51,7 +53,9 @@ class DefaultController extends MainController
         }
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = $this->findModel($id);
         $modelUser = UserCommon::findOne(['id' => $model->user_id, 'user_category' => User::USER_CATEGORY_STUDENT]);
@@ -63,7 +67,7 @@ class DefaultController extends MainController
         if ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax) {
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-            return \yii\widgets\ActiveForm::validate($model,$modelUser);
+            return \yii\widgets\ActiveForm::validate($model, $modelUser);
         } elseif ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
             //echo '<pre>' . print_r($model, true) . '</pre>';
@@ -74,25 +78,26 @@ class DefaultController extends MainController
             }
         } else {
 
-            
 
             return $this->renderIsAjax('update', [
                 'modelUser' => $modelUser,
                 'model' => $model,
-          
+
             ]);
         }
     }
+
     /**
-     * Удаляет связь студент - родитель 
+     * Удаляет связь студент - родитель
      * Элемент Родитель при это не удаляется
      */
-    public function actionRemove() {
-        $id = Yii::$app->request->get('id');        
+    public function actionRemove()
+    {
+        $id = Yii::$app->request->get('id');
         $model = \common\models\user\UserFamily::findOne($id);
         if (empty($model)) return false;
         $model->delete();
         Yii::$app->session->setFlash('crudMessage', Yii::t('art', 'Your item has been deleted.'));
-        return $this->redirect(Yii::$app->request->referrer); 
+        return $this->redirect(Yii::$app->request->referrer);
     }
 }

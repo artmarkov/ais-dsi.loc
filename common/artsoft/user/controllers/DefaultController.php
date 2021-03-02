@@ -46,6 +46,8 @@ class DefaultController extends MainController
      */
     public function actionCreate()
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $model = new User(['scenario' => 'newUser']);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -63,6 +65,8 @@ class DefaultController extends MainController
      */
     public function actionChangePassword($id)
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $model = User::findOne($id);
 
         if (!$model) {

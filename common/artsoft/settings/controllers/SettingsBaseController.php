@@ -47,6 +47,7 @@ abstract class SettingsBaseController extends BaseController
      */
     public function actionIndex()
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
         $modelClass = $this->modelClass;
         $model = new $modelClass();
 

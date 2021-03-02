@@ -2,21 +2,32 @@
 
 namespace backend\controllers\routine;
 
-use common\models\calendar\Conference;
+use common\models\routine\Routine;
+use yii\data\ActiveDataProvider;
 
-class DefaultController extends \backend\controllers\DefaultController
+class DefaultController extends MainController
 {
-    public function actionIndex()
+    public $modelClass = 'common\models\routine\Routine';
+    public $modelSearchClass = 'common\models\routine\search\RoutineSearch';
+
+    public function actionCalendar()
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
         $this->view->title = 'Производственный календарь';
         $this->view->params['breadcrumbs'][] = $this->view->title;
+        $dataProvider = new ActiveDataProvider([
+            'query' => $this->modelClass::find()
+//                ->joinWith('cat')->select('routine_cat.name as name, routine.name as location, start_date, end_date, routine.color as color')
+        ]);
 
-        return $this->render('index.php');
+        return $this->render('calendar.php', [
+            'dataProvider' => $dataProvider
+        ]);
     }
 
     public function actionInitEvent()
     {
-        $model = new Conference();
+        $model = new $this->modelClass();
         $model->start_date = \Yii::$app->request->post('startDate');
         $model->end_date = \Yii::$app->request->post('endDate');
 

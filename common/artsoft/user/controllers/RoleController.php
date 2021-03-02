@@ -28,6 +28,8 @@ class RoleController extends MainController
      */
     public function actionView($id)
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $role = $this->findModel($id);
 
         $authManager = new DbManager();
@@ -65,6 +67,8 @@ class RoleController extends MainController
      */
     public function actionSetChildRoles($id)
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $role = $this->findModel($id);
 
         $newChildRoles = Yii::$app->request->post('child_roles', []);
@@ -99,6 +103,8 @@ class RoleController extends MainController
      */
     public function actionSetChildPermissions($id)
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $role = $this->findModel($id);
 
         $newChildPermissions = Yii::$app->request->post('child_permissions', []);
@@ -123,6 +129,8 @@ class RoleController extends MainController
      */
     public function actionCreate()
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $model = new Role;
         $model->scenario = 'webInput';
 
@@ -143,6 +151,8 @@ class RoleController extends MainController
      */
     public function actionUpdate($id)
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $model = $this->findModel($id);
         $model->scenario = 'webInput';
 

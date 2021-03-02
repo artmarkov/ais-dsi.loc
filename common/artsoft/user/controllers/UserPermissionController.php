@@ -19,6 +19,8 @@ class UserPermissionController extends MainController
      */
     public function actionSet($id)
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $user = User::findOne($id);
 
         if (!$user) {
@@ -47,6 +49,8 @@ class UserPermissionController extends MainController
      */
     public function actionSetRoles($id)
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         if (!Yii::$app->user->isSuperadmin AND Yii::$app->user->id == $id) {
             Yii::$app->session->setFlash('error', Yii::t('art/user', 'You can not change own permissions'));
             return $this->redirect(['set', 'id' => $id]);

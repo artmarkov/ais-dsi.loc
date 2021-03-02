@@ -12,12 +12,14 @@ Use yii\web\NotFoundHttpException;
 /**
  * DefaultController implements the CRUD actions for common\models\user\UserCommon model.
  */
-class DefaultController extends \backend\controllers\DefaultController {
+class DefaultController extends \backend\controllers\DefaultController
+{
 
     public $modelClass = 'common\models\user\UserCommon';
     public $modelSearchClass = '';
 
-    protected function getRedirectPage($action, $model = null) {
+    protected function getRedirectPage($action, $model = null)
+    {
         switch ($action) {
             case 'update':
                 return ['update', 'id' => $model->id];
@@ -34,20 +36,26 @@ class DefaultController extends \backend\controllers\DefaultController {
      * Lists all UserCommon models.
      * @return mixed
      */
-    public function actionIndex() {
+    public function actionIndex()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $dataProvider = new ActiveDataProvider([
             'query' => $model = \common\models\user\UserCommon::find()->andWhere(['user_category' => User::USER_CATEGORY_PARENT]),
         ]);
 
         return $this->render('index', [
-                    'dataProvider' => $dataProvider,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
     /**
      * @return array|string|\yii\web\Response
      */
-    public function actionCreate() {
+    public function actionCreate()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $model = new $this->modelClass;
 
         if ($model->load(Yii::$app->request->post())) {
@@ -65,7 +73,10 @@ class DefaultController extends \backend\controllers\DefaultController {
     }
 
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
 
         $model = $this->findModel(['id' => $id, 'user_category' => User::USER_CATEGORY_PARENT]);
 
@@ -81,12 +92,14 @@ class DefaultController extends \backend\controllers\DefaultController {
         }
         return $this->renderIsAjax($this->updateView, compact('model'));
     }
+
     /**
      * Добавляется родитель в базу и формируется родственная связь
      * Запускается из формы редактирования model Student из Модального окна parent-modal
      * Модал находится в layouts main
      */
-    public function actionCreateFamily() {
+    public function actionCreateFamily()
+    {
 
         $modelFamily = new UserFamily();
 
@@ -114,7 +127,7 @@ class DefaultController extends \backend\controllers\DefaultController {
                         return $this->redirect(Yii::$app->request->referrer);
                     }
                 } else {
-                    
+
                 }
             }
         } else {
@@ -127,10 +140,10 @@ class DefaultController extends \backend\controllers\DefaultController {
      */
     public function actionInitFamily()
     {
-            $id = Yii::$app->request->get('id');
-            $user_slave_id = Yii::$app->request->get('user_slave_id');
-            $user_slave_id != 0 ? $model = UserCommon::findOne($user_slave_id) : $model = new UserCommon();
-            $modelFamily = new UserFamily();
+        $id = Yii::$app->request->get('id');
+        $user_slave_id = Yii::$app->request->get('user_slave_id');
+        $user_slave_id != 0 ? $model = UserCommon::findOne($user_slave_id) : $model = new UserCommon();
+        $modelFamily = new UserFamily();
 
         if (!Yii::$app->request->isAjax) {
             return $this->redirect(Yii::$app->request->referrer);
@@ -139,7 +152,7 @@ class DefaultController extends \backend\controllers\DefaultController {
         $modelFamily->user_slave_id = $user_slave_id;
 
         $this->layout = false;
-        return $this->renderIsAjax('parents-modal',  ['model' => $model, 'modelFamily' => $modelFamily]);
+        return $this->renderIsAjax('parents-modal', ['model' => $model, 'modelFamily' => $modelFamily]);
     }
-    
+
 }

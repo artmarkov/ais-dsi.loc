@@ -38,7 +38,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Учебные планы', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/index']],
                     ['label' => 'Счета за обучение', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/index']],
                     ['label' => 'Табель учета педагогических часов', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/index']],
-                    ['label' => 'Календарный график', 'icon' => 'fa fa-minus', 'url' => ['/routine/default/index']],
+                    ['label' => 'Производственный календарь', 'icon' => 'fa fa-minus', 'url' => ['/routine/default/index']],
                     ['label' => 'Работы и сертификаты', 'icon' => 'fa fa-minus', 'url' => ['/creative/default/index']],
                 ],
             ],

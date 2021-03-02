@@ -28,6 +28,8 @@ class PermissionController extends MainController
      */
     public function actionView($id)
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $item = $this->findModel($id);
 
         $routes = Route::find()->asArray()->all();
@@ -58,6 +60,8 @@ class PermissionController extends MainController
      */
     public function actionSetChildPermissions($id)
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $item = $this->findModel($id);
 
         $newChildPermissions = Yii::$app->request->post('child_permissions', []);
@@ -85,6 +89,8 @@ class PermissionController extends MainController
      */
     public function actionSetChildRoutes($id)
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $item = $this->findModel($id);
 
         $newRoutes = Yii::$app->request->post('child_routes', []);
@@ -116,6 +122,8 @@ class PermissionController extends MainController
      */
     public function actionCreate()
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $model = new Permission();
         $model->scenario = 'webInput';
 
@@ -137,6 +145,8 @@ class PermissionController extends MainController
      */
     public function actionUpdate($id)
     {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $model = $this->findModel($id);
         $model->scenario = 'webInput';
 

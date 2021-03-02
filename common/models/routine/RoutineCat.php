@@ -1,0 +1,78 @@
+<?php
+
+namespace common\models\routine;
+
+use Yii;
+
+/**
+ * This is the model class for table "{{%routine_cat}}".
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $color
+ * @property int $plan_flag Учитывать при планировании
+ *
+ * @property Routine[] $routines
+ */
+class RoutineCat extends \yii\db\ActiveRecord
+{
+    const FLAG_ACTIVE = 1;
+    const FLAG_INACTIVE = 0;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName()
+    {
+        return '{{%routine_cat}}';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            [['name', 'color', 'plan_flag'], 'required'],
+            [['plan_flag'], 'integer'],
+            [['name'], 'string', 'max' => 256],
+            [['color'], 'string', 'max' => 128],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('art/routine', 'ID'),
+            'name' => Yii::t('art/routine', 'Name'),
+            'color' => Yii::t('art/routine', 'Color'),
+            'plan_flag' => Yii::t('art/routine', 'Plan Flag'),
+        ];
+    }
+
+    /**
+     * Gets query for [[Routines]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRoutines()
+    {
+        return $this->hasMany(Routine::className(), ['cat_id' => 'id']);
+    }
+
+    public static function getPlanFlagList() {
+        return array(
+            self::FLAG_ACTIVE => Yii::t('art', 'Active'),
+            self::FLAG_INACTIVE => Yii::t('art', 'Inactive'),
+        );
+    }
+
+    public static function getPlanFlagValue($val) {
+        $ar = self::getPlanFlagList();
+
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+}
