@@ -194,7 +194,7 @@ EOF;
              <div class="row">
                 <div class="col-md-10">
 
-                    <?= \edofre\fullcalendarscheduler\FullcalendarScheduler::widget([
+                    <?= \artsoft\fullcalendarscheduler\FullcalendarScheduler::widget([
                                 'options' => [
                                     'lang' => 'ru',
                                 ],

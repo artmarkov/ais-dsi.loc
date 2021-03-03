@@ -73,7 +73,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'start_timestamp',
                                 'value' => function (Routine $model) {
                                     return '<span style="font-size:85%;" class="label label-'
-                                        . ((time() >= $model->start_timestamp) ? 'primary' : 'default') . '">'
+                                        . ((time() >= $model->start_timestamp) ? 'danger' : 'default') . '">'
                                         . $model->start_date . '</span>';
                                 },
                                 'label' => Yii::t('art/routine', 'Start Date'),
@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'end_timestamp',
                                 'value' => function (Routine $model) {
                                     return '<span style="font-size:85%;" class="label label-'
-                                        . ((time() >= $model->end_timestamp) ? 'primary' : 'default') . '">'
+                                        . ((time() >= $model->end_timestamp) ? 'danger' : 'default') . '">'
                                         . $model->end_date . '</span>';
                                 },
                                 'label' => Yii::t('art/routine', 'End Date'),
