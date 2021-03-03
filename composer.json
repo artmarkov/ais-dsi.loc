@@ -32,6 +32,7 @@
     "cjtterabytesoft/yii2-jvectormap": "*",
     "bower-asset/metismenu": "*",
     "bower-asset/pace": "*",
+    "bower-asset/bootstrap-year-calendar": "~1.1",
     "omgdef/yii2-multilingual-behavior": "~2.0",
     "rmrevin/yii2-fontawesome": "~2.12",
     "2amigos/yii2-transliterator-helper": "*",
@@ -52,7 +53,6 @@
     "kartik-v/yii2-widget-switchinput": "*",
     "kartik-v/yii2-widget-touchspin": "*",
     "kartik-v/yii2-widget-depdrop": "@dev",
-    "tecnocen/yii2-bootstrap-year-calendar": "*",
     "kartik-v/yii2-widget-colorinput": "*"
 
   },

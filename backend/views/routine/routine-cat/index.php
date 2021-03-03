@@ -78,8 +78,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'plan_flag',
                                 'optionsArray' => [
-                                    [RoutineCat::FLAG_ACTIVE, Yii::t('art', 'Active'), 'primary'],
-                                    [RoutineCat::FLAG_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                    [RoutineCat::FLAG_ACTIVE, Yii::t('art', 'Yes'), 'primary'],
+                                    [RoutineCat::FLAG_INACTIVE, Yii::t('art', 'No'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:150px']
                             ],

@@ -13,14 +13,14 @@ class m210302_153750_create_table_routine extends Migration
 
         $this->createTable('{{%routine_cat}}', [
             'id' => $this->primaryKey(8),
-            'name' => $this->string(256)->notNull(),
-            'color' => $this->string(128)->notNull(),
+            'name' => $this->string(255)->notNull(),
+            'color' => $this->string(127)->notNull(),
             'plan_flag' => $this->tinyInteger(1)->notNull()->comment('Учитывать при планировании'),
         ], $tableOptions);
 
         $this->createTable('{{%routine}}', [
             'id' => $this->primaryKey(8),
-            'name' => $this->string(1024)->notNull(),
+            'description' => $this->string(1024)->notNull(),
             'cat_id' => $this->integer(8)->notNull(),
             'start_date' => $this->integer()->notNull(),
             'end_date' => $this->integer()->notNull(),

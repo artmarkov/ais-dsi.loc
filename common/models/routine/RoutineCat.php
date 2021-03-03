@@ -35,8 +35,8 @@ class RoutineCat extends \yii\db\ActiveRecord
         return [
             [['name', 'color', 'plan_flag'], 'required'],
             [['plan_flag'], 'integer'],
-            [['name'], 'string', 'max' => 256],
-            [['color'], 'string', 'max' => 128],
+            [['name'], 'string', 'max' => 255],
+            [['color'], 'string', 'max' => 127],
         ];
     }
 
@@ -46,8 +46,8 @@ class RoutineCat extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('art/routine', 'ID'),
-            'name' => Yii::t('art/routine', 'Name'),
+            'id' => Yii::t('art', 'ID'),
+            'name' => Yii::t('art', 'Name'),
             'color' => Yii::t('art/routine', 'Color'),
             'plan_flag' => Yii::t('art/routine', 'Plan Flag'),
         ];
@@ -65,8 +65,8 @@ class RoutineCat extends \yii\db\ActiveRecord
 
     public static function getPlanFlagList() {
         return array(
-            self::FLAG_ACTIVE => Yii::t('art', 'Active'),
-            self::FLAG_INACTIVE => Yii::t('art', 'Inactive'),
+            self::FLAG_ACTIVE => Yii::t('art', 'Yes'),
+            self::FLAG_INACTIVE => Yii::t('art', 'No'),
         );
     }
 
@@ -74,5 +74,10 @@ class RoutineCat extends \yii\db\ActiveRecord
         $ar = self::getPlanFlagList();
 
         return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    public static function getCatList()
+    {
+        return \yii\helpers\ArrayHelper::map(RoutineCat::find()->all(), 'id', 'name');
     }
 }

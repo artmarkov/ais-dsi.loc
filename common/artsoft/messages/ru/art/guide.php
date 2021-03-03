@@ -54,5 +54,6 @@ return [
     'Select Department...' => 'Выберите отдел...',
     'Select Subject Category...' => 'Выберите категорию дисциплины...',
     'Name Division' => 'Название отделения',
+    'Category' => 'Категория'
 ];
 ?>

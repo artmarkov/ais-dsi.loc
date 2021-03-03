@@ -11,14 +11,18 @@ use common\models\routine\Routine;
  */
 class RoutineSearch extends Routine
 {
+    public $start_timestamp_operand;
+    public $end_timestamp_operand;
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'cat_id', 'start_date', 'end_date'], 'integer'],
-            [['name'], 'safe'],
+            [['id', 'cat_id'], 'integer'],
+            [['description', 'start_timestamp', 'end_timestamp'], 'safe'],
+            [['start_timestamp_operand'], 'string'],
+            [['end_timestamp_operand'], 'string'],
         ];
     }
 
@@ -60,11 +64,11 @@ class RoutineSearch extends Routine
         $query->andFilterWhere([
             'id' => $this->id,
             'cat_id' => $this->cat_id,
-            'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
         ]);
+        $query->andFilterWhere([($this->start_timestamp_operand) ? $this->start_timestamp_operand : '=', 'start_timestamp', ($this->start_timestamp) ? strtotime($this->start_timestamp) : null]);
+        $query->andFilterWhere([($this->end_timestamp_operand) ? $this->end_timestamp_operand : '=', 'end_timestamp', ($this->end_timestamp) ? strtotime($this->end_timestamp) : null]);
 
-        $query->andFilterWhere(['like', 'name', $this->name]);
+        $query->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;
     }

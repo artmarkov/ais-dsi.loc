@@ -28,15 +28,17 @@ use artsoft\helpers\Html;
                     <div class="row">
                         <div class="col-sm-12">
 
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'cat_id')
+                                ->dropDownList(\common\models\routine\RoutineCat::getCatList(), [
+                                    'prompt' => Yii::t('art/guide', 'Select Cat...')
+                                ])->label(Yii::t('art/guide', 'Category'));
+                            ?>
 
-                            <?= $form->field($model, 'color')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'start_date')->widget(kartik\date\DatePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
 
-                            <?= $form->field($model, 'cat_id')->textInput() ?>
+                            <?= $form->field($model, 'end_date')->widget(kartik\date\DatePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput() ?>
 
-                            <?= $form->field($model, 'start_date')->textInput() ?>
-
-                            <?= $form->field($model, 'end_date')->textInput() ?>
+                            <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
 
                         </div>
                     </div>

@@ -9,9 +9,10 @@ use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
+/* @var $searchModel common\models\routine\search\RoutineSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art', 'Routines');
+$this->title = Yii::t('art/routine', 'Routines');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="routine-index">
@@ -48,6 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     GridView::widget([
                         'id' => 'routine-grid',
                         'dataProvider' => $dataProvider,
+                        'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'routine-grid',
                             'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
@@ -55,20 +57,41 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'attribute' => 'name',
+                                'attribute' => 'cat_id',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/routine/default',
+                                'label' => Yii::t('art', 'Name'),
                                 'title' => function (Routine $model) {
-                                    return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->cat->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
+                                'filter' => \common\models\routine\RoutineCat::getCatList(),
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
-
-                            'color',
-                            'cat_id',
-                            'start_date',
-                            'end_date',
-
+                            'description',
+                            [
+                                'class' => 'artsoft\grid\columns\DateFilterColumn',
+                                'attribute' => 'start_timestamp',
+                                'value' => function (Routine $model) {
+                                    return '<span style="font-size:85%;" class="label label-'
+                                        . ((time() >= $model->start_timestamp) ? 'primary' : 'default') . '">'
+                                        . $model->start_date . '</span>';
+                                },
+                                'label' => Yii::t('art/routine', 'Start Date'),
+                                'format' => 'raw',
+                                'options' => ['style' => 'width:150px'],
+                            ],
+                            [
+                                'class' => 'artsoft\grid\columns\DateFilterColumn',
+                                'attribute' => 'end_timestamp',
+                                'value' => function (Routine $model) {
+                                    return '<span style="font-size:85%;" class="label label-'
+                                        . ((time() >= $model->end_timestamp) ? 'primary' : 'default') . '">'
+                                        . $model->end_date . '</span>';
+                                },
+                                'label' => Yii::t('art/routine', 'End Date'),
+                                'format' => 'raw',
+                                'options' => ['style' => 'width:150px'],
+                            ],
                         ],
                     ]);
                     ?>

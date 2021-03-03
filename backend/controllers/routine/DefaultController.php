@@ -2,8 +2,10 @@
 
 namespace backend\controllers\routine;
 
-use common\models\routine\Routine;
+use artsoft\widgets\ActiveForm;
 use yii\data\ActiveDataProvider;
+use yii\web\Response;
+use Yii;
 
 class DefaultController extends MainController
 {
@@ -17,7 +19,6 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = $this->view->title;
         $dataProvider = new ActiveDataProvider([
             'query' => $this->modelClass::find()
-//                ->joinWith('cat')->select('routine_cat.name as name, routine.name as location, start_date, end_date, routine.color as color')
         ]);
 
         return $this->render('calendar.php', [
@@ -34,5 +35,21 @@ class DefaultController extends MainController
         return $this->renderAjax('routine-modal', [
             'model' => $model
         ]);
+    }
+
+    /**
+     * @return array|Response
+     */
+    public function actionCreateEvent()
+    {
+        $model = new $this->modelClass();
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            if ($model->load(Yii::$app->request->post()) && $model->save()):
+                return $this->redirect('calendar');
+            else:
+                return ActiveForm::validate($model);
+            endif;
+        }
     }
 }

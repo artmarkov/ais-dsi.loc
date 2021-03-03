@@ -9,8 +9,8 @@ $this->title = Yii::t('art/routine', 'Update Routine Cat: {name}', [
     'name' => $model->name,
 ]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/routine', 'Routine Cats'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('art/routine', 'Update');
+$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['update', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = Yii::t('art', 'Update');
 ?>
 <div class="routine-cat-update">
 

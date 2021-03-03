@@ -135,4 +135,6 @@ return [
     'Your item has been updated.' => 'Запись успешно обновлена.',
     'Your item has been created.' => 'Запись успешно создана.',
     'Your item has been deleted.' => 'Запись успешно удалена.',
+    'Yes' => 'Да',
+    'No' => 'Нет'
 ];
