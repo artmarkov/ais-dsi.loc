@@ -9,7 +9,7 @@ return [
         'art' => [
             'class' => 'artsoft\Art',
             'languages' => [
-//              'en-US' => 'English',
+              'en-US' => 'English',
                 'ru' => 'Россия',
             ],
             'languageRedirects' => ['ru' => 'ru'],

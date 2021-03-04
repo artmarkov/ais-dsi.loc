@@ -12,17 +12,21 @@ class CoreAsset extends \yii\web\AssetBundle
     public $css = [
         'main.css',
     ];
-    /** @var  array List of the dependencies this assets bundle requires */
-    public $depends = [
-        'yii\web\YiiAsset',
-    ];
+
     /** @var  array Required JS files for the fullcalendar */
     public $js = [
         'main.js',
         'locale-all.js',
     ];
+
+    /** @var  array List of the dependencies this assets bundle requires */
+    public $depends = [
+        'yii\web\YiiAsset',
+    ];
+
     /** @var  string Language for the fullcalendar */
     public $language = null;
+
     /** @var  string Location of the fullcalendar distribution */
     public $sourcePath = '@backend/widgets/fullcalendar/src/lib';
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace  backend\widgets\fullcalendar\src\models;
+namespace backend\widgets\fullcalendar\src\models;
 
 /**
  * Class Event
@@ -59,5 +59,10 @@ class Event extends CalendarModel
             [['id', 'end', 'url', 'className', 'rendering', 'constraint', 'source', 'color', 'backgroundColor', 'borderColor', 'textColor'], 'safe'],
             [['editable', 'startEditable', 'durationEditable', 'overlap'], 'boolean'],
         ];
+    }
+
+    public static function getDate($timestamp)
+    {
+        return \Yii::$app->formatter->asDatetime($timestamp, 'php:Y-m-d\TH:i:s');
     }
 }

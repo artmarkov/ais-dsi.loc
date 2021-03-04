@@ -2,8 +2,9 @@
 
 namespace backend\controllers\calendar;
 
+use backend\widgets\fullcalendar\src\data\JsExpressionHelper;
 use common\models\calendar\Event;
-use edofre\fullcalendarscheduler\models\Event as BaseEvent;
+use backend\widgets\fullcalendar\src\models\Event as BaseEvent;
 use common\models\auditory\Auditory;
 use Yii;
 use backend\controllers\DefaultController;
@@ -75,8 +76,7 @@ class EventController extends DefaultController
     public function actionInitEvent()
     {
 
-        $eventData = Yii::$app->request->post('eventData');
-        $id = $eventData['id'];
+        $id = Yii::$app->request->post('id');
 
         if ($id == 0) {
             $model = new Event();
@@ -93,7 +93,7 @@ class EventController extends DefaultController
             $model->end_timestamp = \Yii::$app->formatter->asDatetime($model->end_timestamp);
 
             return $this->renderAjax('event-modal', [
-                'model' => $model, 'id' => $id
+                'model' => $model
             ]);
         }
 
@@ -134,34 +134,23 @@ class EventController extends DefaultController
             $event = new BaseEvent();
             $event->id = $item->id;
             $event->title = $item->title;
-            $event->resourceId = $item->auditory_id;
-            $event->color = $item->categoryColor; 
+            $event->end = BaseEvent::getDate($item->end_timestamp);
+            $event->start = BaseEvent::getDate($item->start_timestamp);
+
+           // $event->resourceId = $item->auditory_id;
+            $event->color = $item->categoryColor;
             $event->textColor = $item->categoryTextColor;
             $event->borderColor = $item->categoryBorderColor;
-            if($item->categoryRendering != 0)  $event->rendering = 'background'; // для фоновых событий
-            
+           // if($item->categoryRendering != 0)  $event->rendering = 'background'; // для фоновых событий
+
             // $event->url = Url::to(['/calendar/event/view', 'id' => $item->id]); // ссылка для просмотра события - перебивает событие по клику!!!
             $item->all_day == 1 ? $event->allDay = true : $event->allDay = false;
+            //$date=new \DateTime(Yii::$app->formatter->asDatetime($item->end_timestamp, 'Y-m-d\TH:i:s')); //this returns the current date time
 
-            $event->start = date("Y-m-d H:i", (integer)mktime(
-                date("H", $item->start_timestamp),
-                date("i", $item->start_timestamp),
-                0,
-                date("m", $item->start_timestamp),
-                date("d", $item->start_timestamp),
-                date("Y", $item->start_timestamp)
-            ));
-            $event->end = date("Y-m-d H:i", (integer)mktime(
-                date("H", $item->end_timestamp),
-                date("i", $item->end_timestamp),
-                0,
-                date("m", $item->end_timestamp),
-                date("d", $item->end_timestamp),
-                date("Y", $item->end_timestamp)
-            ));
             $tasks[] = $event;
         }
-        // echo '<pre>' . print_r($events, true) . '</pre>';
+
+//        echo '<pre>' . print_r($tasks, true) . '</pre>';
 
         return $tasks;
     }

@@ -50,31 +50,24 @@ $this->params['breadcrumbs'][] = $this->title;
 EOF;
             // кликаем по событию
             $JSEventClick = <<<EOF
-    function(info) {
-    console.log('Клик по событию: ' + info.event.title);
-    console.log('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
-    console.log('View: ' + info.view.type);
+    function(e) {
 
     // change the border color just for fun
-    info.el.style.borderColor = 'red';
-//        var eventData;
-//            eventData = {
-//                id: calEvent.id,
-//            };
-//        console.log('кликаем по событию');
-//        console.log(eventData);
-//      $.ajax({
-//            url: '/admin/calendar/event/init-event',
-//            type: 'POST',
-//            data: {eventData : eventData},
-//            success: function (res) {
-//               // console.log(res);
-//            showDay(res);
-//            },
-//            error: function () {
-//                alert('Error!!!');
-//            }
-//        });
+    e.el.style.borderColor = 'red';
+        
+        console.log('кликаем по событию ' + e.event.id);
+      $.ajax({
+            url: '/admin/calendar/event/init-event',
+            type: 'POST',
+            data: {id: e.event.id},
+            success: function (res) {
+               // console.log(res);
+            showDay(res);
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
     }
 EOF;
             // бросаем событие извне
@@ -159,33 +152,52 @@ EOF;
         });
       }
 EOF;
+            $JSOnDay = <<<EOF
+        function(info) {
+        console.log(info.event.start);
+                var content = '<div class="event-tooltip-content">'
+                                    + '<div class="event-name">' + info.event.title + '</div>'
+                                + '</div>';
+            
+                $(info.el).popover({
+                    trigger: 'manual',
+                    container: 'body',
+                    html:true,
+                    content: content
+                });
+                
+                $(info.el).popover('show');
+}
+EOF;
+
+
+            $JSOutDay = <<<EOF
+        function(info) {
+                $(info.el).popover('hide');
+}
+EOF;
             ?>
 
             <?= \backend\widgets\fullcalendar\src\Fullcalendar::widget([
-                'headerToolbar' => [
-                    'left' => 'prev,next today',
-                    'center' => 'title',
-                    'right' => 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
-
-                ],
                 'clientOptions' => [
-                    'locale' => 'ru',
-                    'initialDate' => '2020-09-12',
+//                    'initialDate' => '2020-09-12',
                     'initialView' => 'timeGridWeek',
-//                    'height' => 'auto',
-                    'expandRows' => true,
-                    'slotMinTime' => '08:00',
-                    'slotMaxTime' => '20:00',
-                    'selectable' => true,
-                    'droppable' => true,
+                    'height' => 'auto', // 'auto' - aspectRatio no works
+                    'aspectRatio' => 1.8,
+                    'navLinks' => true,
+                    'businessHours' => true,
                     'editable' => true,
+                    'selectable' => true,
+                    'expandRows' => true,
+//                    'slotMinTime' => '08:00',
+//                    'slotMaxTime' => '20:00',
                     'eventDurationEditable' => true, // разрешить изменение размера
                     'eventOverlap' => true, // разрешить перекрытие событий
-//                    'eventClick' => new JsExpression($JSEventClick),
-//                    'eventMouseEnter' => new JsExpression("function(info) {console.log('Навел мышкой на: ' + info.event.title);}"),
-//                    'eventMouseLeave' => new JsExpression("function(info) {console.log('Снял мышку с: ' + info.event.title);}"),
-//                    'eventDrop' => new JsExpression("function(info) {console.log('Drop: ' + info.event.title);}"),
-//                    'eventResize' => new JsExpression("function(info) {console.log('Resize: ' + info.event.title);}"),
+                    'eventClick' => new JsExpression($JSEventClick),
+                    'eventMouseEnter' => new JsExpression($JSOnDay),
+                    'eventMouseLeave' => new JsExpression($JSOutDay),
+                    'eventDrop' => new JsExpression("function(info) {console.log('Drop: ' + info.event.title);}"),
+                    'eventResize' => new JsExpression("function(info) {console.log('Resize: ' + info.event.title);}"),
                     'select' => new JsExpression("function(info) {console.log('selected ' + info.startStr + ' to ' + info.endStr);}"),
 //                    'select' => new JsExpression($JSSelect),
 //                    'eventResize' => new JsExpression($JSEventResize),
@@ -194,17 +206,16 @@ EOF;
                     'defaultAllDayEventDuration' => [
                         'days' => '1'// то-же при перетаскиваниив в allDay
                     ],
-                    'aspectRatio' => 1.8,
-                    'navLinks' => true,
                 ],
-                'events' => [
-                    [
-                        'title' => 'Business Lunch',
-                        'start' => '2020-09-04T13:00:00',
-                        // 'constraint' => 'businessHours'
-                    ],
-                ]
-//               'events' => \yii\helpers\Url::to(['/calendar/event/calendar']),
+//                'events' => [
+//                    [
+//                            'id' => '15',
+//                        'title' => 'Business Lunch',
+//                        'start' => '2020-09-10T13:00:00',
+//                        // 'constraint' => 'businessHours'
+//                    ],
+//                ]
+               'events' => \yii\helpers\Url::to(['/calendar/event/calendar']),
             ]);
             ?>
             <?php $this->registerCss('
