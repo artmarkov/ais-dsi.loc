@@ -10,42 +10,18 @@ use yii\web\JsExpression;
 
 $this->title = 'Events';
 $this->params['breadcrumbs'][] = $this->title;
-
-$DragJS = <<<EOF
-    /* initialize the external events
-    -----------------------------------------------------------------*/
-    $('#external-events .fc-event').each(function() {
-        // store data so the calendar knows to render an event upon drop
-        $(this).data('event', {
-            title: $.trim($(this).text()), // use the element's text as the event title
-            stick: true // maintain when user navigates (see docs on the renderEvent method)
-        });
-        // make the event draggable using jQuery UI
-        $(this).draggable({
-            zIndex: 999,
-            revert: true,      // will cause the event to go back to its
-            revertDuration: 0  // original position after the drag
-        });
-    });
-
-EOF;
-$this->registerJs($DragJS);
-    ?>
+?>
 <div class="event-index">
-
-    <div class="row">
-        <div class="col-sm-12">
-            <h3 class="lte-hide-title page-title"><?=  Html::encode($this->title) ?></h3>
-            
+    <div class="panel">
+        <div class="panel-heading">
+            <?= Html::encode($this->title) ?>
         </div>
-    </div>
-
-    <div class="panel panel-default">
         <div class="panel-body">
+            <div class="col-sm-12"
 
-<?php
-// выбираем мышкой область или кликаем в пустое поле
-$JSSelect = <<<EOF
+            <?php
+            // выбираем мышкой область или кликаем в пустое поле
+            $JSSelect = <<<EOF
     function(start, end, jsEvent, view) {
         var eventData;
             eventData = {
@@ -72,32 +48,37 @@ $JSSelect = <<<EOF
         });
     }
 EOF;
-// кликаем по событию
-$JSEventClick = <<<EOF
-    function(calEvent, jsEvent, view) {
+            // кликаем по событию
+            $JSEventClick = <<<EOF
+    function(info) {
+    console.log('Клик по событию: ' + info.event.title);
+    console.log('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
+    console.log('View: ' + info.view.type);
 
-        var eventData;
-            eventData = {
-                id: calEvent.id,
-            };
-        console.log('кликаем по событию');
-        console.log(eventData);
-      $.ajax({
-            url: '/admin/calendar/event/init-event',
-            type: 'POST',
-            data: {eventData : eventData},
-            success: function (res) {
-               // console.log(res);
-            showDay(res);
-            },
-            error: function () {
-                alert('Error!!!');
-            }
-        });
+    // change the border color just for fun
+    info.el.style.borderColor = 'red';
+//        var eventData;
+//            eventData = {
+//                id: calEvent.id,
+//            };
+//        console.log('кликаем по событию');
+//        console.log(eventData);
+//      $.ajax({
+//            url: '/admin/calendar/event/init-event',
+//            type: 'POST',
+//            data: {eventData : eventData},
+//            success: function (res) {
+//               // console.log(res);
+//            showDay(res);
+//            },
+//            error: function () {
+//                alert('Error!!!');
+//            }
+//        });
     }
 EOF;
-// бросаем событие извне
-$JSDrop = <<<EOF
+            // бросаем событие извне
+            $JSDrop = <<<EOF
     function(date, jsEvent, ui, resourceId ) {
       if ($('#drop-remove').is(':checked')) {
              $(this).remove();
@@ -125,8 +106,8 @@ $JSDrop = <<<EOF
         });
     }
 EOF;
-// растягиваем/сжимаем событие мышкой
-$JSEventResize = <<<EOF
+            // растягиваем/сжимаем событие мышкой
+            $JSEventResize = <<<EOF
     function(event, delta, revertFunc, jsEvent, ui, view) {
       var eventData;
             eventData = {
@@ -151,8 +132,8 @@ $JSEventResize = <<<EOF
         });
       }
 EOF;
-// перетаскиваем событие, удерживая мышкой
-$JSEventDrop = <<<EOF
+            // перетаскиваем событие, удерживая мышкой
+            $JSEventDrop = <<<EOF
     function(event, delta, revertFunc, jsEvent, ui, view) {
         var eventData;
             eventData = {
@@ -178,48 +159,55 @@ $JSEventDrop = <<<EOF
         });
       }
 EOF;
-?>
-            <div class="row">
-                <div class="col-md-10">
+            ?>
 
-            <?= edofre\fullcalendar\Fullcalendar::widget([
-                //'defaultView' => 'basicWeek',
-                //'defaultView' => 'basicDay',
-                //'defaultView' => 'agendaDay',
-                'options' => [
-                    'lang' => 'ru',
+            <?= \backend\widgets\fullcalendar\src\Fullcalendar::widget([
+                'headerToolbar' => [
+                    'left' => 'prev,next today',
+                    'center' => 'title',
+                    'right' => 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
+
                 ],
-                'header' => [
-				'left'=> 'prev,next today',
-				'center'=> 'title',
-				'right'=> 'agendaDay,agendaWeek,month,listMonth',
-
-			],
-                'clientOptions' => [ 
+                'clientOptions' => [
+                    'locale' => 'ru',
+                    'initialDate' => '2020-09-12',
+                    'initialView' => 'timeGridWeek',
+//                    'height' => 'auto',
+                    'expandRows' => true,
+                    'slotMinTime' => '08:00',
+                    'slotMaxTime' => '20:00',
                     'selectable' => true,
-                    'selectHelper' => true,
                     'droppable' => true,
                     'editable' => true,
-                    'eventDurationEditable'  => true, // разрешить изменение размера
-                    'eventOverlap'  => true, // разрешить перекрытие событий
-                    'drop' => new JsExpression($JSDrop),
-                    'select' => new JsExpression($JSSelect),
-                    'eventClick' => new JsExpression($JSEventClick),
-                    'eventResize'=> new JsExpression($JSEventResize),
-                    'eventDrop'=> new JsExpression($JSEventDrop),
-                    'defaultDate' => date('Y-m-d H:i'),
+                    'eventDurationEditable' => true, // разрешить изменение размера
+                    'eventOverlap' => true, // разрешить перекрытие событий
+//                    'eventClick' => new JsExpression($JSEventClick),
+//                    'eventMouseEnter' => new JsExpression("function(info) {console.log('Навел мышкой на: ' + info.event.title);}"),
+//                    'eventMouseLeave' => new JsExpression("function(info) {console.log('Снял мышку с: ' + info.event.title);}"),
+//                    'eventDrop' => new JsExpression("function(info) {console.log('Drop: ' + info.event.title);}"),
+//                    'eventResize' => new JsExpression("function(info) {console.log('Resize: ' + info.event.title);}"),
+                    'select' => new JsExpression("function(info) {console.log('selected ' + info.startStr + ' to ' + info.endStr);}"),
+//                    'select' => new JsExpression($JSSelect),
+//                    'eventResize' => new JsExpression($JSEventResize),
+//                    'eventDrop' => new JsExpression($JSEventDrop),
                     'defaultTimedEventDuration' => '00:45:00', // при перетаскивании события в календарь задается длительность события
                     'defaultAllDayEventDuration' => [
                         'days' => '1'// то-же при перетаскиваниив в allDay
                     ],
-                    'aspectRatio'       => 1.8,
-                    'defaultView' => 'agendaWeek',
-              ],
-
-               'events' => \yii\helpers\Url::to(['/calendar/event/calendar']),
+                    'aspectRatio' => 1.8,
+                    'navLinks' => true,
+                ],
+                'events' => [
+                    [
+                        'title' => 'Business Lunch',
+                        'start' => '2020-09-04T13:00:00',
+                        // 'constraint' => 'businessHours'
+                    ],
+                ]
+//               'events' => \yii\helpers\Url::to(['/calendar/event/calendar']),
             ]);
             ?>
-<?php $this->registerCss('
+            <?php $this->registerCss('
 	
 	#external-events {
 		float: left;
@@ -232,26 +220,7 @@ EOF;
 		cursor: pointer;
 	}	
 ');
-?>
-
-                </div>
-                <div class="col-md-2">
-
-                          <div id="external-events">
-                                <h4>Draggable Events</h4>
-
-                                <div class="fc-event ui-draggable ui-draggable-handle">My Event 1</div>
-                                <div class="fc-event ui-draggable ui-draggable-handle">My Event 2</div>
-                                <div class="fc-event ui-draggable ui-draggable-handle">My Event 3</div>
-                                <div class="fc-event ui-draggable ui-draggable-handle">My Event 4</div>
-                                <div class="fc-event ui-draggable ui-draggable-handle">My Event 5</div>
-                                <p>
-                                    <input type="checkbox" id="drop-remove">
-                                    <label for="drop-remove">remove after drop</label>
-                                </p>
-                    </div>
-                </div>
-            </div>
+            ?>
         </div>
     </div>
 </div>

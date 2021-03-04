@@ -53,7 +53,9 @@
     "kartik-v/yii2-widget-switchinput": "*",
     "kartik-v/yii2-widget-touchspin": "*",
     "kartik-v/yii2-widget-depdrop": "@dev",
-    "kartik-v/yii2-widget-colorinput": "*"
+    "kartik-v/yii2-widget-colorinput": "*",
+    "artsoft/yii2-fullcalendar": "*",
+    "artsoft/yii2-fullcalendar-scheduler": "*"
 
   },
   "require-dev": {

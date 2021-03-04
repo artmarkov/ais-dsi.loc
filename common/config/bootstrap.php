@@ -11,3 +11,5 @@ Yii::setAlias('artsoft/queue', dirname(__DIR__) . '/artsoft/queue');
 Yii::setAlias('artsoft/settings', dirname(__DIR__) . '/artsoft/settings');
 Yii::setAlias('artsoft/user', dirname(__DIR__) . '/artsoft/user');
 Yii::setAlias('artsoft/logs', dirname(__DIR__) . '/artsoft/logs');
+Yii::setAlias('artsoft/fullcalendar', dirname(__DIR__) . '/artsoft/yii2-fullcalendar/src');
+Yii::setAlias('artsoft/fullcalendar-scheduler', dirname(__DIR__) . '/artsoft/yii2-fullcalendar-scheduler/src');

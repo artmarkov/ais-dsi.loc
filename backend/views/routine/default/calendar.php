@@ -132,7 +132,7 @@ EOF;
     'header' => '<h3 class="lte-hide-title page-title">' . Yii::t('art/calendar', 'Event') . '</h3>',
     'size' => 'modal-lg',
     'id' => 'routine-modal',
-    'footer' => 'footer',
+//    'footer' => 'footer',
 ]);
 
 \yii\bootstrap\Modal::end(); ?>

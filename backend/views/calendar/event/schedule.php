@@ -12,27 +12,27 @@ use yii\web\JsExpression;
 
 $this->title = 'Events Schedule';
 $this->params['breadcrumbs'][] = $this->title;
-
-$DragJS = <<<EOF
-    /* initialize the external events
-    -----------------------------------------------------------------*/
-    $('#external-events .fc-event').each(function() {
-        // store data so the calendar knows to render an event upon drop
-        $(this).data('event', {
-            title: $.trim($(this).text()), // use the element's text as the event title
-            stick: true // maintain when user navigates (see docs on the renderEvent method)
-        });
-        // make the event draggable using jQuery UI
-        $(this).draggable({
-            zIndex: 999,
-            revert: true,      // will cause the event to go back to its
-            revertDuration: 0  // original position after the drag
-        });
-    });
-
-EOF;
-$this->registerJs($DragJS);
-?>
+//
+//$DragJS = <<<EOF
+//    /* initialize the external events
+//    -----------------------------------------------------------------*/
+//    $('#external-events .fc-event').each(function() {
+//        // store data so the calendar knows to render an event upon drop
+//        $(this).data('event', {
+//            title: $.trim($(this).text()), // use the element's text as the event title
+//            stick: true // maintain when user navigates (see docs on the renderEvent method)
+//        });
+//        // make the event draggable using jQuery UI
+//        $(this).draggable({
+//            zIndex: 999,
+//            revert: true,      // will cause the event to go back to its
+//            revertDuration: 0  // original position after the drag
+//        });
+//    });
+//
+//EOF;
+//$this->registerJs($DragJS);
+//?>
 
 <div class="event-index">
 
@@ -194,7 +194,7 @@ EOF;
              <div class="row">
                 <div class="col-md-10">
 
-                    <?= \artsoft\fullcalendarscheduler\FullcalendarScheduler::widget([
+                    <?= \backend\widgets\fullcalendarscheduler\src\FullcalendarScheduler::widget([
                                 'options' => [
                                     'lang' => 'ru',
                                 ],

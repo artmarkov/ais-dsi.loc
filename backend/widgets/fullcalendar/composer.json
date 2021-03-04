@@ -1,0 +1,44 @@
+{
+  "name": "artsoft/yii2-fullcalendar",
+  "description": "Yii2 widget for fullcalendar",
+  "keywords": [
+    "fullcalendar",
+    "javascript",
+    "event",
+    "calendar"
+  ],
+  "homepage": "https://github.com/artsoft/yii2-fullcalendar",
+  "type": "yii2-extension",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Edo Freriks",
+      "email": "edofre@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0",
+    "yiisoft/yii2": "*",
+    "yiisoft/yii2-jui": "*",
+    "bower-asset/fullcalendar": "v3.9.0"
+  },
+  "require-dev": {
+    "codeception/codeception": "*"
+  },
+  "config": {
+    "process-timeout": 1800,
+    "fxp-asset": {
+      "repositories": {
+        "bower-asset/eve": {
+          "type": "bower-vcs",
+          "url": "https://github.com/adobe-webplatform/eve.git"
+        }
+      }
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "artsoft\\fullcalendar\\": "src"
+    }
+  }
+}
