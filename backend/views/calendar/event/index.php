@@ -61,8 +61,9 @@ EOF;
             type: 'POST',
             data: {id: e.event.id},
             success: function (res) {
-               // console.log(res);
-            showDay(res);
+//                console.log(res);
+                $('#event-modal .modal-body').html(res);
+                $('#event-modal').modal();
             },
             error: function () {
                 alert('Error!!!');
@@ -169,8 +170,6 @@ EOF;
                 $(info.el).popover('show');
 }
 EOF;
-
-
             $JSOutDay = <<<EOF
         function(info) {
                 $(info.el).popover('hide');
@@ -189,8 +188,8 @@ EOF;
                     'editable' => true,
                     'selectable' => true,
                     'expandRows' => true,
-//                    'slotMinTime' => '08:00',
-//                    'slotMaxTime' => '20:00',
+                    'slotMinTime' => '07:00',
+                    'slotMaxTime' => '22:00',
                     'eventDurationEditable' => true, // разрешить изменение размера
                     'eventOverlap' => true, // разрешить перекрытие событий
                     'eventClick' => new JsExpression($JSEventClick),
@@ -202,35 +201,9 @@ EOF;
 //                    'select' => new JsExpression($JSSelect),
 //                    'eventResize' => new JsExpression($JSEventResize),
 //                    'eventDrop' => new JsExpression($JSEventDrop),
-                    'defaultTimedEventDuration' => '00:45:00', // при перетаскивании события в календарь задается длительность события
-                    'defaultAllDayEventDuration' => [
-                        'days' => '1'// то-же при перетаскиваниив в allDay
-                    ],
                 ],
-//                'events' => [
-//                    [
-//                            'id' => '15',
-//                        'title' => 'Business Lunch',
-//                        'start' => '2020-09-10T13:00:00',
-//                        // 'constraint' => 'businessHours'
-//                    ],
-//                ]
                'events' => \yii\helpers\Url::to(['/calendar/event/calendar']),
             ]);
-            ?>
-            <?php $this->registerCss('
-	
-	#external-events {
-		float: left;
-		padding: 0 10px;
-		text-align: left;
-	}
-	
-	#external-events .fc-event {
-		margin: 10px 0;
-		cursor: pointer;
-	}	
-');
             ?>
         </div>
     </div>
@@ -245,15 +218,4 @@ EOF;
 
 \yii\bootstrap\Modal::end(); ?>
 
-<?php
-$js = <<<JS
-
-function showDay(res) {
-    $('#event-modal .modal-body').html(res);
-    $('#event-modal').modal();
-}
-JS;
-
-$this->registerJs($js);
-?>
 

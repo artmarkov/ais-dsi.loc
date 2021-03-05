@@ -90,7 +90,7 @@ $JSCast = <<<EOF
 EOF;
 
 ?>
-<div class="department-index">
+<div class="calendar-index">
     <div class="panel">
         <div class="panel-heading">
         </div>
@@ -101,12 +101,8 @@ EOF;
                         'id' => 'calendar',
                         'language' => Yii::$app->language,
                         'dataProvider' => $dataProvider,
-                        'options' => [
-                            // HTML attributes for the container.
-                            // the `tag` option is specially handled as the HTML tag name
-                        ],
-                        'clientOptions' => [
 
+                        'clientOptions' => [
                             'customDayRenderer' => new \yii\web\JsExpression($JSCast),
                             'enableContextMenu' => true,
                             'enableRangeSelection' => true,

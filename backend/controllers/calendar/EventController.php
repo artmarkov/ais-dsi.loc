@@ -2,6 +2,7 @@
 
 namespace backend\controllers\calendar;
 
+use artsoft\widgets\ActiveForm;
 use backend\widgets\fullcalendar\src\data\JsExpressionHelper;
 use common\models\calendar\Event;
 use backend\widgets\fullcalendar\src\models\Event as BaseEvent;
@@ -13,6 +14,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\helpers\Url;
 use edofre\fullcalendarscheduler\models\Resource;
+use yii\web\Response;
 
 /**
  * EventController implements the CRUD actions for common\models\calendar\Event model.
@@ -36,17 +38,17 @@ class EventController extends DefaultController
         }
     }
 
-    public function behaviors()
-    {
-        return ArrayHelper::merge(parent::behaviors(), [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['refactor-event', 'remove-event'],
-                ],
-            ],
-        ]);
-    }
+//    public function behaviors()
+//    {
+//        return ArrayHelper::merge(parent::behaviors(), [
+//            'verbs' => [
+//                'class' => VerbFilter::className(),
+//                'actions' => [
+//                    'delete' => ['refactor-event', 'remove-event'],
+//                ],
+//            ],
+//        ]);
+//    }
     /**
      * @return string|\yii\web\Response
      *
@@ -55,7 +57,7 @@ class EventController extends DefaultController
      */
     public function actionIndex()
     {
-        return $this->renderIsAjax('index');
+        return $this->render('index');
     } 
     /**
      * @return string|\yii\web\Response
@@ -80,8 +82,8 @@ class EventController extends DefaultController
 
         if ($id == 0) {
             $model = new Event();
-            $model->start_timestamp = \Yii::$app->formatter->asDatetime($eventData['start']);
-            $model->end_timestamp = \Yii::$app->formatter->asDatetime($eventData['end']);
+            $model->start_timestamp = \Yii::$app->formatter->asDatetime($model->start_timestamp);
+            $model->end_timestamp = \Yii::$app->formatter->asDatetime($model->end_timestamp);
             $model->auditory_id = $eventData['resourceId'];
             return $this->renderAjax('event-modal', [
                 'model' => $model
@@ -180,28 +182,43 @@ class EventController extends DefaultController
     /**
      * @return bool
      */
+//    public function actionRefactorEvent()
+//    {
+//        $eventData = Yii::$app->request->post('eventData');
+//        $id = $eventData['id'];
+//
+//       $id == 0 ?  $model = new Event() : $model = Event::findOne($id);
+//
+//        $model->title = $eventData['title'];
+//        $model->start_timestamp = \Yii::$app->formatter->asTimestamp($eventData['start']);
+//
+//        if(!empty($eventData['end'])) $model->end_timestamp = \Yii::$app->formatter->asTimestamp($eventData['end']);
+//        if(!empty($eventData['allDay'])) $eventData['allDay'] == 'false' ? $model->all_day = 0 : $model->all_day = 1;
+//        if(!empty($eventData['resourceId'])) $model->auditory_id = $eventData['resourceId'];
+//        if(!empty($eventData['category_id'])) $model->category_id = $eventData['category_id'];
+//        if(!empty($eventData['description']))$model->description = $eventData['description'];
+//       // echo '<pre>' . print_r($model, true) . '</pre>';
+//
+//        if($model->save()) {
+//            return true;
+//        }
+//        else {
+//            return false;
+//        }
+//    }
     public function actionRefactorEvent()
     {
-        $eventData = Yii::$app->request->post('eventData');
-        $id = $eventData['id'];
 
-       $id == 0 ?  $model = new Event() : $model = Event::findOne($id);
-
-        $model->title = $eventData['title'];
-        $model->start_timestamp = \Yii::$app->formatter->asTimestamp($eventData['start']);
-
-        if(!empty($eventData['end'])) $model->end_timestamp = \Yii::$app->formatter->asTimestamp($eventData['end']);
-        if(!empty($eventData['allDay'])) $eventData['allDay'] == 'false' ? $model->all_day = 0 : $model->all_day = 1;
-        if(!empty($eventData['resourceId'])) $model->auditory_id = $eventData['resourceId'];
-        if(!empty($eventData['category_id'])) $model->category_id = $eventData['category_id'];
-        if(!empty($eventData['description']))$model->description = $eventData['description'];
-       // echo '<pre>' . print_r($model, true) . '</pre>';
-
-        if($model->save()) {
-            return true;
-        }
-        else {
-            return false;
+        print_r($_POST['_csrf']);
+        $id = Yii::$app->request->post('id');
+        $model = Event::findOne($id);
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            if ($model->load(Yii::$app->request->post()) && $model->save()):
+                return $this->redirect('index');
+            else:
+                return ActiveForm::validate($model);
+            endif;
         }
     }
     /**

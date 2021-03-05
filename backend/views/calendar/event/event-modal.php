@@ -2,6 +2,7 @@
 
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\calendar\Event */
@@ -10,10 +11,17 @@ use artsoft\helpers\Html;
 ?>
 
 <div class="event-form">
-
-    <?php
-    $form = ActiveForm::begin();
-    ?>
+    <?php Pjax::begin(); ?>
+    <?php ActiveForm::$autoIdPrefix = 'a';?>
+    <?php $form = ActiveForm::begin([
+        'id' => 'event-form',
+        'options' => [
+            'data-pjax' => true
+        ],
+        'action' => 'refactor-event',
+        'enableClientValidation' => true,
+        'enableAjaxValidation' => true
+    ]) ?>
 
     <div class="row">
         <div class="col-md-12">
@@ -32,85 +40,84 @@ use artsoft\helpers\Html;
                     
                     <?= $form->field($model, 'end_timestamp')->widget(kartik\datetime\DateTimePicker::classname())->widget(\yii\widgets\MaskedInput::className(),['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput() ?>
                     
-                    <?= $form->field($model, 'id')->label(false)->hiddenInput() ?>
+<!--                    --><?//= $form->field($model, 'id')->label(false)->textInput() ?>
                     
                 </div>
 
             </div>
-            <div class="form-group">
-                <?php if ($model->isNewRecord): ?>
-                    <?= Html::a(Yii::t('art', 'Create'), ['#'],['class' => 'btn btn-primary create-event']) ?>
-                    <?= Html::a(Yii::t('art', 'Cancel'), ['#'], ['class' => 'btn btn-default cancel-event']) ?>
-                <?php else: ?>
-                    
-                    <?= Html::a(Yii::t('art', 'Save'), ['#'],['class' => 'btn btn-primary create-event']) ?>
-                    <?= Html::a(Yii::t('art', 'Delete'), ['#'], ['class' => 'btn btn-default remove-event']) ?>
+            <div class="panel-footer">
+                    <div class="form-group">
+                        <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
+                        <?= Html::a(Yii::t('art', 'Cancel'), ['#'], ['class' => 'btn btn-default cancel-event']) ?>
+                <?php if (!$model->isNewRecord): ?>
+                    <?= Html::a(Yii::t('art', 'Delete'), ['#'], ['class' => 'btn btn-danger remove-event']) ?>
                 <?php endif; ?>
             </div>
         </div>
     </div>
 
     <?php ActiveForm::end(); ?>
+        <?php Pjax::end(); ?>
 
 </div>
 <?php
 $js = <<<JS
-
-$('.create-event').on('click', function (e) {
-
-    e.preventDefault();
-
-    var eventData;
-            eventData = {
-                id : $('#event-id').val(),
-                category_id : $('#event-category_id').val(),
-                resourceId : $('#event-auditory_id').val(),
-                title : $('#event-title').val(),
-                description : $('#event-description').val(),
-                start : $('#event-start_timestamp').val(),
-                end : $('#event-end_timestamp').val()
-            };
-
-    $.ajax({
-        url: '/admin/calendar/event/refactor-event',
-        data: {eventData : eventData},
-        type: 'POST',
-    success: function (res) {
-                $('#w0').fullCalendar('refetchEvents', JSON);
-                closeModal();
-                //console.log(eventData);
-            },
-            error: function () {
-                alert('Error!!!');
-            }
-        });
-});
+//
+//$('.create-event').on('click', function (e) {
+//
+//    e.preventDefault();
+//
+//    var eventData;
+//            eventData = {
+//                id : $('#event-id').val(),
+//                category_id : $('#event-category_id').val(),
+//                resourceId : $('#event-auditory_id').val(),
+//                title : $('#event-title').val(),
+//                description : $('#event-description').val(),
+//                start : $('#event-start_timestamp').val(),
+//                end : $('#event-end_timestamp').val()
+//            };
+//
+//    $.ajax({
+//        url: '/admin/calendar/event/refactor-event',
+//        data: {eventData : eventData},
+//        type: 'POST',
+//    success: function (res) {
+//                $('#w0').fullCalendar('refetchEvents', JSON);
+//                closeModal();
+//                //console.log(eventData);
+//            },
+//            error: function () {
+//                alert('Error!!!');
+//            }
+//        });
+//});
+//
+//$('.remove-event').on('click', function (e) {
+//
+//    e.preventDefault();
+//
+//    var id = $('#event-id').val();
+//
+//    $.ajax({
+//        url: '/admin/calendar/event/remove-event',
+//        data: {id: id},
+//        type: 'POST',
+//        success: function (res) {
+//       
+//         $('#w0').fullCalendar('refetchEvents', JSON);
+//                closeModal();
+//               // console.log(id);
+//            },
+//            error: function () {
+//                alert('Error!!!');
+//            }
+//    });
+//});
 
 $('.cancel-event').on('click', function (e) {
-         e.preventDefault();        
+         e.preventDefault();
          closeModal();
-});
-        
-$('.remove-event').on('click', function (e) {
-
-    e.preventDefault();
-
-    var id = $('#event-id').val();
-
-    $.ajax({
-        url: '/admin/calendar/event/remove-event',
-        data: {id: id},
-        type: 'POST',
-        success: function (res) {
-       
-         $('#w0').fullCalendar('refetchEvents', JSON);
-                closeModal();
-               // console.log(id);
-            },
-            error: function () {
-                alert('Error!!!');
-            }
-    });
 });
 
 function closeModal() {
