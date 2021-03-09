@@ -12,10 +12,7 @@ use artsoft\helpers\Html;
 <div class="auditory-cat-form">
 
     <?php
-    $form = ActiveForm::begin([
-        'id' => 'auditory-cat-form',
-        'validateOnBlur' => false,
-    ])
+    $form = ActiveForm::begin()
     ?>
 
     <div class="panel">

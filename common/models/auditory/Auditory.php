@@ -2,6 +2,8 @@
 
 namespace common\models\auditory;
 
+use himiklab\sortablegrid\SortableGridBehavior;
+use artsoft\db\ActiveRecord;
 use Yii;
 
 /**
@@ -20,7 +22,7 @@ use Yii;
  * @property string $description
  * @property int $order
  */
-class Auditory extends \yii\db\ActiveRecord
+class Auditory extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -31,13 +33,26 @@ class Auditory extends \yii\db\ActiveRecord
     }
 
     /**
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            'grid-sort' => [
+                'class' => SortableGridBehavior::className(),
+                'sortableAttribute' => 'sortOrder',
+            ],
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id','building_id', 'study_flag', 'floor', 'area', 'capacity', 'order'], 'required'],
-            [['id','building_id', 'cat_id', 'num', 'capacity', 'order'], 'integer'],
+            [['name', 'num', 'building_id', 'study_flag'], 'required'],
+            [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sortOrder'], 'integer'],
             [['study_flag'], 'string'],
             [['area'], 'number'],
             [['name'], 'string', 'max' => 128],
@@ -96,6 +111,6 @@ class Auditory extends \yii\db\ActiveRecord
 
     public static function getAuditoryList()
     {
-        return  Auditory::find()->select(['CONCAT(num,\' - \',name) as name', 'id'])->indexBy('id')->column();
+        return Auditory::find()->select(['CONCAT(num,\' - \',name) as name', 'id'])->indexBy('id')->column();
     }
 }

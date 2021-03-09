@@ -63,7 +63,7 @@ class Subject extends \yii\db\ActiveRecord
     {
         return [
             [['status'], 'required'],
-            [['department_list', 'category_list', 'vid_list'], 'required'],
+            [['name', 'slug', 'department_list', 'category_list', 'vid_list'], 'required'],
             [['order', 'status'], 'integer'],
             [['name'], 'string', 'max' => 64],
             [['slug'], 'string', 'max' => 32],

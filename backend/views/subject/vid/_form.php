@@ -13,10 +13,7 @@ use artsoft\helpers\Html;
 <div class="subject-vid-form">
 
     <?php
-    $form = ActiveForm::begin([
-        'id' => 'subject-vid-form',
-        'validateOnBlur' => false,
-    ])
+    $form = ActiveForm::begin();
     ?>
 
     <div class="panel">

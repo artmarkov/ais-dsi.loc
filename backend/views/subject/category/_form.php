@@ -12,10 +12,7 @@ use artsoft\helpers\Html;
 <div class="subject-category-item-form">
 
     <?php
-    $form = ActiveForm::begin([
-        'id' => 'subject-category-item-form',
-        'validateOnBlur' => false,
-    ])
+    $form = ActiveForm::begin();
     ?>
 
     <div class="panel">

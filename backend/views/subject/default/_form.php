@@ -13,12 +13,7 @@ use nex\chosen\Chosen;
 <div class="subject-form">
 
     <?php
-    $form = ActiveForm::begin([
-        'id' => 'teachers-form',
-        'validateOnBlur' => false,
-        'enableAjaxValidation' => true,
-        'options' => ['enctype' => 'multipart/form-data'],
-    ])
+    $form = ActiveForm::begin();
     ?>
 
     <div class="panel">

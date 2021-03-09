@@ -2,7 +2,7 @@
 
 use yii\helpers\Url;
 use yii\widgets\Pjax;
-use artsoft\grid\GridView;
+use artsoft\grid\SortableGridView;
 use artsoft\grid\GridQuickLinks;
 use common\models\auditory\Auditory;
 use common\models\auditory\AuditoryCat;
@@ -48,10 +48,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     ?>
 
                     <?=
-                    GridView::widget([
+                    SortableGridView::widget([
                         'id' => 'auditory-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
+                        'sortableAction' => ['grid-sort'],
                         'bulkActionOptions' => [
                             'gridId' => 'auditory-grid',
                             'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
@@ -97,7 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             // 'area',
                             // 'capacity',
                             // 'description',
-                            // 'order',
+                            // 'sortOrder',
 
                         ],
                     ]);

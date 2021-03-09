@@ -24,7 +24,7 @@ class AuditorySearch extends Auditory
     {
 
         return [
-            [['id', 'building_id', 'cat_id', 'num', 'capacity', 'order'], 'integer'],
+            [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sortOrder'], 'integer'],
             [['study_flag', 'name', 'floor', 'description'], 'safe'],
             [['area'], 'number'],
             [['catName', 'buildingName'], 'string'],
@@ -58,35 +58,36 @@ class AuditorySearch extends Auditory
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'id' => SORT_DESC,
+                    'sortOrder' => SORT_ASC,
                 ],
             ],
         ]);
 
-        $dataProvider->setSort([
-            'attributes' => [
-                'id',
-                'name',
-                'num',
-                'study_flag',
-                
-//                закоментировать для сортировки по названию
-                'cat_id',
-                'building_id',
-                
-//                разкоментировать для сортировки по названию
-//                'catName' => [
-//                    'asc' => ['auditory_cat.name' => SORT_ASC],
-//                    'desc' => ['auditory_cat.name' => SORT_DESC],
-//                    'label' => Yii::t('art/guide', 'Name Cat')
-//                ],
-//                'buildingName' => [
-//                    'asc' => ['auditory_building.name' => SORT_ASC],
-//                    'desc' => ['auditory_building.name' => SORT_DESC],
-//                    'label' => Yii::t('art/guide', 'Name Building')
-//                ]
-            ]
-        ]);
+//        $dataProvider->setSort([
+//            'attributes' => [
+//                'id',
+//                'name',
+//                'num',
+//                'study_flag',
+//                'order',
+//
+////                закоментировать для сортировки по названию
+//                'cat_id',
+//                'building_id',
+//
+////                разкоментировать для сортировки по названию
+////                'catName' => [
+////                    'asc' => ['auditory_cat.name' => SORT_ASC],
+////                    'desc' => ['auditory_cat.name' => SORT_DESC],
+////                    'label' => Yii::t('art/guide', 'Name Cat')
+////                ],
+////                'buildingName' => [
+////                    'asc' => ['auditory_building.name' => SORT_ASC],
+////                    'desc' => ['auditory_building.name' => SORT_DESC],
+////                    'label' => Yii::t('art/guide', 'Name Building')
+////                ]
+//            ]
+//        ]);
 
         $this->load($params);
 
@@ -106,11 +107,10 @@ class AuditorySearch extends Auditory
 //                закоментировать для поиска путем ввода названия            
             'building_id' => $this->building_id,
             'cat_id' => $this->cat_id,
-
             'num' => $this->num,
             'area' => $this->area,
             'capacity' => $this->capacity,
-            'order' => $this->order,
+
         ]);
 
         $query->andFilterWhere(['like', 'study_flag', $this->study_flag])

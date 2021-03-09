@@ -13,10 +13,7 @@ use common\models\auditory\AuditoryCat;
 <div class="auditory-form">
 
     <?php
-    $form = ActiveForm::begin([
-        'id' => 'auditory-form',
-        'validateOnBlur' => false,
-    ])
+    $form = ActiveForm::begin()
     ?>
     <div class="panel">
         <div class="panel-heading">
@@ -32,6 +29,16 @@ use common\models\auditory\AuditoryCat;
 
                             <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
+                            <?= $form->field($model, 'building_id')
+                                ->dropDownList(AuditoryBuilding::getAuditoryBuildingList(), [
+                                    'prompt' => Yii::t('art/guide', 'Select Building...')
+                                ])->label(Yii::t('art/guide', 'Name Building'));
+                            ?>
+                            <?= $form->field($model, 'cat_id')
+                                ->dropDownList(AuditoryCat::getAuditoryCatList(), [
+                                    'prompt' => Yii::t('art/guide', 'Select Cat...')
+                                ])->label(Yii::t('art/guide', 'Name Auditory Category'));
+                            ?>
                             <?= $form->field($model, 'floor')->textInput(['maxlength' => true]) ?>
 
                             <?= $form->field($model, 'area')->textInput() ?>
@@ -39,20 +46,6 @@ use common\models\auditory\AuditoryCat;
                             <?= $form->field($model, 'capacity')->textInput() ?>
 
                             <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
-
-                            <?= $form->field($model, 'building_id')
-                                ->dropDownList(AuditoryBuilding::getAuditoryBuildingList(), [
-                                    'prompt' => Yii::t('art/guide', 'Select Building...')
-                                ])->label(Yii::t('art/guide', 'Name Building'));
-                            ?>
-
-                            <?= $form->field($model, 'cat_id')
-                                ->dropDownList(AuditoryCat::getAuditoryCatList(), [
-                                    'prompt' => Yii::t('art/guide', 'Select Cat...')
-                                ])->label(Yii::t('art/guide', 'Name Auditory Category'));
-                            ?>
-
-                            <?= $form->field($model, 'order')->textInput() ?>
 
                             <?= $form->field($model, 'study_flag')->checkbox() ?>
 
