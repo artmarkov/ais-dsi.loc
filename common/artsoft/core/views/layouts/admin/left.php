@@ -34,7 +34,6 @@ use artsoft\widgets\Nav;
                 'icon' => 'fa fa-university',
                 'url' => '#',
                 'items' => [
-                    ['label' => 'План мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/index']],
                     ['label' => 'Учебные планы', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/index']],
                     ['label' => 'Счета за обучение', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/index']],
                     ['label' => 'Табель учета педагогических часов', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/index']],
@@ -50,7 +49,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Вступительные экзамены', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/index']],
                     ['label' => 'Движение учеников', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/index']],
                     ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/index']],
-                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/index']],
+                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/index']],
                     ['label' => 'Журнал успеваемости', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/index']],
                 ],
             ],

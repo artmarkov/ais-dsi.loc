@@ -41,9 +41,9 @@ use yii\widgets\MaskedInput;
                             <?= $form->field($model, 'first_name')->textInput(['maxlength' => 124]) ?>
                             <?= $form->field($model, 'middle_name')->textInput(['maxlength' => 124]) ?>
                             <?= $form->field($model, 'gender')->dropDownList(User::getGenderList()) ?>
-<!--                            --><?//= $form->field($model, 'birth_day')->textInput(['maxlength' => 2]) ?>
-<!--                            --><?//= $form->field($model, 'birth_month')->dropDownList(ArtHelper::getMonthsList()) ?>
-<!--                            --><?//= $form->field($model, 'birth_year')->textInput(['maxlength' => 4]) ?>
+                            <!--                            --><? //= $form->field($model, 'birth_day')->textInput(['maxlength' => 2]) ?>
+                            <!--                            --><? //= $form->field($model, 'birth_month')->dropDownList(ArtHelper::getMonthsList()) ?>
+                            <!--                            --><? //= $form->field($model, 'birth_year')->textInput(['maxlength' => 4]) ?>
                             <?= $form->field($model, 'info')->textarea(['maxlength' => 255, 'rows' => 6]) ?>
                             <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(User::getStatusList()) ?>
                             <?= $form->field($model, 'registration_ip')->textInput(['readonly' => true]) ?>
@@ -59,19 +59,8 @@ use yii\widgets\MaskedInput;
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <div class="form-group ">
-                        <?= Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'), ['/user/default/index'], ['class' => 'btn btn-default']) ?>
-                        <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
-                        <?php if (!$model->isNewRecord): ?>
-                            <?= Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'), ['/user/default/delete', 'id' => $model->id], [
-                                'class' => 'btn btn-danger',
-                                'data' => [
-                                    'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                    'method' => 'post',
-                                ],
-                            ])
-                            ?>
-                        <?php endif; ?>
+                    <div class="form-group btn-group">
+                        <?= \artsoft\helpers\ButtonHelper::submitButtons($model); ?>
                     </div>
                     <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
                 </div>

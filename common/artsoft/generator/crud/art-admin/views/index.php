@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="<?= $modelClassId ?>-index">
     <div class="panel">
         <div class="panel-heading">
-            <?= "<?= " ?>Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('art', 'Add New'), ['/<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>/default/create'], ['class' => 'btn btn-sm btn-default']) ?>
+            <?= "<?= " ?>\artsoft\helpers\ButtonHelper::createButton(); ?>
         </div>
         <div class="panel-body">
             <div class="panel panel-default">

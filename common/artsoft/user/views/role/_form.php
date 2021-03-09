@@ -31,7 +31,7 @@ use artsoft\widgets\ActiveForm;
                         </div>
                     </div>
                 </div>
-                <div class="panel-footer">
+
                     <div class="form-group">
                         <?= Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'), ['/user/role/index'], ['class' => 'btn btn-default']) ?>
                         <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>

@@ -68,8 +68,7 @@ class Routine extends ActiveRecord implements DataItem
             [['cat_id'], 'integer'],
             [['description'], 'string', 'max' => 1024],
             [['color'], 'string', 'max' => 127],
-            ['start_date', 'date', 'format' => 'php:d.m.Y'],
-            ['end_date', 'date', 'format' => 'php:d.m.Y'],
+            [['start_date', 'end_date'], 'date', 'format' => 'php:d.m.Y'],
             [['cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => RoutineCat::className(), 'targetAttribute' => ['cat_id' => 'id']],
         ];
     }

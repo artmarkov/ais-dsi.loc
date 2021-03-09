@@ -36,19 +36,8 @@ use artsoft\helpers\Html;
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <div class="form-group">
-                        <?= Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'), ['/guidejob/level/index'], ['class' => 'btn btn-default']) ?>
-                        <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
-                        <?php if (!$model->isNewRecord): ?>
-                            <?= Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'),
-                                ['/guidejob/level/delete', 'id' => $model->id], [
-                                    'class' => 'btn btn-danger',
-                                    'data' => [
-                                        'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                        'method' => 'post',
-                                    ],
-                                ]) ?>
-                        <?php endif; ?>
+                    <div class="form-group btn-group">
+                        <?= \artsoft\helpers\ButtonHelper::submitButtons($model);?>
                     </div>
                     <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
                 </div>

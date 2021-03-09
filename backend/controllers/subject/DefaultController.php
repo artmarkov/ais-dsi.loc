@@ -14,6 +14,8 @@ class DefaultController extends MainController
 
     public function actionUpdate($id) {
 
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         $model = $this->findModel($id);
 
 

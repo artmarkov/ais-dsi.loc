@@ -41,8 +41,10 @@ use yii\widgets\Pjax;
                     </div>
                 </div>
                 <div class="form-group">
-                    <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
-                    <?= Html::a(Yii::t('art', 'Cancel'), ['#'], ['class' => 'btn btn-default cancel-event']) ?>
+                    <div class="form-group btn-group">
+                        <?= \artsoft\helpers\ButtonHelper::closeButton('cancel-event');?>
+                        <?= \artsoft\helpers\ButtonHelper::saveButton();?>
+                    </div>
                 </div>
             </div>
         </div>

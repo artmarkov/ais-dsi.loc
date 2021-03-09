@@ -93,4 +93,9 @@ class Auditory extends \yii\db\ActiveRecord
     {
         return $this->building->name;
     }
+
+    public static function getAuditoryList()
+    {
+        return  Auditory::find()->select(['CONCAT(num,\' - \',name) as name', 'id'])->indexBy('id')->column();
+    }
 }

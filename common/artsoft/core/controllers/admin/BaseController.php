@@ -162,7 +162,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
-            return $this->redirect($this->getRedirectPage('create', $model));
+            $this->getSubmitAction($model);
         }
 
         return $this->renderIsAjax($this->createView, compact('model'));
@@ -185,7 +185,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
 
         if ($model->load(Yii::$app->request->post()) AND $model->save()) {
             Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been updated.'));
-            return $this->redirect($this->getRedirectPage('update', $model));
+            $this->getSubmitAction($model);
         }
 
         return $this->renderIsAjax($this->updateView, compact('model'));
@@ -357,6 +357,27 @@ abstract class BaseController extends \artsoft\controllers\BaseController
     }
 
     /**
+     * Define redirect page after submit save action
+     *
+     * @param null $model
+     * @return \yii\web\Response
+     */
+    protected function getSubmitAction($model = null)
+    {
+        switch (Yii::$app->request->post('submitAction', 'save')) {
+            case 'savenext':
+                return $this->redirect($this->getRedirectPage('create', $model));
+                break;
+            case 'saveexit':
+                return $this->redirect($this->getRedirectPage('index'));
+                break;
+            default:
+                $this->redirect($this->getRedirectPage('update', $model));
+
+        }
+
+    }
+    /**
      * Define redirect page after update, create, delete, etc
      *
      * @param string $action
@@ -371,10 +392,10 @@ abstract class BaseController extends \artsoft\controllers\BaseController
                 return ['index'];
                 break;
             case 'update':
-                return ['view', 'id' => $model->id];
+                return ['update', 'id' => $model->id];
                 break;
             case 'create':
-                return ['view', 'id' => $model->id];
+                return ['create', 'id' => $model->id];
                 break;
             default:
                 return ['index'];

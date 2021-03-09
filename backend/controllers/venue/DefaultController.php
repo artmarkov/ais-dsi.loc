@@ -60,9 +60,10 @@ class DefaultController extends MainController {
      * @return mixed
      */
     public function actionCreate() {
+
+        $this->view->params['tabMenu'] = $this->tabMenu;
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
-
 
         if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax) {
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -95,6 +96,8 @@ class DefaultController extends MainController {
      * @return mixed
      */
     public function actionUpdate($id) {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
         /* @var $model \artsoft\db\ActiveRecord */
         $model = $this->findModel($id);
 

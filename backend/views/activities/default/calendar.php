@@ -1,66 +1,198 @@
+<?php
 
-<?= \artsoft\fullcalendarscheduler\FullcalendarScheduler::widget([
-    'header'        => [
-        'left'   => 'today prev,next',
-        'center' => 'title',
-        'right'  => 'timelineDay,timelineThreeDays,agendaWeek,month',
-    ],
-    'clientOptions' => [
-        'now'               => '2016-05-07',
-        'editable'          => true, // enable draggable events
-        'aspectRatio'       => 1.8,
-        'scrollTime'        => '00:00', // undo default 6am scrollTime
-        'defaultView'       => 'timelineDay',
-        'views'             => [
-            'timelineThreeDays' => [
-                'type'     => 'timeline',
-                'duration' => [
-                    'days' => 3,
-                ],
-            ],
-        ],
-        'resourceLabelText' => 'Rooms',
-        'resources'         => [
-            ['id' => 'a', 'title' => 'Auditorium A'],
-            ['id' => 'b', 'title' => 'Auditorium B', 'eventColor' => 'green'],
-            ['id' => 'c', 'title' => 'Auditorium C', 'eventColor' => 'orange'],
-            [
-                'id'       => 'd', 'title' => 'Auditorium D',
-                'children' => [
-                    ['id' => 'd1', 'title' => 'Room D1'],
-                    ['id' => 'd2', 'title' => 'Room D2'],
-                ],
-            ],
-            ['id' => 'e', 'title' => 'Auditorium E'],
-            ['id' => 'f', 'title' => 'Auditorium F', 'eventColor' => 'red'],
-            ['id' => 'g', 'title' => 'Auditorium G'],
-            ['id' => 'h', 'title' => 'Auditorium H'],
-            ['id' => 'i', 'title' => 'Auditorium I'],
-            ['id' => 'j', 'title' => 'Auditorium J'],
-            ['id' => 'k', 'title' => 'Auditorium K'],
-            ['id' => 'l', 'title' => 'Auditorium L'],
-            ['id' => 'm', 'title' => 'Auditorium M'],
-            ['id' => 'n', 'title' => 'Auditorium N'],
-            ['id' => 'o', 'title' => 'Auditorium O'],
-            ['id' => 'p', 'title' => 'Auditorium P'],
-            ['id' => 'q', 'title' => 'Auditorium Q'],
-            ['id' => 'r', 'title' => 'Auditorium R'],
-            ['id' => 's', 'title' => 'Auditorium S'],
-            ['id' => 't', 'title' => 'Auditorium T'],
-            ['id' => 'u', 'title' => 'Auditorium U'],
-            ['id' => 'v', 'title' => 'Auditorium V'],
-            ['id' => 'w', 'title' => 'Auditorium W'],
-            ['id' => 'x', 'title' => 'Auditorium X'],
-            ['id' => 'y', 'title' => 'Auditorium Y'],
-            ['id' => 'z', 'title' => 'Auditorium Z'],
-        ],
-        'events'            => [
-            ['id' => '1', 'resourceId' => 'b', 'start' => '2016-05-07T02:00:00', 'end' => '2016-05-07T07:00:00', 'title' => 'event 1'],
-            ['id' => '2', 'resourceId' => 'c', 'start' => '2016-05-07T05:00:00', 'end' => '2016-05-07T22:00:00', 'title' => 'event 2'],
-            ['id' => '3', 'resourceId' => 'd', 'start' => '2016-05-06', 'end' => '2016-05-08', 'title' => 'event 3'],
-            ['id' => '4', 'resourceId' => 'e', 'start' => '2016-05-07T03:00:00', 'end' => '2016-05-07T08:00:00', 'title' => 'event 4'],
-            ['id' => '5', 'resourceId' => 'f', 'start' => '2016-05-07T00:30:00', 'end' => '2016-05-07T02:30:00', 'title' => 'event 5'],
-        ],
-    ],
-]);
+use artsoft\helpers\Html;
+use yii\web\JsExpression;
+
+/* @var $this yii\web\View */
+/* @var $dataProvider yii\data\ActiveDataProvider */
+
+//echo '<pre>' . print_r($events, true) . '</pre>';
+
+$this->title = Yii::t('art/calendar', 'Activities calendar');
+$this->params['breadcrumbs'][] = $this->title;
 ?>
+<div class="activities-index">
+    <div class="panel">
+        <div class="panel-heading">
+            <?= Html::encode($this->title) ?>
+        </div>
+        <div class="panel-body">
+            <div class="col-sm-12"
+
+            <?php
+            // выбираем мышкой область или кликаем в пустое поле
+            $JSSelect = <<<EOF
+    function(e) {
+    var start = e.start.getFullYear()+ '/' + ('0'+ (e.start.getMonth()+1)).slice(-2)+'/'+ ('0' + e.start.getDate()).slice(-2)+' '+ ('0' + e.start.getHours()).slice(-2)+':'+ ('0' + e.start.getMinutes()).slice(-2);
+    var end = e.end.getFullYear()+ '/' + ('0'+ (e.end.getMonth()+1)).slice(-2)+'/'+ ('0' + e.end.getDate()).slice(-2)+' '+ ('0' + e.end.getHours()).slice(-2)+':'+ ('0' + e.end.getMinutes()).slice(-2);
+        var eventData;
+            eventData = {
+                id: 0,
+                start: start,
+                end: end,
+                allDay: e.allDay
+            };
+        console.log('выбираем мышкой область или кликаем в пустое поле');
+        console.log(eventData);
+      $.ajax({
+            url: '/admin/activities/default/create-event',
+            type: 'POST',
+            data: {eventData : eventData},
+           success: function (res) {
+//                console.log(res);
+                $('#activities-modal .modal-body').html(res);
+                $('#activities-modal').modal();
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
+    }
+EOF;
+            // кликаем по событию
+            $JSEventClick = <<<EOF
+    function(e) {
+        eventData = {
+                id: e.event.id,              
+            };
+    // change the border color just for fun
+    e.el.style.borderColor = 'red';
+        
+        console.log('кликаем по событию ' + e.event.id);
+      $.ajax({
+            url: '/admin/activities/default/create-event',
+            type: 'POST',
+            data: {eventData: eventData},
+            success: function (res) {
+//                console.log(res);
+                $('#activities-modal .modal-body').html(res);
+                $('#activities-modal').modal();
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
+    }
+
+EOF;
+            // растягиваем/сжимаем событие мышкой
+            $JSEventResize = <<<EOF
+    function(e) {
+        var start = e.event.start.getFullYear()+ '/' + ('0'+ (e.event.start.getMonth()+1)).slice(-2)+'/'+ ('0' + e.event.start.getDate()).slice(-2)+' '+ ('0' + e.event.start.getHours()).slice(-2)+':'+ ('0' + e.event.start.getMinutes()).slice(-2);
+        var end = e.event.start.getFullYear()+ '/' + ('0'+ (e.event.end.getMonth()+1)).slice(-2)+'/'+ ('0' + e.event.end.getDate()).slice(-2)+' '+ ('0' + e.event.end.getHours()).slice(-2)+':'+ ('0' + e.event.end.getMinutes()).slice(-2);
+        var eventData;
+            eventData = {
+                id: e.event.id, 
+                start: start,
+                end: end,
+                allDay: e.event.allDay
+            };
+         console.log('растягиваем/сжимаем событие мышкой');
+        console.log(eventData);
+         $.ajax({
+             url: '/admin/activities/default/refactor-event',
+            type: 'POST',
+            data: {eventData : eventData},
+            success: function (res) {
+                  console.log('success');
+            },
+            error: function () {
+               console.log('error');
+            }
+        });
+      }
+EOF;
+            // перетаскиваем событие, удерживая мышкой
+            $JSEventDrop = <<<EOF
+    function(e) {
+        var c = e.event;
+        var start = c.start.getFullYear()+ '/' + ('0'+ (c.start.getMonth()+1)).slice(-2)+'/'+ ('0' + c.start.getDate()).slice(-2)+' '+ ('0' + c.start.getHours()).slice(-2)+':'+ ('0' + c.start.getMinutes()).slice(-2);
+    if(e.event.allDay == true && e.event.end == null) {
+        var end = c.start.getFullYear()+ '/' + ('0'+ (c.start.getMonth()+1)).slice(-2) + '/' + ('0' + (c.start.getDate()+1)).slice(-2) + ' ' + ('0' + c.start.getHours()).slice(-2)+':'+ ('0' + c.start.getMinutes()).slice(-2);
+    }else if(e.event.allDay == false && e.event.end == null) {
+        var end = c.start.getFullYear()+ '/' + ('0'+ (c.start.getMonth()+1)).slice(-2)+'/'+ ('0' + c.start.getDate()).slice(-2)+ ' ' + ('0' + (c.start.getHours()+1)).slice(-2)+':'+ ('0' + c.start.getMinutes()).slice(-2);
+    }else {
+        var end = c.end.getFullYear()+ '/' + ('0'+ (c.end.getMonth()+1)).slice(-2)+'/'+ ('0' + c.end.getDate()).slice(-2)+' '+ ('0' + c.end.getHours()).slice(-2)+':'+ ('0' + c.end.getMinutes()).slice(-2);
+    }
+        var eventData;
+            eventData = {
+                id: e.event.id, 
+                start: start,
+                end: end,
+                allDay: e.event.allDay
+            };
+         console.log('перетаскиваем событие, удерживая мышкой');
+         $.ajax({
+             url: '/admin/activities/default/refactor-event',
+            type: 'POST',
+            data: {eventData : eventData},
+            success: function (res) {
+                  console.log('success');
+            },
+            error: function () {
+               console.log('error');
+            }
+        });
+      }
+EOF;
+            $JSOnDay = <<<EOF
+        function(info) {
+        console.log(info.event.start);
+                var content = '<div class="event-tooltip-content">'
+                                    + '<div class="event-name">' + info.event.title + '</div>'
+                                + '</div>';
+            
+                $(info.el).popover({
+                    trigger: 'manual',
+                    container: 'body',
+                    html:true,
+                    content: content
+                });
+                
+                $(info.el).popover('show');
+}
+EOF;
+            $JSOutDay = <<<EOF
+        function(info) {
+                $(info.el).popover('hide');
+}
+EOF;
+            ?>
+
+            <?= \backend\widgets\fullcalendar\src\Fullcalendar::widget([
+                'clientOptions' => [
+                    'initialView' => 'timeGridWeek',
+                    'height' => 'auto', // 'auto' - aspectRatio no works
+                    'aspectRatio' => 1.8,
+                    'navLinks' => true,
+                    'businessHours' => true,
+                    'editable' => true,
+                    'selectable' => true,
+                    'expandRows' => true,
+                    'slotMinTime' => '07:00',
+                    'slotMaxTime' => '22:00',
+                    'eventDurationEditable' => true, // разрешить изменение размера
+                    'eventOverlap' => true, // разрешить перекрытие событий
+                    'eventClick' => new JsExpression($JSEventClick),
+//                    'eventMouseEnter' => new JsExpression($JSOnDay),
+//                    'eventMouseLeave' => new JsExpression($JSOutDay),
+                    'eventDrop' => new JsExpression($JSEventDrop),
+                    'select' => new JsExpression($JSSelect),
+                    'eventResize' => new JsExpression($JSEventResize),
+                ],
+                'events' => \yii\helpers\Url::to(['/activities/default/init-calendar']),
+            ]);
+            ?>
+        </div>
+    </div>
+</div>
+
+<?php \yii\bootstrap\Modal::begin([
+    'header' => '<h3 class="lte-hide-title page-title">' . Yii::t('art/calendar', 'Event') . '</h3>',
+    'size' => 'modal-lg',
+    'id' => 'activities-modal',
+]);
+
+\yii\bootstrap\Modal::end(); ?>
+
+

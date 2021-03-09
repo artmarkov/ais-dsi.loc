@@ -25,52 +25,32 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="panel">
     <div class="panel-heading">
-        <?= "<?= " ?>Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('art', 'Add New'), ['/<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>/default/create'], ['class' => 'btn btn-sm btn-default']) ?>
+        <?= "<?= " ?>\artsoft\helpers\ButtonHelper::createButton(); ?>
     </div>
     <div class="panel-body">
         <div class="panel panel-default">
+            <div class="panel-heading">
+                <?= "<?= " ?>\artsoft\helpers\ButtonHelper::viewButtons($model) ?>
+            </div>
             <div class="panel-body">
                 <div class="row">
-                <p>
-                    <?= "<?= " ?>
-                    Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'), ['/<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>/default/index'], ['class' => 'btn btn-default']) ?>
-                    <?= "<?= " ?>
-                    Html::a(Yii::t('art', 'Edit'), ['/<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>/default/update', 'id' => $model->id],
-                        ['class' => 'btn btn-sm btn-primary'])
-                    ?>
-                    <?= "<?= " ?>
-                    Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'), ['/<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>/default/delete', 'id' => $model->id],
-                        [
-                        'class' => 'btn btn-sm btn-danger',
-                        'data' => [
-                            'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                            'method' => 'post',
-                        ],
-                    ])
-                    ?>
-                </p>
-
-
-            <?= "<?= " ?>
-            DetailView::widget([
+                    <?= "<?= " ?>DetailView::widget([
                 'model' => $model,
                 'attributes' => [
-<?php
-if (($tableSchema = $generator->getTableSchema()) === false) {
-    foreach ($generator->getColumnNames() as $name) {
-        echo "            '" . $name . "',\n";
-    }
-} else {
-    foreach ($generator->getTableSchema()->columns as $column) {
-        $format = $generator->generateColumnFormat($column);
-        echo "            '" . $column->name . ($format === 'text' ? "" : ":" . $format) . "',\n";
-    }
-}
-?>
+                    <?php
+                    if (($tableSchema = $generator->getTableSchema()) === false) {
+                        foreach ($generator->getColumnNames() as $name) {
+                            echo "            '" . $name . "',\n";
+                        }
+                    } else {
+                        foreach ($generator->getTableSchema()->columns as $column) {
+                            $format = $generator->generateColumnFormat($column);
+                            echo "            '" . $column->name . ($format === 'text' ? "" : ":" . $format) . "',\n";
+                        }
+                    }
+                    ?>
                 ],
-            ])
-            ?>
-
+            ])?>
                 </div>
             </div>
         </div>

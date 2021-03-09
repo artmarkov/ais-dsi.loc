@@ -38,6 +38,7 @@ return [
     'Select District...' => 'Выберите округ...',
     'Select Cat...' => 'Выберите категорию...',
     'Select Building...' => 'Выберите здание...',
+    'Select Auditory...' => 'Выберите аудиторию...',
     'Name' => 'Название',
     'Division' => 'Отделение',
     'Department' => 'Отдел',

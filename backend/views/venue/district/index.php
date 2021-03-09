@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="venue-district-index">
     <div class="panel">
         <div class="panel-heading">
-            <?= Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('art', 'Add New'), ['/venue/district/create'], ['class' => 'btn btn-sm btn-default']) ?>
+            <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
         </div>
         <div class="panel-body">
             <div class="panel panel-default">

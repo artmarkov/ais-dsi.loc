@@ -33,7 +33,7 @@ class Event extends CalendarModel
     /** @var  boolean Is the event duration editable? */
     public $durationEditable;
     /** @var  string Allows alternate rendering of the event, like background events. Can be empty, "background", or "inverse-background" */
-    public $rendering;
+    public $display;
     /** @var  boolean  Overrides the master eventOverlap option for this single event. If false, prevents this event from being dragged/resized over other events. Also prevents other events from being dragged/resized over this event. */
     public $overlap;
     /** @var  string an event ID, "businessHours", object. Optional. Overrides the master eventConstraint option for this single event. */
@@ -56,7 +56,7 @@ class Event extends CalendarModel
     {
         return [
             [['title', 'start'], 'required'],
-            [['id', 'end', 'url', 'className', 'rendering', 'constraint', 'source', 'color', 'backgroundColor', 'borderColor', 'textColor'], 'safe'],
+            [['id', 'end', 'url', 'className', 'display', 'constraint', 'source', 'color', 'backgroundColor', 'borderColor', 'textColor'], 'safe'],
             [['editable', 'startEditable', 'durationEditable', 'overlap'], 'boolean'],
         ];
     }
@@ -65,4 +65,23 @@ class Event extends CalendarModel
     {
         return \Yii::$app->formatter->asDatetime($timestamp, 'php:Y-m-d\TH:i:s');
     }
+
+    public static function getBgColor($hex)
+    {
+        $rgb = \artsoft\helpers\ColorHelper::hex2rgb($hex);
+        $rgb['alpha'] = $rgb['alpha'] ?? 0.85;
+        return 'rgba(' . implode(',', $rgb) . ')';
+    }
+
+    public static function getBorderColor($hex)
+    {
+        return \artsoft\helpers\ColorHelper::hex2rgb($hex, true);
+    }
+
+    public static function getColor($hex)
+    {
+        $hex = \artsoft\helpers\ColorHelper::calcColor($hex);
+        return \artsoft\helpers\ColorHelper::hex2rgb($hex, true);
+    }
+
 }

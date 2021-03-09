@@ -13,6 +13,7 @@ class RoutineSearch extends Routine
 {
     public $start_timestamp_operand;
     public $end_timestamp_operand;
+
     /**
      * {@inheritdoc}
      */
