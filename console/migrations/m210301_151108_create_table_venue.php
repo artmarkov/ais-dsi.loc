@@ -335,7 +335,7 @@ class m210301_151108_create_table_venue extends Migration
             [905, 'КОСОВО', 'Республика Косово', 'XK', 'XKX']
         ])->execute();
 
-        $this->db->createCommand()->batchInsert('venue_regions', ['id', 'name', 'fias_id'], [
+        $this->db->createCommand()->batchInsert('venue_regions', ['id', 'name'], [
             [1, 'Республика Адыгея (Адыгея)', 'd8327a56-80de-4df2-815c-4f6ab1224c50'],
             [2, 'Республика Башкортостан', '6f2cbfd8-692a-4ee4-9b16-067210bde3fc'],
             [3, 'Республика Бурятия', 'a84ebed3-153d-4ba9-8532-8bdf879e1f5a'],

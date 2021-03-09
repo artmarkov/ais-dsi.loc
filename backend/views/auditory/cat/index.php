@@ -76,7 +76,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:60px']
                             ],
                             // 'study_flag',
-                            'order',
 
                         ],
                     ]);
