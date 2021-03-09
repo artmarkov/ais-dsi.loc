@@ -12,7 +12,6 @@ use Yii;
  * @property int $id
  * @property int $building_id
  * @property int $cat_id
- * @property string $study_flag
  * @property int $num
  * @property string $name
  * @property string $slug
@@ -51,9 +50,8 @@ class Auditory extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'num', 'building_id', 'study_flag'], 'required'],
+            [['name', 'num', 'building_id'], 'required'],
             [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sortOrder'], 'integer'],
-            [['study_flag'], 'string'],
             [['area'], 'number'],
             [['name'], 'string', 'max' => 128],
             [['floor'], 'string', 'max' => 32],
@@ -67,17 +65,16 @@ class Auditory extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('art/guide', 'ID'),
+            'id' => Yii::t('art/guide', '#'),
             'building_id' => Yii::t('art/guide', 'Building ID'),
             'cat_id' => Yii::t('art/guide', 'Cat ID'),
-            'study_flag' => Yii::t('art/guide', 'Study Flag'),
             'num' => Yii::t('art/guide', 'Num Auditory'),
             'name' => Yii::t('art/guide', 'Name Auditory'),
             'floor' => Yii::t('art/guide', 'Floor'),
             'area' => Yii::t('art/guide', 'Area Auditory'),
             'capacity' => Yii::t('art/guide', 'Capacity Auditory'),
             'description' => Yii::t('art/guide', 'Description Auditory'),
-            'order' => Yii::t('art/guide', 'Order'),
+            'sortOrder' => Yii::t('art/guide', 'Order'),
         ];
     }
 

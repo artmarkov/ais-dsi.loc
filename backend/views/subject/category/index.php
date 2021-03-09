@@ -1,8 +1,7 @@
 <?php
 
-use yii\helpers\Url;
 use yii\widgets\Pjax;
-use artsoft\grid\GridView;
+use artsoft\grid\SortableGridView;
 use artsoft\grid\GridQuickLinks;
 use common\models\subject\SubjectCategoryItem;
 use artsoft\helpers\Html;
@@ -46,9 +45,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     ?>
 
                     <?=
-                    GridView::widget([
+                    SortableGridView::widget([
                         'id' => 'subject-category-item-grid',
                         'dataProvider' => $dataProvider,
+                        'filterModel' => $searchModel,
+                        'sortableAction' => ['grid-sort'],
                         'bulkActionOptions' => [
                             'gridId' => 'subject-category-item-grid',
 //                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art','Delete')] //Configure here you bulk actions

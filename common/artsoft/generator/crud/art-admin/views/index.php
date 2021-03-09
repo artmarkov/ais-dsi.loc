@@ -75,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>/default',
                                 'title' => function(<?= $modelClass ?> $model) {
-                                    return Html::a($model->id, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                             ],

@@ -11,7 +11,6 @@ use Yii;
  * @property string $name
  * @property string $description
  * @property string $study_flag
- * @property int $order
  */
 class AuditoryCat extends \yii\db\ActiveRecord
 {
@@ -31,7 +30,6 @@ class AuditoryCat extends \yii\db\ActiveRecord
         return [
             [['name', 'study_flag'], 'required'],
             [['study_flag'], 'string'],
-            [['order'], 'integer'],
             [['name'], 'string', 'max' => 128],
             [['description'], 'string', 'max' => 256],
         ];
@@ -47,7 +45,6 @@ class AuditoryCat extends \yii\db\ActiveRecord
             'name' => Yii::t('art/guide', 'Name Auditory Category'),
             'description' => Yii::t('art/guide', 'Description Auditory Category'),
             'study_flag' => Yii::t('art/guide', 'Study Opportunity'),
-            'order' => Yii::t('art/guide', 'Order'),
         ];
     }
     public function getAuditory()

@@ -2,15 +2,15 @@
 
 namespace common\models\subject\search;
 
+use common\models\subject\SubjectCategoryItem;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\subject\Subject;
 
 /**
- * SubjectSearch represents the model behind the search form about `common\models\subject\Subject`.
+ * SubjectCategoryItemSearch represents the model behind the search form about `common\models\subject\SubjectCategoryItem`.
  */
-class SubjectSearch extends Subject
+class SubjectCategoryItemSearch extends SubjectCategoryItem
 {
     /**
      * @inheritdoc
@@ -18,9 +18,8 @@ class SubjectSearch extends Subject
     public function rules()
     {
         return [
-            [['id'], 'integer'],
+            [['id', 'sortOrder'], 'integer'],
             [['name', 'slug', 'status'], 'safe'],
-            [['gridCategorySearch', 'gridDepartmentSearch', 'gridVidSearch'], 'string'],
         ];
     }
 
@@ -42,15 +41,8 @@ class SubjectSearch extends Subject
      */
     public function search($params)
     {
-        $query = Subject::find();
+        $query = SubjectCategoryItem::find();
         
-        // жадная загрузка
-        $query->with(['subjectCategories']);
-        $query->with(['subjectCategoryItem']);
-        $query->with(['subjectDepartments']);
-        $query->with(['departmentItem']);
-        $query->with(['subjectVids']);
-        $query->with(['subjectVidItem']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -59,7 +51,7 @@ class SubjectSearch extends Subject
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'id' => SORT_DESC,
+                    'sortOrder' => SORT_ASC,
                 ],
             ],
         ]);
@@ -71,20 +63,9 @@ class SubjectSearch extends Subject
             // $query->where('0=1');
             return $dataProvider;
         }
-        if ($this->gridCategorySearch) {
-            $query->joinWith(['subjectCategories']);
-        }
-        if ($this->gridDepartmentSearch) {
-            $query->joinWith(['subjectDepartments']);
-        }
-        if ($this->gridVidSearch) {
-            $query->joinWith(['subjectVids']);
-        }
+
         $query->andFilterWhere([
             'id' => $this->id,
-            'subject_category.category_id' => $this->gridCategorySearch,
-            'subject_department.department_id' => $this->gridDepartmentSearch,
-            'subject_vid.vid_id' => $this->gridVidSearch,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])

@@ -24,8 +24,8 @@ class AuditorySearch extends Auditory
     {
 
         return [
-            [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sortOrder'], 'integer'],
-            [['study_flag', 'name', 'floor', 'description'], 'safe'],
+            [['id', 'building_id', 'cat_id', 'num', 'capacity'], 'integer'],
+            [['name', 'floor', 'description', 'sortOrder'], 'safe'],
             [['area'], 'number'],
             [['catName', 'buildingName'], 'string'],
         ];
@@ -68,7 +68,6 @@ class AuditorySearch extends Auditory
 //                'id',
 //                'name',
 //                'num',
-//                'study_flag',
 //                'order',
 //
 ////                закоментировать для сортировки по названию
@@ -113,8 +112,7 @@ class AuditorySearch extends Auditory
 
         ]);
 
-        $query->andFilterWhere(['like', 'study_flag', $this->study_flag])
-            ->andFilterWhere(['like', 'auditory.name', $this->name])
+        $query->andFilterWhere(['like', 'auditory.name', $this->name])
             ->andFilterWhere(['like', 'floor', $this->floor])
             ->andFilterWhere(['like', 'description', $this->description]);
         

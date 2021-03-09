@@ -12,7 +12,7 @@ return [
     'controllerMap' => [
         'migrate' => [
             'class' => 'console\controllers\MigrateController',
-            'migrationPath' => '@app/migrations',
+            'migrationPath' => '@app/mig',
 //
 //            'migrationNamespaces' => [
 //                'zhuravljov\yii\queue\monitor\migrations',

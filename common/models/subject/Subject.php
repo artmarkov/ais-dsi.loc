@@ -14,7 +14,6 @@ use common\models\subject\SubjectQuery;
  * @property int $id
  * @property string $name
  * @property string $slug
- * @property int $order
  * @property int $status
  *
  * @property SubjectCategory[] $subjectCategories
@@ -64,7 +63,7 @@ class Subject extends \yii\db\ActiveRecord
         return [
             [['status'], 'required'],
             [['name', 'slug', 'department_list', 'category_list', 'vid_list'], 'required'],
-            [['order', 'status'], 'integer'],
+            ['status', 'integer'],
             [['name'], 'string', 'max' => 64],
             [['slug'], 'string', 'max' => 32],
             [['department_list', 'category_list', 'vid_list'], 'safe'],
@@ -80,7 +79,6 @@ class Subject extends \yii\db\ActiveRecord
             'id' => Yii::t('art/guide', 'ID'),
             'name' => Yii::t('art/guide', 'Name'),
             'slug' => Yii::t('art/guide', 'Slug'),
-            'order' => Yii::t('art/guide', 'Order'),
             'status' => Yii::t('art/guide', 'Status'),
             'department_list' => Yii::t('art/guide', 'Department'),
             'gridDepartmentSearch' => Yii::t('art/guide', 'Department'),
@@ -184,7 +182,7 @@ class Subject extends \yii\db\ActiveRecord
     {
         return ArrayHelper::map(SubjectCategoryItem::find()
             ->select('id, name')
-            ->orderBy('order')
+            ->orderBy('sortOrder')
             ->asArray()->all(), 'id', 'name');
     }
 

@@ -59,20 +59,19 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
-                            ['class' => 'yii\grid\SerialColumn', 'options' => ['style' => 'width:20px'],],
                             [
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:300px'],
-                                'attribute' => 'name',
+                                'attribute' => 'id',
                                 'controller' => '/auditory/default',
                                 'title' => function (Auditory $model) {
-                                    return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a(sprintf('#%06d', $model->id), ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
 
-                            //'id',
                             'num',
+                            'name',
                             //'catName',
                             //'buildingName',
                             [
@@ -87,12 +86,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label' => Yii::t('art/guide', 'Name Building'),
                                 'filter' => AuditoryBuilding::getAuditoryBuildingList(),
                             ],
-                            [
-                                'class' => 'artsoft\grid\columns\StatusColumn',
-                                'attribute' => 'study_flag',
-                                'options' => ['style' => 'width:60px']
-                            ],
-                            // 'study_flag',
                             // 'name',
                             // 'floor',
                             // 'area',

@@ -31,8 +31,6 @@ use artsoft\helpers\Html;
 
                             <?= $form->field($model, 'study_flag')->checkbox() ?>
 
-                            <?= $form->field($model, 'order')->textInput() ?>
-
                         </div>
                     </div>
                 </div>
