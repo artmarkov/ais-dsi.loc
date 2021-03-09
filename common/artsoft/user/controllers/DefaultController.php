@@ -23,23 +23,6 @@ class DefaultController extends MainController
     public $modelSearchClass = 'artsoft\user\models\search\UserSearch';
 
     public $disabledActions = ['view'];
-
-    protected function getRedirectPage($action, $model = null)
-    {
-        switch ($action) {
-            case 'delete':
-                return ['index'];
-                break;
-            case 'update':
-                return ['update', 'id' => $model->id];
-                break;
-            case 'create':
-                return ['update', 'id' => $model->id];
-                break;
-            default:
-                return ['index'];
-        }
-    }
     
     /**
      * @return mixed|string|\yii\web\Response

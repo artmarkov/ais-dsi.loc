@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="permission-index">
     <div class="panel">
         <div class="panel-heading">
-            <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
+            <?= \artsoft\helpers\ButtonHelper::createButton('create'); ?>
         </div>
         <div class="panel-body">
             <div class="panel panel-default">

@@ -1,12 +1,12 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\subject\SubjectVid;
+use common\models\subject\SubjectVidItem;
 use artsoft\helpers\Html;
 
 
 /* @var $this yii\web\View */
-/* @var $model common\models\subject\SubjectVid */
+/* @var $model common\models\subject\SubjectVidItem */
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 

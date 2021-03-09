@@ -11,17 +11,4 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Округа',  'url' => ['/venue/district/index']],
     ];
 
-    protected function getRedirectPage($action, $model = null)
-    {
-        switch ($action) {
-            case 'update':
-                return ['update', 'id' => $model->id];
-                break;
-            case 'create':
-                return ['update', 'id' => $model->id];
-                break;
-            default:
-                return parent::getRedirectPage($action, $model);
-        }
-    }
 }

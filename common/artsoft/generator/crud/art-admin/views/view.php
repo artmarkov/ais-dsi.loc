@@ -30,7 +30,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="panel-body">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= "<?= " ?>\artsoft\helpers\ButtonHelper::viewButtons($model) ?>
+                <div class="form-group btn-group">
+                    <?= "<?= " ?>\artsoft\helpers\ButtonHelper::viewButtons($model) ?>
+                </div>
             </div>
             <div class="panel-body">
                 <div class="row">
@@ -40,12 +42,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php
                     if (($tableSchema = $generator->getTableSchema()) === false) {
                         foreach ($generator->getColumnNames() as $name) {
-                            echo "            '" . $name . "',\n";
+                            echo "'" . $name . "',\n";
                         }
                     } else {
                         foreach ($generator->getTableSchema()->columns as $column) {
                             $format = $generator->generateColumnFormat($column);
-                            echo "            '" . $column->name . ($format === 'text' ? "" : ":" . $format) . "',\n";
+                            echo "'" . $column->name . ($format === 'text' ? "" : ":" . $format) . "',\n";
                         }
                     }
                     ?>

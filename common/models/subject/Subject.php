@@ -3,6 +3,7 @@
 namespace common\models\subject;
 
 use common\models\own\Department;
+use common\models\subject\SubjectVidItem;
 use Yii;
 use yii\helpers\ArrayHelper;
 use common\models\subject\SubjectQuery;
@@ -18,6 +19,7 @@ use common\models\subject\SubjectQuery;
  *
  * @property SubjectCategory[] $subjectCategories
  * @property SubjectDepartment[] $subjectDepartments
+ * @property SubjectVid[] $subjectVids
  */
 class Subject extends \yii\db\ActiveRecord
 {
@@ -25,6 +27,7 @@ class Subject extends \yii\db\ActiveRecord
     const STATUS_INACTIVE = 0;
 
     public $gridCategorySearch;
+    public $gridVidSearch;
     public $gridDepartmentSearch;
 
     /**
@@ -34,6 +37,7 @@ class Subject extends \yii\db\ActiveRecord
     {
         return '{{%subject}}';
     }
+
     /**
      * Реализация поведения многое ко многим
      * @return  mixed
@@ -46,10 +50,12 @@ class Subject extends \yii\db\ActiveRecord
                 'relations' => [
                     'subjectCategoryItem' => 'category_list',
                     'departmentItem' => 'department_list',
+                    'subjectVidItem' => 'vid_list',
                 ],
             ],
         ];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -57,11 +63,11 @@ class Subject extends \yii\db\ActiveRecord
     {
         return [
             [['status'], 'required'],
-            [['department_list', 'category_list'], 'required'],
+            [['department_list', 'category_list', 'vid_list'], 'required'],
             [['order', 'status'], 'integer'],
             [['name'], 'string', 'max' => 64],
             [['slug'], 'string', 'max' => 32],
-            [['department_list', 'category_list'], 'safe'],
+            [['department_list', 'category_list', 'vid_list'], 'safe'],
         ];
     }
 
@@ -80,18 +86,23 @@ class Subject extends \yii\db\ActiveRecord
             'gridDepartmentSearch' => Yii::t('art/guide', 'Department'),
             'category_list' => Yii::t('art/guide', 'Subject Category'),
             'gridCategorySearch' => Yii::t('art/guide', 'Subject Category'),
+            'vid_list' => Yii::t('art/guide', 'Subject Vid'),
+            'gridVidSearch' => Yii::t('art/guide', 'Subject Vid'),
         ];
     }
+
     /**
      * getStatusList
      * @return array
      */
-    public static function getStatusList() {
+    public static function getStatusList()
+    {
         return array(
             self::STATUS_ACTIVE => Yii::t('art', 'Active'),
             self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
         );
     }
+
     /**
      * getStatusValue
      *
@@ -99,11 +110,13 @@ class Subject extends \yii\db\ActiveRecord
      *
      * @return string
      */
-    public static function getStatusValue($val) {
+    public static function getStatusValue($val)
+    {
         $ar = self::getStatusList();
 
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -119,6 +132,15 @@ class Subject extends \yii\db\ActiveRecord
     {
         return $this->hasMany(SubjectDepartment::className(), ['subject_id' => 'id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubjectVids()
+    {
+        return $this->hasMany(SubjectVid::className(), ['subject_id' => 'id']);
+    }
+
     /**
      * {@inheritdoc}
      * @return SubjectQuery the active query used by this AR class.
@@ -130,6 +152,7 @@ class Subject extends \yii\db\ActiveRecord
 
     /**
      * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
      */
     public function getSubjectCategoryItem()
     {
@@ -139,12 +162,22 @@ class Subject extends \yii\db\ActiveRecord
 
     /**
      * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
      */
-
     public function getDepartmentItem()
     {
         return $this->hasMany(Department::className(), ['id' => 'department_id'])
             ->viaTable('subject_department', ['subject_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getSubjectVidItem()
+    {
+        return $this->hasMany(SubjectVidItem::className(), ['id' => 'vid_id'])
+            ->viaTable('subject_vid', ['subject_id' => 'id']);
     }
 
     public static function getSubjectCategoryList()
@@ -152,6 +185,13 @@ class Subject extends \yii\db\ActiveRecord
         return ArrayHelper::map(SubjectCategoryItem::find()
             ->select('id, name')
             ->orderBy('order')
+            ->asArray()->all(), 'id', 'name');
+    }
+
+    public static function getSubjectVidList()
+    {
+        return ArrayHelper::map(SubjectVidItem::find()
+            ->select('id, name')
             ->asArray()->all(), 'id', 'name');
     }
 

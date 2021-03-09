@@ -12,5 +12,4 @@ class MainController extends BaseController
         ['url' => ['/user/permission-groups/index'], 'label' => 'Группы прав доступа'],
         ['url' => ['/user/role/index'], 'label' => 'Роли'],
     ];
-
 }

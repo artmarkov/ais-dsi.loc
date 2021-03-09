@@ -27,17 +27,7 @@ class <?= $controllerClass ?> extends <?= $baseControllerClass ?>
     public $modelClass       = '<?= $generator->modelClass ?>';
     public $modelSearchClass = '<?= $generator->searchModelClass ?>';
 
-    protected function getRedirectPage($action, $model = null)
-    {
-        switch ($action) {
-            case 'update':
-                return ['update', 'id' => $model->id];
-                break;
-            case 'create':
-                return ['update', 'id' => $model->id];
-                break;
-            default:
-                return parent::getRedirectPage($action, $model);
-        }
-    }
+    public $tabMenu = [
+        ['label' => 'Main',  'url' => ['/index']],
+    ];
 }

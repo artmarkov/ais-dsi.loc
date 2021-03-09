@@ -7,6 +7,6 @@ namespace backend\controllers\subject;
  */
 class VidController extends MainController
 {
-    public $modelClass       = 'common\models\subject\SubjectVid';
+    public $modelClass       = 'common\models\subject\SubjectVidItem';
     public $modelSearchClass = '';
 }

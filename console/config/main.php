@@ -12,8 +12,8 @@ return [
     'controllerMap' => [
         'migrate' => [
             'class' => 'console\controllers\MigrateController',
-            'migrationPath' => '@app/migration',
-
+            'migrationPath' => '@app/migrations',
+//
 //            'migrationNamespaces' => [
 //                'zhuravljov\yii\queue\monitor\migrations',
 //                'artsoft\queue\migrations',

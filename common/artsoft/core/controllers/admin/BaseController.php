@@ -388,6 +388,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
     protected function getRedirectPage($action, $model = null)
     {
         switch ($action) {
+            case 'index':
             case 'delete':
                 return ['index'];
                 break;

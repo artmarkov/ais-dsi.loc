@@ -67,7 +67,7 @@ BootstrapPluginAsset::register($this);
 
                             <?php if (Yii::$app->user->isSuperadmin OR Yii::$app->user->id != $user->id): ?>
 
-                                <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary btn-sm']) ?>
+                                <?= \artsoft\helpers\ButtonHelper::saveButton();?>
                             <?php else: ?>
                                 <div class="alert alert-warning well-sm text-center">
                                     <?= Yii::t('art/user', "You can't update own permissions!") ?>

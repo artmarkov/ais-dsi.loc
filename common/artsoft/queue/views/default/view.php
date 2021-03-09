@@ -79,20 +79,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     ?>
                 </div>
                 <div class="panel-footer">
-                    <div class="form-group">
-                        <?= Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'), ['/queue-schedule/default/index'], ['class' => 'btn btn-default']) ?>
-                        <?= Html::a('<i class="fa fa-pencil" aria-hidden="true"></i> ' . Yii::t('art', 'Edit'), ['/queue-schedule/default/update', 'id' => $model->id], ['class' => 'btn btn-sm btn-primary']) ?>
-                        <?= Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'), ['/queue-schedule/default/delete', 'id' => $model->id], [
-                            'class' => 'btn btn-sm btn-danger',
-                            'data' => [
-                                'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                'method' => 'post',
-                            ],
-                        ]) ?>
+                    <div class="form-group btn-group">
+                        <?= \artsoft\helpers\ButtonHelper::viewButtons($model, '/queue-schedule/default/index', ['/queue-schedule/default/update', 'id' => $model->id], ['/queue-schedule/default/delete', 'id' => $model->id]); ?>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-</div>

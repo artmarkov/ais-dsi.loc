@@ -47,16 +47,10 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
         <div class="panel-footer">
-            <?= Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'), ['/logs/default/index'], ['class' => 'btn btn-default']) ?>
-            <?php if (Yii::$app->user->isSuperadmin): ?>
-                <?= Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'), ['/logs/default/delete', 'id' => $model->id], [
-                    'class' => 'btn btn-sm btn-danger',
-                    'data' => [
-                        'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                        'method' => 'post',
-                    ],
-                ]) ?>
-            <?php endif; ?>
+            <div class="form-group btn-group">
+                <?= \artsoft\helpers\ButtonHelper::exitButton('/logs/default/index');?>
+                <?= \artsoft\helpers\ButtonHelper::deleteButton($model, ['/logs/default/delete', 'id' => $model->id]);?>
+            </div>
         </div>
     </div>
 </div>

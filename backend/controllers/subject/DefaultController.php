@@ -29,7 +29,7 @@ class DefaultController extends MainController
 
             if ($model->save()) {
                 Yii::$app->session->setFlash('crudMessage', Yii::t('art', 'Your item has been updated.'));
-                return $this->redirect($this->getRedirectPage('update', $model));
+                $this->getSubmitAction($model);
             }
         } else {
             return $this->renderIsAjax('update', compact('model'));

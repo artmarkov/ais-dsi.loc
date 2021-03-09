@@ -42,7 +42,7 @@ SettingsAsset::register($this);
         </div>
         <div class="panel-footer">
             <div class="form-group">
-                <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
+                <?= \artsoft\helpers\ButtonHelper::saveButton();?>
             </div>
         </div>
     </div>

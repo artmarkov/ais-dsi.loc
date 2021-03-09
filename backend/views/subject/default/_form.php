@@ -51,6 +51,13 @@ use nex\chosen\Chosen;
                                 'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
                             ])->label(Yii::t('art/guide', 'Subject Category'));
                             ?>
+                            <?php
+                            echo $form->field($model, 'vid_list')->widget(Chosen::className(), [
+                                'items' => Subject::getSubjectVidList(),
+                                'multiple' => true,
+                                'placeholder' => Yii::t('art/guide', 'Select Subject Vid...'),
+                            ])->label(Yii::t('art/guide', 'Subject Vid'));
+                            ?>
 
                             <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(Subject::getStatusList()) ?>
 

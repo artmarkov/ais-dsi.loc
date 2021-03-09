@@ -38,18 +38,8 @@ use artsoft\widgets\ActiveForm;
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <div class="form-group">
-                        <?= Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'), ['/user/permission/index'], ['class' => 'btn btn-default']) ?>
-                        <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary']) ?>
-                        <?php if (!$model->isNewRecord): ?>
-                            <?= Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'), ['delete', 'id' => $model->name], [
-                                'class' => 'btn btn-danger',
-                                'data' => [
-                                    'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                    'method' => 'post',
-                                ],
-                            ]) ?>
-                        <?php endif; ?>
+                    <div class="form-group btn-group">
+                        <?= \artsoft\helpers\ButtonHelper::submitButtons($model, '/user/permission/index', ['delete', 'id' => $model->name]); ?>
                     </div>
                 </div>
             </div>

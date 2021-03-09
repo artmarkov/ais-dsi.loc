@@ -1,7 +1,7 @@
 <?php
 return [
     'General Settings' => 'Общие Настройки',
-    'Reading Settings' => 'Настройки Чтения',
+    'Reading Settings' => 'Настройки форм',
     'Site Title' => 'Название Сайта',
     'Site Description' => 'Описание Сайта',
     'Admin Email' => 'E-mail Администратора',

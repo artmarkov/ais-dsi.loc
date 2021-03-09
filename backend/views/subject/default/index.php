@@ -89,6 +89,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                             ],
                             [
+                                'attribute' => 'gridVidSearch',
+                                'filter' => Subject::getSubjectVidList(),
+                                'value' => function (Subject $model) {
+                                    return implode(', ',
+                                        ArrayHelper::map($model->subjectVidItem, 'id', 'name'));
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
+                            [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'status',
                                 'optionsArray' => [

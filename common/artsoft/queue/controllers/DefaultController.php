@@ -13,19 +13,6 @@ class DefaultController extends BaseController
     public $modelClass       = 'artsoft\queue\models\QueueSchedule';
     public $modelSearchClass = 'artsoft\queue\models\search\QueueScheduleSearch';
 
-    protected function getRedirectPage($action, $model = null)
-    {
-        switch ($action) {
-            case 'update':
-                return ['update', 'id' => $model->id];
-                break;
-            case 'create':
-                return ['update', 'id' => $model->id];
-                break;
-            default:
-                return parent::getRedirectPage($action, $model);
-        }
-    }
     /**
      * 
      * @param type $id

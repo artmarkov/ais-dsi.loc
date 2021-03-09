@@ -21,8 +21,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="panel">
         <div class="panel-heading">
             <?= Html::encode($this->title) ?>
-            <?= Html::a(Yii::t('art', 'Edit'), ['update', 'id' => $item->name], ['class' => 'btn btn-sm btn-primary']) ?>
-            <?= Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('art', 'Create'), ['create'], ['class' => 'btn btn-sm btn-default']) ?>
+            <?= \artsoft\helpers\ButtonHelper::updateButton($model, ['update', 'id' => $item->name]);?>
+            <?= \artsoft\helpers\ButtonHelper::createButton( 'create');?>
         </div>
         <div class="panel-body">
             <div class="panel panel-default">
@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                     <hr/>
                                     <?php if (User::hasPermission('manageRolesAndPermissions')): ?>
-                                        <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary btn-sm']) ?>
+                                        <?= \artsoft\helpers\ButtonHelper::saveButton();?>
                                     <?php endif; ?>
 
                                     <?= Html::endForm() ?>
@@ -81,7 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <div class="row">
                                         <div class="col-sm-3">
                                             <?php if (User::hasPermission('manageRolesAndPermissions')): ?>
-                                                <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary btn-sm']) ?>
+                                                <?= \artsoft\helpers\ButtonHelper::saveButton();?>
                                             <?php endif; ?>
                                         </div>
 
@@ -123,7 +123,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                     <hr/>
                                     <?php if (User::hasPermission('manageRolesAndPermissions')): ?>
-                                        <?= Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Save'), ['class' => 'btn btn-primary btn-sm']) ?>
+                                        <?= \artsoft\helpers\ButtonHelper::saveButton();?>
                                     <?php endif; ?>
 
                                     <?= Html::endForm() ?>

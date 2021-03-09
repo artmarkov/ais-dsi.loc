@@ -53,7 +53,7 @@ class ButtonHelper
      * @param string $buttonClass
      * @return string
      */
-    public static function viewButtons($model, $indexAction = null, $deleteAction = null, $editAction = null, $buttonClass = self::buttonClass)
+    public static function viewButtons($model, $indexAction = null, $editAction = null, $deleteAction = null, $buttonClass = self::buttonClass)
     {
         $result = self::exitButton($indexAction, $buttonClass);
         $result .= self::updateButton($model, $editAction, $buttonClass);
@@ -84,7 +84,7 @@ class ButtonHelper
         $editAction = $editAction == null ? [self::getAction('update'), 'id' => $model->id] : $editAction;
 
         return Html::a(
-            '<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', 'Edit'),
+            '<i class="fa fa-pencil" aria-hidden="true"></i> ' . Yii::t('art', 'Edit'),
             $editAction,
             [
                 'class' => 'btn btn-primary ' . $buttonClass,
@@ -154,7 +154,7 @@ class ButtonHelper
         return Html::submitButton(
             '<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('art', $message),
             [
-                'class' => 'btn btn-primary ' . $buttonClass,
+                'class' => ($value == 'savenext' ? 'btn btn-success ' : 'btn btn-primary ') . $buttonClass,
                 'name' => $name,
                 'value' => $value,
             ]
