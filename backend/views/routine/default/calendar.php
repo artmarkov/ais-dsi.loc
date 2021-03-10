@@ -72,10 +72,9 @@ $JSCast = <<<EOF
         function(element, date) {
            var currentYear = new Date().getFullYear();
            var currentMonth = new Date().getMonth();
-           var currentDay = new Date().getDay();
-           var currentDateTime = new Date(currentYear, currentMonth, currentDay).getTime();
+           var currentDate = new Date().getDate();
+           var currentDateTime = new Date(currentYear, currentMonth, currentDate).getTime();
            var currentWeekDay = date.getDay();
-           
             if(date.getTime() == currentDateTime) {
                 $(element).css('font-weight', 'bold');
                 $(element).css('background-color', 'gray');
