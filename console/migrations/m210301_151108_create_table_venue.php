@@ -80,7 +80,7 @@ class m210301_151108_create_table_venue extends Migration
         $this->addForeignKey('venue_place_ibfk_4', '{{%venue_place}}', 'created_by', '{{%user}}', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('venue_place_ibfk_5', '{{%venue_place}}', 'updated_by', '{{%user}}', 'id', 'NO ACTION', 'NO ACTION');
 
-        $this->db->createCommand()->batchInsert('venue_country', ['id', 'name', 'fullname', 'alpha2', 'alpha3'], [
+        $this->db->createCommand()->batchInsert('{{%venue_country}}', ['id', 'name', 'fullname', 'alpha2', 'alpha3'], [
             [4, 'АФГАНИСТАН', 'Переходное Исламское Государство Афганистан', 'AF', 'AFG'],
             [8, 'АЛБАНИЯ', 'Республика Албания', 'AL', 'ALB'],
             [10, 'АНТАРКТИДА', '', 'AQ', 'ATA'],
