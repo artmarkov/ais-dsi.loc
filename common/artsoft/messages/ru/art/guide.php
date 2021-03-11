@@ -56,6 +56,18 @@ return [
     'Select Subject Category...' => 'Выберите категорию дисциплины...',
     'Select Subject Vid...' => 'Выберите вид дисциплины...',
     'Name Division' => 'Название отделения',
-    'Category' => 'Категория'
+    'Category' => 'Категория',
+    'Name purpose' => 'Назначение',
+    'Recipient' => 'Получатель',
+    'Inn' => 'ИНН',
+    'Kpp' => 'КПП',
+    'Payment Account' => 'Расчетный счет',
+    'Corr Account' => 'Кореспондентский счет',
+    'Personal Account' => 'Лицевой счет',
+    'Bank Name' => 'Наименование банка получател',
+    'Bik' => 'БИК',
+    'Oktmo' => 'ОКТМО',
+    'Kbk' => 'КБК',
+    'Invoices' => 'Банковские реквизиты',
 ];
 ?>

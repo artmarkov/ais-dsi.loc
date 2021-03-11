@@ -22,12 +22,12 @@ class m150319_184824_init_settings extends yii\db\Migration
         ], $tableOptions);
 
         $this->createIndex('setting_group_lang', self::TABLE_NAME, ['group', 'key', 'language']);
-        
+
         $this->insert(self::TABLE_NAME, ['group' => 'reading', 'key' => 'phone_mask', 'value' => '+7 (999) 999 99 99']);
         $this->insert(self::TABLE_NAME, ['group' => 'reading', 'key' => 'date_mask', 'value' => '99.99.9999']);
         $this->insert(self::TABLE_NAME, ['group' => 'reading', 'key' => 'time_mask', 'value' => '99:99']);
         $this->insert(self::TABLE_NAME, ['group' => 'reading', 'key' => 'date_time_mask', 'value' => '99.99.9999 99:99']);
-    }	
+    }
 
     public function down()
     {
