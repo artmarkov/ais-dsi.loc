@@ -50,6 +50,11 @@ class m210301_151052_create_table_creative extends Migration
             'description' => $this->text()->notNull(),
         ], $tableOptions);
 
+        $this->db->createCommand()->batchInsert('{{%creative_category}}', ['id', 'name', 'description'], [
+            [1, 'Творческие работы', ''],
+            [2, 'Методические работы', ''],
+            [3, 'Сертификаты', ''],
+        ])->execute();
 
         $this->createTable('{{%creative_works}}', [
             'id' => $this->primaryKey(8)->unsigned(),

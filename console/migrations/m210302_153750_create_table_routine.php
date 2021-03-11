@@ -18,6 +18,14 @@ class m210302_153750_create_table_routine extends Migration
             'plan_flag' => $this->tinyInteger(1)->notNull()->comment('Учитывать при планировании'),
         ], $tableOptions);
 
+        $this->db->createCommand()->batchInsert('{{%routine_cat}}', ['id', 'name', 'color', 'plan_flag'], [
+            [1, 'Каникулы', '#0000ff', 1],
+            [2, 'Праздники', '#ff0000', 1],
+            [3, 'Отпуск преподавателей', '#6aa84f', 1],
+            [4, 'Методический день', '#ff00ff', 1],
+            [5, 'Учебное время', '#ffd966', 0],
+        ])->execute();
+
         $this->createTable('{{%routine}}', [
             'id' => $this->primaryKey(8),
             'description' => $this->string(1024)->notNull(),

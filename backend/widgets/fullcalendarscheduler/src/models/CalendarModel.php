@@ -1,10 +1,10 @@
 <?php
 
-namespace backend\widgets\fullcalendarscheduler\src\models;
+namespace  backend\widgets\fullcalendarscheduler\src\models;
 
 /**
  * Class CalendarModel
- * @package backend\widgets\fullcalendarscheduler\src\models
+ * @package  backend\widgets\fullcalendarscheduler\src\models
  */
 class CalendarModel extends \yii\base\Model
 {

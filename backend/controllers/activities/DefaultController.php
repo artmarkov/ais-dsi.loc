@@ -2,9 +2,11 @@
 
 namespace backend\controllers\activities;
 
+use artsoft\fullcalendarscheduler\models\Resource;
 use artsoft\widgets\ActiveForm;
 use common\models\activities\Activities;
 use backend\widgets\fullcalendar\src\models\Event as BaseEvent;
+use common\models\auditory\Auditory;
 use yii\helpers\Url;
 use yii\web\Response;
 use Yii;
@@ -24,6 +26,12 @@ class DefaultController extends MainController
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
         return $this->render('calendar');
+    }
+
+    public function actionSchedule()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        return $this->render('schedule');
     }
 
     /**
@@ -150,5 +158,25 @@ class DefaultController extends MainController
 
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
         return $this->redirect('/admin/activities/default/calendar');
+    }
+
+    public function actionResources()
+    {
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $events = Auditory::find()->all();
+        $tasks = [];
+        foreach ($events as $item) {
+
+            $resource = new Resource();
+            $resource->id = $item->id;
+            $resource->building = $item->buildingName;
+            $resource->title = $item->num . ' ' .$item->name;
+
+            $tasks[] = $resource;
+        }
+        //echo '<pre>' . print_r($tasks, true) . '</pre>';
+        return $tasks;
     }
 }

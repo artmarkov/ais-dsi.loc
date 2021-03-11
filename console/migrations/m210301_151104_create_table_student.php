@@ -18,6 +18,14 @@ class m210301_151104_create_table_student extends Migration
             'status' => $this->smallInteger(1)->unsigned()->notNull(),
         ], $tableOptions);
 
+        $this->db->createCommand()->batchInsert('{{%student_position}}', ['id', 'name', 'slug', 'status'], [
+            [1, 'Абитуриент', 'Абит', 1],
+            [2, 'Учащийся', 'Уч-ся', 1],
+            [3, 'Выпускной класс', 'Вып.кл', 1],
+            [4, 'Окончил обучение', 'Окон', 1],
+            [5, 'Отчислен', 'Отч', 1],
+        ])->execute();
+
         $this->createTable('{{%student}}', [
             'id' => $this->integer(8)->unsigned()->notNull(),
             'user_id' => $this->integer(),

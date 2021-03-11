@@ -4,7 +4,7 @@ namespace backend\widgets\fullcalendarscheduler\src\models;
 
 /**
  * Class Event
- * @package backend\widgets\fullcalendarscheduler\src\models
+ * @package  backend\widgets\fullcalendarscheduler\src\models
  */
 class Event extends CalendarModel
 {
@@ -14,8 +14,6 @@ class Event extends CalendarModel
 
     /** @var  string Uniquely identifies the given event. Different instances of repeating events should all have the same id. */
     public $id;
-    /** @var  string The identifier for the specified resource, attaches this event to the specified resource */
-    public $resourceId;
     /** @var  string The text on an event's element */
     public $title;
     /** @var  boolean Whether an event occurs at a specific time-of-day. This property affects whether an event's time is shown. Also, in the agenda views, determines if it is displayed in the "all-day" section. */
@@ -35,7 +33,7 @@ class Event extends CalendarModel
     /** @var  boolean Is the event duration editable? */
     public $durationEditable;
     /** @var  string Allows alternate rendering of the event, like background events. Can be empty, "background", or "inverse-background" */
-    public $rendering;
+    public $display;
     /** @var  boolean  Overrides the master eventOverlap option for this single event. If false, prevents this event from being dragged/resized over other events. Also prevents other events from being dragged/resized over this event. */
     public $overlap;
     /** @var  string an event ID, "businessHours", object. Optional. Overrides the master eventConstraint option for this single event. */
@@ -58,8 +56,32 @@ class Event extends CalendarModel
     {
         return [
             [['title', 'start'], 'required'],
-            [['id', 'end', 'url', 'className', 'rendering', 'constraint', 'source', 'color', 'backgroundColor', 'borderColor', 'textColor'], 'safe'],
+            [['id', 'end', 'url', 'className', 'display', 'constraint', 'source', 'color', 'backgroundColor', 'borderColor', 'textColor'], 'safe'],
             [['editable', 'startEditable', 'durationEditable', 'overlap'], 'boolean'],
         ];
     }
+
+    public static function getDate($timestamp)
+    {
+        return \Yii::$app->formatter->asDatetime($timestamp, 'php:Y-m-d\TH:i:s');
+    }
+
+    public static function getBgColor($hex)
+    {
+        $rgb = \artsoft\helpers\ColorHelper::hex2rgb($hex);
+        $rgb['alpha'] = $rgb['alpha'] ?? 0.85;
+        return 'rgba(' . implode(',', $rgb) . ')';
+    }
+
+    public static function getBorderColor($hex)
+    {
+        return \artsoft\helpers\ColorHelper::hex2rgb($hex, true);
+    }
+
+    public static function getColor($hex)
+    {
+        $hex = \artsoft\helpers\ColorHelper::calcColor($hex);
+        return \artsoft\helpers\ColorHelper::hex2rgb($hex, true);
+    }
+
 }

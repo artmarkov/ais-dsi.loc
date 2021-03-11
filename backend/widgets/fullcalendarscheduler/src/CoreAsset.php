@@ -4,44 +4,31 @@ namespace backend\widgets\fullcalendarscheduler\src;
 
 /**
  * Class CoreAsset
- * @package backend\widgets\fullcalendarscheduler\src
+ * @package  backend\widgets\fullcalendarscheduler\src
  */
 class CoreAsset extends \yii\web\AssetBundle
 {
-    /**
-     * @var  boolean
-     * Whether to automatically generate the needed language js files.
-     * If this is true, the language js files will be determined based on the actual usage of [[DatePicker]]
-     * and its language settings. If this is false, you should explicitly specify the language js files via [[js]].
-     */
-    public $autoGenerate = true;
-    /** @var  array Required CSS files for the fullcalendar */
+    /** @var  array Required CSS files for the fullcalendarscheduler */
     public $css = [
-        'fullcalendar/dist/fullcalendar.css',
-        'fullcalendar-scheduler/dist/scheduler.css',
+        'main.css',
     ];
+
+    /** @var  array Required JS files for the fullcalendarscheduler */
+    public $js = [
+        'main.js',
+        'locale-all.js',
+    ];
+
     /** @var  array List of the dependencies this assets bundle requires */
     public $depends = [
         'yii\web\YiiAsset',
-        'backend\widgets\fullcalendarscheduler\src\MomentAsset',
-        'backend\widgets\fullcalendarscheduler\src\PrintAsset',
     ];
-    /**
-     * @var  boolean
-     * FullCalendar can display events from a public Google Calendar. Google Calendar can serve as a backend that manages and persistently stores event data (a feature that FullCalendar currently lacks).
-     * Please read http://fullcalendar.io/docs/google_calendar/ for more information
-     */
-    public $googleCalendar = false;
-    /** @var  array Required JS files for the fullcalendar */
-    public $js = [
-        'fullcalendar/dist/fullcalendar.js',
-        'fullcalendar/dist/locale-all.js',
-        'fullcalendar-scheduler/dist/scheduler.js',
-    ];
-    /** @var  string Language for the fullcalendar */
+
+    /** @var  string Language for the fullcalendarscheduler */
     public $language = null;
-    /** @var  string Location of the fullcalendar scheduler distribution */
-    public $sourcePath = '@bower';
+
+    /** @var  string Location of the fullcalendarscheduler distribution */
+    public $sourcePath = '@backend/widgets/fullcalendarscheduler/src/lib';
 
     /**
      * @inheritdoc
@@ -49,12 +36,8 @@ class CoreAsset extends \yii\web\AssetBundle
     public function registerAssetFiles($view)
     {
         $language = empty($this->language) ? \Yii::$app->language : $this->language;
-        if (file_exists($this->sourcePath . "/fullcalendar/dist/locale/$language.js")) {
-            $this->js[] = "fullcalendar/dist/locale/$language.js";
-        }
-
-        if ($this->googleCalendar) {
-            $this->js[] = 'fullcalendar/dist/gcal.js';
+        if (file_exists($this->sourcePath . "/locales/$language.js")) {
+            $this->js[] = "locales/$language.js";
         }
 
         // We need to return the parent implementation otherwise the scripts are not loaded

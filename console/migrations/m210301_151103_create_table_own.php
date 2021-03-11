@@ -17,6 +17,12 @@ class m210301_151103_create_table_own extends Migration
             'slug' => $this->string(32)->notNull(),
         ], $tableOptions);
 
+        $this->db->createCommand()->batchInsert('{{%department}}', ['id', 'name', 'slug'], [
+            [1, 'Музыкальное отделение', 'МО'],
+            [2, 'Художественное отделение', 'ИЗО'],
+            [3, 'Отделение "Хореография"', 'ХО'],
+        ])->execute();
+
         $this->createTable('{{%department}}', [
             'id' => $this->tinyInteger(2)->unsigned()->notNull()->append('AUTO_INCREMENT PRIMARY KEY'),
             'division_id' => $this->tinyInteger(2)->unsigned()->notNull(),
@@ -24,6 +30,28 @@ class m210301_151103_create_table_own extends Migration
             'slug' => $this->string(32),
             'status' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
+
+        $this->db->createCommand()->batchInsert('{{%department}}', ['id', 'division_id', 'name', 'slug', 'status'], [
+            [2, 1, 'Фортепиано', 'Фно', 1],
+            [3, 1, 'Струнные инструменты', 'Стр', 1],
+            [4, 1, 'Духовые и ударные инструменты', 'Дух', 1],
+            [5, 1, 'Народные инструменты', 'Нар', 1],
+            [6, 1, 'Теоретические дисциплины', 'Теор', 1],
+            [7, 1, 'Хоровое пение', 'Хор', 1],
+            [8, 1, 'Музыкальный фольклор', 'Фольк', 1],
+            [9, 1, 'Инструменты эстрадного оркестра', 'Джаз', 1],
+            [10, 1, 'Отдел общего фортепиано', 'О-фно', 1],
+            [11, 1, 'Концертмейстерский отдел', 'Конц', 1],
+            [12, 2, 'Художественный отдел', 'Худ', 1],
+            [13, 1, 'Отделение развития МО', 'ОР МО', 1],
+            [14, 2, 'Класс художественной керамики', 'Керам', 1],
+            [15, 3, 'Хореография', 'Хореография', 1],
+            [16, 1, 'Музыкальный театр', 'Театр', 1],
+            [17, 2, 'Архитектурное творчество', 'Арх.тв', 1],
+            [18, 2, 'Основы дизайна', 'Диз-н', 1],
+            [19, 1, 'Академический вокал', 'Ак.вок', 1],
+            [20, 1, 'Сценическое мастерство', 'Сцен.маст-во', 1],
+        ])->execute();
 
         $this->createIndex('division_id', '{{%department}}', 'division_id');
         $this->addForeignKey('department_ibfk_1', '{{%department}}', 'division_id', '{{%division}}', 'id', 'NO ACTION', 'NO ACTION');

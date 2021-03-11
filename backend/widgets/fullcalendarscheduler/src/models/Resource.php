@@ -1,10 +1,10 @@
 <?php
 
-namespace backend\widgets\fullcalendarscheduler\src\models;
+namespace artsoft\fullcalendarscheduler\models;
 
 /**
  * Class Resource
- * @package backend\widgets\fullcalendarscheduler\src\models
+ * @package artsoft\fullcalendarscheduler\models
  */
 class Resource extends CalendarModel
 {

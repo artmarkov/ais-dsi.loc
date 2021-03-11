@@ -3,135 +3,103 @@
 namespace backend\widgets\fullcalendarscheduler\src;
 
 /**
- * Class FullcalendarScheduler
- * @package backend\widgets\fullcalendarscheduler\src
+ * Class FullcalendarScheduler ver.5.5.1
+ * @package  backend\widgets\fullcalendarscheduler\src
  */
 class FullcalendarScheduler extends \yii\base\Widget
 {
-	/**
-	 * @var array  The fullcalendar options, for all available options check http://fullcalendar.io/docs/
-	 */
-	public $clientOptions = [
-		'weekends' => true,
-		'default'  => 'timelineDay',
-		'editable' => false,
-	];
-	/**
-	 * @var array  Array containing the events, can be JSON array, PHP array or URL that returns an array containing JSON events
-	 */
-	public $events = [];
-	/**
-	 * @var array  Array containing the resources, can be JSON array, PHP array or URL that returns an array containing JSON resources
-	 */
-	public $resources = [];
-	/** @var boolean  Determines whether or not to include the gcal.js */
-	public $googleCalendar = false;
-	/**
-	 * @var array
-	 * Possible header keys
-	 * - center
-	 * - left
-	 * - right
-	 * Possible options:
-	 * - title
-	 * - prevYear
-	 * - nextYear
-	 * - prev
-	 * - next
-	 * - today
-	 * - basicDay
-	 * - agendaDay
-	 * - basicWeek
-	 * - agendaWeek
-	 * - month
-	 */
-	public $header = [
-		'center' => 'title',
-		'left'   => 'prev,next, today',
-		'right'  => 'timelineDay,timelineWeek,timelineMonth,timelineYear',
-	];
-	/** @var string  Text to display while the calendar is loading */
-	public $loading = 'Please wait, calendar is loading';
-	/**
-	 * @var array  Default options for the id and class HTML attributes
-	 */
-	public $options = [
-		'id'    => 'calendar',
-		'class' => 'fullcalendar',
-	];
-	/**
-	 * @var boolean  Whether or not we need to include the ThemeAsset bundle
-	 */
-	public $theme = false;
+    /**
+     * @var array  Default options for the id and class HTML attributes
+     */
+    public $options = [
+        'id' => null,
+        'class' => null,
+    ];
 
-	/**
-	 * Always make sure we have a valid id and class for the Fullcalendar widget
-	 */
-	public function init()
-	{
-		if (!isset($this->options['id'])) {
-			$this->options['id'] = $this->getId();
-		}
-		if (!isset($this->options['class'])) {
-			$this->options['class'] = 'fullcalendar';
-		}
+    /**
+     * @var array $headerToolbar
+     */
+    public $headerToolbar = [
+        'left' => 'promptResource today prev,next',
+        'center' => 'title',
+        'right' => 'resourceTimelineDay,resourceTimelineThreeDays,timeGridWeek,dayGridMonth',
+    ];
 
-		parent::init();
-	}
+    /**
+     * @var array $clientOptions
+     */
+    public $clientOptions = [
 
-	/**
-	 * Load the options and start the widget
-	 */
-	public function run()
-	{
-		$this->echoLoadingTags();
+    ];
 
-		$assets = CoreAsset::register($this->view);
+    /**
+     * @var array  Array containing the events, can be JSON array,
+     * PHP array or URL that returns an array containing JSON events
+     */
+    public $events = [];
 
-		if ($this->theme === true) { // Register the theme
-			ThemeAsset::register($this->view);
-		}
+    /**
+     * Always make sure we have a valid id and class for the FullcalendarScheduler widget
+     */
+    public function init()
+    {
+        if (!isset($this->options['id'])) {
+            $this->options['id'] = $this->getId();
+        }
+        if (!isset($this->options['class'])) {
+            $this->options['class'] = 'fullcalendarscheduler';
+        }
 
-		if (isset($this->options['language'])) {
-			$assets->language = $this->options['language'];
-		}
+        if (!isset($this->clientOptions['locale'])) {
+            $this->clientOptions['locale'] = \Yii::$app->language;
+        }
+        parent::init();
+    }
 
-		$assets->googleCalendar = $this->googleCalendar;
-		$this->clientOptions['header'] = $this->header;
+    /**
+     * Load the options and start the widget
+     */
+    public function run()
+    {
+        $this->wrapper();
 
-		$this->view->registerJs(implode("\n", [
-			"jQuery('#{$this->options['id']}').fullCalendar({$this->getClientOptions()});",
-		]), \yii\web\View::POS_READY);
-	}
+        $assets = CoreAsset::register($this->view);
+        if (isset($this->clientOptions['locale'])) {
+            $assets->language = $this->clientOptions['locale'];
+        }
 
-	/**
-	 * Echo the tags to show the loading state for the calendar
-	 */
-	private function echoLoadingTags()
-	{
-		echo \yii\helpers\Html::beginTag('div', $this->options) . "\n";
-		echo \yii\helpers\Html::beginTag('div', ['class' => 'fc-loading', 'style' => 'display:none;']);
-		echo \yii\helpers\Html::encode($this->loading);
-		echo \yii\helpers\Html::endTag('div') . "\n";
-		echo \yii\helpers\Html::endTag('div') . "\n";
-	}
+        $this->clientOptions['headerToolbar'] = $this->headerToolbar;
 
-	/**
-	 * @return string
-	 * Returns an JSON array containing the fullcalendar options,
-	 * all available callbacks will be wrapped in JsExpressions objects if they're set
-	 */
-	private function getClientOptions()
-	{
-		$options['loading'] = new \yii\web\JsExpression("function(isLoading, view ) {
-			jQuery('#{$this->options['id']}').find('.fc-loading').toggle(isLoading);
-        }");
+        $js = <<<JS
+    document.addEventListener('DOMContentLoaded', function() {
+    var calendar = new FullCalendar.Calendar(document.getElementById('{$this->options['id']}'), {$this->getClientOptions()});
+    calendar.render();
+  });
+JS;
 
-		$options['events'] = $this->events;
-		$options['resources'] = $this->resources;
-		$options = array_merge($options, $this->clientOptions);
+        $this->view->registerJs($js, \yii\web\View::POS_HEAD);
+    }
 
-		return \yii\helpers\Json::encode($options);
-	}
+    /**
+     * Echo the tags to show the calendar
+     */
+    private function wrapper()
+    {
+        echo \yii\helpers\Html::beginTag('div', $this->options);
+        echo \yii\helpers\Html::endTag('div') . "\n";
+    }
 
+    /**
+     * @return string
+     * Returns an JSON array containing the fullcalendar options,
+     * all available callbacks will be wrapped in JsExpressions objects if they're set
+     */
+    private function getClientOptions()
+    {
+
+        $options['events'] = $this->events;
+        $options = array_merge($options, $this->clientOptions);
+
+        return \yii\helpers\Json::encode($options);
+    }
 }

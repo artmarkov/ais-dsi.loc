@@ -28,7 +28,7 @@ to the ```require``` section of your `composer.json` file.
 
 ### Fullcalendar can be created as following, all options are optional, below is just an example of most options
 ```php
-<?=  backend\widgets\fullcalendar\src\Fullcalendar::widget([
+<?=  backend\widgets\fullcalendar\src\FullcalendarScheduler::widget([
         'options'       => [
             'id'       => 'calendar',
             'language' => 'nl',
@@ -101,7 +101,7 @@ to the ```require``` section of your `composer.json` file.
     ];
 ?>
 
-<?=  backend\widgets\fullcalendar\src\Fullcalendar::widget([
+<?=  backend\widgets\fullcalendar\src\FullcalendarScheduler::widget([
         'events'        => $events
     ]);
 ?>
@@ -109,7 +109,7 @@ to the ```require``` section of your `composer.json` file.
 
 #### Javascript array
 ```php
-<?=  backend\widgets\fullcalendar\src\Fullcalendar::widget([
+<?=  backend\widgets\fullcalendar\src\FullcalendarScheduler::widget([
        'events'        => new JsExpression('[
             {
                 "id":null,
@@ -218,7 +218,7 @@ to the ```require``` section of your `composer.json` file.
 
 #### JSON feed
 ```php
-<?=  backend\widgets\fullcalendar\src\Fullcalendar::widget([
+<?=  backend\widgets\fullcalendar\src\FullcalendarScheduler::widget([
         'events'        => Url::to(['calendar/events', 'id' => $uniqid]),
     ]);
 ?>
@@ -289,7 +289,7 @@ Your controller action would then return an array as following
 
 Callbacks have to be wrapped in a JsExpression() object. For example if you want to use the eventResize you would add the following to the fullcalendar clientOptions
 ```php
-<?=  backend\widgets\fullcalendar\src\Fullcalendar::widget([
+<?=  backend\widgets\fullcalendar\src\FullcalendarScheduler::widget([
         'clientOptions' => [
             'eventResize' => new JsExpression("
                 function(event, delta, revertFunc, jsEvent, ui, view) {

@@ -33,7 +33,7 @@ class RoutineCat extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'color', 'plan_flag'], 'required'],
+            [['name', 'color'], 'required'],
             [['plan_flag'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['color'], 'string', 'max' => 127],
