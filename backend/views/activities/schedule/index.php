@@ -1,6 +1,8 @@
 <?php
 
+
 use artsoft\helpers\Html;
+use common\models\auditory\Auditory;
 use yii\web\JsExpression;
 
 /* @var $this yii\web\View */
@@ -30,18 +32,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 id: 0,
                 start: start,
                 end: end,
-                allDay: e.allDay
+                allDay: e.allDay,
+                resourceId: e.resource.id
             };
         console.log('выбираем мышкой область или кликаем в пустое поле');
-        console.log(eventData);
+        console.log(e.resource.id);
       $.ajax({
-            url: '/admin/activities/default/create-event',
+            url: '/admin/activities/schedule/create-event',
             type: 'POST',
             data: {eventData : eventData},
            success: function (res) {
 //                console.log(res);
-                $('#activities-modal .modal-body').html(res);
-                $('#activities-modal').modal();
+                $('#schedule-modal .modal-body').html(res);
+                $('#schedule-modal').modal();
             },
             error: function () {
                 alert('Error!!!');
@@ -53,20 +56,20 @@ EOF;
             $JSEventClick = <<<EOF
     function(e) {
         eventData = {
-                id: e.event.id,              
+                id: e.event.id          
             };
     // change the border color just for fun
     e.el.style.borderColor = 'red';
         
         console.log('кликаем по событию ' + e.event.id);
       $.ajax({
-            url: '/admin/activities/default/create-event',
+            url: '/admin/activities/schedule/create-event',
             type: 'POST',
             data: {eventData: eventData},
             success: function (res) {
 //                console.log(res);
-                $('#activities-modal .modal-body').html(res);
-                $('#activities-modal').modal();
+                $('#schedule-modal .modal-body').html(res);
+                $('#schedule-modal').modal();
             },
             error: function () {
                 alert('Error!!!');
@@ -90,7 +93,7 @@ EOF;
          console.log('растягиваем/сжимаем событие мышкой');
         console.log(eventData);
          $.ajax({
-             url: '/admin/activities/default/refactor-event',
+             url: '/admin/activities/schedule/refactor-event',
             type: 'POST',
             data: {eventData : eventData},
             success: function (res) {
@@ -119,11 +122,13 @@ EOF;
                 id: e.event.id, 
                 start: start,
                 end: end,
-                allDay: e.event.allDay
+                allDay: e.event.allDay,
+                resourceId: e.newResource.id
             };
          console.log('перетаскиваем событие, удерживая мышкой');
+         console.log(e.newResource.id);
          $.ajax({
-             url: '/admin/activities/default/refactor-event',
+             url: '/admin/activities/schedule/refactor-event',
             type: 'POST',
             data: {eventData : eventData},
             success: function (res) {
@@ -135,55 +140,42 @@ EOF;
         });
       }
 EOF;
-            $JSOnDay = <<<EOF
-        function(info) {
-        console.log(info.event.start);
-                var content = '<div class="event-tooltip-content">'
-                                    + '<div class="event-name">' + info.event.title + '</div>'
-                                + '</div>';
-            
-                $(info.el).popover({
-                    trigger: 'manual',
-                    container: 'body',
-                    html:true,
-                    content: content
-                });
-                
-                $(info.el).popover('show');
-}
-EOF;
-            $JSOutDay = <<<EOF
-        function(info) {
-                $(info.el).popover('hide');
-}
-EOF;
             ?>
-
-            <?= \backend\widgets\fullcalendar\src\Fullcalendar::widget([
+            <?= \backend\widgets\fullcalendarscheduler\src\FullcalendarScheduler::widget([
                 'clientOptions' => [
-                    'initialView' => 'timeGridWeek',
-                    'height' => 'auto', // 'auto' - aspectRatio no works
+                    'schedulerLicenseKey' => 'GPL-My-Project-Is-Open-Source',
+                    'initialView' => 'resourceTimelineDay',
                     'aspectRatio' => 1.8,
+                    'height' => 'auto', // 'auto' - aspectRatio no works
                     'navLinks' => true,
-                    'businessHours' => true,
                     'editable' => true,
-                    'selectable' => true,
+                    'selectable' => true,// разрешено выбирать область
                     'expandRows' => true,
                     'nowIndicator' => true, //Отображение маркера, указывающего Текущее время
-                    'slotMinTime' => '07:00',
+                    'slotMinTime' => '07:00',// Определяет первый временной интервал, который будет отображаться для каждого дня
                     'slotMaxTime' => '22:00',
+                    'slotDuration' => '00:15:00', // Частота отображения временных интервалов.
                     'eventDurationEditable' => true, // разрешить изменение размера
                     'eventOverlap' => true, // разрешить перекрытие событий
-                    'eventClick' => new JsExpression($JSEventClick),
-//                    'eventMouseEnter' => new JsExpression($JSOnDay),
-//                    'eventMouseLeave' => new JsExpression($JSOutDay),
-                    'eventDrop' => new JsExpression($JSEventDrop),
+                    'views' => [
+                        'resourceTimelineThreeDays' => [
+                            'type' => 'resourceTimeline',
+                            'duration' => ['days' => 3],
+                            'buttonText' => Yii::t('art/calendar', '3 days'),
+                        ]
+                    ],
                     'select' => new JsExpression($JSSelect),
+                    'eventClick' => new JsExpression($JSEventClick),
                     'eventResize' => new JsExpression($JSEventResize),
+                    'eventDrop' => new JsExpression($JSEventDrop),
+                    'resourceAreaHeaderContent' => Yii::t('art/calendar', 'Auditories'),
+                    'resourceGroupField' => 'parent',
+                    'resources' => \yii\helpers\Url::to(['/activities/schedule/resources']),
+                    'events' => \yii\helpers\Url::to(['/activities/schedule/init-calendar']),
                 ],
-                'events' => \yii\helpers\Url::to(['/activities/default/init-calendar']),
             ]);
             ?>
+
         </div>
     </div>
 </div>
@@ -191,9 +183,8 @@ EOF;
 <?php \yii\bootstrap\Modal::begin([
     'header' => '<h3 class="lte-hide-title page-title">' . Yii::t('art/calendar', 'Event') . '</h3>',
     'size' => 'modal-lg',
-    'id' => 'activities-modal',
+    'id' => 'schedule-modal',
 ]);
 
 \yii\bootstrap\Modal::end(); ?>
-
 

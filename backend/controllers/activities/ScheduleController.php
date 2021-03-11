@@ -2,36 +2,31 @@
 
 namespace backend\controllers\activities;
 
+use backend\widgets\fullcalendarscheduler\src\models\Resource;
 use artsoft\widgets\ActiveForm;
 use common\models\activities\Activities;
-use backend\widgets\fullcalendar\src\models\Event as BaseEvent;
+use backend\widgets\fullcalendarscheduler\src\models\Event as BaseEvent;
+use common\models\auditory\Auditory;
 use yii\helpers\Url;
 use yii\web\Response;
 use Yii;
 
-class DefaultController extends MainController
+class ScheduleController extends MainController
 {
     public $modelClass = 'common\models\activities\Activities';
     public $modelSearchClass = 'common\models\activities\search\ActivitiesSearch';
 
     /**
-     * @return string|\yii\web\Response
-     *
-     * рендерим виджет календаря
-     *
+     * @return mixed|string
      */
-    public function actionCalendar()
+    public function actionIndex()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
-        return $this->render('calendar');
+        return $this->render('index');
     }
 
     /**
-     * @param null $start
-     * @param null $end
-     *
      * формирует массив событий текущей страницы календаря
-     *
      * @return array
      */
     public function actionInitCalendar()
@@ -70,7 +65,7 @@ class DefaultController extends MainController
 
             //$event->url = Url::to(['/activities/default/view/', 'id' => $item->id]); // ссылка для просмотра события - перебивает событие по клику!!!
             $item->all_day == 1 ? $event->allDay = true : $event->allDay = false;
-
+            $event->resourceId = $item->auditory_id;
             $tasks[] = $event;
         }
 
@@ -79,6 +74,26 @@ class DefaultController extends MainController
         return $tasks;
     }
 
+    /**
+     * @return array
+     */
+    public function actionResources()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $events = Auditory::find()->all();
+        $tasks = [];
+        foreach ($events as $item) {
+            $resource = new Resource();
+            $resource->id = $item->id;
+            $resource->parent = $item->buildingName;
+            $resource->title = $item->num . ' ' .$item->name;
+            $tasks[] = $resource;
+        }
+//        echo '<pre>' . print_r($events, true) . '</pre>';
+        return $tasks;
+    }
     /**
      * @return string
      * @throws \yii\base\InvalidConfigException
@@ -94,13 +109,13 @@ class DefaultController extends MainController
 
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
-                return $this->redirect('/admin/activities/default/calendar');
+                return $this->redirect('/admin/activities/schedule/index');
             }
             $model->getData($eventData);
         } else {
             $model = $this->modelClass::findOne($id);
         }
-        return $this->renderAjax('activities-modal', [
+        return $this->renderAjax('schedule-modal', [
             'model' => $model
         ]);
 
@@ -131,7 +146,7 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been updated.'));
-            return $this->redirect('/admin/activities/default/calendar');
+            return $this->redirect('/admin/activities/schedule/index');
         }
     }
 
@@ -149,6 +164,6 @@ class DefaultController extends MainController
         $model->delete();
 
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-        return $this->redirect('/admin/activities/default/calendar');
+        return $this->redirect('/admin/activities/schedule/index');
     }
 }

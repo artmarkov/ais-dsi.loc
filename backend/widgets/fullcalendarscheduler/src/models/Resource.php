@@ -1,6 +1,6 @@
 <?php
 
-namespace artsoft\fullcalendarscheduler\models;
+namespace backend\widgets\fullcalendarscheduler\src\models;
 
 /**
  * Class Resource

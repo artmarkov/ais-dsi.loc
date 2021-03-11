@@ -20,9 +20,9 @@ class FullcalendarScheduler extends \yii\base\Widget
      * @var array $headerToolbar
      */
     public $headerToolbar = [
-        'left' => 'promptResource today prev,next',
+        'left' => 'today prev,next',
         'center' => 'title',
-        'right' => 'resourceTimelineDay,resourceTimelineThreeDays,timeGridWeek,dayGridMonth',
+        'right' => 'resourceTimelineDay,resourceTimelineThreeDays,timeGridWeek,dayGridMonth,listWeek',
     ];
 
     /**
@@ -37,6 +37,12 @@ class FullcalendarScheduler extends \yii\base\Widget
      * PHP array or URL that returns an array containing JSON events
      */
     public $events = [];
+
+    /**
+     * @var array  Array containing the resources, can be JSON array,
+     * PHP array or URL that returns an array containing JSON resources
+     */
+    public $resources = [];
 
     /**
      * Always make sure we have a valid id and class for the FullcalendarScheduler widget
