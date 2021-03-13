@@ -28,11 +28,11 @@ use yii\helpers\Url;
         ?>
 
         <div class="panel">
-            <div class="panel-heading">
-                <?= Html::encode($this->title) ?>
-            </div>
             <div class="panel-body">
                 <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <?= Html::encode($this->title) ?>
+                    </div>
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-sm-12">
@@ -78,19 +78,16 @@ use yii\helpers\Url;
 
                                 <?= $form->field($model, 'coords')->widget(\common\widgets\YandexGetCoordsWidget::className())->label(false) ?>
 
-
                             </div>
                         </div>
                     </div>
-                    <div class="panel-footer">
-                        <div class="form-group btn-group">
-                            <?= \artsoft\helpers\ButtonHelper::submitButtons($model);?>
-                        </div>
-                        <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
-                    </div>
-
-
                 </div>
+            </div>
+            <div class="panel-footer">
+                <div class="form-group btn-group">
+                    <?= \artsoft\helpers\ButtonHelper::submitButtons($model); ?>
+                </div>
+                <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>
         </div>
         <?php ActiveForm::end(); ?>

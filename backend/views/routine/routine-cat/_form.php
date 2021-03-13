@@ -11,11 +11,11 @@ use kartik\color\ColorInput;
 
 <div class="routine-cat-form">
     <div class="panel">
-        <div class="panel-heading">
-            <?= Html::encode($this->title) ?>
-        </div>
         <div class="panel-body">
             <div class="panel panel-default">
+                <div class="panel-heading">
+                    <?= Html::encode($this->title) ?>
+                </div>
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
@@ -32,14 +32,12 @@ use kartik\color\ColorInput;
                         </div>
                     </div>
                 </div>
-                <div class="panel-footer">
-                    <?= \artsoft\helpers\ButtonHelper::submitButtons($model);?>
-                    <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
-                </div>
             </div>
-
-            <?php ActiveForm::end(); ?>
-
+        </div>
+        <div class="panel-footer">
+            <?= \artsoft\helpers\ButtonHelper::submitButtons($model); ?>
+            <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>
+    <?php ActiveForm::end(); ?>
 </div>
