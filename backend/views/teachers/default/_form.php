@@ -27,10 +27,13 @@ use yii\widgets\MaskedInput;
 
     ?>
     <div class="panel">
+        <div class="panel-heading">
+            Информация о сотруднике
+        </div>
         <div class="panel-body">
-            <div class="panel panel-default">
+            <div class="panel panel-info">
                 <div class="panel-heading">
-                    <?= Html::encode($this->title) ?>
+                    Основные сведения
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -52,7 +55,69 @@ use yii\widgets\MaskedInput;
                             <?= $form->field($modelUser, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
 
                             <?= $form->field($modelUser, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Должностные характеристики
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <?php
+                            echo $form->field($model, 'position_id')->dropDownList(common\models\guidejob\Position::getPositionList(), [
+                                'prompt' => Yii::t('art/teachers', 'Select Position...'),
+                                'id' => 'position_id'
+                            ])->label(Yii::t('art/teachers', 'Name Position'));
+                            ?>
 
+                            <?php
+                            echo $form->field($model, 'level_id')->dropDownList(common\models\guidejob\Level::getLevelList(), [
+                                'prompt' => Yii::t('art/teachers', 'Select Level...'),
+                                'id' => 'level_id'
+                            ])->label(Yii::t('art/teachers', 'Name Level'));
+                            ?>
+
+                            <?= $form->field($model, 'tab_num')->textInput(['maxlength' => true]) ?>
+
+                            <?= $form->field($model, 'year_serv')->textInput() ?>
+
+                            <?php
+                            echo $form->field($model, 'time_serv_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date'));
+                            ?>
+
+                            <?= $form->field($model, 'year_serv_spec')->textInput() ?>
+
+                            <?php
+                            echo $form->field($model, 'time_serv_spec_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date'));
+                            ?>
+
+                            <?php
+                            echo $form->field($model, 'department_list')->widget(Chosen::className(), [
+                                'items' => Teachers::getDepartmentList(),
+                                'multiple' => true,
+                                'placeholder' => Yii::t('art/teachers', 'Select Department...'),
+                            ])->label(Yii::t('art/guide', 'Department'));
+                            ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Сведения о трудовой деятельности
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <?php
+                            echo $form->field($model, 'work_id')->dropDownList(common\models\guidejob\Work::getWorkList(), [
+                                'prompt' => Yii::t('art/teachers', 'Select Work...'),
+                                'id' => 'work_id'
+                            ])->label(Yii::t('art/teachers', 'Name Work'));
+                            ?>
                             <?php
                             echo $form->field($model, 'direction_id_main')->dropDownList(\common\models\guidejob\Direction::getDirectionList(), [
                                 'prompt' => Yii::t('art/teachers', 'Select Direction...'),
@@ -90,25 +155,18 @@ use yii\widgets\MaskedInput;
 
                             ?>
 
-                            <?= $form->field($model, 'year_serv')->textInput() ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Сведения о достижениях
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
 
-                            <?php
-                            echo $form->field($model, 'time_serv_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date'));
-                            ?>
-
-                            <?= $form->field($model, 'year_serv_spec')->textInput() ?>
-
-                            <?php
-                            echo $form->field($model, 'time_serv_spec_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date'));
-                            ?>
-
-                            <?php
-                            echo $form->field($model, 'department_list')->widget(Chosen::className(), [
-                                'items' => Teachers::getDepartmentList(),
-                                'multiple' => true,
-                                'placeholder' => Yii::t('art/teachers', 'Select Department...'),
-                            ])->label(Yii::t('art/guide', 'Department'));
-                            ?>
                             <?php
                             echo $form->field($model, 'bonus_list')->widget(Chosen::className(), [
                                 'items' => Teachers::getBonusItemList(),
@@ -117,29 +175,7 @@ use yii\widgets\MaskedInput;
                             ])->label(Yii::t('art/teachers', 'Teachers Bonus'));
                             ?>
 
-                            <?php
-                            echo $form->field($model, 'position_id')->dropDownList(common\models\guidejob\Position::getPositionList(), [
-                                'prompt' => Yii::t('art/teachers', 'Select Position...'),
-                                'id' => 'position_id'
-                            ])->label(Yii::t('art/teachers', 'Name Position'));
-                            ?>
-
-                            <?php
-                            echo $form->field($model, 'work_id')->dropDownList(common\models\guidejob\Work::getWorkList(), [
-                                'prompt' => Yii::t('art/teachers', 'Select Work...'),
-                                'id' => 'work_id'
-                            ])->label(Yii::t('art/teachers', 'Name Work'));
-                            ?>
-
-                            <?php
-                            echo $form->field($model, 'level_id')->dropDownList(common\models\guidejob\Level::getLevelList(), [
-                                'prompt' => Yii::t('art/teachers', 'Select Level...'),
-                                'id' => 'level_id'
-                            ])->label(Yii::t('art/teachers', 'Name Level'));
-                            ?>
-
-                            <?= $form->field($model, 'tab_num')->textInput(['maxlength' => true]) ?>
-                        </div>
+                           </div>
                     </div>
                 </div>
             </div>
