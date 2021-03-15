@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\widgets\fullcalendarscheduler\src\models;
+namespace common\widgets\fullcalendarscheduler\src\models;
 
 /**
  * Class Resource

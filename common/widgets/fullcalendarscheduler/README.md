@@ -30,7 +30,7 @@ See the demos/ folder for all the examples.
 
 ### Simple usage with array data
 ```php
-<?= \backend\widgets\fullcalendarscheduler\src\FullcalendarScheduler::widget([
+<?= \common\widgets\fullcalendarscheduler\src\FullcalendarScheduler::widget([
 	'header'        => [
 		'left'   => 'today prev,next',
 		'center' => 'title',
@@ -99,7 +99,7 @@ See the demos/ folder for all the examples.
 
 ### Simple use with JSON data from controller actions
 ```php
-<?= \backend\widgets\fullcalendarscheduler\src\FullcalendarScheduler::widget([
+<?= \common\widgets\fullcalendarscheduler\src\FullcalendarScheduler::widget([
 	'header'        => [
 		'left'   => 'today prev,next',
 		'center' => 'title',

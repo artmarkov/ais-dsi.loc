@@ -362,9 +362,10 @@ abstract class BaseController extends \artsoft\controllers\BaseController
      * @param null $model
      * @return \yii\web\Response
      */
-    protected function getSubmitAction($model = null)
+    protected function getSubmitAction($model = null, $submitAction = null)
     {
-        switch (Yii::$app->request->post('submitAction', 'save')) {
+        $submitAction = $submitAction == null ? Yii::$app->request->post('submitAction', 'save') : $submitAction;
+        switch ($submitAction) {
             case 'savenext':
                 return $this->redirect($this->getRedirectPage('create', $model));
                 break;

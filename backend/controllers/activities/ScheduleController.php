@@ -2,10 +2,10 @@
 
 namespace backend\controllers\activities;
 
-use backend\widgets\fullcalendarscheduler\src\models\Resource;
+use common\widgets\fullcalendarscheduler\src\models\Resource;
 use artsoft\widgets\ActiveForm;
 use common\models\activities\Activities;
-use backend\widgets\fullcalendarscheduler\src\models\Event as BaseEvent;
+use common\widgets\fullcalendarscheduler\src\models\Event as BaseEvent;
 use common\models\auditory\Auditory;
 use yii\helpers\Url;
 use yii\web\Response;

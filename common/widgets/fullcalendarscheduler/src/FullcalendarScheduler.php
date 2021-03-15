@@ -1,12 +1,12 @@
 <?php
 
-namespace backend\widgets\fullcalendar\src;
+namespace common\widgets\fullcalendarscheduler\src;
 
 /**
- * Class Fullcalendar ver.5.5.1
- * @package  backend\widgets\fullcalendar\src
+ * Class FullcalendarScheduler ver.5.5.1
+ * @package  common\widgets\fullcalendarscheduler\src
  */
-class Fullcalendar extends \yii\base\Widget
+class FullcalendarScheduler extends \yii\base\Widget
 {
     /**
      * @var array  Default options for the id and class HTML attributes
@@ -20,9 +20,9 @@ class Fullcalendar extends \yii\base\Widget
      * @var array $headerToolbar
      */
     public $headerToolbar = [
-        'left' => 'prev,next today',
+        'left' => 'today prev,next',
         'center' => 'title',
-        'right' => 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
+        'right' => 'resourceTimelineDay,resourceTimelineThreeDays,timeGridWeek,dayGridMonth,listWeek',
     ];
 
     /**
@@ -39,7 +39,13 @@ class Fullcalendar extends \yii\base\Widget
     public $events = [];
 
     /**
-     * Always make sure we have a valid id and class for the Fullcalendar widget
+     * @var array  Array containing the resources, can be JSON array,
+     * PHP array or URL that returns an array containing JSON resources
+     */
+    public $resources = [];
+
+    /**
+     * Always make sure we have a valid id and class for the FullcalendarScheduler widget
      */
     public function init()
     {
@@ -47,7 +53,7 @@ class Fullcalendar extends \yii\base\Widget
             $this->options['id'] = $this->getId();
         }
         if (!isset($this->options['class'])) {
-            $this->options['class'] = 'fullcalendar';
+            $this->options['class'] = 'fullcalendarscheduler';
         }
 
         if (!isset($this->clientOptions['locale'])) {

@@ -4,7 +4,7 @@ namespace backend\controllers\activities;
 
 use artsoft\widgets\ActiveForm;
 use common\models\activities\Activities;
-use backend\widgets\fullcalendar\src\models\Event as BaseEvent;
+use common\widgets\fullcalendar\src\models\Event as BaseEvent;
 use yii\helpers\Url;
 use yii\web\Response;
 use Yii;

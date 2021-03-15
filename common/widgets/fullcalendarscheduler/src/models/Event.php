@@ -1,10 +1,10 @@
 <?php
 
-namespace backend\widgets\fullcalendar\src\models;
+namespace common\widgets\fullcalendarscheduler\src\models;
 
 /**
  * Class Event
- * @package  backend\widgets\fullcalendar\src\models
+ * @package  common\widgets\fullcalendarscheduler\src\models
  */
 class Event extends CalendarModel
 {
@@ -14,6 +14,8 @@ class Event extends CalendarModel
 
     /** @var  string Uniquely identifies the given event. Different instances of repeating events should all have the same id. */
     public $id;
+    /** @var  string The text on an event's element */
+    public $resourceId;
     /** @var  string The text on an event's element */
     public $title;
     /** @var  boolean Whether an event occurs at a specific time-of-day. This property affects whether an event's time is shown. Also, in the agenda views, determines if it is displayed in the "all-day" section. */

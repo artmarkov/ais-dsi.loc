@@ -1,10 +1,10 @@
 <?php
 
-namespace  backend\widgets\fullcalendar\src;
+namespace  common\widgets\fullcalendar\src;
 
 /**
  * Class CoreAsset
- * @package  backend\widgets\fullcalendar\src
+ * @package  common\widgets\fullcalendar\src
  */
 class CoreAsset extends \yii\web\AssetBundle
 {
@@ -28,7 +28,7 @@ class CoreAsset extends \yii\web\AssetBundle
     public $language = null;
 
     /** @var  string Location of the fullcalendar distribution */
-    public $sourcePath = '@backend/widgets/fullcalendar/src/lib';
+    public $sourcePath = '@common/widgets/fullcalendar/src/lib';
 
     /**
      * @inheritdoc

@@ -141,7 +141,7 @@ EOF;
       }
 EOF;
             ?>
-            <?= \backend\widgets\fullcalendarscheduler\src\FullcalendarScheduler::widget([
+            <?= \common\widgets\fullcalendarscheduler\src\FullcalendarScheduler::widget([
                 'clientOptions' => [
                     'schedulerLicenseKey' => 'GPL-My-Project-Is-Open-Source',
                     'initialView' => 'resourceTimelineDay',
