@@ -7,13 +7,13 @@ use wbraganca\dynamicform\DynamicFormWidget;
 $js = '
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
     jQuery(".dynamicform_wrapper .panel-title-address").each(function(index) {
-        jQuery(this).html("Address: " + (index + 1))
+        jQuery(this).html("Адрес: " + (index + 1))
     });
 });
 
 jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
     jQuery(".dynamicform_wrapper .panel-title-address").each(function(index) {
-        jQuery(this).html("Address: " + (index + 1))
+        jQuery(this).html("Адрес: " + (index + 1))
     });
 });
 ';
@@ -55,19 +55,17 @@ $this->registerJs($js);
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <i class="glyphicon glyphicon-envelope"></i> Адреса
-                <button type="button" class="add-item btn btn-success btn-sm pull-right"><i
-                            class="glyphicon glyphicon-plus"></i> Добавить
-                </button>
+
             </div>
             <div class="panel-body">
                 <div class="container-items"><!-- widgetBody -->
                     <?php foreach ($modelsAddress as $index => $modelAddress): ?>
                         <div class="item panel panel-info"><!-- widgetItem -->
                             <div class="panel-heading">
-                                <span class="panel-title-address">Address: <?= ($index + 1) ?></span>
+                                <span class="panel-title-address">Адрес: <?= ($index + 1) ?></span>
                                 <div class="pull-right">
                                     <button type="button" class="remove-item btn btn-danger btn-xs"><i
-                                                class="glyphicon glyphicon-minus"></i></button>
+                                                class="glyphicon glyphicon-trash"></i> удалить</button>
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
@@ -89,6 +87,13 @@ $this->registerJs($js);
                     <?php endforeach; ?>
                 </div>
             </div><!-- .panel -->
+            <div class="panel-footer">
+                <div class="form-group btn-group">
+                    <button type="button" class="add-item btn btn-success btn-sm pull-right"><i
+                                class="glyphicon glyphicon-plus"></i> Добавить
+                    </button>
+                </div>
+            </div>
             <?php DynamicFormWidget::end(); ?>
         </div>
     </div>
