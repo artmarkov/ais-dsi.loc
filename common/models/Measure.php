@@ -2,10 +2,10 @@
 
 namespace common\models;
 
-use backend\modules\eav\models\EavCategories;
+use artsoft\eav\models\EavCategories;
 use Yii;
 use yii\db\ActiveRecord;
-use backend\modules\eav\EavBehavior;
+use artsoft\eav\EavBehavior;
 use artsoft\eav\EavQueryTrait;
 /**
  * This is the model class for table "measure".

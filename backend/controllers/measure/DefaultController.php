@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\controllers;
+namespace backend\controllers\measure;
 
 use Yii;
 
@@ -8,7 +8,7 @@ use Yii;
 /**
  * MeasureController implements the CRUD actions for backend\models\Measure model.
  */
-class MeasureController extends DefaultController
+class DefaultController extends \backend\controllers\DefaultController
 {
     public $modelClass       = 'common\models\Measure';
     public $modelSearchClass = 'common\models\MeasureSearch';

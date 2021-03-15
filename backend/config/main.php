@@ -57,6 +57,9 @@ $config =  [
         'queue-schedule' => [
             'class' => 'artsoft\queue\Module',
         ],
+        'eav' => [
+            'class' => 'artsoft\eav\Module',
+        ],
     ],
     'components' => [
         'request' => [

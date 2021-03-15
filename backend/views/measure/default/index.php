@@ -68,7 +68,7 @@ $model = new Measure;
                                  'class' => 'artsoft\grid\columns\TitleActionColumn',
                                  'attribute' => 'name',
                                  'options' => ['style' => 'width:200px'],
-                                 'controller' => '/measure',
+                                 'controller' => '/measure/default',
                                  'title' => function (Measure $model) {
                                          return Html::a($model->name, ['/measure/view',  'id' => $model->id], ['data-pjax' => 0]);
                                  },
