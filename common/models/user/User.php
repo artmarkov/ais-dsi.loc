@@ -17,22 +17,37 @@ use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 /**
- * This is the model class for table "user".
+ * This is the model class for table "{{%user}}".
  *
- * @property integer $id
- * @property string $username
- * @property string $email
- * @property integer $email_confirmed
- * @property string $auth_key
- * @property string $password_hash
- * @property string $confirmation_token
- * @property string $bind_to_ip
- * @property string $registration_ip
- * @property integer $status
- * @property integer $superadmin
- * @property string $avatar
- * @property integer $created_at
- * @property integer $updated_at
+ * @property int $id
+ * @property string|null $username
+ * @property string|null $auth_key
+ * @property string|null $password_hash
+ * @property string|null $password_reset_token
+ * @property string|null $email
+ * @property int $status
+ * @property int $user_category
+ * @property int|null $superadmin
+ * @property string|null $registration_ip
+ * @property string|null $bind_to_ip
+ * @property int|null $email_confirmed
+ * @property string|null $confirmation_token
+ * @property string|null $avatar
+ * @property string|null $first_name
+ * @property string|null $middle_name
+ * @property string|null $last_name
+ * @property int|null $birth_timestamp
+ * @property int|null $gender
+ * @property string|null $phone
+ * @property string|null $phone_optional
+ * @property string|null $skype
+ * @property string|null $info
+ * @property string|null $snils
+ * @property int $created_at
+ * @property int $updated_at
+ * @property int $created_by
+ * @property int $updated_by
+ *
  */
 class User extends UserIdentity {
 

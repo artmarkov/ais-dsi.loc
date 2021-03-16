@@ -13,19 +13,24 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "{{%user}}".
  *
+ * @property int $id
  * @property int $status
  * @property int $user_category
+ * @property string|null $first_name
+ * @property string|null $middle_name
+ * @property string|null $last_name
+ * @property int|null $birth_timestamp
+ * @property int|null $gender
+ * @property string|null $phone
+ * @property string|null $phone_optional
+ * @property string|null $skype
+ * @property string|null $info
+ * @property string|null $snils
  * @property int $created_at
  * @property int $updated_at
- * @property string $first_name
- * @property string $middle_name
- * @property string $last_name
- * @property int $birth_timestamp
- * @property int $gender
- * @property string $phone
- * @property string $phone_optional 
- * @property string $snils
- * 
+ * @property int $created_by
+ * @property int $updated_by
+ *
  */
 class UserCommon extends \artsoft\models\UserIdentity
 {
