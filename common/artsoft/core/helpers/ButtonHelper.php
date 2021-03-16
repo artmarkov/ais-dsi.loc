@@ -10,7 +10,7 @@ use Yii;
  */
 class ButtonHelper
 {
-    const buttonClass = 'btn-sm';
+    const buttonClass = 'btn-md';
 
     /**
      * @param $model

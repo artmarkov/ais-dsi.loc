@@ -2,9 +2,14 @@
 
 namespace common\models\user;
 
+use artsoft\behaviors\DateToTimeBehavior;
+use artsoft\traits\DateTimeTrait;
 use common\models\student\Student;
 use Yii;
+use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
+
 /**
  * This is the model class for table "{{%user}}".
  *
@@ -24,6 +29,13 @@ use yii\behaviors\TimestampBehavior;
  */
 class UserCommon extends \artsoft\models\UserIdentity
 {
+    use DateTimeTrait;
+
+    /**
+     * @var string
+     */
+    public $birth_date;
+
     /**
      * @inheritdoc
      */
@@ -36,7 +48,17 @@ class UserCommon extends \artsoft\models\UserIdentity
      */
     public function behaviors() {
         return [
+            BlameableBehavior::className(),
             TimestampBehavior::className(),
+            [
+                'class' => DateToTimeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'birth_date',
+                    ActiveRecord::EVENT_AFTER_FIND => 'birth_date',
+                ],
+                'timeAttribute' => 'birth_timestamp',
+                'timeFormat' => 'd-m-Y',
+            ],
         ];
     }
 
@@ -46,18 +68,17 @@ class UserCommon extends \artsoft\models\UserIdentity
     public function rules()
     {
         return [
-            [['first_name', 'middle_name', 'last_name', 'birth_timestamp'], 'required'],
+            [['first_name', 'middle_name', 'last_name', 'birth_date'], 'required'],
             [['status', 'user_category', 'gender'], 'integer'],
             ['birth_timestamp', 'safe'],
+            [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             ['last_name', 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'], 'message' => Yii::t('art/auth', 'The user with the entered data already exists.')],
             [['phone', 'phone_optional'], 'string', 'max' => 24],           
             [['snils'], 'string', 'max' => 16],
-            ['birth_timestamp', 'date', 'timestampAttribute' => 'birth_timestamp', 'format' => 'dd-MM-yyyy'],
-            ['birth_timestamp', 'default', 'value' =>  mktime(0,0,0, date("m", time()), date("d", time()), date("Y", time()))],
-            
+            ['birth_date', 'date', 'format' => 'dd-MM-yyyy'],
         ];
     }
     /**
@@ -73,13 +94,16 @@ class UserCommon extends \artsoft\models\UserIdentity
             'middle_name' => Yii::t('art', 'Middle Name'),
             'last_name' => Yii::t('art', 'Last Name'),
             'birth_timestamp' => Yii::t('art', 'Birth Date'),
+            'birth_date' => Yii::t('art', 'Birth Date'),
             'gender' => Yii::t('art', 'Gender'),
             'phone' => Yii::t('art', 'Phone'),
             'phone_optional' => Yii::t('art', 'Phone Optional'),
-            'snils' => Yii::t('art', 'Snils'),
-            'created_at' => Yii::t('art', 'Created At'),
-            'updated_at' => Yii::t('art', 'Updated At'),
             'fullName' => Yii::t('art', 'Full Name'),
+            'snils' => Yii::t('art', 'Snils'),
+            'created_at' => Yii::t('art', 'Created'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_by' => Yii::t('art', 'Updated By'),
         ];
     }
      /* Геттер для полного имени человека */
@@ -144,5 +168,18 @@ class UserCommon extends \artsoft\models\UserIdentity
             ->orderBy('user.last_name')
             ->asArray()->all(), 'user_id', 'name');
     }
-   
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatedBy()
+    {
+        return $this->hasOne(self::className(), ['id' => 'created_by']);
+    } /**
+ * @return \yii\db\ActiveQuery
+ */
+    public function getUpdatedBy()
+    {
+        return $this->hasOne(self::className(), ['id' => 'updated_by']);
+    }
 }

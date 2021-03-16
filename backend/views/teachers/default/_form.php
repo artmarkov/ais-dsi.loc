@@ -46,9 +46,7 @@ use yii\widgets\MaskedInput;
 
                             <?= $form->field($modelUser, 'gender')->dropDownList(artsoft\models\User::getGenderList()) ?>
 
-                            <?php if ($modelUser->birth_timestamp) $modelUser->birth_timestamp = date("d-m-Y", (integer)mktime(0, 0, 0, date("m", $modelUser->birth_timestamp), date("d", $modelUser->birth_timestamp), date("Y", $modelUser->birth_timestamp))); ?>
-                            <?= $form->field($modelUser, 'birth_timestamp')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname());
-                            ?>
+                            <?= $form->field($modelUser, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname());?>
 
                             <?= $form->field($modelUser, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
 
@@ -84,15 +82,11 @@ use yii\widgets\MaskedInput;
 
                             <?= $form->field($model, 'year_serv')->textInput() ?>
 
-                            <?php
-                            echo $form->field($model, 'time_serv_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date'));
-                            ?>
+                            <?= $form->field($model, 'time_serv_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date'));?>
 
                             <?= $form->field($model, 'year_serv_spec')->textInput() ?>
 
-                            <?php
-                            echo $form->field($model, 'time_serv_spec_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date'));
-                            ?>
+                            <?= $form->field($model, 'time_serv_spec_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date'));?>
 
                             <?php
                             echo $form->field($model, 'department_list')->widget(Chosen::className(), [

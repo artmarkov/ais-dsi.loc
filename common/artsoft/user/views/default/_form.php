@@ -5,6 +5,7 @@ use common\models\user\User;
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\ArtHelper;
 use yii\widgets\MaskedInput;
+use kartik\date\DatePicker;
 
 /**
  * @var yii\web\View $this
@@ -36,22 +37,20 @@ use yii\widgets\MaskedInput;
                             <?php endif; ?>
                             <?php if (User::hasPermission('editUserEmail')): ?>
                                 <?= $form->field($model, 'email')->textInput(['maxlength' => 255]) ?>
+                                <?= $form->field($model, 'email_confirmed')->checkbox() ?>
                             <?php endif; ?>
                             <?= $form->field($model, 'last_name')->textInput(['maxlength' => 124]) ?>
                             <?= $form->field($model, 'first_name')->textInput(['maxlength' => 124]) ?>
                             <?= $form->field($model, 'middle_name')->textInput(['maxlength' => 124]) ?>
                             <?= $form->field($model, 'gender')->dropDownList(User::getGenderList()) ?>
-                            <!--                            --><? //= $form->field($model, 'birth_day')->textInput(['maxlength' => 2]) ?>
-                            <!--                            --><? //= $form->field($model, 'birth_month')->dropDownList(ArtHelper::getMonthsList()) ?>
-                            <!--                            --><? //= $form->field($model, 'birth_year')->textInput(['maxlength' => 4]) ?>
+                            <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname());?>
+
                             <?= $form->field($model, 'info')->textarea(['maxlength' => 255, 'rows' => 6]) ?>
                             <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(User::getStatusList()) ?>
                             <?= $form->field($model, 'registration_ip')->textInput(['readonly' => true]) ?>
-                            <?php if (User::hasPermission('editUserEmail')): ?>
-                                <?= $form->field($model, 'email_confirmed')->checkbox() ?>
-                            <?php endif; ?>
                             <?= $form->field($model, 'skype')->textInput(['maxlength' => 64]) ?>
                             <?= $form->field($model, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                            <?= $form->field($model, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                             <?php if (User::hasPermission('bindUserToIp')): ?>
                                 <?= $form->field($model, 'bind_to_ip')->textInput(['maxlength' => 255])->hint(Yii::t('art', 'For example') . ' : 123.34.56.78, 234.123.89.78') ?>
                             <?php endif; ?>

@@ -2,14 +2,18 @@
 
 namespace common\models\user;
 
+use artsoft\behaviors\DateToTimeBehavior;
 use artsoft\helpers\AuthHelper;
 use artsoft\helpers\artHelper;
 use artsoft\models\Role;
 use artsoft\models\Route;
 use artsoft\models\UserIdentity;
 use artsoft\models\UserQuery;
+use artsoft\traits\DateTimeTrait;
 use Yii;
+use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -31,6 +35,8 @@ use yii\helpers\ArrayHelper;
  * @property integer $updated_at
  */
 class User extends UserIdentity {
+
+    use DateTimeTrait;
 
     const STATUS_ACTIVE = 10;
     const STATUS_INACTIVE = 0;
@@ -60,6 +66,11 @@ class User extends UserIdentity {
     public $repeat_password;
 
     /**
+     * @var string
+     */
+    public $birth_date;
+
+    /**
      * @inheritdoc
      */
     public static function tableName() {
@@ -71,7 +82,17 @@ class User extends UserIdentity {
      */
     public function behaviors() {
         return [
+            BlameableBehavior::className(),
             TimestampBehavior::className(),
+            [
+                'class' => DateToTimeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'birth_date',
+                    ActiveRecord::EVENT_AFTER_FIND => 'birth_date',
+                ],
+                'timeAttribute' => 'birth_timestamp',
+                'timeFormat' => 'd-m-Y',
+            ],
         ];
     }
 
@@ -80,7 +101,7 @@ class User extends UserIdentity {
      */
     public function rules() {
         return [
-            [['username', 'email', 'birth_timestamp'], 'required'],
+            [['username', 'email', 'birth_date'], 'required'],
             ['birth_timestamp', 'safe'],
             ['username', 'unique'],
             [['username', 'email', 'bind_to_ip'], 'trim'],
@@ -91,11 +112,12 @@ class User extends UserIdentity {
             [['first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
-            [['snils'], 'string', 'max' => 16],
+            ['snils', 'string', 'max' => 16],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             ['bind_to_ip', 'string', 'max' => 255],
             ['info', 'string', 'max' => 1024],
             ['gender', 'integer'],
+            [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             ['password', 'required', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['password', 'string', 'max' => 255, 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['password', 'string', 'min' => 6, 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
@@ -104,8 +126,7 @@ class User extends UserIdentity {
             ['repeat_password', 'compare', 'compareAttribute' => 'password'],
             ['user_category', 'default', 'value' => self::USER_CATEGORY_STAFF],
             ['user_category', 'in', 'range' => [self::USER_CATEGORY_STAFF, self::USER_CATEGORY_TEACHER, self::USER_CATEGORY_STUDENT, self::USER_CATEGORY_PARENT]],
-            ['birth_timestamp', 'date', 'timestampAttribute' => 'birth_timestamp', 'format' => 'dd-MM-yyyy'],
-            ['birth_timestamp', 'default', 'value' =>  mktime(0,0,0, date("m", time()), date("d", time()), date("Y", time()))],
+            ['birth_date', 'date', 'format' => 'dd-MM-yyyy'],
         ];
     }
 
@@ -386,8 +407,6 @@ class User extends UserIdentity {
             'status' => Yii::t('art', 'Status'),
             'role' => Yii::t('art', 'Role'),
             'gridRoleSearch' => Yii::t('art', 'Roles'),
-            'created_at' => Yii::t('art', 'Created'),
-            'updated_at' => Yii::t('art', 'Updated'),
             'password' => Yii::t('art', 'Password'),
             'repeat_password' => Yii::t('art', 'Repeat password'),
             'email_confirmed' => Yii::t('art', 'E-mail confirmed'),
@@ -401,8 +420,13 @@ class User extends UserIdentity {
             'info' => Yii::t('art', 'Short Info'),
             'snils' => Yii::t('art', 'Snils'),
             'birth_timestamp' => Yii::t('art', 'Birth Date'),
+            'birth_date' => Yii::t('art', 'Birth Date'),
             'user_category' => Yii::t('art', 'User Category'),
             'fullName' => Yii::t('art', 'Full Name'),
+            'created_at' => Yii::t('art', 'Created'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_by' => Yii::t('art', 'Updated By'),
         ];
     }
 
@@ -456,7 +480,6 @@ class User extends UserIdentity {
 
     /**
      * Don't let delete yourself and don't let non-superadmin delete superadmin
-     *
      * @inheritdoc
      */
     public function beforeDelete() {
@@ -484,62 +507,8 @@ class User extends UserIdentity {
         return new UserQuery(get_called_class());
     }
 
-    /**
-     * Get created date
-     *
-     * @return string
-     */
-    public function getCreatedDate() {
-        return Yii::$app->formatter->asDate(($this->isNewRecord) ? time() : $this->created_at);
-    }
 
     /**
-     * Get created date
-     *
-     * @return string
-     */
-    public function getUpdatedDate() {
-        return Yii::$app->formatter->asDate(($this->isNewRecord) ? time() : $this->updated_at);
-    }
-
-    /**
-     * Get created time
-     *
-     * @return string
-     */
-    public function getCreatedTime() {
-        return Yii::$app->formatter->asTime(($this->isNewRecord) ? time() : $this->created_at);
-    }
-
-    /**
-     * Get created time
-     *
-     * @return string
-     */
-    public function getUpdatedTime() {
-        return Yii::$app->formatter->asTime(($this->isNewRecord) ? time() : $this->updated_at);
-    }
-
-    /**
-     * Get created datetime
-     *
-     * @return string
-     */
-    public function getCreatedDatetime() {
-        return "{$this->createdDate} {$this->createdTime}";
-    }
-
-    /**
-     * Get created datetime
-     *
-     * @return string
-     */
-    public function getUpdatedDatetime() {
-        return "{$this->updatedDate} {$this->updatedTime}";
-    }
-
-    /**
-     *
      * @param string $size
      * @return boolean|string
      */
@@ -596,4 +565,17 @@ class User extends UserIdentity {
         return parent::beforeValidate();
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatedBy()
+    {
+        return $this->hasOne(self::className(), ['id' => 'created_by']);
+    } /**
+ * @return \yii\db\ActiveQuery
+ */
+    public function getUpdatedBy()
+    {
+        return $this->hasOne(self::className(), ['id' => 'updated_by']);
+    }
 }

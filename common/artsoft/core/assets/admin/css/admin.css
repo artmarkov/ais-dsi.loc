@@ -308,7 +308,8 @@ img.dw-media-image {
 }
 
 .panel-heading {
-    font-size: large;
+    padding: 8px 15px;
+    font-size: medium;
 }
 
 .unset{
