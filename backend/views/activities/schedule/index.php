@@ -123,10 +123,10 @@ EOF;
                 start: start,
                 end: end,
                 allDay: e.event.allDay,
-                resourceId: e.newResource.id
+                resourceId: e.newResource === null ? null : e.newResource.id
             };
          console.log('перетаскиваем событие, удерживая мышкой');
-         console.log(e.newResource.id);
+         console.log(e.newResource);
          $.ajax({
              url: '/admin/activities/schedule/refactor-event',
             type: 'POST',

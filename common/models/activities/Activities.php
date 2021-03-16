@@ -124,7 +124,9 @@ class Activities extends ActiveRecord
         $this->start_time = \Yii::$app->formatter->asDatetime($eventData['start']);
         $this->end_time = \Yii::$app->formatter->asDatetime($eventData['end']);
         $this->all_day = $eventData['allDay'] == 'true' ? 1 : 0;
-        isset($eventData['resourceId']) ? $this->auditory_id = $eventData['resourceId'] : false;
+        if($eventData['resourceId'] != null) {
+            $this->auditory_id = $eventData['resourceId'];
+        }
         return $this;
     }
 
