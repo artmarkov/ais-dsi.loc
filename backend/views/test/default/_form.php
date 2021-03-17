@@ -22,7 +22,11 @@ $this->registerJs($js);
 ?>
 
 <div class="panel">
-        <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
+    <?php $form = ActiveForm::begin([
+        'fieldConfig' => [
+            'inputOptions' => ['readonly' => $readonly]
+        ],
+        'id' => 'dynamic-form']); ?>
     <div class="panel-heading">
         Информация о сотруднике
     </div>

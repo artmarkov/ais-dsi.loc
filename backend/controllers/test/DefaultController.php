@@ -28,15 +28,19 @@ class DefaultController extends \backend\controllers\DefaultController
      * @param integer $id
      * @return mixed
      */
+//    public function actionView($id)
+//    {
+//        $model = $this->findModel($id);
+//        $addresses = $model->addresses;
+//
+//        return $this->render('view', [
+//            'model' => $model,
+//            'addresses' => $addresses,
+//        ]);
+//    }
     public function actionView($id)
     {
-        $model = $this->findModel($id);
-        $addresses = $model->addresses;
-
-        return $this->render('view', [
-            'model' => $model,
-            'addresses' => $addresses,
-        ]);
+        return $this->actionUpdate($id, true);
     }
     /**
      * Creates a new Customer model.
@@ -94,7 +98,7 @@ class DefaultController extends \backend\controllers\DefaultController
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $readonly = false)
     {
         $modelCustomer = $this->findModel($id);
         $modelsAddress = $modelCustomer->addresses;
@@ -138,7 +142,8 @@ class DefaultController extends \backend\controllers\DefaultController
 
         return $this->render('update', [
             'modelCustomer' => $modelCustomer,
-            'modelsAddress' => (empty($modelsAddress)) ? [new Address] : $modelsAddress
+            'modelsAddress' => (empty($modelsAddress)) ? [new Address] : $modelsAddress,
+            'readonly' => $readonly
         ]);
     }
 
