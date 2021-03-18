@@ -5,10 +5,12 @@ namespace backend\controllers\teachers;
 use common\models\guidejob\Stake;
 use common\models\guidejob\Cost;
 use common\models\teachers\Teachers;
+use common\models\teachers\TeachersActivity;
 use common\models\user\UserCommon;
 use common\models\user\User;
 use yii\web\NotFoundHttpException;
 use Yii;
+use backend\models\Model;
 
 /**
  * DefaultController implements the CRUD actions for common\models\teachers\Teachers model.
@@ -26,47 +28,114 @@ class DefaultController extends MainController
      */
     public function actionCreate()
     {
-
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = new $this->modelClass;
         $modelUser = new UserCommon();
-
+        $modelsActivity = [new TeachersActivity];
         $model->time_serv_init = Teachers::getTimeServInit();
         $model->time_serv_spec_init = Teachers::getTimeServInit();
 
-        if ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax) {
-            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        if ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
-            return \yii\widgets\ActiveForm::validate($model, $modelUser);
-        } elseif ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
+            $modelsActivity = Model::createMultiple(TeachersActivity::classname());
+            Model::loadMultiple($modelsActivity, Yii::$app->request->post());
 
-            //echo '<pre>' . print_r($model, true) . '</pre>';
+            // validate all models
+            $valid = true;
+           // $valid = $modelUser->validate();
+//            $valid = $model->validate() && $valid;
+//            $valid = Model::validateMultiple($modelsActivity) && $valid;
 
-            $modelUser->user_category = User::USER_CATEGORY_TEACHER;
-            $modelUser->status = User::STATUS_INACTIVE;
+            if ($valid) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                $modelUser->user_category = User::USER_CATEGORY_TEACHER;
+                $modelUser->status = User::STATUS_INACTIVE;
 
-            $model->cost_main_id = Cost::getCostId($model->direction_id_main, $model->stake_id_main);
-            $model->cost_optional_id = Cost::getCostId($model->direction_id_optional, $model->stake_id_optional);
+//                $model->cost_main_id = Cost::getCostId($model->direction_id_main, $model->stake_id_main);
+//                $model->cost_optional_id = Cost::getCostId($model->direction_id_optional, $model->stake_id_optional);
 
-            $model->timestamp_serv = Teachers::getTimestampServ($model->year_serv, $model->time_serv_init);
-            $model->timestamp_serv_spec = Teachers::getTimestampServ($model->year_serv_spec, $model->time_serv_spec_init);
+                $model->timestamp_serv = Teachers::getTimestampServ($model->year_serv, $model->time_serv_init);
+                $model->timestamp_serv_spec = Teachers::getTimestampServ($model->year_serv_spec, $model->time_serv_spec_init);
 
-            if ($modelUser->save()) {
-                $model->user_id = $modelUser->id;
+                try {
+                    if ($flag = $modelUser->save(false)) {
+                        $model->user_id = $modelUser->id;
 
-                if ($model->save()) {
-                    Yii::$app->session->setFlash('crudMessage', Yii::t('art', 'Your item has been updated.'));
-                    return $this->redirect($this->getRedirectPage('update', $model));
+                        if ($flag = $model->save(false)) {
+                            foreach ($modelsActivity as $modelActivity) {
+                                $modelActivity->teachers_id = $model->id;
+                                if (!($flag = $modelActivity->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if ($flag) {
+                        $transaction->commit();
+                        $this->getSubmitAction($modelUser);
+//                        return $this->redirect(['update', 'id' => $modelCustomer->id]);
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
                 }
             }
-        } else {
-            return $this->renderIsAjax('create', [
-                'modelUser' => $modelUser,
-                'model' => $model,
-            ]);
         }
+
+        return $this->renderIsAjax('create', [
+            'modelUser' => $modelUser,
+            'model' => $model,
+            'modelsActivity' => (empty($modelsActivity)) ? [new TeachersActivity] : $modelsActivity
+        ]);
     }
+//    public function actionCreate()
+//    {
+//
+//        $this->view->params['tabMenu'] = $this->tabMenu;
+//
+//        $model = new $this->modelClass;
+//        $modelUser = new UserCommon();
+//        $modelsActivity = [new TeachersActivity];
+//
+//        $model->time_serv_init = Teachers::getTimeServInit();
+//        $model->time_serv_spec_init = Teachers::getTimeServInit();
+//
+//        if ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax) {
+//            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+//
+//            return \yii\widgets\ActiveForm::validate($model, $modelUser);
+//        } elseif ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
+//            $modelsActivity = Model::createMultiple(TeachersActivity::classname());
+//            Model::loadMultiple($modelsActivity, Yii::$app->request->post());
+//            //echo '<pre>' . print_r($model, true) . '</pre>';
+//
+//            $modelUser->user_category = User::USER_CATEGORY_TEACHER;
+//            $modelUser->status = User::STATUS_INACTIVE;
+//
+//            $model->cost_main_id = Cost::getCostId($model->direction_id_main, $model->stake_id_main);
+//            $model->cost_optional_id = Cost::getCostId($model->direction_id_optional, $model->stake_id_optional);
+//
+//            $model->timestamp_serv = Teachers::getTimestampServ($model->year_serv, $model->time_serv_init);
+//            $model->timestamp_serv_spec = Teachers::getTimestampServ($model->year_serv_spec, $model->time_serv_spec_init);
+//
+//            if ($modelUser->save()) {
+//                $model->user_id = $modelUser->id;
+//
+//                if ($model->save()) {
+//                    Yii::$app->session->setFlash('crudMessage', Yii::t('art', 'Your item has been updated.'));
+//                    return $this->redirect($this->getRedirectPage('update', $model));
+//                }
+//            }
+//        } else {
+//            return $this->renderIsAjax('create', [
+//                'modelUser' => $modelUser,
+//                'model' => $model,
+//                'modelsActivity' => (empty($modelsActivity)) ? [new TeachersActivity] : $modelsActivity
+//            ]);
+//        }
+//    }
 
     public function actionUpdate($id)
     {

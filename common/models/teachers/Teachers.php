@@ -81,19 +81,17 @@ class Teachers extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['position_id', 'work_id', 'level_id', 'cost_main_id', 'cost_optional_id', 'timestamp_serv', 'timestamp_serv_spec'], 'integer'],
+            [['position_id', 'work_id', 'level_id', 'timestamp_serv', 'timestamp_serv_spec'], 'integer'],
             [['position_id', 'work_id', 'level_id'], 'required'],
-            [['cost_main_id', 'direction_id_main', 'stake_id_main'], 'required'],
+//            [[ 'direction_id_main', 'stake_id_main'], 'required'],
             [['tab_num'], 'string', 'max' => 16],
             [['level_id'], 'exist', 'skipOnError' => true, 'targetClass' => Level::className(), 'targetAttribute' => ['level_id' => 'id']],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position_id' => 'id']],
             [['work_id'], 'exist', 'skipOnError' => true, 'targetClass' => Work::className(), 'targetAttribute' => ['work_id' => 'id']],
-            [['cost_main_id'], 'exist', 'skipOnError' => true, 'targetClass' => Cost::className(), 'targetAttribute' => ['cost_main_id' => 'id']],
-            [['cost_optional_id'], 'exist', 'skipOnError' => true, 'targetClass' => Cost::className(), 'targetAttribute' => ['cost_optional_id' => 'id']],
             [['bonus_list', 'department_list'], 'safe'],
-            [['direction_id_main', 'stake_id_main', 'direction_id_optional', 'stake_id_optional'], 'integer'],
+//            [['direction_id_main', 'stake_id_main', 'direction_id_optional', 'stake_id_optional'], 'integer'],
             [['year_serv', 'year_serv_spec', 'time_serv_init', 'time_serv_spec_init'], 'safe'],
-            ['cost_main_id', 'compareCost'],
+//            ['cost_main_id', 'compareCost'],
             ['year_serv', 'compareSpec'],
         ];
     }

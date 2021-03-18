@@ -9,10 +9,29 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use common\models\guidejob\BonusItem;
 use yii\widgets\MaskedInput;
+use wbraganca\dynamicform\DynamicFormWidget;
+use kartik\depdrop\DepDrop as DepDrop;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\teachers\Teachers */
 /* @var $form artsoft\widgets\ActiveForm */
+
+$js = '
+jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
+    jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
+        jQuery(this).html("Деятельность: " + (index + 1))
+    });
+});
+
+jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
+    jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
+        jQuery(this).html("Деятельность: " + (index + 1))
+    });
+});
+';
+
+$this->registerJs($js);
+?>
 ?>
 
 <div class="teachers-form">
@@ -21,7 +40,7 @@ use yii\widgets\MaskedInput;
     $form = ActiveForm::begin([
         'id' => 'teachers-form',
         'validateOnBlur' => false,
-        'enableAjaxValidation' => true,
+//        'enableAjaxValidation' => true,
         'options' => ['enctype' => 'multipart/form-data'],
     ])
 
@@ -99,60 +118,75 @@ use yii\widgets\MaskedInput;
                     </div>
                 </div>
             </div>
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    Сведения о трудовой деятельности
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <?php
-                            echo $form->field($model, 'work_id')->dropDownList(common\models\guidejob\Work::getWorkList(), [
-                                'prompt' => Yii::t('art/teachers', 'Select Work...'),
-                                'id' => 'work_id'
-                            ])->label(Yii::t('art/teachers', 'Name Work'));
-                            ?>
-                            <?php
-                            echo $form->field($model, 'direction_id_main')->dropDownList(\common\models\guidejob\Direction::getDirectionList(), [
-                                'prompt' => Yii::t('art/teachers', 'Select Direction...'),
-                                'id' => 'direction_id_main'
-                            ])->label(Yii::t('art/teachers', 'Name Direction Main'));
-                            ?>
-                            <?php
-                            echo $form->field($model, 'stake_id_main')->widget(\kartik\depdrop\DepDrop::classname(), [
-                                'data' => \common\models\guidejob\Stake::getStakeByName($model->direction_id_main),
-                                'options' => ['prompt' => Yii::t('art/teachers', 'Select Stake...'), 'id' => 'stake_id_main'],
-                                'pluginOptions' => [
-                                    'depends' => ['direction_id_main'],
-                                    'placeholder' => Yii::t('art/teachers', 'Select Stake...'),
-                                    'url' => Url::to(['/teachers/default/stake'])
-                                ]
-                            ])->label(Yii::t('art/teachers', 'Name Stake Main'));
+                    <?php DynamicFormWidget::begin([
+                        'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
+                        'widgetBody' => '.container-items', // required: css class selector
+                        'widgetItem' => '.item', // required: css class
+                        'limit' => 4, // the maximum times, an element can be added (default 999)
+                        'min' => 1, // 0 or 1 (default 1)
+                        'insertButton' => '.add-item', // css class
+                        'deleteButton' => '.remove-item', // css class
+                        'model' => $modelsActivity[0],
+                        'formId' => 'teachers-form',
+                        'formFields' => [
+                            'work_id',
+                            'direction_id',
+                            'stake_id',
+                        ],
+                    ]); ?>
 
-                            ?>
-                            <?php
-                            echo $form->field($model, 'direction_id_optional')->dropDownList(\common\models\guidejob\Direction::getDirectionList(), [
-                                'prompt' => Yii::t('art/teachers', 'Select Direction...'),
-                                'id' => 'direction_id_optional'
-                            ])->label(Yii::t('art/teachers', 'Name Direction Optional'));
-                            ?>
-                            <?php
-                            echo $form->field($model, 'stake_id_optional')->widget(\kartik\depdrop\DepDrop::classname(), [
-                                'data' => \common\models\guidejob\Stake::getStakeByName($model->direction_id_optional),
-                                'options' => ['prompt' => Yii::t('art/teachers', 'Select Stake...'), 'id' => 'stake_id_optional'],
-                                'pluginOptions' => [
-                                    'depends' => ['direction_id_optional'],
-                                    'placeholder' => Yii::t('art/teachers', 'Select Stake...'),
-                                    'url' => Url::to(['/teachers/default/stake'])
-                                ]
-                            ])->label(Yii::t('art/teachers', 'Name Stake Optional'));
-
-                            ?>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Сведения о трудовой деятельности
 
                         </div>
-                    </div>
-                </div>
-            </div>
+                        <div class="panel-body">
+                            <div class="container-items"><!-- widgetBody -->
+                                <?php foreach ($modelsActivity as $index => $modelActivity): ?>
+                                    <div class="item panel panel-info"><!-- widgetItem -->
+                                        <div class="panel-heading">
+                                            <span class="panel-title-activities">Деятельность: <?= ($index + 1) ?></span>
+                                            <div class="pull-right">
+                                                <button type="button" class="remove-item btn btn-danger btn-xs"><i
+                                                            class="glyphicon glyphicon-trash"></i> удалить</button>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="panel-body">
+                                            <?php
+                                            // necessary for update action.
+                                            if (!$modelActivity->isNewRecord) {
+                                                echo Html::activeHiddenInput($modelActivity, "[{$index}]id");
+                                            }
+                                            ?>
+                                            <?= $form->field($modelActivity, "[{$index}]work_id")->dropDownList(common\models\guidejob\Work::getWorkList(), [
+                                                'prompt' => Yii::t('art/teachers', 'Select Work...'),
+                                                'id' => 'work_id'
+                                            ])->label(Yii::t('art/teachers', 'Name Work'));
+                                            ?>
+                                            <?= $form->field($modelActivity, "[{$index}]direction_id")->dropDownList(\common\models\guidejob\Direction::getDirectionList(), [
+                                                'prompt' => Yii::t('art/teachers', 'Select Direction...'),
+                                                'id' => 'direction_id'
+                                            ])->label(Yii::t('art/teachers', 'Name Direction'));
+                                            ?>
+                                            <?= $form->field($modelActivity, "[{$index}]stake_id")->dropDownList(\common\models\guidejob\Stake::getStakeList(), [
+                                                'prompt' => Yii::t('art/teachers', 'Select Stake...'),
+                                                'id' => 'direction_id'
+                                            ])->label(Yii::t('art/teachers', 'Name Stake'));
+                                             ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div><!-- .panel -->
+                        <div class="panel-footer">
+                            <div class="form-group btn-group">
+                                <button type="button" class="add-item btn btn-success btn-sm pull-right"><i
+                                            class="glyphicon glyphicon-plus"></i> Добавить
+                                </button>
+                            </div>
+                        </div>
+                        <?php DynamicFormWidget::end(); ?>
             <div class="panel panel-info">
                 <div class="panel-heading">
                     Сведения о достижениях
