@@ -51,7 +51,7 @@ class StudentPosition extends \yii\db\ActiveRecord
             'status' => Yii::t('art/guide', 'Status'),
         ];
     }
- /**
+    /**
      * getStatusList
      * @return array
      */

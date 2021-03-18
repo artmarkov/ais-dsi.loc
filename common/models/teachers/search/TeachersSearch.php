@@ -19,8 +19,8 @@ class TeachersSearch extends Teachers
     public function rules()
     {
         return [
-            [['id', 'timestamp_serv', 'timestamp_serv_spec'], 'integer'],
-            [['position_id', 'work_id', 'level_id', 'tab_num'], 'safe'],
+            [['id', 'timestamp_serv', 'timestamp_serv_spec', 'status'], 'integer'],
+            [['position_id', 'level_id', 'tab_num'], 'safe'],
             ['teachersFullName', 'string'],
             ['gridDepartmentSearch', 'string'],
         ];
@@ -87,14 +87,14 @@ class TeachersSearch extends Teachers
             $query->joinWith(['teachersDepartments']);
         }
         $query->andFilterWhere([
-            'id' => $this->id,
+            'teachers.id' => $this->id,
+            'teachers.status' => $this->status,
             'timestamp_serv' => $this->timestamp_serv,
             'timestamp_serv_spec' => $this->timestamp_serv_spec,
             'teachers_department.department_id' => $this->gridDepartmentSearch,
         ]);
 
         $query->andFilterWhere(['like', 'position_id', $this->position_id])
-            ->andFilterWhere(['like', 'work_id', $this->work_id])
             ->andFilterWhere(['like', 'level_id', $this->level_id])
             ->andFilterWhere(['like', 'tab_num', $this->tab_num]);
         

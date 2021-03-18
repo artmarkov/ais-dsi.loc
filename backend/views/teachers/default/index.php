@@ -28,10 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-6">
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
-                            /* echo GridQuickLinks::widget([
+                             echo GridQuickLinks::widget([
                                 'model' => Teachers::className(),
                                 'searchModel' => $searchModel,
-                            ])*/
+                            ])
                             ?>
                         </div>
 
@@ -58,14 +58,22 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
+                                'options' => ['style' => 'width:30px'],
+                                'attribute' => 'id',
+                                'value' => function (Teachers $model) {
+                                    return Html::a(sprintf('#%06d', $model->id), ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                },
+                                'format' => 'raw'
+                            ],
+                            [
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'teachersFullName',
                                 'controller' => '/teachers/default',
                                 'title' => function (Teachers $model) {
-                                    return Html::a($model->teachersFullName, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->teachersFullName, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
+                                'buttonsTemplate' => '{update} {view} {delete}',
                             ],
                             [
                                 'attribute' => 'position_id',
@@ -73,12 +81,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label' => Yii::t('art/teachers', 'Name Position'),
                                 'filter' => \common\models\guidejob\Position::getPositionList(),
                             ],
-                            [
-                                'attribute' => 'work_id',
-                                'value' => 'work.name',
-                                'label' => Yii::t('art/teachers', 'Name Work'),
-                                'filter' => \common\models\guidejob\Work::getWorkList(),
-                            ],
+//                            [
+//                                'attribute' => 'work_id',
+//                                'value' => 'work.name',
+//                                'label' => Yii::t('art/teachers', 'Name Work'),
+//                                'filter' => \common\models\guidejob\Work::getWorkList(),
+//                            ],
                             [
                                 'attribute' => 'gridDepartmentSearch',
                                 'filter' => Teachers::getDepartmentList(),
@@ -89,8 +97,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-                            'user.phone',
-                            'user.email',
+//                            'user.phone',
+//                            'user.email',
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'status',
+                                'optionsArray' => [
+                                    [Teachers::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
+                                    [Teachers::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                ],
+                                'options' => ['style' => 'width:120px']
+                            ],
                         ],
                     ]);
                     ?>

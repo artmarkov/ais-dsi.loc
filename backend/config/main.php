@@ -5,11 +5,11 @@ Yii::$container->set(\kartik\date\DatePicker::class, [
         'options' => ['placeholder' => ''],
         'convertFormat' => true,
         'pluginOptions' => [
-            'format' => 'dd.MM.yyyy',
+            'format' => 'dd-MM-yyyy',
             'autoclose' => true,
             'weekStart' => 1,
-            'startDate' => '01.01.1930',
-            'endDate' => '01.01.2030',
+            'startDate' => '01-01-1930',
+            'endDate' => '01-01-2030',
             'todayBtn' => 'linked',
             'todayHighlight' => true,
         ]
@@ -20,11 +20,11 @@ Yii::$container->set(\kartik\datetime\DateTimePicker::class, [
         'options' => ['placeholder' => ''],
         'convertFormat' => true,
         'pluginOptions' => [
-            'format' => 'dd.MM.yyyy hh:i',
+            'format' => 'dd-MM-yyyy hh:i',
             'autoclose' => true,
             'weekStart' => 1,
-            'startDateTime' => '01.01.1930 00:00',
-            'endDateTime' => '01.01.2030 00:00',
+            'startDateTime' => '01-01-1930 00:00',
+            'endDateTime' => '01-01-2030 00:00',
             'todayBtn' => 'linked',
             'todayHighlight' => true,
         ]

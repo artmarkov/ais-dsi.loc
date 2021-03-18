@@ -40,6 +40,7 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
         return [
             [['work_id', 'direction_id', 'stake_id'], 'required'],
             [['teachers_id', 'work_id', 'direction_id', 'stake_id'], 'integer'],
+            ['work_id', 'unique', 'targetAttribute' => ['teachers_id', 'work_id', 'direction_id', 'stake_id'], 'message' => Yii::t('art/teachers', 'This combination already exists.')],
             [['work_id'], 'exist', 'skipOnError' => true, 'targetClass' => Work::className(), 'targetAttribute' => ['work_id' => 'id']],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::className(), 'targetAttribute' => ['direction_id' => 'id']],
             [['stake_id'], 'exist', 'skipOnError' => true, 'targetClass' => Stake::className(), 'targetAttribute' => ['stake_id' => 'id']],

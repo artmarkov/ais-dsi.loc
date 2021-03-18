@@ -3,10 +3,8 @@
 namespace common\models\teachers;
 
 use common\models\guidejob\BonusItem;
-use common\models\guidejob\Cost;
 use common\models\guidejob\Level;
 use common\models\guidejob\Position;
-use common\models\guidejob\Work;
 use common\models\own\Department;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -17,15 +15,14 @@ use common\models\user\User;
  *
  * @property int $id
  * @property int $position_id
- * @property int $work_id
  * @property int $level_id
  * @property string $tab_num
  * @property int $timestamp_serv
  * @property int $timestamp_serv_spec
+ * @property int $status
  *
  * @property TeachersLevel $level
  * @property TeachersPosition $position
- * @property TeachersWork $work
  */
 class Teachers extends \yii\db\ActiveRecord
 {
@@ -38,9 +35,12 @@ class Teachers extends \yii\db\ActiveRecord
     public $stake_id_main;
     public $direction_id_optional;
     public $stake_id_optional;
-    
+
     public $gridDepartmentSearch;
-    
+
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+
     /**
      * Кол-во секунд в году
      */
@@ -81,18 +81,15 @@ class Teachers extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['position_id', 'work_id', 'level_id', 'timestamp_serv', 'timestamp_serv_spec'], 'integer'],
-            [['position_id', 'work_id', 'level_id'], 'required'],
-//            [[ 'direction_id_main', 'stake_id_main'], 'required'],
+            [['position_id', 'level_id', 'timestamp_serv', 'timestamp_serv_spec', 'status'], 'integer'],
             [['tab_num'], 'string', 'max' => 16],
             [['level_id'], 'exist', 'skipOnError' => true, 'targetClass' => Level::className(), 'targetAttribute' => ['level_id' => 'id']],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position_id' => 'id']],
-            [['work_id'], 'exist', 'skipOnError' => true, 'targetClass' => Work::className(), 'targetAttribute' => ['work_id' => 'id']],
             [['bonus_list', 'department_list'], 'safe'],
-//            [['direction_id_main', 'stake_id_main', 'direction_id_optional', 'stake_id_optional'], 'integer'],
             [['year_serv', 'year_serv_spec', 'time_serv_init', 'time_serv_spec_init'], 'safe'],
 //            ['cost_main_id', 'compareCost'],
             ['year_serv', 'compareSpec'],
+            [['time_serv_init', 'time_serv_spec_init'], 'date', 'format' => 'dd-MM-yyyy'],
         ];
     }
 
@@ -125,16 +122,15 @@ class Teachers extends \yii\db\ActiveRecord
     /**
      * Преобразование даты в timestamp
      */
-    public static function getDateToTimestamp($mask = "-", $date) {
-        $d_in = explode($mask, $date);
-        return mktime(0, 0, 0, $d_in[1], $d_in[0], $d_in[2]);
+    public static function getDateToTimestamp($date) {
+        return Yii::$app->formatter->asTimestamp($date);
     }
 
     /**
      * Преобразование timestamp в дату
      */
-    public static function getTimestampToDate($mask = "d-m-Y", $timestamp) {
-        return date($mask, $timestamp);
+    public static function getTimestampToDate($mask = "php:d-m-Y", $timestamp) {
+        return Yii::$app->formatter->asDate($timestamp, $mask);
     }
     /**
      * {@inheritdoc}
@@ -144,10 +140,7 @@ class Teachers extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('art/teachers', 'ID'),
             'position_id' => Yii::t('art/teachers', 'Position ID'),
-            'work_id' => Yii::t('art/teachers', 'Work ID'),
             'level_id' => Yii::t('art/teachers', 'Level ID'),
-            'cost_main_id' => Yii::t('art/teachers', 'Cost Main ID'),
-            'cost_optional_id' => Yii::t('art/teachers', 'Cost Optional ID'),
             'tab_num' => Yii::t('art/teachers', 'Tab Num'),
             'timestamp_serv' => Yii::t('art/teachers', 'Timestamp Serv'),
             'timestamp_serv_spec' => Yii::t('art/teachers', 'Timestamp Serv Spec'),
@@ -156,6 +149,7 @@ class Teachers extends \yii\db\ActiveRecord
             'year_serv_spec' => Yii::t('art/teachers', 'Year Serv Spec'),
             'teachersFullName' => Yii::t('art', 'Full Name'),
             'gridDepartmentSearch' => Yii::t('art/guide', 'Department'),
+            'status' => Yii::t('art', 'Status'),
         ];
     }
 
@@ -178,33 +172,17 @@ class Teachers extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getWork()
-    {
-        return $this->hasOne(Work::className(), ['id' => 'work_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCostMain()
-    {
-        return $this->hasOne(Cost::className(), ['id' => 'cost_main_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCostOptional()
-    {
-        return $this->hasOne(Cost::className(), ['id' => 'cost_optional_id']);
-    }
-  
- /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTeachersDepartments()
     {
         return $this->hasMany(TeachersDepartment::className(), ['teachers_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeachersActivity()
+    {
+        return $this->hasMany(TeachersActivity::className(), ['teachers_id' => 'id']);
     }
     /**
      * @return \yii\db\ActiveQuery
@@ -272,7 +250,7 @@ class Teachers extends \yii\db\ActiveRecord
      */
     public static function getTimestampServ($year_serv, $time_serv_init) {
              
-        if ($year_serv != NULL)  return Teachers::getDateToTimestamp("-", $time_serv_init) - $year_serv * Teachers::YEAR_SEC;
+        if ($year_serv != NULL)  return Teachers::getDateToTimestamp($time_serv_init) - $year_serv * Teachers::YEAR_SEC;
         return NULL;
         
     }
@@ -282,8 +260,11 @@ class Teachers extends \yii\db\ActiveRecord
      * @param type $day
      * @return type integer
      */
-    public static function getThisTime() {
-       return mktime(0, 0, 0, Teachers::SERV_MON, Teachers::SERV_DAY, date('Y', time())); 
+    public static function getThisTime()
+    {
+        $time = mktime(0, 0, 0, Teachers::SERV_MON, Teachers::SERV_DAY, date('Y', time()));
+        $year = (date('m', time()) > Teachers::SERV_MON and $time > time()) ? date('Y', time()) : date('Y', time()) - 1;
+        return mktime(0, 0, 0, Teachers::SERV_MON, Teachers::SERV_DAY, $year);
     }
     /**
      * Преобразование timуstamp в дату по маске
@@ -293,7 +274,7 @@ class Teachers extends \yii\db\ActiveRecord
         
         $this_time = Teachers::getThisTime();
         
-        return Teachers::getTimestampToDate("d-m-Y", $this_time);
+        return Teachers::getTimestampToDate("php:d-m-Y", $this_time);
         
     }
     /**
@@ -307,5 +288,17 @@ class Teachers extends \yii\db\ActiveRecord
         
         if ($timestamp_serv != NULL)  return round(($this_time - $timestamp_serv) / Teachers::YEAR_SEC, 2);
         return NULL;
+    }
+
+    /**
+     * getStatusList
+     * @return array
+     */
+    public static function getStatusList()
+    {
+        return array(
+            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
+            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
+        );
     }
 }
