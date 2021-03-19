@@ -40,7 +40,8 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
         return [
             [['work_id', 'direction_id', 'stake_id'], 'required'],
             [['teachers_id', 'work_id', 'direction_id', 'stake_id'], 'integer'],
-            ['work_id', 'unique', 'targetAttribute' => ['teachers_id', 'work_id', 'direction_id', 'stake_id'], 'message' => Yii::t('art/teachers', 'This combination already exists.')],
+//            ['work_id', 'unique', 'targetAttribute' => ['teachers_id', 'work_id'], 'message' => Yii::t('art/teachers', 'The main activity may not be the same as the secondary one.')],
+//            ['direction_id', 'compareDirection'],
             [['work_id'], 'exist', 'skipOnError' => true, 'targetClass' => Work::className(), 'targetAttribute' => ['work_id' => 'id']],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::className(), 'targetAttribute' => ['direction_id' => 'id']],
             [['stake_id'], 'exist', 'skipOnError' => true, 'targetClass' => Stake::className(), 'targetAttribute' => ['stake_id' => 'id']],
@@ -48,6 +49,23 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
         ];
     }
 
+    /**
+     * Проверка на одинаковость полей direction_id
+     * @return  mixed
+     */
+    public function compareDirection()
+    {
+        if (!$this->hasErrors()) {
+           $count = self::find()
+                ->where('id != :id', ['id'=>$this->id])
+                ->andWhere(['teachers_id' => $this->teachers_id])
+                ->andWhere(['direction_id' => $this->direction_id])
+                ->count();
+            if ($count != 0) {
+                $this->addError('direction_id', Yii::t('art/teachers', 'The primary activity cannot but coincide with the secondary one.'));
+            }
+        }
+    }
     /**
      * {@inheritdoc}
      */

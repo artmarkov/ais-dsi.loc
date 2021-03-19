@@ -1,10 +1,6 @@
 <?php
 return [
     'Teachers' => 'Преподаватели',
-    'Name Direction Main' => 'Основная деятельность',
-    'Name Stake' => 'Ставка',
-    'Name Direction Optional' => 'Дополнительная деятельность',
-    'Name Stake Optional' => 'Дополнительная ставка',
     'Year Serv' => 'Стаж работы',
     'Year Serv Spec' => 'Стаж работы по специальности',
     'Teachers Bonus' => 'Достижения',
@@ -24,6 +20,7 @@ return [
     'Select Direction...' => 'Выберите деятельность...',
     'Select Stake...' => 'Выберите ставку...',
     'Stake' => 'Ставка',
+    'Bonus Summ' => 'Сумма бонусов',
     'Bonus Category' => 'Категория достижений',
     'Value Default' => 'По умолчанию',
     'Select Bonus Category...' => 'Выберите категорию...',

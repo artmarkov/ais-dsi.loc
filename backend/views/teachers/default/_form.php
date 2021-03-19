@@ -4,7 +4,6 @@ use artsoft\widgets\ActiveForm;
 use common\models\teachers\Teachers;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
-use nex\chosen\Chosen;
 use yii\widgets\MaskedInput;
 use wbraganca\dynamicform\DynamicFormWidget;
 
@@ -27,6 +26,53 @@ jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
 ';
 
 $this->registerJs($js);
+
+$JSUnselect = <<<EOF
+        function(e) {
+         console.log('select2:select', e.params.data.id);
+         var bonus0 =  parseFloat(document.getElementById('teachers-bonus_summ').value);
+         if (isNaN(bonus0) == true) bonus0 = 0;
+         
+         $.ajax({
+            url: '/admin/teachers/default/select',
+            type: 'POST',
+            data: {
+                id: e.params.data.id 
+            },
+            success: function (bonus) {
+             var bonus = bonus0 - parseFloat(bonus);
+              if (bonus < 0) bonus = 0;
+             document.getElementById('teachers-bonus_summ').value = bonus;
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
+}
+EOF;
+$JSSelect = <<<EOF
+        function(e) {
+         console.log('select2:select', e.params.data.id);
+         var bonus0 =  parseFloat(document.getElementById('teachers-bonus_summ').value);
+         if (isNaN(bonus0) == true) bonus0 = 0;
+         
+         $.ajax({
+            url: '/admin/teachers/default/select',
+            type: 'POST',
+            data: {
+                id: e.params.data.id 
+            },
+            success: function (bonus) {
+            var bonus = bonus0 + parseFloat(bonus);
+             document.getElementById('teachers-bonus_summ').value = bonus;
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
+}
+EOF;
+
 ?>
 
 <div class="teachers-form">
@@ -111,11 +157,16 @@ $this->registerJs($js);
                             <?= $form->field($model, 'time_serv_spec_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date')); ?>
 
                             <?php
-                            echo $form->field($model, 'department_list')->widget(Chosen::className(), [
-                                'items' => Teachers::getDepartmentList(),
-                                'options' => ['disabled' => $readonly],
-                                'multiple' => true,
-                                'placeholder' => Yii::t('art/teachers', 'Select Department...'),
+                            echo $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
+                                'data' => Teachers::getDepartmentList(),
+                                'options' => [
+                                    'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art/teachers', 'Select Department...'),
+                                    'multiple' => true,
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
                             ])->label(Yii::t('art/guide', 'Department'));
                             ?>
                         </div>
@@ -204,14 +255,24 @@ $this->registerJs($js);
                             <div class="col-sm-12">
 
                                 <?php
-                                echo $form->field($model, 'bonus_list')->widget(Chosen::className(), [
-                                    'items' => Teachers::getBonusItemList(),
-                                    'options' => ['disabled' => $readonly],
-                                    'multiple' => true,
-                                    'placeholder' => Yii::t('art/teachers', 'Select Teachers Bonus...'),
+                                 echo $form->field($model, 'bonus_list')->widget(\kartik\select2\Select2::className(), [
+                                    'data' => Teachers::getBonusItemList(),
+                                    'options' => [
+                                        'disabled' => $readonly,
+                                        'placeholder' => Yii::t('art/teachers', 'Select Teachers Bonus...'),
+                                        'multiple' => true,
+                                    ],
+                                    'pluginOptions' => [
+                                        'allowClear' => true
+                                    ],
+                                    'pluginEvents' => [
+                                        "select2:select" => new \yii\web\JsExpression($JSSelect),
+                                        "select2:unselect" => new \yii\web\JsExpression($JSUnselect),
+                                    ],
                                 ])->label(Yii::t('art/teachers', 'Teachers Bonus'));
                                 ?>
 
+                                <?= $form->field($model, 'bonus_summ')->textInput()->hint('При начальной загрузке Будет учтена сумма бонусов всех выбранных достижений.') ?>
                             </div>
                         </div>
                     </div>

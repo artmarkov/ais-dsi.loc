@@ -2,6 +2,7 @@
 
 namespace backend\controllers\teachers;
 
+use common\models\guidejob\BonusItem;
 use common\models\guidejob\Stake;
 use common\models\guidejob\Cost;
 use common\models\teachers\Teachers;
@@ -108,11 +109,11 @@ class DefaultController extends MainController
 
         $modelsActivity = $model->teachersActivity;
 
-            $model->time_serv_init = Teachers::getTimeServInit();
-            $model->time_serv_spec_init = Teachers::getTimeServInit();
+        $model->time_serv_init = Teachers::getTimeServInit();
+        $model->time_serv_spec_init = Teachers::getTimeServInit();
 
-            $model->year_serv = Teachers::getYearServ($model->timestamp_serv);
-            $model->year_serv_spec = Teachers::getYearServ($model->timestamp_serv_spec);
+        $model->year_serv = Teachers::getYearServ($model->timestamp_serv);
+        $model->year_serv_spec = Teachers::getYearServ($model->timestamp_serv_spec);
 
         if ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
@@ -167,6 +168,14 @@ class DefaultController extends MainController
     public function actionView($id)
     {
         return $this->actionUpdate($id, true);
+    }
+
+    public function actionSelect()
+    {
+        $id = \Yii::$app->request->post('id');
+        $model = BonusItem::findOne(['id' => $id]);
+
+        return $model->value_default;
     }
 
 }

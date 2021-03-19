@@ -20,6 +20,7 @@ use common\models\user\User;
  * @property int $timestamp_serv
  * @property int $timestamp_serv_spec
  * @property int $status
+ * @property string $bonus_summ
  *
  * @property TeachersLevel $level
  * @property TeachersPosition $position
@@ -83,29 +84,16 @@ class Teachers extends \yii\db\ActiveRecord
         return [
             [['position_id', 'level_id', 'timestamp_serv', 'timestamp_serv_spec', 'status'], 'integer'],
             [['tab_num'], 'string', 'max' => 16],
+            [['bonus_summ'], 'string', 'max' => 16],
             [['level_id'], 'exist', 'skipOnError' => true, 'targetClass' => Level::className(), 'targetAttribute' => ['level_id' => 'id']],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position_id' => 'id']],
             [['bonus_list', 'department_list'], 'safe'],
             [['year_serv', 'year_serv_spec', 'time_serv_init', 'time_serv_spec_init'], 'safe'],
-//            ['cost_main_id', 'compareCost'],
             ['year_serv', 'compareSpec'],
             [['time_serv_init', 'time_serv_spec_init'], 'date', 'format' => 'dd-MM-yyyy'],
         ];
     }
 
-    /**
-     * Проверка на одинаковость полей direction_id_main и direction_id_optional
-     * @return  mixed
-     */
-    public function compareCost()
-    {
-        if (!$this->hasErrors()) {
-
-            if ($this->direction_id_main == $this->direction_id_optional) {
-                $this->addError('direction_id_main', Yii::t('art/teachers', 'The main activity may not be the same as the secondary one.'));
-            }
-        }
-    }
      /**
      * Сравнение общего стажа со стажем по специальности
      * @return  mixed
@@ -150,6 +138,7 @@ class Teachers extends \yii\db\ActiveRecord
             'teachersFullName' => Yii::t('art', 'Full Name'),
             'gridDepartmentSearch' => Yii::t('art/guide', 'Department'),
             'status' => Yii::t('art', 'Status'),
+            'bonus_summ' => Yii::t('art/teachers', 'Bonus Summ'),
         ];
     }
 
