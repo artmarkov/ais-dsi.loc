@@ -1,6 +1,8 @@
 <?php
 
 namespace artsoft\grid;
+use artsoft\widgets\JumpPager as LinkPager;
+use yii\helpers\ArrayHelper;
 
 class GridView extends \yii\grid\GridView
 {
@@ -8,6 +10,7 @@ class GridView extends \yii\grid\GridView
     public $bulkActionOptions = [];
     public $filterPosition = self::FILTER_POS_HEADER;
     public $pager = [
+        'maxButtonCount' => 5,
         'options' => ['class' => 'pagination pagination-sm'],
         'hideOnSinglePage' => true,
         'firstPageLabel' => '<<',
@@ -41,5 +44,24 @@ class GridView extends \yii\grid\GridView
             $this->bulkActions = GridBulkActions::widget($this->bulkActionOptions);
         }
         return $this->bulkActions;
+    }
+
+    /**
+     * Renders the pager.
+     * @return string the rendering result
+     */
+    public function renderPager()
+    {
+        $pagination = $this->dataProvider->getPagination();
+        if ($pagination === false || $this->dataProvider->getCount() <= 0) {
+            return '';
+        }
+        /* @var $class LinkPager */
+        $pager = $this->pager;
+        $class = ArrayHelper::remove($pager, 'class', LinkPager::className());
+        $pager['pagination'] = $pagination;
+        $pager['view'] = $this->getView();
+
+        return $class::widget($pager);
     }
 }

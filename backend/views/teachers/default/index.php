@@ -48,6 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <?=
                     GridView::widget([
+
                         'id' => 'teachers-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
@@ -61,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:30px'],
                                 'attribute' => 'id',
                                 'value' => function (Teachers $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'format' => 'raw'
                             ],
@@ -104,7 +105,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'status',
                                 'optionsArray' => [
                                     [Teachers::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
-                                    [Teachers::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                    [Teachers::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'warning'],
                                 ],
                                 'options' => ['style' => 'width:120px']
                             ],

@@ -29,7 +29,7 @@ $this->registerJs($js);
 
 $JSUnselect = <<<EOF
         function(e) {
-         console.log('select2:select', e.params.data.id);
+         console.log('select2:unselect', e.params.data);
          var bonus0 =  parseFloat(document.getElementById('teachers-bonus_summ').value);
          if (isNaN(bonus0) == true) bonus0 = 0;
          
@@ -52,7 +52,7 @@ $JSUnselect = <<<EOF
 EOF;
 $JSSelect = <<<EOF
         function(e) {
-         console.log('select2:select', e.params.data.id);
+         console.log('select2:select', e.params.data);
          var bonus0 =  parseFloat(document.getElementById('teachers-bonus_summ').value);
          if (isNaN(bonus0) == true) bonus0 = 0;
          
@@ -98,7 +98,7 @@ EOF;
                     <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(Teachers::getStatusList()) ?>
                 </div>
             </div>
-            <div class="panel panel-info">
+            <div class="panel panel-primary">
                 <div class="panel-heading">
                     Основные сведения
                 </div>
@@ -125,7 +125,7 @@ EOF;
                     </div>
                 </div>
             </div>
-            <div class="panel panel-info">
+            <div class="panel panel-primary">
                 <div class="panel-heading">
                     Должностные характеристики
                 </div>
@@ -190,7 +190,7 @@ EOF;
                 ],
             ]); ?>
 
-            <div class="panel panel-info">
+            <div class="panel panel-primary">
                 <div class="panel-heading">
                     Сведения о трудовой деятельности
 
@@ -246,7 +246,7 @@ EOF;
                     </div>
                 <?php endif; ?>
                 <?php DynamicFormWidget::end(); ?>
-                <div class="panel panel-info">
+                <div class="panel panel-primary">
                     <div class="panel-heading">
                         Сведения о достижениях
                     </div>
@@ -257,13 +257,14 @@ EOF;
                                 <?php
                                  echo $form->field($model, 'bonus_list')->widget(\kartik\select2\Select2::className(), [
                                     'data' => Teachers::getBonusItemList(),
+                                    'showToggleAll' => false,
                                     'options' => [
                                         'disabled' => $readonly,
                                         'placeholder' => Yii::t('art/teachers', 'Select Teachers Bonus...'),
                                         'multiple' => true,
                                     ],
                                     'pluginOptions' => [
-                                        'allowClear' => true
+                                        'allowClear' => false,
                                     ],
                                     'pluginEvents' => [
                                         "select2:select" => new \yii\web\JsExpression($JSSelect),
