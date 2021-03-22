@@ -5,7 +5,7 @@ namespace backend\controllers\parent;
 use common\models\user\UserCommon;
 use common\models\user\UserFamily;
 use Yii;
-use common\models\user\User;
+use artsoft\models\User;
 use yii\data\ActiveDataProvider;
 Use yii\web\NotFoundHttpException;
 

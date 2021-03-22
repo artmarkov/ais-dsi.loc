@@ -140,4 +140,13 @@ return [
     'Save & Exit' => 'Сохранить и выйти',
     'Save & Add' => 'Сохранить и добавить',
     'New entry' => 'Новая запись',
+    'Staff' => 'Сотрудник',
+    'Teacher' => 'Преподаватель',
+    'Student' => 'Ученик',
+    'Parent' => 'Родитель',
+    'Full Name' => 'Полное имя',
+    'User Category' => 'Пользователи',
+    'Login as user' => 'Войти под пользователем',
+    'Send registration data' => 'Отправить регистрационные данные',
+    'Are you sure you want to send registration data?' => 'Вы уверены, что хотите отправить регистрационные данные?',
 ];

@@ -2,43 +2,52 @@
 
 namespace artsoft\models;
 
+use artsoft\behaviors\DateToTimeBehavior;
 use artsoft\helpers\AuthHelper;
-use artsoft\helpers\ArtHelper;
+use artsoft\helpers\artHelper;
+use artsoft\traits\DateTimeTrait;
 use Yii;
+use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 /**
- * This is the model class for table "user".
+ * This is the model class for table "{{%user}}".
  *
  * @property int $id
- * @property string $username
- * @property string $auth_key
- * @property string $password_hash
- * @property string $password_reset_token
- * @property string $email
+ * @property string|null $username
+ * @property string|null $auth_key
+ * @property string|null $password_hash
+ * @property string|null $password_reset_token
+ * @property string|null $email
  * @property int $status
+ * @property int $user_category
+ * @property int|null $superadmin
+ * @property string|null $registration_ip
+ * @property string|null $bind_to_ip
+ * @property int|null $email_confirmed
+ * @property string|null $confirmation_token
+ * @property string|null $avatar
+ * @property string|null $first_name
+ * @property string|null $middle_name
+ * @property string|null $last_name
+ * @property int|null $birth_timestamp
+ * @property int|null $gender
+ * @property string|null $phone
+ * @property string|null $phone_optional
+ * @property string|null $skype
+ * @property string|null $info
+ * @property string|null $snils
  * @property int $created_at
  * @property int $updated_at
- * @property int $superadmin
- * @property string $registration_ip
- * @property string $bind_to_ip
- * @property int $email_confirmed
- * @property string $confirmation_token
- * @property string $avatar
- * @property string $first_name
- * @property string $last_name
- * @property string $middle_name
- * @property int $birth_day
- * @property int $birth_month
- * @property int $birth_year
- * @property int $gender
- * @property string $phone
- * @property string $skype
- * @property string $info
+ * @property int $created_by
+ * @property int $updated_by
+ *
  */
-class User extends UserIdentity
-{
+class User extends UserIdentity {
+
+    use DateTimeTrait;
 
     const STATUS_ACTIVE = 10;
     const STATUS_INACTIVE = 0;
@@ -47,13 +56,17 @@ class User extends UserIdentity
     const GENDER_NOT_SET = 0;
     const GENDER_MALE = 1;
     const GENDER_FEMALE = 2;
+    const USER_CATEGORY_STAFF = 1;
+    const USER_CATEGORY_TEACHER = 2;
+    const USER_CATEGORY_STUDENT = 3;
+    const USER_CATEGORY_PARENT = 4;
 
     /**
      * @var string
      */
     public $gridRoleSearch;
 
-    /**
+   /**
      * @var string
      */
     public $password;
@@ -64,56 +77,74 @@ class User extends UserIdentity
     public $repeat_password;
 
     /**
+     * @var string
+     */
+    public $birth_date;
+
+    /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return Yii::$app->art->user_table;
     }
 
     /**
      * @inheritdoc
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
+            BlameableBehavior::className(),
             TimestampBehavior::className(),
+            [
+                'class' => DateToTimeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'birth_date',
+                    ActiveRecord::EVENT_AFTER_FIND => 'birth_date',
+                ],
+                'timeAttribute' => 'birth_timestamp',
+                'timeFormat' => 'd-m-Y',
+            ],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            [['username', 'email'], 'required'],
+            [['username', 'email', 'birth_date'], 'required'],
+            ['birth_timestamp', 'safe'],
             ['username', 'unique'],
-            ['username', 'match', 'pattern' => Yii::$app->art->usernameRegexp, 'message' => Yii::t('art/auth', 'The username should contain only Latin letters, numbers and the following characters: "_".')],
-            ['username', 'match', 'not' => true, 'pattern' => Yii::$app->art->usernameBlackRegexp, 'message' => Yii::t('art/auth', 'Username contains not allowed characters or words.')],
             [['username', 'email', 'bind_to_ip'], 'trim'],
-            [['status', 'email_confirmed'], 'integer'],
             ['email', 'email'],
-            ['email', 'validateEmailUnique'],
+            [['status', 'user_category', 'email_confirmed'], 'integer'],
             ['bind_to_ip', 'validateBindToIp'],
             ['bind_to_ip', 'string', 'max' => 255],
-            [['first_name', 'last_name', 'middle_name'], 'string', 'max' => 124],
-            [['skype'], 'string', 'max' => 64],
-            [['phone'], 'string', 'max' => 24],
-            [['bind_to_ip', 'info'], 'string', 'max' => 255],
+            [['first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
+            [['first_name', 'middle_name', 'last_name'], 'trim'],
+            [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
+            ['snils', 'string', 'max' => 16],
+            [['phone', 'phone_optional'], 'string', 'max' => 24],
+            ['bind_to_ip', 'string', 'max' => 255],
+            ['info', 'string', 'max' => 1024],
             ['gender', 'integer'],
-            ['birth_day', 'integer', 'max' => 31],
-            ['birth_month', 'integer', 'max' => 12],
-            ['birth_year', 'integer', 'max' => 2099],
-            [['birth_month', 'birth_day'], 'integer', 'min' => 1],
-            ['birth_year', 'integer', 'min' => 1880],
+            [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             ['password', 'required', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['password', 'string', 'max' => 255, 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['password', 'string', 'min' => 6, 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['password', 'trim', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['repeat_password', 'required', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['repeat_password', 'compare', 'compareAttribute' => 'password'],
+            ['user_category', 'default', 'value' => self::USER_CATEGORY_STAFF],
+            ['user_category', 'in', 'range' => [self::USER_CATEGORY_STAFF, self::USER_CATEGORY_TEACHER, self::USER_CATEGORY_STUDENT, self::USER_CATEGORY_PARENT]],
+            ['birth_date', 'date', 'format' => 'dd-MM-yyyy'],
         ];
+    }
+
+    /* Геттер для полного имени человека */
+
+    public function getFullName() {
+        return $this->last_name . ' ' . $this->first_name . ' ' . $this->middle_name;
     }
 
     /**
@@ -123,8 +154,7 @@ class User extends UserIdentity
      *
      * @return static
      */
-    public static function getCurrentUser($fromSession = true)
-    {
+    public static function getCurrentUser($fromSession = true) {
         if (!$fromSession) {
             return static::findOne(Yii::$app->user->id);
         }
@@ -148,8 +178,7 @@ class User extends UserIdentity
      *
      * @return bool
      */
-    public static function assignRole($userId, $roleName)
-    {
+    public static function assignRole($userId, $roleName) {
         try {
             Yii::$app->db->createCommand()
                     ->insert(Yii::$app->art->auth_assignment_table, [
@@ -174,8 +203,7 @@ class User extends UserIdentity
      *
      * @return bool
      */
-    public function assignRoles(array $roles)
-    {
+    public function assignRoles(array $roles) {
         foreach ($roles as $role) {
             User::assignRole($this->id, $role);
         }
@@ -189,8 +217,7 @@ class User extends UserIdentity
      *
      * @return bool
      */
-    public static function revokeRole($userId, $roleName)
-    {
+    public static function revokeRole($userId, $roleName) {
         $result = Yii::$app->db->createCommand()
                         ->delete(Yii::$app->art->auth_assignment_table, ['user_id' => $userId, 'item_name' => $roleName])
                         ->execute() > 0;
@@ -208,8 +235,7 @@ class User extends UserIdentity
      *
      * @return bool
      */
-    public static function hasRole($roles, $superAdminAllowed = true)
-    {
+    public static function hasRole($roles, $superAdminAllowed = true) {
         if ($superAdminAllowed AND Yii::$app->user->isSuperadmin) {
             return true;
         }
@@ -226,8 +252,7 @@ class User extends UserIdentity
      *
      * @return bool
      */
-    public static function hasPermission($permission, $superAdminAllowed = true)
-    {
+    public static function hasPermission($permission, $superAdminAllowed = true) {
         if ($superAdminAllowed AND Yii::$app->user->isSuperadmin) {
             return true;
         }
@@ -251,8 +276,7 @@ class User extends UserIdentity
      *
      * @return bool
      */
-    public static function canRoute($route, $superAdminAllowed = true)
-    {
+    public static function canRoute($route, $superAdminAllowed = true) {
         if ($superAdminAllowed AND Yii::$app->user->isSuperadmin) {
             return true;
         }
@@ -276,8 +300,7 @@ class User extends UserIdentity
      * getStatusList
      * @return array
      */
-    public static function getStatusList()
-    {
+    public static function getStatusList() {
         return array(
             self::STATUS_ACTIVE => Yii::t('art', 'Active'),
             self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
@@ -289,8 +312,7 @@ class User extends UserIdentity
      * Get gender list
      * @return array
      */
-    public static function getGenderList()
-    {
+    public static function getGenderList() {
         return array(
             self::GENDER_NOT_SET => Yii::t('yii', '(not set)'),
             self::GENDER_MALE => Yii::t('art', 'Male'),
@@ -299,12 +321,24 @@ class User extends UserIdentity
     }
 
     /**
+     * Get gender list
+     * @return array
+     */
+    public static function getUserCategoryList() {
+        return array(
+            self::USER_CATEGORY_STAFF => Yii::t('art', 'Staff'),
+            self::USER_CATEGORY_TEACHER => Yii::t('art', 'Teacher'),
+            self::USER_CATEGORY_STUDENT => Yii::t('art', 'Student'),
+            self::USER_CATEGORY_PARENT => Yii::t('art', 'Parent'),
+        );
+    }
+
+    /**
      * getUsersList
      *
      * @return array
      */
-    public static function getUsersList()
-    {
+    public static function getUsersList() {
         $users = static::find()->select(['id', 'username'])->asArray()->all();
         return ArrayHelper::map($users, 'id', 'username');
     }
@@ -316,9 +350,21 @@ class User extends UserIdentity
      *
      * @return string
      */
-    public static function getStatusValue($val)
-    {
+    public static function getStatusValue($val) {
         $ar = self::getStatusList();
+
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    /**
+     * getFunctionValue
+     *
+     * @param string $val
+     *
+     * @return string
+     */
+    public static function getUserCategoryValue($val) {
+        $ar = self::getUserCategoryList();
 
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
@@ -326,16 +372,14 @@ class User extends UserIdentity
     /**
      * Generates new password reset token
      */
-    public function generatePasswordResetToken()
-    {
+    public function generatePasswordResetToken() {
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
     /**
      * Check that there is no such confirmed E-mail in the system
      */
-    public function validateEmailUnique()
-    {
+    public function validateEmailUnique() {
         if ($this->email) {
             $exists = User::findOne(['email' => $this->email]);
 
@@ -348,8 +392,7 @@ class User extends UserIdentity
     /**
      * Validate bind_to_ip attr to be in correct format
      */
-    public function validateBindToIp()
-    {
+    public function validateBindToIp() {
         if ($this->bind_to_ip) {
             $ips = explode(',', $this->bind_to_ip);
 
@@ -364,8 +407,7 @@ class User extends UserIdentity
     /**
      * @return array
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => Yii::t('art', 'ID'),
             'username' => Yii::t('art', 'Login'),
@@ -374,31 +416,36 @@ class User extends UserIdentity
             'registration_ip' => Yii::t('art', 'Registration IP'),
             'bind_to_ip' => Yii::t('art', 'Bind to IP'),
             'status' => Yii::t('art', 'Status'),
+            'role' => Yii::t('art', 'Role'),
             'gridRoleSearch' => Yii::t('art', 'Roles'),
-            'created_at' => Yii::t('art', 'Created'),
-            'updated_at' => Yii::t('art', 'Updated'),
             'password' => Yii::t('art', 'Password'),
             'repeat_password' => Yii::t('art', 'Repeat password'),
             'email_confirmed' => Yii::t('art', 'E-mail confirmed'),
             'email' => Yii::t('art', 'E-mail'),
             'first_name' => Yii::t('art', 'First Name'),
-            'last_name' => Yii::t('art', 'Last Name'),
             'middle_name' => Yii::t('art', 'Middle Name'),
-            'skype' => Yii::t('art', 'Skype'),
+            'last_name' => Yii::t('art', 'Last Name'),
+            'fullName' => Yii::t('art', 'Full Name'),
             'phone' => Yii::t('art', 'Phone'),
+            'phone_optional' => Yii::t('art', 'Phone Optional'),
             'gender' => Yii::t('art', 'Gender'),
-            'birth_day' => Yii::t('art', 'Birthday'),
-            'birth_month' => Yii::t('art', 'Birth month'),
-            'birth_year' => Yii::t('art', 'Birth year'),
             'info' => Yii::t('art', 'Short Info'),
+            'snils' => Yii::t('art', 'Snils'),
+            'birth_timestamp' => Yii::t('art', 'Birth Date'),
+            'birth_date' => Yii::t('art', 'Birth Date'),
+            'user_category' => Yii::t('art', 'User Category'),
+            'fullName' => Yii::t('art', 'Full Name'),
+            'created_at' => Yii::t('art', 'Created'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_by' => Yii::t('art', 'Updated By'),
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getRoles()
-    {
+    public function getRoles() {
         return $this->hasMany(Role::className(), ['name' => 'item_name'])
                         ->viaTable(Yii::$app->art->auth_assignment_table, ['user_id' => 'id']);
     }
@@ -409,11 +456,10 @@ class User extends UserIdentity
      *
      * @inheritdoc
      */
-    public function beforeSave($insert)
-    {
+    public function beforeSave($insert) {
         if ($insert) {
             if (php_sapi_name() != 'cli') {
-                $this->registration_ip = ArtHelper::getRealIp();
+                $this->registration_ip = artHelper::getRealIp();
             }
             $this->generateAuthKey();
         } else {
@@ -421,8 +467,7 @@ class User extends UserIdentity
             if (php_sapi_name() != 'cli') {
                 if (Yii::$app->user->id == $this->id) {
                     // Make sure user will not deactivate himself
-                    $this->status = static::STATUS_ACTIVE;
-
+                    // $this->status = static::STATUS_ACTIVE; //Пользователь деактивирует себя при изменении e-mail - Model ProfileForm
                     // Superadmin could not demote himself
                     if (Yii::$app->user->isSuperadmin AND $this->superadmin != 1) {
                         $this->superadmin = 1;
@@ -447,11 +492,9 @@ class User extends UserIdentity
 
     /**
      * Don't let delete yourself and don't let non-superadmin delete superadmin
-     *
      * @inheritdoc
      */
-    public function beforeDelete()
-    {
+    public function beforeDelete() {
         // Console doesn't have Yii::$app->user, so we skip it for console
         if (php_sapi_name() != 'cli') {
             // Don't let delete yourself
@@ -472,78 +515,16 @@ class User extends UserIdentity
      * @inheritdoc
      * @return PostQuery the active query used by this AR class.
      */
-    public static function find()
-    {
+    public static function find() {
         return new UserQuery(get_called_class());
     }
 
-    /**
-     * Get created date
-     *
-     * @return string
-     */
-    public function getCreatedDate()
-    {
-        return Yii::$app->formatter->asDate(($this->isNewRecord) ? time() : $this->created_at);
-    }
 
     /**
-     * Get created date
-     *
-     * @return string
-     */
-    public function getUpdatedDate()
-    {
-        return Yii::$app->formatter->asDate(($this->isNewRecord) ? time() : $this->updated_at);
-    }
-
-    /**
-     * Get created time
-     *
-     * @return string
-     */
-    public function getCreatedTime()
-    {
-        return Yii::$app->formatter->asTime(($this->isNewRecord) ? time() : $this->updated_at);
-    }
-
-    /**
-     * Get created time
-     *
-     * @return string
-     */
-    public function getUpdatedTime()
-    {
-        return Yii::$app->formatter->asTime(($this->isNewRecord) ? time() : $this->updated_at);
-    }
-
-    /**
-     * Get created datetime
-     *
-     * @return string
-     */
-    public function getCreatedDatetime()
-    {
-        return "{$this->createdDate} {$this->createdTime}";
-    }
-
-    /**
-     * Get created datetime
-     *
-     * @return string
-     */
-    public function getUpdatedDatetime()
-    {
-        return "{$this->updatedDate} {$this->updatedTime}";
-    }
-
-    /**
-     *
      * @param string $size
      * @return boolean|string
      */
-    public function getAvatar($size = 'small')
-    {
+    public function getAvatar($size = 'small') {
         if (!empty($this->avatar)) {
             $avatars = json_decode($this->avatar);
 
@@ -559,8 +540,7 @@ class User extends UserIdentity
      *
      * @param array $avatars
      */
-    public function setAvatars($avatars)
-    {
+    public function setAvatars($avatars) {
         $this->avatar = json_encode($avatars);
         return $this->save();
     }
@@ -568,10 +548,46 @@ class User extends UserIdentity
     /**
      *
      */
-    public function removeAvatar()
-    {
+    public function removeAvatar() {
         $this->avatar = '';
         return $this->save();
     }
 
+    /**
+     * Первая буква заглавная
+     */
+    protected function getUcFirst($str, $encoding = 'UTF-8') {
+        /* $str = mb_ereg_replace('^[\ ]+', '', $str);
+          $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) .
+          mb_substr($str, 1, mb_strlen($str), $encoding); */
+        $str = mb_convert_case($str, MB_CASE_TITLE, $encoding);
+        return $str;
+    }
+
+    /**
+     * До валидации формируем строки с первой заглавной
+     */
+    public function beforeValidate() {
+
+        $this->first_name = User::getUcFirst($this->first_name);
+        $this->middle_name = User::getUcFirst($this->middle_name);
+        $this->last_name = User::getUcFirst($this->last_name);
+
+
+        return parent::beforeValidate();
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatedBy()
+    {
+        return $this->hasOne(self::className(), ['id' => 'created_by']);
+    } /**
+ * @return \yii\db\ActiveQuery
+ */
+    public function getUpdatedBy()
+    {
+        return $this->hasOne(self::className(), ['id' => 'updated_by']);
+    }
 }

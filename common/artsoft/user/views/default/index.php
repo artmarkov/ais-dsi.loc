@@ -5,10 +5,10 @@ use artsoft\grid\GridQuickLinks;
 use artsoft\grid\GridView;
 use artsoft\helpers\Html;
 use artsoft\models\Role;
-use artsoft\models\User;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
+use artsoft\models\User;
 
 /**
  * @var yii\web\View $this
@@ -55,12 +55,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'attribute' => 'username',
+                                'options' => ['style' => 'width:30px'],
+                                'attribute' => 'id',
+                                'value' => function (User $model) {
+                                    if (User::hasPermission('editUsers')) {
+                                        return Html::a(sprintf('#%06d', $model->id), ['/user/default/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    } else {
+                                        return sprintf('#%06d', $model->id);
+                                    }
+                                },
+                                'format' => 'raw'
+                            ],
+                            [
+                                'attribute' => 'fullName',
                                 'controller' => '/user/default',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'title' => function (User $model) {
                                     if (User::hasPermission('editUsers')) {
-                                        return Html::a($model->username, ['/user/default/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                        return Html::a($model->getFullName(), ['/user/default/update', 'id' => $model->id], ['data-pjax' => 0]);
                                     } else {
                                         return $model->username;
                                     }
@@ -84,18 +96,21 @@ $this->params['breadcrumbs'][] = $this->title;
                                         );
                                     }
                                 ],
-                                'options' => ['style' => 'width:350px']
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
                             ],
+                            'username',
+//
                             [
                                 'attribute' => 'email',
                                 'format' => 'raw',
                                 'visible' => User::hasPermission('viewUserEmail'),
                             ],
-                            /* [
-                              'class' => 'artsoft\grid\columns\StatusColumn',
-                              'attribute' => 'email_confirmed',
-                              'visible' => User::hasPermission('viewUserEmail'),
-                              ], */
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'email_confirmed',
+                                'visible' => User::hasPermission('viewUserEmail'),
+                            ],
                             [
                                 'attribute' => 'gridRoleSearch',
                                 'filter' => ArrayHelper::map(Role::getAvailableRoles(Yii::$app->user->isSuperAdmin),
@@ -118,6 +133,17 @@ $this->params['breadcrumbs'][] = $this->title;
                               'format' => 'raw',
                               'visible' => User::hasPermission('viewRegistrationIp'),
                               ], */
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'user_category',
+                                'optionsArray' => [
+                                    [User::USER_CATEGORY_STAFF, Yii::t('art', 'Staff'), 'default'],
+                                    [User::USER_CATEGORY_TEACHER, Yii::t('art', 'Teacher'), 'info'],
+                                    [User::USER_CATEGORY_STUDENT, Yii::t('art', 'Student'), 'danger'],
+                                    [User::USER_CATEGORY_PARENT, Yii::t('art', 'Parent'), 'warning'],
+                                ],
+                                'options' => ['style' => 'width:100px']
+                            ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'superadmin',

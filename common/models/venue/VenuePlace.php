@@ -155,7 +155,7 @@ class VenuePlace extends \yii\db\ActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(\common\models\user\User::className(), ['id' => 'created_by']);
+        return $this->hasOne(\artsoft\models::className(), ['id' => 'created_by']);
     }
 
     /**
@@ -163,7 +163,7 @@ class VenuePlace extends \yii\db\ActiveRecord
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(\common\models\user\User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(\artsoft\models::className(), ['id' => 'updated_by']);
     }
     /**
      * Get created date

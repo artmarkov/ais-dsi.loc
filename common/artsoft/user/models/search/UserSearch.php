@@ -13,11 +13,14 @@ use yii\data\ActiveDataProvider;
 class UserSearch extends User
 {
 
+    public $fullName;
+
     public function rules()
     {
         return [
-            [['id', 'superadmin', 'status', 'created_at', 'updated_at', 'email_confirmed'], 'integer'],
+            [['id', 'superadmin', 'status', 'created_at', 'updated_at', 'email_confirmed', 'user_category'], 'integer'],
             [['username', 'gridRoleSearch', 'registration_ip', 'email'], 'string'],
+            ['fullName', 'string'],
         ];
     }
 
@@ -49,6 +52,21 @@ class UserSearch extends User
             ],
         ]);
 
+        $dataProvider->setSort([
+            'attributes' => [
+                'id',
+                'superadmin',
+                'status',
+                'email_confirmed',
+                'user_category',
+                'username',
+                'fullName' => [
+                    'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
+                    'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],
+                ]
+            ]
+        ]);
+
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;
         }
@@ -61,6 +79,7 @@ class UserSearch extends User
             'id' => $this->id,
             'superadmin' => $this->superadmin,
             'status' => $this->status,
+            'user_category' => $this->user_category,
             Yii::$app->art->auth_item_table . '.name' => $this->gridRoleSearch,
             'registration_ip' => $this->registration_ip,
             'created_at' => $this->created_at,
@@ -71,6 +90,10 @@ class UserSearch extends User
         $query->andFilterWhere(['like', 'username', $this->username])
             ->andFilterWhere(['like', 'email', $this->email]);
 
+        $query->andWhere('first_name LIKE "%' . $this->fullName . '%" '.
+            'OR last_name LIKE "%' . $this->fullName . '%"'.
+            'OR middle_name LIKE "%' . $this->fullName . '%"'
+        );
         return $dataProvider;
     }
 }

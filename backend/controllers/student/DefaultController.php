@@ -2,7 +2,7 @@
 
 namespace backend\controllers\student;
 
-use common\models\user\User;
+use artsoft\models\User;
 use common\models\user\UserCommon;
 use yii\web\NotFoundHttpException;
 use Yii;

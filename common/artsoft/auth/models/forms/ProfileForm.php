@@ -10,7 +10,7 @@ namespace artsoft\auth\models\forms;
 
 use Yii;
 
-use common\models\user\User;
+use artsoft\models\User;
 
 class ProfileForm extends User
 {

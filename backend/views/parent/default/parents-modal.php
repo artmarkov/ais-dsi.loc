@@ -1,7 +1,7 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\user\User;
+use artsoft\models\User;
 use artsoft\helpers\Html;
 use yii\widgets\MaskedInput;
 

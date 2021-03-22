@@ -8,7 +8,7 @@ use common\models\guidejob\Cost;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersActivity;
 use common\models\user\UserCommon;
-use common\models\user\User;
+use artsoft\models\User;
 use yii\web\NotFoundHttpException;
 use Yii;
 use backend\models\Model;

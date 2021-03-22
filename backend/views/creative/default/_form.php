@@ -3,7 +3,7 @@
 use artsoft\widgets\ActiveForm;
 use common\models\creative\CreativeWorks;
 use common\models\creative\CreativeCategory;
-use common\models\user\User;
+use artsoft\models\User;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 use yii\helpers\Url;

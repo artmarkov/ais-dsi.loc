@@ -156,8 +156,7 @@ EOF;
 
                             <?= $form->field($model, 'time_serv_spec_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date')); ?>
 
-                            <?php
-                            echo $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
+                            <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
                                 'data' => Teachers::getDepartmentList(),
                                 'options' => [
                                     'disabled' => $readonly,
@@ -196,6 +195,15 @@ EOF;
 
                 </div>
                 <div class="panel-body">
+                    <?= \yii\bootstrap\Alert::widget([
+                        'body' => '<h4>Внимание!</h4>
+                            <hr>
+                            <p>При выборе вида работы используйте следующее правило.
+                            Выбирайте сначала основной вид работы.</p>
+                            ',
+                        'options' => ['class' => 'alert-warning'],
+                    ]);
+                    ?>
                     <div class="container-items"><!-- widgetBody -->
                         <?php foreach ($modelsActivity as $index => $modelActivity): ?>
                             <div class="item panel panel-info"><!-- widgetItem -->
@@ -254,8 +262,7 @@ EOF;
                         <div class="row">
                             <div class="col-sm-12">
 
-                                <?php
-                                 echo $form->field($model, 'bonus_list')->widget(\kartik\select2\Select2::className(), [
+                                <?= $form->field($model, 'bonus_list')->widget(\kartik\select2\Select2::className(), [
                                     'data' => Teachers::getBonusItemList(),
                                     'showToggleAll' => false,
                                     'options' => [

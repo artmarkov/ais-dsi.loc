@@ -2,7 +2,7 @@
 
 namespace common\models\creative;
 
-use common\models\user\User;
+use artsoft\models\User;
 use Yii;
 use yii\helpers\ArrayHelper;
 

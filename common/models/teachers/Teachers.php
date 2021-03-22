@@ -8,7 +8,7 @@ use common\models\guidejob\Position;
 use common\models\own\Department;
 use Yii;
 use yii\helpers\ArrayHelper;
-use common\models\user\User;
+use artsoft\models\User;
 
 /**
  * This is the model class for table "{{%teachers}}".

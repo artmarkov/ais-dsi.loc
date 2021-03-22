@@ -8,7 +8,7 @@
 
 namespace artsoft\auth\models\forms;
 
-use common\models\user\User;
+use artsoft\models\User;
 use artsoft\auth\AuthModule;
 use Yii;
 use yii\base\Model;

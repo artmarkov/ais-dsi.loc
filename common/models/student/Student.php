@@ -4,7 +4,7 @@ namespace common\models\student;
 
 use common\models\user\UserFamily;
 use Yii;
-use common\models\user\User;
+use artsoft\models\User;
 
 /**
  * This is the model class for table "{{%student}}".
