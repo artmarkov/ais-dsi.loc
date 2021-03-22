@@ -206,7 +206,7 @@ class InitAdminController extends Controller
 
     private function canUpdateRootUser()
     {
-        $user = $this->db->createCommand('SELECT * FROM {{%user}} WHERE id = 1')->queryOne(\PDO::FETCH_OBJ);
+        $user = $this->db->createCommand('SELECT * FROM users WHERE id = 1')->queryOne(\PDO::FETCH_OBJ);
 
         return ($user && (empty($user->password_hash) || $this->allowOverwrite));
     }
@@ -218,7 +218,7 @@ class InitAdminController extends Controller
             $security      = new Security();
             $password_hash = $security->generatePasswordHash($password);
 
-            $result = $this->db->createCommand()->update('{{%user}}', [
+            $result = $this->db->createCommand()->update('users', [
                     'username' => $username,
                     'password_hash' => $password_hash,
                     'email' => $email,

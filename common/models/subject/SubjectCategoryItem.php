@@ -6,7 +6,7 @@ use Yii;
 use himiklab\sortablegrid\SortableGridBehavior;
 
 /**
- * This is the model class for table "{{%subject_category_item}}".
+ * This is the model class for table "subject_category_item".
  *
  * @property int $id
  * @property string $name
@@ -25,7 +25,7 @@ class SubjectCategoryItem extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%subject_category_item}}';
+        return 'subject_category_item';
     }
 
     /**
@@ -36,7 +36,7 @@ class SubjectCategoryItem extends \yii\db\ActiveRecord
         return [
             'grid-sort' => [
                 'class' => SortableGridBehavior::className(),
-                'sortableAttribute' => 'sortOrder',
+                'sortableAttribute' => 'sort_order',
             ],
         ];
     }
@@ -49,7 +49,7 @@ class SubjectCategoryItem extends \yii\db\ActiveRecord
         return [
             [['slug', 'name', 'status'], 'required'],
             [['slug', 'name'], 'unique'],
-            [['sortOrder', 'status'], 'integer'],
+            [['sort_order', 'status'], 'integer'],
             [['name'], 'string', 'max' => 127],
             [['slug'], 'string', 'max' => 64],
             
@@ -65,7 +65,7 @@ class SubjectCategoryItem extends \yii\db\ActiveRecord
             'id' => Yii::t('art/guide', 'ID'),
             'name' => Yii::t('art/guide', 'Name'),
             'slug' => Yii::t('art/guide', 'Slug'),
-            'sortOrder' => Yii::t('art/guide', 'Order'),
+            'sort_order' => Yii::t('art/guide', 'Order'),
             'status' => Yii::t('art/guide', 'Status'),
         ];
     }

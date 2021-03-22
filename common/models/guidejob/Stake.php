@@ -5,7 +5,7 @@ namespace common\models\guidejob;
 use Yii;
 
 /**
- * This is the model class for table "{{%teachers_stake}}".
+ * This is the model class for table "teachers_stake".
  *
  * @property int $id
  * @property string $name
@@ -24,7 +24,7 @@ class Stake extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%teachers_stake}}';
+        return 'teachers_stake';
     }
 
     /**

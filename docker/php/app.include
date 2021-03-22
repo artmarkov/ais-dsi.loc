@@ -1,0 +1,31 @@
+ServerName yii2.local
+ErrorLog /logs/apache-error.log
+CustomLog /logs/apache-access.log combined
+
+DocumentRoot /app/frontend/web/
+<Directory /app/frontend/web/>
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Require all granted
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</Directory>
+
+Alias /admin /app/backend/web/
+<Directory /app/backend/web/>
+  Options Indexes FollowSymLinks
+      AllowOverride None
+      Require all granted
+      RewriteEngine On
+      RewriteCond %{REQUEST_FILENAME} !-f
+      RewriteCond %{REQUEST_FILENAME} !-d
+      RewriteRule ^(.*)$ index.php [QSA,L]
+</Directory>
+
+Alias /webdav_hub /var/www/html/webdav
+<Directory /var/www/html/webdav>
+    Options Indexes
+    DAV On
+</Directory>

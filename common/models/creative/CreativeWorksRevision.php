@@ -5,7 +5,7 @@ namespace common\models\creative;
 use Yii;
 
 /**
- * This is the model class for table "{{%creative_works_revision}}".
+ * This is the model class for table "creative_works_revision".
  *
  * @property int $id
  * @property int $works_id
@@ -22,7 +22,7 @@ class CreativeWorksRevision extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%creative_works_revision}}';
+        return 'creative_works_revision';
     }
 
     /**

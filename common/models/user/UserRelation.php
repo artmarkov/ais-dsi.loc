@@ -5,7 +5,7 @@ namespace common\models\user;
 use Yii;
 
 /**
- * This is the model class for table "{{%user_relation}}".
+ * This is the model class for table "user_relation".
  *
  * @property int $id
  * @property string $name
@@ -20,7 +20,7 @@ class UserRelation extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%user_relation}}';
+        return 'user_relation';
     }
 
     /**

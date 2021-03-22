@@ -27,7 +27,7 @@ class Activities extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%activities}}';
+        return 'activities';
     }
 
     /**

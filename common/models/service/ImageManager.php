@@ -6,7 +6,7 @@ use Yii;
 use yii\helpers\Url;
 
 /**
- * This is the model class for table "{{%image_manager}}".
+ * This is the model class for table "image_manager".
  *
  * @property int $id
  * @property string $name
@@ -23,7 +23,7 @@ class ImageManager extends \yii\db\ActiveRecord {
      * {@inheritdoc}
      */
     public static function tableName() {
-        return '{{%image_manager}}';
+        return 'image_manager';
     }
 
     /**

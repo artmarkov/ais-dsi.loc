@@ -25,6 +25,7 @@ services:
       volumes:
         - ../:/app:delegated
         - ./php/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+        - ./php/app.include:/etc/apache2/sites-enabled/app.include
         - ./php/php-ini-overrides.ini:/usr/local/etc/php/conf.d/z-overrides.ini
         - ${LOGS_DIR}:/logs
         - ${WEBDAV_DIR}:/var/www/html/webdav

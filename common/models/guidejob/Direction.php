@@ -5,7 +5,7 @@ namespace common\models\guidejob;
 use Yii;
 
 /**
- * This is the model class for table "{{%teachers_direction}}".
+ * This is the model class for table "teachers_direction".
  *
  * @property int $id
  * @property string $name
@@ -20,7 +20,7 @@ class Direction extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%teachers_direction}}';
+        return 'teachers_direction';
     }
 
     /**

@@ -11,28 +11,23 @@ class m210301_151052_create_table_creative extends Migration
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%creative_works_department}}', [
+        $this->createTable('creative_works_department', [
             'id' => $this->primaryKey(8)->unsigned(),
             'works_id' => $this->integer(8)->unsigned()->notNull(),
             'department_id' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 
-        $this->createIndex('user_id', '{{%creative_works_department}}', 'department_id');
-        $this->createIndex('works_id', '{{%creative_works_department}}', 'works_id');
-        $this->addForeignKey('creative_works_department_ibfk_2', '{{%creative_works_department}}', 'department_id', '{{%department}}', 'id', 'NO ACTION', 'NO ACTION');
+        $this->createIndex('works_id', 'creative_works_department', 'works_id');
+        $this->addForeignKey('creative_works_department_ibfk_2', 'creative_works_department', 'department_id', 'department', 'id', 'NO ACTION', 'NO ACTION');
 
-        $this->createTable('{{%creative_works_revision}}', [
+        $this->createTable('creative_works_revision', [
             'id' => $this->primaryKey(8)->unsigned(),
             'works_id' => $this->integer(8)->unsigned()->notNull(),
             'user_id' => $this->integer()->notNull(),
             'timestamp' => $this->integer(),
         ], $tableOptions);
 
-        $this->createIndex('user_id', '{{%creative_works_revision}}', 'user_id');
-        $this->createIndex('works_id', '{{%creative_works_revision}}', 'works_id');
-
-
-        $this->createTable('{{%creative_works_author}}', [
+        $this->createTable('creative_works_author', [
             'id' => $this->primaryKey(8)->unsigned(),
             'works_id' => $this->integer(8)->unsigned()->notNull(),
             'author_id' => $this->integer()->notNull(),
@@ -40,23 +35,21 @@ class m210301_151052_create_table_creative extends Migration
             'weight' => $this->smallInteger(1)->unsigned()->defaultValue('0')->comment('Надбавка'),
         ], $tableOptions);
 
-        $this->createIndex('user_id', '{{%creative_works_author}}', 'author_id');
-        $this->createIndex('works_id', '{{%creative_works_author}}', 'works_id');
+        $this->createIndex('author_id', 'creative_works_author', 'author_id');
 
-
-        $this->createTable('{{%creative_category}}', [
-            'id' => $this->tinyInteger(2)->unsigned()->notNull()->append('AUTO_INCREMENT PRIMARY KEY'),
+        $this->createTable('creative_category', [
+            'id' => $this->primaryKey(8),
             'name' => $this->string(256)->notNull(),
             'description' => $this->text()->notNull(),
         ], $tableOptions);
 
-        $this->db->createCommand()->batchInsert('{{%creative_category}}', ['id', 'name', 'description'], [
+        $this->db->createCommand()->batchInsert('creative_category', ['id', 'name', 'description'], [
             [1, 'Творческие работы', ''],
             [2, 'Методические работы', ''],
             [3, 'Сертификаты', ''],
         ])->execute();
 
-        $this->createTable('{{%creative_works}}', [
+        $this->createTable('creative_works', [
             'id' => $this->primaryKey(8)->unsigned(),
             'category_id' => $this->tinyInteger(2)->unsigned()->notNull(),
             'name' => $this->string(512)->notNull(),
@@ -70,27 +63,24 @@ class m210301_151052_create_table_creative extends Migration
             'updated_by' => $this->integer(),
         ], $tableOptions);
 
-        $this->createIndex('status', '{{%creative_works}}', 'status');
-        $this->createIndex('apdated_by', '{{%creative_works}}', 'updated_by');
-        $this->createIndex('cat_id', '{{%creative_works}}', 'category_id');
-        $this->createIndex('created_by', '{{%creative_works}}', 'created_by');
-        $this->addForeignKey('creative_works_ibfk_1', '{{%creative_works}}', 'category_id', '{{%creative_category}}', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('creative_works_ibfk_2', '{{%creative_works}}', 'updated_by', '{{%user}}', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('creative_works_ibfk_3', '{{%creative_works}}', 'created_by', '{{%user}}', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('creative_works_author_ibfk_1', '{{%creative_works_author}}', 'works_id', '{{%creative_works}}', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('creative_works_author_ibfk_2', '{{%creative_works_author}}', 'author_id', '{{%user}}', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('creative_works_revision_ibfk_1', '{{%creative_works_revision}}', 'works_id', '{{%creative_works}}', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('creative_works_revision_ibfk_2', '{{%creative_works_revision}}', 'user_id', '{{%user}}', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('creative_works_department_ibfk_1', '{{%creative_works_department}}', 'works_id', '{{%creative_works}}', 'id', 'NO ACTION', 'NO ACTION');
+
+        $this->addForeignKey('creative_works_ibfk_1', 'creative_works', 'category_id', 'creative_category', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('creative_works_ibfk_2', 'creative_works', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('creative_works_ibfk_3', 'creative_works', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('creative_works_author_ibfk_1', 'creative_works_author', 'works_id', 'creative_works', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('creative_works_author_ibfk_2', 'creative_works_author', 'author_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('creative_works_revision_ibfk_1', 'creative_works_revision', 'works_id', 'creative_works', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('creative_works_revision_ibfk_2', 'creative_works_revision', 'user_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('creative_works_department_ibfk_1', 'creative_works_department', 'works_id', 'creative_works', 'id', 'NO ACTION', 'NO ACTION');
 
     }
 
     public function down()
     {
-        $this->dropTable('{{%creative_works}}');
-        $this->dropTable('{{%creative_category}}');
-        $this->dropTable('{{%creative_works_author}}');
-        $this->dropTable('{{%creative_works_revision}}');
-        $this->dropTable('{{%creative_works_department}}');
+        $this->dropTable('creative_works');
+        $this->dropTable('creative_category');
+        $this->dropTable('creative_works_author');
+        $this->dropTable('creative_works_revision');
+        $this->dropTable('creative_works_department');
     }
 }

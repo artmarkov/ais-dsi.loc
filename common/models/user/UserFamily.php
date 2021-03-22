@@ -5,7 +5,7 @@ namespace common\models\user;
 use Yii;
 
 /**
- * This is the model class for table "{{%user_family}}".
+ * This is the model class for table "user_family".
  *
  * @property int $id
  * @property int $relation_id
@@ -23,7 +23,7 @@ class UserFamily extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%user_family}}';
+        return 'user_family';
     }
 
     /**

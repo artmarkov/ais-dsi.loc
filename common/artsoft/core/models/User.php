@@ -13,7 +13,7 @@ use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 /**
- * This is the model class for table "{{%user}}".
+ * This is the model class for table "users".
  *
  * @property int $id
  * @property string|null $username
@@ -125,6 +125,7 @@ class User extends UserIdentity {
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             ['snils', 'string', 'max' => 16],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
+            ['skype', 'string', 'max' => 64],
             ['bind_to_ip', 'string', 'max' => 255],
             ['info', 'string', 'max' => 1024],
             ['gender', 'integer'],

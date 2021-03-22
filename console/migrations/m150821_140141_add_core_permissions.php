@@ -7,16 +7,24 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
 
     public function beforeUp()
     {
-        $this->addPermissionsGroup('dashboard', 'Dashboard');
-        $this->addPermissionsGroup('userCommonPermissions', 'Common Permissions');
+        $this->addPermissionsGroup('dashboard', 'Главная панель');
+        $this->addPermissionsGroup('userCommonPermissions', 'Общий доступ');
 
-        $this->addRole(self::ROLE_ADMIN, 'Administrator');
-        $this->addRole(self::ROLE_MODERATOR, 'Moderator');
-        $this->addRole(self::ROLE_AUTHOR, 'Author');
-        $this->addRole(self::ROLE_USER, 'User');
+        $this->addRole(self::ROLE_ADMIN, 'Администратор');
+        $this->addRole(self::ROLE_MODERATOR, 'Модератор');
+        $this->addRole(self::ROLE_AUTHOR, 'Автор');
+        $this->addRole(self::ROLE_USER, 'Пользователь');
+        $this->addRole(self::ROLE_STAFF, 'Сотрудник');
+        $this->addRole(self::ROLE_TEACHER, 'Преподаватель');
+        $this->addRole(self::ROLE_STUDENT, 'Ученик');
+        $this->addRole(self::ROLE_CURATOR, 'Опекун');
 
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'user', 'child' => 'teacher']);
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'user', 'child' => 'student']);
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'user', 'child' => 'curator']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'author', 'child' => 'user']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'moderator', 'child' => 'user']);
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'moderator', 'child' => 'staff']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'moderator', 'child' => 'author']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'user']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'author']);
@@ -32,6 +40,10 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
         $this->deleteRole(self::ROLE_MODERATOR);
         $this->deleteRole(self::ROLE_AUTHOR);
         $this->deleteRole(self::ROLE_USER);
+        $this->deleteRole(self::ROLE_STAFF);
+        $this->deleteRole(self::ROLE_TEACHER);
+        $this->deleteRole(self::ROLE_STUDENT);
+        $this->deleteRole(self::ROLE_CURATOR);
     }
 
     public function getPermissions()
@@ -43,8 +55,8 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
                     '/admin/default/*',
                 ],
                 'viewDashboard' => [
-                    'title' => 'View Dashboard',
-                    'roles' => [self::ROLE_AUTHOR],
+                    'title' => 'Просмотр главной панели',
+                    'roles' => [self::ROLE_MODERATOR],
                     'links' => [
                         '/admin',
                         '/admin/site/index',
@@ -53,11 +65,11 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
             ],
             'userCommonPermissions' => [
                 'commonPermission' => [
-                    'title' => 'Common Permission',
-                    'roles' => [self::ROLE_USER],
+                    'title' => 'Общий доступ',
+                    'roles' => [self::ROLE_MODERATOR],
                 ],
                 'changeOwnPassword' => [
-                    'title' => 'Change Own Password',
+                    'title' => 'Изменение своего пароля',
                     'roles' => [self::ROLE_USER],
                 ],
             ],

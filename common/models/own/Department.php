@@ -5,7 +5,7 @@ namespace common\models\own;
 use Yii;
 
 /**
- * This is the model class for table "{{%department}}".
+ * This is the model class for table "department".
  *
  * @property int $id
  * @property int $division_id
@@ -26,7 +26,7 @@ class Department extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%department}}';
+        return 'department';
     }
 
     /**

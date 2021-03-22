@@ -5,7 +5,7 @@ use creocoder\nestedsets\NestedSetsBehavior;
 use Yii;
 
 /**
- * This is the model class for table "{{%catalog}}".
+ * This is the model class for table "catalog".
  *
  * @property int $id
  * @property int $tree
@@ -23,7 +23,7 @@ class Catalog extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%catalog}}';
+        return 'catalog';
     }
     public function behaviors() {
         return [

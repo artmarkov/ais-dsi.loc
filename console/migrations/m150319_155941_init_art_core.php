@@ -3,21 +3,18 @@
 class m150319_155941_init_art_core extends \yii\db\Migration
 {
 
-    const USER_TABLE = '{{%user}}';
-    const AUTH_RULE_TABLE = '{{%auth_rule}}';
-    const AUTH_ITEM_TABLE = '{{%auth_item}}';
-    const AUTH_ITEM_CHILD_TABLE = '{{%auth_item_child}}';
-    const AUTH_ITEM_GROUP_TABLE = '{{%auth_item_group}}';
-    const AUTH_ASSIGNMENT_TABLE = '{{%auth_assignment}}';
-    const USER_VISIT_LOG_TABLE = '{{%user_visit_log}}';
-    const USER_SETTING_TABLE = '{{%user_setting}}';
+    const USER_TABLE = 'users';
+    const AUTH_RULE_TABLE = 'auth_rule';
+    const AUTH_ITEM_TABLE = 'auth_item';
+    const AUTH_ITEM_CHILD_TABLE = 'auth_item_child';
+    const AUTH_ITEM_GROUP_TABLE = 'auth_item_group';
+    const AUTH_ASSIGNMENT_TABLE = 'auth_assignment';
+    const USER_VISIT_LOG_TABLE = 'user_visit_log';
+    const USER_SETTING_TABLE = 'user_setting';
 
     public function up()
     {
         $tableOptions = null;
-        if ($this->db->driverName === 'mysql') {
-            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
-        }
 
         $this->createTable(self::AUTH_RULE_TABLE, [
             'name' => $this->string(64)->notNull(),
@@ -26,6 +23,7 @@ class m150319_155941_init_art_core extends \yii\db\Migration
             'updated_at' => $this->integer(),
             'PRIMARY KEY (name)',
         ], $tableOptions);
+        $this->addCommentOnTable(self::AUTH_RULE_TABLE ,'Роли');
 
         $this->createTable(self::AUTH_ITEM_GROUP_TABLE, [
             'code' => $this->string(64)->notNull(),
@@ -34,6 +32,7 @@ class m150319_155941_init_art_core extends \yii\db\Migration
             'updated_at' => $this->integer(),
             'PRIMARY KEY (code)',
         ], $tableOptions);
+        $this->addCommentOnTable(self::AUTH_ITEM_GROUP_TABLE ,'Группы');
 
         $this->createTable(self::AUTH_ITEM_TABLE, [
             'name' => $this->string(64)->notNull(),
@@ -81,6 +80,7 @@ class m150319_155941_init_art_core extends \yii\db\Migration
             'user_id' => $this->integer(),
             'visit_time' => $this->integer()->notNull(),
         ], $tableOptions);
+        $this->addCommentOnTable(self::USER_VISIT_LOG_TABLE ,'Лог посещений');
 
         $this->createIndex('visit_log_user_id', self::USER_VISIT_LOG_TABLE, 'user_id');
         $this->addForeignKey('fk_user_id_user_visit_log_table', self::USER_VISIT_LOG_TABLE, ['user_id'], self::USER_TABLE, ['id'], 'SET NULL', 'CASCADE');
@@ -91,11 +91,14 @@ class m150319_155941_init_art_core extends \yii\db\Migration
             'key' => $this->string(64)->notNull(),
             'value' => $this->text(),
         ], $tableOptions);
-        
+
+        $this->addCommentOnTable(self::USER_SETTING_TABLE ,'Настройки пользователей');
+
         $this->createIndex('user_setting_user_key', self::USER_SETTING_TABLE, ['user_id','key']);
         $this->addForeignKey('fk_user_id_user_setting_table', self::USER_SETTING_TABLE, ['user_id'], self::USER_TABLE, ['id'], 'CASCADE', 'CASCADE');
 
-        $this->insert(self::USER_TABLE, ['id' => 1, 'username' => 'admin', 'auth_key' => '', 'password_hash' => '', 'email' => '', 'superadmin' => 1, 'created_at' => 0, 'updated_at' => 0]);
+        $this->insert(self::USER_TABLE, ['id' => 1000, 'username' => 'system', 'auth_key' => Yii::$app->getSecurity()->generateRandomString(), 'password_hash' => Yii::$app->getSecurity()->generatePasswordHash('system'), 'email' => 'system@mail.ru', 'superadmin' => 1, 'birth_timestamp' => 0, 'created_at' => time(), 'updated_at' => time(), 'created_by' => 0, 'updated_by' => 0]);
+        $this->insert(self::USER_TABLE, ['id' => 1001, 'username' => 'admin', 'auth_key' => Yii::$app->getSecurity()->generateRandomString(), 'password_hash' => Yii::$app->getSecurity()->generatePasswordHash('admin'), 'email' => 'admin@mail.ru', 'superadmin' => 1, 'birth_timestamp' => 0, 'created_at' => time(), 'updated_at' => time(), 'created_by' => 0, 'updated_by' => 0]);
     }
 
     public function down()

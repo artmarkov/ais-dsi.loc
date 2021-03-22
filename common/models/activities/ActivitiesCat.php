@@ -5,7 +5,7 @@ namespace common\models\activities;
 use Yii;
 
 /**
- * This is the model class for table "{{%activities_cat}}".
+ * This is the model class for table "activities_cat".
  *
  * @property int $id
  * @property string $name
@@ -22,7 +22,7 @@ class ActivitiesCat extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%activities_cat}}';
+        return 'activities_cat';
     }
 
     /**

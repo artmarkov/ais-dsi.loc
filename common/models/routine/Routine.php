@@ -9,7 +9,7 @@ use common\widgets\yearcalendar\data\JsExpressionHelper;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "{{%routine}}".
+ * This is the model class for table "routine".
  *
  * @property int $id
  * @property string $description
@@ -29,7 +29,7 @@ class Routine extends ActiveRecord implements DataItem
      */
     public static function tableName()
     {
-        return '{{%routine}}';
+        return 'routine';
     }
     /**
      * @inheritdoc

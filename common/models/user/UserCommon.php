@@ -11,7 +11,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "{{%user}}".
+ * This is the model class for table "users".
  *
  * @property int $id
  * @property int $status
@@ -81,7 +81,8 @@ class UserCommon extends \artsoft\models\UserIdentity
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             ['last_name', 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'], 'message' => Yii::t('art/auth', 'The user with the entered data already exists.')],
-            [['phone', 'phone_optional'], 'string', 'max' => 24],           
+            [['phone', 'phone_optional'], 'string', 'max' => 24],
+            ['skype', 'string', 'max' => 64],
             [['snils'], 'string', 'max' => 16],
             ['birth_date', 'date', 'format' => 'dd-MM-yyyy'],
         ];

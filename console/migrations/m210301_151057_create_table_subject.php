@@ -11,14 +11,14 @@ class m210301_151057_create_table_subject extends Migration
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%subject}}', [
+        $this->createTable('subject', [
             'id' => $this->primaryKey(8)->unsigned(),
             'name' => $this->string(64),
             'slug' => $this->string(32),
             'status' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 
-        $this->db->createCommand()->batchInsert('{{%subject}}', ['name', 'slug', 'status'], [
+        $this->db->createCommand()->batchInsert('subject', ['name', 'slug', 'status'], [
             ['Академический вокал', 'Акад.вок.', 1],
             ['Аккордеон', 'Акк-н', 1],
             ['Акробатика', 'Акробатика', 1],
@@ -39,7 +39,7 @@ class m210301_151057_create_table_subject extends Migration
             ['Баян', 'Баян', 1],
             ['Беседы об искусстве', 'Беседы об иск-ве', 1],
             ['Беседы по хореографическому искусству', 'Беседы по хореогр-му иск-ву', 1],
-            ['Блок флейта', 'Бл.фл', 0, 1],
+            ['Блок флейта', 'Бл.фл', 1],
             ['Брейк-данс', 'Брейк-данс', 1],
             ['Валторна', 'Валт', 1],
             ['Веселая арифметика', 'Арифм.', 1],
@@ -178,15 +178,15 @@ class m210301_151057_create_table_subject extends Migration
             ['"Почемучки" - класс раннего развития', '"Почемучки"', 1],
         ])->execute();
 
-        $this->createTable('{{%subject_category_item}}', [
-            'id' => $this->tinyInteger(2)->unsigned()->notNull()->append('AUTO_INCREMENT PRIMARY KEY'),
+        $this->createTable('subject_category_item', [
+            'id' => $this->primaryKey(8),
             'name' => $this->string(127),
             'slug' => $this->string(64)->notNull(),
             'status' => $this->tinyInteger(2)->unsigned()->notNull(),
-            'sortOrder' => $this->tinyInteger(2)->unsigned()->notNull(),
+            'sort_order' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 
-        $this->db->createCommand()->batchInsert('{{%subject_category_item}}', ['name', 'slug', 'sortOrder', 'status'], [
+        $this->db->createCommand()->batchInsert('subject_category_item', ['id', 'name', 'slug', 'sort_order', 'status'], [
             [1, 'Специальность', 'Спец.', 1, 1],
             [2, 'Музыкальный инструмент', 'Инстр', 2, 1],
             [3, 'Дисциплины отдела', 'Дис.отд.', 3, 1],
@@ -196,8 +196,8 @@ class m210301_151057_create_table_subject extends Migration
             [7, 'Сводные репетиции', 'Св.реп', 7, 1],
         ])->execute();
 
-        $this->createTable('{{%subject_vid_item}}', [
-            'id' => $this->tinyInteger(2)->notNull()->append('AUTO_INCREMENT PRIMARY KEY'),
+        $this->createTable('subject_vid_item', [
+            'id' => $this->primaryKey(8)->unsigned(),
             'name' => $this->string(64)->notNull(),
             'slug' => $this->string(32)->notNull(),
             'qty_min' => $this->smallInteger(3)->unsigned()->notNull(),
@@ -206,53 +206,46 @@ class m210301_151057_create_table_subject extends Migration
             'status' => $this->tinyInteger(1)->notNull(),
         ], $tableOptions);
 
-        $this->db->createCommand()->batchInsert('{{%subject_vid_item}}', ['name', 'slug','qty_min','qty_max','info','status'], [
+        $this->db->createCommand()->batchInsert('subject_vid_item', ['name', 'slug','qty_min','qty_max','info','status'], [
             ['Индивидуальные', 'Инд.', 0, 1,'',1],
             ['Мелкогрупповые', 'Мелк-гр.', 0, 1,'',1],
             ['Групповые', 'Гр.', 0, 1,'',1],
         ])->execute();
 
-        $this->createTable('{{%subject_department}}', [
+        $this->createTable('subject_department', [
             'id' => $this->primaryKey(8)->unsigned(),
             'subject_id' => $this->integer(8)->unsigned()->notNull(),
-            'department_id' => $this->tinyInteger(2)->unsigned()->notNull(),
+            'department_id' =>  $this->integer(8)->unsigned()->notNull(),
         ], $tableOptions);
 
-        $this->createIndex('department_id', '{{%subject_department}}', 'department_id');
-        $this->createIndex('subject_id', '{{%subject_department}}', 'subject_id');
-        $this->addForeignKey('subject_department_ibfk_1', '{{%subject_department}}', 'department_id', '{{%department}}', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('subject_department_ibfk_2', '{{%subject_department}}', 'subject_id', '{{%subject}}', 'id', 'NO ACTION', 'NO ACTION');
-
-        $this->createTable('{{%subject_category}}', [
+        $this->createTable('subject_category', [
             'id' => $this->primaryKey(8)->unsigned(),
             'subject_id' => $this->integer(8)->unsigned()->notNull(),
             'category_id' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 
-        $this->createIndex('category_id', '{{%subject_category}}', 'category_id');
-        $this->createIndex('subject_id', '{{%subject_category}}', 'subject_id');
-        $this->addForeignKey('subject_category_ibfk_1', '{{%subject_category}}', 'category_id', '{{%subject_category_item}}', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('subject_category_ibfk_2', '{{%subject_category}}', 'subject_id', '{{%subject}}', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('subject_category_ibfk_1', 'subject_category', 'category_id', 'subject_category_item', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('subject_category_ibfk_2', 'subject_category', 'subject_id', 'subject', 'id', 'NO ACTION', 'NO ACTION');
 
-        $this->createTable('{{%subject_vid}}', [
+        $this->createTable('subject_vid', [
             'id' => $this->primaryKey(8)->unsigned(),
             'subject_id' => $this->integer(8)->unsigned()->notNull(),
             'vid_id' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 
-        $this->createIndex('vid_id', '{{%subject_vid}}', 'vid_id');
-        $this->createIndex('subject_id', '{{%subject_vid}}', 'subject_id');
-//        $this->addForeignKey('subject_vid_ibfk_1', '{{%subject_vid}}', 'vid_id', '{{%subject_vid_item}}', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('subject_vid_ibfk_2', '{{%subject_vid}}', 'subject_id', '{{%subject}}', 'id', 'NO ACTION', 'NO ACTION');
+        $this->createIndex('vid_id', 'subject_vid', 'vid_id');
 
-        $this->createTable('{{%subject_type}}', [
-            'id' => $this->tinyInteger(2)->unsigned()->notNull()->append('AUTO_INCREMENT PRIMARY KEY'),
+        $this->addForeignKey('subject_vid_ibfk_1', 'subject_vid', 'vid_id', 'subject_vid_item', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('subject_vid_ibfk_2', 'subject_vid', 'subject_id', 'subject', 'id', 'NO ACTION', 'NO ACTION');
+
+        $this->createTable('subject_type', [
+            'id' => $this->primaryKey(8),
             'name' => $this->string(127)->notNull(),
             'slug' => $this->string(64)->notNull(),
             'status' => $this->tinyInteger(1)->unsigned()->notNull(),
         ], $tableOptions);
 
-        $this->db->createCommand()->batchInsert('{{%subject_type}}', ['name', 'slug', 'status'], [
+        $this->db->createCommand()->batchInsert('subject_type', ['name', 'slug', 'status'], [
             ['Бюджет', 'Бюд.', 1],
             ['Хозрасчет', 'х/р.', 1],
         ])->execute();
@@ -260,12 +253,12 @@ class m210301_151057_create_table_subject extends Migration
 
     public function down()
     {
-        $this->dropTable('{{%subject_type}}');
-        $this->dropTable('{{%subject_vid}}');
-        $this->dropTable('{{%subject_category}}');
-        $this->dropTable('{{%subject_department}}');
-        $this->dropTable('{{%subject_vid_item}}');
-        $this->dropTable('{{%subject_category_item}}');
-        $this->dropTable('{{%subject}}');
+        $this->dropTable('subject_type');
+        $this->dropTable('subject_vid');
+        $this->dropTable('subject_category');
+        $this->dropTable('subject_department');
+        $this->dropTable('subject_vid_item');
+        $this->dropTable('subject_category_item');
+        $this->dropTable('subject');
     }
 }

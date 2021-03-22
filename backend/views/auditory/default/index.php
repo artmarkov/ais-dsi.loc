@@ -91,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             // 'area',
                             // 'capacity',
                             // 'description',
-                            // 'sortOrder',
+                            // 'sort_order',
 
                         ],
                     ]);

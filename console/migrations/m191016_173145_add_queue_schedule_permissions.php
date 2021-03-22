@@ -7,7 +7,7 @@ class m191016_173145_add_queue_schedule_permissions extends PermissionsMigration
 
     public function beforeUp()
     {
-        $this->addPermissionsGroup('queueManagement', 'Queue Management');
+        $this->addPermissionsGroup('queueManagement', 'Управление очередями');
     }
 
     public function afterDown()
@@ -25,7 +25,7 @@ class m191016_173145_add_queue_schedule_permissions extends PermissionsMigration
                     '/admin/queue-schedule/queue-layers/*',
                 ],
                 'viewQueue' => [
-                    'title' => 'View Queue',
+                    'title' => 'Просмотр задания',
                     'links' => [
                         '/admin/queue-schedule/default/index',
                         '/admin/queue-schedule/default/view',
@@ -37,7 +37,7 @@ class m191016_173145_add_queue_schedule_permissions extends PermissionsMigration
                     ],
                 ],
                 'editQueue' => [
-                    'title' => 'Edit Queue',
+                    'title' => 'Редактирование заданий',
                     'links' => [
                         '/admin/queue-schedule/default/update',
                         '/admin/queue-schedule/default/run',
@@ -48,14 +48,14 @@ class m191016_173145_add_queue_schedule_permissions extends PermissionsMigration
                         '/admin/queue-schedule/default/bulk-deactivate',
                     ],
                     'roles' => [
-                        self::ROLE_MODERATOR,
+                        self::ROLE_ADMIN,
                     ],
                     'childs' => [
                         'viewQueue',
                     ],
                 ],
                 'createQueue' => [
-                    'title' => 'Create Queue',
+                    'title' => 'Добавление заданий',
                     'links' => [
                         '/admin/queue-schedule/default/create',
                         
@@ -68,7 +68,7 @@ class m191016_173145_add_queue_schedule_permissions extends PermissionsMigration
                     ],
                 ],
                 'deleteQueue' => [
-                    'title' => 'Delete Queue',
+                    'title' => 'Удаление заданий',
                     'links' => [
                         '/admin/queue-schedule/default/delete',
                         '/admin/queue-schedule/default/bulk-delete',
@@ -81,7 +81,7 @@ class m191016_173145_add_queue_schedule_permissions extends PermissionsMigration
                     ],
                 ],
                 'editClassJob' => [
-                    'title' => 'Edit Class Job',
+                    'title' => 'Редактировать класс задания',
                     'roles' => [
                         self::ROLE_ADMIN
                     ],

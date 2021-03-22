@@ -9,7 +9,7 @@ use yii\behaviors\TimestampBehavior;
 use common\models\venue\VenueDistrict;
 use common\models\venue\VenueCountry;
 /**
- * This is the model class for table "{{%venue_place}}".
+ * This is the model class for table "venue_place".
  *
  * @property int $id
  * @property int $country_id
@@ -43,7 +43,7 @@ class VenuePlace extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%venue_place}}';
+        return 'venue_place';
     }
     /**
      * @inheritdoc

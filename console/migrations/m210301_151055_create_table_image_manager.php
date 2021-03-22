@@ -11,7 +11,7 @@ class m210301_151055_create_table_image_manager extends Migration
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%image_manager}}', [
+        $this->createTable('image_manager', [
             'id' => $this->primaryKey(8),
             'name' => $this->string(256)->notNull(),
             'class' => $this->string(256),
@@ -28,6 +28,6 @@ class m210301_151055_create_table_image_manager extends Migration
 
     public function down()
     {
-        $this->dropTable('{{%image_manager}}');
+        $this->dropTable('image_manager');
     }
 }

@@ -7,7 +7,7 @@ use Yii;
 use yii\helpers\ArrayHelper;
 
 /**
- * This is the model class for table "{{%creative_works_author}}".
+ * This is the model class for table "creative_works_author".
  *
  * @property int $id
  * @property int $works_id
@@ -25,7 +25,7 @@ class CreativeWorksAuthor extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%creative_works_author}}';
+        return 'creative_works_author';
     }
 
     /**

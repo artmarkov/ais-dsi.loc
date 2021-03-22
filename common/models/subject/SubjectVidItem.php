@@ -5,7 +5,7 @@ namespace common\models\subject;
 use Yii;
 
 /**
- * This is the model class for table "{{%subject_vid}}".
+ * This is the model class for table "subject_vid".
  *
  * @property int $id
  * @property string $name
@@ -25,7 +25,7 @@ class SubjectVidItem extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%subject_vid_item}}';
+        return 'subject_vid_item';
     }
 
     /**

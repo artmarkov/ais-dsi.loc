@@ -12,16 +12,16 @@ return [
     'controllerMap' => [
         'migrate' => [
             'class' => 'console\controllers\MigrateController',
-            'migrationPath' => '@app/mig',
+            'migrationPath' => '@app/migrations',
 //
 //            'migrationNamespaces' => [
 //                'zhuravljov\yii\queue\monitor\migrations',
 //                'artsoft\queue\migrations',
 //            ],
         ],
-         'migration' => [
-            'class' => 'bizley\migration\controllers\MigrationController',
-        ],
+//         'migration' => [
+//            'class' => 'bizley\migration\controllers\MigrationController',
+//        ],
 //        'monitor' => [
 //            'class' => \zhuravljov\yii\queue\monitor\console\GcController::class,
 //            'silent' => false,

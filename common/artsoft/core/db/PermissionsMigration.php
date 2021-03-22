@@ -15,6 +15,10 @@ abstract class PermissionsMigration extends \yii\db\Migration
     const ROLE_ADMIN = 'administrator';
     const ROLE_MODERATOR = 'moderator';
     const ROLE_USER = 'user';
+    const ROLE_STAFF = 'staff';
+    const ROLE_TEACHER = 'teacher';
+    const ROLE_STUDENT = 'student';
+    const ROLE_CURATOR = 'curator';
 
     public function safeUp()
     {

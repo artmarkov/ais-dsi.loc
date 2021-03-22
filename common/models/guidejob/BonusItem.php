@@ -5,7 +5,7 @@ namespace common\models\guidejob;
 use Yii;
 use common\models\service\MeasureUnit;
 /**
- * This is the model class for table "{{%teachers_bonus_item}}".
+ * This is the model class for table "teachers_bonus_item".
  *
  * @property int $id
  * @property int $bonus_category_id
@@ -29,7 +29,7 @@ class BonusItem extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%teachers_bonus_item}}';
+        return 'teachers_bonus_item';
     }
 
     /**

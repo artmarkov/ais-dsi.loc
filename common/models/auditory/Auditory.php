@@ -7,7 +7,7 @@ use artsoft\db\ActiveRecord;
 use Yii;
 
 /**
- * This is the model class for table "{{%auditory}}".
+ * This is the model class for table "auditory".
  *
  * @property int $id
  * @property int $building_id
@@ -28,7 +28,7 @@ class Auditory extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%auditory}}';
+        return 'auditory';
     }
 
     /**
@@ -39,7 +39,7 @@ class Auditory extends ActiveRecord
         return [
             'grid-sort' => [
                 'class' => SortableGridBehavior::className(),
-                'sortableAttribute' => 'sortOrder',
+                'sortableAttribute' => 'sort_order',
             ],
         ];
     }
@@ -51,7 +51,7 @@ class Auditory extends ActiveRecord
     {
         return [
             [['name', 'num', 'building_id'], 'required'],
-            [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sortOrder'], 'integer'],
+            [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sort_order'], 'integer'],
             [['area'], 'number'],
             [['name'], 'string', 'max' => 128],
             [['floor'], 'string', 'max' => 32],
@@ -74,7 +74,7 @@ class Auditory extends ActiveRecord
             'area' => Yii::t('art/guide', 'Area Auditory'),
             'capacity' => Yii::t('art/guide', 'Capacity Auditory'),
             'description' => Yii::t('art/guide', 'Description Auditory'),
-            'sortOrder' => Yii::t('art/guide', 'Order'),
+            'sort_order' => Yii::t('art/guide', 'Order'),
         ];
     }
 

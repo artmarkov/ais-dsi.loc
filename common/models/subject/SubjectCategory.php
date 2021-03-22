@@ -5,7 +5,7 @@ namespace common\models\subject;
 use Yii;
 
 /**
- * This is the model class for table "{{%subject_category}}".
+ * This is the model class for table "subject_category".
  *
  * @property int $id
  * @property int $subject_id
@@ -21,7 +21,7 @@ class SubjectCategory extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%subject_category}}';
+        return 'subject_category';
     }
 
     /**

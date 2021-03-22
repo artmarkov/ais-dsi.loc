@@ -9,7 +9,7 @@ use yii\helpers\ArrayHelper;
 use common\models\subject\SubjectQuery;
 
 /**
- * This is the model class for table "{{%subject}}".
+ * This is the model class for table "subject".
  *
  * @property int $id
  * @property string $name
@@ -34,7 +34,7 @@ class Subject extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%subject}}';
+        return 'subject';
     }
 
     /**
@@ -182,7 +182,7 @@ class Subject extends \yii\db\ActiveRecord
     {
         return ArrayHelper::map(SubjectCategoryItem::find()
             ->select('id, name')
-            ->orderBy('sortOrder')
+            ->orderBy('sort_order')
             ->asArray()->all(), 'id', 'name');
     }
 

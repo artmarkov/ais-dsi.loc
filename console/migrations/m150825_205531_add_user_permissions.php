@@ -7,7 +7,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
 
     public function beforeUp()
     {
-        $this->addPermissionsGroup('userManagement', 'User Management');
+        $this->addPermissionsGroup('userManagement', 'Управление учетноыми записями');
     }
 
     public function afterDown()
@@ -29,7 +29,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     '/admin/user/visit-log/*',
                 ],
                 'viewUsers' => [
-                    'title' => 'View Users',
+                    'title' => 'Просмотр учетной записи',
                     'roles' => [self::ROLE_MODERATOR],
                     'links' => [
                         '/admin/user/default/index',
@@ -38,7 +38,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     ],
                 ],
                 'editUsers' => [
-                    'title' => 'Edit Users',
+                    'title' => 'Редактирование учетной записи',
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUsers'],
                     'links' => [
@@ -49,7 +49,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     ],
                 ],
                 'createUsers' => [
-                    'title' => 'Create Users',
+                    'title' => 'Добавление учетной записи',
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUsers'],
                     'links' => [
@@ -57,7 +57,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     ],
                 ],
                 'deleteUsers' => [
-                    'title' => 'Delete Users',
+                    'title' => 'Удаление учетной записи',
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUsers'],
                     'links' => [
@@ -66,7 +66,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     ],
                 ],
                 'changeUserPassword' => [
-                    'title' => 'Change User Password',
+                    'title' => 'Изменение пароля учетных записей',
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUsers'],
                     'links' => [
@@ -74,7 +74,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     ],
                 ],
                 'viewRolesAndPermissions' => [
-                    'title' => 'View Roles And Permissions',
+                    'title' => 'Просмотр Ролей И Прав',
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUsers', 'viewUserRoles'],
                     'links' => [
@@ -90,7 +90,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     ],
                 ],
                 'manageRolesAndPermissions' => [
-                    'title' => 'Manage Roles And Permissions',
+                    'title' => 'Управление Ролями И Правами',
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewRolesAndPermissions', 'viewUsers', 'editUsers'],
                     'links' => [
@@ -116,7 +116,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     ],
                 ],
                 'assignRolesToUsers' => [
-                    'title' => 'Assign Roles To Users',
+                    'title' => 'Назначение Ролей Пользователям',
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUsers', 'viewUserRoles'],
                     'links' => [
@@ -125,7 +125,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     ],
                 ],
                 'viewVisitLog' => [
-                    'title' => 'View Visit Logs',
+                    'title' => 'Просмотр Журнала посещений',
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUsers'],
                     'links' => [
@@ -136,7 +136,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     ],
                 ],
                 'viewSession' => [
-                    'title' => 'View Session',
+                    'title' => 'Просмотр Сессий',
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUsers'],
                     'links' => [
@@ -146,7 +146,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     ],
                 ],
                 'viewRequest' => [
-                    'title' => 'View Request',
+                    'title' => 'Просмотр Запросов',
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUsers'],
                     'links' => [
@@ -156,24 +156,24 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     ],
                 ],
                 'bindUserToIp' => [
-                    'title' => 'Bind User To IP',
+                    'title' => 'Привязка Пользователя К IP',
                     'roles' => [self::ROLE_ADMIN],
                 ],
                 'editUserEmail' => [
-                    'title' => 'Edit User Email',
+                    'title' => 'Редактирование Email Пользователя',
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUserEmail'],
                 ],
                 'viewRegistrationIp' => [
-                    'title' => 'View Registration IP',
+                    'title' => 'Просмотр Регистрационного IP-адреса',
                     'roles' => [self::ROLE_ADMIN],
                 ],
                 'viewUserEmail' => [
-                    'title' => 'View User Email',
+                    'title' => 'Просмотр Email Пользователя',
                     'roles' => [self::ROLE_MODERATOR],
                 ],
                 'viewUserRoles' => [
-                    'title' => 'View User Roles',
+                    'title' => 'Просмотр Ролей Пользователя',
                     'roles' => [self::ROLE_ADMIN],
                 ],
             ],

@@ -9,7 +9,7 @@ use Yii;
 
 
 /**
- * This is the model class for table "{{%teachers_activity}}".
+ * This is the model class for table "teachers_activity".
  *
  * @property int $id
  * @property int $teachers_id
@@ -29,7 +29,7 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%teachers_activity}}';
+        return 'teachers_activity';
     }
 
     /**

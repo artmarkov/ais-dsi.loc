@@ -12,7 +12,7 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 
 /**
- * This is the model class for table "{{%creative_works}}".
+ * This is the model class for table "creative_works".
  *
  * @property int $id
  * @property int $category_id
@@ -49,7 +49,7 @@ class CreativeWorks extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%creative_works}}';
+        return 'creative_works';
     }
     /**
      * @inheritdoc

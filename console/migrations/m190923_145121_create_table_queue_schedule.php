@@ -7,11 +7,8 @@ class m190923_145121_create_table_queue_schedule extends Migration
     public function up()
     {
          $tableOptions = null;
-        if ($this->db->driverName === 'mysql') {
-            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
-        }
 
-        $this->createTable('{{%queue_schedule}}', [
+        $this->createTable('queue_schedule', [
             'id' => $this->primaryKey(),
             'title' => $this->string(127)->notNull(),
             'class' => $this->string(127)->notNull(),
@@ -27,16 +24,18 @@ class m190923_145121_create_table_queue_schedule extends Migration
             'updated_by' => $this->integer(),
         ], $tableOptions);
 
-        $this->createIndex('created_by', '{{%queue_schedule}}', 'created_by');
-        $this->createIndex('updated_by', '{{%queue_schedule}}', 'updated_by');
-        $this->createIndex('class', '{{%queue_schedule}}', 'class', true);
-        $this->addForeignKey('queue_schedule_ibfk_1', '{{%queue_schedule}}', 'created_by', '{{%user}}', 'id', 'RESTRICT', 'RESTRICT');
-        $this->addForeignKey('queue_schedule_ibfk_2', '{{%queue_schedule}}', 'updated_by', '{{%user}}', 'id', 'RESTRICT', 'RESTRICT');
+        $this->addCommentOnTable('queue_schedule','Назначенные задания');
+
+        $this->createIndex('created_by', 'queue_schedule', 'created_by');
+        $this->createIndex('updated_by', 'queue_schedule', 'updated_by');
+        $this->createIndex('class', 'queue_schedule', 'class', true);
+        $this->addForeignKey('queue_schedule_ibfk_1', 'queue_schedule', 'created_by', 'users', 'id', 'RESTRICT', 'RESTRICT');
+        $this->addForeignKey('queue_schedule_ibfk_2', 'queue_schedule', 'updated_by', 'users', 'id', 'RESTRICT', 'RESTRICT');
 
     }
 
     public function down()
     {
-        $this->dropTable('{{%queue_schedule}}');
+        $this->dropTable('queue_schedule');
     }
 }

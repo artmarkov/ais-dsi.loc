@@ -5,7 +5,7 @@ namespace common\models\auditory;
 use Yii;
 
 /**
- * This is the model class for table "{{%auditory_cat}}".
+ * This is the model class for table "auditory_cat".
  *
  * @property int $id
  * @property string $name
@@ -19,7 +19,7 @@ class AuditoryCat extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%auditory_cat}}';
+        return 'auditory_cat';
     }
 
     /**

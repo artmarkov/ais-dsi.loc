@@ -5,7 +5,7 @@ namespace common\models\creative;
 use Yii;
 
 /**
- * This is the model class for table "{{%creative_category}}".
+ * This is the model class for table "creative_category".
  *
  * @property int $id
  * @property string $name
@@ -20,7 +20,7 @@ class CreativeCategory extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%creative_category}}';
+        return 'creative_category';
     }
 
     /**

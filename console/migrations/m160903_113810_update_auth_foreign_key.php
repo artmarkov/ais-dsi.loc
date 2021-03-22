@@ -5,7 +5,7 @@ use yii\db\Migration;
 class m160903_113810_update_auth_foreign_key extends Migration
 {
 
-    const TABLE_NAME = '{{%auth}}';
+    const TABLE_NAME = 'auth';
 
     public function safeUp()
     {
@@ -15,7 +15,7 @@ class m160903_113810_update_auth_foreign_key extends Migration
         }
 
         $this->dropForeignKey('fk_auth_user', self::TABLE_NAME);
-        $this->addForeignKey('fk_auth_user', self::TABLE_NAME, 'user_id', '{{%user}}', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('fk_auth_user', self::TABLE_NAME, 'user_id', 'users', 'id', 'CASCADE', 'CASCADE');
     }
 
     public function safeDown()

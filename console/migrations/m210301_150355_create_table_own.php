@@ -1,8 +1,6 @@
 <?php
 
-use yii\db\Migration;
-
-class m210301_151103_create_table_own extends Migration
+class m210301_150355_create_table_own extends \artsoft\db\BaseMigration
 {
     public function up()
     {
@@ -11,27 +9,30 @@ class m210301_151103_create_table_own extends Migration
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%division}}', [
-            'id' => $this->tinyInteger(2)->unsigned()->notNull()->append('AUTO_INCREMENT PRIMARY KEY'),
+        $this->createTable('division', [
+            'id' => $this->primaryKey(8),
             'name' => $this->string(127)->notNull(),
             'slug' => $this->string(32)->notNull(),
         ], $tableOptions);
+        $this->addCommentOnTable('division','Отделения');
 
-        $this->db->createCommand()->batchInsert('{{%department}}', ['id', 'name', 'slug'], [
+        $this->db->createCommand()->batchInsert('division', ['id', 'name', 'slug'], [
             [1, 'Музыкальное отделение', 'МО'],
             [2, 'Художественное отделение', 'ИЗО'],
             [3, 'Отделение "Хореография"', 'ХО'],
         ])->execute();
 
-        $this->createTable('{{%department}}', [
-            'id' => $this->tinyInteger(2)->unsigned()->notNull()->append('AUTO_INCREMENT PRIMARY KEY'),
+        $this->createTable('department', [
+            'id' => $this->primaryKey(8),
             'division_id' => $this->tinyInteger(2)->unsigned()->notNull(),
             'name' => $this->string(127),
             'slug' => $this->string(32),
             'status' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 
-        $this->db->createCommand()->batchInsert('{{%department}}', ['id', 'division_id', 'name', 'slug', 'status'], [
+        $this->addCommentOnTable('department','Отделы');
+
+        $this->db->createCommand()->batchInsert('department', ['id', 'division_id', 'name', 'slug', 'status'], [
             [2, 1, 'Фортепиано', 'Фно', 1],
             [3, 1, 'Струнные инструменты', 'Стр', 1],
             [4, 1, 'Духовые и ударные инструменты', 'Дух', 1],
@@ -53,10 +54,10 @@ class m210301_151103_create_table_own extends Migration
             [20, 1, 'Сценическое мастерство', 'Сцен.маст-во', 1],
         ])->execute();
 
-        $this->createIndex('division_id', '{{%department}}', 'division_id');
-        $this->addForeignKey('department_ibfk_1', '{{%department}}', 'division_id', '{{%division}}', 'id', 'NO ACTION', 'NO ACTION');
+        $this->createIndex('division_id', 'department', 'division_id');
+        $this->addForeignKey('department_ibfk_1', 'department', 'division_id', 'division', 'id', 'NO ACTION', 'NO ACTION');
 
-        $this->createTable('{{%invoices}}', [
+        $this->createTableWithHistory('invoices', [
             'id' => $this->primaryKey(8),
             'name' => $this->string(512)->notNull(),
             'recipient' => $this->string(512)->notNull(),
@@ -69,28 +70,33 @@ class m210301_151103_create_table_own extends Migration
             'bik' => $this->string(32)->notNull(),
             'oktmo' => $this->string(32),
             'kbk' => $this->string(32),
+            'created_at' => $this->integer()->notNull(),
+            'created_by' => $this->integer(),
+            'updated_at' => $this->integer()->notNull(),
+            'updated_by' => $this->integer(),
+            'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
+        $this->addCommentOnTable('invoices','Реквизиты');
 
-
-        $this->db->createCommand()->batchInsert('{{%invoices}}', ['id', 'name', 'recipient', 'inn', 'kpp', 'payment_account', 'corr_account', 'personal_account', 'bank_name', 'bik', 'oktmo', 'kbk'
-        ], [
+        $this->db->createCommand()->batchInsert('invoices', ['id', 'name', 'recipient', 'inn', 'kpp', 'payment_account', 'corr_account', 'personal_account', 'bank_name', 'bik', 'oktmo', 'kbk',
+        'created_at', 'created_by', 'updated_at', 'updated_by'], [
             [1, 'Банковские реквизиты для оплаты за обучение', 'Департамент финансов города Москвы (ГБУДО г.Москвы "ДШИ им. И.Ф.Стравинского")',
                 '7733098705', '773301001', '03224643450000007300', '40102810545370000003', '2605642000830080',
-                'ГУ Банка России по ЦФО//УФК по г.Москве г.Москва', '004525988', '45367000', '05600000000131131022'],
+                'ГУ Банка России по ЦФО//УФК по г.Москве г.Москва', '004525988', '45367000', '05600000000131131022', time(), time(), 1, 1],
             [2, 'Банковские реквизиты для добровольных пожертвований', 'Департамент финансов города Москвы (ГБУДО г.Москвы "ДШИ им. И.Ф.Стравинского")',
                 '7733098705', '773301001', '03224643450000007300', '40102810545370000003', '2605642000830080', 'ГУ Банка России по ЦФО//УФК по г.Москве г.Москва',
-                '004525988', '45367000', '05600000000155000002'],
+                '004525988', '45367000', '05600000000155000002', time(), time(), 1, 1],
             [3, 'Банковские реквизиты - Фонд поддержки и развития детского образования и культуры «МИТЮША»',
                 'Фонд поддержки и развития детского образования и культуры "МИТЮША"',
                 '7733092580','773301001','40703810538020100115','30101810400000000225','',
-                'ПАО Сбербанк г.Москва','044525225','',''],
+                'ПАО Сбербанк г.Москва','044525225','','', time(), time(), 1, 1],
         ])->execute();
     }
 
     public function down()
     {
-        $this->dropTable('{{%invoices}}');
-        $this->dropTable('{{%department}}');
-        $this->dropTable('{{%division}}');
+        $this->dropTable('invoices');
+        $this->dropTable('department');
+        $this->dropTable('division');
     }
 }

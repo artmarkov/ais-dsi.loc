@@ -11,7 +11,7 @@ use yii\helpers\ArrayHelper;
 use artsoft\models\User;
 
 /**
- * This is the model class for table "{{%teachers}}".
+ * This is the model class for table "teachers".
  *
  * @property int $id
  * @property int $position_id
@@ -57,7 +57,7 @@ class Teachers extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%teachers}}';
+        return 'teachers';
     }
     /**
      * Реализация поведения многое ко многим

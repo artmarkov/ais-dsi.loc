@@ -25,7 +25,7 @@ class AuditorySearch extends Auditory
 
         return [
             [['id', 'building_id', 'cat_id', 'num', 'capacity'], 'integer'],
-            [['name', 'floor', 'description', 'sortOrder'], 'safe'],
+            [['name', 'floor', 'description', 'sort_order'], 'safe'],
             [['area'], 'number'],
             [['catName', 'buildingName'], 'string'],
         ];
@@ -58,7 +58,7 @@ class AuditorySearch extends Auditory
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'sortOrder' => SORT_ASC,
+                    'sort_order' => SORT_ASC,
                 ],
             ],
         ]);

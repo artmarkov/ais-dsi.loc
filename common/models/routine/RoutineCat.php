@@ -5,7 +5,7 @@ namespace common\models\routine;
 use Yii;
 
 /**
- * This is the model class for table "{{%routine_cat}}".
+ * This is the model class for table "routine_cat".
  *
  * @property int $id
  * @property string $name
@@ -24,7 +24,7 @@ class RoutineCat extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%routine_cat}}';
+        return 'routine_cat';
     }
 
     /**

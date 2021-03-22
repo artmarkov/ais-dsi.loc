@@ -7,7 +7,7 @@ use Yii;
 use artsoft\models\User;
 
 /**
- * This is the model class for table "{{%student}}".
+ * This is the model class for table "student".
  *
  * @property int $id
  * @property int $user_id
@@ -29,7 +29,7 @@ class Student extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%student}}';
+        return 'student';
     }
 
     /**

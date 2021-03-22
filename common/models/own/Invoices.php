@@ -5,7 +5,7 @@ namespace common\models\own;
 use Yii;
 
 /**
- * This is the model class for table "{{%invoices}}".
+ * This is the model class for table "invoices".
  *
  * @property int $id
  * @property string $name
@@ -27,7 +27,7 @@ class Invoices extends \artsoft\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%invoices}}';
+        return 'invoices';
     }
 
     /**

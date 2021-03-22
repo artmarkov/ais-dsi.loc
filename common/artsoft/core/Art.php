@@ -154,7 +154,7 @@ class Art extends Component
      * 
      * @var string 
      */
-    public $user_table = '{{%user}}';
+    public $user_table = 'users';
 
     /**
      * User visit log table alias.
