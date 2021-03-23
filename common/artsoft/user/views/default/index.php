@@ -67,12 +67,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw'
                             ],
                             [
-                                'attribute' => 'fullName',
+                                'attribute' => 'username',
                                 'controller' => '/user/default',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'title' => function (User $model) {
                                     if (User::hasPermission('editUsers')) {
-                                        return Html::a($model->getFullName(), ['/user/default/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                        return Html::a($model->username, ['/user/default/update', 'id' => $model->id], ['data-pjax' => 0]);
                                     } else {
                                         return $model->username;
                                     }
@@ -99,8 +99,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-                            'username',
-//
+                            [
+                                'attribute' => 'fullName',
+                                'value' => function (User $model) {
+                                    return $model->getFullName();
+                                },
+                            ],
                             [
                                 'attribute' => 'email',
                                 'format' => 'raw',

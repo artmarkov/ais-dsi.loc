@@ -10,11 +10,11 @@ class m130524_201442_init extends BaseMigration
 
         $this->createTableWithHistory('users', [
             'id' => $this->primaryKey().' constraint check_range check (id between 1000 and 9999)',
-            'username' => $this->string()->notNull()->unique(),
+            'username' => $this->string()->notNull(),
             'auth_key' => $this->string(32)->notNull(),
             'password_hash' => $this->string()->notNull(),
             'password_reset_token' => $this->string()->unique(),
-            'email' => $this->string()->notNull()->unique(),
+            'email' => $this->string()->notNull(),
             'superadmin'=> $this->integer(6)->defaultValue(0),
             'registration_ip' => $this->string(15),
             'bind_to_ip' => $this->string(255),
@@ -26,7 +26,7 @@ class m130524_201442_init extends BaseMigration
             'first_name' => $this->string(124),
             'last_name' => $this->string(124),
             'middle_name' => $this->string(124),
-            'birth_timestamp' => $this->integer()->notNull(),
+            'birth_timestamp' => $this->integer(),
             'gender' => $this->integer(1),
             'phone' => $this->string(24),
             'phone_optional' => $this->string(24),

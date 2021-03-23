@@ -12,6 +12,7 @@ use kartik\date\DatePicker;
  * @var artsoft\models $model
  * @var artsoft\widgets\ActiveForm $form
  */
+print_r($model->getVersions());
 ?>
 
 <div class="user-form">
@@ -26,26 +27,6 @@ use kartik\date\DatePicker;
             Информация о пользователе
         </div>
         <div class="panel-body">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Основные сведения
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <?= $form->field($model, 'last_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($model, 'first_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($model, 'middle_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($model, 'gender')->dropDownList(User::getGenderList()) ?>
-                            <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
-                            <?= $form->field($model, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                            <?= $form->field($model, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                            <?= $form->field($model, 'skype')->textInput(['maxlength' => 64]) ?>
-                            <?= $form->field($model, 'info')->textarea(['maxlength' => 255, 'rows' => 6]) ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Регистрационные данные
@@ -111,6 +92,27 @@ use kartik\date\DatePicker;
                         </div>
                     </div>
                 <?php endif; ?>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Связанные данные
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <?= $form->field($model, 'user_category')->dropDownList(User::getUserCategoryList(), ['disabled' => Yii::$app->user->isSuperadmin ? false : true]) ?>
+                            <?= $form->field($model, 'last_name')->textInput(['maxlength' => 124]) ?>
+                            <?= $form->field($model, 'first_name')->textInput(['maxlength' => 124]) ?>
+                            <?= $form->field($model, 'middle_name')->textInput(['maxlength' => 124]) ?>
+                            <?= $form->field($model, 'gender')->dropDownList(User::getGenderList()) ?>
+                            <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
+                            <?= $form->field($model, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                            <?= $form->field($model, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                            <?= $form->field($model, 'skype')->textInput(['maxlength' => 64]) ?>
+                            <?= $form->field($model, 'info')->textarea(['maxlength' => 255, 'rows' => 6]) ?>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="panel-footer">

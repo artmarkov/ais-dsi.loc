@@ -89,11 +89,12 @@ class UserSearch extends User
 
         $query->andFilterWhere(['like', 'username', $this->username])
             ->andFilterWhere(['like', 'email', $this->email]);
-
-        $query->andWhere('first_name LIKE "%' . $this->fullName . '%" '.
-            'OR last_name LIKE "%' . $this->fullName . '%"'.
-            'OR middle_name LIKE "%' . $this->fullName . '%"'
-        );
+        if($this->fullName) {
+            $query->andWhere('first_name LIKE "%' . $this->fullName . '%" ' .
+                'OR last_name LIKE "%' . $this->fullName . '%"' .
+                'OR middle_name LIKE "%' . $this->fullName . '%"'
+            );
+        }
         return $dataProvider;
     }
 }

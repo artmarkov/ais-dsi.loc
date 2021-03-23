@@ -4,7 +4,7 @@ namespace artsoft\models;
 
 use artsoft\behaviors\DateToTimeBehavior;
 use artsoft\helpers\AuthHelper;
-use artsoft\helpers\artHelper;
+use artsoft\helpers\ArtHelper;
 use artsoft\traits\DateTimeTrait;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -45,8 +45,8 @@ use yii\helpers\ArrayHelper;
  * @property int $updated_by
  *
  */
-class User extends UserIdentity {
-
+class User extends UserIdentity
+{
     use DateTimeTrait;
 
     const STATUS_ACTIVE = 10;
@@ -66,7 +66,7 @@ class User extends UserIdentity {
      */
     public $gridRoleSearch;
 
-   /**
+    /**
      * @var string
      */
     public $password;
@@ -84,14 +84,16 @@ class User extends UserIdentity {
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName()
+    {
         return Yii::$app->art->user_table;
     }
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             BlameableBehavior::className(),
             TimestampBehavior::className(),
@@ -110,11 +112,12 @@ class User extends UserIdentity {
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
-            [['username', 'email', 'birth_date'], 'required'],
+            [['username', 'email'], 'required'],
             ['birth_timestamp', 'safe'],
-            ['username', 'unique'],
+            [['username'], 'unique'],
             [['username', 'email', 'bind_to_ip'], 'trim'],
             ['email', 'email'],
             [['status', 'user_category', 'email_confirmed'], 'integer'],
@@ -144,7 +147,8 @@ class User extends UserIdentity {
 
     /* Геттер для полного имени человека */
 
-    public function getFullName() {
+    public function getFullName()
+    {
         return $this->last_name . ' ' . $this->first_name . ' ' . $this->middle_name;
     }
 
@@ -155,7 +159,8 @@ class User extends UserIdentity {
      *
      * @return static
      */
-    public static function getCurrentUser($fromSession = true) {
+    public static function getCurrentUser($fromSession = true)
+    {
         if (!$fromSession) {
             return static::findOne(Yii::$app->user->id);
         }
@@ -179,14 +184,15 @@ class User extends UserIdentity {
      *
      * @return bool
      */
-    public static function assignRole($userId, $roleName) {
+    public static function assignRole($userId, $roleName)
+    {
         try {
             Yii::$app->db->createCommand()
-                    ->insert(Yii::$app->art->auth_assignment_table, [
-                        'user_id' => $userId,
-                        'item_name' => $roleName,
-                        'created_at' => time(),
-                    ])->execute();
+                ->insert(Yii::$app->art->auth_assignment_table, [
+                    'user_id' => $userId,
+                    'item_name' => $roleName,
+                    'created_at' => time(),
+                ])->execute();
 
             AuthHelper::invalidatePermissions();
 
@@ -204,7 +210,8 @@ class User extends UserIdentity {
      *
      * @return bool
      */
-    public function assignRoles(array $roles) {
+    public function assignRoles(array $roles)
+    {
         foreach ($roles as $role) {
             User::assignRole($this->id, $role);
         }
@@ -218,10 +225,11 @@ class User extends UserIdentity {
      *
      * @return bool
      */
-    public static function revokeRole($userId, $roleName) {
+    public static function revokeRole($userId, $roleName)
+    {
         $result = Yii::$app->db->createCommand()
-                        ->delete(Yii::$app->art->auth_assignment_table, ['user_id' => $userId, 'item_name' => $roleName])
-                        ->execute() > 0;
+                ->delete(Yii::$app->art->auth_assignment_table, ['user_id' => $userId, 'item_name' => $roleName])
+                ->execute() > 0;
 
         if ($result) {
             AuthHelper::invalidatePermissions();
@@ -236,11 +244,12 @@ class User extends UserIdentity {
      *
      * @return bool
      */
-    public static function hasRole($roles, $superAdminAllowed = true) {
+    public static function hasRole($roles, $superAdminAllowed = true)
+    {
         if ($superAdminAllowed AND Yii::$app->user->isSuperadmin) {
             return true;
         }
-        $roles = (array) $roles;
+        $roles = (array)$roles;
 
         AuthHelper::ensurePermissionsUpToDate();
 
@@ -253,7 +262,8 @@ class User extends UserIdentity {
      *
      * @return bool
      */
-    public static function hasPermission($permission, $superAdminAllowed = true) {
+    public static function hasPermission($permission, $superAdminAllowed = true)
+    {
         if ($superAdminAllowed AND Yii::$app->user->isSuperadmin) {
             return true;
         }
@@ -277,7 +287,8 @@ class User extends UserIdentity {
      *
      * @return bool
      */
-    public static function canRoute($route, $superAdminAllowed = true) {
+    public static function canRoute($route, $superAdminAllowed = true)
+    {
         if ($superAdminAllowed AND Yii::$app->user->isSuperadmin) {
             return true;
         }
@@ -301,7 +312,8 @@ class User extends UserIdentity {
      * getStatusList
      * @return array
      */
-    public static function getStatusList() {
+    public static function getStatusList()
+    {
         return array(
             self::STATUS_ACTIVE => Yii::t('art', 'Active'),
             self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
@@ -313,7 +325,8 @@ class User extends UserIdentity {
      * Get gender list
      * @return array
      */
-    public static function getGenderList() {
+    public static function getGenderList()
+    {
         return array(
             self::GENDER_NOT_SET => Yii::t('yii', '(not set)'),
             self::GENDER_MALE => Yii::t('art', 'Male'),
@@ -325,7 +338,8 @@ class User extends UserIdentity {
      * Get gender list
      * @return array
      */
-    public static function getUserCategoryList() {
+    public static function getUserCategoryList()
+    {
         return array(
             self::USER_CATEGORY_STAFF => Yii::t('art', 'Staff'),
             self::USER_CATEGORY_TEACHER => Yii::t('art', 'Teacher'),
@@ -339,7 +353,8 @@ class User extends UserIdentity {
      *
      * @return array
      */
-    public static function getUsersList() {
+    public static function getUsersList()
+    {
         $users = static::find()->select(['id', 'username'])->asArray()->all();
         return ArrayHelper::map($users, 'id', 'username');
     }
@@ -351,7 +366,8 @@ class User extends UserIdentity {
      *
      * @return string
      */
-    public static function getStatusValue($val) {
+    public static function getStatusValue($val)
+    {
         $ar = self::getStatusList();
 
         return isset($ar[$val]) ? $ar[$val] : $val;
@@ -364,7 +380,8 @@ class User extends UserIdentity {
      *
      * @return string
      */
-    public static function getUserCategoryValue($val) {
+    public static function getUserCategoryValue($val)
+    {
         $ar = self::getUserCategoryList();
 
         return isset($ar[$val]) ? $ar[$val] : $val;
@@ -373,14 +390,16 @@ class User extends UserIdentity {
     /**
      * Generates new password reset token
      */
-    public function generatePasswordResetToken() {
+    public function generatePasswordResetToken()
+    {
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
     /**
      * Check that there is no such confirmed E-mail in the system
      */
-    public function validateEmailUnique() {
+    public function validateEmailUnique()
+    {
         if ($this->email) {
             $exists = User::findOne(['email' => $this->email]);
 
@@ -393,7 +412,8 @@ class User extends UserIdentity {
     /**
      * Validate bind_to_ip attr to be in correct format
      */
-    public function validateBindToIp() {
+    public function validateBindToIp()
+    {
         if ($this->bind_to_ip) {
             $ips = explode(',', $this->bind_to_ip);
 
@@ -408,7 +428,8 @@ class User extends UserIdentity {
     /**
      * @return array
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'id' => Yii::t('art', 'ID'),
             'username' => Yii::t('art', 'Login'),
@@ -446,9 +467,10 @@ class User extends UserIdentity {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getRoles() {
+    public function getRoles()
+    {
         return $this->hasMany(Role::className(), ['name' => 'item_name'])
-                        ->viaTable(Yii::$app->art->auth_assignment_table, ['user_id' => 'id']);
+            ->viaTable(Yii::$app->art->auth_assignment_table, ['user_id' => 'id']);
     }
 
     /**
@@ -457,10 +479,11 @@ class User extends UserIdentity {
      *
      * @inheritdoc
      */
-    public function beforeSave($insert) {
+    public function beforeSave($insert)
+    {
         if ($insert) {
             if (php_sapi_name() != 'cli') {
-                $this->registration_ip = artHelper::getRealIp();
+                $this->registration_ip = ArtHelper::getRealIp();
             }
             $this->generateAuthKey();
         } else {
@@ -495,7 +518,8 @@ class User extends UserIdentity {
      * Don't let delete yourself and don't let non-superadmin delete superadmin
      * @inheritdoc
      */
-    public function beforeDelete() {
+    public function beforeDelete()
+    {
         // Console doesn't have Yii::$app->user, so we skip it for console
         if (php_sapi_name() != 'cli') {
             // Don't let delete yourself
@@ -516,7 +540,8 @@ class User extends UserIdentity {
      * @inheritdoc
      * @return PostQuery the active query used by this AR class.
      */
-    public static function find() {
+    public static function find()
+    {
         return new UserQuery(get_called_class());
     }
 
@@ -525,7 +550,8 @@ class User extends UserIdentity {
      * @param string $size
      * @return boolean|string
      */
-    public function getAvatar($size = 'small') {
+    public function getAvatar($size = 'small')
+    {
         if (!empty($this->avatar)) {
             $avatars = json_decode($this->avatar);
 
@@ -541,7 +567,8 @@ class User extends UserIdentity {
      *
      * @param array $avatars
      */
-    public function setAvatars($avatars) {
+    public function setAvatars($avatars)
+    {
         $this->avatar = json_encode($avatars);
         return $this->save();
     }
@@ -549,7 +576,8 @@ class User extends UserIdentity {
     /**
      *
      */
-    public function removeAvatar() {
+    public function removeAvatar()
+    {
         $this->avatar = '';
         return $this->save();
     }
@@ -557,7 +585,8 @@ class User extends UserIdentity {
     /**
      * Первая буква заглавная
      */
-    protected function getUcFirst($str, $encoding = 'UTF-8') {
+    protected function getUcFirst($str, $encoding = 'UTF-8')
+    {
         /* $str = mb_ereg_replace('^[\ ]+', '', $str);
           $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) .
           mb_substr($str, 1, mb_strlen($str), $encoding); */
@@ -568,7 +597,8 @@ class User extends UserIdentity {
     /**
      * До валидации формируем строки с первой заглавной
      */
-    public function beforeValidate() {
+    public function beforeValidate()
+    {
 
         $this->first_name = User::getUcFirst($this->first_name);
         $this->middle_name = User::getUcFirst($this->middle_name);
@@ -584,11 +614,31 @@ class User extends UserIdentity {
     public function getCreatedBy()
     {
         return $this->hasOne(self::className(), ['id' => 'created_by']);
-    } /**
- * @return \yii\db\ActiveQuery
- */
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getUpdatedBy()
     {
         return $this->hasOne(self::className(), ['id' => 'updated_by']);
+    }
+
+    /**
+     * Возвращает версии объекта
+     * @return User[]
+     */
+    public function getVersions()
+    {
+        $rows = (new \yii\db\Query)
+            ->from('users_hist')
+            ->where(['id' => $this->id])
+            ->orderBy('hist_id')
+            ->all();
+        return array_map(function ($item) {
+            unset($item['hist_id']);
+            unset($item['op']);
+            return new User($item);
+        }, $rows);
     }
 }
