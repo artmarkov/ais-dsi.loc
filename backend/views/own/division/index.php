@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="panel-body">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <div class="row">
+                    <div class="col-sm-6">
                         <?php
                         /* Uncomment this to activate GridQuickLinks */
                         /* echo GridQuickLinks::widget([
@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
 
                     <div class="col-sm-6 text-right">
-                        <? //=  GridPageSize::widget(['pjaxId' => 'division-grid-pjax']) ?>
+                        <?=  GridPageSize::widget(['pjaxId' => 'division-grid-pjax']) ?>
                     </div>
                 </div>
 

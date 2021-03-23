@@ -22,7 +22,7 @@ class UserSetting extends \artsoft\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%user_setting}}';
+        return 'user_setting';
     }
 
     /**

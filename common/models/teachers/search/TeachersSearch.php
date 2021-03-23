@@ -97,11 +97,13 @@ class TeachersSearch extends Teachers
         $query->andFilterWhere(['like', 'position_id', $this->position_id])
             ->andFilterWhere(['like', 'level_id', $this->level_id])
             ->andFilterWhere(['like', 'tab_num', $this->tab_num]);
-        
-        $query->andWhere('first_name LIKE "%' . $this->teachersFullName . '%" '.
-               'OR last_name LIKE "%' . $this->teachersFullName . '%"'. 
-               'OR middle_name LIKE "%' . $this->teachersFullName . '%"'
-           );
+
+        if($this->teachersFullName) {
+            $query->andWhere('first_name LIKE "%' . $this->teachersFullName . '%" ' .
+                'OR last_name LIKE "%' . $this->teachersFullName . '%"' .
+                'OR middle_name LIKE "%' . $this->teachersFullName . '%"'
+            );
+        }
         return $dataProvider;
     }
 }

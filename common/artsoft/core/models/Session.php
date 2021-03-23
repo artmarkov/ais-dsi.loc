@@ -23,7 +23,7 @@ class Session extends \artsoft\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%session}}';
+        return 'session';
     }
 
     /**

@@ -20,7 +20,7 @@ class Env extends BaseObject {
     /**
      * @var string
      */
-    public $scheduleTableName = '{{%queue_schedule}}';
+    public $scheduleTableName = 'queue_schedule';
     
     /**
      * @return static

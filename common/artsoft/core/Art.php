@@ -161,42 +161,42 @@ class Art extends Component
      * 
      * @var string 
      */
-    public $user_visit_log_table = '{{%user_visit_log}}';
+    public $user_visit_log_table = 'user_visit_log';
 
     /**
      * Auth item table alias.
      * 
      * @var string 
      */
-    public $auth_item_table = '{{%auth_item}}';
+    public $auth_item_table = 'auth_item';
 
     /**
      * Auth item child table alias.
      * 
      * @var string 
      */
-    public $auth_item_child_table = '{{%auth_item_child}}';
+    public $auth_item_child_table = 'auth_item_child';
 
     /**
      * Auth item group table alias.
      * 
      * @var string 
      */
-    public $auth_item_group_table = '{{%auth_item_group}}';
+    public $auth_item_group_table = 'auth_item_group';
 
     /**
      * Auth assignment table alias.
      * 
      * @var string 
      */
-    public $auth_assignment_table = '{{%auth_assignment}}';
+    public $auth_assignment_table = 'auth_assignment';
 
     /**
      * Auth rule table alias.
      * 
      * @var string 
      */
-    public $auth_rule_table = '{{%auth_rule}}';
+    public $auth_rule_table = 'auth_rule';
 
     /**
      * List of languages used in frontend rules. Contains the same values as

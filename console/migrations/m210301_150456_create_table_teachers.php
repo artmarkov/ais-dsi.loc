@@ -183,7 +183,7 @@ class m210301_150456_create_table_teachers extends Migration
         $this->createIndex('level_id', 'teachers', 'level_id');
         $this->addForeignKey('teachers_ibfk_1', 'teachers', 'level_id', 'teachers_level', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('teachers_ibfk_2', 'teachers', 'position_id', 'teachers_position', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('teachers_ibfk_3', 'teachers', 'user_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
+       // $this->addForeignKey('teachers_ibfk_3', 'teachers', 'user_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTable('teachers_activity', [
             'id' => $this->primaryKey(),

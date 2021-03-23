@@ -22,7 +22,7 @@ class Auth extends \artsoft\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%auth}}';
+        return 'auth';
     }
 
     /**

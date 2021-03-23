@@ -8,9 +8,9 @@ namespace artsoft\db;
 abstract class PermissionsMigration extends \yii\db\Migration
 {
 
-    const AUTH_ITEM_TABLE = '{{%auth_item}}';
-    const AUTH_ITEM_GROUP_TABLE = '{{%auth_item_group}}';
-    const AUTH_ITEM_CHILD_TABLE = '{{%auth_item_child}}';
+    const AUTH_ITEM_TABLE = 'auth_item';
+    const AUTH_ITEM_GROUP_TABLE = 'auth_item_group';
+    const AUTH_ITEM_CHILD_TABLE = 'auth_item_child';
     const ROLE_AUTHOR = 'author';
     const ROLE_ADMIN = 'administrator';
     const ROLE_MODERATOR = 'moderator';
