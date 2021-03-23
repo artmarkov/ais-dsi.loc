@@ -1,6 +1,6 @@
 <?php
 
-namespace xj\qrcode\formatter;
+namespace common\widgets\qrcode\formatter;
 
 interface IFormatter {
 

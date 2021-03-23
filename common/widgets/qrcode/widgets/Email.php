@@ -1,11 +1,11 @@
 <?php
 
-namespace xj\qrcode\widgets;
+namespace common\widgets\qrcode\widgets;
 
 use Yii;
 use yii\web\View;
 use yii\helpers\Html;
-use xj\qrcode\formatter\Email as FormatEmail;
+use common\widgets\qrcode\formatter\Email as FormatEmail;
 
 /**
  * @author xjflyttp <xjflyttp@gmail.com>

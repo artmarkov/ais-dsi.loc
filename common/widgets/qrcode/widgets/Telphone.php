@@ -1,10 +1,10 @@
 <?php
 
-namespace xj\qrcode\widgets;
+namespace common\widgets\qrcode\widgets;
 
 use Yii;
-use xj\qrcode\widgets\Text;
-use xj\qrcode\formatter\Telphone as FormatTel;
+use common\widgets\qrcode\widgets\Text;
+use common\widgets\qrcode\formatter\Telphone as FormatTel;
 
 /**
  * @author xjflyttp <xjflyttp@gmail.com>

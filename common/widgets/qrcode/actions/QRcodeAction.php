@@ -1,13 +1,13 @@
 <?php
 
-namespace xj\qrcode\actions;
+namespace common\widgets\qrcode\actions;
 
 use Yii;
 use yii\base\Action;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\web\HttpException;
-use xj\qrcode\QRcode;
+use common\widgets\qrcode\QRcode;
 
 /**
  * @author xjflyttp <xjflyttp@gmail.com>
@@ -95,7 +95,7 @@ class QRcodeAction extends Action {
     /**
      * init options
      * @var [] 
-     * @see xj\qrcode\QRcode defaultOptions
+     * @see common\widgets\qrcode\QRcode defaultOptions
      */
     public $options = [
             // if true=>estimates best mask (spec. default=>but extremally slow; set to false to significant performance boost but (propably) worst quality code

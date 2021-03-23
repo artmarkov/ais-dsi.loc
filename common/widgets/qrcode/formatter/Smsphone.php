@@ -1,9 +1,9 @@
 <?php
 
-namespace xj\qrcode\formatter;
+namespace common\widgets\qrcode\formatter;
 
 use yii\base\BaseObject;
-use xj\qrcode\formatter\IFormatter;
+use common\widgets\qrcode\formatter\IFormatter;
 
 class Smsphone extends BaseObject implements IFormatter {
 

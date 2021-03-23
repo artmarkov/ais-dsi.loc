@@ -1,10 +1,10 @@
 <?php
 
-namespace xj\qrcode\widgets;
+namespace common\widgets\qrcode\widgets;
 
 use Yii;
-use xj\qrcode\widgets\Text;
-use xj\qrcode\formatter\Card as FormatCard;
+use common\widgets\qrcode\widgets\Text;
+use common\widgets\qrcode\formatter\Card as FormatCard;
 
 /**
  * @author xjflyttp <xjflyttp@gmail.com>

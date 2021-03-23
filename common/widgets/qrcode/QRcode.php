@@ -1,6 +1,6 @@
 <?php
 
-namespace xj\qrcode;
+namespace common\widgets\qrcode;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'qrlib.php';
 

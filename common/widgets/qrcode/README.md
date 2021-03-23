@@ -14,10 +14,10 @@ example:
 Widget直接生成QR
 -----
 ```php
-use xj\qrcode\QRcode;
-use xj\qrcode\widgets\Text;
-use xj\qrcode\widgets\Email;
-use xj\qrcode\widgets\Card;
+use common\widgets\qrcode\QRcode;
+use common\widgets\qrcode\widgets\Text;
+use common\widgets\qrcode\widgets\Email;
+use common\widgets\qrcode\widgets\Card;
 
 //Widget直接生成QR
 Text::widget([

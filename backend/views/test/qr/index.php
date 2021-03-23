@@ -1,10 +1,11 @@
 <?php
 
-use xj\qrcode\QRcode;
-use xj\qrcode\widgets\Email;
-use xj\qrcode\widgets\Text;
+use common\widgets\qrcode\QRcode;
+use common\widgets\qrcode\widgets\Email;
+use common\widgets\qrcode\widgets\Text;
+
 ?>
-    <div>--------------</div>
+    <hr>
 <?php
 echo Text::widget([
     'outputDir' => '@webroot/upload/qrcode',
@@ -14,7 +15,7 @@ echo Text::widget([
     'size' => 2,
 ]);
 ?>
-<div>--------------</div>
+    <hr>
 <?php
 //Widget create a Action URL //QR Create by Action
 echo Text::widget([
@@ -25,31 +26,31 @@ echo Text::widget([
     'size' => 3,
 ]);
 
-//other type
-//Create EMAIL
-echo Email::widget([
-    'email' => 'aaaa@gmail.com',
-    'subject' => 'myMail',
-    'body' => 'do something',
-]);
-
-//Create Card
-echo \xj\qrcode\widgets\Card::widget([
-    'actions' => ['clientQrcode'],
-    'name' => 'SB',
-    'phone' => '1111111111111',
-    //here jpeg file is only 40x40, grayscale, 50% quality!
-    'avatar' => '@webroot/avatar.jpg',
-]);
-
-//Create Sms
-echo \xj\qrcode\widgets\Smsphone::widget([
-    'actions' => ['clientQrcode'],
-    'phone' => '131111111111',
-]);
-
-//Create Tel
-echo \xj\qrcode\widgets\Telphone::widget([
-    'actions' => ['clientQrcode'],
-    'phone' => '131111111111',
-]);
+////other type
+////Create EMAIL
+//echo Email::widget([
+//    'email' => 'aaaa@gmail.com',
+//    'subject' => 'myMail',
+//    'body' => 'do something',
+//]);
+//
+////Create Card
+//echo \common\widgets\qrcode\widgets\Card::widget([
+//    'actions' => ['clientQrcode'],
+//    'name' => 'SB',
+//    'phone' => '1111111111111',
+//    //here jpeg file is only 40x40, grayscale, 50% quality!
+//    'avatar' => '@webroot/avatar.jpg',
+//]);
+//
+////Create Sms
+//echo \common\widgets\qrcode\widgets\Smsphone::widget([
+//    'actions' => ['clientQrcode'],
+//    'phone' => '131111111111',
+//]);
+//
+////Create Tel
+//echo \common\widgets\qrcode\widgets\Telphone::widget([
+//    'actions' => ['clientQrcode'],
+//    'phone' => '131111111111',
+//]);

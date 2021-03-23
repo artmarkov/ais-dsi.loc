@@ -1,6 +1,6 @@
 <?php
 
-namespace xj\qrcode\widgets;
+namespace common\widgets\qrcode\widgets;
 
 use Yii;
 use yii\web\View;
@@ -8,7 +8,7 @@ use yii\helpers\Html;
 use yii\base\Widget;
 use yii\base\Exception;
 use yii\helpers\Json;
-use xj\qrcode\QRcode;
+use common\widgets\qrcode\QRcode;
 
 class Text extends Widget {
 
