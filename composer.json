@@ -54,8 +54,7 @@
     "trntv/yii2-aceeditor": "^2.0.0",
     "zhuravljov/yii2-queue-monitor": "~0.1",
     "artsoft/yii2-date-range-picker": "*",
-    "wbraganca/yii2-dynamicform": "*",
-    "xj/yii2-qrcode-widget": "^1.1"
+    "wbraganca/yii2-dynamicform": "*"
 
   },
   "require-dev": {

@@ -3,7 +3,9 @@
 namespace artsoft\user\controllers;
 
 use artsoft\models\User;
+use http\Url;
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -63,5 +65,20 @@ class DefaultController extends MainController
         }
 
         return $this->renderIsAjax('changePassword', compact('model'));
+    }
+    
+    public function actionHistory($id)
+    {
+        $data = new \common\history\UserHistory($id);
+        $dataProvider = $data->search(Yii::$app->request->get());
+
+        //echo '<pre>' . print_r($list, true) . '</pre>';
+
+        $content=\Yii::$app->view->renderFile('@common/history/views/history.php',[
+        'dataProvider' => $dataProvider,
+            'filterModel' => $data,
+        ]);
+        return $this->renderContent($content);
+
     }
 }

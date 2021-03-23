@@ -12,7 +12,10 @@ use kartik\date\DatePicker;
  * @var artsoft\models $model
  * @var artsoft\widgets\ActiveForm $form
  */
-print_r($model->getVersions());
+//print_r($model->getVersions());
+foreach ($model->getVersions() as $version) {
+    echo '<pre>' . print_r($version->id, true) . '</pre>';
+}
 ?>
 
 <div class="user-form">
