@@ -1,19 +1,11 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: Aleksey
- * Date: 16.08.2018
- * Time: 14:24
- */
 
 namespace common\history;
-
 
 use artsoft\models\User;
 
 class UserHistory extends BaseHistory
 {
-
     public static function getTableName()
     {
         return 'users_hist';
@@ -21,7 +13,7 @@ class UserHistory extends BaseHistory
 
     public static function getModelName()
     {
-        return User::className();
+        return User::class;
     }
 
     protected function getFields()
@@ -32,28 +24,35 @@ class UserHistory extends BaseHistory
             'first_name',
             'middle_name',
             'last_name',
+            'birth_timestamp',
+            'email',
+            'status',
+            'snils',
+            'phone',
+            'phone_optional',
+            'skype',
+            'info',
+            'user_category',
         ];
     }
 
     /**
-     * @param Activity $model
-     * @param string $name
-     * @param string $value
-     * @return string
+     * @param $model
+     * @param $name
+     * @param $value
+     * @return string|null
+     * @throws \yii\base\InvalidConfigException
      */
     protected static function getDisplayValue($model, $name, $value)
     {
         switch ($name) {
-            case 'first_name':
-                return $model->first_name ? $model->first_name : $value;
-            case 'middle_name':
-                return $model->middle_name ? $model->middle_name : '';
-            case 'last_name':
-                return $model->last_name ? $model->last_name : '';
+            case 'birth_timestamp':
+                return $model->birth_timestamp ? \Yii::$app->formatter->asDate($model->birth_timestamp) : $value;
+            case 'user_category':
+                return isset($model->user_category) ? $model->getUserCategoryValue($model->user_category) : $value;
+            case 'status':
+                return isset($model->status) ? $model->getStatusValue($model->status) : $value;
         }
-
         return parent::getDisplayValue($model, $name, $value);
     }
-
-
 }

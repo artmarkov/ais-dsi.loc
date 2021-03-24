@@ -162,6 +162,23 @@ class ButtonHelper
     }
 
     /**
+     * @param $model
+     * @param null $historyAction
+     * @param string $buttonClass
+     * @return string
+     */
+    public static function historyButton($model, $historyAction = null, $buttonClass = self::buttonClass)
+    {
+        $historyAction = $historyAction == null ? [self::getAction('history'), 'id' => $model->id] : $historyAction;
+        return Html::a('<i class="fa fa-history" aria-hidden="true"></i> ' . Yii::t('art', 'History'),
+            $historyAction,
+            [
+                'class' => 'btn btn-default ' . $buttonClass,
+            ]
+        );
+    }
+
+    /**
      * @param $action
      * @return string
      */

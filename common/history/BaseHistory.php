@@ -7,7 +7,6 @@ use yii\base\Model;
 
 abstract class BaseHistory extends Model
 {
-
     protected $model;
     protected $objId;
 
@@ -98,6 +97,17 @@ abstract class BaseHistory extends Model
         }
     }
 
+    public static function getLinkedIdList($linkFiledName, $id)
+    {
+        $res =  array_reduce((new \yii\db\Query)->select('id')->distinct()->from(static::getTableName())->where([$linkFiledName => $id])->all(), function($result, $item) {
+            $result[] = $item['id'];
+            return $result;
+        });
+        // var_dump($result);
+        // exit;
+        return $res ? $res : [];
+    }
+
     /**
      * Возвращает исторические версии объекта
      * @return \common\models\BaseModel[]
@@ -150,7 +160,7 @@ abstract class BaseHistory extends Model
             foreach ($attrList as $attr) {
                 try {
                     $item = \Yii::createObject([
-                        'class' => \common\history\Item::className(),
+                        'class' => \common\history\Item::class,
                         'updated_at' => $modelOld->updated_at,
                         'updated_by' => $modelOld->updated_by,
                         'attr_name' => $attr,
@@ -193,5 +203,4 @@ abstract class BaseHistory extends Model
             }
         }
     }
-
 }

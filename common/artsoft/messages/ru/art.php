@@ -50,6 +50,7 @@ return [
     'For example' => 'Например',
     'Gender' => 'Пол',
     'Group' => 'Группа',
+    'History' => 'История изменений',
     'ID' => 'ID',
     'IP' => 'IP',
     'Icon' => 'Иконка',

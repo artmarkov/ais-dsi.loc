@@ -1,14 +1,10 @@
 <?php
-//echo '<pre>' . print_r($provider, true) . '</pre>';
 
-?>
-<?php
+use artsoft\helpers\Html;
 use yii\widgets\Pjax;
 use artsoft\grid\GridPageSize;
 use artsoft\grid\GridView;
 
-$this->title = Yii::t('art', 'История изменений');
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="history-index">
     <div class="panel">
@@ -19,7 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="panel panel-default">
                 <div class="panel-body">
                     <div class="row">
-
                         <div class="col-sm-12 text-right">
                             <?= GridPageSize::widget(['pjaxId' => 'history-grid-pjax']) ?>
                         </div>
@@ -33,11 +28,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'history-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $filterModel,
-                        'bulkActionOptions' => [
-                            'gridId' => 'history-grid',
-                            'actions' => [],
-                        ],
                         'columns' => [
+                            ['class' => 'yii\grid\SerialColumn', 'options' => ['style' => 'width:20px'],],
                             ['attribute' => 'type', 'label' => 'Событие'],
                             ['attribute' => 'attr_label', 'label' => 'Параметр'],
                             ['attribute' => 'display_value_old', 'label' => 'Старое'],
@@ -46,7 +38,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             ['attribute' => 'updated_by_username', 'label' => 'Инициатор'],
                         ],
                     ]);
-
                     ?>
                     <?php Pjax::end() ?>
                 </div>

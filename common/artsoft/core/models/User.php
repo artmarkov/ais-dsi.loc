@@ -43,6 +43,7 @@ use yii\helpers\ArrayHelper;
  * @property int $updated_at
  * @property int $created_by
  * @property int $updated_by
+ * @property int $version
  *
  */
 class User extends UserIdentity
@@ -120,7 +121,7 @@ class User extends UserIdentity
             [['username'], 'unique'],
             [['username', 'email', 'bind_to_ip'], 'trim'],
             ['email', 'email'],
-            [['status', 'user_category', 'email_confirmed'], 'integer'],
+            [['status', 'user_category', 'email_confirmed', 'version'], 'integer'],
             ['bind_to_ip', 'validateBindToIp'],
             ['bind_to_ip', 'string', 'max' => 255],
             [['first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
@@ -143,6 +144,11 @@ class User extends UserIdentity
             ['user_category', 'in', 'range' => [self::USER_CATEGORY_STAFF, self::USER_CATEGORY_TEACHER, self::USER_CATEGORY_STUDENT, self::USER_CATEGORY_PARENT]],
             ['birth_date', 'date', 'format' => 'dd-MM-yyyy'],
         ];
+    }
+
+    public function optimisticLock()
+    {
+        return 'version';
     }
 
     /* Геттер для полного имени человека */
@@ -327,11 +333,11 @@ class User extends UserIdentity
      */
     public static function getGenderList()
     {
-        return array(
+        return [
             self::GENDER_NOT_SET => Yii::t('yii', '(not set)'),
             self::GENDER_MALE => Yii::t('art', 'Male'),
             self::GENDER_FEMALE => Yii::t('art', 'Female'),
-        );
+        ];
     }
 
     /**
@@ -340,12 +346,12 @@ class User extends UserIdentity
      */
     public static function getUserCategoryList()
     {
-        return array(
+        return [
             self::USER_CATEGORY_STAFF => Yii::t('art', 'Staff'),
             self::USER_CATEGORY_TEACHER => Yii::t('art', 'Teacher'),
             self::USER_CATEGORY_STUDENT => Yii::t('art', 'Student'),
             self::USER_CATEGORY_PARENT => Yii::t('art', 'Parent'),
-        );
+        ];
     }
 
     /**

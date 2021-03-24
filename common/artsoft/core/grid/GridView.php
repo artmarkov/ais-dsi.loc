@@ -41,7 +41,7 @@ class GridView extends \yii\grid\GridView
     public function renderBulkActions()
     {
         if (!$this->bulkActions) {
-            $this->bulkActions = GridBulkActions::widget($this->bulkActionOptions);
+            $this->bulkActions = $this->bulkActionOptions ? GridBulkActions::widget($this->bulkActionOptions) : null;
         }
         return $this->bulkActions;
     }

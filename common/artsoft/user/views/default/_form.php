@@ -13,9 +13,6 @@ use kartik\date\DatePicker;
  * @var artsoft\widgets\ActiveForm $form
  */
 //print_r($model->getVersions());
-foreach ($model->getVersions() as $version) {
-    echo '<pre>' . print_r($version->id, true) . '</pre>';
-}
 ?>
 
 <div class="user-form">
@@ -28,6 +25,7 @@ foreach ($model->getVersions() as $version) {
     <div class="panel">
         <div class="panel-heading">
             Информация о пользователе
+            <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/user/default/history', 'id' => $model->id]); ?>
         </div>
         <div class="panel-body">
             <div class="panel panel-primary">

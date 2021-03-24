@@ -48,7 +48,7 @@ class SortableGridView extends \himiklab\sortablegrid\SortableGridView
     public function renderBulkActions()
     {
         if (!$this->bulkActions) {
-            $this->bulkActions = GridBulkActions::widget($this->bulkActionOptions);
+            $this->bulkActions = $this->bulkActionOptions ? GridBulkActions::widget($this->bulkActionOptions) : null;
         }
         return $this->bulkActions;
     }

@@ -66,19 +66,24 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax('changePassword', compact('model'));
     }
-    
+
     public function actionHistory($id)
     {
+        $model = $this->findModel($id);
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/user', 'Users'), 'url' => ['index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/user', $model->username), 'url' => ['/user/default/update', 'id' => $model->id]];
+        $this->view->title = 'История изменений: ' . $model->username;
+        $this->view->params['breadcrumbs'][] = $this->view->title;
+
         $data = new \common\history\UserHistory($id);
         $dataProvider = $data->search(Yii::$app->request->get());
 
-        //echo '<pre>' . print_r($list, true) . '</pre>';
-
-        $content=\Yii::$app->view->renderFile('@common/history/views/history.php',[
-        'dataProvider' => $dataProvider,
+        $content = \Yii::$app->view->renderFile('@common/history/views/history.php', [
+            'dataProvider' => $dataProvider,
             'filterModel' => $data,
         ]);
         return $this->renderContent($content);
-
     }
+
 }
