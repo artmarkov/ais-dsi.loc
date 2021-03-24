@@ -34,7 +34,8 @@ class Session extends \artsoft\db\ActiveRecord
         return [
             [['id'], 'required'],
             [['expire'], 'integer'],
-            [['data','status','ip','run_at'], 'string'],
+            [['data'], 'safe'],
+            [['status','ip','run_at'], 'string'],
             [['id'], 'string', 'max' => 255],
         ];
     }
