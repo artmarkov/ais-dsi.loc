@@ -4,5 +4,5 @@ return [
     'robotEmail' => env('ROBOT_EMAIL'),    
     'supportEmail' => env('SUPPORT_EMAIL'),
     'user.passwordResetTokenExpire' => 3600,
-    'version' => '0.1.0',
+    'version' => '2.1.0',
 ];

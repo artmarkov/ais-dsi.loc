@@ -20,6 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 AvatarUploaderAsset::register($this);
 AvatarAsset::register($this);
 
+$info = \artsoft\models\UserVisitLog::getLastVisit();
 ?>
 
 <div class="profile-index">
@@ -52,29 +53,27 @@ AvatarAsset::register($this);
                                     <img src="<?= $avatar ?>"/>
                                 </div>
                                 <div class="image-actions">
-                            <span class="btn btn-primary btn-file"
-                                  title="<?= Yii::t('art/auth', 'Change profile picture') ?>" data-toggle="tooltip"
-                                  data-placement="left">
-                                <i class="fa fa-folder-open"></i>
-                                <?= Html::fileInput('image', null, ['class' => 'image-input']) ?>
-                            </span>
+                                <span class="btn btn-primary btn-file"
+                                      title="<?= Yii::t('art/auth', 'Change profile picture') ?>" data-toggle="tooltip"
+                                      data-placement="bottom">
+                                    <i class="fa fa-folder-open"></i>
+                                    <?= Html::fileInput('image', null, ['class' => 'image-input']) ?>
+                                </span>
 
-                                    <?=
-                                    Html::submitButton('<i class="fa fa-save"></i>', [
-                                        'class' => 'btn btn-primary image-submit',
-                                        'title' => Yii::t('art/auth', 'Save profile picture'),
-                                        'data-toggle' => 'tooltip',
-                                        'data-placement' => 'top',
-                                    ])
-                                    ?>
-
-                                    <span class="btn btn-primary image-remove"
-                                          data-action="<?= Url::to(['/auth/default/remove-avatar']) ?>"
-                                          title="<?= Yii::t('art/auth', 'Remove profile picture') ?>"
-                                          data-toggle="tooltip"
-                                          data-placement="right">
+                                <?=
+                                Html::submitButton('<i class="fa fa-save"></i>', [
+                                    'class' => 'btn btn-primary image-submit',
+                                    'title' => Yii::t('art/auth', 'Save profile picture'),
+                                    'data-toggle' => 'tooltip',
+                                    'data-placement' => 'bottom',
+                                ])
+                                ?>
+                                <span class="btn btn-primary image-remove"
+                                      data-action="<?= Url::to(['/auth/default/remove-avatar']) ?>"
+                                      title="<?= Yii::t('art/auth', 'Remove profile picture') ?>"
+                                      data-toggle="tooltip" data-placement="bottom">
                                 <i class="fa fa-remove"></i>
-                            </span>
+                                </span>
                                 </div>
                                 <div class="upload-status"></div>
 
@@ -97,7 +96,7 @@ AvatarAsset::register($this);
                                         <?= $model->attributeLabels()['user_category'] ?>
                                     </label>
                                     <span>
-                        <?= \artsoft\models\User::getUserCategoryValue($model->user_category); ?>
+                                    <?= \artsoft\models\User::getUserCategoryValue($model->user_category); ?>
 
                                 </div>
                                 <div class="form-group clearfix">
@@ -112,6 +111,14 @@ AvatarAsset::register($this);
                                     </label>
                                     <span><?= $model->updatedDatetime; ?></span>
                                 </div>
+                            <hr>
+                                <div class="form-group clearfix">
+                                    <label class="control-label" style="float: left; padding-right: 5px;">
+                                        <?= Yii::t('art', 'Previous successful login') ?> :
+                                    </label>
+                                    <label class="control-label"
+                                           style="float: left; padding-right: 5px;"><?= $info ? Yii::$app->formatter->asDatetime($info['visit_time'], 'php:d.m.Y h:i:s') . '<br/>ip: ' . $info['ip'] : ''; ?></label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -121,6 +128,9 @@ AvatarAsset::register($this);
                 $form = ActiveForm::begin([
                     'id' => 'user',
                     'validateOnBlur' => false,
+                    'options' => [
+                        'autocomplete' => 'off'
+                    ]
                 ])
                 ?>
                 <div class="col-md-9">
@@ -139,7 +149,7 @@ AvatarAsset::register($this);
                                 <?= $form->field($model, 'first_name')->textInput(['maxlength' => 124]) ?>
                                 <?= $form->field($model, 'middle_name')->textInput(['maxlength' => 124]) ?>
                                 <?= $form->field($model, 'gender')->dropDownList(artsoft\models\User::getGenderList()) ?>
-                                <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput() ?>
+                                <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(\kartik\date\DatePicker::classname()); ?>
                                 <?= $form->field($model, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
                                 <?= $form->field($model, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                                 <?= $form->field($model, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>

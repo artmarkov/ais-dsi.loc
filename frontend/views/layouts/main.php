@@ -41,7 +41,7 @@ AvatarAsset::register($this);
     <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 
         <?php
-        $logo = $assetBundle->baseUrl . '/images/art-logo.png';
+        $logo = $assetBundle->baseUrl . '/images/art-logo-inverse.png';
         NavBar::begin([
             'brandLabel' => Html::img($logo, ['class' => 'art-logo', 'alt' => 'ArtCMS']) . '<b>' .Yii::t('art', 'AIS'). '</b> ' . Yii::$app->settings->get('general.title', 'Art Site', Yii::$app->language),
             'brandUrl' => Yii::$app->homeUrl,
@@ -83,6 +83,10 @@ AvatarAsset::register($this);
                 'label' => '<i class="fa fa-sign-out"></i>&nbsp;' . Yii::t('art/auth', 'Logout'),
                 'url' => ['/auth/default/logout', 'language' => false],
                 'linkOptions' => ['data-method' => 'post']
+            ];
+            $menuItems[] = [
+                'label' => '<i class="fa fa-cogs"></i>',
+                'url' => \yii\helpers\Url::to(['/admin'])
             ];
         }
         echo Nav::widget([
@@ -141,9 +145,9 @@ AvatarAsset::register($this);
 </div>
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; <?= Html::encode(Yii::$app->settings->get('general.title', 'Art Site', Yii::$app->language)) ?> 2009-<?= date('Y') ?></p>
+        <p class="pull-left">&copy; <?= '<b>' .Yii::t('art', 'AIS'). '</b> ' . Html::encode(Yii::$app->settings->get('general.title', 'Art Site', Yii::$app->language)) ?> 2009-<?= date('Y') ?></p>
 
-        <p class="pull-right"><?= Yii::powered() ?>, <?= artsoft\Art::powered() ?></p>
+        <p class="pull-right"><?= Yii::powered() ?>, <?= artsoft\Art::powered() . ' ' . Yii::$app->params['version'] ?></p>
     </div>
 </footer>
     

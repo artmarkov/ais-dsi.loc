@@ -38,6 +38,21 @@ class DefaultController extends \backend\controllers\DefaultController
 //            'addresses' => $addresses,
 //        ]);
 //    }
+
+    public function actionIndex()
+    {
+        $info = \Yii::$app->getDb()->createCommand('
+            select visit_time, ip
+            from user_visit_log 
+            where user_id = :userId 
+            order by id desc 
+            limit 2 offset 1',
+            ['userId' => Yii::$app->user->id])
+            ->queryOne();
+        echo $info ? 'Предыдущий успешный вход в систему: ' . Yii::$app->formatter->asDatetime($info['visit_time'], 'long') . ' ip: ' . $info['ip'] : '';
+
+    }
+
     public function actionView($id)
     {
         return $this->actionUpdate($id, true);

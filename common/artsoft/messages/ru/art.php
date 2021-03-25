@@ -1,6 +1,7 @@
 <?php
 return [
     '--- With selected ---' => '--- С выбранным ---',
+    'AIS' => 'АИС',
     'Activate' => 'Активировать',
     'Active' => 'Активные',
     'Add New' => 'Добавить запись',
@@ -150,4 +151,5 @@ return [
     'Login as user' => 'Войти под пользователем',
     'Send registration data' => 'Отправить регистрационные данные',
     'Are you sure you want to send registration data?' => 'Вы уверены, что хотите отправить регистрационные данные?',
+    'Previous successful login' => 'Предыдущий успешный вход',
 ];

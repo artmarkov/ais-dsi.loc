@@ -31,6 +31,7 @@ use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\web\UploadedFile;
+use frontend\components\NumericCaptcha;
 
 
 class DefaultController extends BaseController
@@ -50,7 +51,10 @@ class DefaultController extends BaseController
     public function actions()
     {
         return [
-            'captcha' => Yii::$app->art->captchaAction,
+            'captcha' => [
+                'class' => NumericCaptcha::className(),
+                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+            ],
             'oauth' => [
                 'class' => 'artsoft\auth\AuthAction',
                 'successCallback' => [$this, 'onAuthSuccess'],

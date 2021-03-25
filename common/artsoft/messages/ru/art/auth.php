@@ -59,4 +59,5 @@ return [
     'Username contains not allowed characters or words.' => 'Имя пользователя содержит недопустимые символы или слова.',
     'Wrong password' => 'Неверный пароль',
     'You could not login from this IP' => 'Вы не можете войти с этого IP',
+    'After changing the E-mail confirmation is required' => 'После изменения адреса электронной почты требуется подтверждение',
 ];

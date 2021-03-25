@@ -25,6 +25,8 @@ class Request extends \yii\db\ActiveRecord
     public static $request;
     public static $startTime;
 
+    const ONLY_POST = false; // true - только post-запросы
+
     /**
      * @inheritdoc
      */
@@ -72,7 +74,7 @@ class Request extends \yii\db\ActiveRecord
      */
     public static function register($request, $user)
     {
-        if (!$request->isPost) {
+        if (!$request->isPost && self::ONLY_POST) {
             return;
         }
         /* @var $o Request */

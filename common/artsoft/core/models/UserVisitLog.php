@@ -163,4 +163,21 @@ class UserVisitLog extends ActiveRecord
    
     }
 
+    /**
+     * Предыдущий успешный вход в систему
+     * @return array|false
+     * @throws \yii\db\Exception
+     */
+    public static function getLastVisit()
+    {
+        return \Yii::$app->getDb()->createCommand('
+            select visit_time, ip
+            from user_visit_log 
+            where user_id = :userId 
+            order by id desc 
+            limit 2 offset 1',
+            ['userId' => Yii::$app->user->id])
+            ->queryOne();
+    }
+
 }

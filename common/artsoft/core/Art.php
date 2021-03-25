@@ -22,7 +22,7 @@ class Art extends Component
     /**
      * Version number of the component.
      */
-    const VERSION = '0.1.0';
+    const VERSION = '2.1.0';
 
     /**
      * Session ID of last login attempt.

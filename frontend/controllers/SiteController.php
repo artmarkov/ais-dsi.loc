@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use frontend\models\ContactForm;
+use frontend\components\NumericCaptcha;
 use Yii;
 
 /**
@@ -22,7 +23,7 @@ class SiteController extends \artsoft\controllers\BaseController
                 'class' => 'artsoft\web\ErrorAction',
             ],
             'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
+                'class' => NumericCaptcha::className(),
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
