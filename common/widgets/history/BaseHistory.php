@@ -1,6 +1,6 @@
 <?php
 
-namespace common\history;
+namespace common\widgets\history;
 
 use yii\base\InvalidConfigException;
 use yii\base\Model;
@@ -160,7 +160,7 @@ abstract class BaseHistory extends Model
             foreach ($attrList as $attr) {
                 try {
                     $item = \Yii::createObject([
-                        'class' => \common\history\Item::class,
+                        'class' => Item::class,
                         'updated_at' => $modelOld->updated_at,
                         'updated_by' => $modelOld->updated_by,
                         'attr_name' => $attr,
@@ -185,7 +185,7 @@ abstract class BaseHistory extends Model
                 }
                 try {
                     $item = \Yii::createObject([
-                        'class' => \common\history\Item::className(),
+                        'class' => Item::className(),
                         'updated_at' => $modelNew->updated_at,
                         'updated_by' => $modelNew->updated_by,
                         'attr_name' => $attr,

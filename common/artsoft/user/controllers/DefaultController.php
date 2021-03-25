@@ -3,9 +3,9 @@
 namespace artsoft\user\controllers;
 
 use artsoft\models\User;
+use common\models\history\UserHistory;
 use http\Url;
 use Yii;
-use yii\data\ArrayDataProvider;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -24,7 +24,7 @@ class DefaultController extends MainController
     public $modelSearchClass = 'artsoft\user\models\search\UserSearch';
 
     public $disabledActions = ['view'];
-    
+
     /**
      * @return mixed|string|\yii\web\Response
      */
@@ -44,8 +44,8 @@ class DefaultController extends MainController
     /**
      * @param int $id User ID
      *
-     * @throws \yii\web\NotFoundHttpException
      * @return string
+     * @throws \yii\web\NotFoundHttpException
      */
     public function actionChangePassword($id)
     {
@@ -69,21 +69,9 @@ class DefaultController extends MainController
 
     public function actionHistory($id)
     {
-        $model = $this->findModel($id);
         $this->view->params['tabMenu'] = $this->tabMenu;
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/user', 'Users'), 'url' => ['index']];
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/user', $model->username), 'url' => ['/user/default/update', 'id' => $model->id]];
-        $this->view->title = 'История изменений: ' . $model->username;
-        $this->view->params['breadcrumbs'][] = $this->view->title;
-
-        $data = new \common\history\UserHistory($id);
-        $dataProvider = $data->search(Yii::$app->request->get());
-
-        $content = \Yii::$app->view->renderFile('@common/history/views/history.php', [
-            'dataProvider' => $dataProvider,
-            'filterModel' => $data,
-        ]);
-        return $this->renderContent($content);
+        $model = $this->findModel($id);
+        $data = new UserHistory($id);
+        return $this->renderIsAjax('history', compact(['model', 'data']));
     }
-
 }

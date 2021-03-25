@@ -1,8 +1,9 @@
 <?php
 
-namespace common\history;
+namespace common\models\history;
 
 use artsoft\models\User;
+use common\widgets\history\BaseHistory;
 
 class UserHistory extends BaseHistory
 {

@@ -39,10 +39,10 @@ class m170529_050554_create_table_system extends Migration
         $this->createTable('session', [
             'id' => $this->char(64)->notNull(),
             'expire' => $this->integer(),
-            'data' => $this->binary()
+            'data' => $this->text()
         ]);
+        $this->addPrimaryKey('session_pk', 'session', 'id');;
         $this->addCommentOnTable('session','Сессии');
-        $this->addPrimaryKey('pk-id', 'session', 'id');
 
         $this->createTable('requests', [
             'id'               => $this->primaryKey(),

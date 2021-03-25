@@ -1,6 +1,6 @@
 <?php
 
-namespace common\history;
+namespace common\widgets\history;
 
 class Item extends \yii\base\Model
 {
