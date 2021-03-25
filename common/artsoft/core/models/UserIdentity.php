@@ -49,6 +49,10 @@ abstract class UserIdentity extends ActiveRecord implements IdentityInterface
     {
         return static::findOne(['username' => $username, 'status' => User::STATUS_ACTIVE]);
     }
+    public static function findByAuthKey($auth_key)
+    {
+        return static::findOne(['auth_key' => $auth_key, 'status' => User::STATUS_INACTIVE]);
+    }
 
     /**
      * Finds user by confirmation token

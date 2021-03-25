@@ -26,12 +26,6 @@ class AuthModule extends \yii\base\Module
     const VERSION = '0.1.0';
     const PARAMS_SESSION_ID = 'authUserParams';
 
-    /**
-     * Bootstrap grid columns count.
-     *
-     * @var int
-     */
-    public $gridColumns = 12;
 
     /**
      * Profile layout.

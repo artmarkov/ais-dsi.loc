@@ -45,66 +45,66 @@ abstract class BaseController extends Controller
     {
         parent::init();
 
-        if (!Yii::$app->errorHandler->exception && Yii::$app->art->isMultilingual) {
-
-            $languages = Yii::$app->art->languages;
-
-            // If there is a post-request, redirect the application 
-            // to the provided url of the selected language
-            if (Yii::$app->getRequest()->post('language', NULL)) {
-                $language = Yii::$app->art->getSourceLanguageShortcode(Yii::$app->getRequest()->post('language'));
-
-                if (!isset($languages[$language])) {
-                    throw new NotFoundHttpException();
-                }
-
-                $multilingualReturnUrl = Yii::$app->getRequest()->post($language);
-                $this->redirect($multilingualReturnUrl);
-            }
-
-            // Set the application lang if provided by GET, session or cookie
-            if ($language = Yii::$app->getRequest()->get('language', NULL)) {
-
-                $language = Yii::$app->art->getSourceLanguageShortcode($language);
-
-                if (!isset($languages[$language])) {
-                    throw new NotFoundHttpException();
-                }
-
-                Yii::$app->language = $language;
-                Yii::$app->session->set('language', $language);
-                Yii::$app->response->cookies->add(new Cookie([
-                    'name' => 'language',
-                    'value' => Yii::$app->session->get('language'),
-                    'expire' => time() + 31536000 // a year
-                ]));
-            } else if (Yii::$app->session->has('language')) {
-
-                $language = Yii::$app->session->get('language');
-                $language = Yii::$app->art->getSourceLanguageShortcode($language);
-
-                if (!isset($languages[$language])) {
-                    throw new NotFoundHttpException();
-                }
-
-                Yii::$app->language = $language;
-
-            } else if (isset(Yii::$app->request->cookies['language'])) {
-
-                $language = Yii::$app->request->cookies['language']->value;
-                $language = Yii::$app->art->getSourceLanguageShortcode($language);
-
-                if (!isset($languages[$language])) {
-                    throw new NotFoundHttpException();
-                }
-
-                Yii::$app->language = $language;
-
-            }
-
-            Yii::$app->formatter->locale = Yii::$app->language;
-
-        }
+//        if (!Yii::$app->errorHandler->exception && Yii::$app->art->isMultilingual) {
+//
+//            $languages = Yii::$app->art->languages;
+//
+//            // If there is a post-request, redirect the application
+//            // to the provided url of the selected language
+//            if (Yii::$app->getRequest()->post('language', NULL)) {
+//                $language = Yii::$app->art->getSourceLanguageShortcode(Yii::$app->getRequest()->post('language'));
+//
+//                if (!isset($languages[$language])) {
+//                    throw new NotFoundHttpException();
+//                }
+//
+//                $multilingualReturnUrl = Yii::$app->getRequest()->post($language);
+//                $this->redirect($multilingualReturnUrl);
+//            }
+//
+//            // Set the application lang if provided by GET, session or cookie
+//            if ($language = Yii::$app->getRequest()->get('language', NULL)) {
+//
+//                $language = Yii::$app->art->getSourceLanguageShortcode($language);
+//
+//                if (!isset($languages[$language])) {
+//                    throw new NotFoundHttpException();
+//                }
+//
+//                Yii::$app->language = $language;
+//                Yii::$app->session->set('language', $language);
+//                Yii::$app->response->cookies->add(new Cookie([
+//                    'name' => 'language',
+//                    'value' => Yii::$app->session->get('language'),
+//                    'expire' => time() + 31536000 // a year
+//                ]));
+//            } else if (Yii::$app->session->has('language')) {
+//
+//                $language = Yii::$app->session->get('language');
+//                $language = Yii::$app->art->getSourceLanguageShortcode($language);
+//
+//                if (!isset($languages[$language])) {
+//                    throw new NotFoundHttpException();
+//                }
+//
+//                Yii::$app->language = $language;
+//
+//            } else if (isset(Yii::$app->request->cookies['language'])) {
+//
+//                $language = Yii::$app->request->cookies['language']->value;
+//                $language = Yii::$app->art->getSourceLanguageShortcode($language);
+//
+//                if (!isset($languages[$language])) {
+//                    throw new NotFoundHttpException();
+//                }
+//
+//                Yii::$app->language = $language;
+//
+//            }
+//
+//            Yii::$app->formatter->locale = Yii::$app->language;
+//
+//        }
     }
 
     /**

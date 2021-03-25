@@ -11,15 +11,11 @@ use yii\helpers\Html;
 $this->title = Yii::t('art/auth', 'Update Password');
 $this->params['breadcrumbs'][] = $this->title;
 
-$col12 = $this->context->module->gridColumns;
-$col9 = (int)($col12 * 3 / 4);
-$col6 = (int)($col12 / 2);
-$col3 = (int)($col12 / 4);
 ?>
     <div id="update-wrapper">
         <div class="row">
-            <div class="col-md-<?= $col6 ?> col-md-offset-<?= $col3 ?>">
-                <div class="panel panel-default">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title"><?= $this->title ?></h3>
                     </div>

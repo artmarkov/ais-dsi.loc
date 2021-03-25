@@ -4,7 +4,6 @@ namespace frontend\controllers;
 
 use frontend\models\ContactForm;
 use Yii;
-use yii\data\Pagination;
 
 /**
  * Site controller
@@ -36,8 +35,7 @@ class SiteController extends \artsoft\controllers\BaseController
      */
     public function actionIndex()
     {
-        return $this->render('about');
-
+        return $this->render('index');
         //if nothing suitable was found then throw 404 error
         throw new \yii\web\NotFoundHttpException('Page not found.');
     }
@@ -63,15 +61,5 @@ class SiteController extends \artsoft\controllers\BaseController
                 'model' => $model,
             ]);
         }
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return mixed
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
     }
 }

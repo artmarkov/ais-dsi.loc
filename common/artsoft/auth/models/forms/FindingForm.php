@@ -22,7 +22,7 @@ class FindingForm extends User
     public $last_name;
     public $birth_date;
     public $birth_timestamp;
-
+    public $captcha;
 
     /**
      * @inheritdoc
@@ -32,12 +32,11 @@ class FindingForm extends User
         return [
             [['first_name', 'last_name'], 'required'],
             ['birth_date','required'],
-//            ['birth_date','validateDateCorrect'],
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             [['birth_timestamp'],'integer'],
-//            ['captcha', 'captcha', 'captchaAction' => '/auth/default/captcha'],
+            ['captcha', 'captcha', 'captchaAction' => '/auth/default/captcha'],
         ];
     }
 

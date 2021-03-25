@@ -95,14 +95,11 @@ AvatarAsset::register($this);
 
         NavBar::end();
         ?>
-<!--<? echo '<pre>' . print_r($menuItems, true) . '</pre>'; ?>-->
-<!--<? echo '<pre>' . print_r(Menu::getMenuItems('admin-menu'), true) . '</pre>'; ?>-->
         <!-- SIDEBAR NAV -->
         <div class="navbar-default sidebar metismenu" role="navigation">
             <?php
             $menuItemsKey = Yii::$app->user->isGuest ? '__guestMenuItems' . Yii::$app->language : '__mainMenuItems' . Yii::$app->language;
             if (!$menuItems = Yii::$app->cache->get($menuItemsKey)) {
-//                $menuItems = Yii::$app->user->isGuest ? Menu::getMenuItems('guest-menu') : Menu::getMenuItems('main-menu');
                 Yii::$app->cache->set($menuItemsKey, $menuItems, 3600);
             }
             echo Navigation::widget([
@@ -151,7 +148,7 @@ AvatarAsset::register($this);
 </footer>
     
 <!--кнопка вверх-->
-<?//= common\widgets\ScrollupWidget::widget() ?>
+<?= \artsoft\widgets\ScrollupWidget::widget() ?>
 <?php $this->endBody() ?>
 
 </body>

@@ -25,7 +25,7 @@ use kartik\date\DatePicker;
     <div class="panel">
         <div class="panel-heading">
             Информация о пользователе
-            <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/user/default/history', 'id' => $model->id]); ?>
+            <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/user/default/history', 'id' => $model->id]); ?></span>
         </div>
         <div class="panel-body">
             <div class="panel panel-primary">

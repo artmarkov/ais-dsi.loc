@@ -24,7 +24,7 @@ class SignupForm extends Model
         $rules = [
             ['id', 'required'], // делаем update по ключу
 //            ['captcha', 'captcha', 'captchaAction' => '/auth/default/captcha'],
-            [['username', 'email', 'password', 'repeat_password', 'captcha'], 'required'],
+            [['username', 'email', 'password', 'repeat_password'], 'required'],
             [['username', 'email', 'password', 'repeat_password'], 'trim'],
             [['email'], 'email'],
             ['username', 'unique',

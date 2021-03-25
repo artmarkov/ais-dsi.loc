@@ -85,6 +85,7 @@ class Teachers extends \yii\db\ActiveRecord
             [['position_id', 'level_id', 'timestamp_serv', 'timestamp_serv_spec', 'status'], 'integer'],
             [['tab_num'], 'string', 'max' => 16],
             [['bonus_summ'], 'string', 'max' => 16],
+            ['status', 'default', 'value' => self::STATUS_INACTIVE],
             [['level_id'], 'exist', 'skipOnError' => true, 'targetClass' => Level::className(), 'targetAttribute' => ['level_id' => 'id']],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position_id' => 'id']],
             [['bonus_list', 'department_list'], 'safe'],
@@ -286,8 +287,8 @@ class Teachers extends \yii\db\ActiveRecord
     public static function getStatusList()
     {
         return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
             self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
+            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
         );
     }
 }

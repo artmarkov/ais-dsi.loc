@@ -12,10 +12,6 @@ use yii\helpers\Html;
 $this->title = Yii::t('art/auth', 'Reset Password');
 $this->params['breadcrumbs'][] = $this->title;
 
-$col12 = $this->context->module->gridColumns;
-$col9 = (int) ($col12 * 3 / 4);
-$col6 = (int) ($col12 / 2);
-$col3 = (int) ($col12 / 4);
 ?>
 
 <?php if (Yii::$app->session->hasFlash('error')): ?>
@@ -26,8 +22,8 @@ $col3 = (int) ($col12 / 4);
 
 <div id="update-wrapper">
     <div class="row">
-        <div class="col-md-<?= $col6 ?> col-md-offset-<?= $col3 ?>">
-            <div class="panel panel-default">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title"><?= $this->title ?></h3>
                 </div>
@@ -46,7 +42,7 @@ $col3 = (int) ($col12 / 4);
                     <?= $form->field($model, 'email')->textInput(['maxlength' => 255]) ?>
 
                     <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
-                        'template' => '<div class="row"><div class="col-sm-' . $col3 . '">{image}</div><div class="col-sm-' . $col3 . '">{input}</div></div>',
+                        'template' => '<div class="row"><div class="col-sm-3">{image}</div><div class="col-sm-3">{input}</div></div>',
                         'captchaAction' => ['/auth/captcha']
                     ]) ?>
 
