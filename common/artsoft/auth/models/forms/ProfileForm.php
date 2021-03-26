@@ -15,19 +15,27 @@ use artsoft\models\User;
 class ProfileForm extends User
 {
 
+    /**
+     * @var string
+     */
+    public $birth_date;
+
     public function rules()
     {
         return [
-            [['username', 'email', 'birth_timestamp'], 'required'],
+            [['username', 'email', 'birth_date', 'phone'], 'required'],
             [['first_name', 'last_name'], 'required'],
             [['first_name', 'middle_name', 'last_name', 'email'], 'trim'],
             ['email', 'email'],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
-            ['phone', 'required'],
+            ['gender', 'integer'],
             ['birth_timestamp', 'safe'],
             ['birth_timestamp', 'date', 'timestampAttribute' => 'birth_timestamp', 'format' => 'dd-MM-yyyy'],
             ['birth_timestamp', 'default', 'value' =>  mktime(0,0,0, date("m", time()), date("d", time()), date("Y", time()))],
             ['info', 'string', 'max' => 1024],
+            [['phone', 'phone_optional'], 'string', 'max' => 24],
+            [['snils'], 'string', 'max' => 16],
+            ['birth_date', 'date', 'format' => 'dd-MM-yyyy'],
         ];
     }
 

@@ -7,7 +7,7 @@ class m150825_212310_add_settings_permissions extends PermissionsMigration
 
     public function beforeUp()
     {
-        $this->addPermissionsGroup('settings', 'Settings');
+        $this->addPermissionsGroup('settings', 'Настройки');
     }
 
     public function afterDown()

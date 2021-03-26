@@ -44,6 +44,7 @@ use kartik\date\DatePicker;
                                 <?= $form->field($model, 'email')->textInput(['maxlength' => 255]) ?>
                                 <?= $form->field($model, 'email_confirmed')->checkbox() ?>
                             <?php endif; ?>
+                            <?= $form->field($model, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput(['readonly' => User::hasPermission('editUserSnils')])->hint('Может потребоваться для восстановления учетных данных.') ?>
 
                             <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(User::getStatusList()) ?>
                             <?= $form->field($model, 'registration_ip')->textInput(['readonly' => true]) ?>

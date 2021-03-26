@@ -1,35 +1,5 @@
 <?php
 
-Yii::$container->set(\kartik\date\DatePicker::class, [
-        'type' => \kartik\date\DatePicker ::TYPE_INPUT,
-        'options' => ['placeholder' => ''],
-        'convertFormat' => true,
-        'pluginOptions' => [
-            'format' => 'dd-MM-yyyy',
-            'autoclose' => true,
-            'weekStart' => 1,
-            'startDate' => '01-01-1930',
-            'endDate' => '01-01-2030',
-            'todayBtn' => 'linked',
-            'todayHighlight' => true,
-        ]
-    ]);
- 
-Yii::$container->set(\kartik\datetime\DateTimePicker::class, [
-        'type' => \kartik\datetime\DateTimePicker::TYPE_INPUT,
-        'options' => ['placeholder' => ''],
-        'convertFormat' => true,
-        'pluginOptions' => [
-            'format' => 'dd-MM-yyyy hh:i',
-            'autoclose' => true,
-            'weekStart' => 1,
-            'startDateTime' => '01-01-1930 00:00',
-            'endDateTime' => '01-01-2030 00:00',
-            'todayBtn' => 'linked',
-            'todayHighlight' => true,
-        ]
-    ]);
-
 $params = array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/params.php')

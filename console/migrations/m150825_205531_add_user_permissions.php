@@ -7,7 +7,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
 
     public function beforeUp()
     {
-        $this->addPermissionsGroup('userManagement', 'Управление учетноыми записями');
+        $this->addPermissionsGroup('userManagement', 'Управление учетными записями');
     }
 
     public function afterDown()
@@ -164,12 +164,21 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUserEmail'],
                 ],
+                'editUserSnils' => [
+                    'title' => 'Редактирование СНИЛС Пользователя',
+                    'roles' => [self::ROLE_ADMIN],
+                    'childs' => ['viewUserSnils'],
+                ],
                 'viewRegistrationIp' => [
                     'title' => 'Просмотр Регистрационного IP-адреса',
                     'roles' => [self::ROLE_ADMIN],
                 ],
                 'viewUserEmail' => [
                     'title' => 'Просмотр Email Пользователя',
+                    'roles' => [self::ROLE_MODERATOR],
+                ],
+                'viewUserSnils' => [
+                    'title' => 'Просмотр СНИЛС Пользователя',
                     'roles' => [self::ROLE_MODERATOR],
                 ],
                 'viewUserRoles' => [

@@ -137,7 +137,8 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div class="row">
-                                <?= $form->field($model, 'username')->textInput(['maxlength' => 255, 'autofocus' => false]) ?>
+                                <?= $form->field($model, 'username')->textInput(['maxlength' => 255, 'autofocus' => false, 'readonly' => true]) ?>
+                                <?= $form->field($model, 'snils')->textInput(['readonly' => true])->hint('Может потребоваться для восстановления учетных данных.') ?>
                                 <?= $form->field($model, 'email')->textInput(['maxlength' => 255, 'autofocus' => false])->hint(Yii::t('art/auth', 'After changing the E-mail confirmation is required')) ?>
                             </div>
                         </div>
@@ -150,7 +151,6 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                                 <?= $form->field($model, 'middle_name')->textInput(['maxlength' => 124]) ?>
                                 <?= $form->field($model, 'gender')->dropDownList(artsoft\models\User::getGenderList()) ?>
                                 <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(\kartik\date\DatePicker::classname()); ?>
-                                <?= $form->field($model, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
                                 <?= $form->field($model, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                                 <?= $form->field($model, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                                 <?= $form->field($model, 'info')->textarea(['rows' => 10, 'maxlength' => 1024]) ?>
