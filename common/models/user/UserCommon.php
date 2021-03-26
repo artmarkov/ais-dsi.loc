@@ -8,13 +8,12 @@ use common\models\student\Student;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
+use artsoft\db\ActiveRecord;
 
 /**
- * This is the model class for table "users".
+ * This is the model class for table "user_common".
  *
  * @property int $id
- * @property int $status
  * @property int $user_category
  * @property string|null $first_name
  * @property string|null $middle_name
@@ -23,29 +22,39 @@ use yii\db\ActiveRecord;
  * @property int|null $gender
  * @property string|null $phone
  * @property string|null $phone_optional
- * @property string|null $skype
- * @property string|null $info
  * @property string|null $snils
+ * @property string|null $info
  * @property int $created_at
  * @property int $updated_at
  * @property int $created_by
  * @property int $updated_by
+ * @property int $status
+ * @property int $version
  *
  */
-class UserCommon extends \artsoft\models\UserIdentity
+class UserCommon extends ActiveRecord
 {
     use DateTimeTrait;
 
-    /**
-     * @var string
-     */
+    const STATUS_ACTIVE = 10;
+    const STATUS_INACTIVE = 0;
+
+    const GENDER_NOT_SET = 0;
+    const GENDER_MALE = 1;
+    const GENDER_FEMALE = 2;
+    
+    const USER_CATEGORY_STAFF = 1;
+    const USER_CATEGORY_TEACHER = 2;
+    const USER_CATEGORY_STUDENT = 3;
+    const USER_CATEGORY_PARENT = 4;
+    
     public $birth_date;
 
     /**
      * @inheritdoc
      */
     public static function tableName() {
-        return Yii::$app->art->user_table;
+        return 'user_common';
     }
 
     /**
@@ -53,10 +62,10 @@ class UserCommon extends \artsoft\models\UserIdentity
      */
     public function behaviors() {
         return [
-            BlameableBehavior::className(),
-            TimestampBehavior::className(),
+            BlameableBehavior::class,
+            TimestampBehavior::class,
             [
-                'class' => DateToTimeBehavior::className(),
+                'class' => DateToTimeBehavior::class,
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_VALIDATE => 'birth_date',
                     ActiveRecord::EVENT_AFTER_FIND => 'birth_date',
@@ -74,7 +83,7 @@ class UserCommon extends \artsoft\models\UserIdentity
     {
         return [
             [['first_name', 'middle_name', 'last_name', 'birth_date'], 'required'],
-            [['status', 'user_category', 'gender'], 'integer'],
+            [['user_category', 'gender', 'status', 'version'], 'integer'],
             ['birth_timestamp', 'safe'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
@@ -82,8 +91,8 @@ class UserCommon extends \artsoft\models\UserIdentity
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             ['last_name', 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'], 'message' => Yii::t('art/auth', 'The user with the entered data already exists.')],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
-            ['skype', 'string', 'max' => 64],
             [['snils'], 'string', 'max' => 16],
+            ['info', 'string'],
             ['birth_date', 'date', 'format' => 'dd-MM-yyyy'],
         ];
     }
@@ -94,24 +103,32 @@ class UserCommon extends \artsoft\models\UserIdentity
     {
         return [
             'id' => Yii::t('art', 'ID'),
-            'status' => Yii::t('art', 'Status'),
             'user_category' => Yii::t('art', 'User Category'),
             'first_name' => Yii::t('art', 'First Name'),
             'middle_name' => Yii::t('art', 'Middle Name'),
             'last_name' => Yii::t('art', 'Last Name'),
+            'fullName' => Yii::t('art', 'Full Name'),
             'birth_timestamp' => Yii::t('art', 'Birth Date'),
             'birth_date' => Yii::t('art', 'Birth Date'),
             'gender' => Yii::t('art', 'Gender'),
             'phone' => Yii::t('art', 'Phone'),
             'phone_optional' => Yii::t('art', 'Phone Optional'),
-            'fullName' => Yii::t('art', 'Full Name'),
             'snils' => Yii::t('art', 'Snils'),
+            'info' => Yii::t('art', 'Info'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
+            'status' => Yii::t('art', 'Status'),
+            'version' => Yii::t('art', 'Version'),
         ];
     }
+
+    public function optimisticLock()
+    {
+        return 'version';
+    }
+    
      /* Геттер для полного имени человека */
 
     public function getFullName() {
@@ -122,7 +139,51 @@ class UserCommon extends \artsoft\models\UserIdentity
     public function getLastFM() {
         return $this->last_name . ' ' . mb_substr((string) $this->first_name, 0, 1) . '.' . mb_substr((string) $this->middle_name, 0, 1) .'.';
     }
+    
+    public static function getUserCategoryValue($val)
+    {
+        $ar = self::getUserCategoryList();
 
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+    /**
+     * Get gender list
+     * @return array
+     */
+    public static function getGenderList()
+    {
+        return [
+            self::GENDER_NOT_SET => Yii::t('yii', '(not set)'),
+            self::GENDER_MALE => Yii::t('art', 'Male'),
+            self::GENDER_FEMALE => Yii::t('art', 'Female'),
+        ];
+    }
+
+    /**
+     * getStatusList
+     * @return array
+     */
+    public static function getStatusList()
+    {
+        return array(
+            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
+            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
+        );
+    }
+
+    /**
+     * Get gender list
+     * @return array
+     */
+    public static function getUserCategoryList()
+    {
+        return [
+            self::USER_CATEGORY_STAFF => Yii::t('art', 'Staff'),
+            self::USER_CATEGORY_TEACHER => Yii::t('art', 'Teacher'),
+            self::USER_CATEGORY_STUDENT => Yii::t('art', 'Student'),
+            self::USER_CATEGORY_PARENT => Yii::t('art', 'Parent'),
+        ];
+    }
     /**
      * Первая буква заглавная
      */
@@ -180,12 +241,19 @@ class UserCommon extends \artsoft\models\UserIdentity
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(self::className(), ['id' => 'created_by']);
+        return $this->hasOne(self::class, ['id' => 'created_by']);
     } /**
  * @return \yii\db\ActiveQuery
  */
     public function getUpdatedBy()
     {
-        return $this->hasOne(self::className(), ['id' => 'updated_by']);
+        return $this->hasOne(self::class, ['id' => 'updated_by']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(self::class, ['user_id' => 'id']);
     }
 }

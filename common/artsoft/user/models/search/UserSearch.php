@@ -58,12 +58,12 @@ class UserSearch extends User
                 'superadmin',
                 'status',
                 'email_confirmed',
-                'user_category',
+//                'user_category',
                 'username',
-                'fullName' => [
-                    'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
-                    'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],
-                ]
+//                'fullName' => [
+//                    'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
+//                    'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],
+//                ]
             ]
         ]);
 
@@ -79,7 +79,7 @@ class UserSearch extends User
             'id' => $this->id,
             'superadmin' => $this->superadmin,
             'status' => $this->status,
-            'user_category' => $this->user_category,
+           // 'user_category' => $this->user_category,
             Yii::$app->art->auth_item_table . '.name' => $this->gridRoleSearch,
             'registration_ip' => $this->registration_ip,
             'created_at' => $this->created_at,
@@ -89,12 +89,12 @@ class UserSearch extends User
 
         $query->andFilterWhere(['like', 'username', $this->username])
             ->andFilterWhere(['like', 'email', $this->email]);
-        if($this->fullName) {
-            $query->andWhere('first_name LIKE "%' . $this->fullName . '%" ' .
-                'OR last_name LIKE "%' . $this->fullName . '%"' .
-                'OR middle_name LIKE "%' . $this->fullName . '%"'
-            );
-        }
+//        if($this->fullName) {
+//            $query->andWhere('first_name LIKE "%' . $this->fullName . '%" ' .
+//                'OR last_name LIKE "%' . $this->fullName . '%"' .
+//                'OR middle_name LIKE "%' . $this->fullName . '%"'
+//            );
+//        }
         return $dataProvider;
     }
 }

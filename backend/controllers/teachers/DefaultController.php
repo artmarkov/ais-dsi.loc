@@ -5,6 +5,7 @@ namespace backend\controllers\teachers;
 use common\models\guidejob\BonusItem;
 use common\models\guidejob\Stake;
 use common\models\guidejob\Cost;
+use common\models\history\UserCommonHistory;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersActivity;
 use common\models\user\UserCommon;
@@ -32,11 +33,11 @@ class DefaultController extends MainController
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
 
-        $model = new $this->modelClass;
         $modelUser = new UserCommon();
+        $model = new $this->modelClass;
         $modelsActivity = [new TeachersActivity];
-        $model->time_serv_init = Teachers::getTimeServInit();
-        $model->time_serv_spec_init = Teachers::getTimeServInit();
+//        $model->time_serv_init = Teachers::getTimeServInit();
+//        $model->time_serv_spec_init = Teachers::getTimeServInit();
 
         if ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
@@ -50,16 +51,16 @@ class DefaultController extends MainController
 
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
-                $modelUser->user_category = User::USER_CATEGORY_TEACHER;
-                $modelUser->status = User::STATUS_INACTIVE;
+                $modelUser->user_category = UserCommon::USER_CATEGORY_TEACHER;
+                $modelUser->status = UserCommon::STATUS_INACTIVE;
 
-                $model->timestamp_serv = Teachers::getTimestampServ($model->year_serv, $model->time_serv_init);
-                $model->timestamp_serv_spec = Teachers::getTimestampServ($model->year_serv_spec, $model->time_serv_spec_init);
+//                $model->timestamp_serv = Teachers::getTimestampServ($model->year_serv, $model->time_serv_init);
+//                $model->timestamp_serv_spec = Teachers::getTimestampServ($model->year_serv_spec, $model->time_serv_spec_init);
 
                 try {
                     if ($flag = $modelUser->save(false)) {
-                        $model->user_id = $modelUser->id;
-
+                        $model->user_common_id = $modelUser->id;
+//                        echo '<pre>' . print_r($model, true) . '</pre>';
                         if ($flag = $model->save(false)) {
                             foreach ($modelsActivity as $modelActivity) {
                                 $modelActivity->teachers_id = $model->id;
@@ -101,7 +102,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = $this->findModel($id);
-        $modelUser = UserCommon::findOne(['id' => $model->user_id, 'user_category' => User::USER_CATEGORY_TEACHER]);
+        $modelUser = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_TEACHER]);
 
         if (!isset($model, $modelUser)) {
             throw new NotFoundHttpException("The user was not found.");
@@ -109,11 +110,11 @@ class DefaultController extends MainController
 
         $modelsActivity = $model->teachersActivity;
 
-        $model->time_serv_init = Teachers::getTimeServInit();
-        $model->time_serv_spec_init = Teachers::getTimeServInit();
-
-        $model->year_serv = Teachers::getYearServ($model->timestamp_serv);
-        $model->year_serv_spec = Teachers::getYearServ($model->timestamp_serv_spec);
+//        $model->time_serv_init = Teachers::getTimeServInit();
+//        $model->time_serv_spec_init = Teachers::getTimeServInit();
+//
+//        $model->year_serv = Teachers::getYearServ($model->timestamp_serv);
+//        $model->year_serv_spec = Teachers::getYearServ($model->timestamp_serv_spec);
 
         if ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
@@ -129,8 +130,8 @@ class DefaultController extends MainController
 
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
-                $model->timestamp_serv = Teachers::getTimestampServ($model->year_serv, $model->time_serv_init);
-                $model->timestamp_serv_spec = Teachers::getTimestampServ($model->year_serv_spec, $model->time_serv_spec_init);
+//                $model->timestamp_serv = Teachers::getTimestampServ($model->year_serv, $model->time_serv_init);
+//                $model->timestamp_serv_spec = Teachers::getTimestampServ($model->year_serv_spec, $model->time_serv_spec_init);
 //                print_r($model);
                 try {
                     if ($flag = $modelUser->save(false)) {
@@ -176,6 +177,16 @@ class DefaultController extends MainController
         $model = BonusItem::findOne(['id' => $id]);
 
         return $model->value_default;
+    }
+
+    public function actionHistory($id)
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $model = $this->findModel($id);
+        $ids = $model->user->id;
+//        print_r($ids);
+        $data = new UserCommonHistory($ids);
+        return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 
 }

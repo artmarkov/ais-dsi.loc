@@ -2,10 +2,14 @@
 
 namespace common\models\teachers;
 
+use artsoft\behaviors\ArrayFieldBehavior;
+use artsoft\behaviors\DateToTimeBehavior;
+use artsoft\db\ActiveRecord;
 use common\models\guidejob\BonusItem;
 use common\models\guidejob\Level;
 use common\models\guidejob\Position;
 use common\models\own\Department;
+use common\models\user\UserCommon;
 use Yii;
 use yii\helpers\ArrayHelper;
 use artsoft\models\User;
@@ -14,29 +18,22 @@ use artsoft\models\User;
  * This is the model class for table "teachers".
  *
  * @property int $id
+ * @property int $user_common_id
  * @property int $position_id
  * @property int $level_id
  * @property string $tab_num
- * @property int $timestamp_serv
- * @property int $timestamp_serv_spec
+ * @property int $year_serv
+ * @property int $year_serv_spec
+ * @property int $date_serv
+ * @property int $date_serv_spec
  * @property int $status
- * @property string $bonus_summ
+ * @property float $bonus_summ
  *
  * @property TeachersLevel $level
  * @property TeachersPosition $position
  */
 class Teachers extends \yii\db\ActiveRecord
 {
-    public $time_serv_init;
-    public $time_serv_spec_init;
-    public $year_serv;
-    public $year_serv_spec;
-
-    public $direction_id_main;
-    public $stake_id_main;
-    public $direction_id_optional;
-    public $stake_id_optional;
-
     public $gridDepartmentSearch;
 
     const STATUS_ACTIVE = 1;
@@ -51,7 +48,9 @@ class Teachers extends \yii\db\ActiveRecord
      */
     const SERV_MON = 9;
     const SERV_DAY = 1;
-    
+
+    public $date_serv;
+    public $date_serv_spec;
     /**
      * {@inheritdoc}
      */
@@ -69,9 +68,33 @@ class Teachers extends \yii\db\ActiveRecord
             [
                 'class' => \artsoft\behaviors\ManyHasManyBehavior::className(),
                 'relations' => [
-                    'bonusItem' => 'bonus_list',
+                    //'bonusItem' => 'bonus_list',
                     'departmentItem' => 'department_list',
                 ],
+            ],
+            [
+                'class' => DateToTimeBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'date_serv',
+                    ActiveRecord::EVENT_AFTER_FIND => 'date_serv',
+                ],
+                'timeAttribute' => 'timestamp_serv',
+                'timeFormat' => 'd-m-Y',
+            ],
+            [
+                'class' => DateToTimeBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'date_serv_spec',
+                    ActiveRecord::EVENT_AFTER_FIND => 'date_serv_spec',
+                ],
+                'timeAttribute' => 'timestamp_serv_spec',
+                'timeFormat' => 'd-m-Y',
+            ],
+            [
+                'class' => ArrayFieldBehavior::className(),
+                'attributes' => ['bonus_list'],
+                // 'defaultEncodedValue' => null,
+                // 'defaultDecodedValue' => [],
             ],
         ];
     }
@@ -82,16 +105,16 @@ class Teachers extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['position_id', 'level_id', 'timestamp_serv', 'timestamp_serv_spec', 'status'], 'integer'],
+            [['position_id', 'level_id', 'status', 'user_common_id'], 'integer'],
             [['tab_num'], 'string', 'max' => 16],
-            [['bonus_summ'], 'string', 'max' => 16],
+            ['bonus_summ', 'safe'],
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             [['level_id'], 'exist', 'skipOnError' => true, 'targetClass' => Level::className(), 'targetAttribute' => ['level_id' => 'id']],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position_id' => 'id']],
             [['bonus_list', 'department_list'], 'safe'],
-            [['year_serv', 'year_serv_spec', 'time_serv_init', 'time_serv_spec_init'], 'safe'],
+            [['year_serv', 'year_serv_spec', 'timestamp_serv', 'timestamp_serv_spec'], 'safe'],
             ['year_serv', 'compareSpec'],
-            [['time_serv_init', 'time_serv_spec_init'], 'date', 'format' => 'dd-MM-yyyy'],
+            [['date_serv', 'date_serv_spec'], 'date', 'format' => 'dd-MM-yyyy'],
         ];
     }
 
@@ -220,7 +243,7 @@ class Teachers extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(UserCommon::className(), ['id' => 'user_common_id']);
     } 
     /**
      * Геттер полного имени юзера

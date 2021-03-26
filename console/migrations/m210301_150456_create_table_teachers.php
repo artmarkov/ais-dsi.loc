@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m210301_150456_create_table_teachers extends Migration
+class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
 {
     public function up()
     {
@@ -11,10 +11,10 @@ class m210301_150456_create_table_teachers extends Migration
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('teachers_department', [
-            'id' => $this->primaryKey(8)->unsigned(),
-            'teachers_id' => $this->integer(8)->unsigned()->notNull(),
-            'department_id' => $this->tinyInteger(2)->unsigned()->notNull(),
+        $this->createTableWithHistory('teachers_department', [
+            'id' =>  $this->primaryKey(),
+            'teachers_id' => $this->integer()->notNull(),
+            'department_id' => $this->integer()->notNull(),
         ], $tableOptions);
 
         $this->createIndex('department_id', 'teachers_department', 'department_id');
@@ -22,7 +22,7 @@ class m210301_150456_create_table_teachers extends Migration
         $this->addForeignKey('teachers_department_ibfk_2', 'teachers_department', 'department_id', 'department', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTable('teachers_direction', [
-            'id' => $this->primaryKey(8),
+            'id' =>  $this->primaryKey(),
             'name' => $this->string(128),
             'slug' => $this->string(32),
         ], $tableOptions);
@@ -33,10 +33,10 @@ class m210301_150456_create_table_teachers extends Migration
         ])->execute();
 
         $this->createTable('teachers_stake', [
-            'id' => $this->primaryKey(8),
+            'id' => $this->primaryKey(),
             'name' => $this->string(128)->notNull(),
             'slug' => $this->string(32),
-            'status' => $this->tinyInteger(1)->notNull()->defaultValue('1'),
+            'status' => $this->integer()->notNull(),
         ], $tableOptions);
 
         $this->db->createCommand()->batchInsert('teachers_stake', ['id', 'name', 'slug', 'status'], [
@@ -47,9 +47,9 @@ class m210301_150456_create_table_teachers extends Migration
         ])->execute();
 
         $this->createTable('teachers_cost', [
-            'id' => $this->primaryKey(8),
-            'direction_id' => $this->tinyInteger(2)->unsigned()->notNull(),
-            'stake_id' => $this->tinyInteger(2)->unsigned()->notNull(),
+            'id' =>  $this->primaryKey(),
+            'direction_id' => $this->integer()->notNull(),
+            'stake_id' => $this->integer()->notNull(),
             'stake_value' => $this->float(),
         ], $tableOptions);
 
@@ -70,7 +70,7 @@ class m210301_150456_create_table_teachers extends Migration
         $this->addForeignKey('teachers_cost_ibfk_2', 'teachers_cost', 'stake_id', 'teachers_stake', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTable('teachers_work', [
-            'id' => $this->primaryKey(8),
+            'id' => $this->primaryKey(),
             'name' => $this->string(128),
             'slug' => $this->string(32),
         ], $tableOptions);
@@ -82,7 +82,7 @@ class m210301_150456_create_table_teachers extends Migration
         ])->execute();
 
         $this->createTable('teachers_position', [
-            'id' => $this->primaryKey(8),
+            'id' => $this->primaryKey(),
             'name' => $this->string(128),
             'slug' => $this->string(32),
         ], $tableOptions);
@@ -95,7 +95,7 @@ class m210301_150456_create_table_teachers extends Migration
         ])->execute();
 
         $this->createTable('teachers_level', [
-            'id' => $this->primaryKey(8),
+            'id' => $this->primaryKey(),
             'name' => $this->string(128),
             'slug' => $this->string(32),
         ], $tableOptions);
@@ -108,10 +108,10 @@ class m210301_150456_create_table_teachers extends Migration
         ])->execute();
 
         $this->createTable('teachers_bonus_category', [
-            'id' => $this->primaryKey(8),
+            'id' => $this->primaryKey(),
             'name' => $this->string(128)->notNull(),
             'slug' => $this->string(127)->notNull(),
-            'multiple' => $this->tinyInteger(1)->notNull()->defaultValue('0'),
+            'multiple' =>$this->integer()->notNull(),
         ], $tableOptions);
 
         $this->db->createCommand()->batchInsert('teachers_bonus_category', ['id', 'name', 'slug', 'multiple'], [
@@ -121,76 +121,76 @@ class m210301_150456_create_table_teachers extends Migration
             [4, 'Специальные обязанности', 'Спец.обяз-ти', 0],
         ])->execute();
 
-        $this->createTable('teachers_bonus', [
-            'id' => $this->primaryKey(8),
-            'teachers_id' => $this->integer(8),
-            'bonus_item_id' => $this->integer(8)->notNull(),
+        $this->createTableWithHistory('teachers_bonus', [
+            'id' =>  $this->primaryKey(),
+            'teachers_id' => $this->integer()->notNull(),
+            'bonus_item_id' => $this->integer()->notNull(),
         ], $tableOptions);
 
         $this->createIndex('bonus_item_id', 'teachers_bonus', 'bonus_item_id');
 
         $this->createTable('teachers_bonus_item', [
-            'id' => $this->primaryKey(8),
-            'bonus_category_id' => $this->integer(8)->notNull(),
+            'id' => $this->primaryKey(),
+            'bonus_category_id' => $this->integer()->notNull(),
             'name' => $this->string(127),
             'slug' => $this->string(32),
             'value_default' => $this->string(127),
-            'measure_id' => $this->smallInteger(2)->unsigned()->comment('ед. измерения'),
-            'bonus_rule_id' => $this->tinyInteger(2)->comment('правило обработки бонуса'),
-            'status' => $this->tinyInteger(1)->notNull()->defaultValue('1')->comment('1-активна, 0-удалена'),
+            'status' => $this->integer()->notNull(),
         ], $tableOptions);
 
-        $this->db->createCommand()->batchInsert('teachers_bonus_item', ['id', 'bonus_category_id', 'name', 'slug', 'value_default', 'measure_id', 'bonus_rule_id', 'status'], [
-            [1, 1, 'Кандидат наук', 'КН', '20', 3, 1, 1],
-            [2, 1, 'Доктор наук', 'ДН', '30', 3, 1, 1],
-            [3, 2, 'Народный артист', 'НА', '50', 3, 1, 1],
-            [4, 2, 'Заслуженный деятель искусств', 'ЗДИ', '50', 3, 1, 1],
-            [5, 2, 'Заслуженный артист', 'ЗА', '50', 3, 1, 1],
-            [6, 2, 'Заслуженный работник культуры', 'ЗРК', '50', 3, 1, 1],
-            [7, 2, 'Заслуженный учитель', 'ЗУ', '50', 3, 1, 1],
-            [8, 2, 'Почетный работник культуры', 'ПРК', '30', 3, 1, 1],
-            [9, 2, 'Обладатель нагрудного знака', 'ОНЗ', '30', 3, 1, 1],
-            [10, 2, 'Звание лауреата', 'ЗЛ', '30', 3, 1, 1],
-            [12, 3, 'Молодой специалист + проезд', 'МС+', '55', 3, 1, 1],
-            [13, 3, 'Молодой специалист-отличник + проезд', 'МСО+', '65', 3, 1, 1],
-            [14, 4, 'Руководство отделением', 'РО', '30', 3, 1, 1],
-            [15, 4, 'Руководство выставочной работой', 'РВР', '30', 3, 1, 1],
-            [16, 4, 'Участие в экспертной группе город', 'ЭГГ', '30', 3, 1, 1],
-            [17, 4, 'Участие в экспертной группе округ', 'ЭГО', '15', 3, 1, 1],
-            [18, 4, 'Заведование секцией', 'ЗС', '15', 3, 1, 1],
+        $this->db->createCommand()->batchInsert('teachers_bonus_item', ['id', 'bonus_category_id', 'name', 'slug', 'value_default', 'status'], [
+            [1, 1, 'Кандидат наук', 'КН', '20', 1],
+            [2, 1, 'Доктор наук', 'ДН', '30', 1],
+            [3, 2, 'Народный артист', 'НА', '50', 1],
+            [4, 2, 'Заслуженный деятель искусств', 'ЗДИ', '50', 1],
+            [5, 2, 'Заслуженный артист', 'ЗА', '50', 1],
+            [6, 2, 'Заслуженный работник культуры', 'ЗРК', '50', 1],
+            [7, 2, 'Заслуженный учитель', 'ЗУ', '50', 1],
+            [8, 2, 'Почетный работник культуры', 'ПРК', '30', 1],
+            [9, 2, 'Обладатель нагрудного знака', 'ОНЗ', '30', 1],
+            [10, 2, 'Звание лауреата', 'ЗЛ', '30', 1],
+            [12, 3, 'Молодой специалист + проезд', 'МС+', '55', 1],
+            [13, 3, 'Молодой специалист-отличник + проезд', 'МСО+', '65', 1],
+            [14, 4, 'Руководство отделением', 'РО', '30', 1],
+            [15, 4, 'Руководство выставочной работой', 'РВР', '30', 1],
+            [16, 4, 'Участие в экспертной группе город', 'ЭГГ', '30', 1],
+            [17, 4, 'Участие в экспертной группе округ', 'ЭГО', '15', 1],
+            [18, 4, 'Заведование секцией', 'ЗС', '15', 1],
         ])->execute();
 
         $this->createIndex('status', 'teachers_bonus_item', 'status');
         $this->createIndex('bonus_category_id', 'teachers_bonus_item', 'bonus_category_id');
-        $this->createIndex('bonus_rule_id', 'teachers_bonus_item', 'bonus_rule_id');
-        $this->createIndex('measure_id', 'teachers_bonus_item', 'measure_id');
         $this->addForeignKey('teachers_bonus_item_ibfk_1', 'teachers_bonus_item', 'bonus_category_id', 'teachers_bonus_category', 'id', 'NO ACTION', 'NO ACTION');
 
-        $this->createTable('teachers', [
-            'id' => $this->integer(8)->unsigned()->notNull(),
-            'user_id' => $this->integer(),
-            'position_id' => $this->tinyInteger(2)->unsigned(),
-            'level_id' => $this->tinyInteger(2)->unsigned(),
+        $this->createTableWithHistory('teachers', [
+            'id' => $this->primaryKey(),
+            'user_common_id' => $this->integer(),
+            'position_id' => $this->integer(),
+            'level_id' => $this->integer(),
             'tab_num' => $this->string(16),
+            'bonus_list' => $this->integer[],
+            'year_serv' => $this->float(),
+            'year_serv_spec' => $this->float(),
             'timestamp_serv' => $this->integer(),
             'timestamp_serv_spec' => $this->integer(),
-            'status' => $this->tinyInteger(1)->unsigned(),
+            'bonus_summ' => $this->float(),
+            'status' => $this->integer(),
         ], $tableOptions);
 
         $this->createIndex('status_id', 'teachers', 'position_id');
-        $this->createIndex('user_id', 'teachers', 'user_id');
+        $this->createIndex('user_common_id', 'teachers', 'user_common_id');
         $this->createIndex('id', 'teachers', 'id', true);
         $this->createIndex('level_id', 'teachers', 'level_id');
         $this->addForeignKey('teachers_ibfk_1', 'teachers', 'level_id', 'teachers_level', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('teachers_ibfk_2', 'teachers', 'position_id', 'teachers_position', 'id', 'NO ACTION', 'NO ACTION');
-       // $this->addForeignKey('teachers_ibfk_3', 'teachers', 'user_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('teachers_ibfk_3', 'teachers', 'user_common_id', 'user_common', 'id', 'NO ACTION', 'NO ACTION');
 
-        $this->createTable('teachers_activity', [
+        $this->createTableWithHistory('teachers_activity', [
             'id' => $this->primaryKey(),
-            'teachers_id' => $this->integer(8)->unsigned()->notNull(),
-            'work_id' => $this->tinyInteger(2)->unsigned()->notNull(),
-            'direction_id' => $this->tinyInteger(2)->unsigned()->notNull(),
-            'stake_id' => $this->tinyInteger(2)->unsigned()->notNull(),
+            'teachers_id' => $this->integer()->notNull(),
+            'work_id' => $this->integer()->notNull(),
+            'direction_id' => $this->integer()->notNull(),
+            'stake_id' => $this->integer()->notNull(),
         ], $tableOptions);
         $this->createIndex('work_id', 'teachers_activity', 'work_id');
         $this->addForeignKey('teachers_activity_ibfk_1', 'teachers_activity', 'work_id', 'teachers_work', 'id', 'RESTRICT', 'RESTRICT');

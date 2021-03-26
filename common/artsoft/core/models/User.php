@@ -21,29 +21,17 @@ use yii\helpers\ArrayHelper;
  * @property string|null $password_hash
  * @property string|null $password_reset_token
  * @property string|null $email
- * @property int $status
- * @property int $user_category
+ * @property int|null $email_confirmed
  * @property int|null $superadmin
  * @property string|null $registration_ip
  * @property string|null $bind_to_ip
- * @property int|null $email_confirmed
  * @property string|null $confirmation_token
  * @property string|null $avatar
- * @property string|null $first_name
- * @property string|null $middle_name
- * @property string|null $last_name
- * @property int|null $birth_timestamp
- * @property int|null $gender
- * @property string|null $phone
- * @property string|null $phone_optional
- * @property string|null $skype
- * @property string|null $info
- * @property string|null $snils
+ * @property int $status
  * @property int $created_at
  * @property int $updated_at
  * @property int $created_by
  * @property int $updated_by
- * @property int $version
  *
  */
 class User extends UserIdentity
@@ -54,13 +42,6 @@ class User extends UserIdentity
     const STATUS_INACTIVE = 0;
     const STATUS_BANNED = -1;
     const SCENARIO_NEW_USER = 'newUser';
-    const GENDER_NOT_SET = 0;
-    const GENDER_MALE = 1;
-    const GENDER_FEMALE = 2;
-    const USER_CATEGORY_STAFF = 1;
-    const USER_CATEGORY_TEACHER = 2;
-    const USER_CATEGORY_STUDENT = 3;
-    const USER_CATEGORY_PARENT = 4;
 
     /**
      * @var string
@@ -78,11 +59,6 @@ class User extends UserIdentity
     public $repeat_password;
 
     /**
-     * @var string
-     */
-    public $birth_date;
-
-    /**
      * @inheritdoc
      */
     public static function tableName()
@@ -96,17 +72,8 @@ class User extends UserIdentity
     public function behaviors()
     {
         return [
-            BlameableBehavior::className(),
-            TimestampBehavior::className(),
-            [
-                'class' => DateToTimeBehavior::className(),
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'birth_date',
-                    ActiveRecord::EVENT_AFTER_FIND => 'birth_date',
-                ],
-                'timeAttribute' => 'birth_timestamp',
-                'timeFormat' => 'd-m-Y',
-            ],
+            BlameableBehavior::class,
+            TimestampBehavior::class,
         ];
     }
 
@@ -117,22 +84,13 @@ class User extends UserIdentity
     {
         return [
             [['username', 'email'], 'required'],
-            ['birth_timestamp', 'safe'],
             [['username'], 'unique'],
             [['username', 'email', 'bind_to_ip'], 'trim'],
             ['email', 'email'],
-            [['status', 'user_category', 'email_confirmed', 'version'], 'integer'],
+            [['status', 'user_category', 'email_confirmed'], 'integer'],
             ['bind_to_ip', 'validateBindToIp'],
             ['bind_to_ip', 'string', 'max' => 255],
-            [['first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
-            [['first_name', 'middle_name', 'last_name'], 'trim'],
-            [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
-            ['snils', 'string', 'max' => 16],
-            [['phone', 'phone_optional'], 'string', 'max' => 24],
-            ['skype', 'string', 'max' => 64],
             ['bind_to_ip', 'string', 'max' => 255],
-            ['info', 'string', 'max' => 1024],
-            ['gender', 'integer'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             ['password', 'required', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['password', 'string', 'max' => 255, 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
@@ -140,23 +98,11 @@ class User extends UserIdentity
             ['password', 'trim', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['repeat_password', 'required', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['repeat_password', 'compare', 'compareAttribute' => 'password'],
-            ['user_category', 'default', 'value' => self::USER_CATEGORY_STAFF],
-            ['user_category', 'in', 'range' => [self::USER_CATEGORY_STAFF, self::USER_CATEGORY_TEACHER, self::USER_CATEGORY_STUDENT, self::USER_CATEGORY_PARENT]],
             ['birth_date', 'date', 'format' => 'dd-MM-yyyy'],
         ];
     }
 
-    public function optimisticLock()
-    {
-        return 'version';
-    }
-
-    /* Геттер для полного имени человека */
-
-    public function getFullName()
-    {
-        return $this->last_name . ' ' . $this->first_name . ' ' . $this->middle_name;
-    }
+   
 
     /**
      * Store result in session to prevent multiple db requests with multiple calls
@@ -327,32 +273,7 @@ class User extends UserIdentity
         );
     }
 
-    /**
-     * Get gender list
-     * @return array
-     */
-    public static function getGenderList()
-    {
-        return [
-            self::GENDER_NOT_SET => Yii::t('yii', '(not set)'),
-            self::GENDER_MALE => Yii::t('art', 'Male'),
-            self::GENDER_FEMALE => Yii::t('art', 'Female'),
-        ];
-    }
-
-    /**
-     * Get gender list
-     * @return array
-     */
-    public static function getUserCategoryList()
-    {
-        return [
-            self::USER_CATEGORY_STAFF => Yii::t('art', 'Staff'),
-            self::USER_CATEGORY_TEACHER => Yii::t('art', 'Teacher'),
-            self::USER_CATEGORY_STUDENT => Yii::t('art', 'Student'),
-            self::USER_CATEGORY_PARENT => Yii::t('art', 'Parent'),
-        ];
-    }
+   
 
     /**
      * getUsersList
@@ -375,20 +296,6 @@ class User extends UserIdentity
     public static function getStatusValue($val)
     {
         $ar = self::getStatusList();
-
-        return isset($ar[$val]) ? $ar[$val] : $val;
-    }
-
-    /**
-     * getFunctionValue
-     *
-     * @param string $val
-     *
-     * @return string
-     */
-    public static function getUserCategoryValue($val)
-    {
-        $ar = self::getUserCategoryList();
 
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
@@ -448,21 +355,8 @@ class User extends UserIdentity
             'gridRoleSearch' => Yii::t('art', 'Roles'),
             'password' => Yii::t('art', 'Password'),
             'repeat_password' => Yii::t('art', 'Repeat password'),
-            'email_confirmed' => Yii::t('art', 'E-mail confirmed'),
             'email' => Yii::t('art', 'E-mail'),
-            'first_name' => Yii::t('art', 'First Name'),
-            'middle_name' => Yii::t('art', 'Middle Name'),
-            'last_name' => Yii::t('art', 'Last Name'),
-            'fullName' => Yii::t('art', 'Full Name'),
-            'phone' => Yii::t('art', 'Phone'),
-            'phone_optional' => Yii::t('art', 'Phone Optional'),
-            'gender' => Yii::t('art', 'Gender'),
-            'info' => Yii::t('art', 'Short Info'),
-            'snils' => Yii::t('art', 'Snils'),
-            'birth_timestamp' => Yii::t('art', 'Birth Date'),
-            'birth_date' => Yii::t('art', 'Birth Date'),
-            'user_category' => Yii::t('art', 'User Category'),
-            'fullName' => Yii::t('art', 'Full Name'),
+            'email_confirmed' => Yii::t('art', 'E-mail confirmed'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -475,7 +369,7 @@ class User extends UserIdentity
      */
     public function getRoles()
     {
-        return $this->hasMany(Role::className(), ['name' => 'item_name'])
+        return $this->hasMany(Role::class, ['name' => 'item_name'])
             ->viaTable(Yii::$app->art->auth_assignment_table, ['user_id' => 'id']);
     }
 
@@ -619,7 +513,7 @@ class User extends UserIdentity
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(self::className(), ['id' => 'created_by']);
+        return $this->hasOne(self::class, ['id' => 'created_by']);
     }
 
     /**
@@ -627,7 +521,7 @@ class User extends UserIdentity
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(self::className(), ['id' => 'updated_by']);
+        return $this->hasOne(self::class, ['id' => 'updated_by']);
     }
 
     /**

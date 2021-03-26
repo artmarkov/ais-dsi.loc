@@ -99,12 +99,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-                            [
-                                'attribute' => 'fullName',
-                                'value' => function (User $model) {
-                                    return $model->getFullName();
-                                },
-                            ],
+//                            [
+//                                'attribute' => 'fullName',
+//                                'value' => function (User $model) {
+//                                    return $model->getFullName();
+//                                },
+//                            ],
                             [
                                 'attribute' => 'email',
                                 'format' => 'raw',
@@ -137,17 +137,17 @@ $this->params['breadcrumbs'][] = $this->title;
                               'format' => 'raw',
                               'visible' => User::hasPermission('viewRegistrationIp'),
                               ], */
-                            [
-                                'class' => 'artsoft\grid\columns\StatusColumn',
-                                'attribute' => 'user_category',
-                                'optionsArray' => [
-                                    [User::USER_CATEGORY_STAFF, Yii::t('art', 'Staff'), 'default'],
-                                    [User::USER_CATEGORY_TEACHER, Yii::t('art', 'Teacher'), 'info'],
-                                    [User::USER_CATEGORY_STUDENT, Yii::t('art', 'Student'), 'danger'],
-                                    [User::USER_CATEGORY_PARENT, Yii::t('art', 'Parent'), 'warning'],
-                                ],
-                                'options' => ['style' => 'width:100px']
-                            ],
+//                            [
+//                                'class' => 'artsoft\grid\columns\StatusColumn',
+//                                'attribute' => 'user_category',
+//                                'optionsArray' => [
+//                                    [User::USER_CATEGORY_STAFF, Yii::t('art', 'Staff'), 'default'],
+//                                    [User::USER_CATEGORY_TEACHER, Yii::t('art', 'Teacher'), 'info'],
+//                                    [User::USER_CATEGORY_STUDENT, Yii::t('art', 'Student'), 'danger'],
+//                                    [User::USER_CATEGORY_PARENT, Yii::t('art', 'Parent'), 'warning'],
+//                                ],
+//                                'options' => ['style' => 'width:100px']
+//                            ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'superadmin',

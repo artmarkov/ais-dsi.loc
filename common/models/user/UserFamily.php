@@ -36,8 +36,8 @@ class UserFamily extends \yii\db\ActiveRecord
             ['relation_id', 'required'],
             ['user_main_id', 'unique', 'targetAttribute' => ['user_main_id', 'user_slave_id'],'message' => Yii::t('art/user', 'The relationships of the selected users are already defined.')], // проверка уникальности пары
             ['user_main_id', 'unique', 'targetAttribute' => ['user_main_id', 'relation_id'],'message' => Yii::t('art/user', 'You cannot use the same relationship to different users.')], // проверка уникальности пары
-            [['user_main_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_main_id' => 'id']],
-            [['user_slave_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_slave_id' => 'id']],
+            [['user_main_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::className(), 'targetAttribute' => ['user_main_id' => 'id']],
+            [['user_slave_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::className(), 'targetAttribute' => ['user_slave_id' => 'id']],
             [['relation_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserRelation::className(), 'targetAttribute' => ['relation_id' => 'id']],
         ];
     }
@@ -60,7 +60,7 @@ class UserFamily extends \yii\db\ActiveRecord
      */
     public function getUserMain()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_main_id']);
+        return $this->hasOne(UserCommon::className(), ['id' => 'user_main_id']);
     }
 
     /**
@@ -68,7 +68,7 @@ class UserFamily extends \yii\db\ActiveRecord
      */
     public function getUserSlave()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_slave_id']);
+        return $this->hasOne(UserCommon::className(), ['id' => 'user_slave_id']);
     }
 
     /**

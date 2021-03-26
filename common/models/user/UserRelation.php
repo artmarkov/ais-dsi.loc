@@ -51,7 +51,7 @@ class UserRelation extends \yii\db\ActiveRecord
      */
     public function getUserFamilies()
     {
-        return $this->hasMany(UserFamily::className(), ['relation_id' => 'id']);
+        return $this->hasMany(UserFamily::class, ['relation_id' => 'id']);
     }
     /**
      * @return \yii\db\ActiveQuery

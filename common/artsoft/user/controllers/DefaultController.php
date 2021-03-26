@@ -3,8 +3,6 @@
 namespace artsoft\user\controllers;
 
 use artsoft\models\User;
-use common\models\history\UserHistory;
-use http\Url;
 use Yii;
 use yii\web\NotFoundHttpException;
 
@@ -67,11 +65,4 @@ class DefaultController extends MainController
         return $this->renderIsAjax('changePassword', compact('model'));
     }
 
-    public function actionHistory($id)
-    {
-        $this->view->params['tabMenu'] = $this->tabMenu;
-        $model = $this->findModel($id);
-        $data = new UserHistory($id);
-        return $this->renderIsAjax('history', compact(['model', 'data']));
-    }
 }

@@ -2,36 +2,34 @@
 
 namespace common\models\history;
 
-use artsoft\models\User;
+use common\models\user\UserCommon;
 use common\widgets\history\BaseHistory;
 
-class UserHistory extends BaseHistory
+class TeachersHistory extends BaseHistory
 {
     public static function getTableName()
     {
-        return 'users_hist';
+        return 'teachers_hist';
     }
 
     public static function getModelName()
     {
-        return User::class;
+        return UserCommon::class;
     }
 
     protected function getFields()
     {
         return [
             'id',
-            'username',
             'first_name',
             'middle_name',
             'last_name',
             'birth_timestamp',
-            'email',
             'status',
             'snils',
             'phone',
             'phone_optional',
-            'skype',
+            'snils',
             'info',
             'user_category',
         ];

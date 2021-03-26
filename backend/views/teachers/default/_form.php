@@ -91,6 +91,9 @@ EOF;
     <div class="panel">
         <div class="panel-heading">
             Информация о преподавателе
+            <?php if (!$modelUser->isNewRecord):?>
+            <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/teachers/default/history', 'id' => $model->id]); ?></span>
+            <?php endif; ?>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -112,7 +115,7 @@ EOF;
 
                             <?= $form->field($modelUser, 'middle_name')->textInput(['maxlength' => 124]) ?>
 
-                            <?= $form->field($modelUser, 'gender')->dropDownList(artsoft\models\User::getGenderList()) ?>
+                            <?= $form->field($modelUser, 'gender')->dropDownList(\common\models\user\UserCommon::getGenderList()) ?>
 
                             <?= $form->field($modelUser, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
 
@@ -150,11 +153,11 @@ EOF;
 
                             <?= $form->field($model, 'year_serv')->textInput() ?>
 
-                            <?= $form->field($model, 'time_serv_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date')); ?>
+                            <?= $form->field($model, 'date_serv')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date')); ?>
 
                             <?= $form->field($model, 'year_serv_spec')->textInput() ?>
 
-                            <?= $form->field($model, 'time_serv_spec_init')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date')); ?>
+                            <?= $form->field($model, 'date_serv_spec')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date')); ?>
 
                             <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
                                 'data' => Teachers::getDepartmentList(),

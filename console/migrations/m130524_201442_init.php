@@ -31,8 +31,9 @@ class m130524_201442_init extends BaseMigration
         $this->addCommentOnTable('users', 'Учетные записи');
         $this->db->createCommand()->resetSequence('users', 1000)->execute();
 
-        $this->createTableWithHistory('common_users', [
+        $this->createTableWithHistory('user_common', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'user_id' => $this->integer(),
             'user_category' => $this->smallInteger()->notNull()->defaultValue(1),
             'first_name' => $this->string(124),
             'last_name' => $this->string(124),
@@ -41,9 +42,8 @@ class m130524_201442_init extends BaseMigration
             'gender' => $this->integer(1),
             'phone' => $this->string(24),
             'phone_optional' => $this->string(24),
-            'skype' => $this->string(64),
-            'info' => $this->text(),
             'snils' => $this->string(16),
+            'info' => $this->text(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -52,13 +52,15 @@ class m130524_201442_init extends BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable('common_users', 'Общие данные');
-        $this->db->createCommand()->resetSequence('common_users', 1000)->execute();
+        $this->createIndex('user_id', 'user_common', 'user_id');
+        $this->addForeignKey('user_common_ibfk_', 'user_common', 'user_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addCommentOnTable('user_common', 'Общие данные');
+        $this->db->createCommand()->resetSequence('user_common', 1000)->execute();
     }
 
     public function down()
     {
-        $this->dropTable('common_users');
+        $this->dropTable('user_common');
         $this->dropTableWithHistory('users');
     }
 }

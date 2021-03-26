@@ -25,7 +25,6 @@ use kartik\date\DatePicker;
     <div class="panel">
         <div class="panel-heading">
             Информация о пользователе
-            <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/user/default/history', 'id' => $model->id]); ?></span>
         </div>
         <div class="panel-body">
             <div class="panel panel-primary">
@@ -44,7 +43,6 @@ use kartik\date\DatePicker;
                                 <?= $form->field($model, 'email')->textInput(['maxlength' => 255]) ?>
                                 <?= $form->field($model, 'email_confirmed')->checkbox() ?>
                             <?php endif; ?>
-                            <?= $form->field($model, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput(['readonly' => User::hasPermission('editUserSnils')])->hint('Может потребоваться для восстановления учетных данных.') ?>
 
                             <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(User::getStatusList()) ?>
                             <?= $form->field($model, 'registration_ip')->textInput(['readonly' => true]) ?>
@@ -102,16 +100,17 @@ use kartik\date\DatePicker;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'user_category')->dropDownList(User::getUserCategoryList(), ['disabled' => Yii::$app->user->isSuperadmin ? false : true]) ?>
-                            <?= $form->field($model, 'last_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($model, 'first_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($model, 'middle_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($model, 'gender')->dropDownList(User::getGenderList()) ?>
-                            <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
-                            <?= $form->field($model, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                            <?= $form->field($model, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                            <?= $form->field($model, 'skype')->textInput(['maxlength' => 64]) ?>
-                            <?= $form->field($model, 'info')->textarea(['maxlength' => 255, 'rows' => 6]) ?>
+                            <!--                            --><? //= $form->field($model, 'user_category')->dropDownList(User::getUserCategoryList(), ['disabled' => Yii::$app->user->isSuperadmin ? false : true]) ?>
+                            <!--                            --><? //= $form->field($model, 'last_name')->textInput(['maxlength' => 124]) ?>
+                            <!--                            --><? //= $form->field($model, 'first_name')->textInput(['maxlength' => 124]) ?>
+                            <!--                            --><? //= $form->field($model, 'middle_name')->textInput(['maxlength' => 124]) ?>
+                            <!--                            --><? //= $form->field($model, 'gender')->dropDownList(User::getGenderList()) ?>
+                            <!--                            --><? //= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
+                            <!--                            --><? //= $form->field($model, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                            <!--                            --><? //= $form->field($model, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                            <!--                            --><? //= $form->field($model, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput(['readonly' => User::hasPermission('editUserSnils')])->hint('Может потребоваться для восстановления учетных данных.') ?>
+                            <!--                            --><? //= $form->field($model, 'skype')->textInput(['maxlength' => 64]) ?>
+                            <!--                            --><? //= $form->field($model, 'info')->textarea(['maxlength' => 255, 'rows' => 6]) ?>
                         </div>
                     </div>
                 </div>

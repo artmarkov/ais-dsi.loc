@@ -19,7 +19,7 @@ class TeachersSearch extends Teachers
     public function rules()
     {
         return [
-            [['id', 'timestamp_serv', 'timestamp_serv_spec', 'status'], 'integer'],
+            [['id', 'year_serv', 'year_serv_spec', 'date_serv', 'date_serv_spec', 'status'], 'integer'],
             [['position_id', 'level_id', 'tab_num'], 'safe'],
             ['teachersFullName', 'string'],
             ['gridDepartmentSearch', 'string'],
@@ -63,6 +63,8 @@ class TeachersSearch extends Teachers
                 'position_id',
                 'work_id',
                 'level_id',
+                'year_serv',
+                'year_serv_spec',
                 'teachersFullName' => [
                     'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
                     'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],
@@ -89,8 +91,8 @@ class TeachersSearch extends Teachers
         $query->andFilterWhere([
             'teachers.id' => $this->id,
             'teachers.status' => $this->status,
-            'timestamp_serv' => $this->timestamp_serv,
-            'timestamp_serv_spec' => $this->timestamp_serv_spec,
+            'year_serv' => $this->year_serv,
+            'year_serv_spec' => $this->year_serv_spec,
             'teachers_department.department_id' => $this->gridDepartmentSearch,
         ]);
 
