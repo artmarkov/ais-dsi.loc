@@ -87,6 +87,7 @@ class TeachersSearch extends Teachers
         
         $query->andFilterWhere([
             'teachers.id' => $this->id,
+            'position_id' => $this->position_id,
             'level_id' => $this->level_id,
             'teachers.status' => $this->status,
             'year_serv' => $this->year_serv,
