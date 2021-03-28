@@ -5,6 +5,9 @@ namespace common\models\auditory;
 use himiklab\sortablegrid\SortableGridBehavior;
 use artsoft\db\ActiveRecord;
 use Yii;
+use artsoft\traits\DateTimeTrait;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "auditory".
@@ -20,9 +23,17 @@ use Yii;
  * @property int $capacity
  * @property string $description
  * @property int $order
+ * @property int $created_at
+ * @property int $updated_at
+ * @property int $created_by
+ * @property int $updated_by
+ * @property int $status
+ * @property int $version
  */
 class Auditory extends ActiveRecord
 {
+    use DateTimeTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -37,6 +48,8 @@ class Auditory extends ActiveRecord
     public function behaviors()
     {
         return [
+            BlameableBehavior::class,
+            TimestampBehavior::class,
             'grid-sort' => [
                 'class' => SortableGridBehavior::className(),
                 'sortableAttribute' => 'sort_order',
@@ -56,7 +69,13 @@ class Auditory extends ActiveRecord
             [['name'], 'string', 'max' => 128],
             [['floor'], 'string', 'max' => 32],
             [['description'], 'string', 'max' => 255],
+            [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
         ];
+    }
+
+    public function optimisticLock()
+    {
+        return 'version';
     }
 
     /**
@@ -75,6 +94,11 @@ class Auditory extends ActiveRecord
             'capacity' => Yii::t('art/guide', 'Capacity Auditory'),
             'description' => Yii::t('art/guide', 'Description Auditory'),
             'sort_order' => Yii::t('art/guide', 'Order'),
+            'created_at' => Yii::t('art', 'Created'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_by' => Yii::t('art', 'Updated By'),
+            'version' => Yii::t('art', 'Version'),
         ];
     }
 
@@ -109,5 +133,21 @@ class Auditory extends ActiveRecord
     public static function getAuditoryList()
     {
         return Auditory::find()->select(['CONCAT(num,\' - \',name) as name', 'id'])->indexBy('id')->column();
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatedBy()
+    {
+        return $this->hasOne(self::class, ['id' => 'created_by']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUpdatedBy()
+    {
+        return $this->hasOne(self::class, ['id' => 'updated_by']);
     }
 }

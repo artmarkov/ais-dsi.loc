@@ -42,15 +42,6 @@ use artsoft\helpers\Html;
 
                             <?= $form->field($model, 'value_default')->textInput(['maxlength' => true]) ?>
 
-                            <?php
-                            echo $form->field($model, 'measure_id')->dropDownList(MeasureUnit::getMeasureUnitList(), [
-                                'prompt' => Yii::t('art/teachers', 'Select Measure Unit...'),
-                                'id' => 'measure_id'
-                            ])->label(Yii::t('art/teachers', 'Measure Unit'));
-                            ?>
-
-                            <?= $form->field($model, 'bonus_rule_id')->textInput() ?>
-
                         </div>
                     </div>
                 </div>

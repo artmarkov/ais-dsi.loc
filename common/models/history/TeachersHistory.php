@@ -2,8 +2,11 @@
 
 namespace common\models\history;
 
-use common\models\user\UserCommon;
+use common\models\guidejob\Bonus;
+use common\models\own\Department;
+use common\models\teachers\Teachers;
 use common\widgets\history\BaseHistory;
+use yii\helpers\Json;
 
 class TeachersHistory extends BaseHistory
 {
@@ -14,24 +17,22 @@ class TeachersHistory extends BaseHistory
 
     public static function getModelName()
     {
-        return UserCommon::class;
+        return Teachers::class;
     }
 
     protected function getFields()
     {
         return [
-            'id',
-            'first_name',
-            'middle_name',
-            'last_name',
-            'birth_timestamp',
-            'status',
-            'snils',
-            'phone',
-            'phone_optional',
-            'snils',
-            'info',
-            'user_category',
+            'position_id',
+            'level_id',
+            'tab_num',
+            'department_list',
+            'year_serv',
+            'year_serv_spec',
+            'date_serv',
+            'date_serv_spec',
+            'bonus_list',
+            'bonus_summ',
         ];
     }
 
@@ -45,13 +46,47 @@ class TeachersHistory extends BaseHistory
     protected static function getDisplayValue($model, $name, $value)
     {
         switch ($name) {
-            case 'birth_timestamp':
-                return $model->birth_timestamp ? \Yii::$app->formatter->asDate($model->birth_timestamp) : $value;
-            case 'user_category':
-                return isset($model->user_category) ? $model->getUserCategoryValue($model->user_category) : $value;
-            case 'status':
-                return isset($model->status) ? $model->getStatusValue($model->status) : $value;
+            case 'bonus_list':
+                if (isset($model->bonus_list)) {
+                    $v = [];
+                    foreach (Json::decode($model->bonus_list) as $id) {
+                        $v[] = Bonus::findOne($id)->name;
+                    }
+                    return implode(', ', $v);
+                }
+            case 'department_list':
+                if (isset($model->department_list)) {
+                    $v = [];
+                    foreach (Json::decode($model->department_list) as $id) {
+                        $v[] = Department::findOne(['id' => $id])->name;
+                    }
+                    return implode(', ', $v);
+                }
+            case 'level_id':
+                return isset($model->level_id) ? $model->level->name : $value;
+            case 'position_id':
+                return isset($model->position_id) ? $model->position->name : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
+    }
+
+    /**
+     * @return array
+     */
+    public function getHistory()
+    {
+        $selfHistory = parent::getHistory();
+
+        $id = $this->getModelName()::findOne($this->objId)->user->id;
+        $vf = new UserCommonHistory($id);
+        $selfHistory = array_merge($selfHistory, $vf->getHistory());
+
+        foreach (TeachersActivityHistory::getLinkedIdList('teachers_id', $this->objId) as $teachersId) {
+            $vf = new TeachersActivityHistory($teachersId);
+            $selfHistory = array_merge($selfHistory, $vf->getHistory());
+        }
+
+        krsort($selfHistory);
+        return $selfHistory;
     }
 }

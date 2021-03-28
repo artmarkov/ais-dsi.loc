@@ -4,6 +4,7 @@ namespace common\widgets\history;
 
 use yii\base\InvalidConfigException;
 use yii\base\Model;
+use yii\helpers\Json;
 
 abstract class BaseHistory extends Model
 {
@@ -22,7 +23,6 @@ abstract class BaseHistory extends Model
     public function __construct($objectId)
     {
         $this->objId = $objectId;
-
     }
 
     public function rules()
@@ -51,7 +51,6 @@ abstract class BaseHistory extends Model
 
     protected function getData()
     {
-
         $data = $this->getHistory();
 
         if ($this->_filtered) {
@@ -99,7 +98,7 @@ abstract class BaseHistory extends Model
 
     public static function getLinkedIdList($linkFiledName, $id)
     {
-        $res =  array_reduce((new \yii\db\Query)->select('id')->distinct()->from(static::getTableName())->where([$linkFiledName => $id])->all(), function($result, $item) {
+        $res = array_reduce((new \yii\db\Query)->select('id')->distinct()->from(static::getTableName())->where([$linkFiledName => $id])->all(), function ($result, $item) {
             $result[] = $item['id'];
             return $result;
         });
@@ -136,6 +135,7 @@ abstract class BaseHistory extends Model
         $list = $this->getModelRevisions();
         $data = [];
         foreach ($list as $k => $m) {
+
             list($histId, $op) = explode('.', $k);
             if ('I' == $op) {
                 $this->buildHistItems($data, $histId, null, $m);
@@ -158,6 +158,9 @@ abstract class BaseHistory extends Model
         $attrList = $this->getFields();
         if (null === $modelNew) {
             foreach ($attrList as $attr) {
+                if (is_array($modelOld->{$attr})) {
+                    $modelOld->{$attr} = Json::encode($modelOld->{$attr});
+                }
                 try {
                     $item = \Yii::createObject([
                         'class' => Item::class,
@@ -180,6 +183,12 @@ abstract class BaseHistory extends Model
             $type = $modelOld == null ? 'Создание' : 'Изменение';
             $modelOld = $modelOld ? $modelOld : \Yii::createObject(static::getModelName());
             foreach ($attrList as $attr) {
+                if (is_array($modelOld->{$attr})) {
+                    $modelOld->{$attr} = Json::encode($modelOld->{$attr});
+                }
+                if (is_array($modelNew->{$attr})) {
+                    $modelNew->{$attr} = Json::encode($modelNew->{$attr});
+                }
                 if ($modelOld->{$attr} == $modelNew->{$attr}) {
                     continue;
                 }

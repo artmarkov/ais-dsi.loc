@@ -14,7 +14,7 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
         $this->addRole(self::ROLE_MODERATOR, 'Модератор');
         $this->addRole(self::ROLE_AUTHOR, 'Автор');
         $this->addRole(self::ROLE_USER, 'Пользователь');
-        $this->addRole(self::ROLE_STAFF, 'Сотрудник');
+        $this->addRole(self::ROLE_EMPLOYEES, 'Сотрудник');
         $this->addRole(self::ROLE_TEACHER, 'Преподаватель');
         $this->addRole(self::ROLE_STUDENT, 'Ученик');
         $this->addRole(self::ROLE_CURATOR, 'Опекун');
@@ -24,7 +24,7 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'user', 'child' => 'curator']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'author', 'child' => 'user']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'moderator', 'child' => 'user']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'moderator', 'child' => 'staff']);
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'moderator', 'child' => 'employees']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'moderator', 'child' => 'author']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'user']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'author']);
@@ -40,7 +40,7 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
         $this->deleteRole(self::ROLE_MODERATOR);
         $this->deleteRole(self::ROLE_AUTHOR);
         $this->deleteRole(self::ROLE_USER);
-        $this->deleteRole(self::ROLE_STAFF);
+        $this->deleteRole(self::ROLE_EMPLOYEES);
         $this->deleteRole(self::ROLE_TEACHER);
         $this->deleteRole(self::ROLE_STUDENT);
         $this->deleteRole(self::ROLE_CURATOR);

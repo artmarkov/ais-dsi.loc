@@ -5,7 +5,7 @@ namespace common\models\guidejob;
 use Yii;
 
 /**
- * This is the model class for table "teachers_level".
+ * This is the model class for table "guide_teachers_level".
  *
  * @property int $id
  * @property string $name
@@ -20,7 +20,7 @@ class Level extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'teachers_level';
+        return 'guide_teachers_level';
     }
 
     /**

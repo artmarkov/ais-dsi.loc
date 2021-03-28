@@ -6,6 +6,7 @@ use artsoft\behaviors\DateToTimeBehavior;
 use artsoft\helpers\AuthHelper;
 use artsoft\helpers\ArtHelper;
 use artsoft\traits\DateTimeTrait;
+use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -16,11 +17,11 @@ use yii\helpers\ArrayHelper;
  * This is the model class for table "users".
  *
  * @property int $id
- * @property string|null $username
- * @property string|null $auth_key
- * @property string|null $password_hash
+ * @property string $username
+ * @property string $auth_key
+ * @property string $password_hash
  * @property string|null $password_reset_token
- * @property string|null $email
+ * @property string $email
  * @property int|null $email_confirmed
  * @property int|null $superadmin
  * @property string|null $registration_ip
@@ -29,11 +30,12 @@ use yii\helpers\ArrayHelper;
  * @property string|null $avatar
  * @property int $status
  * @property int $created_at
+ * @property int|null $created_by
  * @property int $updated_at
- * @property int $created_by
- * @property int $updated_by
+ * @property int|null $updated_by
  *
  */
+
 class User extends UserIdentity
 {
     use DateTimeTrait;
@@ -87,9 +89,8 @@ class User extends UserIdentity
             [['username'], 'unique'],
             [['username', 'email', 'bind_to_ip'], 'trim'],
             ['email', 'email'],
-            [['status', 'user_category', 'email_confirmed'], 'integer'],
+            [['status', 'email_confirmed'], 'integer'],
             ['bind_to_ip', 'validateBindToIp'],
-            ['bind_to_ip', 'string', 'max' => 255],
             ['bind_to_ip', 'string', 'max' => 255],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             ['password', 'required', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
@@ -98,7 +99,6 @@ class User extends UserIdentity
             ['password', 'trim', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['repeat_password', 'required', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['repeat_password', 'compare', 'compareAttribute' => 'password'],
-            ['birth_date', 'date', 'format' => 'dd-MM-yyyy'],
         ];
     }
 
@@ -272,8 +272,6 @@ class User extends UserIdentity
             self::STATUS_BANNED => Yii::t('art', 'Banned'),
         );
     }
-
-   
 
     /**
      * getUsersList
@@ -483,32 +481,6 @@ class User extends UserIdentity
     }
 
     /**
-     * Первая буква заглавная
-     */
-    protected function getUcFirst($str, $encoding = 'UTF-8')
-    {
-        /* $str = mb_ereg_replace('^[\ ]+', '', $str);
-          $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) .
-          mb_substr($str, 1, mb_strlen($str), $encoding); */
-        $str = mb_convert_case($str, MB_CASE_TITLE, $encoding);
-        return $str;
-    }
-
-    /**
-     * До валидации формируем строки с первой заглавной
-     */
-    public function beforeValidate()
-    {
-
-        $this->first_name = User::getUcFirst($this->first_name);
-        $this->middle_name = User::getUcFirst($this->middle_name);
-        $this->last_name = User::getUcFirst($this->last_name);
-
-
-        return parent::beforeValidate();
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getCreatedBy()
@@ -525,20 +497,12 @@ class User extends UserIdentity
     }
 
     /**
-     * Возвращает версии объекта
-     * @return User[]
+     * Gets query for [[UserCommons]].
+     *
+     * @return \yii\db\ActiveQuery
      */
-    public function getVersions()
+    public function getUserCommon()
     {
-        $rows = (new \yii\db\Query)
-            ->from('users_hist')
-            ->where(['id' => $this->id])
-            ->orderBy('hist_id')
-            ->all();
-        return array_map(function ($item) {
-            unset($item['hist_id']);
-            unset($item['op']);
-            return new User($item);
-        }, $rows);
+        return $this->hasOne(UserCommon::class, ['user_id' => 'id']);
     }
 }

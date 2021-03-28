@@ -7,18 +7,18 @@ use yii\db\BaseActiveRecord;
 use yii\helpers\Json;
 
 /**
- * Class ArrayFieldBehavior
+ * Class DateFieldBehavior
  *
  * ~~~
- * use artsoft\behaviors\ArrayFieldBehavior;
+ * use artsoft\behaviors\DateFieldBehavior;
  *
  * public function behaviors()
  * {
  *     return [
  *         [
- *             'class' => ArrayFieldBehavior::className(),
+ *             'class' => DateFieldBehavior::className(),
  *             'attributes' => ['attribute1', 'attribute2'],
- *             'json' => true,
+ *             'timeFormat' => 'some value',
  *             'defaultEncodedValue' => 'some value',
  *             'defaultDecodedValue' => 'some value',
  *         ],
@@ -30,17 +30,16 @@ use yii\helpers\Json;
  *
  * @package https://github.com/frostealth/yii2-array-field.git
  */
-class ArrayFieldBehavior extends Behavior
+class DateFieldBehavior extends Behavior
 {
-    /**
-     * @var bool
-     */
-    public $json = false;
-
     /**
      * @var array
      */
     public $attributes = [];
+    /**
+     * @var string
+     */
+    public $timeFormat = 'd-m-Y';
 
     /**
      * @var mixed
@@ -50,7 +49,7 @@ class ArrayFieldBehavior extends Behavior
     /**
      * @var mixed
      */
-    public $defaultDecodedValue = [];
+    public $defaultDecodedValue = null;
 
     /**
      * @var array
@@ -61,7 +60,6 @@ class ArrayFieldBehavior extends Behavior
      * @var array
      */
     private $_oldAttributes = [];
-
 
     /**
      * @inheritdoc
@@ -89,8 +87,7 @@ class ArrayFieldBehavior extends Behavior
 
             $value = $this->owner->getAttribute($attribute);
             $this->_cache[$attribute] = $value;
-
-            $value = !empty($value) ? ($this->json ? Json::encode($value) : implode(',', $value)) : $this->defaultEncodedValue;
+            $value = $value ? strtotime($value) : $this->defaultEncodedValue;
             $this->owner->setAttribute($attribute, $value);
         }
     }
@@ -104,10 +101,10 @@ class ArrayFieldBehavior extends Behavior
             if (isset($this->_cache[$attribute])) {
                 $value = $this->_cache[$attribute];
             } else {
-                $value = $this->json ? Json::decode($this->owner->getAttribute($attribute)) : explode(',', $this->owner->getAttribute($attribute));
+                $value = null != $this->owner->getAttribute($attribute) ? date($this->timeFormat, $this->owner->getAttribute($attribute)) : null;
             }
 
-            $value = !empty($value) ? $value : $this->defaultDecodedValue;
+            $value = $value ? $value : $this->defaultDecodedValue;
             $this->owner->setAttribute($attribute, $value);
 
             if (!$this->owner->getIsNewRecord()) {

@@ -5,6 +5,8 @@ namespace common\models\teachers;
 use common\models\guidejob\Direction;
 use common\models\guidejob\Stake;
 use common\models\guidejob\Work;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 use Yii;
 
 
@@ -33,6 +35,17 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            BlameableBehavior::class,
+            TimestampBehavior::class,
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
@@ -42,13 +55,18 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
             [['teachers_id', 'work_id', 'direction_id', 'stake_id'], 'integer'],
 //            ['work_id', 'unique', 'targetAttribute' => ['teachers_id', 'work_id'], 'message' => Yii::t('art/teachers', 'The main activity may not be the same as the secondary one.')],
 //            ['direction_id', 'compareDirection'],
-            [['work_id'], 'exist', 'skipOnError' => true, 'targetClass' => Work::className(), 'targetAttribute' => ['work_id' => 'id']],
-            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::className(), 'targetAttribute' => ['direction_id' => 'id']],
-            [['stake_id'], 'exist', 'skipOnError' => true, 'targetClass' => Stake::className(), 'targetAttribute' => ['stake_id' => 'id']],
-            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
+            [['work_id'], 'exist', 'skipOnError' => true, 'targetClass' => Work::class, 'targetAttribute' => ['work_id' => 'id']],
+            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
+            [['stake_id'], 'exist', 'skipOnError' => true, 'targetClass' => Stake::class, 'targetAttribute' => ['stake_id' => 'id']],
+            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
 
+    public function optimisticLock()
+    {
+        return 'version';
+    }
+    
     /**
      * Проверка на одинаковость полей direction_id
      * @return  mixed
@@ -87,7 +105,7 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
      */
     public function getWork()
     {
-        return $this->hasOne(Work::className(), ['id' => 'work_id']);
+        return $this->hasOne(Work::class, ['id' => 'work_id']);
     }
 
     /**
@@ -97,7 +115,7 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
      */
     public function getDirection()
     {
-        return $this->hasOne(Direction::className(), ['id' => 'direction_id']);
+        return $this->hasOne(Direction::class, ['id' => 'direction_id']);
     }
 
     /**
@@ -107,7 +125,7 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
      */
     public function getStake()
     {
-        return $this->hasOne(Stake::className(), ['id' => 'stake_id']);
+        return $this->hasOne(Stake::class, ['id' => 'stake_id']);
     }
 
     /**
@@ -117,6 +135,6 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
      */
     public function getTeachers()
     {
-        return $this->hasOne(Teachers::className(), ['id' => 'teachers_id']);
+        return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
     }
 }

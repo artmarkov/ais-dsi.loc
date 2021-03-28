@@ -18,7 +18,7 @@ class UserCommonSearch extends UserCommon
     public function rules()
     {
         return [
-            [['id', 'user_id', 'user_category', 'birth_timestamp', 'gender', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
+            [['id', 'user_id', 'user_category', 'birth_date', 'gender', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['first_name', 'last_name', 'middle_name', 'phone', 'phone_optional', 'snils', 'info'], 'safe'],
         ];
     }
@@ -67,7 +67,7 @@ class UserCommonSearch extends UserCommon
             'id' => $this->id,
             'user_id' => $this->user_id,
             'user_category' => $this->user_category,
-            'birth_timestamp' => $this->birth_timestamp,
+            'birth_date' => $this->birth_date,
             'gender' => $this->gender,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,

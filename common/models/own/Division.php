@@ -5,7 +5,7 @@ namespace common\models\own;
 use Yii;
 
 /**
- * This is the model class for table "division".
+ * This is the model class for table "guide_division".
  *
  * @property int $id
  * @property string $name
@@ -18,7 +18,7 @@ class Division extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'division';
+        return 'guide_division';
     }
 
     /**

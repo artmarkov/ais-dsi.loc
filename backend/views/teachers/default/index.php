@@ -7,7 +7,8 @@ use artsoft\grid\GridQuickLinks;
 use common\models\teachers\Teachers;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
-use yii\helpers\ArrayHelper;
+use common\models\own\Department;
+use common\models\guidejob\Bonus;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\teachers\search\TeachersSearch */
@@ -28,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-6">
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
-                             echo GridQuickLinks::widget([
+                            echo GridQuickLinks::widget([
                                 'model' => Teachers::className(),
                                 'searchModel' => $searchModel,
                             ])
@@ -89,17 +90,38 @@ $this->params['breadcrumbs'][] = $this->title;
 //                                'filter' => \common\models\guidejob\Work::getWorkList(),
 //                            ],
                             [
-                                'attribute' => 'gridDepartmentSearch',
-                                'filter' => Teachers::getDepartmentList(),
+                                'attribute' => 'department_list',
+                                'filter' => Department::getDepartmentList(),
                                 'value' => function (Teachers $model) {
-                                    return implode(', ',
-                                        ArrayHelper::map($model->departmentItem, 'id', 'name'));
+                                    $v = [];
+                                    foreach ($model->department_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = Department::findOne($id)->name;
+                                    }
+                                    return implode('<br/> ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-//                            'user.phone',
-//                            'user.email',
+                            [
+                                'attribute' => 'bonus_list',
+                                'filter' => Bonus::getBonusList(),
+                                'value' => function (Teachers $model) {
+                                    $v = [];
+                                    foreach ($model->bonus_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = Bonus::findOne($id)->name;
+                                    }
+                                    return implode('<br/> ', $v);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
+                            'bonus_summ',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'status',

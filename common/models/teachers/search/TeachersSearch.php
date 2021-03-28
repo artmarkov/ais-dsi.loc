@@ -20,9 +20,9 @@ class TeachersSearch extends Teachers
     {
         return [
             [['id', 'year_serv', 'year_serv_spec', 'date_serv', 'date_serv_spec', 'status'], 'integer'],
-            [['position_id', 'level_id', 'tab_num'], 'safe'],
+            [['position_id', 'level_id', 'tab_num', 'bonus_summ'], 'safe'],
             ['teachersFullName', 'string'],
-            ['gridDepartmentSearch', 'string'],
+            [['department_list', 'bonus_list'], 'string'],
         ];
     }
 
@@ -63,6 +63,10 @@ class TeachersSearch extends Teachers
                 'position_id',
                 'work_id',
                 'level_id',
+                'tab_num',
+                'bonus_summ',
+//                'bonus_list',
+//                'department_list',
                 'year_serv',
                 'year_serv_spec',
                 'teachersFullName' => [
@@ -81,30 +85,24 @@ class TeachersSearch extends Teachers
 //        жадная загрузка
         $query->joinWith(['user']);
         
-        $query->with(['teachersDepartments']);
-        $query->with(['departmentItem']);
-        
-        
-        if ($this->gridDepartmentSearch) {
-            $query->joinWith(['teachersDepartments']);
-        }
         $query->andFilterWhere([
             'teachers.id' => $this->id,
+            'level_id' => $this->level_id,
             'teachers.status' => $this->status,
             'year_serv' => $this->year_serv,
             'year_serv_spec' => $this->year_serv_spec,
-            'teachers_department.department_id' => $this->gridDepartmentSearch,
+            'bonus_summ' => $this->bonus_summ,
         ]);
 
-        $query->andFilterWhere(['like', 'position_id', $this->position_id])
-            ->andFilterWhere(['like', 'level_id', $this->level_id])
-            ->andFilterWhere(['like', 'tab_num', $this->tab_num]);
+        $query->andFilterWhere(['like', 'department_list', $this->department_list]);
+        $query->andFilterWhere(['like', 'bonus_list', $this->bonus_list]);
+        $query->andFilterWhere(['like', 'tab_num', $this->tab_num]);
 
-        if($this->teachersFullName) {
-            $query->andWhere('first_name LIKE "%' . $this->teachersFullName . '%" ' .
-                'OR last_name LIKE "%' . $this->teachersFullName . '%"' .
-                'OR middle_name LIKE "%' . $this->teachersFullName . '%"'
-            );
+        if ($this->teachersFullName) {
+            $query->andFilterWhere(['like', 'first_name', $this->teachersFullName])
+                ->orFilterWhere(['like', 'last_name', $this->teachersFullName])
+                ->orFilterWhere(['like', 'middle_name', $this->teachersFullName]);
+
         }
         return $dataProvider;
     }

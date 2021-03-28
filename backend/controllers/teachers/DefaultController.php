@@ -2,18 +2,14 @@
 
 namespace backend\controllers\teachers;
 
-use common\models\guidejob\BonusItem;
-use common\models\guidejob\Stake;
-use common\models\guidejob\Cost;
-use common\models\history\UserCommonHistory;
-use common\models\teachers\Teachers;
+use common\models\guidejob\Bonus;
+use common\models\history\TeachersHistory;
 use common\models\teachers\TeachersActivity;
 use common\models\user\UserCommon;
-use artsoft\models\User;
 use yii\web\NotFoundHttpException;
-use Yii;
 use backend\models\Model;
 use yii\helpers\ArrayHelper;
+use Yii;
 
 /**
  * DefaultController implements the CRUD actions for common\models\teachers\Teachers model.
@@ -25,9 +21,8 @@ class DefaultController extends MainController
     public $modelSearchClass = 'common\models\teachers\search\TeachersSearch';
 
     /**
-     * на 1 сентября текущего года  - в следующем году данные по стажу автоматически обновятся
-     * (в базе ничего не меняется)
-     * хранится условная временная метка
+     * @return mixed|string|\yii\web\Response
+     * @throws \yii\db\Exception
      */
     public function actionCreate()
     {
@@ -36,31 +31,24 @@ class DefaultController extends MainController
         $modelUser = new UserCommon();
         $model = new $this->modelClass;
         $modelsActivity = [new TeachersActivity];
-//        $model->time_serv_init = Teachers::getTimeServInit();
-//        $model->time_serv_spec_init = Teachers::getTimeServInit();
 
         if ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
-            $modelsActivity = Model::createMultiple(TeachersActivity::classname());
+            $modelsActivity = Model::createMultiple(TeachersActivity::class);
             Model::loadMultiple($modelsActivity, Yii::$app->request->post());
 
             // validate all models
             $valid = $modelUser->validate();
             $valid = $model->validate() && $valid;
             $valid = Model::validateMultiple($modelsActivity) && $valid;
-
+            //$valid = true;
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 $modelUser->user_category = UserCommon::USER_CATEGORY_TEACHER;
                 $modelUser->status = UserCommon::STATUS_INACTIVE;
-
-//                $model->timestamp_serv = Teachers::getTimestampServ($model->year_serv, $model->time_serv_init);
-//                $model->timestamp_serv_spec = Teachers::getTimestampServ($model->year_serv_spec, $model->time_serv_spec_init);
-
                 try {
                     if ($flag = $modelUser->save(false)) {
                         $model->user_common_id = $modelUser->id;
-//                        echo '<pre>' . print_r($model, true) . '</pre>';
                         if ($flag = $model->save(false)) {
                             foreach ($modelsActivity as $modelActivity) {
                                 $modelActivity->teachers_id = $model->id;
@@ -110,16 +98,10 @@ class DefaultController extends MainController
 
         $modelsActivity = $model->teachersActivity;
 
-//        $model->time_serv_init = Teachers::getTimeServInit();
-//        $model->time_serv_spec_init = Teachers::getTimeServInit();
-//
-//        $model->year_serv = Teachers::getYearServ($model->timestamp_serv);
-//        $model->year_serv_spec = Teachers::getYearServ($model->timestamp_serv_spec);
-
         if ($modelUser->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
             $oldIDs = ArrayHelper::map($modelsActivity, 'id', 'id');
-            $modelsActivity = Model::createMultiple(TeachersActivity::classname(), $modelsActivity);
+            $modelsActivity = Model::createMultiple(TeachersActivity::class, $modelsActivity);
             Model::loadMultiple($modelsActivity, Yii::$app->request->post());
             $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsActivity, 'id', 'id')));
 
@@ -130,9 +112,6 @@ class DefaultController extends MainController
 
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
-//                $model->timestamp_serv = Teachers::getTimestampServ($model->year_serv, $model->time_serv_init);
-//                $model->timestamp_serv_spec = Teachers::getTimestampServ($model->year_serv_spec, $model->time_serv_spec_init);
-//                print_r($model);
                 try {
                     if ($flag = $modelUser->save(false)) {
                         if ($flag = $model->save(false)) {
@@ -174,7 +153,7 @@ class DefaultController extends MainController
     public function actionSelect()
     {
         $id = \Yii::$app->request->post('id');
-        $model = BonusItem::findOne(['id' => $id]);
+        $model = Bonus::findOne(['id' => $id]);
 
         return $model->value_default;
     }
@@ -183,9 +162,7 @@ class DefaultController extends MainController
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
         $model = $this->findModel($id);
-        $ids = $model->user->id;
-//        print_r($ids);
-        $data = new UserCommonHistory($ids);
+        $data = new TeachersHistory($id);
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 

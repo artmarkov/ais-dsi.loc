@@ -25,6 +25,9 @@ use common\models\guidejob\Stake;
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <?= Html::encode($this->title) ?>
+                    <?php if (!$model->isNewRecord):?>
+                        <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/guidejob/cost/history', 'id' => $model->id]); ?></span>
+                    <?php endif; ?>
                 </div>
                 <div class="panel-body">
                     <div class="row">

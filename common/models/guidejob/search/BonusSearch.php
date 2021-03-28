@@ -5,15 +5,14 @@ namespace common\models\guidejob\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\guidejob\BonusItem;
+use common\models\guidejob\Bonus;
 
 /**
- * BonusItemSearch represents the model behind the search form about `common\models\guidejob\BonusItem`.
+ * BonusSearch represents the model behind the search form about `common\models\guidejob\Bonus`.
  */
-class BonusItemSearch extends BonusItem
+class BonusSearch extends Bonus
 {
     public $bonusCategoryName;
-    public $measureValueSlugName;
 
     /**
      * @inheritdoc
@@ -22,8 +21,8 @@ class BonusItemSearch extends BonusItem
     {
         return [
             [['id', 'bonus_category_id'], 'integer'],
-            [['name', 'slug', 'value_default', 'bonus_rule_id', 'status'], 'safe'],
-            [['bonusCategoryName','measureValueSlugName'], 'string'],
+            [['name', 'slug', 'value_default', 'status'], 'safe'],
+            [['bonusCategoryName'], 'string'],
         ];
     }
 
@@ -45,7 +44,7 @@ class BonusItemSearch extends BonusItem
      */
     public function search($params)
     {
-        $query = BonusItem::find();
+        $query = Bonus::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -58,23 +57,7 @@ class BonusItemSearch extends BonusItem
                 ],
             ],
         ]);
-        $dataProvider->setSort([
-            'attributes' => [
-                'bonus_category_id',
-                'name',
-                'slug',
-                'measureValueSlugName' =>
-                    [
-                        'asc' => ['value_default' => SORT_ASC, 'measure_id' => SORT_ASC],
-                        'desc' => ['value_default' => SORT_DESC, 'measure_id' => SORT_DESC],
-                        'label' => Yii::t('art/teachers', 'Value Default')
 
-                    ],
-                'bonus_rule_id',
-                'status',
-
-            ]
-        ]);
         $this->load($params);
 
         if (!$this->validate()) {
@@ -94,10 +77,8 @@ class BonusItemSearch extends BonusItem
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'slug', $this->slug])
-            ->andFilterWhere(['like', 'bonus_rule_id', $this->bonus_rule_id])
         ;
 
-        $query->andWhere('value_default LIKE "%' . $this->measureValueSlugName . '%" ');
 
         return $dataProvider;
     }

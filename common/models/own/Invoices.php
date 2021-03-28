@@ -2,7 +2,10 @@
 
 namespace common\models\own;
 
+use artsoft\traits\DateTimeTrait;
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "invoices".
@@ -19,9 +22,16 @@ use Yii;
  * @property string $bik
  * @property string $oktmo
  * @property string $kbk
+ * @property int $created_at
+ * @property int $updated_at
+ * @property int $created_by
+ * @property int $updated_by
+ * @property int $version
  */
 class Invoices extends \artsoft\db\ActiveRecord
 {
+    use DateTimeTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -31,6 +41,16 @@ class Invoices extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            BlameableBehavior::class,
+            TimestampBehavior::class,
+        ];
+    }
+    /**
      * {@inheritdoc}
      */
     public function rules()
@@ -39,6 +59,7 @@ class Invoices extends \artsoft\db\ActiveRecord
             [['name', 'recipient', 'inn', 'kpp', 'payment_account', 'corr_account', 'bank_name', 'bik'], 'required'],
             [['name', 'recipient', 'bank_name'], 'string', 'max' => 512],
             [['inn', 'kpp', 'payment_account', 'corr_account', 'personal_account', 'bik', 'oktmo', 'kbk'], 'string', 'max' => 32],
+            [['created_by', 'updated_by', 'created_at', 'updated_at', 'version'], 'integer'],
         ];
     }
 
@@ -60,6 +81,32 @@ class Invoices extends \artsoft\db\ActiveRecord
             'bik' => Yii::t('art/guide', 'Bik'),
             'oktmo' => Yii::t('art/guide', 'Oktmo'),
             'kbk' => Yii::t('art/guide', 'Kbk'),
+            'created_at' => Yii::t('art', 'Created'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_by' => Yii::t('art', 'Updated By'),
+            'version' => Yii::t('art', 'Version'),
         ];
+    }
+
+    public function optimisticLock()
+    {
+        return 'version';
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatedBy()
+    {
+        return $this->hasOne(self::class, ['id' => 'created_by']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUpdatedBy()
+    {
+        return $this->hasOne(self::class, ['id' => 'updated_by']);
     }
 }

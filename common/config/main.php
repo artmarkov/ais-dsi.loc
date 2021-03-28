@@ -1,4 +1,9 @@
 <?php
+Yii::$container->set(\yii\widgets\DetailView::class,[
+    'options' => ['class' => 'table detail-view'],
+    'template' => '<tr><th style="width:30%;text-align:right;" {captionOptions}>{label}</th><td {contentOptions}>{value}</td></tr>',
+    ]);
+
 Yii::$container->set(\kartik\date\DatePicker::class, [
     'type' => \kartik\date\DatePicker ::TYPE_INPUT,
     'options' => ['placeholder' => ''],

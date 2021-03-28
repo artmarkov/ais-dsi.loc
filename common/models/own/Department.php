@@ -3,9 +3,10 @@
 namespace common\models\own;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
- * This is the model class for table "department".
+ * This is the model class for table "guide_department".
  *
  * @property int $id
  * @property int $division_id
@@ -26,7 +27,7 @@ class Department extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'department';
+        return 'guide_department';
     }
 
     /**
@@ -79,13 +80,17 @@ class Department extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTeachersDepartments()
+    public static function getDepartmentList()
     {
-        return $this->hasMany(TeachersDepartment::className(), ['department_id' => 'id']);
+        return ArrayHelper::map(self::find()
+            ->innerJoin('guide_division', 'guide_division.id = guide_department.division_id')
+            ->andWhere(['guide_department.status' => self::STATUS_ACTIVE])
+            ->select('guide_department.id as id, guide_department.name as name, guide_division.name as name_category')
+            ->orderBy('guide_division.id')
+            ->addOrderBy('guide_department.name')
+            ->asArray()->all(), 'id', 'name', 'name_category');
     }
+
     /**
      * @return \yii\db\ActiveQuery
      */

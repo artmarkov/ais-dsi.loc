@@ -5,7 +5,7 @@ namespace common\models\guidejob;
 use Yii;
 
 /**
- * This is the model class for table "teachers_direction".
+ * This is the model class for table "guide_teachers_direction".
  *
  * @property int $id
  * @property string $name
@@ -20,7 +20,7 @@ class Direction extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'teachers_direction';
+        return 'guide_teachers_direction';
     }
 
     /**
@@ -52,7 +52,7 @@ class Direction extends \yii\db\ActiveRecord
      */
     public function getCosts()
     {
-        return $this->hasMany(Cost::className(), ['direction_id' => 'id']);
+        return $this->hasMany(Cost::class, ['direction_id' => 'id']);
     }
 
     /**
@@ -61,7 +61,7 @@ class Direction extends \yii\db\ActiveRecord
    
     public static function getDirectionList()
     {
-        return \yii\helpers\ArrayHelper::map(Direction::find()->all(), 'id', 'name');
+        return \yii\helpers\ArrayHelper::map(self::find()->all(), 'id', 'name');
 
     }
 }

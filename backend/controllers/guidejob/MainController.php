@@ -11,7 +11,7 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Должность',  'url' => ['/guidejob/position/index']],
         ['label' => 'Ставки',  'url' => ['/guidejob/stake/index']],
         ['label' => 'Значение ставки',  'url' => ['/guidejob/cost/index']],
-        ['label' => 'Достижения',  'url' => ['/guidejob/bonus-item/index']],
+        ['label' => 'Достижения',  'url' => ['/guidejob/bonus/index']],
         ['label' => 'Категории достижений',  'url' => ['/guidejob/bonus-category/index']],
     ];
 }

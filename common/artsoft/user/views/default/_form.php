@@ -27,6 +27,39 @@ use kartik\date\DatePicker;
             Информация о пользователе
         </div>
         <div class="panel-body">
+            <div class="panel">
+                <div class="panel-body">
+                    <?php if ($model->userCommon): ?>
+                    <?= \yii\widgets\DetailView::widget([
+                        'model' => $model->userCommon,
+                        'attributes' => [
+                            [
+                                'attribute' => 'user_category',
+                                'value' => \common\models\user\UserCommon::getUserCategoryValue($model->userCommon->user_category),
+                            ],
+                            'fullName',
+                            'birth_date',
+                            'phone',
+                            'phone_optional',
+                            'snils',
+                            'info:ntext',
+                            [
+                                'attribute' => 'status',
+                                'value' => \common\models\user\UserCommon::getStatusValue($model->userCommon->status),
+                            ],
+                        ],
+                    ]) ?>
+                </div>
+                <div class="panel-footer">
+                    <?= Html::a('<i class="fa fa-user-o" aria-hidden="true"></i> Открыть в новом окне',
+                        $model->userCommon->getRelatedUrl(),
+                        [
+                            'target' => '_blank',
+                            'class' => 'btn btn-default',
+                        ]); ?>
+                </div>
+                <?php endif; ?>
+            </div>
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Регистрационные данные
@@ -58,7 +91,7 @@ use kartik\date\DatePicker;
                             <?= Html::a('<i class="fa fa-envelope-o" aria-hidden="true"></i> ' . Yii::t('art', 'Send registration data'),
                                 ['/user/default/send-login', 'id' => $model->id],
                                 [
-                                    'class' => 'btn btn-default',
+                                    'class' => 'btn btn-default btn-sm',
                                     'data' => [
                                         'confirm' => Yii::t('yii', 'Are you sure you want to send registration data?'),
                                         'method' => 'post',
@@ -69,7 +102,7 @@ use kartik\date\DatePicker;
                             <?= Html::a('<i class="fa fa-user-secret" aria-hidden="true"></i> ' . Yii::t('art', 'Login as user'),
                                 ['/user/default/secret-login', 'id' => $model->id],
                                 [
-                                    'class' => 'btn btn-warning',
+                                    'class' => 'btn btn-warning btn-sm',
 
                                 ]);
                             ?>
@@ -77,7 +110,7 @@ use kartik\date\DatePicker;
                             <?= Html::a('<i class="fa fa-shield" aria-hidden="true"></i> ' . Yii::t('art/user', 'Permissions'),
                                 ['user-permission/set', 'id' => $model->id],
                                 [
-                                    'class' => 'btn btn-primary',
+                                    'class' => 'btn btn-primary btn-sm',
 
                                 ]);
                             ?>
@@ -85,35 +118,13 @@ use kartik\date\DatePicker;
                             <?= Html::a('<i class="fa fa-key" aria-hidden="true"></i> ' . Yii::t('art/user', 'Password'),
                                 ['default/change-password', 'id' => $model->id],
                                 [
-                                    'class' => 'btn btn-danger',
+                                    'class' => 'btn btn-danger btn-sm',
 
                                 ]);
                             ?>
                         </div>
                     </div>
                 <?php endif; ?>
-            </div>
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Связанные данные
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <!--                            --><? //= $form->field($model, 'user_category')->dropDownList(User::getUserCategoryList(), ['disabled' => Yii::$app->user->isSuperadmin ? false : true]) ?>
-                            <!--                            --><? //= $form->field($model, 'last_name')->textInput(['maxlength' => 124]) ?>
-                            <!--                            --><? //= $form->field($model, 'first_name')->textInput(['maxlength' => 124]) ?>
-                            <!--                            --><? //= $form->field($model, 'middle_name')->textInput(['maxlength' => 124]) ?>
-                            <!--                            --><? //= $form->field($model, 'gender')->dropDownList(User::getGenderList()) ?>
-                            <!--                            --><? //= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
-                            <!--                            --><? //= $form->field($model, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                            <!--                            --><? //= $form->field($model, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                            <!--                            --><? //= $form->field($model, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput(['readonly' => User::hasPermission('editUserSnils')])->hint('Может потребоваться для восстановления учетных данных.') ?>
-                            <!--                            --><? //= $form->field($model, 'skype')->textInput(['maxlength' => 64]) ?>
-                            <!--                            --><? //= $form->field($model, 'info')->textarea(['maxlength' => 255, 'rows' => 6]) ?>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         <div class="panel-footer">

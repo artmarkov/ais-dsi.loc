@@ -5,7 +5,7 @@ namespace common\models\guidejob;
 use Yii;
 
 /**
- * This is the model class for table "teachers_stake".
+ * This is the model class for table "guide_teachers_stake".
  *
  * @property int $id
  * @property string $name
@@ -24,7 +24,7 @@ class Stake extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'teachers_stake';
+        return 'guide_teachers_stake';
     }
 
     /**
@@ -85,12 +85,12 @@ class Stake extends \yii\db\ActiveRecord
      */
     public function getCosts()
     {
-        return $this->hasMany(Cost::className(), ['stake_id' => 'id']);
+        return $this->hasMany(Cost::class, ['stake_id' => 'id']);
     }
 
     public static function getStakeList()
     {
-        return \yii\helpers\ArrayHelper::map(Stake::find()->all(), 'id', 'name');
+        return \yii\helpers\ArrayHelper::map(self::find()->all(), 'id', 'name');
     }
 
     /**
@@ -101,8 +101,8 @@ class Stake extends \yii\db\ActiveRecord
     {
         $data = self::find()
             ->innerJoin('teachers_cost', 'teachers_cost.stake_id = teachers_stake.id')
-            ->innerJoin('teachers_direction', 'teachers_direction.id = teachers_cost.direction_id')
-            ->select(['teachers_stake.name', 'teachers_stake.id'])
+            ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = teachers_cost.direction_id')
+            ->select(['guide_teachers_stake.name', 'guide_teachers_stake.id'])
             ->where(['teachers_cost.direction_id' => $direction_id])
             ->asArray()->all();
 
@@ -116,9 +116,9 @@ class Stake extends \yii\db\ActiveRecord
     public static function getStakeByName($direction_id)
     {
         $data = self::find()
-            ->innerJoin('teachers_cost', 'teachers_cost.stake_id = teachers_stake.id')
-            ->innerJoin('teachers_direction', 'teachers_direction.id = teachers_cost.direction_id')
-            ->select(['teachers_stake.name as name', 'teachers_stake.id as id'])
+            ->innerJoin('teachers_cost', 'teachers_cost.stake_id = guide_teachers_stake.id')
+            ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = teachers_cost.direction_id')
+            ->select(['guide_teachers_stake.name as name', 'guide_teachers_stake.id as id'])
             ->where(['teachers_cost.direction_id' => $direction_id])
             ->indexBy('id')->column();
 

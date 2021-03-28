@@ -5,7 +5,7 @@ namespace common\models\guidejob;
 use Yii;
 
 /**
- * This is the model class for table "teachers_position".
+ * This is the model class for table "guide_teachers_position".
  *
  * @property int $id
  * @property string $name
@@ -20,7 +20,7 @@ class Position extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'teachers_position';
+        return 'guide_teachers_position';
     }
 
     /**

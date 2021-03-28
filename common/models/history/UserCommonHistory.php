@@ -20,11 +20,10 @@ class UserCommonHistory extends BaseHistory
     protected function getFields()
     {
         return [
-            'id',
             'first_name',
             'middle_name',
             'last_name',
-            'birth_timestamp',
+            'birth_date',
             'status',
             'snils',
             'phone',
@@ -45,8 +44,6 @@ class UserCommonHistory extends BaseHistory
     protected static function getDisplayValue($model, $name, $value)
     {
         switch ($name) {
-            case 'birth_timestamp':
-                return $model->birth_timestamp ? \Yii::$app->formatter->asDate($model->birth_timestamp) : $value;
             case 'user_category':
                 return isset($model->user_category) ? $model->getUserCategoryValue($model->user_category) : $value;
             case 'status':

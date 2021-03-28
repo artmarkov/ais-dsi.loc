@@ -6,6 +6,8 @@ use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
 use wbraganca\dynamicform\DynamicFormWidget;
+use common\models\user\UserCommon;
+use common\models\own\Department;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\teachers\Teachers */
@@ -115,7 +117,7 @@ EOF;
 
                             <?= $form->field($modelUser, 'middle_name')->textInput(['maxlength' => 124]) ?>
 
-                            <?= $form->field($modelUser, 'gender')->dropDownList(\common\models\user\UserCommon::getGenderList()) ?>
+                            <?= $form->field($modelUser, 'gender')->dropDownList(UserCommon::getGenderList()) ?>
 
                             <?= $form->field($modelUser, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
 
@@ -160,7 +162,7 @@ EOF;
                             <?= $form->field($model, 'date_serv_spec')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date')); ?>
 
                             <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
-                                'data' => Teachers::getDepartmentList(),
+                                'data' => Department::getDepartmentList(),
                                 'options' => [
                                     'disabled' => $readonly,
                                     'placeholder' => Yii::t('art/teachers', 'Select Department...'),
@@ -266,7 +268,7 @@ EOF;
                             <div class="col-sm-12">
 
                                 <?= $form->field($model, 'bonus_list')->widget(\kartik\select2\Select2::className(), [
-                                    'data' => Teachers::getBonusItemList(),
+                                    'data' => \common\models\guidejob\Bonus::getBonusList(),
                                     'showToggleAll' => false,
                                     'options' => [
                                         'disabled' => $readonly,
