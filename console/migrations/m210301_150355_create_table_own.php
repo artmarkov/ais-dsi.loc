@@ -97,7 +97,8 @@ class m210301_150355_create_table_own extends \artsoft\db\BaseMigration
 
     public function down()
     {
-        $this->dropTable('invoices');
+        $this->dropForeignKey('department_ibfk_1', 'guide_department');
+        $this->dropTableWithHistory('invoices');
         $this->dropTable('guide_department');
         $this->dropTable('guide_division');
     }

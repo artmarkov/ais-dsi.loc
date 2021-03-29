@@ -301,7 +301,7 @@ class UserCommon extends ActiveRecord
         foreach (Student::getFamilyList($id) as $item) $user_array[] = $item['user_id'];
 
         return \yii\helpers\ArrayHelper::map(self::find()
-            ->andWhere(['not in', 'user.status', User::STATUS_BANNED])// заблокированных не добавляем в список
+            //->andWhere(['not in', 'user.status', User::STATUS_BANNED])// заблокированных не добавляем в список
             ->andWhere(['in', 'user.user_category', self::USER_CATEGORY_PARENT])// только родителей
             ->andWhere(['not in', 'user.id', $user_array])// не добавляем уже добавленных родителей
             ->select(['user.id as user_id', "CONCAT(user.last_name, ' ',user.first_name, ' ',user.middle_name) AS name"])
@@ -309,13 +309,13 @@ class UserCommon extends ActiveRecord
             ->asArray()->all(), 'user_id', 'name');
     }
 
-    public static function getWorkAuthorTeachersList()
+    public static function getTeachersList()
     {
         return \yii\helpers\ArrayHelper::map(self::find()
-            ->andWhere(['not in', 'user.status', User::STATUS_BANNED])// заблокированных не добавляем в список
-            ->andWhere(['in', 'user.user_category', self::USER_CATEGORY_TEACHER])// только преподаватели
-            ->select(['user.id as user_id', "CONCAT(user.last_name, ' ',user.first_name, ' ',user.middle_name) AS name"])
-            ->orderBy('user.last_name')
+            ->andWhere(['in', 'user_common.status', self::STATUS_ACTIVE])// заблокированных не добавляем в список
+            ->andWhere(['in', 'user_common.user_category', self::USER_CATEGORY_TEACHER])// только преподаватели
+            ->select(['user_common.id as user_id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
+            ->orderBy('user_common.last_name')
             ->asArray()->all(), 'user_id', 'name');
     }
 

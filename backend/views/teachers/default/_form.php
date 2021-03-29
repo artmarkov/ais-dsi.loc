@@ -11,6 +11,9 @@ use common\models\own\Department;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\teachers\Teachers */
+/* @var $modelUser UserCommon */
+/* @var $modelsActivity \common\models\teachers\TeachersActivity */
+/* @var $readonly */
 /* @var $form artsoft\widgets\ActiveForm */
 
 $js = '
@@ -100,7 +103,7 @@ EOF;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(Teachers::getStatusList()) ?>
+                    <?= $form->field($modelUser->loadDefaultValues(), 'status')->dropDownList(\artsoft\models\User::getStatusList()) ?>
                 </div>
             </div>
             <div class="panel panel-primary">
@@ -112,19 +115,12 @@ EOF;
                         <div class="col-sm-12">
 
                             <?= $form->field($modelUser, 'last_name')->textInput(['maxlength' => 124]) ?>
-
                             <?= $form->field($modelUser, 'first_name')->textInput(['maxlength' => 124]) ?>
-
                             <?= $form->field($modelUser, 'middle_name')->textInput(['maxlength' => 124]) ?>
-
                             <?= $form->field($modelUser, 'gender')->dropDownList(UserCommon::getGenderList()) ?>
-
                             <?= $form->field($modelUser, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
-
                             <?= $form->field($modelUser, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
-
                             <?= $form->field($modelUser, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-
                             <?= $form->field($modelUser, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                         </div>
                     </div>
@@ -150,17 +146,11 @@ EOF;
                                 'id' => 'level_id'
                             ])->label(Yii::t('art/teachers', 'Name Level'));
                             ?>
-
                             <?= $form->field($model, 'tab_num')->textInput(['maxlength' => true]) ?>
-
                             <?= $form->field($model, 'year_serv')->textInput() ?>
-
                             <?= $form->field($model, 'date_serv')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date')); ?>
-
                             <?= $form->field($model, 'year_serv_spec')->textInput() ?>
-
                             <?= $form->field($model, 'date_serv_spec')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date')); ?>
-
                             <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
                                 'data' => Department::getDepartmentList(),
                                 'options' => [

@@ -13,17 +13,14 @@ use common\models\creative\CreativeWorks;
 class CreativeWorksSearch extends CreativeWorks
 {
     public $published_at_operand;
-    public $categoryName;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'status', 'comment_status', 'created_by', 'updated_by'], 'integer'],
-            [['published_at_operand', 'category_id', 'name', 'description', 'published_at', 'created_at', 'updated_at'], 'safe'],
-            ['categoryName', 'string'],
-            [['gridDepartmentSearch','gridAuthorSearch'], 'string'],
+            [['id', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['department_list', 'teachers_list', 'category_id', 'name', 'description', 'published_at', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -69,33 +66,19 @@ class CreativeWorksSearch extends CreativeWorks
 //        жадная загрузка
         $query->joinWith(['category']);
         
-        $query->with(['creativeWorksDepartments']);
-        $query->with(['departmentItem']);
-        
-        $query->with(['creativeWorksAuthors']);
-        $query->with(['authorItem']);
-        
-        if ($this->gridDepartmentSearch) {
-            $query->joinWith(['creativeWorksDepartments']);
-        }
-        
-        if ($this->gridAuthorSearch) {
-            $query->joinWith(['creativeWorksAuthors']);
-        }
-        
+
         $query->andFilterWhere([
             'id' => $this->id,
             'category_id' => $this->category_id,
             'status' => $this->status,
-            'comment_status' => $this->comment_status,
-            'creative_works_department.department_id' => $this->gridDepartmentSearch,
-            'creative_works_author.author_id' => $this->gridAuthorSearch,
             ]);
 
         $query->andFilterWhere([($this->published_at_operand) ? $this->published_at_operand : '=', 'published_at', ($this->published_at) ? strtotime($this->published_at) : null]);
 
         $query->andFilterWhere(['like', 'category_id', $this->category_id])
             ->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'department_list', $this->department_list])
+            ->andFilterWhere(['like', 'teachers_list', $this->teachers_list])
             ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;

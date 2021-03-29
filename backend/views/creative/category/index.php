@@ -67,7 +67,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
                             'description:ntext',
-
                         ],
                     ]);
                     ?>

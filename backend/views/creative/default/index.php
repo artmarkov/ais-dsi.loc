@@ -9,9 +9,10 @@ use common\models\user\UserCommon;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use yii\helpers\ArrayHelper;
+use common\models\own\Department;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\creative\search\CreativeWorksSearch */
+/* @var $searchModel common\models\creative\search\Search */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/creative', 'Creative Works');
@@ -64,7 +65,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
-                            ['class' => 'yii\grid\SerialColumn', 'options' => ['style' => 'width:20px'],],
+                            [
+                                'options' => ['style' => 'width:30px'],
+                                'attribute' => 'id',
+                                'value' => function (CreativeWorks $model) {
+                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                },
+                                'format' => 'raw'
+                            ],
                             [
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:800px'],
@@ -73,7 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'title' => function (CreativeWorks $model) {
                                     return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
+                                'buttonsTemplate' => '{update} {view} {delete}',
                             ],
                             [
                                 'attribute' => 'category_id',
@@ -82,21 +90,33 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'filter' => \common\models\creative\CreativeCategory::getCreativeCategoryList(),
                             ],
                             [
-                                'attribute' => 'gridDepartmentSearch',
-                                'filter' => CreativeWorks::getDepartmentList(),
+                                'attribute' => 'department_list',
+                                'filter' => Department::getDepartmentList(),
                                 'value' => function (CreativeWorks $model) {
-                                    return implode(', ',
-                                        ArrayHelper::map($model->departmentItem, 'id', 'name'));
+                                    $v = [];
+                                    foreach ($model->department_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = Department::findOne($id)->name;
+                                    }
+                                    return implode('<br/> ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
                             [
-                                'attribute' => 'gridAuthorSearch',
-                                'filter' => UserCommon::getWorkAuthorTeachersList(),
+                                'attribute' => 'teachers_list',
+                                'filter' => UserCommon::getTeachersList(),
                                 'value' => function (CreativeWorks $model) {
-                                    return implode('<br />',
-                                        ArrayHelper::map($model->authorItem, 'id', 'lastFM'));
+                                    $v = [];
+                                    foreach ($model->teachers_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = UserCommon::findOne($id)->getLastFM();
+                                    }
+                                    return implode('<br/> ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
@@ -113,7 +133,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function (CreativeWorks $model) {
                                     return '<span style="font-size:85%;" class="label label-'
                                         . ((time() >= $model->published_at) ? 'primary' : 'default') . '">'
-                                        . $model->publishedDate . '</span>';
+                                        . $model->published_at . '</span>';
                                 },
                                 'format' => 'raw',
                                 'options' => ['style' => 'width:150px'],

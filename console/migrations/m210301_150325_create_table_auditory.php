@@ -168,7 +168,9 @@ class m210301_150325_create_table_auditory extends \artsoft\db\BaseMigration
 
     public function down()
     {
-        $this->dropTable('auditory');
+        $this->dropForeignKey('auditory_ibfk_1', 'auditory');
+        $this->dropForeignKey('auditory_ibfk_2', 'auditory');
+        $this->dropTableWithHistory('auditory');
         $this->dropTable('guide_auditory_building');
         $this->dropTable('guide_auditory_cat');
     }

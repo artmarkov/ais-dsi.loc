@@ -27,11 +27,8 @@ use artsoft\helpers\Html;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-
                             <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-
                             <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
-
                         </div>
                     </div>
                 </div>

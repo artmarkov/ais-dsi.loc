@@ -5,23 +5,24 @@ namespace common\models\creative;
 use Yii;
 
 /**
- * This is the model class for table "creative_works_department".
+ * This is the model class for table "creative_works_revision".
  *
  * @property int $id
  * @property int $works_id
- * @property int $department_id
+ * @property int $user_id
+ * @property int $timestamp
  *
  * @property CreativeWorks $works
- * @property Department $department
+ * @property User $user
  */
-class CreativeWorksDepartment extends \yii\db\ActiveRecord
+class CreativeRevision extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'creative_works_department';
+        return 'creative_revision';
     }
 
     /**
@@ -30,10 +31,10 @@ class CreativeWorksDepartment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['works_id', 'department_id'], 'required'],
-            [['works_id', 'department_id'], 'integer'],
+            [['works_id', 'user_id'], 'required'],
+            [['works_id', 'user_id', 'timestamp'], 'integer'],
             [['works_id'], 'exist', 'skipOnError' => true, 'targetClass' => CreativeWorks::className(), 'targetAttribute' => ['works_id' => 'id']],
-            [['department_id'], 'exist', 'skipOnError' => true, 'targetClass' => Department::className(), 'targetAttribute' => ['department_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -45,7 +46,8 @@ class CreativeWorksDepartment extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('art/creative', 'ID'),
             'works_id' => Yii::t('art/creative', 'Works ID'),
-            'department_id' => Yii::t('art/creative', 'Department ID'),
+            'user_id' => Yii::t('art/creative', 'User ID'),
+            'timestamp' => Yii::t('art/creative', 'Timestamp'),
         ];
     }
 
@@ -60,8 +62,8 @@ class CreativeWorksDepartment extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getDepartment()
+    public function getUser()
     {
-        return $this->hasOne(Department::className(), ['id' => 'department_id']);
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 }

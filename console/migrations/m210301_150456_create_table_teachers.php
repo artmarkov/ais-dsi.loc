@@ -204,8 +204,18 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
 
     public function down()
     {
+        $this->dropForeignKey('teachers_cost_ibfk_1', 'teachers_cost',);
+        $this->dropForeignKey('teachers_cost_ibfk_2', 'teachers_cost',);
+        $this->dropForeignKey('guide_teachers_bonus_ibfk_1', 'guide_teachers_bonus',);
+        $this->dropForeignKey('teachers_ibfk_1', 'teachers',);
+        $this->dropForeignKey('teachers_ibfk_2', 'teachers',);
+        $this->dropForeignKey('teachers_ibfk_3', 'teachers',);
+        $this->dropForeignKey('teachers_activity_ibfk_1', 'teachers_activity',);
+        $this->dropForeignKey('teachers_activity_ibfk_2', 'teachers_activity',);
+        $this->dropForeignKey('teachers_activity_ibfk_3', 'teachers_activity',);
+        $this->dropForeignKey('teachers_activity_ibfk_4', 'teachers_activity',);
         $this->dropTable('teachers_activity');
-        $this->dropTable('teachers');
+        $this->dropTableWithHistory('teachers');
         $this->dropTable('guide_teachers_bonus');
         $this->dropTable('guide_teachers_bonus_category');
         $this->dropTable('guide_teachers_bonus');
@@ -214,7 +224,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->dropTable('guide_teachers_position');
         $this->dropTable('guide_teachers_stake');
         $this->dropTable('guide_teachers_work');
-        $this->dropTable('teachers_cost');
+        $this->dropTableWithHistory('teachers_cost');
         $this->dropTable('guide_teachers_department');
     }
 }
