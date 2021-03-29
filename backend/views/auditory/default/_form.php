@@ -20,6 +20,9 @@ use common\models\auditory\AuditoryCat;
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <?= Html::encode($this->title) ?>
+                    <?php if (!$model->isNewRecord):?>
+                        <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/auditory/default/history', 'id' => $model->id]); ?></span>
+                    <?php endif; ?>
                 </div>
                 <div class="panel-body">
                     <div class="row">

@@ -38,7 +38,8 @@ class Item extends \yii\base\Model
                 return \Yii::$app->formatter->asDatetime($this->updated_at, 'php:d-m-Y h:i:s');
             },
             'updated_by_username' => function () {
-                return $this->updated_by > 0 ? \artsoft\models\User::findOne($this->updated_by)->username : null;
+                $username = \artsoft\models\User::findOne($this->updated_by);
+                return isset($username->username) ? $username : null;
             },
             'updated_by',
             'attr_name',

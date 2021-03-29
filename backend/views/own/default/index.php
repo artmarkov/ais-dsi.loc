@@ -57,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'name',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/invoices/default',
+                                'controller' => '/own/default',
                                 'title' => function(Invoices $model) {
                                     return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },

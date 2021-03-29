@@ -3,6 +3,7 @@
 namespace backend\controllers\auditory;
 
 use himiklab\sortablegrid\SortableGridAction;
+use common\models\history\AuditoryHistory;
 
 /**
  * AuditoryController implements the CRUD actions for common\models\Auditory model.
@@ -24,5 +25,18 @@ class DefaultController extends MainController
                 'modelName' => $this->modelClass,
             ],
         ];
+    }
+
+    /**
+     * @param $id
+     * @return string|\yii\web\Response
+     * @throws \yii\web\NotFoundHttpException
+     */
+    public function actionHistory($id)
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $model = $this->findModel($id);
+        $data = new AuditoryHistory($id);
+        return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 }
