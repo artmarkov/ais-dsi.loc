@@ -26,7 +26,7 @@ class m190923_145121_create_table_queue_schedule extends Migration
 
         $this->addCommentOnTable('queue_schedule','Назначенные задания');
 
-        $this->createIndex('created_by', 'queue_schedule', 'created_by');
+//        $this->createIndex('created_by', 'queue_schedule', 'created_by');
         $this->createIndex('updated_by', 'queue_schedule', 'updated_by');
         $this->createIndex('class', 'queue_schedule', 'class', true);
         $this->addForeignKey('queue_schedule_ibfk_1', 'queue_schedule', 'created_by', 'users', 'id', 'RESTRICT', 'RESTRICT');
@@ -36,6 +36,8 @@ class m190923_145121_create_table_queue_schedule extends Migration
 
     public function down()
     {
+        $this->dropForeignKey('queue_schedule_ibfk_1', 'queue_schedule');
+        $this->dropForeignKey('queue_schedule_ibfk_2', 'queue_schedule');
         $this->dropTable('queue_schedule');
     }
 }

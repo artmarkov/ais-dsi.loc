@@ -63,6 +63,9 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
                 'class' => DateFieldBehavior::class,
                 'attributes' => ['published_at'],
             ],
+            [
+                'class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class,
+            ],
         ];
     }
     /**
