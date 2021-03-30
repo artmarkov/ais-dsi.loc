@@ -20,20 +20,22 @@ use yii\helpers\Url;
     $form = ActiveForm::begin([
         'id' => 'creative-works-form',
         'validateOnBlur' => false,
-        'options' => ['enctype'=>'multipart/form-data'],
+        'options' => ['enctype' => 'multipart/form-data'],
         'enableClientScript' => true, // default
     ])
     ?>
 
     <div class="panel">
         <div class="panel-body">
-            <div class="panel panel-default">
+            <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <?= Html::encode($this->title) ?>
+                    Сведения о работе
                 </div>
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
+                            <?= $form->field($model, 'category_id')->dropDownList(CreativeCategory::getCreativeCategoryList(), ['prompt' => '', 'encodeSpaces' => true]) ?>
+                            <?= $form->field($model, 'status')->dropDownList(CreativeWorks::getStatusList()) ?>
 
                             <?= $form->field($model, 'name')->textarea(['rows' => 3]) ?>
                             <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
@@ -53,18 +55,16 @@ use yii\helpers\Url;
                                 'data' => \common\models\user\UserCommon::getTeachersList(),
                                 'options' => [
                                     //'disabled' => $readonly,
-                                    'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
+                                    'placeholder' => Yii::t('art/creative', 'Select performers...'),
                                     'multiple' => true,
                                 ],
                                 'pluginOptions' => [
                                     'allowClear' => true
                                 ],
-                            ])->label(Yii::t('art/teachers', 'Teachers'));
+                            ])->label(Yii::t('art/creative', 'Аuthors-performers'));
                             ?>
 
-                            <?= $form->field($model, 'category_id')->dropDownList(CreativeCategory::getCreativeCategoryList(), ['prompt' => '', 'encodeSpaces' => true]) ?>
                             <?= $form->field($model, 'published_at')->widget(DatePicker::class)->textInput(['autocomplete' => 'off']); ?>
-                            <?= $form->field($model, 'status')->dropDownList(CreativeWorks::getStatusList()) ?>
 
                             <?php if (!$model->isNewRecord): ?>
                                 <?= $form->field($model, 'created_by')->dropDownList(User::getUsersList()) ?>
@@ -74,11 +74,30 @@ use yii\helpers\Url;
                     </div>
 
                     <?php if (!$model->isNewRecord) : ?>
-                    <div class="panel-body">
-                        <div class="row">
-                            <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true]])?>
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                Загруженные материалы
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true]]) ?>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                Поощрения за работу
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     <?php endif; ?>
 
                 </div>
@@ -91,5 +110,5 @@ use yii\helpers\Url;
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>
-        <?php ActiveForm::end(); ?>
+    <?php ActiveForm::end(); ?>
 </div>

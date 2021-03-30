@@ -26,6 +26,7 @@ use artsoft\models\User;
  * @property int|null $updated_by
  * @property int|null $published_at
  * @property int $status
+ * @property int $view_rights
  * @property int $version
  *
  * @property CreativeRevision[] $creativeRevisions
@@ -37,9 +38,9 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
 {
     use DateTimeTrait;
 
-    const STATUS_PENDING = 0;
-    const STATUS_PUBLISHED = 1;
-    
+    const VIEW_CLOSE = 0;
+    const VIEW_OPEN = 1;
+
     /**
      * {@inheritdoc}
      */
@@ -74,16 +75,16 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['category_id', 'name', 'description'], 'required'],
+            [['category_id', 'name', 'description', 'department_list', 'teachers_list'], 'required'],
             [['category_id', 'created_by', 'updated_by', 'status', 'version'], 'integer'],
             [['description'], 'string'],
             [['created_at', 'updated_at'], 'integer'],
             [['published_at'], 'safe'],
             [['name'], 'string', 'max' => 512],
             [['department_list', 'teachers_list'], 'safe'],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => CreativeCategory::className(), 'targetAttribute' => ['category_id' => 'id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => CreativeCategory::class, 'targetAttribute' => ['category_id' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
         ];
     }
 
@@ -95,11 +96,11 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/creative', 'ID'),
             'category_id' => Yii::t('art', 'Category'),
-            'name' => Yii::t('art', 'Name'),
+            'name' => Yii::t('art/creative', 'Work topic'),
             'description' => Yii::t('art', 'Description'),
             'department_list' => Yii::t('art', 'Department'),
             'teachers_list' => Yii::t('art/teachers', 'Teachers'),
-            'published_at' => Yii::t('art', 'Published'),
+            'published_at' => Yii::t('art', 'Published At'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -116,7 +117,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
      */
     public function getCreativeRevisions()
     {
-        return $this->hasMany(CreativeRevision::className(), ['works_id' => 'id']);
+        return $this->hasMany(CreativeRevision::class, ['works_id' => 'id']);
     }
 
     /**
@@ -126,7 +127,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(CreativeCategory::className(), ['id' => 'category_id']);
+        return $this->hasOne(CreativeCategory::class, ['id' => 'category_id']);
     }
     public function getCategoryName()
     {
@@ -139,7 +140,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
@@ -149,7 +150,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**
@@ -157,14 +158,14 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
      */
     public function getCreativeWorksRevisions()
     {
-        return $this->hasMany(CreativeRevision::className(), ['works_id' => 'id']);
+        return $this->hasMany(CreativeRevision::class, ['works_id' => 'id']);
     }
     
     public static function getStatusList()
     {
         return [
-            self::STATUS_PENDING => Yii::t('art', 'Pending'),
-            self::STATUS_PUBLISHED => Yii::t('art', 'Published'),
+            self::VIEW_CLOSE => Yii::t('art/creative', 'Closed'),
+            self::VIEW_OPEN => Yii::t('art/creative', 'Open'),
         ];
     }
 
@@ -175,8 +176,8 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
     public static function getStatusOptionsList()
     {
         return [
-            [self::STATUS_PENDING, Yii::t('art', 'Pending'), 'default'],
-            [self::STATUS_PUBLISHED, Yii::t('art', 'Published'), 'primary']
+            [self::VIEW_CLOSE, Yii::t('art/creative', 'Closed'), 'danger'],
+            [self::VIEW_OPEN, Yii::t('art/creative', 'Open'), 'success'],
         ];
     }
 }

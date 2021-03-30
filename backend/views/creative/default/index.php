@@ -33,8 +33,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'searchModel' => $searchModel,
                                 'labels' => [
                                     'all' => Yii::t('art', 'All'),
-                                    'active' => Yii::t('art', 'Published'),
-                                    'inactive' => Yii::t('art', 'Pending'),
+                                    'active' => Yii::t('art/creative', 'Closed'),
+                                    'inactive' => Yii::t('art/creative', 'Open'),
                                 ]
                             ]) ?>
                         </div>
@@ -58,8 +58,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'bulkActionOptions' => [
                             'gridId' => 'post-grid',
                             'actions' => [
-                                Url::to(['bulk-activate']) => Yii::t('art', 'Publish'),
-                                Url::to(['bulk-deactivate']) => Yii::t('art', 'Unpublish'),
+                                Url::to(['bulk-activate']) => Yii::t('art/creative', 'Оpen for viewing'),
+                                Url::to(['bulk-deactivate']) => Yii::t('art/creative', 'Close for viewing'),
                                 Url::to(['bulk-delete']) => Yii::t('yii', 'Delete'),
                             ]
                         ],
@@ -79,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'name',
                                 'controller' => '/creative/default',
                                 'title' => function (CreativeWorks $model) {
-                                    return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->name, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                             ],

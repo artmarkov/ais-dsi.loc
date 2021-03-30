@@ -89,6 +89,7 @@ return [
     'Processing' => 'Обработка данных',
     'Publish' => 'Опубликовать',
     'Published' => 'Опубликовано',
+    'Published At' => 'Дата публикации',
     'Read more' => 'Читать дальше',
     'Recent Comments' => 'Последние комментарии',
     'Records per page' => 'Записей на странице',
