@@ -38,7 +38,7 @@ use yii\helpers\Url;
                             <?= $form->field($model, 'status')->dropDownList(CreativeWorks::getStatusList()) ?>
 
                             <?= $form->field($model, 'name')->textarea(['rows' => 3]) ?>
-                            <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+                            <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::class, [
                                 'data' => \common\models\own\Department::getDepartmentList(),
                                 'options' => [

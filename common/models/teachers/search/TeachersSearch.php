@@ -19,7 +19,7 @@ class TeachersSearch extends Teachers
     public function rules()
     {
         return [
-            [['id', 'year_serv', 'year_serv_spec', 'date_serv', 'date_serv_spec', 'status'], 'integer'],
+            [['id', 'year_serv', 'year_serv_spec', 'date_serv', 'date_serv_spec'], 'integer'],
             [['position_id', 'level_id', 'tab_num', 'bonus_summ'], 'safe'],
             ['teachersFullName', 'string'],
             [['department_list', 'bonus_list'], 'string'],
@@ -89,7 +89,7 @@ class TeachersSearch extends Teachers
             'teachers.id' => $this->id,
             'position_id' => $this->position_id,
             'level_id' => $this->level_id,
-            'teachers.status' => $this->status,
+            //'teachers.status' => $this->status,
             'year_serv' => $this->year_serv,
             'year_serv_spec' => $this->year_serv_spec,
             'bonus_summ' => $this->bonus_summ,

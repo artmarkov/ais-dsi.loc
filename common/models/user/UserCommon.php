@@ -177,8 +177,8 @@ class UserCommon extends ActiveRecord
     public static function getStatusList()
     {
         return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
             self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
+            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
         );
     }
 

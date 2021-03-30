@@ -48,6 +48,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
+        $this->db->createCommand()->resetSequence('teachers_cost', 1000)->execute();
         $this->db->createCommand()->batchInsert('teachers_cost', ['id', 'direction_id', 'stake_id', 'stake_value', 'created_at', 'updated_at', 'created_by', 'updated_by'], [
             [1, 1, 1, 0, time(), time(), 1000, 1000],
             [2, 1, 2, 0, time(), time(), 1000, 1000],
@@ -167,10 +168,10 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
             'updated_by' => $this->integer(),
-            'status' => $this->smallInteger()->notNull()->defaultValue(1),
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
+        $this->db->createCommand()->resetSequence('teachers', 1000)->execute();
         $this->createIndex('status_id', 'teachers', 'position_id');
         $this->createIndex('user_common_id', 'teachers', 'user_common_id');
         $this->createIndex('id', 'teachers', 'id', true);

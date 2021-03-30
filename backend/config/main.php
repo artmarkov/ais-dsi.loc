@@ -31,7 +31,7 @@ $config =  [
             'class' => 'artsoft\eav\Module',
         ],
         'fileinput' => [
-            'class' => 'artsoft\fileinput\FileinputModule',
+            'class' => 'artsoft\fileinput\FileInputModule',
         ],
     ],
     'components' => [

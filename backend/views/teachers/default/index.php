@@ -9,6 +9,7 @@ use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use common\models\own\Department;
 use common\models\guidejob\Bonus;
+use common\models\user\UserCommon;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\teachers\search\TeachersSearch */
@@ -29,10 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-6">
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
-                            echo GridQuickLinks::widget([
-                                'model' => Teachers::className(),
-                                'searchModel' => $searchModel,
-                            ])
+//                            echo GridQuickLinks::widget([
+//                                'model' => Teachers::className(),
+//                                'searchModel' => $searchModel,
+//                            ])
                             ?>
                         </div>
 
@@ -46,10 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'teachers-grid-pjax',
                     ])
                     ?>
-
-                    <?=
-                    GridView::widget([
-
+                    <?= GridView::widget([
                         'id' => 'teachers-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
@@ -83,12 +81,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label' => Yii::t('art/teachers', 'Name Position'),
                                 'filter' => \common\models\guidejob\Position::getPositionList(),
                             ],
-//                            [
-//                                'attribute' => 'work_id',
-//                                'value' => 'work.name',
-//                                'label' => Yii::t('art/teachers', 'Name Work'),
-//                                'filter' => \common\models\guidejob\Work::getWorkList(),
-//                            ],
                             [
                                 'attribute' => 'department_list',
                                 'filter' => Department::getDepartmentList(),
@@ -122,15 +114,21 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                             ],
                             'bonus_summ',
-                            [
-                                'class' => 'artsoft\grid\columns\StatusColumn',
-                                'attribute' => 'status',
-                                'optionsArray' => [
-                                    [Teachers::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
-                                    [Teachers::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'warning'],
-                                ],
-                                'options' => ['style' => 'width:120px']
-                            ],
+//                            [
+//                                'attribute' => 'status',
+//                                'filter' => UserCommon::getStatusList(),
+//                                'value' => 'user.status',
+//                                'options' => ['style' => 'width:120px']
+//                            ],
+//                            [
+//                                'class' => 'artsoft\grid\columns\StatusColumn',
+//                                'attribute' => 'user.status',
+//                                'optionsArray' => [
+//                                    [UserCommon::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
+//                                    [UserCommon::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'warning'],
+//                                ],
+//                                'options' => ['style' => 'width:120px']
+//                            ],
                         ],
                     ]);
                     ?>

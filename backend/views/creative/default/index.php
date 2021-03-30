@@ -33,8 +33,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'searchModel' => $searchModel,
                                 'labels' => [
                                     'all' => Yii::t('art', 'All'),
-                                    'active' => Yii::t('art/creative', 'Closed'),
-                                    'inactive' => Yii::t('art/creative', 'Open'),
+                                    'inactive' => Yii::t('art/creative', 'Closed'),
+                                    'active' => Yii::t('art/creative', 'Open'),
                                 ]
                             ]) ?>
                         </div>
@@ -56,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
-                            'gridId' => 'post-grid',
+                            'gridId' => 'creative-works-grid',
                             'actions' => [
                                 Url::to(['bulk-activate']) => Yii::t('art/creative', 'Оpen for viewing'),
                                 Url::to(['bulk-deactivate']) => Yii::t('art/creative', 'Close for viewing'),

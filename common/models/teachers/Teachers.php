@@ -13,7 +13,6 @@ use common\models\user\UserCommon;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
-use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "teachers".
@@ -27,7 +26,6 @@ use yii\helpers\ArrayHelper;
  * @property int $year_serv_spec
  * @property int $date_serv
  * @property int $date_serv_spec
- * @property int $status
  * @property float $bonus_summ
  * @property int $created_at
  * @property int $updated_at
@@ -42,11 +40,7 @@ use yii\helpers\ArrayHelper;
  */
 class Teachers extends ActiveRecord
 {
-
     use DateTimeTrait;
-
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
 
     /**
      * {@inheritdoc}
@@ -81,12 +75,11 @@ class Teachers extends ActiveRecord
     public function rules()
     {
         return [
-            [['position_id', 'status', 'department_list'], 'required'],
-            [['position_id', 'level_id', 'status', 'user_common_id'], 'integer'],
+            [['position_id', 'department_list'], 'required'],
+            [['position_id', 'level_id', 'user_common_id'], 'integer'],
             [['tab_num'], 'string', 'max' => 16],
             ['bonus_summ', 'safe'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
-            ['status', 'default', 'value' => self::STATUS_INACTIVE],
             [['level_id'], 'exist', 'skipOnError' => true, 'targetClass' => Level::class, 'targetAttribute' => ['level_id' => 'id']],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::class, 'targetAttribute' => ['position_id' => 'id']],
             [['bonus_list', 'department_list', 'date_serv', 'date_serv_spec'], 'safe'],
@@ -129,7 +122,6 @@ class Teachers extends ActiveRecord
             'year_serv_spec' => Yii::t('art/teachers', 'Year Serv Spec'),
             'teachersFullName' => Yii::t('art', 'Full Name'),
             'gridDepartmentSearch' => Yii::t('art/guide', 'Department'),
-            'status' => Yii::t('art', 'Status'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -181,18 +173,6 @@ class Teachers extends ActiveRecord
     public function getTeachersFullName()
     {
         return $this->user->fullName;
-    }
-
-    /**
-     * getStatusList
-     * @return array
-     */
-    public static function getStatusList()
-    {
-        return array(
-            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
-        );
     }
 
     /**

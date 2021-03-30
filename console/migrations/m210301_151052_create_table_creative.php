@@ -31,8 +31,8 @@ class m210301_151052_create_table_creative extends \artsoft\db\BaseMigration
         $this->createTableWithHistory('creative_works', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'category_id' => $this->tinyInteger(2)->unsigned()->notNull(),
-            'name' => $this->string(512)->notNull(),
-            'description' => $this->text()->notNull(),
+            'name' => $this->string(1024)->notNull(),
+            'description' => $this->string(512),
             'department_list' => $this->string(1024),
             'teachers_list' => $this->string(1024),
             'published_at' => $this->integer(),
