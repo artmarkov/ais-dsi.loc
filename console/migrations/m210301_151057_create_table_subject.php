@@ -62,7 +62,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'name' => $this->string(127),
             'slug' => $this->string(32),
-            'type_list' => $this->string(1024),
+            'department_list' => $this->string(1024),
             'vid_list' => $this->string(1024),
             'category_list' => $this->string(1024),
             'created_at' => $this->integer()->notNull(),
@@ -239,9 +239,6 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
     {
         $this->dropTableWithHistory('subject');
         $this->dropTable('guide_subject_type');
-        $this->dropTable('guide_subject_vid');
-        $this->dropTable('subject_category');
-        $this->dropTable('subject_department');
         $this->dropTable('guide_subject_vid');
         $this->dropTable('guide_subject_category');
     }

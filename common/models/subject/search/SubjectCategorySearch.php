@@ -2,15 +2,15 @@
 
 namespace common\models\subject\search;
 
-use common\models\subject\SubjectCategoryItem;
+use common\models\subject\SubjectCategory;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * SubjectCategoryItemSearch represents the model behind the search form about `common\models\subject\SubjectCategoryItem`.
+ * SubjectCategorySearch represents the model behind the search form about `common\models\subject\SubjectCategory`.
  */
-class SubjectCategoryItemSearch extends SubjectCategoryItem
+class SubjectCategorySearch extends SubjectCategory
 {
     /**
      * @inheritdoc
@@ -41,7 +41,7 @@ class SubjectCategoryItemSearch extends SubjectCategoryItem
      */
     public function search($params)
     {
-        $query = SubjectCategoryItem::find();
+        $query = SubjectCategory::find();
         
 
         $dataProvider = new ActiveDataProvider([

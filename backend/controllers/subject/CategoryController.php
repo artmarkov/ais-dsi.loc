@@ -5,12 +5,12 @@ namespace backend\controllers\subject;
 use himiklab\sortablegrid\SortableGridAction;
 
 /**
- * CategoryItemController implements the CRUD actions for common\models\subject\SubjectCategoryItem model.
+ * CategoryItemController implements the CRUD actions for common\models\subject\SubjectCategory model.
  */
 class CategoryController extends MainController
 {
-    public $modelClass       = 'common\models\subject\SubjectCategoryItem';
-    public $modelSearchClass = 'common\models\subject\search\SubjectCategoryItemSearch';
+    public $modelClass       = 'common\models\subject\SubjectCategory';
+    public $modelSearchClass = 'common\models\subject\search\SubjectCategorySearch';
 
     /**
      * action sort for himiklab\sortablegrid\SortableGridBehavior

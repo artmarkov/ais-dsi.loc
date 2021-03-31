@@ -1,7 +1,8 @@
 <?php
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Auditory'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['/auditory/default/update', 'id' => $model->id]];
+$this->title = 'История изменений: ' . $model->name;
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 <div class="history-index">
     <div class="panel">

@@ -1,8 +1,7 @@
 <?php
 
-use yii\db\Migration;
 
-class m210302_153750_create_table_routine extends Migration
+class m210302_153750_create_table_routine extends \artsoft\db\BaseMigration
 {
     public function up()
     {
@@ -11,14 +10,14 @@ class m210302_153750_create_table_routine extends Migration
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('routine_cat', [
+        $this->createTable('guide_routine_cat', [
             'id' => $this->primaryKey(8),
             'name' => $this->string(255)->notNull(),
             'color' => $this->string(127)->notNull(),
             'plan_flag' => $this->tinyInteger(1)->notNull()->comment('Учитывать при планировании'),
         ], $tableOptions);
 
-        $this->db->createCommand()->batchInsert('routine_cat', ['id', 'name', 'color', 'plan_flag'], [
+        $this->db->createCommand()->batchInsert('guide_routine_cat', ['id', 'name', 'color', 'plan_flag'], [
             [1, 'Каникулы', '#0000ff', 1],
             [2, 'Праздники', '#ff0000', 1],
             [3, 'Отпуск преподавателей', '#6aa84f', 1],
@@ -35,12 +34,12 @@ class m210302_153750_create_table_routine extends Migration
         ], $tableOptions);
 
 //        $this->createIndex('cat_id', 'routine', 'cat_id');
-        $this->addForeignKey('routine_ibfk_1', 'routine', 'cat_id', 'routine_cat', 'id', 'RESTRICT', 'RESTRICT');
+        $this->addForeignKey('routine_ibfk_1', 'routine', 'cat_id', 'guide_routine_cat', 'id', 'RESTRICT', 'RESTRICT');
     }
 
     public function down()
     {
         $this->dropTable('routine');
-        $this->dropTable('routine_cat');
+        $this->dropTable('guide_routine_cat');
     }
 }

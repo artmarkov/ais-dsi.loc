@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\subject\SubjectVidItem */
+/* @var $model common\models\subject\SubjectVid */
 
 $this->title = Yii::t('art','Create');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide','Subjects'), 'url' => ['subject/default/index']];

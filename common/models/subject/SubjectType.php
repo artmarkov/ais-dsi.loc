@@ -5,7 +5,7 @@ namespace common\models\subject;
 use Yii;
 
 /**
- * This is the model class for table "subject_type".
+ * This is the model class for table "guide_subject_type".
  *
  * @property int $id
  * @property string $name
@@ -22,7 +22,7 @@ class SubjectType extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'subject_type';
+        return 'guide_subject_type';
     }
 
     /**

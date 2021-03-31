@@ -60,7 +60,7 @@ class m130524_201442_init extends BaseMigration
 
     public function down()
     {
-        $this->dropTable('user_common');
-        $this->dropTableWithHistory('users');
+        $this->dropTableWithHistory('user_common');
+        $this->dropTable('users');
     }
 }

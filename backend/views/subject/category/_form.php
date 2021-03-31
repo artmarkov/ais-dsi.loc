@@ -1,11 +1,11 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\subject\SubjectCategoryItem;
+use common\models\subject\SubjectCategory;
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\subject\SubjectCategoryItem */
+/* @var $model common\models\subject\SubjectCategory */
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 
@@ -31,7 +31,7 @@ use artsoft\helpers\Html;
 
                             <? //= $form->field($model, 'order')->textInput() ?>
 
-                            <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(SubjectCategoryItem::getStatusList()) ?>
+                            <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(SubjectCategory::getStatusList()) ?>
 
                         </div>
                     </div>

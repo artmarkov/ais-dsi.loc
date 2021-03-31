@@ -3,7 +3,9 @@
 use artsoft\widgets\ActiveForm;
 use common\models\subject\Subject;
 use artsoft\helpers\Html;
-use nex\chosen\Chosen;
+use common\models\subject\SubjectCategory;
+use common\models\subject\SubjectVid;
+use common\models\own\Department;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\subject\Subject */
@@ -30,30 +32,42 @@ use nex\chosen\Chosen;
 
                             <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
-                            <? //= $form->field($model, 'order')->textInput() ?>
-                            <?php
-                            echo $form->field($model, 'department_list')->widget(Chosen::className(), [
-                                'items' => Subject::getDepartmentList(),
-                                'multiple' => true,
-                                'placeholder' => Yii::t('art/guide', 'Select Department...'),
+                            <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
+                                'data' => Department::getDepartmentList(),
+                                'options' => [
+                                    // 'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art/teachers', 'Select Department...'),
+                                    'multiple' => true,
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
                             ])->label(Yii::t('art/guide', 'Department'));
                             ?>
-
-                            <?php
-                            echo $form->field($model, 'category_list')->widget(Chosen::className(), [
-                                'items' => Subject::getSubjectCategoryList(),
-                                'multiple' => true,
-                                'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
+                            <?= $form->field($model, 'category_list')->widget(\kartik\select2\Select2::className(), [
+                                'data' => SubjectCategory::getCategoryList(),
+                                'options' => [
+                                    // 'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art/teachers', 'Select Subject Category...'),
+                                    'multiple' => true,
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
                             ])->label(Yii::t('art/guide', 'Subject Category'));
                             ?>
-                            <?php
-                            echo $form->field($model, 'vid_list')->widget(Chosen::className(), [
-                                'items' => Subject::getSubjectVidList(),
-                                'multiple' => true,
-                                'placeholder' => Yii::t('art/guide', 'Select Subject Vid...'),
+                            <?= $form->field($model, 'vid_list')->widget(\kartik\select2\Select2::className(), [
+                                'data' => SubjectVid::getVidList(),
+                                'options' => [
+                                    // 'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art/teachers', 'Select Subject Vid...'),
+                                    'multiple' => true,
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
                             ])->label(Yii::t('art/guide', 'Subject Vid'));
                             ?>
-
                             <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(Subject::getStatusList()) ?>
 
                         </div>
@@ -68,5 +82,5 @@ use nex\chosen\Chosen;
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>
-            <?php ActiveForm::end(); ?>
+    <?php ActiveForm::end(); ?>
 </div>

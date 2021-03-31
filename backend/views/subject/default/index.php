@@ -8,6 +8,9 @@ use common\models\subject\Subject;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use yii\helpers\ArrayHelper;
+use common\models\own\Department;
+use common\models\subject\SubjectCategory;
+use common\models\subject\SubjectVid;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\subject\search\SubjectSearch */
@@ -69,31 +72,49 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'slug',
                             [
-                                'attribute' => 'gridCategorySearch',
-                                'filter' => Subject::getSubjectCategoryList(),
+                                'attribute' => 'department_list',
+                                'filter' => Department::getDepartmentList(),
                                 'value' => function (Subject $model) {
-                                    return implode(', ',
-                                        ArrayHelper::map($model->subjectCategoryItem, 'id', 'name'));
+                                    $v = [];
+                                    foreach ($model->department_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = Department::findOne($id)->name;
+                                    }
+                                    return implode('<br/> ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
                             [
-                                'attribute' => 'gridDepartmentSearch',
-                                'filter' => Subject::getDepartmentList(),
+                                'attribute' => 'category_list',
+                                'filter' => SubjectCategory::getCategoryList(),
                                 'value' => function (Subject $model) {
-                                    return implode(', ',
-                                        ArrayHelper::map($model->departmentItem, 'id', 'name'));
+                                    $v = [];
+                                    foreach ($model->category_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = Department::findOne($id)->name;
+                                    }
+                                    return implode('<br/> ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
                             [
-                                'attribute' => 'gridVidSearch',
-                                'filter' => Subject::getSubjectVidList(),
+                                'attribute' => 'vid_list',
+                                'filter' => SubjectVid::getVidList(),
                                 'value' => function (Subject $model) {
-                                    return implode(', ',
-                                        ArrayHelper::map($model->subjectVidItem, 'id', 'name'));
+                                    $v = [];
+                                    foreach ($model->vid_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = Department::findOne($id)->name;
+                                    }
+                                    return implode('<br/> ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',

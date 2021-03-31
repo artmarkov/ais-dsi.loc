@@ -2,6 +2,7 @@
 
 namespace common\models\venue;
 
+use artsoft\traits\DateTimeTrait;
 use Yii;
 use artsoft\models\User;
 use yii\behaviors\BlameableBehavior;
@@ -38,6 +39,7 @@ use common\models\venue\VenueCountry;
 class VenuePlace extends \yii\db\ActiveRecord
 {
     public  $map_address;
+    use DateTimeTrait;
     /**
      * {@inheritdoc}
      */
@@ -96,8 +98,8 @@ class VenuePlace extends \yii\db\ActiveRecord
             'сontact_person' => Yii::t('art/guide', 'Contact Person'),
             'coords' => Yii::t('art/guide', 'Coordinates'),
             'description' => Yii::t('art/guide', 'Description Venue'),
-            'created_at' => Yii::t('art', 'Created At'),
-            'updated_at' => Yii::t('art', 'Updated At'),
+            'created_at' => Yii::t('art', 'Created'),
+            'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
         ];
@@ -155,7 +157,7 @@ class VenuePlace extends \yii\db\ActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(\artsoft\models::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::className(), ['id' => 'created_by']);
     }
 
     /**
@@ -163,68 +165,7 @@ class VenuePlace extends \yii\db\ActiveRecord
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(\artsoft\models::className(), ['id' => 'updated_by']);
-    }
-    /**
-     * Get created date
-     *
-     * @param string $format date format
-     * @return string
-     */
-    public function getCreatedDate($format = 'd-m-Y')
-    {
-        return date($format, ($this->isNewRecord) ? time() : $this->created_at);
+        return $this->hasOne(User::className(), ['id' => 'updated_by']);
     }
 
-    /**
-     * Get created date
-     *
-     * @param string $format date format
-     * @return string
-     */
-    public function getUpdatedDate($format = 'd-m-Y')
-    {
-        return date($format, ($this->isNewRecord) ? time() : $this->updated_at);
-    }
-
-    /**
-     * Get created time
-     *
-     * @param string $format time format
-     * @return string
-     */
-    public function getCreatedTime($format = 'H:i')
-    {
-        return date($format, ($this->isNewRecord) ? time() : $this->created_at);
-    }
-
-    /**
-     * Get created time
-     *
-     * @param string $format time format
-     * @return string
-     */
-    public function getUpdatedTime($format = 'H:i')
-    {
-        return date($format, ($this->isNewRecord) ? time() : $this->updated_at);
-    }
-    /**
-     * Get created datetime
-     *
-     * @return string
-     */
-    public function getCreatedDatetime()
-    {
-        return "{$this->createdDate} {$this->createdTime}";
-    }
-
-    /**
-     * Get created datetime
-     *
-     * @return string
-     */
-    public function getUpdatedDatetime()
-    {
-        return "{$this->updatedDate} {$this->updatedTime}";
-    }
 }

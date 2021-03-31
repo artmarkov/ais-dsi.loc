@@ -5,7 +5,7 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\subject\SubjectCategoryItem;
+use common\models\subject\SubjectCategory;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use common\models\routine\RoutineCat;

@@ -75,16 +75,16 @@ class VenuePlaceSearch extends VenuePlace
 //                    'desc' => ['venue_country.name' => SORT_DESC]
 //                ],
                 'districtSlug' => [
-                    'asc' => ['venue_district.slug' => SORT_ASC],
-                    'desc' => ['venue_district.slug' => SORT_DESC]
+                    'asc' => ['guide_venue_district.slug' => SORT_ASC],
+                    'desc' => ['guide_venue_district.slug' => SORT_DESC]
                 ],
                 'districtName' => [
-                    'asc' => ['venue_district.name' => SORT_ASC],
-                    'desc' => ['venue_district.name' => SORT_DESC]
+                    'asc' => ['guide_venue_district.name' => SORT_ASC],
+                    'desc' => ['guide_venue_district.name' => SORT_DESC]
                 ],
                 'sityName' => [
-                    'asc' => ['venue_sity.name' => SORT_ASC],
-                    'desc' => ['venue_sity.name' => SORT_DESC]
+                    'asc' => ['guide_venue_sity.name' => SORT_ASC],
+                    'desc' => ['guide_venue_sity.name' => SORT_DESC]
                 ]
             ]
         ]);
@@ -124,13 +124,13 @@ class VenuePlaceSearch extends VenuePlace
 //        }]);
 
 //        $query->joinWith(['district' => function ($q) {
-//           $q->where('venue_district.name LIKE "%' . $this->districtName . '%"');
+//           $q->where('guide_venue_district.name LIKE "%' . $this->districtName . '%"');
 //        }]);
         $query->joinWith(['district' => function ($q) {
-            $q->where('venue_district.slug LIKE "%' . $this->districtSlug . '%"');
+            $q->andFilterWhere(['like', 'guide_venue_district.slug',  $this->districtSlug]);
         }]);
         $query->joinWith(['sity' => function ($q) {
-            $q->where('venue_sity.name LIKE "%' . $this->sityName . '%"');
+            $q->andFilterWhere(['like', 'guide_venue_sity.name' , $this->sityName]);
         }]);
         
         return $dataProvider;

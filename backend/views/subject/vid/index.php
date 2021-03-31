@@ -4,7 +4,7 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\subject\SubjectVidItem;
+use common\models\subject\SubjectVid;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'name',
                                 'controller' => '/subject/vid',
-                                'title' => function (SubjectVidItem $model) {
+                                'title' => function (SubjectVid $model) {
                                     return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
@@ -73,8 +73,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'status',
                                 'optionsArray' => [
-                                    [SubjectVidItem::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
-                                    [SubjectVidItem::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                    [SubjectVid::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
+                                    [SubjectVid::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:150px']
                             ],

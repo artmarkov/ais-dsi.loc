@@ -24,7 +24,6 @@ class m150703_182055_create_auth_table extends Migration
 
     public function safeDown()
     {
-        $this->dropForeignKey('fk_auth_user', self::TABLE_NAME);
         $this->dropTable(self::TABLE_NAME);
     }
 }

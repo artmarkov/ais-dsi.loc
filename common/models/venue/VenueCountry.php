@@ -5,7 +5,7 @@ namespace common\models\venue;
 use Yii;
 
 /**
- * This is the model class for table "venue_country".
+ * This is the model class for table "guide_venue_country".
  *
  * @property int $id
  * @property string $name
@@ -22,7 +22,7 @@ class VenueCountry extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'venue_country';
+        return 'guide_venue_country';
     }
 
     /**

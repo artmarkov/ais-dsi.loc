@@ -13,13 +13,15 @@ use common\models\teachers\Teachers;
 class TeachersSearch extends Teachers
 {
     public $teachersFullName;
+    public $userStatus;
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'year_serv', 'year_serv_spec', 'date_serv', 'date_serv_spec'], 'integer'],
+            [['id', 'year_serv', 'year_serv_spec', 'date_serv', 'date_serv_spec', 'userStatus'], 'integer'],
             [['position_id', 'level_id', 'tab_num', 'bonus_summ'], 'safe'],
             ['teachersFullName', 'string'],
             [['department_list', 'bonus_list'], 'string'],
@@ -65,6 +67,7 @@ class TeachersSearch extends Teachers
                 'level_id',
                 'tab_num',
                 'bonus_summ',
+                'userStatus',
 //                'bonus_list',
 //                'department_list',
                 'year_serv',
@@ -84,15 +87,15 @@ class TeachersSearch extends Teachers
         }
 //        жадная загрузка
         $query->joinWith(['user']);
-        
+
         $query->andFilterWhere([
             'teachers.id' => $this->id,
             'position_id' => $this->position_id,
             'level_id' => $this->level_id,
-            //'teachers.status' => $this->status,
             'year_serv' => $this->year_serv,
             'year_serv_spec' => $this->year_serv_spec,
             'bonus_summ' => $this->bonus_summ,
+            'user_common.status' => $this->userStatus,
         ]);
 
         $query->andFilterWhere(['like', 'department_list', $this->department_list]);

@@ -19,7 +19,7 @@ class VenueCountrySearch extends VenueCountry
     {
         return [
             [['id'], 'integer'],
-            [['name', 'fips'], 'safe'],
+            [['name'], 'safe'],
         ];
     }
 
@@ -69,7 +69,8 @@ class VenueCountrySearch extends VenueCountry
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'fips', $this->fips]);
+//            ->andFilterWhere(['like', 'fips', $this->fips])
+        ;
 
         return $dataProvider;
     }

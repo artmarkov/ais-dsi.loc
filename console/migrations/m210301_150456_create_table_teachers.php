@@ -217,7 +217,6 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->dropForeignKey('teachers_activity_ibfk_4', 'teachers_activity',);
         $this->dropTable('teachers_activity');
         $this->dropTableWithHistory('teachers');
-        $this->dropTable('guide_teachers_bonus');
         $this->dropTable('guide_teachers_bonus_category');
         $this->dropTable('guide_teachers_bonus');
         $this->dropTable('guide_teachers_direction');
@@ -226,6 +225,5 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->dropTable('guide_teachers_stake');
         $this->dropTable('guide_teachers_work');
         $this->dropTableWithHistory('teachers_cost');
-        $this->dropTable('guide_teachers_department');
     }
 }

@@ -63,8 +63,8 @@ class VenueDistrictSearch extends VenueDistrict
                 'name',
                 'slug',
                 'sityName' => [
-                    'asc' => ['venue_sity.name' => SORT_ASC],
-                    'desc' => ['venue_sity.name' => SORT_DESC],
+                    'asc' => ['guide_venue_sity.name' => SORT_ASC],
+                    'desc' => ['guide_venue_sity.name' => SORT_DESC],
                     'label' => Yii::t('art/guide', 'Name Sity')
                 ]
             ]
@@ -81,16 +81,16 @@ class VenueDistrictSearch extends VenueDistrict
         //        жадная загрузка
             $query->joinWith(['sity']);
 
-        $query->andWhere(['not', ['venue_district.id' => 0]]); // убираем запись с 0 ид - 'Не определено'
+        $query->andWhere(['not', ['guide_venue_district.id' => 0]]); // убираем запись с 0 ид - 'Не определено'
         $query->andFilterWhere([
             'id' => $this->id,
         ]);
 
-        $query->andFilterWhere(['like', 'venue_district.name', $this->name])
+        $query->andFilterWhere(['like', 'guide_venue_district.name', $this->name])
             ->andFilterWhere(['like', 'slug', $this->slug]);
 
         $query->joinWith(['sity' => function ($q) {
-            $q->where('venue_sity.name LIKE "%' . $this->sityName . '%"');
+            $q->andFilterWhere(['like','guide_venue_sity.name', $this->sityName]);
         }]);
 
         return $dataProvider;

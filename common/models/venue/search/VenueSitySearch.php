@@ -82,22 +82,22 @@ class VenueSitySearch extends VenueSity
 //        жадная загрузка
             $query->joinWith(['country']);
 
-        $query->andWhere(['not', ['venue_sity.id' => 0]]); // убираем запись с 0 ид - 'Не определено'
+        $query->andWhere(['not', ['guide_venue_sity.id' => 0]]); // убираем запись с 0 ид - 'Не определено'
         $query->andFilterWhere([
             'id' => $this->id,
         ]);
-        $query->andFilterWhere(['like', 'venue_sity.name', $this->name]);
+        $query->andFilterWhere(['like', 'guide_venue_sity.name', $this->name]);
 
 //        $query->joinWith(['country' => function ($q) {
-//            $q->where('venue_sity.latitude LIKE "%' . $this->latitude . '%"');
+//            $q->where('guide_venue_sity.latitude LIKE "%' . $this->latitude . '%"');
 //        }]);
 //
 //        $query->joinWith(['country' => function ($q) {
-//            $q->where('venue_sity.longitude LIKE "%' . $this->longitude . '%"');
+//            $q->where('guide_venue_sity.longitude LIKE "%' . $this->longitude . '%"');
 //        }]);
 
         $query->joinWith(['country' => function ($q) {
-            $q->where('venue_country.name LIKE "%' . $this->countryName . '%"');
+            $q->andFilterWhere(['like', 'venue_country.name', $this->countryName]);
         }]);
         return $dataProvider;
     }

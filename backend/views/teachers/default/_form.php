@@ -103,7 +103,7 @@ EOF;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($modelUser->loadDefaultValues(), 'status')->dropDownList(UserCommon::getStatusList()) ?>
+                    <?= $form->field($modelUser, 'status')->dropDownList(UserCommon::getStatusList()) ?>
                 </div>
             </div>
             <div class="panel panel-primary">

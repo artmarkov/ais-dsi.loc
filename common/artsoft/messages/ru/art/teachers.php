@@ -23,7 +23,7 @@ return [
     'Select Stake...' => 'Выберите ставку...',
     'Stake' => 'Ставка',
     'Bonus' => 'Достижения',
-    'Bonus Summ' => 'Сумма надбавки',
+    'Bonus Summ %' => 'Надбавка %',
     'Bonus Category' => 'Категория',
     'Bonus Value' => 'Надбавка %',
     'Select Bonus Category...' => 'Выберите категорию...',

@@ -37,6 +37,7 @@ use Yii;
  *
  * @property TeachersLevel $level
  * @property TeachersPosition $position
+ * @property UserCommon $status
  */
 class Teachers extends ActiveRecord
 {
@@ -116,7 +117,7 @@ class Teachers extends ActiveRecord
             'date_serv' => Yii::t('art/teachers', 'Date Serv'),
             'date_serv_spec' => Yii::t('art/teachers', 'Date Serv Spec'),
             'bonus_list' => Yii::t('art/teachers', 'Bonus'),
-            'bonus_summ' => Yii::t('art/teachers', 'Bonus Summ'),
+            'bonus_summ' => Yii::t('art/teachers', 'Bonus Summ %'),
             'department_list' => Yii::t('art/guide', 'Department'),
             'year_serv' => Yii::t('art/teachers', 'Year Serv'),
             'year_serv_spec' => Yii::t('art/teachers', 'Year Serv Spec'),
@@ -127,6 +128,7 @@ class Teachers extends ActiveRecord
             'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'userStatus' => Yii::t('art', 'Status'),
         ];
     }
 
@@ -166,7 +168,11 @@ class Teachers extends ActiveRecord
     public function getUser()
     {
         return $this->hasOne(UserCommon::class, ['id' => 'user_common_id']);
-    } 
+    }
+    public function getUserStatus()
+    {
+        return $this->user->status;
+    }
     /**
      * Геттер полного имени юзера
      */

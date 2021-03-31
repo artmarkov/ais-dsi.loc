@@ -44,14 +44,13 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
 
         $this->db->createCommand()->resetSequence('student', 1000)->execute();
         $this->createIndex('position_id', 'student', 'position_id');
-        $this->createIndex('user_id', 'student', 'user_id');
         $this->addForeignKey('student_ibfk_1', 'student', 'position_id', 'guide_student_position', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('student_ibfk_2', 'student', 'user_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
     }
 
     public function down()
     {
+        $this->dropForeignKey('student_ibfk_1', 'student');
         $this->dropTable('student');
         $this->dropTable('guide_student_position');
     }

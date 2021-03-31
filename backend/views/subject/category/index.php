@@ -3,7 +3,7 @@
 use yii\widgets\Pjax;
 use artsoft\grid\SortableGridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\subject\SubjectCategoryItem;
+use common\models\subject\SubjectCategory;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
                             /* echo GridQuickLinks::widget([
-                              'model' => SubjectCategoryItem::className(),
+                              'model' => SubjectCategory::className(),
                               'searchModel' => $searchModel,
                               ]) */
                             ?>
@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'name',
                                 'controller' => '/subject/category',
-                                'title' => function (SubjectCategoryItem $model) {
+                                'title' => function (SubjectCategory $model) {
                                     return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
@@ -71,8 +71,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'status',
                                 'optionsArray' => [
-                                    [SubjectCategoryItem::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
-                                    [SubjectCategoryItem::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                    [SubjectCategory::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
+                                    [SubjectCategory::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:150px']
                             ],

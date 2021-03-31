@@ -67,9 +67,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:300px'],
+                                'options' => ['style' => 'width:800px'],
                                 'attribute' => 'teachersFullName',
                                 'controller' => '/teachers/default',
+
                                 'title' => function (Teachers $model) {
                                     return Html::a($model->teachersFullName, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
@@ -80,6 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => 'position.name',
                                 'label' => Yii::t('art/teachers', 'Name Position'),
                                 'filter' => \common\models\guidejob\Position::getPositionList(),
+                                'options' => ['style' => 'width:350px'],
                             ],
                             [
                                 'attribute' => 'department_list',
@@ -114,21 +116,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                             ],
                             'bonus_summ',
-//                            [
-//                                'attribute' => 'status',
-//                                'filter' => UserCommon::getStatusList(),
-//                                'value' => 'user.status',
-//                                'options' => ['style' => 'width:120px']
-//                            ],
-//                            [
-//                                'class' => 'artsoft\grid\columns\StatusColumn',
-//                                'attribute' => 'user.status',
-//                                'optionsArray' => [
-//                                    [UserCommon::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
-//                                    [UserCommon::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'warning'],
-//                                ],
-//                                'options' => ['style' => 'width:120px']
-//                            ],
+                            'tab_num',
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'userStatus',
+                                'optionsArray' => [
+                                    [UserCommon::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
+                                    [UserCommon::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
+                                ],
+                                'options' => ['style' => 'width:120px']
+                            ],
                         ],
                     ]);
                     ?>

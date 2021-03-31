@@ -20,7 +20,7 @@ class SubjectSearch extends Subject
         return [
             [['id'], 'integer'],
             [['name', 'slug', 'status'], 'safe'],
-            [['gridCategorySearch', 'gridDepartmentSearch', 'gridVidSearch'], 'string'],
+            [['department_list', 'category_list', 'vid_list'], 'string'],
         ];
     }
 
@@ -43,15 +43,6 @@ class SubjectSearch extends Subject
     public function search($params)
     {
         $query = Subject::find();
-        
-        // жадная загрузка
-        $query->with(['subjectCategories']);
-        $query->with(['subjectCategoryItem']);
-        $query->with(['subjectDepartments']);
-        $query->with(['departmentItem']);
-        $query->with(['subjectVids']);
-        $query->with(['subjectVidItem']);
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
@@ -71,21 +62,12 @@ class SubjectSearch extends Subject
             // $query->where('0=1');
             return $dataProvider;
         }
-        if ($this->gridCategorySearch) {
-            $query->joinWith(['subjectCategories']);
-        }
-        if ($this->gridDepartmentSearch) {
-            $query->joinWith(['subjectDepartments']);
-        }
-        if ($this->gridVidSearch) {
-            $query->joinWith(['subjectVids']);
-        }
         $query->andFilterWhere([
             'id' => $this->id,
-            'subject_category.category_id' => $this->gridCategorySearch,
-            'subject_department.department_id' => $this->gridDepartmentSearch,
-            'subject_vid.vid_id' => $this->gridVidSearch,
         ]);
+        $query->andFilterWhere(['like', 'department_list', $this->department_list]);
+        $query->andFilterWhere(['like', 'category_list', $this->category_list]);
+        $query->andFilterWhere(['like', 'vid_list', $this->vid_list]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'slug', $this->slug])
