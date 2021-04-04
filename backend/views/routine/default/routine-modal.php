@@ -18,7 +18,6 @@ use yii\widgets\Pjax;
             ],
             'action' => 'create-event',
             'enableClientValidation' => true,
-            'enableAjaxValidation' => true
         ]) ?>
 
         <div class="row">

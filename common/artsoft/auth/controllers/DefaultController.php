@@ -39,7 +39,7 @@ class DefaultController extends BaseController
     /**
      * @var array
      */
-    public $freeAccessActions = ['login', 'logout', 'captcha', 'oauth', 'signup','finding',
+    public $freeAccessActions = ['login', 'logout', 'captcha', 'oauth', 'signup', 'finding',
         'confirm-email', 'confirm-registration-email', 'confirm-email-receive',
         'reset-password', 'reset-password-request', 'update-password', 'set-email',
         'set-username', 'set-password', 'profile', 'upload-avatar', 'remove-avatar',
@@ -81,10 +81,10 @@ class DefaultController extends BaseController
         $source = $client->getId();
         $userAttributes = $client->getUserAttributes();
 
-        if(!isset($this->module->attributeParsers[$source])){
+        if (!isset($this->module->attributeParsers[$source])) {
             throw \yii\base\InvalidConfigException("There are no settings for '{$source}' in the AuthModule::attributeParsers.");
         }
-             
+
         $attributes = $this->module->attributeParsers[$source]($userAttributes);
         Yii::$app->session->set(AuthModule::PARAMS_SESSION_ID, $attributes);
 
@@ -204,15 +204,15 @@ class DefaultController extends BaseController
     protected function createUser($attributes)
     {
         $auth = [
-            'source' => (string) $attributes['source'],
-            'source_id' => (string) $attributes['source_id'],
+            'source' => (string)$attributes['source'],
+            'source_id' => (string)$attributes['source_id'],
         ];
-        
+
         unset($attributes['source']);
         unset($attributes['source_id']);
-        
+
         $attributes['repeat_password'] = isset($attributes['password']) ? $attributes['password'] : NULL;
-        
+
         $user = new User($attributes);
 
         $user->setScenario(User::SCENARIO_NEW_USER);
@@ -291,9 +291,9 @@ class DefaultController extends BaseController
         return $this->redirect(Yii::$app->homeUrl);
     }
 
-  
+
     /**
-     * Finding page before registration
+     * Finding User before registration
      *
      * @return string
      */
@@ -305,19 +305,12 @@ class DefaultController extends BaseController
         }
         $model = new FindingForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $d_in = explode("-", $model->birth_date);
-            $model->birth_timestamp = mktime(0, 0, 0, $d_in[1], $d_in[0], $d_in[2]);
-            $user = FindingForm::findByFio(
-                $model->last_name,
-                $model->first_name,
-                $model->middle_name,
-                $model->birth_timestamp,
-                User::STATUS_INACTIVE
-            );
-            if ($user) {
-                return $this->redirect(['signup', 'auth_key' => $user->auth_key]);
+            $userCommon = FindingForm::findByFio($model);
+//            echo '<pre>' . print_r($userCommon, true) . '</pre>'; die();
+            if ($userCommon) { // если нашли запись
+                return $this->redirect(['signup', 'auth_key' => $userCommon->user->auth_key]);
             } else {
-                Yii::$app->session->setFlash('error', Yii::t('art/auth', "User not found or blocked in the system."));
+                Yii::$app->session->setFlash('error', Yii::t('art/auth', "User not found or blocked in the system"));
             }
         }
         return $this->render('finding', compact('model'));
@@ -341,14 +334,9 @@ class DefaultController extends BaseController
         }
         $model = new SignupForm();
 
-        if (empty($user->username)) {
-            $username = FindingForm::generateUsername($user->last_name, $user->first_name, $user->middle_name);
-        } else {
-            $username = $user->username;
-        }
         $model->setAttributes(
             [
-                'username' => $username,
+                'username' => $user->username,
                 'id' => $user->id,
             ]
         );
@@ -361,16 +349,16 @@ class DefaultController extends BaseController
             // Trigger event "before registration" and checks if it's valid
             if ($this->triggerModuleEvent(AuthEvent::BEFORE_REGISTRATION, ['model' => $model])) {
 
-                $user = $model->signup(false,$model);
+                $user = $model->signup(false, $model);
 
                 // Trigger event "after registration" and checks if it's valid
                 if ($user && $this->triggerModuleEvent(AuthEvent::AFTER_REGISTRATION, ['model' => $model, 'user' => $user])) {
 
                     if (Yii::$app->art->emailConfirmationRequired) {
                         Yii::$app->session->setFlash('info', Yii::t('art/auth', 'Check your e-mail {email} for instructions to activate account', ['email' => '<b>' . $user->email . '</b>']));
-                       //return $this->renderIsAjax('signup-confirmation', compact('user'));
+                        //return $this->renderIsAjax('signup-confirmation', compact('user'));
                     } else {
-                        $user->assignRoles(Yii::$app->art->defaultRoles);
+                       // $user->assignRoles(Yii::$app->art->defaultRoles);
 
                         Yii::$app->user->login($user);
 
@@ -602,7 +590,7 @@ class DefaultController extends BaseController
             throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
         }
 
-        $model = ProfileForm::findIdentity(Yii::$app->user->id);
+        $model = User::findIdentity(Yii::$app->user->id);
 
         if ($model->load(Yii::$app->request->post())) {
             $model->save();

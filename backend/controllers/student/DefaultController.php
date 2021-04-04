@@ -35,7 +35,7 @@ class DefaultController extends MainController
 
             //echo '<pre>' . print_r($model, true) . '</pre>';
 
-            $modelUser->user_category = User::USER_CATEGORY_STUDENT;
+            $modelUser->user_category = User::USER_CATEGORY_STUDENTS;
             $modelUser->status = User::STATUS_INACTIVE;
 
             if ($modelUser->save()) {
@@ -58,7 +58,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = $this->findModel($id);
-        $modelUser = UserCommon::findOne(['id' => $model->user_id, 'user_category' => User::USER_CATEGORY_STUDENT]);
+        $modelUser = UserCommon::findOne(['id' => $model->user_id, 'user_category' => User::USER_CATEGORY_STUDENTS]);
 
         if (!isset($model, $modelUser)) {
             throw new NotFoundHttpException("The user was not found.");

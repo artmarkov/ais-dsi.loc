@@ -11,29 +11,30 @@ class m210302_153750_create_table_routine extends \artsoft\db\BaseMigration
         }
 
         $this->createTable('guide_routine_cat', [
-            'id' => $this->primaryKey(8),
+            'id' => $this->primaryKey(),
             'name' => $this->string(255)->notNull(),
             'color' => $this->string(127)->notNull(),
             'plan_flag' => $this->tinyInteger(1)->notNull()->comment('Учитывать при планировании'),
         ], $tableOptions);
 
-        $this->db->createCommand()->batchInsert('guide_routine_cat', ['id', 'name', 'color', 'plan_flag'], [
-            [1, 'Каникулы', '#0000ff', 1],
-            [2, 'Праздники', '#ff0000', 1],
-            [3, 'Отпуск преподавателей', '#6aa84f', 1],
-            [4, 'Методический день', '#ff00ff', 1],
-            [5, 'Учебное время', '#ffd966', 0],
+        $this->db->createCommand()->batchInsert('guide_routine_cat', ['name', 'color', 'plan_flag'], [
+            ['Каникулы', '#0000ff', 1],
+            ['Праздники', '#ff0000', 1],
+            ['Отпуск преподавателей', '#6aa84f', 1],
+            ['Методический день', '#ff00ff', 1],
+            ['Учебное время', '#ffd966', 0],
         ])->execute();
 
-        $this->createTable('routine', [
-            'id' => $this->primaryKey(8),
+        $this->createTableWithHistory('routine', [
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
             'description' => $this->string(1024)->notNull(),
-            'cat_id' => $this->integer(8)->notNull(),
-            'start_timestamp' => $this->integer()->notNull(),
-            'end_timestamp' => $this->integer()->notNull(),
+            'cat_id' => $this->integer()->notNull(),
+            'start_date' => $this->integer()->notNull(),
+            'end_date' => $this->integer()->notNull(),
         ], $tableOptions);
 
-//        $this->createIndex('cat_id', 'routine', 'cat_id');
+        $this->db->createCommand()->resetSequence('routine', 1000)->execute();
+
         $this->addForeignKey('routine_ibfk_1', 'routine', 'cat_id', 'guide_routine_cat', 'id', 'RESTRICT', 'RESTRICT');
     }
 

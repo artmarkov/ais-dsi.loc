@@ -56,7 +56,7 @@ class m170529_050554_create_table_system extends Migration
 
         ]);
         $this->addCommentOnTable('requests','Запросы');
-        $this->addForeignKey('requests_ibfk_user', 'requests', ['user_id'], 'users', ['id'], 'RESTRICT', 'RESTRICT');
+        $this->addForeignKey('requests_ibfk_user', 'requests', 'user_id', 'users', 'id', 'CASCADE', 'CASCADE');
 
     }
 

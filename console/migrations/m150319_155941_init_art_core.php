@@ -97,8 +97,8 @@ class m150319_155941_init_art_core extends \yii\db\Migration
         $this->createIndex('user_setting_user_key', self::USER_SETTING_TABLE, ['user_id','key']);
         $this->addForeignKey('fk_user_id_user_setting_table', self::USER_SETTING_TABLE, ['user_id'], self::USER_TABLE, ['id'], 'CASCADE', 'CASCADE');
 
-        $this->insert(self::USER_TABLE, ['id' => 1000, 'username' => 'system', 'auth_key' => Yii::$app->getSecurity()->generateRandomString(), 'password_hash' => Yii::$app->getSecurity()->generatePasswordHash('system'), 'email' => 'system@mail.ru', 'superadmin' => 1, 'created_at' => time(), 'updated_at' => time(), 'created_by' => 0, 'updated_by' => 0]);
-        $this->insert(self::USER_TABLE, ['id' => 1001, 'username' => 'admin', 'auth_key' => Yii::$app->getSecurity()->generateRandomString(), 'password_hash' => Yii::$app->getSecurity()->generatePasswordHash('admin'), 'email' => 'admin@mail.ru', 'superadmin' => 1, 'created_at' => time(), 'updated_at' => time(), 'created_by' => 0, 'updated_by' => 0]);
+        $this->insert(self::USER_TABLE, ['id' => 1000, 'username' => 'system', 'auth_key' => Yii::$app->getSecurity()->generateRandomString(), 'password_hash' => Yii::$app->getSecurity()->generatePasswordHash('system'), 'superadmin' => 1, 'created_at' => time(), 'updated_at' => time(), 'created_by' => 0, 'updated_by' => 0]);
+        $this->insert(self::USER_TABLE, ['id' => 1001, 'username' => 'admin', 'auth_key' => Yii::$app->getSecurity()->generateRandomString(), 'password_hash' => Yii::$app->getSecurity()->generatePasswordHash('admin'), 'superadmin' => 1, 'created_at' => time(), 'updated_at' => time(), 'created_by' => 0, 'updated_by' => 0]);
     }
 
     public function down()

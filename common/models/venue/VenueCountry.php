@@ -9,14 +9,16 @@ use Yii;
  *
  * @property int $id
  * @property string $name
- * @property string $fips
+ * @property string $fullname
+ * @property string $alpha2
+ * @property string $alpha3
  *
  * @property VenuePlace[] $venuePlaces
  * @property VenueSity[] $venueSities
  */
 class VenueCountry extends \yii\db\ActiveRecord
 {
-    
+
     /**
      * {@inheritdoc}
      */
@@ -31,9 +33,10 @@ class VenueCountry extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'fips'], 'required'],
-            [['name'], 'string', 'max' => 127],
-            [['fips'], 'string', 'max' => 2],
+            [['name', 'fullname', 'alpha2', 'alpha3'], 'required'],
+            [['name', 'fullname'], 'string', 'max' => 100],
+            [['alpha2'], 'string', 'max' => 2],
+            [['alpha3'], 'string', 'max' => 3],
         ];
     }
 
@@ -45,7 +48,9 @@ class VenueCountry extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('art/guide', 'ID'),
             'name' => Yii::t('art/guide', 'Name Country'),
-            'fips' => Yii::t('art/guide', 'Fips'),
+            'fullname' => Yii::t('art/guide', 'Fullname'),
+            'alpha2' => Yii::t('art/guide', 'Alpha2'),
+            'alpha3' => Yii::t('art/guide', 'Alpha3'),
         ];
     }
 
@@ -67,8 +72,8 @@ class VenueCountry extends \yii\db\ActiveRecord
 
     public static function getVenueCountryList()
     {
-        return \yii\helpers\ArrayHelper::map(VenueCountry::find()->where(['not',['id'=>0]])->all(), 'id', 'name');
-        
+        return \yii\helpers\ArrayHelper::map(VenueCountry::find()->where(['not', ['id' => 0]])->all(), 'id', 'name');
+
     }
-    
+
 }

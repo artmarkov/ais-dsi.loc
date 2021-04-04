@@ -28,58 +28,54 @@ use yii\helpers\Url;
         ?>
 
         <div class="panel">
+            <div class="panel-heading">
+                <?= Html::encode($this->title) ?>
+            </div>
             <div class="panel-body">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <?= Html::encode($this->title) ?>
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-                                <?= $form->field($model, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                        <?= $form->field($model, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
 
-                                <?= $form->field($model, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                        <?= $form->field($model, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
 
-                                <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
+                        <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
 
-                                <?= $form->field($model, 'сontact_person')->textInput(['maxlength' => true]) ?>
+                        <?= $form->field($model, 'сontact_person')->textInput(['maxlength' => true]) ?>
 
-                                <?= $form->field($model, 'description')->textarea(['rows' => '3', 'maxlength' => true]) ?>
+                        <?= $form->field($model, 'description')->textarea(['rows' => '3', 'maxlength' => true]) ?>
 
-                                <?php
-                                echo $form->field($model, 'country_id')->dropDownList(VenueCountry::getVenueCountryList(), [
-                                    'prompt' => Yii::t('art/guide', 'Select Country...'),
-                                    'id' => 'country_id'
-                                ])->label(Yii::t('art/guide', 'Name Country'));
-                                echo $form->field($model, 'sity_id')->widget(DepDrop::classname(), [
-                                    'data' => VenueSity::getSityByName($model->country_id),
-                                    'options' => ['prompt' => Yii::t('art/guide', 'Select Sity...'), 'id' => 'sity_id'],
-                                    'pluginOptions' => [
-                                        'depends' => ['country_id'],
-                                        'placeholder' => Yii::t('art/guide', 'Select Sity...'),
-                                        'url' => Url::to(['/venue/default/sity'])
-                                    ]
-                                ])->label(Yii::t('art/guide', 'Name Sity'));
+                        <?php
+                        echo $form->field($model, 'country_id')->dropDownList(VenueCountry::getVenueCountryList(), [
+                            'prompt' => Yii::t('art/guide', 'Select Country...'),
+                            'id' => 'country_id'
+                        ])->label(Yii::t('art/guide', 'Name Country'));
+                        echo $form->field($model, 'sity_id')->widget(DepDrop::classname(), [
+                            'data' => VenueSity::getSityByName($model->country_id),
+                            'options' => ['prompt' => Yii::t('art/guide', 'Select Sity...'), 'id' => 'sity_id'],
+                            'pluginOptions' => [
+                                'depends' => ['country_id'],
+                                'placeholder' => Yii::t('art/guide', 'Select Sity...'),
+                                'url' => Url::to(['/venue/default/sity'])
+                            ]
+                        ])->label(Yii::t('art/guide', 'Name Sity'));
 
-                                echo $form->field($model, 'district_id')->widget(DepDrop::classname(), [
-                                    'data' => VenueDistrict::getDistrictByName($model->sity_id),
-                                    'options' => ['prompt' => Yii::t('art/guide', 'Select District...')],
-                                    'pluginOptions' => [
-                                        'depends' => ['sity_id'],
-                                        'placeholder' => Yii::t('art/guide', 'Select District...'),
-                                        'url' => Url::to(['/venue/default/district'])
-                                    ]
-                                ])->label(Yii::t('art/guide', 'Name District'));
-                                ?>
+                        echo $form->field($model, 'district_id')->widget(DepDrop::classname(), [
+                            'data' => VenueDistrict::getDistrictByName($model->sity_id),
+                            'options' => ['prompt' => Yii::t('art/guide', 'Select District...')],
+                            'pluginOptions' => [
+                                'depends' => ['sity_id'],
+                                'placeholder' => Yii::t('art/guide', 'Select District...'),
+                                'url' => Url::to(['/venue/default/district'])
+                            ]
+                        ])->label(Yii::t('art/guide', 'Name District'));
+                        ?>
 
-                                <?= $form->field($model, 'address')->textInput(['maxlength' => true])->hint(\Yii::t('art', 'Click on the map to get the address and coordinates, then click the button to insert the address into the form')) ?>
+                        <?= $form->field($model, 'address')->textInput(['maxlength' => true])->hint(\Yii::t('art', 'Click on the map to get the address and coordinates, then click the button to insert the address into the form')) ?>
 
-                                <?= $form->field($model, 'coords')->widget(\common\widgets\YandexGetCoordsWidget::className())->label(false) ?>
+                        <?= $form->field($model, 'coords')->widget(\common\widgets\YandexGetCoordsWidget::className())->label(false) ?>
 
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

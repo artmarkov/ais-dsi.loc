@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'routine-grid',
-                            'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
+                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
@@ -70,10 +70,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             'description',
                             [
                                 'class' => 'artsoft\grid\columns\DateFilterColumn',
-                                'attribute' => 'start_timestamp',
+                                'attribute' => 'start_date',
                                 'value' => function (Routine $model) {
                                     return '<span style="font-size:85%;" class="label label-'
-                                        . ((time() >= $model->start_timestamp) ? 'danger' : 'default') . '">'
+                                        . ((time() >= \Yii::$app->formatter->asTimestamp($model->start_date)) ? 'danger' : 'success') . '">'
                                         . $model->start_date . '</span>';
                                 },
                                 'label' => Yii::t('art/routine', 'Start Date'),
@@ -82,10 +82,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'class' => 'artsoft\grid\columns\DateFilterColumn',
-                                'attribute' => 'end_timestamp',
+                                'attribute' => 'end_date',
                                 'value' => function (Routine $model) {
                                     return '<span style="font-size:85%;" class="label label-'
-                                        . ((time() >= $model->end_timestamp) ? 'danger' : 'default') . '">'
+                                        . ((time() >= \Yii::$app->formatter->asTimestamp($model->end_date)) ? 'danger' : 'success') . '">'
                                         . $model->end_date . '</span>';
                                 },
                                 'label' => Yii::t('art/routine', 'End Date'),

@@ -60,4 +60,5 @@ return [
     'Wrong password' => 'Неверный пароль',
     'You could not login from this IP' => 'Вы не можете войти с этого IP',
     'After changing the E-mail confirmation is required' => 'После изменения адреса электронной почты требуется подтверждение',
+    'User not found or blocked in the system' => 'Пользователь не найден или заблокирован в системе',
 ];

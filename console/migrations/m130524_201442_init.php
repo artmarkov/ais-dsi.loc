@@ -12,9 +12,9 @@ class m130524_201442_init extends BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'username' => $this->string()->notNull()->unique(),
             'auth_key' => $this->string(32)->notNull(),
-            'password_hash' => $this->string()->notNull(),
+            'password_hash' => $this->string(),
             'password_reset_token' => $this->string()->unique(),
-            'email' => $this->string()->notNull()->unique(),
+            'email' => $this->string(255),
             'email_confirmed' => $this->integer(1)->defaultValue(0),
             'superadmin' => $this->integer(6)->defaultValue(0),
             'registration_ip' => $this->string(15),
@@ -29,14 +29,14 @@ class m130524_201442_init extends BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('users', 'Учетные записи');
-        $this->db->createCommand()->resetSequence('users', 1000)->execute();
+        $this->db->createCommand()->resetSequence('users', 1100)->execute();
 
         $this->createTableWithHistory('user_common', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'user_id' => $this->integer(),
-            'user_category' => $this->smallInteger()->notNull()->defaultValue(1),
-            'first_name' => $this->string(124),
+            'user_category' => $this->string(124)->notNull()->defaultValue(\common\models\user\UserCommon::USER_CATEGORY_EMPLOYEES),
             'last_name' => $this->string(124),
+            'first_name' => $this->string(124),
             'middle_name' => $this->string(124),
             'birth_date' => $this->integer(),
             'gender' => $this->integer(1),
@@ -53,7 +53,6 @@ class m130524_201442_init extends BaseMigration
         ], $tableOptions);
 
         $this->createIndex('user_id', 'user_common', 'user_id');
-        $this->addForeignKey('user_common_ibfk_', 'user_common', 'user_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addCommentOnTable('user_common', 'Общие данные');
         $this->db->createCommand()->resetSequence('user_common', 1000)->execute();
     }

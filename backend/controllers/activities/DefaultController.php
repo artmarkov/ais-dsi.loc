@@ -41,18 +41,18 @@ class DefaultController extends MainController
         $start = Yii::$app->request->get('start');
         $end = Yii::$app->request->get('end');
 
-        $start_timestamp = Yii::$app->formatter->asTimestamp($start);
-        $end_timestamp = Yii::$app->formatter->asTimestamp($end);
+        $start_time = Yii::$app->formatter->asTimestamp($start);
+        $end_time = Yii::$app->formatter->asTimestamp($end);
 
         $events = $this->modelClass::find()
             ->where(
-                "start_timestamp > :start_timestamp and end_timestamp < :end_timestamp",
+                "start_time > :start_time and end_time < :end_time",
                 [
-                    ":start_timestamp" => $start_timestamp,
-                    ":end_timestamp" => $end_timestamp
+                    ":start_time" => $start_time,
+                    ":end_time" => $end_time
                 ]
             )
-            ->orderBy('start_timestamp')
+            ->orderBy('start_time')
             ->all();
         $tasks = [];
         foreach ($events as $item) {
@@ -60,8 +60,8 @@ class DefaultController extends MainController
             $event = new BaseEvent();
             $event->id = $item->id;
             $event->title = $item->title;
-            $event->end = BaseEvent::getDate($item->end_timestamp);
-            $event->start = BaseEvent::getDate($item->start_timestamp);
+            $event->end = BaseEvent::getDate($item->end_time);
+            $event->start = BaseEvent::getDate($item->start_time);
 
             $event->color = BaseEvent::getBgColor($item->color);
             $event->textColor = BaseEvent::getColor($item->color);

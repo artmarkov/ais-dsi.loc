@@ -14,7 +14,6 @@ class SignupForm extends Model
     public $email;
     public $password;
     public $repeat_password;
-//    public $captcha;
 
     /**
      * @inheritdoc
@@ -23,18 +22,9 @@ class SignupForm extends Model
     {
         $rules = [
             ['id', 'required'], // делаем update по ключу
-//            ['captcha', 'captcha', 'captchaAction' => '/auth/default/captcha'],
             [['username', 'email', 'password', 'repeat_password'], 'required'],
             [['username', 'email', 'password', 'repeat_password'], 'trim'],
             [['email'], 'email'],
-            ['username', 'unique',
-                'targetClass' => 'artsoft\models\User',
-                'targetAttribute' => 'username',
-            ],
-           /* ['email', 'unique',
-                'targetClass' => 'artsoft\models\User',
-                'targetAttribute' => 'email',
-            ],*/
 //            ['username', 'purgeXSS'],
             ['username', 'string', 'max' => 50],
             /*['username', 'match', 'pattern' => Yii::$app->art->usernameRegexp, 'message' => Yii::t('art/auth', 'The username should contain only Latin letters, numbers and the following characters: "-" and "_".')],
@@ -67,7 +57,6 @@ class SignupForm extends Model
             'email' => Yii::t('art/auth', 'E-mail'),
             'password' => Yii::t('art/auth', 'Password'),
             'repeat_password' => Yii::t('art/auth', 'Repeat password'),
-//            'captcha' => Yii::t('art/auth', 'Captcha'),
         ];
     }
 
@@ -138,7 +127,7 @@ class SignupForm extends Model
             $user->email_confirmed = 1;
             $user->removeConfirmationToken();
             $user->save(false);
-            $user->assignRoles(Yii::$app->art->defaultRoles);
+            //$user->assignRoles(Yii::$app->art->defaultRoles);
             Yii::$app->user->login($user);
 
             return $user;

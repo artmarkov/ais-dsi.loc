@@ -20,27 +20,23 @@ use kartik\color\ColorInput;
     ?>
 
     <div class="panel">
+        <div class="panel-heading">
+            <?= Html::encode($this->title) ?>
+        </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <?= Html::encode($this->title) ?>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
+            <div class="row">
+                <div class="col-sm-12">
 
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-                            <?= $form->field($model, 'color')->widget(ColorInput::classname(), [
-                                'options' => ['placeholder' => 'Select color ...'],
-                            ]); ?>
+                    <?= $form->field($model, 'color')->widget(ColorInput::classname(), [
+                        'options' => ['placeholder' => 'Select color ...'],
+                    ]); ?>
 
-                            <?= $form->field($model, 'rendering')->checkbox() ?>
+                    <?= $form->field($model, 'rendering')->checkbox() ?>
 
-                            <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
 
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

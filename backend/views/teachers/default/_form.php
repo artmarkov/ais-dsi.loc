@@ -11,7 +11,7 @@ use common\models\own\Department;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\teachers\Teachers */
-/* @var $modelUser UserCommon */
+/* @var $userCommon UserCommon */
 /* @var $modelsActivity \common\models\teachers\TeachersActivity */
 /* @var $readonly */
 /* @var $form artsoft\widgets\ActiveForm */
@@ -96,14 +96,14 @@ EOF;
     <div class="panel">
         <div class="panel-heading">
             Информация о преподавателе
-            <?php if (!$modelUser->isNewRecord):?>
+            <?php if (!$userCommon->isNewRecord):?>
             <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/teachers/default/history', 'id' => $model->id]); ?></span>
             <?php endif; ?>
         </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($modelUser, 'status')->dropDownList(UserCommon::getStatusList()) ?>
+                    <?= $form->field($userCommon, 'status')->dropDownList(UserCommon::getStatusList()) ?>
                 </div>
             </div>
             <div class="panel panel-primary">
@@ -114,14 +114,14 @@ EOF;
                     <div class="row">
                         <div class="col-sm-12">
 
-                            <?= $form->field($modelUser, 'last_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($modelUser, 'first_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($modelUser, 'middle_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($modelUser, 'gender')->dropDownList(UserCommon::getGenderList()) ?>
-                            <?= $form->field($modelUser, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
-                            <?= $form->field($modelUser, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
-                            <?= $form->field($modelUser, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                            <?= $form->field($modelUser, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                            <?= $form->field($userCommon, 'last_name')->textInput(['maxlength' => 124]) ?>
+                            <?= $form->field($userCommon, 'first_name')->textInput(['maxlength' => 124]) ?>
+                            <?= $form->field($userCommon, 'middle_name')->textInput(['maxlength' => 124]) ?>
+                            <?= $form->field($userCommon, 'gender')->dropDownList(UserCommon::getGenderList()) ?>
+                            <?= $form->field($userCommon, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
+                            <?= $form->field($userCommon, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
+                            <?= $form->field($userCommon, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                            <?= $form->field($userCommon, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                         </div>
                     </div>
                 </div>

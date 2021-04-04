@@ -26,7 +26,7 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
             [5, 'Отчислен', 'Отч', 1],
         ])->execute();
 
-        $this->createTableWithHistory('student', [
+        $this->createTableWithHistory('students', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'user_id' => $this->integer(),
             'position_id' => $this->integer(),
@@ -42,9 +42,9 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->db->createCommand()->resetSequence('student', 1000)->execute();
-        $this->createIndex('position_id', 'student', 'position_id');
-        $this->addForeignKey('student_ibfk_1', 'student', 'position_id', 'guide_student_position', 'id', 'NO ACTION', 'NO ACTION');
+        $this->db->createCommand()->resetSequence('students', 1000)->execute();
+        $this->createIndex('position_id', 'students', 'position_id');
+        $this->addForeignKey('student_ibfk_1', 'students', 'position_id', 'guide_student_position', 'id', 'NO ACTION', 'NO ACTION');
 
     }
 

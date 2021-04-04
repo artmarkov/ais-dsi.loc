@@ -3,7 +3,7 @@
 namespace common\widgets\yearcalendar\data;
 
 use DateTime;
-use yii\base\InvalidParamException;
+use yii\base\InvalidArgumentException;
 use yii\web\JsExpression;
 
 /**
@@ -42,7 +42,7 @@ class JsExpressionHelper
             return self::parsePhpDate($date);
         }
 
-        throw new InvalidParamException('The parameter `$date` must be a '
+        throw new InvalidArgumentException('The parameter `$date` must be a '
             . 'formatted string, a timestamp or a `DateTime` object'
         );
     }
@@ -59,16 +59,18 @@ class JsExpressionHelper
         return new JsExpression('new Date(' . $date->format('Y, m-1, d') . ')');
     }
 
+
     /**
      * Parses an string to a `JsExpression` containing a javascript date object.
-     *
-     * @param string $date
-     * @param string $format used to create a temporal `DateTime` object
+     * @param $date
+     * @param string $format
      * @return JsExpression
+     * @throws \yii\base\InvalidConfigException
      * @see http://php.net/manual/es/datetime.format.php
      */
     public static function parseString($date, $format = 'Y-m-d')
     {
+        $date = \Yii::$app->formatter->asDate($date, "php:Y-m-d");
         return self::parsePhpDate(DateTime::createFromFormat(
             $format,
             $date

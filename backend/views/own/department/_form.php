@@ -18,29 +18,25 @@ use artsoft\helpers\Html;
     ])
     ?>
     <div class="panel">
+        <div class="panel-heading">
+            <?= Html::encode($this->title) ?>
+        </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <?= Html::encode($this->title) ?>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <?php
-                            echo $form->field($model, 'division_id')->dropDownList(\common\models\own\Division::getDivisionList(), [
-                                'prompt' => Yii::t('art/guide', 'Select Name Division...'),
-                                'id' => 'division_id'
-                            ])->label(Yii::t('art/guide', 'Name Division'));
-                            ?>
+            <div class="row">
+                <div class="col-sm-12">
+                    <?php
+                    echo $form->field($model, 'division_id')->dropDownList(\common\models\own\Division::getDivisionList(), [
+                        'prompt' => Yii::t('art/guide', 'Select Name Division...'),
+                        'id' => 'division_id'
+                    ])->label(Yii::t('art/guide', 'Name Division'));
+                    ?>
 
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-                            <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
-                            <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(Department::getStatusList()) ?>
+                    <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(Department::getStatusList()) ?>
 
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

@@ -76,7 +76,7 @@ class Teachers extends ActiveRecord
     public function rules()
     {
         return [
-            [['position_id', 'department_list'], 'required'],
+            [['position_id', 'department_list', 'level_id'], 'required'],
             [['position_id', 'level_id', 'user_common_id'], 'integer'],
             [['tab_num'], 'string', 'max' => 16],
             ['bonus_summ', 'safe'],
@@ -195,5 +195,19 @@ class Teachers extends ActiveRecord
     public function getUpdatedBy()
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
+    }
+
+    /**
+     * @return bool
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function beforeDelete()
+    {
+        $model = UserCommon::findOne($this->user_common_id);
+        if(!$model->delete()){
+            return false;
+        }
+        return parent::beforeDelete();
     }
 }

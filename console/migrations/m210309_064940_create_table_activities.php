@@ -17,19 +17,27 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
             'description' => $this->string(256),
         ], $tableOptions);
 
+        $this->db->createCommand()->batchInsert('guide_activities_cat', ['name', 'color'], [
+            ['Согласно плану работы', '#0000ff'],
+            ['Согласно расписанию', '#ff0000'],
+            ['Консультации', '#6aa84f'],
+            ['Внеплановые мероприятия', '#ff00ff'],
+            ['Учебное время', '#ffd966'],
+        ])->execute();
+
         $this->createTableWithHistory('activities', [
-            'id' => $this->primaryKey(),
-            'category_id' => $this->smallInteger(3)->unsigned()->notNull(),
-            'auditory_id' => $this->integer(8)->unsigned()->notNull(),
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 999999)',
+            'category_id' => $this->integer()->notNull(),
+            'auditory_id' => $this->integer()->notNull(),
             'title' => $this->string(100),
             'description' => $this->text(),
-            'start_timestamp' => $this->integer()->notNull(),
-            'end_timestamp' => $this->integer(),
+            'start_time' => $this->integer()->notNull(),
+            'end_time' => $this->integer(),
             'all_day' => $this->tinyInteger(1)->defaultValue('0'),
         ], $tableOptions);
 
-//        $this->createIndex('auditory_id', 'activities', 'auditory_id');
-//        $this->createIndex('category_id', 'activities', 'category_id');
+        $this->db->createCommand()->resetSequence('activities', 1000)->execute();
+
         $this->addForeignKey('activities_ibfk_1', 'activities', 'category_id', 'guide_activities_cat', 'id', 'RESTRICT', 'RESTRICT');
         $this->addForeignKey('activities_ibfk_2', 'activities', 'auditory_id', 'auditory', 'id', 'RESTRICT', 'RESTRICT');
     }

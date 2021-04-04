@@ -2,7 +2,7 @@
 
 namespace common\models\routine;
 
-use artsoft\behaviors\DateToTimeBehavior;
+use artsoft\behaviors\DateFieldBehavior;
 use Yii;
 use common\widgets\yearcalendar\data\DataItem;
 use common\widgets\yearcalendar\data\JsExpressionHelper;
@@ -13,16 +13,18 @@ use yii\db\ActiveRecord;
  *
  * @property int $id
  * @property string $description
+ * @property string $color
  * @property int $cat_id
- * @property int $start_timestamp
- * @property int $end_timestamp
+ * @property int $start_date
+ * @property int $end_date
+ * @property string $name
+ * @property string startDate
+ * @property string endDate
  *
  * @property RoutineCat $cat
  */
 class Routine extends ActiveRecord implements DataItem
 {
-    public $start_date;
-    public $end_date;
 
     /**
      * {@inheritdoc}
@@ -37,22 +39,8 @@ class Routine extends ActiveRecord implements DataItem
     public function behaviors() {
         return [
             [
-                'class' => DateToTimeBehavior::className(),
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'start_date',
-                    ActiveRecord::EVENT_AFTER_FIND => 'start_date',
-                ],
-                'timeAttribute' => 'start_timestamp',
-                'timeFormat' => 'd.m.Y',
-            ],
-            [
-                'class' => DateToTimeBehavior::className(),
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'end_date',
-                    ActiveRecord::EVENT_AFTER_FIND => 'end_date',
-                ],
-                'timeAttribute' => 'end_timestamp',
-                'timeFormat' => 'd.m.Y',
+                'class' => DateFieldBehavior::class,
+                'attributes' => ['start_date', 'end_date']
             ]
         ];
     }
@@ -63,23 +51,22 @@ class Routine extends ActiveRecord implements DataItem
     {
         return [
             [['description', 'cat_id', 'start_date', 'end_date'], 'required'],
-            [['start_timestamp', 'end_timestamp'], 'safe'],
-            ['start_timestamp', 'compareTimestamp'],
+            [['start_date', 'end_date'], 'safe'],
+            ['start_date', 'compareDate'],
             [['cat_id'], 'integer'],
             [['description'], 'string', 'max' => 1024],
             [['color'], 'string', 'max' => 127],
-            [['start_date', 'end_date'], 'date', 'format' => 'php:d.m.Y'],
-            [['cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => RoutineCat::className(), 'targetAttribute' => ['cat_id' => 'id']],
+            [['cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => RoutineCat::class, 'targetAttribute' => ['cat_id' => 'id']],
         ];
     }
     /**
      * сравнение даты начала и окончания/ дата окончания должна быть меньше даты начала
      */
-    public function compareTimestamp()
+    public function compareDate()
     {
         if (!$this->hasErrors()) {
 
-            if ($this->end_timestamp < $this->start_timestamp) {
+            if ($this->end_date < $this->start_date) {
                 $this->addError('start_date', Yii::t('art/routine', 'The event start date must be less than the end date.'));
             }
         }
@@ -94,9 +81,7 @@ class Routine extends ActiveRecord implements DataItem
             'description' => Yii::t('art', 'Description'),
             'cat_id' => Yii::t('art/routine', 'Catеgory'),
             'start_date' => Yii::t('art/routine', 'Start Date'),
-            'start_timestamp' => Yii::t('art/routine', 'Start Date'),
             'end_date' => Yii::t('art/routine', 'End Date'),
-            'end_timestamp' => Yii::t('art/routine', 'End Date'),
         ];
     }
 
@@ -107,7 +92,7 @@ class Routine extends ActiveRecord implements DataItem
      */
     public function getCat()
     {
-        return $this->hasOne(RoutineCat::className(), ['id' => 'cat_id']);
+        return $this->hasOne(RoutineCat::class, ['id' => 'cat_id']);
     }
 
     public function getName()
@@ -121,11 +106,11 @@ class Routine extends ActiveRecord implements DataItem
 
     public function getStartDate()
     {
-        return JsExpressionHelper::parse($this->start_timestamp);
+        return JsExpressionHelper::parse($this->start_date);
     }
 
     public function getEndDate()
     {
-        return JsExpressionHelper::parse($this->end_timestamp);
+        return JsExpressionHelper::parse($this->end_date);
     }
 }

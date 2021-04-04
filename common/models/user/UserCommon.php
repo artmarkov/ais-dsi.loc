@@ -6,6 +6,7 @@ use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
 use artsoft\traits\DateTimeTrait;
 use common\models\student\Student;
+use dosamigos\transliterator\TransliteratorHelper;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use artsoft\db\ActiveRecord;
@@ -41,17 +42,17 @@ class UserCommon extends ActiveRecord
 {
     use DateTimeTrait;
 
-    const STATUS_ACTIVE = 10;
-    const STATUS_INACTIVE = 0;
+    const STATUS_ACTIVE = 1;
+    const STATUS_ARCHIVE = 0;
 
     const GENDER_NOT_SET = 0;
     const GENDER_MALE = 1;
     const GENDER_FEMALE = 2;
 
-    const USER_CATEGORY_EMPLOYEES = 1;
-    const USER_CATEGORY_TEACHER = 2;
-    const USER_CATEGORY_STUDENT = 3;
-    const USER_CATEGORY_PARENT = 4;
+    const USER_CATEGORY_EMPLOYEES = 'employees';
+    const USER_CATEGORY_TEACHERS = 'teachers';
+    const USER_CATEGORY_STUDENTS = 'students';
+    const USER_CATEGORY_PARENTS = 'parents';
 
 
     /**
@@ -84,12 +85,12 @@ class UserCommon extends ActiveRecord
     {
         return [
             [['first_name', 'last_name', 'birth_date'], 'required'],
-            [['user_category', 'gender', 'status', 'version'], 'integer'],
+            [['gender', 'status', 'version'], 'integer'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
-            [['first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
+            [['user_category', 'first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
-            ['last_name', 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'], 'on' => $this->isNewRecord, 'message' => Yii::t('art/auth', 'The user with the entered data already exists.')],
+            ['last_name', 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'], 'message' => Yii::t('art/auth', 'The user with the entered data already exists.')],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             [['snils'], 'string', 'max' => 16],
             ['info', 'string'],
@@ -142,6 +143,20 @@ class UserCommon extends ActiveRecord
         return $this->last_name . ' ' . mb_substr((string)$this->first_name, 0, 1) . '.' . mb_substr((string)$this->middle_name, 0, 1) . '.';
     }
 
+    public function generateUsername()
+    {
+        $last_name = $this->slug($this->last_name);
+        $first_name = $this->slug($this->first_name);
+        $middle_name = $this->slug($this->middle_name);
+
+        $i = 0;
+
+        do {
+            $username = $last_name . '-' . substr($first_name, 0, ++$i) . substr($middle_name, 0, 1);
+        } while (User::findByUsername($username));
+
+        return $username;
+    }
 
     /**
      * Get gender list
@@ -177,8 +192,8 @@ class UserCommon extends ActiveRecord
     public static function getStatusList()
     {
         return array(
-            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
             self::STATUS_ACTIVE => Yii::t('art', 'Active'),
+            self::STATUS_ARCHIVE => Yii::t('art', 'Archive'),
         );
     }
 
@@ -204,9 +219,9 @@ class UserCommon extends ActiveRecord
     {
         return [
             self::USER_CATEGORY_EMPLOYEES => Yii::t('art', 'Staff'),
-            self::USER_CATEGORY_TEACHER => Yii::t('art', 'Teacher'),
-            self::USER_CATEGORY_STUDENT => Yii::t('art', 'Student'),
-            self::USER_CATEGORY_PARENT => Yii::t('art', 'Parent'),
+            self::USER_CATEGORY_TEACHERS => Yii::t('art', 'Teacher'),
+            self::USER_CATEGORY_STUDENTS => Yii::t('art', 'Student'),
+            self::USER_CATEGORY_PARENTS => Yii::t('art', 'Parent'),
         ];
     }
 
@@ -224,9 +239,9 @@ class UserCommon extends ActiveRecord
     {
         return [
             self::USER_CATEGORY_EMPLOYEES => 'employees',
-            self::USER_CATEGORY_TEACHER => 'teachers',
-            self::USER_CATEGORY_STUDENT => 'students',
-            self::USER_CATEGORY_PARENT => 'parents',
+            self::USER_CATEGORY_TEACHERS => 'teachers',
+            self::USER_CATEGORY_STUDENTS => 'students',
+            self::USER_CATEGORY_PARENTS => 'parents',
         ];
     }
 
@@ -302,7 +317,7 @@ class UserCommon extends ActiveRecord
 
         return \yii\helpers\ArrayHelper::map(self::find()
             //->andWhere(['not in', 'user.status', User::STATUS_BANNED])// заблокированных не добавляем в список
-            ->andWhere(['in', 'user.user_category', self::USER_CATEGORY_PARENT])// только родителей
+            ->andWhere(['in', 'user.user_category', self::USER_CATEGORY_PARENTS])// только родителей
             ->andWhere(['not in', 'user.id', $user_array])// не добавляем уже добавленных родителей
             ->select(['user.id as user_id', "CONCAT(user.last_name, ' ',user.first_name, ' ',user.middle_name) AS name"])
             ->orderBy('user.last_name')
@@ -313,7 +328,7 @@ class UserCommon extends ActiveRecord
     {
         return \yii\helpers\ArrayHelper::map(self::find()
             ->andWhere(['in', 'user_common.status', self::STATUS_ACTIVE])// заблокированных не добавляем в список
-            ->andWhere(['in', 'user_common.user_category', self::USER_CATEGORY_TEACHER])// только преподаватели
+            ->andWhere(['in', 'user_common.user_category', self::USER_CATEGORY_TEACHERS])// только преподаватели
             ->select(['user_common.id as user_id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
             ->orderBy('user_common.last_name')
             ->asArray()->all(), 'user_id', 'name');
@@ -361,5 +376,32 @@ class UserCommon extends ActiveRecord
             unset($item['op']);
             return new User($item);
         }, $rows);
+    }
+
+    /**
+     * Slug translit
+     *
+     * @param  string $slug
+     * @return static|null
+     */
+    protected static function slug($string, $replacement = '-', $lowercase = true)
+    {
+        $string = preg_replace('/[^\p{L}\p{Nd}]+/u', $replacement, $string);
+        $string = TransliteratorHelper::process($string, 'UTF-8');
+        return $lowercase ? mb_strtolower($string) : $string;
+    }
+
+    /**
+     * @return bool
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function beforeDelete()
+    {
+        $model = User::findOne($this->user_id);
+        if(!$model->delete()){
+            return false;
+        }
+        return parent::beforeDelete();
     }
 }

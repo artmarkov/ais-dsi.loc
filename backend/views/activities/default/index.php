@@ -77,32 +77,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label' => Yii::t('art/guide', 'Name Auditory'),
                                 'filter' => \common\models\auditory\Auditory::getAuditoryList(),
                             ],
-
                             'description:ntext',
                             [
-                                'class' => 'artsoft\grid\columns\DateFilterColumn',
-                                'attribute' => 'start_timestamp',
-                                'value' => function (Activities $model) {
-                                    return '<span style="font-size:85%;" class="label label-'
-                                        . ((time() >= $model->start_timestamp) ? 'danger' : 'default') . '">'
-                                        . $model->start_time . '</span>';
+                                'attribute' => 'start_time',
+                                'filterInputOptions' => ['class' => 'form-control', 'id' => null, 'autocomplete' => 'off'],
+                                'value' => function ($model)  {
+                                        return $model->start_time;
                                 },
-                                'label' => Yii::t('art/routine', 'Start Date'),
+                                'options' => ['style' => 'width:270px'],
                                 'format' => 'raw',
-                                'options' => ['style' => 'width:150px'],
                             ],
-                            [
-                                'class' => 'artsoft\grid\columns\DateFilterColumn',
-                                'attribute' => 'end_timestamp',
-                                'value' => function (Activities $model) {
-                                    return '<span style="font-size:85%;" class="label label-'
-                                        . ((time() >= $model->end_timestamp) ? 'danger' : 'default') . '">'
-                                        . $model->end_time . '</span>';
-                                },
-                                'label' => Yii::t('art/routine', 'End Date'),
-                                'format' => 'raw',
-                                'options' => ['style' => 'width:150px'],
-                            ],
+                            'end_time',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'all_day',
@@ -119,4 +104,12 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 
+<?php
+\artsoft\widgets\DateRangePicker::widget([
+    'model' => $searchModel,
+    'attribute' => 'start_time',
+    'format' => 'DD.MM.YYYY H:mm',
+    'opens' => 'left',
+])
+?>
 

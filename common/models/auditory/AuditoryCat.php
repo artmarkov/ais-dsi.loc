@@ -29,7 +29,7 @@ class AuditoryCat extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'study_flag'], 'required'],
-            [['study_flag'], 'string'],
+            [['study_flag'], 'integer'],
             [['name'], 'string', 'max' => 128],
             [['description'], 'string', 'max' => 256],
         ];

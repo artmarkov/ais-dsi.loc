@@ -12,7 +12,7 @@ class m210301_151108_create_table_venue extends \artsoft\db\BaseMigration
         }
 
         $this->createTable('guide_venue_country', [
-            'id' => $this->primaryKey(),
+            'id' => $this->integer()->unique(),
             'name' => $this->string(100)->notNull(),
             'fullname' => $this->string(100),
             'alpha2' => $this->string(2)->notNull(),
@@ -20,7 +20,7 @@ class m210301_151108_create_table_venue extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->createTable('guide_venue_regions', [
-            'id' => $this->primaryKey(),
+            'id' => $this->integer()->unique(),
             'name' => $this->string(500)->notNull(),
         ]);
 
@@ -414,25 +414,23 @@ class m210301_151108_create_table_venue extends \artsoft\db\BaseMigration
             [99, 'Иные территории, включая город и космодром Байконур'],
         ])->execute();
 
-        $this->db->createCommand()->batchInsert('guide_venue_sity', ['id', 'country_id', 'name', 'latitude', 'longitude'], [
-            [0, 643, '--не выбрано--', NULL, NULL],
-            [1, 643, 'Москва', 55.753960, 37.620392],
-            [2, 643, 'Санкт-Петербург', NULL, NULL],
+        $this->db->createCommand()->batchInsert('guide_venue_sity', ['country_id', 'name', 'latitude', 'longitude'], [
+            [643, 'Москва', 55.753960, 37.620392],
+            [643, 'Санкт-Петербург', NULL, NULL],
         ])->execute();
 
-        $this->db->createCommand()->batchInsert('guide_venue_district', ['id', 'sity_id', 'name', 'slug'], [
-            [0, 0, '--не выбрано--', ''],
-            [1, 1, 'Центральный административный округ', 'ЦАО'],
-            [2, 1, 'Северозападный административный округ', 'СЗАО'],
-            [3, 1, 'Северный административный округ', 'САО'],
-            [4, 1, 'Северо-Восточный административный округ', 'СВАО'],
-            [5, 1, 'Восточный административный округ', 'ВАО'],
-            [6, 1, 'Юго-Восточный административный округ', 'ЮВАО'],
-            [7, 1, 'Южный административный округ', 'ЮАО'],
-            [8, 1, 'Юго-Западный административный округ', 'ЮЗАО'],
-            [9, 1, 'Западный административный округ', 'ЗАО'],
-            [10, 1, 'Зеленоградский административный округ', 'ЗелАО'],
-            [11, 1, 'Троицкий и Новомосковский административный округ', 'ТинАО'],
+        $this->db->createCommand()->batchInsert('guide_venue_district', ['sity_id', 'name', 'slug'], [
+            [1, 'Центральный административный округ', 'ЦАО'],
+            [1, 'Северозападный административный округ', 'СЗАО'],
+            [1, 'Северный административный округ', 'САО'],
+            [1, 'Северо-Восточный административный округ', 'СВАО'],
+            [1, 'Восточный административный округ', 'ВАО'],
+            [1, 'Юго-Восточный административный округ', 'ЮВАО'],
+            [1, 'Южный административный округ', 'ЮАО'],
+            [1, 'Юго-Западный административный округ', 'ЮЗАО'],
+            [1, 'Западный административный округ', 'ЗАО'],
+            [1, 'Зеленоградский административный округ', 'ЗелАО'],
+            [1, 'Троицкий и Новомосковский административный округ', 'ТинАО'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('venue_place', ['country_id', 'sity_id', 'district_id', 'name', 'address', 'phone', 'phone_optional', 'email', 'сontact_person', 'coords', 'map_zoom', 'description', 'created_at', 'updated_at', 'created_by', 'updated_by'], [

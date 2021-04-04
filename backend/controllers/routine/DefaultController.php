@@ -21,7 +21,7 @@ class DefaultController extends MainController
             'query' => $this->modelClass::find()
         ]);
 
-        return $this->render('calendar.php', [
+        return $this->render('calendar', [
             'dataProvider' => $dataProvider
         ]);
     }

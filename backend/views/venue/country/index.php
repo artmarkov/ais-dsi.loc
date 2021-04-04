@@ -68,10 +68,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
-
-//            'id',
-//            'name',
-                            'fips',
+                            'fullname',
+                            'alpha2',
+                            'alpha3',
 
                         ],
                     ]);

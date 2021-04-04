@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = $model->teachersFullName;
 <div class="teachers-update">
     <?= $this->render('_form', [
         'model' => $model,
-        'modelUser' => $modelUser,
+        'userCommon' => $userCommon,
         'modelsActivity' => $modelsActivity,
         'readonly' => $readonly
     ]) ?>

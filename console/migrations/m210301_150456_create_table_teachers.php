@@ -48,16 +48,17 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->db->createCommand()->resetSequence('teachers_cost', 1000)->execute();
-        $this->db->createCommand()->batchInsert('teachers_cost', ['id', 'direction_id', 'stake_id', 'stake_value', 'created_at', 'updated_at', 'created_by', 'updated_by'], [
-            [1, 1, 1, 0, time(), time(), 1000, 1000],
-            [2, 1, 2, 0, time(), time(), 1000, 1000],
-            [3, 1, 3, 22200, time(), time(), 1000, 1000],
-            [4, 1, 4, 21800, time(), time(), 1000, 1000],
-            [5, 2, 1, 24000, time(), time(), 1000, 1000],
-            [6, 2, 2, 23500, time(), time(), 1000, 1000],
-            [7, 2, 3, 25700, time(), time(), 1000, 1000],
-            [8, 2, 4, 25300, time(), time(), 1000, 1000],
+        $this->db->createCommand()->resetSequence('teachers_cost', 1)->execute();
+
+        $this->db->createCommand()->batchInsert('teachers_cost', ['direction_id', 'stake_id', 'stake_value', 'created_at', 'updated_at', 'created_by', 'updated_by'], [
+            [1, 1, 0, time(), time(), 1000, 1000],
+            [1, 2, 0, time(), time(), 1000, 1000],
+            [1, 3, 22200, time(), time(), 1000, 1000],
+            [1, 4, 21800, time(), time(), 1000, 1000],
+            [2, 1, 24000, time(), time(), 1000, 1000],
+            [2, 2, 23500, time(), time(), 1000, 1000],
+            [2, 3, 25700, time(), time(), 1000, 1000],
+            [2, 4, 25300, time(), time(), 1000, 1000],
         ])->execute();
 
         $this->createIndex('direction_id', 'teachers_cost', 'direction_id');
@@ -178,7 +179,6 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->createIndex('level_id', 'teachers', 'level_id');
         $this->addForeignKey('teachers_ibfk_1', 'teachers', 'level_id', 'guide_teachers_level', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('teachers_ibfk_2', 'teachers', 'position_id', 'guide_teachers_position', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('teachers_ibfk_3', 'teachers', 'user_common_id', 'user_common', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->resetSequence('teachers', 1000)->execute();
 
@@ -205,16 +205,15 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
 
     public function down()
     {
-        $this->dropForeignKey('teachers_cost_ibfk_1', 'teachers_cost',);
-        $this->dropForeignKey('teachers_cost_ibfk_2', 'teachers_cost',);
-        $this->dropForeignKey('guide_teachers_bonus_ibfk_1', 'guide_teachers_bonus',);
-        $this->dropForeignKey('teachers_ibfk_1', 'teachers',);
-        $this->dropForeignKey('teachers_ibfk_2', 'teachers',);
-        $this->dropForeignKey('teachers_ibfk_3', 'teachers',);
-        $this->dropForeignKey('teachers_activity_ibfk_1', 'teachers_activity',);
-        $this->dropForeignKey('teachers_activity_ibfk_2', 'teachers_activity',);
-        $this->dropForeignKey('teachers_activity_ibfk_3', 'teachers_activity',);
-        $this->dropForeignKey('teachers_activity_ibfk_4', 'teachers_activity',);
+        $this->dropForeignKey('teachers_cost_ibfk_1', 'teachers_cost');
+        $this->dropForeignKey('teachers_cost_ibfk_2', 'teachers_cost');
+        $this->dropForeignKey('guide_teachers_bonus_ibfk_1', 'guide_teachers_bonus');
+        $this->dropForeignKey('teachers_ibfk_1', 'teachers');
+        $this->dropForeignKey('teachers_ibfk_2', 'teachers');
+        $this->dropForeignKey('teachers_activity_ibfk_1', 'teachers_activity');
+        $this->dropForeignKey('teachers_activity_ibfk_2', 'teachers_activity');
+        $this->dropForeignKey('teachers_activity_ibfk_3', 'teachers_activity');
+        $this->dropForeignKey('teachers_activity_ibfk_4', 'teachers_activity');
         $this->dropTable('teachers_activity');
         $this->dropTableWithHistory('teachers');
         $this->dropTable('guide_teachers_bonus_category');

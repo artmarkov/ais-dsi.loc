@@ -3,9 +3,9 @@
 namespace common\models\activities;
 
 use Yii;
-use artsoft\behaviors\DateToTimeBehavior;
 use yii\db\ActiveRecord;
 use common\models\auditory\Auditory;
+use artsoft\behaviors\DateFieldBehavior;
 
 /**
  * This is the model class for table "activities".
@@ -14,13 +14,17 @@ use common\models\auditory\Auditory;
  * @property int $all_day
  * @property string $title
  * @property string $description
- * @property string $start_timestamp
- * @property string $end_timestamp
+ * @property string $start_time
+ * @property string $end_time
+ * @property Auditory $auditory
+ * @property string $auditoryName
+ * @property ActivitiesCat $cat
+ * @property string $catName
+ * @property string $rendering
+ * @property string $color
  */
 class Activities extends ActiveRecord
 {
-    public $start_time;
-    public $end_time;
 
     /**
      * {@inheritdoc}
@@ -37,22 +41,9 @@ class Activities extends ActiveRecord
     {
         return [
             [
-                'class' => DateToTimeBehavior::className(),
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'start_time',
-                    ActiveRecord::EVENT_AFTER_FIND => 'start_time',
-                ],
-                'timeAttribute' => 'start_timestamp',
-                'timeFormat' => 'd.m.Y H:i',
-            ],
-            [
-                'class' => DateToTimeBehavior::className(),
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'end_time',
-                    ActiveRecord::EVENT_AFTER_FIND => 'end_time',
-                ],
-                'timeAttribute' => 'end_timestamp',
-                'timeFormat' => 'd.m.Y H:i',
+                'class' => DateFieldBehavior::class,
+                'attributes' => ['start_time', 'end_time'],
+                'timeFormat' => 'd.m.Y H:i'
             ]
         ];
     }
@@ -65,24 +56,23 @@ class Activities extends ActiveRecord
         return [
             [['title', 'start_time', 'end_time'], 'required'],
             [['category_id', 'auditory_id'], 'required'],
-            [['start_timestamp', 'end_timestamp', 'all_day'], 'safe'],
-            ['start_timestamp', 'compareTimestamp'],
+            [['start_time', 'end_time', 'all_day'], 'safe'],
+            ['start_time', 'compareTime'],
             [['description'], 'string'],
             ['title', 'string', 'max' => 100],
             [['category_id', 'auditory_id', 'all_day'], 'integer'],
-            [['start_time', 'end_time'], 'date', 'format' => 'php:d.m.Y H:i'],
         ];
     }
 
     /**
      * сравнение даты начала и окончания/ дата окончания должна быть меньше даты начала
      */
-    public function compareTimestamp()
+    public function compareTime()
     {
         if (!$this->hasErrors()) {
 
-            if ($this->end_timestamp < $this->start_timestamp) {
-                $this->addError('start_timestamp', Yii::t('art/calendar', 'The event start date must be greater than the end date.'));
+            if ($this->end_time < $this->start_time) {
+                $this->addError('start_time', Yii::t('art/calendar', 'The event start date must be greater than the end date.'));
             }
         }
     }
@@ -96,8 +86,6 @@ class Activities extends ActiveRecord
             'id' => Yii::t('art/calendar', 'ID'),
             'title' => Yii::t('art', 'Title'),
             'description' => Yii::t('art', 'Description'),
-            'start_timestamp' => Yii::t('art/calendar', 'Start Date'),
-            'end_timestamp' => Yii::t('art/calendar', 'End Date'),
             'start_time' => Yii::t('art/calendar', 'Start Date'),
             'end_time' => Yii::t('art/calendar', 'End Date'),
             'all_day' => Yii::t('art/calendar', 'All Day'),
@@ -111,7 +99,7 @@ class Activities extends ActiveRecord
      */
     public function getCat()
     {
-        return $this->hasOne(ActivitiesCat::className(), ['id' => 'category_id']);
+        return $this->hasOne(ActivitiesCat::class, ['id' => 'category_id']);
     }
 
     /**
@@ -124,7 +112,7 @@ class Activities extends ActiveRecord
         $this->start_time = \Yii::$app->formatter->asDatetime($eventData['start']);
         $this->end_time = \Yii::$app->formatter->asDatetime($eventData['end']);
         $this->all_day = $eventData['allDay'] == 'true' ? 1 : 0;
-        if($eventData['resourceId'] != null) {
+        if(isset($eventData['resourceId'])) {
             $this->auditory_id = $eventData['resourceId'];
         }
         return $this;
@@ -135,7 +123,7 @@ class Activities extends ActiveRecord
      */
     public function getAuditory()
     {
-        return $this->hasOne(Auditory::className(), ['id' => 'auditory_id']);
+        return $this->hasOne(Auditory::class, ['id' => 'auditory_id']);
     }
 
     /* Геттер для названия аудитории */
@@ -156,14 +144,10 @@ class Activities extends ActiveRecord
         return $this->cat->color;
     }
 
+    /* геттер определения вида представления события категории в виде фона или бара */
     public function getRendering()
     {
         return $this->cat->rendering;
     }
 
-    /* геттер определения вида представления события категории в виде фона или бара */
-    public function getCategoryRendering()
-    {
-        return $this->cat->rendering;
-    }
 }

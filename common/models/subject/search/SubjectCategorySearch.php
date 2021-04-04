@@ -18,7 +18,7 @@ class SubjectCategorySearch extends SubjectCategory
     public function rules()
     {
         return [
-            [['id', 'sortOrder'], 'integer'],
+            [['id', 'sort_order'], 'integer'],
             [['name', 'slug', 'status'], 'safe'],
         ];
     }
@@ -51,7 +51,7 @@ class SubjectCategorySearch extends SubjectCategory
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'sortOrder' => SORT_ASC,
+                    'sort_order' => SORT_ASC,
                 ],
             ],
         ]);

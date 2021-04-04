@@ -11,8 +11,8 @@ use common\models\routine\Routine;
  */
 class RoutineSearch extends Routine
 {
-    public $start_timestamp_operand;
-    public $end_timestamp_operand;
+    public $start_date_operand;
+    public $end_date_operand;
 
     /**
      * {@inheritdoc}
@@ -21,9 +21,9 @@ class RoutineSearch extends Routine
     {
         return [
             [['id', 'cat_id'], 'integer'],
-            [['description', 'start_timestamp', 'end_timestamp'], 'safe'],
-            [['start_timestamp_operand'], 'string'],
-            [['end_timestamp_operand'], 'string'],
+            [['description', 'start_date', 'end_date'], 'safe'],
+            [['start_date_operand'], 'string'],
+            [['end_date_operand'], 'string'],
         ];
     }
 
@@ -66,8 +66,8 @@ class RoutineSearch extends Routine
             'id' => $this->id,
             'cat_id' => $this->cat_id,
         ]);
-        $query->andFilterWhere([($this->start_timestamp_operand) ? $this->start_timestamp_operand : '=', 'start_timestamp', ($this->start_timestamp) ? strtotime($this->start_timestamp) : null]);
-        $query->andFilterWhere([($this->end_timestamp_operand) ? $this->end_timestamp_operand : '=', 'end_timestamp', ($this->end_timestamp) ? strtotime($this->end_timestamp) : null]);
+        $query->andFilterWhere([($this->start_date_operand) ? $this->start_date_operand : '=', 'start_date', ($this->start_date) ? strtotime($this->start_date) : null]);
+        $query->andFilterWhere([($this->end_date_operand) ? $this->end_date_operand : '=', 'end_date', ($this->end_date) ? strtotime($this->end_date) : null]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);
 

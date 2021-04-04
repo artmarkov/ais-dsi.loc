@@ -39,7 +39,7 @@ class DateFieldBehavior extends Behavior
     /**
      * @var string
      */
-    public $timeFormat = 'd-m-Y';
+    public $timeFormat = 'd.m.Y';
 
     /**
      * @var mixed

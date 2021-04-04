@@ -19,59 +19,55 @@ use common\models\own\Department;
     ?>
 
     <div class="panel">
+        <div class="panel-heading">
+            <?= Html::encode($this->title) ?>
+        </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <?= Html::encode($this->title) ?>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
+            <div class="row">
+                <div class="col-sm-12">
 
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-                            <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
-                            <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
-                                'data' => Department::getDepartmentList(),
-                                'options' => [
-                                    // 'disabled' => $readonly,
-                                    'placeholder' => Yii::t('art/teachers', 'Select Department...'),
-                                    'multiple' => true,
-                                ],
-                                'pluginOptions' => [
-                                    'allowClear' => true
-                                ],
-                            ])->label(Yii::t('art/guide', 'Department'));
-                            ?>
-                            <?= $form->field($model, 'category_list')->widget(\kartik\select2\Select2::className(), [
-                                'data' => SubjectCategory::getCategoryList(),
-                                'options' => [
-                                    // 'disabled' => $readonly,
-                                    'placeholder' => Yii::t('art/teachers', 'Select Subject Category...'),
-                                    'multiple' => true,
-                                ],
-                                'pluginOptions' => [
-                                    'allowClear' => true
-                                ],
-                            ])->label(Yii::t('art/guide', 'Subject Category'));
-                            ?>
-                            <?= $form->field($model, 'vid_list')->widget(\kartik\select2\Select2::className(), [
-                                'data' => SubjectVid::getVidList(),
-                                'options' => [
-                                    // 'disabled' => $readonly,
-                                    'placeholder' => Yii::t('art/teachers', 'Select Subject Vid...'),
-                                    'multiple' => true,
-                                ],
-                                'pluginOptions' => [
-                                    'allowClear' => true
-                                ],
-                            ])->label(Yii::t('art/guide', 'Subject Vid'));
-                            ?>
-                            <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(Subject::getStatusList()) ?>
+                    <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
+                        'data' => Department::getDepartmentList(),
+                        'options' => [
+                            // 'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/teachers', 'Select Department...'),
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Department'));
+                    ?>
+                    <?= $form->field($model, 'category_list')->widget(\kartik\select2\Select2::className(), [
+                        'data' => SubjectCategory::getCategoryList(),
+                        'options' => [
+                            // 'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/teachers', 'Select Subject Category...'),
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Subject Category'));
+                    ?>
+                    <?= $form->field($model, 'vid_list')->widget(\kartik\select2\Select2::className(), [
+                        'data' => SubjectVid::getVidList(),
+                        'options' => [
+                            // 'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/teachers', 'Select Subject Vid...'),
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Subject Vid'));
+                    ?>
+                    <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(Subject::getStatusList()) ?>
 
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

@@ -1,7 +1,6 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\routine\Routine;
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -20,28 +19,24 @@ use artsoft\helpers\Html;
 
     <div class="panel">
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <?=  Html::encode($this->title) ?>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
+            <?= Html::encode($this->title) ?>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-12">
 
-                            <?= $form->field($model, 'cat_id')
-                                ->dropDownList(\common\models\routine\RoutineCat::getCatList(), [
-                                    'prompt' => Yii::t('art/guide', 'Select Cat...')
-                                ])->label(Yii::t('art/guide', 'Category'));
-                            ?>
+                    <?= $form->field($model, 'cat_id')
+                        ->dropDownList(\common\models\routine\RoutineCat::getCatList(), [
+                            'prompt' => Yii::t('art/guide', 'Select Cat...')
+                        ])->label(Yii::t('art/guide', 'Category'));
+                    ?>
 
-                            <?= $form->field($model, 'start_date')->widget(kartik\date\DatePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
+                    <?= $form->field($model, 'start_date')->widget(kartik\date\DatePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
 
-                            <?= $form->field($model, 'end_date')->widget(kartik\date\DatePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput() ?>
+                    <?= $form->field($model, 'end_date')->widget(kartik\date\DatePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput() ?>
 
-                            <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
 
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -53,6 +48,6 @@ use artsoft\helpers\Html;
         </div>
     </div>
 
-    <?php  ActiveForm::end(); ?>
+    <?php ActiveForm::end(); ?>
 
 </div>

@@ -30,9 +30,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]); ?>
                     <div class="col-md-12">
                         <div class="row">
-                            <h4>  Ваш логин: <b><?= $model->username; ?></b></h4>
 
-                            <?= $form->field($model, 'username')->label(false)->hiddenInput(['value' => $model->username]) ?>
+
+                            <?= $form->field($model, 'username')->textInput(['readonly' => true]) ?>
 
                             <?= $form->field($model, 'id')->label(false)->hiddenInput(['value' => $model->id]) ?>
 

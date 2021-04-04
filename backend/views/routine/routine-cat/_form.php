@@ -11,26 +11,22 @@ use kartik\color\ColorInput;
 
 <div class="routine-cat-form">
     <div class="panel">
+        <div class="panel-heading">
+            <?= Html::encode($this->title) ?>
+        </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <?= Html::encode($this->title) ?>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <?php $form = ActiveForm::begin(); ?>
+            <div class="row">
+                <div class="col-sm-12">
+                    <?php $form = ActiveForm::begin(); ?>
 
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-                            <?=
-                            $form->field($model, 'color')->widget(ColorInput::classname(), [
-                                'options' => ['placeholder' => 'Select color ...'],
-                            ]);
-                            ?>
-                            <?= $form->field($model->loadDefaultValues(), 'plan_flag')->dropDownList(\common\models\routine\RoutineCat::getPlanFlagList()) ?>
-                        </div>
-                    </div>
+                    <?=
+                    $form->field($model, 'color')->widget(ColorInput::classname(), [
+                        'options' => ['placeholder' => 'Select color ...'],
+                    ]);
+                    ?>
+                    <?= $form->field($model->loadDefaultValues(), 'plan_flag')->dropDownList(\common\models\routine\RoutineCat::getPlanFlagList()) ?>
                 </div>
             </div>
         </div>

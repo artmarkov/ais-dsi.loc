@@ -12,8 +12,8 @@ use common\models\activities\Activities;
  */
 class ActivitiesSearch extends Activities
 {
-    public $start_timestamp_operand;
-    public $end_timestamp_operand;
+    public $start_time_operand;
+    public $end_time_operand;
 
     /**
      * @inheritdoc
@@ -23,9 +23,9 @@ class ActivitiesSearch extends Activities
         return [
             [['id', 'category_id', 'auditory_id'], 'integer'],
             [['title', 'description', 'all_day'], 'safe'],
-            [['start_timestamp', 'end_timestamp'], 'safe'],
-            [['start_timestamp_operand'], 'string'],
-            [['end_timestamp_operand'], 'string'],
+            [['start_time'], 'safe'],
+           // [['start_time_operand'], 'string'],
+           // [['end_time_operand'], 'string'],
         ];
     }
 
@@ -73,14 +73,20 @@ class ActivitiesSearch extends Activities
             'id' => $this->id,
             'category_id' => $this->category_id,
             'auditory_id' => $this->auditory_id,
+            'all_day' => $this->all_day,
         ]);
-
+        if ($this->start_time) {
+            $tmp = explode(' - ', $this->start_time);
+            if (isset($tmp[0], $tmp[1])) {
+                $query->andFilterWhere(['between', static::tableName() . '.start_time',
+                    strtotime($tmp[0]), strtotime($tmp[1])]);
+            }
+        }
         $query->andFilterWhere(['like', 'title', $this->title])
-            ->andFilterWhere(['like', 'description', $this->description])
-            ->andFilterWhere(['like', 'all_day', $this->all_day]);
+            ->andFilterWhere(['like', 'description', $this->description]);
 
-        $query->andFilterWhere([($this->start_timestamp_operand) ? $this->start_timestamp_operand : '=', 'start_timestamp', ($this->start_timestamp) ? strtotime($this->start_timestamp) : null]);
-        $query->andFilterWhere([($this->end_timestamp_operand) ? $this->end_timestamp_operand : '=', 'end_timestamp', ($this->end_timestamp) ? strtotime($this->end_timestamp) : null]);
+//        $query->andFilterWhere([($this->start_time_operand) ? $this->start_time_operand : '=', 'start_time', ($this->start_time) ? strtotime($this->start_time) : null]);
+        //$query->andFilterWhere([($this->end_time_operand) ? $this->end_time_operand : '=', 'end_time', ($this->end_time) ? strtotime($this->end_time) : null]);
 
         return $dataProvider;
     }

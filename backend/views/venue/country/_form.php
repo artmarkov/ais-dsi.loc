@@ -19,32 +19,26 @@ use artsoft\helpers\Html;
     ?>
 
     <div class="panel">
-        <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <?= Html::encode($this->title) ?>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-
-                            <?= $form->field($model, 'fips')->textInput(['maxlength' => true]) ?>
-                        </div>
+            <div class="panel-heading">
+                <?= Html::encode($this->title) ?>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                        <?= $form->field($model, 'fullname')->textInput(['maxlength' => true]) ?>
+                        <?= $form->field($model, 'alpha2')->textInput(['maxlength' => true]) ?>
+                        <?= $form->field($model, 'alpha3')->textInput(['maxlength' => true]) ?>
                     </div>
                 </div>
+            </div>
+            <div class="panel-footer">
+                <div class="form-group btn-group">
+                    <?= \artsoft\helpers\ButtonHelper::submitButtons($model); ?>
+                </div>
+                <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
+            </div>
 
-            </div>
-        </div>
-        <div class="panel-footer">
-            <div class="form-group btn-group">
-                <?= \artsoft\helpers\ButtonHelper::submitButtons($model); ?>
-            </div>
-            <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
-        </div>
+        <?php ActiveForm::end(); ?>
+
     </div>
-
-    <?php ActiveForm::end(); ?>
-
-</div>

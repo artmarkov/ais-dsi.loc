@@ -50,7 +50,7 @@ class TeachersHistory extends BaseHistory
                 if (isset($model->bonus_list)) {
                     $v = [];
                     foreach (Json::decode($model->bonus_list) as $id) {
-                        $v[] = Bonus::findOne($id)->name;
+                        $v[] = $id != null ? Bonus::findOne($id)->name : null;
                     }
                     return implode(', ', $v);
                 }
@@ -58,7 +58,7 @@ class TeachersHistory extends BaseHistory
                 if (isset($model->department_list)) {
                     $v = [];
                     foreach (Json::decode($model->department_list) as $id) {
-                        $v[] = Department::findOne(['id' => $id])->name;
+                        $v[] = $id != null ? Department::findOne($id)->name : null;
                     }
                     return implode(', ', $v);
                 }

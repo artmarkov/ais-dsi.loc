@@ -20,28 +20,24 @@ use common\models\venue\VenueCountry;
     ?>
 
     <div class="panel">
+        <div class="panel-heading">
+            <?= Html::encode($this->title) ?>
+        </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <?= Html::encode($this->title) ?>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
+            <div class="row">
+                <div class="col-sm-12">
 
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-                            <?= $form->field($model, 'latitude')->textInput() ?>
+                    <?= $form->field($model, 'latitude')->textInput() ?>
 
-                            <?= $form->field($model, 'longitude')->textInput() ?>
+                    <?= $form->field($model, 'longitude')->textInput() ?>
 
-                            <?= $form->field($model, 'country_id')
-                                ->dropDownList(VenueCountry::getVenueCountryList(), [
-                                    'prompt' => Yii::t('art/guide', 'Select Country...')
-                                ])->label(Yii::t('art/guide', 'Name Country'));
-                            ?>
-                        </div>
-                    </div>
+                    <?= $form->field($model, 'country_id')
+                        ->dropDownList(VenueCountry::getVenueCountryList(), [
+                            'prompt' => Yii::t('art/guide', 'Select Country...')
+                        ])->label(Yii::t('art/guide', 'Name Country'));
+                    ?>
                 </div>
             </div>
         </div>

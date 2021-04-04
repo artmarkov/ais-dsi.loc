@@ -14,6 +14,6 @@ return [
             'port' => env('SMTP_PORT'),
             'encryption' => env('ENCRYPTION'),
         ],
-        'htmlLayout' => '@vendor/artsoft/yii2-art-auth/views/mail/layouts/html',
-        'textLayout' => '@vendor/artsoft/yii2-art-auth/views/mail/layouts/text',
+        'htmlLayout' => '@artsoft/auth/views/mail/layouts/html',
+        'textLayout' => '@artsoft/auth/views/mail/layouts/text',
 ];

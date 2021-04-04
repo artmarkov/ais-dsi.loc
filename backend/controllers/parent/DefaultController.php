@@ -27,7 +27,7 @@ class DefaultController extends \backend\controllers\DefaultController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $model = \common\models\user\UserCommon::find()->andWhere(['user_category' => User::USER_CATEGORY_PARENT]),
+            'query' => $model = \common\models\user\UserCommon::find()->andWhere(['user_category' => User::USER_CATEGORY_PARENTS]),
         ]);
 
         return $this->render('index', [
@@ -46,7 +46,7 @@ class DefaultController extends \backend\controllers\DefaultController
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $model->user_category = User::USER_CATEGORY_PARENT;
+            $model->user_category = User::USER_CATEGORY_PARENTS;
             $model->status = User::STATUS_INACTIVE;
 
             if ($model->save()) {
@@ -64,7 +64,7 @@ class DefaultController extends \backend\controllers\DefaultController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
 
-        $model = $this->findModel(['id' => $id, 'user_category' => User::USER_CATEGORY_PARENT]);
+        $model = $this->findModel(['id' => $id, 'user_category' => User::USER_CATEGORY_PARENTS]);
 
         if (!isset($model)) {
             throw new NotFoundHttpException("The user was not found.");
@@ -100,7 +100,7 @@ class DefaultController extends \backend\controllers\DefaultController
                 return \yii\widgets\ActiveForm::validate($model, $modelFamily);
             } elseif ($model->load(Yii::$app->request->post())) {
 
-                $model->user_category = User::USER_CATEGORY_PARENT;
+                $model->user_category = User::USER_CATEGORY_PARENTS;
                 if ($model->isNewRecord)
                     $model->status = User::STATUS_INACTIVE;
 

@@ -142,9 +142,9 @@ $this->params['breadcrumbs'][] = $this->title;
 //                                'attribute' => 'user_category',
 //                                'optionsArray' => [
 //                                    [User::USER_CATEGORY_EMPLOYEES, Yii::t('art', 'Staff'), 'default'],
-//                                    [User::USER_CATEGORY_TEACHER, Yii::t('art', 'Teacher'), 'info'],
-//                                    [User::USER_CATEGORY_STUDENT, Yii::t('art', 'Student'), 'danger'],
-//                                    [User::USER_CATEGORY_PARENT, Yii::t('art', 'Parent'), 'warning'],
+//                                    [User::USER_CATEGORY_TEACHERS, Yii::t('art', 'Teacher'), 'info'],
+//                                    [User::USER_CATEGORY_STUDENTS, Yii::t('art', 'Student'), 'danger'],
+//                                    [User::USER_CATEGORY_PARENTS, Yii::t('art', 'Parent'), 'warning'],
 //                                ],
 //                                'options' => ['style' => 'width:100px']
 //                            ],

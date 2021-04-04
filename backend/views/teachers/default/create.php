@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = Yii::t('art', 'Create');
 <div class="teachers-create">
     <?= $this->render('_form', [
         'model' => $model,
-        'modelUser' => $modelUser,
+        'userCommon' => $userCommon,
         'modelsActivity' => $modelsActivity,
         'readonly' => $readonly
     ]) ?>

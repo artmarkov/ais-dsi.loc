@@ -77,10 +77,8 @@ $JSCast = <<<EOF
            var currentWeekDay = date.getDay();
             if(date.getTime() == currentDateTime) {
                 $(element).css('font-weight', 'bold');
-                $(element).css('background-color', 'gray');
-                $(element).css('opacity', '0.5');
-                $(element).css('color', 'white');
-                $(element).css('border-radius', '15px');
+                $(element).css('font-size', '16px');
+                $(element).css('color', 'green');
             }
             if(0 == currentWeekDay) {
                 $(element).css('color', 'red');
