@@ -11,5 +11,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="student-create">
-    <?= $this->render('_form', ['model' => $model, 'modelUser' => $modelUser]) ?>
+    <?= $this->render('_form', [
+        'model' => $model,
+        'userCommon' => $userCommon,
+       // 'modelsActivity' => $modelsActivity,
+        'readonly' => $readonly
+    ]) ?>
 </div>

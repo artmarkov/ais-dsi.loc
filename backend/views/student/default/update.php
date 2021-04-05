@@ -8,5 +8,10 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('art/student','Students'), '
 $this->params['breadcrumbs'][] = Yii::t('art','Update');
 ?>
 <div class="student-update">
-    <?= $this->render('_form', ['model' => $model, 'modelUser' => $modelUser]) ?>
+    <?= $this->render('_form', [
+        'model' => $model,
+        'userCommon' => $userCommon,
+//        'modelsActivity' => $modelsActivity,
+        'readonly' => $readonly
+    ]) ?>
 </div>

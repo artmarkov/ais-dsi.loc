@@ -31,7 +31,9 @@ use kartik\color\ColorInput;
             </div>
         </div>
         <div class="panel-footer">
-            <?= \artsoft\helpers\ButtonHelper::submitButtons($model); ?>
+            <div class="form-group btn-group">
+                <?= \artsoft\helpers\ButtonHelper::submitButtons($model); ?>
+            </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>

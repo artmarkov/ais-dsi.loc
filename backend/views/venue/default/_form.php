@@ -19,12 +19,7 @@ use yii\helpers\Url;
     <div class="venue-place-form">
 
         <?php
-        $form = ActiveForm::begin([
-            'id' => 'venue-place-form',
-            'validateOnBlur' => false,
-            'enableAjaxValidation' => true,
-            'options' => ['enctype' => 'multipart/form-data'],
-        ])
+        $form = ActiveForm::begin()
         ?>
 
         <div class="panel">
@@ -46,12 +41,19 @@ use yii\helpers\Url;
 
                         <?= $form->field($model, 'description')->textarea(['rows' => '3', 'maxlength' => true]) ?>
 
-                        <?php
-                        echo $form->field($model, 'country_id')->dropDownList(VenueCountry::getVenueCountryList(), [
-                            'prompt' => Yii::t('art/guide', 'Select Country...'),
-                            'id' => 'country_id'
+                        <?= $form->field($model, 'country_id')->widget(\kartik\select2\Select2::class, [
+                            'data' => VenueCountry::getVenueCountryList(),
+                            'options' => [
+                                'id' => 'country_id',
+                                //'disabled' => $readonly,
+                                'placeholder' => Yii::t('art/guide', 'Select Country...'),
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
                         ])->label(Yii::t('art/guide', 'Name Country'));
-                        echo $form->field($model, 'sity_id')->widget(DepDrop::classname(), [
+                        ?>
+                        <?= $form->field($model, 'sity_id')->widget(DepDrop::classname(), [
                             'data' => VenueSity::getSityByName($model->country_id),
                             'options' => ['prompt' => Yii::t('art/guide', 'Select Sity...'), 'id' => 'sity_id'],
                             'pluginOptions' => [
@@ -60,22 +62,19 @@ use yii\helpers\Url;
                                 'url' => Url::to(['/venue/default/sity'])
                             ]
                         ])->label(Yii::t('art/guide', 'Name Sity'));
-
-                        echo $form->field($model, 'district_id')->widget(DepDrop::classname(), [
-                            'data' => VenueDistrict::getDistrictByName($model->sity_id),
-                            'options' => ['prompt' => Yii::t('art/guide', 'Select District...')],
-                            'pluginOptions' => [
-                                'depends' => ['sity_id'],
-                                'placeholder' => Yii::t('art/guide', 'Select District...'),
-                                'url' => Url::to(['/venue/default/district'])
-                            ]
+                        ?>
+                        <?= $form->field($model, 'district_id')->widget(DepDrop::classname(), [
+                        'data' => VenueDistrict::getDistrictByName($model->sity_id),
+                        'options' => ['prompt' => Yii::t('art/guide', 'Select District...')],
+                        'pluginOptions' => [
+                        'depends' => ['sity_id'],
+                        'placeholder' => Yii::t('art/guide', 'Select District...'),
+                        'url' => Url::to(['/venue/default/district'])
+                        ]
                         ])->label(Yii::t('art/guide', 'Name District'));
                         ?>
-
                         <?= $form->field($model, 'address')->textInput(['maxlength' => true])->hint(\Yii::t('art', 'Click on the map to get the address and coordinates, then click the button to insert the address into the form')) ?>
-
-                        <?= $form->field($model, 'coords')->widget(\common\widgets\YandexGetCoordsWidget::className())->label(false) ?>
-
+                        <?= $form->field($model, 'coords')->widget(\common\widgets\YandexGetCoordsWidget::className(), ['apikey' => 'cc75ee6b-40b0-4f0e-9814-489e78b633aa'])->label(false) ?>
                     </div>
                 </div>
             </div>

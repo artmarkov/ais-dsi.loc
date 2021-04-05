@@ -5,9 +5,9 @@ return [
     'Sertificate Num' => 'Номер',
     'Sertificate Organ' => 'Кем выдан',
     'Sertificate Date' => 'Дата выдачи',
-    'Name Position' => 'Статус учащегося',
-    'Select Position...' => 'Выберите статус...',
+    'Name Position' => 'Состояние учащегося',
+    'Select Position...' => 'Выберите состояние...',
     'Students' => 'Ученики',
-    'The format of the date input {sertificate_date} in...' => 'Недопустимый формат ввода данных {certificate_date...',
-    'There is no such date {sertificate_date}' => 'Такой даты не существует {certificate_date}',
+    'The format of the date input {sert_date} in...' => 'Недопустимый формат ввода данных {cert_date...',
+    'There is no such date {sert_date}' => 'Такой даты не существует {cert_date}',
 ];

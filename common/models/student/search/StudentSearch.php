@@ -13,7 +13,6 @@ use common\models\student\Student;
 class StudentSearch extends Student
 {
     public $studentsFullName;
-    public $birth_timestamp;
     public $birth_timestamp_operand;
     /**
      * @inheritdoc
@@ -21,9 +20,9 @@ class StudentSearch extends Student
     public function rules()
     {
         return [
-            [['id', 'user_id'], 'integer'],
-            [['position_id','birth_timestamp_operand'], 'safe'],
-            [['studentsFullName','birth_timestamp'], 'string'],
+            [['id', 'user_common_id'], 'integer'],
+            [['position_id'], 'safe'],
+            [['studentsFullName'], 'string'],
         ];
     }
 
@@ -62,7 +61,7 @@ class StudentSearch extends Student
             'attributes' => [
                 'id',
                 'position_id',
-                'birth_timestamp',
+                'birth_date',
                 'studentsFullName' => [
                     'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
                     'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],
@@ -82,18 +81,20 @@ class StudentSearch extends Student
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'user_common_id' => $this->user_common_id,
 
         ]);
 
-        $query->andFilterWhere([($this->birth_timestamp_operand) ? $this->birth_timestamp_operand : '=', 'birth_timestamp', ($this->birth_timestamp) ? strtotime($this->birth_timestamp) : null]);    
+//        $query->andFilterWhere([($this->birth_timestamp_operand) ? $this->birth_timestamp_operand : '=', 'birth_timestamp', ($this->birth_timestamp) ? strtotime($this->birth_timestamp) : null]);
         
         $query->andFilterWhere(['like', 'position_id', $this->position_id]);
 
-        $query->andWhere('first_name LIKE "%' . $this->studentsFullName . '%" '.
-            'OR last_name LIKE "%' . $this->studentsFullName . '%"'.
-            'OR middle_name LIKE "%' . $this->studentsFullName . '%"'
-        );
+        if ($this->studentsFullName) {
+            $query->andFilterWhere(['like', 'first_name', $this->studentsFullName])
+                ->orFilterWhere(['like', 'last_name', $this->studentsFullName])
+                ->orFilterWhere(['like', 'middle_name', $this->studentsFullName]);
+
+        }
        
         return $dataProvider;
     }

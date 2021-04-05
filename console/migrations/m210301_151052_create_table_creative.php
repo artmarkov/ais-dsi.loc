@@ -8,14 +8,7 @@ class m210301_151052_create_table_creative extends \artsoft\db\BaseMigration
         if ($this->db->driverName === 'mysql') {
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
-
-        $this->createTable('creative_revision', [
-            'id' => $this->primaryKey(),
-            'works_id' => $this->integer()->notNull(),
-            'user_id' => $this->integer()->notNull(),
-            'timestamp' => $this->integer(),
-        ], $tableOptions);
-
+        
         $this->createTable('guide_creative_category', [
             'id' => $this->primaryKey(),
             'name' => $this->string(256)->notNull(),
@@ -49,8 +42,6 @@ class m210301_151052_create_table_creative extends \artsoft\db\BaseMigration
         $this->addForeignKey('creative_works_ibfk_1', 'creative_works', 'category_id', 'guide_creative_category', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('creative_works_ibfk_2', 'creative_works', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('creative_works_ibfk_3', 'creative_works', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('creative_revision_ibfk_1', 'creative_revision', 'works_id', 'creative_works', 'id', 'CASCADE', 'CASCADE');
-        $this->addForeignKey('creative_revision_ibfk_2', 'creative_revision', 'user_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
     }
 
     public function down()
@@ -58,10 +49,7 @@ class m210301_151052_create_table_creative extends \artsoft\db\BaseMigration
         $this->dropForeignKey('creative_works_ibfk_1','creative_works');
         $this->dropForeignKey('creative_works_ibfk_2','creative_works');
         $this->dropForeignKey('creative_works_ibfk_3','creative_works');
-        $this->dropForeignKey('creative_revision_ibfk_1','creative_revision');
-        $this->dropForeignKey('creative_revision_ibfk_2','creative_revision');
         $this->dropTableWithHistory('creative_works');
         $this->dropTable('guide_creative_category');
-        $this->dropTable('creative_revision');
     }
 }

@@ -20,7 +20,7 @@ class m150319_184824_init_settings extends yii\db\Migration
         $this->addCommentOnTable(self::TABLE_NAME ,'Настройки');
         $this->createIndex('setting_group_lang', self::TABLE_NAME, ['group', 'key', 'language']);
 
-        $this->insert(self::TABLE_NAME, ['group' => 'general', 'key' => 'title', 'value' => 'АИС "Школа искусств']);
+        $this->insert(self::TABLE_NAME, ['group' => 'general', 'key' => 'title', 'value' => 'Школа искусств']);
         $this->insert(self::TABLE_NAME, ['group' => 'general', 'key' => 'email', 'value' => 'admin@stravinskiy.ru']);
         $this->insert(self::TABLE_NAME, ['group' => 'general', 'key' => 'timezone', 'value' => 'Europe/London']);
         $this->insert(self::TABLE_NAME, ['group' => 'general', 'key' => 'dateformat', 'value' => 'dd.MM.yyyy']);

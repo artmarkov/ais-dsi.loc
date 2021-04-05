@@ -15,7 +15,7 @@ use yii\helpers\Url;
 
 /**
  **
- * This is the model class for table "{{%user_common}}".
+ * This is the model class for table "user_common".
  *
  * @property int $id
  * @property int|null $user_id

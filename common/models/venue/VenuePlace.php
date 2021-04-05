@@ -63,10 +63,11 @@ class VenuePlace extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['country_id', 'name', 'address', 'phone', 'coords'], 'required'],
+            [['country_id', 'name', 'address'], 'required'],
             ['district_id', 'required', 'when' => function ($model) { return !empty(VenueDistrict::getDistrictBySityId($model->sity_id));}, 'enableClientValidation' => false ],                 ['district_id', 'required', 'when' => function ($model) { return !empty(VenueDistrict::getDistrictBySityId($model->sity_id));}, 'enableClientValidation' => false ], 
             ['sity_id', 'required', 'when' => function ($model) { return !empty(VenueSity::getSityByCountryId($model->country_id));}, 'enableClientValidation' => false ],         
             [['country_id', 'sity_id', 'district_id', 'map_zoom'], 'integer'],
+            ['country_id', 'default', 'value'=> 643, 'on'=>'insert'],
             ['email', 'email'],
             ['coords', 'string'],
             [['name', 'сontact_person'], 'string', 'max' => 127],

@@ -19,23 +19,19 @@ use artsoft\helpers\Html;
     ?>
 
     <div class="panel">
+        <div class="panel-heading">
+            <?= Html::encode($this->title) ?>
+        </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <?= Html::encode($this->title) ?>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
+            <div class="row">
+                <div class="col-sm-12">
 
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-                            <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
-                            <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(StudentPosition::getStatusList()) ?>
+                    <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(StudentPosition::getStatusList()) ?>
 
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

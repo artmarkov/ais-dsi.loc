@@ -57,14 +57,22 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
+                                'options' => ['style' => 'width:30px'],
+                                'attribute' => 'id',
+                                'value' => function (Student $model) {
+                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                },
+                                'format' => 'raw'
+                            ],
+                            [
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'studentsFullName',
                                 'controller' => '/student/default',
                                 'title' => function (Student $model) {
-                                    return Html::a($model->studentsFullName, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->studentsFullName, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
+                                'buttonsTemplate' => '{update} {view} {delete}',
                             ],
 
                             [
@@ -74,20 +82,20 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label' => Yii::t('art/student', 'Name Position'),
                                 'filter' => common\models\student\StudentPosition::getPositionList(),
                             ],
-                            'user.phone',
-                            'user.email',
-                            [
-                                'class' => 'artsoft\grid\columns\DateFilterColumn',
-                                'attribute' => 'birth_timestamp',
-                                'value' => function (Student $model) {
-                                    return '<span style="font-size:85%;" class="label label-'
-                                        . ((time() >= $model->user->birth_timestamp) ? 'primary' : 'default') . '">'
-                                        . $model->birthDate . '</span>';
-                                },
-                                'label' => Yii::t('art', 'Birth Date'),
-                                'format' => 'raw',
-                                'options' => ['style' => 'width:150px'],
-                            ],
+//                            'user.phone',
+//                            'user.email',
+//                            [
+//                                'class' => 'artsoft\grid\columns\DateFilterColumn',
+//                                'attribute' => 'birth_date',
+//                                'value' => function (Student $model) {
+//                                    return '<span style="font-size:85%;" class="label label-'
+//                                        . ((time() >= $model->user->birth_date) ? 'primary' : 'default') . '">'
+//                                        . $model->birth_date . '</span>';
+//                                },
+//                                'label' => Yii::t('art', 'Birth Date'),
+//                                'format' => 'raw',
+//                                'options' => ['style' => 'width:150px'],
+//                            ],
 
                         ],
                     ]);

@@ -12,7 +12,7 @@ class m210301_151108_create_table_venue extends \artsoft\db\BaseMigration
         }
 
         $this->createTable('guide_venue_country', [
-            'id' => $this->integer()->unique(),
+            'id' => $this->primaryKey(),
             'name' => $this->string(100)->notNull(),
             'fullname' => $this->string(100),
             'alpha2' => $this->string(2)->notNull(),
@@ -20,7 +20,7 @@ class m210301_151108_create_table_venue extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->createTable('guide_venue_regions', [
-            'id' => $this->integer()->unique(),
+            'id' => $this->primaryKey(),
             'name' => $this->string(500)->notNull(),
         ]);
 
@@ -42,14 +42,14 @@ class m210301_151108_create_table_venue extends \artsoft\db\BaseMigration
         $this->createTableWithHistory('venue_place', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'country_id' => $this->integer()->notNull(),
-            'sity_id' => $this->integer()->notNull(),
-            'district_id' => $this->integer()->notNull(),
+            'sity_id' => $this->integer(),
+            'district_id' => $this->integer(),
             'name' => $this->string(127)->notNull(),
             'address' => $this->string()->notNull(),
-            'phone' => $this->string(24)->notNull(),
-            'phone_optional' => $this->string(24)->notNull(),
+            'phone' => $this->string(24),
+            'phone_optional' => $this->string(24),
             'email' => $this->string()->notNull(),
-            'сontact_person' => $this->string(127)->notNull(),
+            'сontact_person' => $this->string(127),
             'coords' => $this->string(64),
             'map_zoom' => $this->smallInteger(),
             'description' => $this->string(),
@@ -324,6 +324,7 @@ class m210301_151108_create_table_venue extends \artsoft\db\BaseMigration
             [896, 'ЮЖНАЯ ОСЕТИЯ', 'Республика Южная Осетия', 'OS', 'OST'],
             [905, 'КОСОВО', 'Республика Косово', 'XK', 'XKX']
         ])->execute();
+        $this->db->createCommand()->resetSequence('guide_venue_country', 906)->execute();
 
         $this->db->createCommand()->batchInsert('guide_venue_regions', ['id', 'name'], [
             [1, 'Республика Адыгея (Адыгея)'],
@@ -413,6 +414,7 @@ class m210301_151108_create_table_venue extends \artsoft\db\BaseMigration
             [92, 'Севастополь'],
             [99, 'Иные территории, включая город и космодром Байконур'],
         ])->execute();
+        $this->db->createCommand()->resetSequence('guide_venue_regions', 100)->execute();
 
         $this->db->createCommand()->batchInsert('guide_venue_sity', ['country_id', 'name', 'latitude', 'longitude'], [
             [643, 'Москва', 55.753960, 37.620392],
