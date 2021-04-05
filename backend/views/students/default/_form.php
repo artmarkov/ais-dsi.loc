@@ -9,7 +9,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
 use common\models\user\UserCommon;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\student\Student */
+/* @var $model common\models\students\Student */
 /* @var $userCommon \common\models\user\UserCommon */
 /* @var $readonly */
 /* @var $form artsoft\widgets\ActiveForm */
@@ -33,17 +33,17 @@ use common\models\user\UserCommon;
         <div class="panel-heading">
             Информация об ученике
             <?php if (!$userCommon->isNewRecord):?>
-                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/teachers/default/history', 'id' => $model->id]); ?></span>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/students/default/history', 'id' => $model->id]); ?></span>
             <?php endif; ?>
         </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
                     <?= $form->field($userCommon, 'status')->dropDownList(UserCommon::getStatusList()) ?>
-                    <?= $form->field($model, 'position_id')->dropDownList(\common\models\student\StudentPosition::getPositionList(), [
+                    <?= $form->field($model, 'position_id')->dropDownList(\common\models\students\StudentPosition::getPositionList(), [
                         'prompt' => Yii::t('art/student', 'Select Position...'),
                         'id' => 'position_id'
-                    ])->label(Yii::t('art/student', 'Name Position'));
+                    ])->label(Yii::t('art/student', 'Position'));
                     ?>
                 </div>
             </div>
@@ -74,7 +74,7 @@ use common\models\user\UserCommon;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'sert_name')->dropDownList(\common\models\student\Student::STUDENT_DOC, [
+                            <?= $form->field($model, 'sert_name')->dropDownList(\common\models\students\Student::STUDENT_DOC, [
                                 'options' => [
                                     'birth_cert' => ['selected' => true]
                                 ]

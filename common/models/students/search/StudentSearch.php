@@ -1,28 +1,30 @@
 <?php
 
-namespace common\models\student\search;
+namespace common\models\students\search;
 
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\student\Student;
+use common\models\students\Student;
 
 /**
- * StudentSearch represents the model behind the search form about `common\models\student\Student`.
+ * StudentSearch represents the model behind the search form about `common\models\students\Student`.
  */
 class StudentSearch extends Student
 {
     public $studentsFullName;
-    public $birth_timestamp_operand;
+    public $userStatus;
+    public $userBirthDate;
+    public $userBirthDate_operand;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'user_common_id'], 'integer'],
+            [['id', 'userStatus'], 'integer'],
             [['position_id'], 'safe'],
-            [['studentsFullName'], 'string'],
+            [['studentsFullName', 'userBirthDate', 'userBirthDate_operand'], 'string'],
         ];
     }
 
@@ -61,7 +63,14 @@ class StudentSearch extends Student
             'attributes' => [
                 'id',
                 'position_id',
-                'birth_date',
+                'userBirthDate' => [
+                    'asc' => ['birth_date' => SORT_ASC],
+                    'desc' => ['birth_date' => SORT_DESC],
+                ],
+                'userStatus' => [
+                    'asc' => ['status' => SORT_ASC],
+                    'desc' => ['status' => SORT_DESC],
+                ],
                 'studentsFullName' => [
                     'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
                     'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],
@@ -81,13 +90,13 @@ class StudentSearch extends Student
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'user_common_id' => $this->user_common_id,
+            'user_common.status' => $this->userStatus,
+            'position_id' => $this->position_id
 
         ]);
 
-//        $query->andFilterWhere([($this->birth_timestamp_operand) ? $this->birth_timestamp_operand : '=', 'birth_timestamp', ($this->birth_timestamp) ? strtotime($this->birth_timestamp) : null]);
+        $query->andFilterWhere([($this->userBirthDate_operand) ? $this->userBirthDate_operand : '=', 'birth_date', ($this->userBirthDate) ? strtotime($this->userBirthDate) : null]);
         
-        $query->andFilterWhere(['like', 'position_id', $this->position_id]);
 
         if ($this->studentsFullName) {
             $query->andFilterWhere(['like', 'first_name', $this->studentsFullName])

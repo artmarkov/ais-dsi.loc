@@ -1,20 +1,16 @@
 <?php
 
-use yii\helpers\Html;
-
 /* @var $this yii\web\View */
 /* @var $model common\models\student\Student */
 
-$this->title = Yii::t('art','Create');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/student','Students'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = $model->studentsFullName;
 ?>
-
-<div class="student-create">
+<div class="student-update">
     <?= $this->render('_form', [
         'model' => $model,
         'userCommon' => $userCommon,
-       // 'modelsActivity' => $modelsActivity,
+//        'modelsActivity' => $modelsActivity,
         'readonly' => $readonly
     ]) ?>
 </div>

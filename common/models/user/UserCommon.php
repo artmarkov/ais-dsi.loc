@@ -232,36 +232,13 @@ class UserCommon extends ActiveRecord
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
-    /**
-     * @return array
-     */
-    public static function getRelatedModel()
-    {
-        return [
-            self::USER_CATEGORY_EMPLOYEES => 'employees',
-            self::USER_CATEGORY_TEACHERS => 'teachers',
-            self::USER_CATEGORY_STUDENTS => 'students',
-            self::USER_CATEGORY_PARENTS => 'parents',
-        ];
-    }
-
-    /**
-     * @param $val
-     * @return mixed
-     */
-    public static function getRelatedModelValue($val)
-    {
-        $ar = self::getRelatedModel();
-
-        return isset($ar[$val]) ? $ar[$val] : $val;
-    }
 
     /**
      * @return mixed
      */
     public function getRelatedTable()
     {
-        return self::getRelatedModelValue($this->user_category);
+        return $this->user_category;
 
     }
 

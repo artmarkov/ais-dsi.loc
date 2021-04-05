@@ -1,6 +1,6 @@
 <?php
 
-namespace common\models\student;
+namespace common\models\students;
 
 use Yii;
 

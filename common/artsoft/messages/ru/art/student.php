@@ -5,7 +5,7 @@ return [
     'Sertificate Num' => 'Номер',
     'Sertificate Organ' => 'Кем выдан',
     'Sertificate Date' => 'Дата выдачи',
-    'Name Position' => 'Состояние учащегося',
+    'Position' => 'Состояние учащегося',
     'Select Position...' => 'Выберите состояние...',
     'Students' => 'Ученики',
     'The format of the date input {sert_date} in...' => 'Недопустимый формат ввода данных {cert_date...',

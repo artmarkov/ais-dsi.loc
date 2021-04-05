@@ -4,7 +4,7 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\student\Student;
+use common\models\students\Student;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use common\models\user\UserCommon;
@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'studentsFullName',
-                                'controller' => '/student/default',
+                                'controller' => '/students/default',
                                 'title' => function (Student $model) {
                                     return Html::a($model->studentsFullName, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
@@ -79,23 +79,29 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:200px'],
                                 'attribute' => 'position_id',
                                 'value' => 'position.name',
-                                'label' => Yii::t('art/student', 'Name Position'),
-                                'filter' => common\models\student\StudentPosition::getPositionList(),
+                                'label' => Yii::t('art/student', 'Position'),
+                                'filter' => common\models\students\StudentPosition::getPositionList(),
                             ],
-//                            'user.phone',
-//                            'user.email',
-//                            [
-//                                'class' => 'artsoft\grid\columns\DateFilterColumn',
-//                                'attribute' => 'birth_date',
-//                                'value' => function (Student $model) {
-//                                    return '<span style="font-size:85%;" class="label label-'
-//                                        . ((time() >= $model->user->birth_date) ? 'primary' : 'default') . '">'
-//                                        . $model->birth_date . '</span>';
-//                                },
-//                                'label' => Yii::t('art', 'Birth Date'),
-//                                'format' => 'raw',
-//                                'options' => ['style' => 'width:150px'],
-//                            ],
+                            [
+                                'class' => 'artsoft\grid\columns\DateFilterColumn',
+                                'attribute' => 'userBirthDate',
+                                'value' => function (Student $model) {
+                                    return '<span style="font-size:85%;" class="label label-default">'
+                                        . $model->userBirthDate . '</span>';
+                                },
+                                'label' => Yii::t('art', 'Birth Date'),
+                                'format' => 'raw',
+                                'options' => ['style' => 'width:150px'],
+                            ],
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'userStatus',
+                                'optionsArray' => [
+                                    [UserCommon::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
+                                    [UserCommon::STATUS_ARCHIVE, Yii::t('art', 'Archive'), 'danger'],
+                                ],
+                                'options' => ['style' => 'width:120px']
+                            ],
 
                         ],
                     ]);

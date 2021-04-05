@@ -1,6 +1,6 @@
 <?php
 
-namespace common\models\student;
+namespace common\models\students;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
@@ -13,7 +13,7 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 
 /**
- * This is the model class for table "student".
+ * This is the model class for table "students".
  *
  * @property int $id
  * @property int $user_id
@@ -62,6 +62,7 @@ class Student extends \yii\db\ActiveRecord
             ],
         ];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -75,12 +76,22 @@ class Student extends \yii\db\ActiveRecord
             [['sert_organ'], 'string', 'max' => 127],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudentPosition::className(), 'targetAttribute' => ['position_id' => 'id']],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
-            [['sert_series', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) { return $model->sert_name != NULL; }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) { return $model->sert_series != NULL; }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_series', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) { return $model->sert_num != NULL; }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_num', 'sert_series', 'sert_date'], 'required', 'when' => function ($model) { return $model->sert_organ != NULL; }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_num', 'sert_series', 'sert_organ'], 'required', 'when' => function ($model) { return $model->sert_date != NULL; }, 'enableClientValidation' => false],
-            ['sert_date', 'default', 'value' =>  NULL],
+            [['sert_series', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+                return $model->sert_name != NULL;
+            }, 'enableClientValidation' => false],
+            [['sert_name', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+                return $model->sert_series != NULL;
+            }, 'enableClientValidation' => false],
+            [['sert_name', 'sert_series', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+                return $model->sert_num != NULL;
+            }, 'enableClientValidation' => false],
+            [['sert_name', 'sert_num', 'sert_series', 'sert_date'], 'required', 'when' => function ($model) {
+                return $model->sert_organ != NULL;
+            }, 'enableClientValidation' => false],
+            [['sert_name', 'sert_num', 'sert_series', 'sert_organ'], 'required', 'when' => function ($model) {
+                return $model->sert_date != NULL;
+            }, 'enableClientValidation' => false],
+            ['sert_date', 'default', 'value' => NULL],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
         ];
     }
@@ -92,7 +103,7 @@ class Student extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art/student', 'ID'),
-            'position_id' => Yii::t('art/student', 'Position ID'),
+            'position_id' => Yii::t('art/student', 'Position'),
             'sert_name' => Yii::t('art/student', 'Sertificate Name'),
             'sert_series' => Yii::t('art/student', 'Sertificate Series'),
             'sert_num' => Yii::t('art/student', 'Sertificate Num'),
@@ -128,10 +139,17 @@ class Student extends \yii\db\ActiveRecord
     {
         return $this->hasOne(UserCommon::class, ['id' => 'user_common_id']);
     }
+
     public function getUserStatus()
     {
         return $this->user->status;
     }
+
+    public function getUserBirthDate()
+    {
+        return $this->user->birth_date;
+    }
+
     /**
      * Геттер полного имени юзера
      */
@@ -139,6 +157,7 @@ class Student extends \yii\db\ActiveRecord
     {
         return $this->user->fullName;
     }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -168,7 +187,7 @@ class Student extends \yii\db\ActiveRecord
      * @param type $user_id
      * @return array
      */
-    
+
 //    public static function getFamilyList($user_id)
 //    {
 //        $data = UserFamily::find()

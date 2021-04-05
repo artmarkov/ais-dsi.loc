@@ -4,15 +4,15 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\student\StudentPosition;
+use common\models\students\StudentPosition;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/student', 'Name Position');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/student', 'Students'), 'url' => ['student/default/index']];
+$this->title = Yii::t('art/student', 'Position');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/student', 'Students'), 'url' => ['students/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="student-position-index">
@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'name',
-                                'controller' => '/student/position',
+                                'controller' => '/students/position',
                                 'title' => function (StudentPosition $model) {
                                     return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },

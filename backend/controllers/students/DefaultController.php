@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\controllers\student;
+namespace backend\controllers\students;
 
 use artsoft\models\User;
 use backend\models\Model;
@@ -13,12 +13,12 @@ use Yii;
 
 
 /**
- * DefaultController implements the CRUD actions for common\models\student\Student model.
+ * DefaultController implements the CRUD actions for common\models\students\Student model.
  */
 class DefaultController extends MainController
 {
-    public $modelClass = 'common\models\student\Student';
-    public $modelSearchClass = 'common\models\student\search\StudentSearch';
+    public $modelClass = 'common\models\students\Student';
+    public $modelSearchClass = 'common\models\students\search\StudentSearch';
 
     /**
      * @return mixed|string|\yii\web\Response
