@@ -52,7 +52,7 @@ class DefaultController extends MainController
                         $user->generateConfirmationToken();
                     }
                     if ($flag = $user->save(false)) {
-                        $user->assignRoles(['user', 'student']);
+                        $user->assignRoles(['user', 'curator']);
                         $userCommon->user_category = UserCommon::USER_CATEGORY_PARENTS;
                         $userCommon->user_id = $user->id;
                         if ($flag = $userCommon->save(false)) {

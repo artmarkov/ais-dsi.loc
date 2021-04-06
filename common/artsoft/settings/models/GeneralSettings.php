@@ -43,17 +43,17 @@ class GeneralSettings extends BaseSettingsModel
     /**
      * @inheritdoc
      */
-    public function behaviors()
-    {
-        return [
-            'multilingualSettings' => [
-                'class' => MultilingualSettingsBehavior::className(),
-                'attributes' => [
-                    'title', 'description'
-                ]
-            ],
-        ];
-    }
+//    public function behaviors()
+//    {
+//        return [
+//            'multilingualSettings' => [
+//                'class' => MultilingualSettingsBehavior::className(),
+//                'attributes' => [
+//                    'title', 'description'
+//                ]
+//            ],
+//        ];
+//    }
 
     public function attributeLabels()
     {
