@@ -173,14 +173,11 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->db->createCommand()->resetSequence('teachers', 1000)->execute();
-        $this->createIndex('status_id', 'teachers', 'position_id');
+        $this->createIndex('position_id', 'teachers', 'position_id');
         $this->createIndex('user_common_id', 'teachers', 'user_common_id');
-        $this->createIndex('id', 'teachers', 'id', true);
         $this->createIndex('level_id', 'teachers', 'level_id');
         $this->addForeignKey('teachers_ibfk_1', 'teachers', 'level_id', 'guide_teachers_level', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('teachers_ibfk_2', 'teachers', 'position_id', 'guide_teachers_position', 'id', 'NO ACTION', 'NO ACTION');
-
-        $this->db->createCommand()->resetSequence('teachers', 1000)->execute();
 
         $this->createTableWithHistory('teachers_activity', [
             'id' => $this->primaryKey(),
@@ -214,7 +211,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->dropForeignKey('teachers_activity_ibfk_2', 'teachers_activity');
         $this->dropForeignKey('teachers_activity_ibfk_3', 'teachers_activity');
         $this->dropForeignKey('teachers_activity_ibfk_4', 'teachers_activity');
-        $this->dropTable('teachers_activity');
+        $this->dropTableWithHistory('teachers_activity');
         $this->dropTableWithHistory('teachers');
         $this->dropTable('guide_teachers_bonus_category');
         $this->dropTable('guide_teachers_bonus');

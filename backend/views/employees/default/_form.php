@@ -1,21 +1,19 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\teachers\Teachers;
-use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
 use wbraganca\dynamicform\DynamicFormWidget;
 use common\models\user\UserCommon;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\students\Student */
-/* @var $userCommon \common\models\user\UserCommon */
-/* @var $readonly */
+/* @var $model common\models\employees\Employees */
 /* @var $form artsoft\widgets\ActiveForm */
+/* @var $userCommon common\models\user\UserCommon */
+/* @var $readonly */
 ?>
 
-<div class="student-form">
+<div class="employees-form">
 
     <?php
     $form = ActiveForm::begin([
@@ -31,7 +29,7 @@ use common\models\user\UserCommon;
 
     <div class="panel">
         <div class="panel-heading">
-            Информация об ученике
+            Информация о сотруднике
             <?php if (!$userCommon->isNewRecord):?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/students/default/history', 'id' => $model->id]); ?></span>
             <?php endif; ?>
@@ -40,11 +38,7 @@ use common\models\user\UserCommon;
             <div class="row">
                 <div class="col-sm-12">
                     <?= $form->field($userCommon, 'status')->dropDownList(UserCommon::getStatusList()) ?>
-                    <?= $form->field($model, 'position_id')->dropDownList(\common\models\students\StudentPosition::getPositionList(), [
-                        'prompt' => Yii::t('art/student', 'Select Position...'),
-                        'id' => 'position_id'
-                    ])->label(Yii::t('art/student', 'Position'));
-                    ?>
+
                 </div>
             </div>
             <div class="panel panel-primary">
@@ -70,51 +64,33 @@ use common\models\user\UserCommon;
             </div>
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    Документ
+                    Служебные данные
                 </div>
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'sert_name')->dropDownList(\common\models\students\Student::STUDENT_DOC, [
-                                'options' => [
-                                    'birth_cert' => ['selected' => true]
-                                ]
-                            ]) ?>
-                            <?= $form->field($model, 'sert_series')->textInput(['maxlength' => true]) ?>
-                            <?= $form->field($model, 'sert_num')->textInput(['maxlength' => true]) ?>
-                            <?= $form->field($model, 'sert_organ')->textInput(['maxlength' => true]) ?>
-                            <?= $form->field($model, 'sert_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
+                            <?= $form->field($model, 'position')->textInput(['maxlength' => true]) ?>
                         </div>
                     </div>
                 </div>
             </div>
-<!--            --><?php //DynamicFormWidget::begin([
-//                'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-//                'widgetBody' => '.container-items', // required: css class selector
-//                'widgetItem' => '.item', // required: css class
-//                'limit' => 4, // the maximum times, an element can be added (default 999)
-//                'min' => 1, // 0 or 1 (default 1)
-//                'insertButton' => '.add-item', // css class
-//                'deleteButton' => '.remove-item', // css class
-//                'model' => $modelsRelations[0],
-//                'formId' => 'student-form',
-//                'formFields' => [
-//                    'work_id',
-//                    'direction_id',
-//                    'stake_id',
-//                ],
-//            ]); ?>
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Сведения о родителях
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!--            --><?php //DynamicFormWidget::begin([
+            //                'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
+            //                'widgetBody' => '.container-items', // required: css class selector
+            //                'widgetItem' => '.item', // required: css class
+            //                'limit' => 4, // the maximum times, an element can be added (default 999)
+            //                'min' => 1, // 0 or 1 (default 1)
+            //                'insertButton' => '.add-item', // css class
+            //                'deleteButton' => '.remove-item', // css class
+            //                'model' => $modelsRelations[0],
+            //                'formId' => 'student-form',
+            //                'formFields' => [
+            //                    'work_id',
+            //                    'direction_id',
+            //                    'stake_id',
+            //                ],
+            //            ]); ?>
+
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
@@ -123,5 +99,5 @@ use common\models\user\UserCommon;
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>
-        <?php ActiveForm::end(); ?>
+    <?php ActiveForm::end(); ?>
 </div>

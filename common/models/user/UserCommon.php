@@ -23,6 +23,7 @@ use yii\helpers\Url;
  * @property string|null $first_name
  * @property string|null $last_name
  * @property string|null $middle_name
+ * @property string|null $address
  * @property int|null $birth_date
  * @property int|null $gender
  * @property string|null $phone
@@ -87,7 +88,7 @@ class UserCommon extends ActiveRecord
             [['first_name', 'last_name', 'birth_date'], 'required'],
             [['gender', 'status', 'version'], 'integer'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
-            [['user_category', 'first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
+            [['user_category', 'first_name', 'middle_name', 'last_name', 'address'], 'string', 'max' => 124],
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             ['last_name', 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'], 'message' => Yii::t('art/auth', 'The user with the entered data already exists.')],
@@ -109,6 +110,7 @@ class UserCommon extends ActiveRecord
             'middle_name' => Yii::t('art', 'Middle Name'),
             'last_name' => Yii::t('art', 'Last Name'),
             'fullName' => Yii::t('art', 'Full Name'),
+            'address' => Yii::t('art/guide', 'Address'),
             'birth_date' => Yii::t('art', 'Birth Date'),
             'gender' => Yii::t('art', 'Gender'),
             'phone' => Yii::t('art', 'Phone'),

@@ -62,7 +62,6 @@ use artsoft\widgets\Nav;
                     ['label' => 'Показатели эфективности', 'icon' => 'fa fa-minus', 'url' => ['/visual/index']],
                     ['label' => 'Портфолио преподавателей', 'icon' => 'fa fa-minus', 'url' => ['/visual/index']],
                     ['label' => 'Контроль исполнения', 'icon' => 'fa fa-minus', 'url' => ['/visual/index']],
-//                            ['label' => 'Визуализация', 'icon' => 'fa fa-minus', 'url' => ['visual/index']],
                 ],
             ],
             [
@@ -75,6 +74,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Дисциплины', 'icon' => 'fa fa-minus', 'url' => ['/subject/default/index']],
                     ['label' => 'Кадровая служба', 'icon' => 'fa fa-minus', 'url' => ['/guidejob/default/index']],
                     ['label' => 'Структура организации', 'icon' => 'fa fa-minus', 'url' => ['/own/default/index']],
+                    ['label' => 'Системные справочники', 'icon' => 'fa fa-minus', 'url' => ['/guidesys/default/index']],
                 ],
             ],
             [

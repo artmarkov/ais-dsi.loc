@@ -38,6 +38,7 @@ class m130524_201442_init extends BaseMigration
             'last_name' => $this->string(124),
             'first_name' => $this->string(124),
             'middle_name' => $this->string(124),
+            'address' => $this->string(1024),
             'birth_date' => $this->integer(),
             'gender' => $this->integer(1),
             'phone' => $this->string(24),

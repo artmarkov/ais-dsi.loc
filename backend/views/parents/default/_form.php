@@ -1,21 +1,19 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\teachers\Teachers;
-use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
 use wbraganca\dynamicform\DynamicFormWidget;
 use common\models\user\UserCommon;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\students\Student */
-/* @var $userCommon \common\models\user\UserCommon */
-/* @var $readonly */
+/* @var $model common\models\parents\Parents */
 /* @var $form artsoft\widgets\ActiveForm */
+/* @var $userCommon common\models\user\UserCommon */
+/* @var $readonly */
 ?>
 
-<div class="student-form">
+<div class="parents-form">
 
     <?php
     $form = ActiveForm::begin([
@@ -31,7 +29,7 @@ use common\models\user\UserCommon;
 
     <div class="panel">
         <div class="panel-heading">
-            Информация об ученике
+            Информация о родителе (официальном представителе)
             <?php if (!$userCommon->isNewRecord):?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/students/default/history', 'id' => $model->id]); ?></span>
             <?php endif; ?>
@@ -40,11 +38,7 @@ use common\models\user\UserCommon;
             <div class="row">
                 <div class="col-sm-12">
                     <?= $form->field($userCommon, 'status')->dropDownList(UserCommon::getStatusList()) ?>
-                    <?= $form->field($model, 'position_id')->dropDownList(\common\models\students\StudentPosition::getPositionList(), [
-                        'prompt' => Yii::t('art/student', 'Select Position...'),
-                        'id' => 'position_id'
-                    ])->label(Yii::t('art/student', 'Position'));
-                    ?>
+
                 </div>
             </div>
             <div class="panel panel-primary">
@@ -75,9 +69,9 @@ use common\models\user\UserCommon;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'sert_name')->dropDownList(\common\models\students\Student::STUDENT_DOC, [
+                            <?= $form->field($model, 'sert_name')->dropDownList(\common\models\parents\Parents::PARENT_DOC, [
                                 'options' => [
-                                    'birth_cert' => ['selected' => true]
+                                    'password' => ['selected' => true]
                                 ]
                             ]) ?>
                             <?= $form->field($model, 'sert_series')->textInput(['maxlength' => true]) ?>
@@ -106,7 +100,7 @@ use common\models\user\UserCommon;
 //            ]); ?>
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    Сведения о родителях
+                    Сведения об учениках
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -123,5 +117,5 @@ use common\models\user\UserCommon;
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>
-        <?php ActiveForm::end(); ?>
+    <?php ActiveForm::end(); ?>
 </div>
