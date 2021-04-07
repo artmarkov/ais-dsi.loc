@@ -1,7 +1,7 @@
 <?php if (!$model->isNewRecord): ?>
     <div class="info-model text-default text-muted">
         <?php if (isset($model->id)): ?>
-            <span><strong>#</strong><?= $model->id ?></span>
+            <span><?= sprintf('#%06d', $model->id) ?></span>
         <?php endif; ?>
         <?php if (isset($model->createdDatetime)): ?>
             <span><strong><?= $model->attributeLabels()['created_at'] ?? \Yii::t('art', 'Created') ?></strong> : <?= $model->createdDatetime ?>

@@ -10,8 +10,4 @@ class DefaultController extends MainController
     public $modelClass       = 'common\models\creative\CreativeWorks';
     public $modelSearchClass = 'common\models\creative\search\CreativeWorksSearch';
 
-    public function actionView($id)
-    {
-        return $this->actionUpdate($id);
-    }
 }

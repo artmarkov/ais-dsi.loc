@@ -121,7 +121,7 @@ class Teachers extends ActiveRecord
             'department_list' => Yii::t('art/guide', 'Department'),
             'year_serv' => Yii::t('art/teachers', 'Year Serv'),
             'year_serv_spec' => Yii::t('art/teachers', 'Year Serv Spec'),
-            'teachersFullName' => Yii::t('art', 'Full Name'),
+            'fullName' => Yii::t('art', 'Full Name'),
             'gridDepartmentSearch' => Yii::t('art/guide', 'Department'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -176,7 +176,7 @@ class Teachers extends ActiveRecord
     /**
      * Геттер полного имени юзера
      */
-    public function getTeachersFullName()
+    public function getFullName()
     {
         return $this->user->fullName;
     }

@@ -3,7 +3,7 @@
 namespace backend\controllers\parents;
 
 use artsoft\models\User;
-use common\models\history\StudentsHistory;
+use common\models\history\ParentsHistory;
 use common\models\teachers\TeachersActivity;
 use common\models\user\UserCommon;
 use Yii;
@@ -99,7 +99,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = $this->findModel($id);
-        $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_STUDENTS]);
+        $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_PARENTS]);
 
         if (!isset($model, $userCommon)) {
             throw new NotFoundHttpException("The user was not found.");

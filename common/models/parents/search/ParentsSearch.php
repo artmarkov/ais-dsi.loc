@@ -12,14 +12,18 @@ use common\models\parents\Parents;
  */
 class ParentsSearch extends Parents
 {
+    public $fullName;
+    public $userStatus;
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'user_common_id', 'sert_date', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['id', 'user_common_id', 'sert_date', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'userStatus'], 'integer'],
             [['sert_name', 'sert_series', 'sert_num', 'sert_organ'], 'safe'],
+            ['fullName', 'string'],
         ];
     }
 
@@ -55,6 +59,20 @@ class ParentsSearch extends Parents
             ],
         ]);
 
+        $dataProvider->setSort([
+            'attributes' => [
+                'id',
+                'sert_date',
+                'sert_name',
+                'sert_series',
+                'sert_num',
+                'sert_organ',
+                'fullName' => [
+                    'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
+                    'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],
+                ]
+            ]
+        ]);
         $this->load($params);
 
         if (!$this->validate()) {
@@ -67,11 +85,7 @@ class ParentsSearch extends Parents
             'id' => $this->id,
             'user_common_id' => $this->user_common_id,
             'sert_date' => $this->sert_date,
-            'created_at' => $this->created_at,
-            'created_by' => $this->created_by,
-            'updated_at' => $this->updated_at,
-            'updated_by' => $this->updated_by,
-            'version' => $this->version,
+            'user_common.status' => $this->userStatus,
         ]);
 
         $query->andFilterWhere(['like', 'sert_name', $this->sert_name])
@@ -79,6 +93,12 @@ class ParentsSearch extends Parents
             ->andFilterWhere(['like', 'sert_num', $this->sert_num])
             ->andFilterWhere(['like', 'sert_organ', $this->sert_organ]);
 
+        if ($this->fullName) {
+            $query->andFilterWhere(['like', 'first_name', $this->fullName])
+                ->orFilterWhere(['like', 'last_name', $this->fullName])
+                ->orFilterWhere(['like', 'middle_name', $this->fullName]);
+
+        }
         return $dataProvider;
     }
 }

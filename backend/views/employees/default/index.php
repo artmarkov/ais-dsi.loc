@@ -7,6 +7,7 @@ use artsoft\grid\GridQuickLinks;
 use common\models\employees\Employees;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
+use common\models\user\UserCommon;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\employees\search\EmployeesSearch */
@@ -25,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-6">
-                            <?php 
+                            <?php
                             /* Uncomment this to activate GridQuickLinks */
                             /* echo GridQuickLinks::widget([
                                 'model' => Employees::className(),
@@ -35,49 +36,57 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?=  GridPageSize::widget(['pjaxId' => 'employees-grid-pjax']) ?>
+                            <?= GridPageSize::widget(['pjaxId' => 'employees-grid-pjax']) ?>
                         </div>
                     </div>
 
-                    <?php 
+                    <?php
                     Pjax::begin([
                         'id' => 'employees-grid-pjax',
                     ])
                     ?>
 
-                    <?= 
+                    <?=
                     GridView::widget([
                         'id' => 'employees-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'employees-grid',
-                            'actions' => [ Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
+                            'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
+                                'options' => ['style' => 'width:30px'],
                                 'attribute' => 'id',
+                                'value' => function (Employees $model) {
+                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                },
+                                'format' => 'raw'
+                            ],
+                            [
+                                'attribute' => 'fullName',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/employees/default',
-                                'title' => function(Employees $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'title' => function (Employees $model) {
+                                    return Html::a($model->fullName, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                             ],
-
-            'id',
-            'user_common_id',
-            'position',
-            'created_at',
-            'created_by',
-            // 'updated_at',
-            // 'updated_by',
-            // 'version',
-
-                ],
-            ]);
-            ?>
+                            'position',
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'userStatus',
+                                'optionsArray' => [
+                                    [UserCommon::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
+                                    [UserCommon::STATUS_ARCHIVE, Yii::t('art', 'Archive'), 'danger'],
+                                ],
+                                'options' => ['style' => 'width:120px']
+                            ],
+                        ],
+                    ]);
+                    ?>
 
                     <?php Pjax::end() ?>
                 </div>

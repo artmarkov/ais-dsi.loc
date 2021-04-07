@@ -11,5 +11,8 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="creative-works-create">
-    <?=  $this->render('_form', compact('model')) ?>
+    <?= $this->render('_form', [
+        'model' => $model,
+        'readonly' => false
+    ]) ?>
 </div>

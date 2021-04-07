@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $userCommon common\models\user\UserCommon */
 /* @var $readonly */
 
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/employees', 'Employees'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/employees', 'Employees'), 'url' => ['employees/default/index']];
 $this->params['breadcrumbs'][] = Yii::t('art', 'Create');
 ?>
 
@@ -15,7 +15,6 @@ $this->params['breadcrumbs'][] = Yii::t('art', 'Create');
     <?= $this->render('_form', [
         'model' => $model,
         'userCommon' => $userCommon,
-        // 'modelsActivity' => $modelsActivity,
         'readonly' => $readonly
     ]) ?>
 </div>

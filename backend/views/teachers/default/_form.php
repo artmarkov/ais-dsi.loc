@@ -101,32 +101,9 @@ EOF;
             <?php endif; ?>
         </div>
         <div class="panel-body">
-            <div class="row">
-                <div class="col-sm-12">
-                    <?= $form->field($userCommon, 'status')->dropDownList(UserCommon::getStatusList()) ?>
-                </div>
-            </div>
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Основные сведения
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
 
-                            <?= $form->field($userCommon, 'last_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($userCommon, 'first_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($userCommon, 'middle_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($userCommon, 'gender')->dropDownList(UserCommon::getGenderList()) ?>
-                            <?= $form->field($userCommon, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
-                            <?= $form->field($userCommon, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
-                            <?= $form->field($userCommon, 'address')->textInput(['maxlength' => 1024]) ?>
-                            <?= $form->field($userCommon, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                            <?= $form->field($userCommon, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <?= $this->render('@backend/views/user/_form', ['form' => $form, 'model' => $userCommon, 'readonly' => $readonly]) ?>
+
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Должностные характеристики
@@ -137,21 +114,23 @@ EOF;
                             <?php
                             echo $form->field($model, 'position_id')->dropDownList(common\models\guidejob\Position::getPositionList(), [
                                 'prompt' => Yii::t('art/teachers', 'Select Position...'),
-                                'id' => 'position_id'
+                                'id' => 'position_id',
+                                'disabled' => $readonly,
                             ])->label(Yii::t('art/teachers', 'Name Position'));
                             ?>
 
                             <?php
                             echo $form->field($model, 'level_id')->dropDownList(common\models\guidejob\Level::getLevelList(), [
                                 'prompt' => Yii::t('art/teachers', 'Select Level...'),
-                                'id' => 'level_id'
+                                'id' => 'level_id',
+                                'disabled' => $readonly,
                             ])->label(Yii::t('art/teachers', 'Name Level'));
                             ?>
                             <?= $form->field($model, 'tab_num')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'year_serv')->textInput() ?>
-                            <?= $form->field($model, 'date_serv')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date')); ?>
+                            <?= $form->field($model, 'date_serv')->widget(DatePicker::class,['disabled' => $readonly])->label(Yii::t('art/teachers', 'For date')); ?>
                             <?= $form->field($model, 'year_serv_spec')->textInput() ?>
-                            <?= $form->field($model, 'date_serv_spec')->widget(DatePicker::classname())->label(Yii::t('art/teachers', 'For date')); ?>
+                            <?= $form->field($model, 'date_serv_spec')->widget(DatePicker::class,['disabled' => $readonly])->label(Yii::t('art/teachers', 'For date')); ?>
                             <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
                                 'data' => Department::getDepartmentList(),
                                 'options' => [

@@ -4,6 +4,7 @@ namespace common\models\parents;
 
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
+use artsoft\traits\DateTimeTrait;
 use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -27,6 +28,8 @@ use yii\behaviors\TimestampBehavior;
  */
 class Parents extends \artsoft\db\ActiveRecord
 {
+    use DateTimeTrait;
+
     const PARENT_DOC = [
         'password' => 'Паспорт',
         'military_card' => 'Военный билет',
@@ -64,7 +67,6 @@ class Parents extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_common_id', 'sert_date', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
             [['user_common_id', 'version'], 'integer'],
             [['created_at', 'created_by', 'updated_at', 'updated_by', 'sert_date'], 'safe'],
             [['sert_name', 'sert_series', 'sert_num'], 'string', 'max' => 32],
@@ -84,12 +86,13 @@ class Parents extends \artsoft\db\ActiveRecord
             'sert_num' => Yii::t('art/parents', 'Sertificate Num'),
             'sert_organ' => Yii::t('art/parents', 'Sertificate Organ'),
             'sert_date' => Yii::t('art/parents', 'Sertificate Date'),
-            'parentsFullName' => Yii::t('art', 'Full Name'),
+            'fullName' => Yii::t('art', 'Full Name'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'userStatus' => Yii::t('art', 'Status'),
         ];
     }
     public function optimisticLock()
@@ -117,7 +120,7 @@ class Parents extends \artsoft\db\ActiveRecord
     /**
      * Геттер полного имени юзера
      */
-    public function getParentsFullName()
+    public function getFullName()
     {
         return $this->user->fullName;
     }

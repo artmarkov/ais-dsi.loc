@@ -20,7 +20,6 @@ class ParentsHistory extends BaseHistory
     protected function getFields()
     {
         return [
-            'position_id',
             'sert_name',
             'sert_series',
             'sert_num',
@@ -39,10 +38,8 @@ class ParentsHistory extends BaseHistory
     protected static function getDisplayValue($model, $name, $value)
     {
         switch ($name) {
-            case 'position_id':
-                return isset($model->position_id) ? $model->position->name : $value;
             case 'sert_name':
-                return isset(self::getModelName()::PARENTS_DOC[$value]) ? self::getModelName()::PARENTS_DOC[$value] : $value;
+                return isset(self::getModelName()::PARENT_DOC[$value]) ? self::getModelName()::PARENT_DOC[$value] : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }

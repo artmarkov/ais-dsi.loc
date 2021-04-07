@@ -1,7 +1,7 @@
 <?php
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/student', 'Students'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->studentsFullName, 'url' => ['/students/default/update', 'id' => $model->id]];
-$this->title = 'История изменений: ' . $model->studentsFullName;
+$this->params['breadcrumbs'][] = ['label' => $model->fullName, 'url' => ['/students/default/view', 'id' => $model->id]];
+$this->title = 'История изменений: ' . $model->fullName;
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

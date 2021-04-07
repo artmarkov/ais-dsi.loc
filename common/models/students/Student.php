@@ -109,7 +109,7 @@ class Student extends \yii\db\ActiveRecord
             'sert_num' => Yii::t('art/student', 'Sertificate Num'),
             'sert_organ' => Yii::t('art/student', 'Sertificate Organ'),
             'sert_date' => Yii::t('art/student', 'Sertificate Date'),
-            'studentsFullName' => Yii::t('art', 'Full Name'),
+            'fullName' => Yii::t('art', 'Full Name'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -153,7 +153,7 @@ class Student extends \yii\db\ActiveRecord
     /**
      * Геттер полного имени юзера
      */
-    public function getStudentsFullName()
+    public function getFullName()
     {
         return $this->user->fullName;
     }

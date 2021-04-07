@@ -12,14 +12,17 @@ use common\models\employees\Employees;
  */
 class EmployeesSearch extends Employees
 {
+    public $fullName;
+    public $userStatus;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'user_common_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['id', 'user_common_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'userStatus'], 'integer'],
             [['position'], 'safe'],
+            ['fullName', 'string'],
         ];
     }
 
@@ -54,7 +57,17 @@ class EmployeesSearch extends Employees
                 ],
             ],
         ]);
-
+        $dataProvider->setSort([
+            'attributes' => [
+                'id',
+                'position',
+                'userStatus',
+                'fullName' => [
+                    'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
+                    'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],
+                ]
+            ]
+        ]);
         $this->load($params);
 
         if (!$this->validate()) {
@@ -65,16 +78,16 @@ class EmployeesSearch extends Employees
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'user_common_id' => $this->user_common_id,
-            'created_at' => $this->created_at,
-            'created_by' => $this->created_by,
-            'updated_at' => $this->updated_at,
-            'updated_by' => $this->updated_by,
-            'version' => $this->version,
+            'user_common.status' => $this->userStatus,
         ]);
 
         $query->andFilterWhere(['like', 'position', $this->position]);
+        if ($this->fullName) {
+            $query->andFilterWhere(['like', 'first_name', $this->fullName])
+                ->orFilterWhere(['like', 'last_name', $this->fullName])
+                ->orFilterWhere(['like', 'middle_name', $this->fullName]);
 
+        }
         return $dataProvider;
     }
 }

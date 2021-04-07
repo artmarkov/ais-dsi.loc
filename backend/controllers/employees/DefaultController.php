@@ -3,6 +3,7 @@
 namespace backend\controllers\employees;
 
 use artsoft\models\User;
+use common\models\history\EmployeesHistory;
 use common\models\teachers\TeachersActivity;
 use common\models\user\UserCommon;
 use Yii;
@@ -27,18 +28,11 @@ class DefaultController extends MainController
         $user = new User();
         $userCommon = new UserCommon();
         $model = new $this->modelClass;
-//        $modelsActivity = [new TeachersActivity];
 
         if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
-
-//            $modelsActivity = Model::createMultiple(TeachersActivity::class);
-//            Model::loadMultiple($modelsActivity, Yii::$app->request->post());
-
             // validate all models
             $valid = $userCommon->validate();
             $valid = $model->validate() && $valid;
-//            $valid = Model::validateMultiple($modelsActivity) && $valid;
-            //$valid = true;
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
@@ -51,22 +45,13 @@ class DefaultController extends MainController
                     }
                     if ($flag = $user->save(false)) {
                         $user->assignRoles(['user', 'employees']);
-                        $userCommon->user_category = UserCommon::USER_CATEGORY_PARENTS;
+                        $userCommon->user_category = UserCommon::USER_CATEGORY_EMPLOYEES;
                         $userCommon->user_id = $user->id;
                         if ($flag = $userCommon->save(false)) {
                             $model->user_common_id = $userCommon->id;
-                            if ($flag = $model->save(false)) {
-//                                foreach ($modelsActivity as $modelActivity) {
-//                                    $modelActivity->teachers_id = $model->id;
-//                                    if (!($flag = $modelActivity->save(false))) {
-//                                        $transaction->rollBack();
-//                                        break;
-//                                    }
-//                                }
-                            }
+                            $flag = $model->save(false);
                         }
                     }
-
                     if ($flag) {
                         $transaction->commit();
                         $this->getSubmitAction($model);
@@ -76,11 +61,9 @@ class DefaultController extends MainController
                 }
             }
         }
-
         return $this->renderIsAjax('create', [
             'userCommon' => $userCommon,
             'model' => $model,
-            // 'modelsActivity' => (empty($modelsActivity)) ? [new TeachersActivity] : $modelsActivity,
             'readonly' => false
         ]);
     }
@@ -97,42 +80,21 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = $this->findModel($id);
-        $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_STUDENTS]);
+        $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_EMPLOYEES]);
 
         if (!isset($model, $userCommon)) {
             throw new NotFoundHttpException("The user was not found.");
         }
-
-//        $modelsActivity = $model->teachersActivity;
-
         if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
-
-//            $oldIDs = ArrayHelper::map($modelsActivity, 'id', 'id');
-//            $modelsActivity = Model::createMultiple(TeachersActivity::class, $modelsActivity);
-//            Model::loadMultiple($modelsActivity, Yii::$app->request->post());
-//            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsActivity, 'id', 'id')));
-
             // validate all models
             $valid = $userCommon->validate();
             $valid = $model->validate() && $valid;
-//            $valid = Model::validateMultiple($modelsActivity) && $valid;
 
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $userCommon->save(false)) {
-                        if ($flag = $model->save(false)) {
-                            if (!empty($deletedIDs)) {
-                                TeachersActivity::deleteAll(['id' => $deletedIDs]);
-                            }
-//                            foreach ($modelsActivity as $modelActivity) {
-//                                $modelActivity->teachers_id = $model->id;
-//                                if (!($flag = $modelActivity->save(false))) {
-//                                    $transaction->rollBack();
-//                                    break;
-//                                }
-//                            }
-                        }
+                        $flag = $model->save(false);
                     }
                     if ($flag) {
                         $transaction->commit();
@@ -143,11 +105,9 @@ class DefaultController extends MainController
                 }
             }
         }
-
         return $this->render('update', [
             'userCommon' => $userCommon,
             'model' => $model,
-//            'modelsActivity' => (empty($modelsActivity)) ? [new TeachersActivity] : $modelsActivity,
             'readonly' => $readonly
         ]);
     }
@@ -161,7 +121,7 @@ class DefaultController extends MainController
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
         $model = $this->findModel($id);
-        $data = new ParentsHistory($id);
+        $data = new EmployeesHistory($id);
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 }

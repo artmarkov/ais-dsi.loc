@@ -140,12 +140,16 @@ abstract class BaseController extends \artsoft\controllers\BaseController
      *
      * @return mixed
      */
+//    public function actionView($id)
+//    {
+//        $this->view->params['tabMenu'] = $this->tabMenu;
+//        return $this->renderIsAjax($this->viewView, [
+//            'model' => $this->findModel($id),
+//        ]);
+//    }
     public function actionView($id)
     {
-        $this->view->params['tabMenu'] = $this->tabMenu;
-        return $this->renderIsAjax($this->viewView, [
-            'model' => $this->findModel($id),
-        ]);
+        return $this->actionUpdate($id, true);
     }
 
     /**
@@ -176,7 +180,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
      *
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $readonly = false)
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
 
@@ -188,7 +192,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
             $this->getSubmitAction($model);
         }
 
-        return $this->renderIsAjax($this->updateView, compact('model'));
+        return $this->renderIsAjax($this->updateView, compact(['model', 'readonly']));
     }
 
     /**

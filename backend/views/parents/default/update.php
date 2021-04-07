@@ -7,8 +7,8 @@ use yii\helpers\Html;
 /* @var $userCommon common\models\user\UserCommon */
 /* @var $readonly */
 
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/parents', 'Parents'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = $model->parentsFullName;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/parents', 'Parents'), 'url' => ['parents/default/index']];
+$this->params['breadcrumbs'][] = $model->fullName;
 ?>
 <div class="parents-update">
     <?= $this->render('_form', [

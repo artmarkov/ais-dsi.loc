@@ -249,10 +249,8 @@ class UserCommon extends ActiveRecord
      */
     public function getRelatedId()
     {
-        $table = self::getRelatedTable();
-        return self::find()->innerJoin($table, 'user_common.id = ' . $table . '.id')
+        return self::find()->select(self::getRelatedTable() . '.id')->innerJoin(self::getRelatedTable(), 'user_common_id = user_common.id')
             ->scalar();
-
     }
 
     /**
@@ -360,7 +358,7 @@ class UserCommon extends ActiveRecord
     /**
      * Slug translit
      *
-     * @param  string $slug
+     * @param string $slug
      * @return static|null
      */
     protected static function slug($string, $replacement = '-', $lowercase = true)
@@ -378,7 +376,7 @@ class UserCommon extends ActiveRecord
     public function beforeDelete()
     {
         $model = User::findOne($this->user_id);
-        if(!$model->delete()){
+        if (!$model->delete()) {
             return false;
         }
         return parent::beforeDelete();

@@ -75,7 +75,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['category_id', 'name', 'description', 'department_list', 'teachers_list'], 'required'],
+            [['category_id', 'name', 'department_list', 'teachers_list'], 'required'],
             [['category_id', 'created_by', 'updated_by', 'status', 'version'], 'integer'],
             [['created_at', 'updated_at'], 'integer'],
             [['published_at'], 'safe'],

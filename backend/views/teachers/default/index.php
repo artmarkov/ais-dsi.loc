@@ -68,11 +68,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:800px'],
-                                'attribute' => 'teachersFullName',
+                                'attribute' => 'fullName',
                                 'controller' => '/teachers/default',
 
                                 'title' => function (Teachers $model) {
-                                    return Html::a($model->teachersFullName, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->fullName, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                             ],

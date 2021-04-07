@@ -20,7 +20,7 @@ use common\models\user\UserCommon;
         'fieldConfig' => [
             'inputOptions' => ['readonly' => $readonly]
         ],
-        'id' => 'student-form',
+        'id' => 'employees-form',
         'validateOnBlur' => false,
         'options' => ['enctype' => 'multipart/form-data'],
     ])
@@ -31,37 +31,13 @@ use common\models\user\UserCommon;
         <div class="panel-heading">
             Информация о сотруднике
             <?php if (!$userCommon->isNewRecord):?>
-                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/students/default/history', 'id' => $model->id]); ?></span>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/employees/default/history', 'id' => $model->id]); ?></span>
             <?php endif; ?>
         </div>
         <div class="panel-body">
-            <div class="row">
-                <div class="col-sm-12">
-                    <?= $form->field($userCommon, 'status')->dropDownList(UserCommon::getStatusList()) ?>
 
-                </div>
-            </div>
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Основные сведения
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
+            <?= $this->render('@backend/views/user/_form', ['form' => $form, 'model' => $userCommon, 'readonly' => $readonly]) ?>
 
-                            <?= $form->field($userCommon, 'last_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($userCommon, 'first_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($userCommon, 'middle_name')->textInput(['maxlength' => 124]) ?>
-                            <?= $form->field($userCommon, 'gender')->dropDownList(UserCommon::getGenderList()) ?>
-                            <?= $form->field($userCommon, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()); ?>
-                            <?= $form->field($userCommon, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
-                            <?= $form->field($userCommon, 'address')->textInput(['maxlength' => 1024]) ?>
-                            <?= $form->field($userCommon, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                            <?= $form->field($userCommon, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Служебные данные

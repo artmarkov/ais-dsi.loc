@@ -5,6 +5,7 @@ use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
 use common\models\parents\Parents;
+use common\models\user\UserCommon;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
@@ -57,31 +58,35 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
+                                'options' => ['style' => 'width:30px'],
                                 'attribute' => 'id',
+                                'value' => function (Parents $model) {
+                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                },
+                                'format' => 'raw'
+                            ],
+                            [
+                                'attribute' => 'fullName',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/parents/default',
-                                'title' => function(Parents $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'title' => function (Parents $model) {
+                                    return Html::a($model->fullName, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                             ],
 
-            'id',
-            'user_common_id',
-            'sert_name',
-            'sert_series',
-            'sert_num',
-            // 'sert_organ',
-            // 'sert_date',
-            // 'created_at',
-            // 'created_by',
-            // 'updated_at',
-            // 'updated_by',
-            // 'version',
-
-                ],
-            ]);
-            ?>
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'userStatus',
+                                'optionsArray' => [
+                                    [UserCommon::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
+                                    [UserCommon::STATUS_ARCHIVE, Yii::t('art', 'Archive'), 'danger'],
+                                ],
+                                'options' => ['style' => 'width:120px']
+                            ],
+                        ],
+                    ]);
+                    ?>
 
                     <?php Pjax::end() ?>
                 </div>

@@ -14,6 +14,17 @@ class DefaultController extends BaseController
     public $modelSearchClass = 'artsoft\queue\models\search\QueueScheduleSearch';
 
     /**
+     * @param int $id
+     * @return mixed|string|\yii\web\Response
+     * @throws \yii\web\NotFoundHttpException
+     */
+    public function actionView($id)
+    {
+        return $this->renderIsAjax($this->viewView, [
+            'model' => $this->findModel($id),
+        ]);
+    }
+    /**
      * 
      * @param type $id
      * @return type

@@ -12,7 +12,7 @@ use common\models\teachers\Teachers;
  */
 class TeachersSearch extends Teachers
 {
-    public $teachersFullName;
+    public $fullName;
     public $userStatus;
 
     /**
@@ -23,7 +23,7 @@ class TeachersSearch extends Teachers
         return [
             [['id', 'year_serv', 'year_serv_spec', 'date_serv', 'date_serv_spec', 'userStatus'], 'integer'],
             [['position_id', 'level_id', 'tab_num', 'bonus_summ'], 'safe'],
-            ['teachersFullName', 'string'],
+            ['fullName', 'string'],
             [['department_list', 'bonus_list'], 'string'],
         ];
     }
@@ -72,7 +72,7 @@ class TeachersSearch extends Teachers
 //                'department_list',
                 'year_serv',
                 'year_serv_spec',
-                'teachersFullName' => [
+                'fullName' => [
                     'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
                     'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],
                 ]
@@ -102,10 +102,10 @@ class TeachersSearch extends Teachers
         $query->andFilterWhere(['like', 'bonus_list', $this->bonus_list]);
         $query->andFilterWhere(['like', 'tab_num', $this->tab_num]);
 
-        if ($this->teachersFullName) {
-            $query->andFilterWhere(['like', 'first_name', $this->teachersFullName])
-                ->orFilterWhere(['like', 'last_name', $this->teachersFullName])
-                ->orFilterWhere(['like', 'middle_name', $this->teachersFullName]);
+        if ($this->fullName) {
+            $query->andFilterWhere(['like', 'first_name', $this->fullName])
+                ->orFilterWhere(['like', 'last_name', $this->fullName])
+                ->orFilterWhere(['like', 'middle_name', $this->fullName]);
 
         }
         return $dataProvider;

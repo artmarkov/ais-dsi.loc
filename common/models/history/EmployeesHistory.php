@@ -24,7 +24,6 @@ class EmployeesHistory extends BaseHistory
         ];
     }
 
-
     /**
      * @return array
      */
@@ -35,12 +34,6 @@ class EmployeesHistory extends BaseHistory
         $id = $this->getModelName()::findOne($this->objId)->user->id;
         $vf = new UserCommonHistory($id);
         $selfHistory = array_merge($selfHistory, $vf->getHistory());
-
-//        foreach (TeachersActivityHistory::getLinkedIdList('teachers_id', $this->objId) as $teachersId) {
-//            $vf = new TeachersActivityHistory($teachersId);
-//            $selfHistory = array_merge($selfHistory, $vf->getHistory());
-//        }
-
         krsort($selfHistory);
         return $selfHistory;
     }

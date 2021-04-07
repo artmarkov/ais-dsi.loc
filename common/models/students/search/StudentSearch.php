@@ -12,7 +12,7 @@ use common\models\students\Student;
  */
 class StudentSearch extends Student
 {
-    public $studentsFullName;
+    public $fullName;
     public $userStatus;
     public $userBirthDate;
     public $userBirthDate_operand;
@@ -24,7 +24,7 @@ class StudentSearch extends Student
         return [
             [['id', 'userStatus'], 'integer'],
             [['position_id'], 'safe'],
-            [['studentsFullName', 'userBirthDate', 'userBirthDate_operand'], 'string'],
+            [['fullName', 'userBirthDate', 'userBirthDate_operand'], 'string'],
         ];
     }
 
@@ -55,7 +55,7 @@ class StudentSearch extends Student
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'studentsFullName' => SORT_ASC,
+                    'fullName' => SORT_ASC,
                 ],
             ],
         ]);
@@ -71,7 +71,7 @@ class StudentSearch extends Student
                     'asc' => ['status' => SORT_ASC],
                     'desc' => ['status' => SORT_DESC],
                 ],
-                'studentsFullName' => [
+                'fullName' => [
                     'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
                     'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],
                 ]
@@ -98,10 +98,10 @@ class StudentSearch extends Student
         $query->andFilterWhere([($this->userBirthDate_operand) ? $this->userBirthDate_operand : '=', 'birth_date', ($this->userBirthDate) ? strtotime($this->userBirthDate) : null]);
         
 
-        if ($this->studentsFullName) {
-            $query->andFilterWhere(['like', 'first_name', $this->studentsFullName])
-                ->orFilterWhere(['like', 'last_name', $this->studentsFullName])
-                ->orFilterWhere(['like', 'middle_name', $this->studentsFullName]);
+        if ($this->fullName) {
+            $query->andFilterWhere(['like', 'first_name', $this->fullName])
+                ->orFilterWhere(['like', 'last_name', $this->fullName])
+                ->orFilterWhere(['like', 'middle_name', $this->fullName]);
 
         }
        

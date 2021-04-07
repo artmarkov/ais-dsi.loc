@@ -9,7 +9,7 @@ use yii\helpers\Html;
 /* @var $readonly */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $model->teachersFullName;
+$this->params['breadcrumbs'][] = $model->fullName;
 ?>
 <div class="teachers-update">
     <?= $this->render('_form', [

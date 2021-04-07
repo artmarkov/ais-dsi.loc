@@ -6,7 +6,7 @@
 /* @var $readonly */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/student','Students'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $model->studentsFullName;
+$this->params['breadcrumbs'][] = $model->fullName;
 ?>
 <div class="student-update">
     <?= $this->render('_form', [

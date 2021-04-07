@@ -2,6 +2,9 @@
 
 namespace common\models\employees;
 
+use artsoft\models\User;
+use artsoft\traits\DateTimeTrait;
+use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -20,6 +23,7 @@ use yii\behaviors\TimestampBehavior;
  */
 class Employees extends \artsoft\db\ActiveRecord
 {
+    use DateTimeTrait;
     /**
      * {@inheritdoc}
      */
@@ -35,10 +39,6 @@ class Employees extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
-//            [
-//                'class' => ArrayFieldBehavior::class,
-//                'attributes' => ['bonus_list', 'department_list'],
-//            ],
         ];
     }
     /**
@@ -47,7 +47,6 @@ class Employees extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_common_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
             [['user_common_id', 'version'], 'integer'],
             [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
             [['position'], 'string', 'max' => 256],
@@ -61,9 +60,8 @@ class Employees extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art/employees', 'ID'),
-            'user_common_id' => Yii::t('art/employees', 'User Common ID'),
             'position' => Yii::t('art/employees', 'Position'),
-            'employeesFullName' => Yii::t('art', 'Full Name'),
+            'fullName' => Yii::t('art', 'Full Name'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -71,5 +69,57 @@ class Employees extends \artsoft\db\ActiveRecord
             'version' => Yii::t('art', 'Version'),
             'userStatus' => Yii::t('art', 'Status'),
         ];
+    }
+
+    public function optimisticLock()
+    {
+        return 'version';
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(UserCommon::class, ['id' => 'user_common_id']);
+    }
+    public function getUserStatus()
+    {
+        return $this->user->status;
+    }
+    /**
+     * Геттер полного имени юзера
+     */
+    public function getFullName()
+    {
+        return $this->user->fullName;
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatedBy()
+    {
+        return $this->hasOne(User::class, ['id' => 'created_by']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUpdatedBy()
+    {
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
+    }
+
+    /**
+     * @return bool
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function beforeDelete()
+    {
+        $model = UserCommon::findOne($this->user_common_id);
+        if(!$model->delete()){
+            return false;
+        }
+        return parent::beforeDelete();
     }
 }
