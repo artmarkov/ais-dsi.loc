@@ -12,7 +12,7 @@ use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 
 /**
- * This is the model class for table "{{%file_manager}}".
+ * This is the model class for table "file_manager".
  *
  * @property int $id
  * @property string $orig_name

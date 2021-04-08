@@ -44,7 +44,7 @@ use common\models\user\UserCommon;
             ])->label(Yii::t('art/student', 'Position'));
             ?>
 
-            <?= $this->render('@backend/views/user/_form', ['form' => $form, 'model' => $userCommon, 'readonly' => $readonly]) ?>
+            <?= $this->render('/user/_form', ['form' => $form, 'model' => $userCommon, 'readonly' => $readonly]) ?>
 
             <div class="panel panel-primary">
                 <div class="panel-heading">
@@ -63,10 +63,22 @@ use common\models\user\UserCommon;
                             <?= $form->field($model, 'sert_num')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'sert_organ')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'sert_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname(), ['disabled' => $readonly]); ?>
+                            <?php if (!$model->isNewRecord) : ?>
+                                <div class="form-group field-student-attachment">
+                                    <div class="col-sm-3">
+                                        <label class="control-label" for="student-attachment">Скан документа</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], 'pluginOptions' => ['theme' => 'explorer'], 'disabled' => $readonly]) ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
                         </div>
                     </div>
                 </div>
             </div>
+
             <!--            --><?php //DynamicFormWidget::begin([
             //                'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
             //                'widgetBody' => '.container-items', // required: css class selector

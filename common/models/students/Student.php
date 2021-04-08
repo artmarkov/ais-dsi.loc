@@ -60,6 +60,9 @@ class Student extends \yii\db\ActiveRecord
                 'class' => DateFieldBehavior::class,
                 'attributes' => ['sert_date'],
             ],
+            [
+                'class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class,
+            ],
         ];
     }
 

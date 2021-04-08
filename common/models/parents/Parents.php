@@ -59,6 +59,9 @@ class Parents extends \artsoft\db\ActiveRecord
                 'class' => DateFieldBehavior::class,
                 'attributes' => ['sert_date'],
             ],
+            [
+                'class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class,
+            ],
         ];
     }
     /**
@@ -71,6 +74,23 @@ class Parents extends \artsoft\db\ActiveRecord
             [['created_at', 'created_by', 'updated_at', 'updated_by', 'sert_date'], 'safe'],
             [['sert_name', 'sert_series', 'sert_num'], 'string', 'max' => 32],
             [['sert_organ'], 'string', 'max' => 127],
+            // при заполнении одного из полей, делаем обязательными остальные поля блока документа
+            [['sert_series', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+                return $model->sert_name != NULL;
+            }, 'enableClientValidation' => false],
+            [['sert_name', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+                return $model->sert_series != NULL;
+            }, 'enableClientValidation' => false],
+            [['sert_name', 'sert_series', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+                return $model->sert_num != NULL;
+            }, 'enableClientValidation' => false],
+            [['sert_name', 'sert_num', 'sert_series', 'sert_date'], 'required', 'when' => function ($model) {
+                return $model->sert_organ != NULL;
+            }, 'enableClientValidation' => false],
+            [['sert_name', 'sert_num', 'sert_series', 'sert_organ'], 'required', 'when' => function ($model) {
+                return $model->sert_date != NULL;
+            }, 'enableClientValidation' => false],
+            ['sert_date', 'default', 'value' => NULL],
         ];
     }
 

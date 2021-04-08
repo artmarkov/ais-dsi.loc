@@ -3,36 +3,40 @@
 namespace artsoft\fileinput\controllers;
 
 use Yii;
+use yii\web\MethodNotAllowedHttpException;
 use yii\web\UploadedFile;
 use artsoft\fileinput\models\FileManager;
 use yii\helpers\FileHelper;
 use yii\web\Response;
 use yii\web\BadRequestHttpException;
+
 /**
  * Description of FileManagerController
  *
  * @author markov-av
  */
-class FileManagerController extends \artsoft\controllers\admin\BaseController {
+class FileManagerController extends \artsoft\controllers\admin\BaseController
+{
 
     public $enableOnlyActions = ['file-upload', 'sort-file', 'delete-file'];
 
     /**
-     * 
+     *
      * @return type
      * @throws BadRequestHttpException
      */
-    public function actionFileUpload() {
-        
+    public function actionFileUpload()
+    {
+
         $result = [];
 
         Yii::$app->response->format = Response::FORMAT_JSON;
-        
+
         if (!Yii::$app->request->isPost) {
             throw new BadRequestHttpException('Only POST is allowed.');
         }
         $post = Yii::$app->request->post();
-        
+
         $dir = FileManager::getAbsoluteDir() . DIRECTORY_SEPARATOR . FileManager::getFolder($post['FileManager']['class']);
 
         if (!file_exists($dir)) {
@@ -61,17 +65,19 @@ class FileManagerController extends \artsoft\controllers\admin\BaseController {
     }
 
     /**
-     * 
+     *
      * @param type $id
      * @return boolean
      * @throws MethodNotAllowedHttpException
      */
-    public function actionSortFile($id) {
+    public function actionSortFile($id)
+    {
         if (Yii::$app->request->isAjax) {
-            
-            $model = FileManager::findOne(['item_id' => $id]);
+
             $post = Yii::$app->request->post('sort');
-            
+            $ids = $post['stack'][$post['oldIndex']]['key']; // получаем id FileManager файла, который перетаскиваем
+
+            $model = FileManager::findOne(['id' => $ids]);
             if ($post['oldIndex'] > $post['newIndex']) {
                 $param = ['and', ['>=', 'sort', $post['newIndex']], ['<', 'sort', $post['oldIndex']]];
                 $counter = 1;
@@ -91,11 +97,12 @@ class FileManagerController extends \artsoft\controllers\admin\BaseController {
     }
 
     /**
-     * 
+     *
      * @return boolean
      * @throws NotFoundHttpException
      */
-    public function actionDeleteFile() {
+    public function actionDeleteFile()
+    {
         if (($model = FileManager::findOne(Yii::$app->request->post('key'))) and $model->delete()) {
 
             return true;

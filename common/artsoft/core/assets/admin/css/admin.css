@@ -323,3 +323,8 @@ img.dw-media-image {
     opacity: 0.6;
     margin: -1px 0 0 3px;
 }
+/*звездочка для обязательных полей*/
+.required label:after {
+    content: "*";
+    color: red;
+}
