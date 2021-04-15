@@ -11,6 +11,7 @@ namespace artsoft\widgets;
 
 use yii\base\Widget;
 use artsoft\widgets\assets\ScrollupAsset;
+use artsoft\helpers\Html;
 
 class ScrollupWidget extends Widget {
 
@@ -18,7 +19,7 @@ class ScrollupWidget extends Widget {
 
         ScrollupAsset::register($this->view);
 
-        return $this->render('scrollup');
+        return Html::a('', '#', ['class' => 'scrollup', 'title' => 'Наверх']);
     }
 
 }

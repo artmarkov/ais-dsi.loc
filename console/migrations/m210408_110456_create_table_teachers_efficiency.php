@@ -2,50 +2,65 @@
 
 class m210408_110456_create_table_teachers_efficiency extends \artsoft\db\BaseMigration
 {
+    const TABLE_NAME = 'teachers_efficiency';
+    const TABLE_NAME_TREE = 'guide_efficiency_tree';
+
     public function up()
     {
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
-
-        $this->createTable('guide_efficiency_bonus', [
-            'id' => $this->primaryKey(),
-            'parent_id' => $this->integer(),
-            'name' => $this->string(512),
+        $this->createTable(self::TABLE_NAME_TREE, [
+            'id' => $this->bigPrimaryKey(),
+            'root' => $this->integer(),
+            'lft' => $this->integer()->notNull(),
+            'rgt' => $this->integer()->notNull(),
+            'lvl' => $this->smallInteger(5)->notNull(),
+            'name' => $this->string(512)->notNull(),
             'description' => $this->string(1024),
             'value_default' => $this->string(127),
+            'icon' => $this->string(255),
+            'icon_type' => $this->smallInteger(1)->notNull()->defaultValue(1),
+            'active' => $this->boolean()->notNull()->defaultValue(true),
+            'selected' => $this->boolean()->notNull()->defaultValue(false),
+            'disabled' => $this->boolean()->notNull()->defaultValue(false),
+            'readonly' => $this->boolean()->notNull()->defaultValue(false),
+            'visible' => $this->boolean()->notNull()->defaultValue(true),
+            'collapsed' => $this->boolean()->notNull()->defaultValue(false),
+            'movable_u' => $this->boolean()->notNull()->defaultValue(true),
+            'movable_d' => $this->boolean()->notNull()->defaultValue(true),
+            'movable_l' => $this->boolean()->notNull()->defaultValue(true),
+            'movable_r' => $this->boolean()->notNull()->defaultValue(true),
+            'removable' => $this->boolean()->notNull()->defaultValue(true),
+            'removable_all' => $this->boolean()->notNull()->defaultValue(false),
+            'child_allowed' => $this->boolean()->notNull()->defaultValue(true)
+
         ], $tableOptions);
+        $this->addCommentOnTable(self::TABLE_NAME_TREE, 'Дерево показателей эффективности');
 
-        $this->addForeignKey('guide_efficiency_parentid_fk', 'guide_efficiency_bonus', 'parent_id', 'guide_efficiency_bonus', 'id');
-        $this->addCommentOnTable('guide_efficiency_bonus', 'Дерево показателей эффективности');
+        $this->createIndex('tree_NK1', self::TABLE_NAME_TREE, 'root');
+        $this->createIndex('tree_NK2', self::TABLE_NAME_TREE, 'lft');
+        $this->createIndex('tree_NK3', self::TABLE_NAME_TREE, 'rgt');
+        $this->createIndex('tree_NK4', self::TABLE_NAME_TREE, 'lvl');
+        $this->createIndex('tree_NK5', self::TABLE_NAME_TREE, 'active');
 
-        $this->db->createCommand()->createView('guide_efficiency_bonus_childs', '
-         with recursive r as (
-           select id, parent_id, id as root_id from guide_efficiency_bonus
-           union all
-           select t.id, t.parent_id, r.root_id from guide_efficiency_bonus t, r where t.parent_id=r.id
-         )
-         select root_id, id from r order by root_id,id
-        ')->execute();
-
-        $this->db->createCommand()->batchInsert('guide_efficiency_bonus', ['id', 'parent_id', 'name', 'description', 'value_default'], [
-            [1, NULL, 'Результативность участия учащихся и педагогических работников в мероприятиях методической и творческой напровленности', 'За каждого участника Уровень мероприятия: окружной, городской, российский, международный - 3%. Подтверждающие документы: Грамоты, дипломы и пр.', '3'],
-            [2, NULL, 'Участие в организации и проведении мероприятий, имеющий образовательную направленность(конференция, педагогические чтения, семинары, мастер-классы и др.)', 'Документальное подтверждение участия в организации и проведении мероприятия', '10'],
-            [3, NULL, 'Выполнение творческих работ: создание партитур, переложений, оранжировок в образовательных целях в зависимости от объема', 'Фактически выполненные работы', ''],
-            [4, NULL, 'Выполнение показателей качества профессиональной деятельности', 'Мониторинг качества профессиональной деятельности по результатам (успеваемость – по результатам учебного полугодия)', ''],
-            [5, NULL, 'Инклюзивное обучение детей с различными образовательными возможностями с применением особого подхода, методики', 'За ученика', '5'],
-            [6, NULL, 'Дистанционная работа (освоение новых технологий, увеличение объема работ по проверке выполненных заданий и др.)', 'Применяется, при переводе всех педагогических работников на дистанционную работу по инициативе работодателя в исключительных случаях', '5'],
-            [7, 3, '1-2 стр.', '', '3'],
-            [8, 3, '3-4 стр.', '', '10'],
-            [9, 3, '5-6 стр.', '', '15'],
-            [10, 4, 'отсутствие обоснованных жалоб от учащихся и родителей', '', '10'],
-            [11, 4, 'сохранность контингента учащихся', '', '10'],
-            [12, 4, 'отсутствие неудовлетворительных результатов промежуточной и итоговой аттестации учащихся', '', '10'],
+        $this->db->createCommand()->batchInsert(self::TABLE_NAME_TREE, ['id', 'root', 'lft', 'rgt', 'lvl', 'name', 'description', 'value_default', 'icon', 'icon_type', 'active', 'selected', 'disabled', 'readonly', 'visible', 'collapsed', 'movable_u', 'movable_d', 'movable_l', 'movable_r', 'removable', 'removable_all', 'child_allowed'], [
+            [11, 11, 1, 2, 0, "Дистанционная работа (освоение новых технологий, увеличение объема работ по проверке выполненных заданий и др.)", "Применяется, при переводе всех педагогических работников на дистанционную работу по инициативе работодателя в исключительных случаях", 5, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
+            [2, 2, 1, 2, 0, "Участие в организации и проведении мероприятий, имеющий образовательную направленность(конференция, педагогические чтения, семинары, мастер-классы и др.)", "Документальное подтверждение участия в организации и проведении мероприятия", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
+            [5, 3, 4, 5, 1, "3 - 4 стр .", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
+            [4, 3, 2, 3, 1, "1 - 2 стр .", "", 3, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
+            [6, 3, 6, 7, 1, "5 - 6 стр .", "", 15, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
+            [8, 7, 2, 3, 1, "отсутствие обоснованных жалоб от учащихся и родителей", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
+            [9, 7, 4, 5, 1, "сохранность контингента учащихся", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
+            [10, 7, 6, 7, 1, "отсутствие неудовлетворительных результатов промежуточной и итоговой аттестации учащихся", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
+            [7, 7, 1, 8, 0, "Выполнение показателей качества профессиональной деятельности", "Мониторинг качества профессиональной деятельности по результатам(успеваемость – по результатам учебного полугодия)", 0, "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true],
+            [3, 3, 1, 8, 0, "Выполнение творческих работ: создание партитур, переложений, оранжировок в образовательных целях в зависимости от объема", "Фактически выполненные работы", 0, "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true],
+            [1, 1, 1, 2, 0, "Результативность участия учащихся и педагогических работников в мероприятиях методической и творческой напровленности", "За каждого участника Уровень мероприятия: окружной, городской, российский, международный. Подтверждающие документы: Грамоты, дипломы и пр.", 3, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
         ])->execute();
-        $this->db->createCommand()->resetSequence('guide_efficiency_bonus', 13)->execute();
+        $this->db->createCommand()->resetSequence(self::TABLE_NAME_TREE, 12)->execute();
 
-        $this->createTableWithHistory('teachers_efficiency', [
+        $this->createTableWithHistory(self::TABLE_NAME, [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'efficiency_id' => $this->integer()->notNull(),
             'teachers_id' => $this->integer()->notNull(),
@@ -58,21 +73,19 @@ class m210408_110456_create_table_teachers_efficiency extends \artsoft\db\BaseMi
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->db->createCommand()->resetSequence('teachers_efficiency', 1000)->execute();
-        $this->addCommentOnTable('teachers_efficiency', 'Показатели эффективности');
-        $this->createIndex('efficiency_id', 'teachers_efficiency', 'efficiency_id');
-        $this->addForeignKey('teachers_efficiency_ibfk_1', 'teachers_efficiency', 'efficiency_id', 'guide_efficiency_bonus', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('teachers_efficiency_ibfk_2', 'teachers_efficiency', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
+        $this->db->createCommand()->resetSequence(self::TABLE_NAME, 1000)->execute();
+        $this->addCommentOnTable(self::TABLE_NAME, 'Показатели эффективности');
+        $this->createIndex('efficiency_id', self::TABLE_NAME, 'efficiency_id');
+        $this->addForeignKey('teachers_efficiency_ibfk_1', self::TABLE_NAME, 'efficiency_id', self::TABLE_NAME_TREE, 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('teachers_efficiency_ibfk_2', self::TABLE_NAME, 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
 
     }
 
     public function down()
     {
-        $this->db->createCommand()->dropView('guide_efficiency_bonus_childs')->execute();
-        $this->dropForeignKey('guide_efficiency_parentid_fk', 'guide_efficiency_bonus');
-        $this->dropForeignKey('teachers_efficiency_ibfk_2', 'teachers_efficiency');
-        $this->dropForeignKey('teachers_efficiency_ibfk_1', 'teachers_efficiency');
-        $this->dropTableWithHistory('teachers_efficiency');
-        $this->dropTable('guide_efficiency_bonus');
+        $this->dropForeignKey('teachers_efficiency_ibfk_2', self::TABLE_NAME);
+        $this->dropForeignKey('teachers_efficiency_ibfk_1', self::TABLE_NAME);
+        $this->dropTableWithHistory(self::TABLE_NAME);
+        $this->dropTable(self::TABLE_NAME_TREE);
     }
 }

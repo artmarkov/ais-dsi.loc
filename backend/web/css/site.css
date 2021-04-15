@@ -75,3 +75,11 @@ a.desc:after {
 .grid-view th {
     white-space: nowrap;
 }
+/* Настройка виджета kartik-v/yii2-tree-manager */
+.kv-detail-heading {
+     background-color: #fff;
+}
+.kv-detail-crumbs {
+    font-size: 1.1em;
+    text-shadow: none;
+}
