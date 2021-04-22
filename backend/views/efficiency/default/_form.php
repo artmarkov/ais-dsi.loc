@@ -25,10 +25,7 @@ use kartik\date\DatePicker;
         <div class="panel-body">
             <div class="row">
                 <?= $form->field($model, 'efficiency_id')->widget(\kartik\tree\TreeViewInput::class, [
-                    'options' => [
-                        'id' => 'efficiency_tree',
-                    ],
-                    'id' => 'treeid',
+                    'id' => 'efficiency_tree',
                     'query' => \common\models\efficiency\EfficiencyTree::find()->addOrderBy('root, lft'),
                     'dropdownConfig' => [
                         'input' => ['placeholder' => 'Выберите показатель эффективности...'],
