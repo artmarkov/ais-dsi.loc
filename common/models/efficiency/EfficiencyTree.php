@@ -43,4 +43,8 @@ class EfficiencyTree extends \kartik\tree\models\Tree
         return $attr;
     }
 
+    public static function getEfficiencyList()
+    {
+        return  self::find()->where(['disabled' => false])->select(['name', 'id'])->indexBy('id')->column();
+    }
 }

@@ -64,7 +64,7 @@ class Auditory extends ActiveRecord
     {
         return [
             [['name', 'num', 'building_id'], 'required'],
-            [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sort_order'], 'integer'],
+            [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sort_order', 'version'], 'integer'],
             [['area'], 'number'],
             [['name'], 'string', 'max' => 128],
             [['floor'], 'string', 'max' => 32],

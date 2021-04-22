@@ -31,6 +31,7 @@ return [
     'Status' => 'Статус',
     'For date' => 'На дату',
     'Select Teacher...' => 'Выберите преподавателя...',
+    'Select Teachers...' => 'Выберите преподавателей...',
     'Select Department...' => 'Выберите отдел...',
     'Select Teachers Bonus...' => 'Выберите достижения...',
     'Measure Unit' => 'Единица измерения',

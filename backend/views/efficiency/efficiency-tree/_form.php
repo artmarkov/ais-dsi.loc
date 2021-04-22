@@ -76,15 +76,6 @@ $module = TreeView::module();
 // active form instance
 $form = ActiveForm::begin(['action' => $formAction, 'options' => $formOptions]);
 
-// helper function to show alert
-//$showAlert = function ($type, $body = '', $hide = true) {
-//    $class = "alert alert-{$type}";
-//    if ($hide) {
-//        $class .= ' hide';
-//    }
-//    return Html::tag('div', '<div>' . $body . '</div>', ['class' => $class]);
-//};
-
 // helper function to render additional view content
 $renderContent = function ($part) use ($nodeAddlViews, $params, $form) {
     if (empty($nodeAddlViews[$part])) {
@@ -214,22 +205,6 @@ $icons = is_array($iconsList) ? array_values($iconsList) : $iconsList;
      * SECTION 5: Setup alert containers. Mandatory to set this up.
      */
     ?>
-    <!--    <div class="kv-treeview-alerts">-->
-    <!--        --><?php
-//        if ($session && $session->hasFlash('success')) {
-//            echo $showAlert('success', $session->getFlash('success'), false);
-//        } else {
-//            echo $showAlert('success');
-//        }
-//        if ($session && $session->hasFlash('error')) {
-//            echo $showAlert('danger', $session->getFlash('error'), false);
-//        } else {
-//            echo $showAlert('danger');
-//        }
-//        echo $showAlert('warning');
-//        echo $showAlert('info');
-//        ?>
-    <!--    </div>-->
 
     <?php
     /**
@@ -250,8 +225,6 @@ $icons = is_array($iconsList) ? array_values($iconsList) : $iconsList;
             <div class="row">
                 <div class="col-sm-12">
                     <?= $keyField ?>
-                    <!--                </div>-->
-                    <!--                <div class="col-sm-8">-->
                     <?= $nameField ?>
                 </div>
             </div>
@@ -259,27 +232,12 @@ $icons = is_array($iconsList) ? array_values($iconsList) : $iconsList;
             <?= $keyField ?>
             <?= $nameField ?>
         <?php endif; ?>
-        <?php if ($iconsList === 'text'): ?>
-            <div class="row">
-                <div class="col-sm-12">
-                    <?= $form->field($node, $iconTypeAttribute)->dropdownList([
-                        TreeView::ICON_CSS => 'CSS Suffix',
-                        TreeView::ICON_RAW => 'Raw Markup',
-                    ], $inputOpts) ?>
-                    <!--                </div>-->
-                    <!--                <div class="col-sm-8">-->
-                    <?= $form->field($node, $iconAttribute)->textInput($inputOpts) ?>
-                </div>
-            </div>
-        <?php endif; ?>
     <?php else: ?>
         <div class="row">
             <div class="col-sm-12">
                 <?= $keyField ?>
                 <?= Html::activeHiddenInput($node, $iconTypeAttribute) ?>
                 <?= $nameField ?>
-                <!--            </div>-->
-                <!--            <div class="col-sm-6">-->
                 <?= /** @noinspection PhpUndefinedMethodInspection */
                 $form->field($node, $iconAttribute)->multiselect($iconsList, [
                     'item' => function ($index, $label, $name, $checked, $value) use ($inputOpts) {
@@ -312,52 +270,53 @@ $icons = is_array($iconsList) ? array_values($iconsList) : $iconsList;
      */
     ?>
     <?php if ($isAdmin): ?>
-        <div class="panel panel-warning">
-            <div class="panel-heading">
-                <?= Yii::t('kvtree', 'Admin Settings') ?>
+        <div class="form-group">
+            <div class="col-sm-3">
+                <label class="control-label" for="efficiencytree-description"><?= Yii::t('kvtree', 'Admin Settings') ?>
+                </label>
             </div>
-            <div class="panel-body">
+            <div class="col-sm-9">
 
-                <?php
-                /**
-                 * SECTION 10: Additional views part 3 - within admin zone BEFORE mandatory attributes.
-                 */
-                ?>
-                <?= $renderContent(Module::VIEW_PART_3) ?>
+                    <?php
+                    /**
+                     * SECTION 10: Additional views part 3 - within admin zone BEFORE mandatory attributes.
+                     */
+                    ?>
+                    <?= $renderContent(Module::VIEW_PART_3) ?>
 
-                <?php
-                /**
-                 * SECTION 11: Default mandatory admin controlled attributes.
-                 */
-                ?>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <?= $form->field($node, 'active')->checkbox() ?>
-                        <?= $form->field($node, 'visible')->checkbox() ?>
-                        <?= $form->field($node, 'readonly')->checkbox() ?>
-                        <?= $form->field($node, 'disabled')->checkbox() ?>
-                        <?= $form->field($node, 'child_allowed')->checkbox() ?>
+                    <?php
+                    /**
+                     * SECTION 11: Default mandatory admin controlled attributes.
+                     */
+                    ?>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <?= $form->field($node, 'active')->checkbox() ?>
+                            <?= $form->field($node, 'visible')->checkbox() ?>
+                            <?= $form->field($node, 'readonly')->checkbox() ?>
+                            <?= $form->field($node, 'disabled')->checkbox() ?>
+                            <?= $form->field($node, 'child_allowed')->checkbox() ?>
+                        </div>
+                        <div class="col-sm-4">
+                            <?= $form->field($node, 'selected')->checkbox() ?>
+                            <?= $form->field($node, 'collapsed')->checkbox($flagOptions) ?>
+                            <?= $form->field($node, 'removable')->checkbox() ?>
+                            <?= $form->field($node, 'removable_all')->checkbox($flagOptions) ?>
+                        </div>
+                        <div class="col-sm-4">
+                            <?= $form->field($node, 'movable_u')->checkbox() ?>
+                            <?= $form->field($node, 'movable_d')->checkbox() ?>
+                            <?= $form->field($node, 'movable_l')->checkbox() ?>
+                            <?= $form->field($node, 'movable_r')->checkbox() ?>
+                        </div>
                     </div>
-                    <div class="col-sm-4">
-                        <?= $form->field($node, 'selected')->checkbox() ?>
-                        <?= $form->field($node, 'collapsed')->checkbox($flagOptions) ?>
-                        <?= $form->field($node, 'removable')->checkbox() ?>
-                        <?= $form->field($node, 'removable_all')->checkbox($flagOptions) ?>
-                    </div>
-                    <div class="col-sm-4">
-                        <?= $form->field($node, 'movable_u')->checkbox() ?>
-                        <?= $form->field($node, 'movable_d')->checkbox() ?>
-                        <?= $form->field($node, 'movable_l')->checkbox() ?>
-                        <?= $form->field($node, 'movable_r')->checkbox() ?>
-                    </div>
-                </div>
 
-                <?php
-                /**
-                 * SECTION 12: Additional views part 4 - within admin zone AFTER mandatory attributes.
-                 */
-                ?>
-                <?= $renderContent(Module::VIEW_PART_4) ?>
+                    <?php
+                    /**
+                     * SECTION 12: Additional views part 4 - within admin zone AFTER mandatory attributes.
+                     */
+                    ?>
+                    <?= $renderContent(Module::VIEW_PART_4) ?>
             </div>
         </div>
     <?php endif; ?>

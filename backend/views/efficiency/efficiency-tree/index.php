@@ -36,20 +36,26 @@ HTML;
                         'mainTemplate' => $mainTemplate,
                         'query' => \common\models\efficiency\EfficiencyTree::find()->addOrderBy('root, lft'),
                         'headingOptions' => ['label' => 'Дерево показателей'],
-                        'fontAwesome' => true, // optional
+                        'fontAwesome' => false, // optional
                         'isAdmin' => true, // optional (toggle to enable admin mode)
                         'displayValue' => 1, // initial display value
                         'softDelete' => true, // defaults to true
+                        'childNodeIconOptions' => ['class' => ''],
+                        'defaultParentNodeIcon' => '',
+                        'defaultParentNodeOpenIcon' => '',
+                        'defaultChildNodeIcon' => '',
+                        'childNodeIconOptions' => ['class' => ''],
+                        'parentNodeIconOptions' => ['class' => ''],
+                        'rootOptions' => [
+                            'label' => '',
+                            'class' => 'text-default'
+                        ],
                         'cacheSettings' => [
-                            'enableCache' => true   // defaults to true
+                            'enableCache' => true
                         ],
                         'nodeView' => '@backend/views/efficiency/efficiency-tree/_form', //переопределено
                         'nodeAddlViews' => [
                             Module::VIEW_PART_2 => '@backend/views/efficiency/efficiency-tree/_treePart2',
-                        ],
-                        'rootOptions' => [
-                            'label' => '<i class="fa fa-tree"></i>', // custom root label
-                            'class' => 'text-default'
                         ],
                         'nodeActions' => [
                             Module::NODE_MANAGE => Url::to(['/treemanager/node/manage']),

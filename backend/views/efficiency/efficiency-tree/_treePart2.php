@@ -1,5 +1,9 @@
 <?php 
 use artsoft\widgets\ActiveForm;
+/**
+ * @var Tree $node
+*/
+
 ?>
 <div class="row">
     <div class="col-sm-12">

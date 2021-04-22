@@ -110,6 +110,10 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
         ];
     }
 
+    public function optimisticLock()
+    {
+        return 'version';
+    }
     /**
      * Gets query for [[CreativeRevisions]].
      *
