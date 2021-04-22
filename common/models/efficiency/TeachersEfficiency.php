@@ -107,7 +107,6 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
         return $this->hasOne(EfficiencyTree::class, ['id' => 'efficiency_id']);
     }
 
-
     /* Геттер для названия категории */
     public function getEfficiencyName()
     {

@@ -18,10 +18,17 @@ use kartik\date\DatePicker;
     <div class="panel">
         <div class="panel-heading">
             <?= Html::encode($this->title) ?>
+            <?php if (!$model->isNewRecord):?>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/efficiency/default/history', 'id' => $model->id]); ?></span>
+            <?php endif; ?>
         </div>
         <div class="panel-body">
             <div class="row">
                 <?= $form->field($model, 'efficiency_id')->widget(\kartik\tree\TreeViewInput::class, [
+                    'options' => [
+                        'id' => 'efficiency_tree',
+                    ],
+                    'id' => 'treeid',
                     'query' => \common\models\efficiency\EfficiencyTree::find()->addOrderBy('root, lft'),
                     'dropdownConfig' => [
                         'input' => ['placeholder' => 'Выберите показатель эффективности...'],
@@ -53,7 +60,7 @@ use kartik\date\DatePicker;
                 ])->label(Yii::t('art/teachers', 'Teachers'));
                 ?>
 
-                <?= $form->field($model, 'bonus')->textInput(['maxlength' => true]) ?>
+                <?= $form->field($model, 'bonus')->textInput(['maxlength' => true, 'readonly' => !Yii::$app->user->isSuperadmin]) ?>
 
                 <?= $form->field($model, 'date_in')->widget(DatePicker::class, [
                     'type' => DatePicker::TYPE_INPUT,
@@ -81,11 +88,26 @@ use kartik\date\DatePicker;
 
 </div>
 
+
 <?php
-$js = <<<JS
-$("#w0-tree-input").on("treeview.checked", function (event, key) { console.log(event) });
-$("#w0-tree-input").on("treeview:change", function (event, key) { console.log(event) });
+$script = <<< JS
+$("#efficiency_tree").on('treeview:change', function(event, key) {
+   // console.log(key);
+    $.ajax({
+            url: '/admin/efficiency/default/select',
+            type: 'POST',
+            data: {
+                id: key
+            },
+            success: function (bonus) {
+             document.getElementById('teachersefficiency-bonus').value = bonus;
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
 
+});
 JS;
-
-$this->registerJs($js);
+$this->registerJs($script, \yii\web\View::POS_READY);
+?>
