@@ -14,6 +14,7 @@ $this->params['breadcrumbs'][] = Yii::t('art','Update');
 <div class="creative-works-update">
     <?= $this->render('_form', [
         'model' => $model,
+        'modelsEfficiency' => $modelsEfficiency,
         'readonly' => $readonly
     ]) ?>
 </div>

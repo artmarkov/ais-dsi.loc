@@ -5,6 +5,7 @@ namespace  common\models\creative;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\traits\DateTimeTrait;
+use common\models\efficiency\TeachersEfficiency;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -137,6 +138,15 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
     {
         return $this->category->name;
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeachersEfficiency()
+    {
+        return $this->hasMany(TeachersEfficiency::class, ['item_id' => 'id'])->andWhere(['class' => \yii\helpers\StringHelper::basename(get_class($this))]);
+    }
+
     /**
      * Gets query for [[CreatedBy]].
      *
