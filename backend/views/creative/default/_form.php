@@ -15,6 +15,13 @@ use wbraganca\dynamicform\DynamicFormWidget;
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $readonly */
 
+$this->registerJs(<<<JS
+$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
+	    $( "#creative-works-form" ).submit(); // вызываем событие submit на элементе <form>
+	  });
+JS
+, \yii\web\View::POS_END);
+
 $js = <<<JS
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
@@ -38,20 +45,20 @@ function initSelect2Loading(a,b){ initS2Loading(a,b); }
 function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
 JS
 , \yii\web\View::POS_END);
-
-$this->registerJs(<<<JS
-    $(".dynamicform_wrapper").on('afterInsert', function(e, item) {
-        jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-       if (jQuery('#teachersefficiency-' + index + '-date_in').data('kvDatepicker')) { 
-           jQuery('#teachersefficiency-' + index + '-date_in').kvDatepicker('destroy'); 
-       }
-        jQuery('#teachersefficiency-' + index + '-date_in').kvDatepicker({"format":"dd.mm.yyyy","minViewMode":1,"maxViewMode":2,"autoclose":true,"language":"ru"});
-
-	  });
-});
-JS
-    , \yii\web\View::POS_END);
-?>
+//
+//$this->registerJs(<<<JS
+//    $(".dynamicform_wrapper").on('afterInsert', function(e, item) {
+//        jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
+//       if (jQuery('#teachersefficiency-' + index + '-date_in').data('kvDatepicker')) {
+//           jQuery('#teachersefficiency-' + index + '-date_in').kvDatepicker('destroy');
+//       }
+//        jQuery('#teachersefficiency-' + index + '-date_in').kvDatepicker({"format":"dd.mm.yyyy","minViewMode":1,"maxViewMode":2,"autoclose":true,"language":"ru"});
+//
+//	  });
+//});
+//JS
+//    , \yii\web\View::POS_END);
+//?>
 
 <div class="creative-works-form">
 
@@ -195,19 +202,6 @@ JS
                                                 'parentNodeIconOptions' => ['class' => ''],
                                             ]);
                                             ?>
-<!--                                            --><?//= $form->field($modelEfficiency, "[{$index}]efficiency_id")->widget(\kartik\select2\Select2::class, [
-//                                                'data' => \yii\helpers\ArrayHelper::map(\common\models\efficiency\EfficiencyTree::find()->andWhere(['root' => 3, 'disabled' => false] )->select(['id',  'name'])->addOrderBy('root, lft')
-//                                                        ->asArray()->all(), 'id', 'name'),
-//                                                'options' => [
-//                                                    'disabled' => $readonly,
-//                                                    'placeholder' => 'Выберите показатель эффективности...',
-//                                                    'multiple' => false,
-//                                                ],
-//                                                'pluginOptions' => [
-//                                                    'allowClear' => true
-//                                                ],
-//                                            ]);
-//                                            ?>
                                             <?= $form->field($modelEfficiency, "[{$index}]teachers_id")->widget(\kartik\select2\Select2::class, [
                                                 'data' => \common\models\teachers\Teachers::getTeachersList(),
                                                 'options' => [
@@ -241,6 +235,7 @@ JS
                         <?php if (!$readonly): ?>
                             <div class="panel-footer">
                                 <div class="form-group btn-group">
+
                                     <button type="button" class="add-item btn btn-success btn-sm pull-right">
                                         <i class="glyphicon glyphicon-plus"></i> Добавить
                                     </button>

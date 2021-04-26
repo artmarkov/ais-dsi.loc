@@ -97,7 +97,7 @@ class DefaultController extends MainController
 
             // validate all models
             $valid = $model->validate();
-            //$valid = Model::validateMultiple($modelsEfficiency) && $valid;
+            $valid = Model::validateMultiple($modelsEfficiency) && $valid;
 
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
