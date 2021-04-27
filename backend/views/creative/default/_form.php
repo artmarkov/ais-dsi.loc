@@ -203,7 +203,7 @@ JS
                                             ]);
                                             ?>
                                             <?= $form->field($modelEfficiency, "[{$index}]teachers_id")->widget(\kartik\select2\Select2::class, [
-                                                'data' => \common\models\teachers\Teachers::getTeachersList(),
+                                                'data' => $model->getTeachersList(),
                                                 'options' => [
                                                     'disabled' => $readonly,
                                                     'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),

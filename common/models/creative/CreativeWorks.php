@@ -6,6 +6,8 @@ use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\traits\DateTimeTrait;
 use common\models\efficiency\TeachersEfficiency;
+use common\models\teachers\Teachers;
+use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -193,5 +195,36 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
             [self::VIEW_CLOSE, Yii::t('art/creative', 'Closed'), 'danger'],
             [self::VIEW_OPEN, Yii::t('art/creative', 'Open'), 'success'],
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getTeachersList()
+    {
+        return \yii\helpers\ArrayHelper::map(Teachers::find()->innerJoin('user_common', 'user_common.id = teachers.user_common_id')
+            ->andWhere(['in', 'user_common.status', UserCommon::STATUS_ACTIVE])// заблокированных не добавляем в список
+            ->andWhere(['in', 'user_common.user_category', UserCommon::USER_CATEGORY_TEACHERS])// только преподаватели
+            ->andWhere(['in', 'user_common.id', $this->teachers_list])
+            ->select(['teachers.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
+            ->orderBy('user_common.last_name')
+            ->asArray()->all(), 'id', 'name');
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert) {
+        if ($this->isAttributeChanged('teachers_list')) {
+            print_r($this->teachers_list);
+            print_r($this->getOldAttribute('teachers_list'));
+//            print_r();getTeachersEfficiency()
+//            foreach (array_diff($this->getOldAttribute('teachers_list'), $this->teachers_list ) as $id){
+//                TeachersEfficiency::deleteAll(['AND', 'teachers_id = :teachers_id', ['NOT IN', 'food_id', [1,2]]], [':restaurant_id' => $postData['resto_id']]);
+//            }
+        }
+
+        return parent::beforeSave($insert);
     }
 }
