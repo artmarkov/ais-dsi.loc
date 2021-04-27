@@ -1,6 +1,29 @@
 <?php
-namespace common;
 
+namespace artsoft\helpers;
+/**
+ * Class RefBook
+ * @package artsoft\helpers
+ *
+ * add migration
+ *
+ * $this->createTable('refbooks', [
+ * 'name' => $this->string(50)->notNull(),
+ * 'table_name' => $this->string(30)->notNull(),
+ * 'key_field' => $this->string(30)->notNull(),
+ * 'value_field' => $this->string(30)->notNull(),
+ * 'sort_field' => $this->string(30)->notNull(),
+ * 'ref_field' => $this->string(30),
+ * 'group_field' => $this->string(30),
+ * 'note' => $this->string(100)
+ * ]);
+ * $this->addPrimaryKey('refbooks_pkey', 'refbooks', 'name');
+ *
+ * usage
+ *
+ * RefBook::find('teachers_fio')->getList();
+ * RefBook::find('teachers_fio')->getValue($id);
+ */
 class RefBook
 {
     protected $name;
@@ -16,7 +39,7 @@ class RefBook
      */
     public static function find($name, $refId = null)
     {
-        return new RefBook($name, $refId);
+        return new self($name, $refId);
     }
 
     /**

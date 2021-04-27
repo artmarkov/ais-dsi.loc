@@ -198,10 +198,34 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->addForeignKey('teachers_activity_ibfk_3', 'teachers_activity', 'stake_id', 'guide_teachers_stake', 'id', 'RESTRICT', 'RESTRICT');
         $this->addForeignKey('teachers_activity_ibfk_4', 'teachers_activity', 'teachers_id', 'teachers', 'id', 'CASCADE', 'CASCADE');
 
+        $this->db->createCommand()->createView('teachers_view', '
+         SELECT users.id AS user_id, user_common.id AS user_common_id, teachers.id AS teachers_id, users.username, users.email, users.status AS user_status, 
+                user_common.status, position_id, department_list, user_common.last_name,user_common.first_name,user_common.middle_name, 
+                CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) AS fullname, 
+                CONCAT(user_common.last_name ,\' \', left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'.\') as fio, 
+                CONCAT(left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'. \', user_common.last_name) as iof
+        FROM teachers 
+        INNER JOIN user_common ON user_common.id = teachers.user_common_id 
+        LEFT JOIN users ON user_common.user_id = users.id 
+        WHERE user_common.user_category=\'teachers\'
+        ORDER BY user_common.last_name, user_common.first_name
+        ')->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['teachers_fio', 'teachers_view', 'teachers_id', 'fio', 'fio', 'status', null, 'Преподаватели (Фамилия И.О.)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['teachers_fullname', 'teachers_view', 'teachers_id', 'fullname', 'fullname', 'status', null, 'Преподаватели (Фамилия Имя Отчество)'],
+        ])->execute();
+
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_fullname'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_fio'])->execute();
+        $this->db->createCommand()->dropView('teachers_view')->execute();
         $this->dropForeignKey('teachers_cost_ibfk_1', 'teachers_cost');
         $this->dropForeignKey('teachers_cost_ibfk_2', 'teachers_cost');
         $this->dropForeignKey('guide_teachers_bonus_ibfk_1', 'guide_teachers_bonus');

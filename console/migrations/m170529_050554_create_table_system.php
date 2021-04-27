@@ -58,10 +58,23 @@ class m170529_050554_create_table_system extends Migration
         $this->addCommentOnTable('requests','Запросы');
         $this->addForeignKey('requests_ibfk_user', 'requests', 'user_id', 'users', 'id', 'CASCADE', 'CASCADE');
 
+        $this->createTable('refbooks', [
+            'name' => $this->string(50)->notNull(),
+            'table_name' => $this->string(30)->notNull(),
+            'key_field' => $this->string(30)->notNull(),
+            'value_field' => $this->string(30)->notNull(),
+            'sort_field' => $this->string(30)->notNull(),
+            'ref_field' => $this->string(30),
+            'group_field' => $this->string(30),
+            'note' => $this->string(100)
+        ]);
+        $this->addPrimaryKey('refbooks_pkey', 'refbooks', 'name');
+
     }
 
     public function down()
     {
+        $this->dropTable('refbooks');
         $this->dropTable('requests');
         $this->dropTable('session');
         $this->dropTable('files');

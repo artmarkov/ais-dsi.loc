@@ -197,36 +197,4 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
         ];
     }
 
-//    /**
-//     * @return array
-//     */
-//    public function getTeachersList()
-//    {
-//        return \yii\helpers\ArrayHelper::map(Teachers::find()->innerJoin('user_common', 'user_common.id = teachers.user_common_id')
-//            ->andWhere(['in', 'user_common.status', UserCommon::STATUS_ACTIVE])// заблокированных не добавляем в список
-//            ->andWhere(['in', 'user_common.user_category', UserCommon::USER_CATEGORY_TEACHERS])// только преподаватели
-//            ->andWhere(['in', 'teachers.id', $this->teachers_list])
-//            ->select(['teachers.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
-//            ->orderBy('user_common.last_name')
-//            ->asArray()->all(), 'id', 'name');
-//    }
-
-    /**
-     * @param bool $insert
-     * @return bool
-     */
-//    public function afterSave($insert, $changedAttributes)
-//    {
-//        parent::afterSave($insert, $changedAttributes);
-//        if (isset($changedAttributes['teachers_list'])) {
-////            print_r($changedAttributes);
-////            print_r($this->teachers_list);
-////            print_r($this->getOldAttribute('teachers_list'));
-////            echo '<pre>' . print_r(array_diff(explode(',', $changedAttributes['teachers_list']), $this->teachers_list), true) . '</pre>';
-//            foreach (array_diff(explode(',', $changedAttributes['teachers_list']), $this->teachers_list) as $id){
-//                TeachersEfficiency::deleteAll(['AND', 'teachers_id = :teachers_id', ['class' => \yii\helpers\StringHelper::basename(get_class($this))]], [':teachers_id' => $id]);
-//            }
-//        }
-//
-//    }
 }

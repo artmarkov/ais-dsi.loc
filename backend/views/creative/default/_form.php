@@ -7,7 +7,7 @@ use artsoft\models\User;
 use artsoft\helpers\Html;
 use common\models\user\UserCommon;
 use kartik\date\DatePicker;
-use yii\helpers\Url;
+use artsoft\helpers\RefBook;
 use wbraganca\dynamicform\DynamicFormWidget;
 
 
@@ -103,7 +103,7 @@ JS
                             ])->label(Yii::t('art/guide', 'Department'));
                             ?>
                             <?= $form->field($model, 'teachers_list')->widget(\kartik\select2\Select2::class, [
-                                'data' => \common\RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
+                                'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
                                 'options' => [
                                     'disabled' => $readonly,
                                     'placeholder' => Yii::t('art/creative', 'Select performers...'),
@@ -206,7 +206,7 @@ JS
                                             ]);
                                             ?>
                                             <?= $form->field($modelEfficiency, "[{$index}]teachers_id")->widget(\kartik\select2\Select2::class, [
-                                                'data' => \common\RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
+                                                'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
                                                 'options' => [
                                                     'disabled' => $readonly,
                                                     'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
