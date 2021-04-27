@@ -5,6 +5,7 @@ use common\models\creative\CreativeWorks;
 use common\models\creative\CreativeCategory;
 use artsoft\models\User;
 use artsoft\helpers\Html;
+use common\models\user\UserCommon;
 use kartik\date\DatePicker;
 use yii\helpers\Url;
 use wbraganca\dynamicform\DynamicFormWidget;
@@ -14,6 +15,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
 /* @var $model common\models\creative\CreativeWorks */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $readonly */
+/* @var $modelsEfficiency */
 
 $this->registerJs(<<<JS
 $( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
@@ -101,7 +103,7 @@ JS
                             ])->label(Yii::t('art/guide', 'Department'));
                             ?>
                             <?= $form->field($model, 'teachers_list')->widget(\kartik\select2\Select2::class, [
-                                'data' => \common\models\user\UserCommon::getTeachersList(),
+                                'data' => \common\RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
                                 'options' => [
                                     'disabled' => $readonly,
                                     'placeholder' => Yii::t('art/creative', 'Select performers...'),
@@ -182,6 +184,7 @@ JS
                                             ?>
                                             <?= $form->field($modelEfficiency, "[{$index}]efficiency_id")->widget(\kartik\tree\TreeViewInput::class, [
                                                 'options' => [
+                                                    'disabled' => $readonly,
                                                     'id' => "efficiency_id{$index}",
                                                     ],
                                                 'query' => \common\models\efficiency\EfficiencyTree::find()->andWhere(['root' => 3])->addOrderBy('root, lft'),
@@ -203,7 +206,7 @@ JS
                                             ]);
                                             ?>
                                             <?= $form->field($modelEfficiency, "[{$index}]teachers_id")->widget(\kartik\select2\Select2::class, [
-                                                'data' => $model->getTeachersList(),
+                                                'data' => \common\RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
                                                 'options' => [
                                                     'disabled' => $readonly,
                                                     'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
@@ -214,9 +217,9 @@ JS
                                                 ],
                                             ])->label(Yii::t('art/teachers', 'Teachers'));
                                             ?>
-                                            <?= $form->field($modelEfficiency, "[{$index}]bonus")->textInput(['maxlength' => true, 'readonly' => !Yii::$app->user->isSuperadmin]) ?>
+                                            <?= $form->field($modelEfficiency, "[{$index}]bonus")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
                                             <?= $form->field($modelEfficiency, "[{$index}]date_in")->widget(DatePicker::class, [
-                                                //'id' => "{$index}date_in",
+                                                'disabled' => $readonly,
                                                 'type' => DatePicker::TYPE_INPUT,
                                                 'options' => ['placeholder' => ''],
                                                 'convertFormat' => true,

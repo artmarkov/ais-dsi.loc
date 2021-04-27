@@ -62,7 +62,7 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['efficiency_id', 'teachers_id', 'date_in'], 'required'],
+            [['efficiency_id', 'teachers_id', 'date_in', 'bonus'], 'required'],
             [['efficiency_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'item_id'], 'integer'],
             [['date_in'], 'safe'],
             [['version'], 'default', 'value' => 0],

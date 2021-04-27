@@ -5,7 +5,7 @@ use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
 use common\models\creative\CreativeWorks;
-use common\models\user\UserCommon;
+use common\models\teachers\Teachers;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use yii\helpers\ArrayHelper;
@@ -107,14 +107,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'teachers_list',
-                                'filter' => UserCommon::getTeachersList(),
+                                'filter' =>  \common\RefBook::find('teachers_fullname')->getList(),
                                 'value' => function (CreativeWorks $model) {
                                     $v = [];
                                     foreach ($model->teachers_list as $id) {
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = UserCommon::findOne($id)->getLastFM();
+                                        $v[] = \common\RefBook::find('teachers_fio')->getValue($id);
                                     }
                                     return implode('<br/> ', $v);
                                 },
