@@ -35,7 +35,7 @@ class RefBook
      * @param string $name имя справочника
      * @param string $refId опциональное значение для зависимого справочника
      * @return RefBook
-     * @throws RefBookException
+     * @throws RuntimeException
      */
     public static function find($name, $refId = null)
     {
@@ -45,7 +45,7 @@ class RefBook
     /**
      * @param $name
      * @param null $refId
-     * @throws RefBookException
+     * @throws RuntimeException
      */
     public function __construct($name, $refId = null)
     {
@@ -78,7 +78,7 @@ class RefBook
     }
 
     /**
-     * @throws RefBookException
+     * @throws RuntimeException
      */
     protected function load()
     {
@@ -86,7 +86,7 @@ class RefBook
         if (!array_key_exists($this->name . $this->refId, $DATA)) {
             $r = (new \yii\db\Query)->from('refbooks')->where(['name' => $this->name])->one();
             if (false === $r) {
-                throw new RefBookException('refbook "' . $this->name . '" was not found');
+                throw new \RuntimeException('refbook "' . $this->name . '" was not found');
             }
             $query = (new \yii\db\Query)->from($r['table_name'])->select($r['key_field'] . ',' . $r['value_field'])->orderBy($r['sort_field']);
             if ($r['ref_field'] && $this->refId) {
@@ -119,8 +119,4 @@ class RefBook
         $list = array_map('trim', explode($delimeter, $str));
         return ($emptyValue ? ['' => $emptyValueName] : []) + array_combine($list, $list);
     }
-}
-
-class RefBookException extends \RuntimeException
-{
 }
