@@ -137,14 +137,6 @@ class DefaultController extends MainController
         return $this->actionUpdate($id, true);
     }
 
-    public function actionSelect()
-    {
-        $id = \Yii::$app->request->post('id');
-        $model = EfficiencyTree::findOne(['id' => $id]);
-
-        return $model->value_default;
-    }
-
     public function actionHistory($id)
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
