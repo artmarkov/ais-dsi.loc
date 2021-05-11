@@ -2,9 +2,9 @@
 
 namespace common\models\history;
 
+use artsoft\helpers\RefBook;
 use common\models\creative\CreativeWorks;
 use common\models\own\Department;
-use common\models\teachers\Teachers;
 use common\widgets\history\BaseHistory;
 use yii\helpers\Json;
 
@@ -46,7 +46,7 @@ class CreativeHistory extends BaseHistory
                 if (isset($model->teachers_list)) {
                     $v = [];
                     foreach (Json::decode($model->teachers_list) as $id) {
-                        $v[] = $id != null ? Teachers::findOne($id)->getFullName() : null;
+                        $v[] = $id != null ? RefBook::find('teachers_fio')->getValue($id) : null;
                     }
                     return implode(', ', $v);
                 }
