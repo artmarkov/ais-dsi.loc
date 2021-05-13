@@ -6,6 +6,7 @@ RUN a2enmod dav
 RUN a2enmod dav_fs
 
 RUN apt-get -qq update && apt-get -qqy install  \
+        git \
         locales \
         libxslt-dev \
         libssh2-1-dev \
