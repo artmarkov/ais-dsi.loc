@@ -67,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:800px'],
+                                'options' => ['style' => 'width:1500px'],
                                 'attribute' => 'fullName',
                                 'controller' => '/teachers/default',
 

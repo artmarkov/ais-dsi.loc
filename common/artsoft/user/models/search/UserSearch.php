@@ -18,7 +18,7 @@ class UserSearch extends User
     public function rules()
     {
         return [
-            [['id', 'superadmin', 'status', 'created_at', 'updated_at', 'email_confirmed', 'user_category'], 'integer'],
+            [['id', 'superadmin', 'status', 'created_at', 'updated_at', 'email_confirmed'], 'integer'],
             [['username', 'gridRoleSearch', 'registration_ip', 'email'], 'string'],
             ['fullName', 'string'],
         ];
@@ -58,7 +58,6 @@ class UserSearch extends User
                 'superadmin',
                 'status',
                 'email_confirmed',
-//                'user_category',
                 'username',
 //                'fullName' => [
 //                    'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
@@ -79,7 +78,6 @@ class UserSearch extends User
             'id' => $this->id,
             'superadmin' => $this->superadmin,
             'status' => $this->status,
-           // 'user_category' => $this->user_category,
             Yii::$app->art->auth_item_table . '.name' => $this->gridRoleSearch,
             'registration_ip' => $this->registration_ip,
             'created_at' => $this->created_at,

@@ -37,7 +37,6 @@ use yii\helpers\Url;
  * @property int $status
  * @property int $version
  *
- * @property Users $user
  */
 class UserCommon extends ActiveRecord
 {
@@ -247,18 +246,19 @@ class UserCommon extends ActiveRecord
     /**
      * @return false|int|null|string
      */
-    public function getRelatedId()
+    public function getRelatedId($id)
     {
         return self::find()->select(self::getRelatedTable() . '.id')->innerJoin(self::getRelatedTable(), 'user_common_id = user_common.id')
+            ->where(['=', 'user_common.id', $id])
             ->scalar();
     }
 
     /**
      * @return string
      */
-    public function getRelatedUrl()
+    public function getRelatedUrl($id)
     {
-        return Url::to(['/' . self::getRelatedTable() . '/default/view', 'id' => self::getRelatedId()]);
+        return Url::to(['/' . self::getRelatedTable() . '/default/view', 'id' => self::getRelatedId($id)]);
 
     }
 

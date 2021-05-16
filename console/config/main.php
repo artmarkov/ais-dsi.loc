@@ -19,7 +19,7 @@ return [
 //                'artsoft\queue\migrations',
 //            ],
         ],
-         'migration' => [
+        'migration' => [
             'class' => 'bizley\migration\controllers\MigrationController',
         ],
 //        'monitor' => [
@@ -37,9 +37,14 @@ return [
             ],
         ],
         'urlManager' => [
-        'enablePrettyUrl' => true,
-        'scriptUrl' => 'http://artsoft.loc',
-    ],
+            'enablePrettyUrl' => true,
+            'scriptUrl' => 'http://artsoft.loc',
+        ],
+            'user' => [
+                'class' => 'artsoft\helpers\ConsoleUser',
+                'identityClass' => 'artsoft\models\User',
+                'autoUserIdentityId' => env('CONSOLE_USER_ID')
+            ],
     ],
     'modules' => [
         'gii' => 'yii\gii\Module',

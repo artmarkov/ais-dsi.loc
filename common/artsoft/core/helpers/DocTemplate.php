@@ -35,7 +35,7 @@ class DocTemplate
         new \clsOpenTBS;
         $tbs = new \clsTinyButStrong;
         $tbs->Plugin(TBS_INSTALL, OPENTBS_PLUGIN);
-        $tbs->LoadTemplate(\Yii::getAlias('@common/views/docs/' . $this->tmplName), OPENTBS_ALREADY_UTF8);
+        $tbs->LoadTemplate(\Yii::getAlias('@common/template/' . $this->tmplName), OPENTBS_ALREADY_UTF8);
         $callback = $this->callback;
         $callback($tbs);
         $tbs->PlugIn(OPENTBS_DELETE_COMMENTS);

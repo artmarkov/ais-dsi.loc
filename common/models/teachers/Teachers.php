@@ -171,14 +171,14 @@ class Teachers extends ActiveRecord
     }
     public function getUserStatus()
     {
-        return $this->user->status;
+        return $this->user ? $this->user->status : null;
     }
     /**
      * Геттер полного имени юзера
      */
     public function getFullName()
     {
-        return $this->user->fullName;
+        return $this->user ? $this->user->fullName : null;
     }
 
     /**

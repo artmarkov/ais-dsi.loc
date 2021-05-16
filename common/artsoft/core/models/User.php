@@ -59,7 +59,7 @@ class User extends UserIdentity
      * @var string
      */
     public $repeat_password;
-
+    public $userCategory;
     /**
      * @inheritdoc
      */
@@ -99,6 +99,7 @@ class User extends UserIdentity
             ['password', 'trim', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['repeat_password', 'required', 'on' => [self::SCENARIO_NEW_USER, 'changePassword']],
             ['repeat_password', 'compare', 'compareAttribute' => 'password'],
+            ['userCategory', 'safe'],
         ];
     }
 
@@ -427,6 +428,10 @@ class User extends UserIdentity
 
             // Don't let non-superadmin delete superadmin
             if (!Yii::$app->user->isSuperadmin AND $this->superadmin == 1) {
+                return false;
+            }
+            // запрет на удаление если есть связи
+            if ($this->getUserCommon()) {
                 return false;
             }
         }

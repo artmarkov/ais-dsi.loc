@@ -9,6 +9,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\models\User;
+use common\models\user\UserCommon;
 
 /**
  * @var yii\web\View $this
@@ -79,6 +80,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'buttonsTemplate' => '{update} {delete} {permissions} {password}',
                                 'buttons' => [
+                                    'delete' => function ($url, $model, $key) {
+                                        return !$model->userCommon ? Html::a(Yii::t('art', 'Delete'),
+                                            Url::to(['delete', 'id' => $model->id]), [
+                                                'title' => Yii::t('art', 'Delete'),
+                                                'aria-label' => Yii::t('art', 'Delete'),
+                                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        ) : Yii::t('art', 'Delete');
+                                    },
                                     'permissions' => function ($url, $model, $key) {
                                         return Html::a(Yii::t('art/user', 'Permissions'),
                                             Url::to(['user-permission/set', 'id' => $model->id]), [
@@ -99,12 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-//                            [
-//                                'attribute' => 'fullName',
-//                                'value' => function (User $model) {
-//                                    return $model->getFullName();
-//                                },
-//                            ],
+                            'userCommon.user_category',
                             [
                                 'attribute' => 'email',
                                 'format' => 'raw',
@@ -137,17 +144,6 @@ $this->params['breadcrumbs'][] = $this->title;
                               'format' => 'raw',
                               'visible' => User::hasPermission('viewRegistrationIp'),
                               ], */
-//                            [
-//                                'class' => 'artsoft\grid\columns\StatusColumn',
-//                                'attribute' => 'user_category',
-//                                'optionsArray' => [
-//                                    [User::USER_CATEGORY_EMPLOYEES, Yii::t('art', 'Staff'), 'default'],
-//                                    [User::USER_CATEGORY_TEACHERS, Yii::t('art', 'Teacher'), 'info'],
-//                                    [User::USER_CATEGORY_STUDENTS, Yii::t('art', 'Student'), 'danger'],
-//                                    [User::USER_CATEGORY_PARENTS, Yii::t('art', 'Parent'), 'warning'],
-//                                ],
-//                                'options' => ['style' => 'width:100px']
-//                            ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'superadmin',
