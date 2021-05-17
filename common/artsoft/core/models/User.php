@@ -6,6 +6,7 @@ use artsoft\behaviors\DateToTimeBehavior;
 use artsoft\helpers\AuthHelper;
 use artsoft\helpers\ArtHelper;
 use artsoft\traits\DateTimeTrait;
+use artsoft\user\controllers\DefaultController;
 use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -247,6 +248,10 @@ class User extends UserIdentity
         }
 
         $baseRoute = AuthHelper::unifyRoute($route);
+
+        if (Yii::$app->session->has(DefaultController::ORIGINAL_USER_SESSION_KEY) && $baseRoute == '/user/default/impersonate'){
+            return true;
+        }
 
         if (substr($baseRoute, 0, 4) === "http") {
             return true;
@@ -509,5 +514,9 @@ class User extends UserIdentity
     public function getUserCommon()
     {
         return $this->hasOne(UserCommon::class, ['user_id' => 'id']);
+    }
+
+    public function isAdmin() {
+        return $this->hasRole('administrator');
     }
 }

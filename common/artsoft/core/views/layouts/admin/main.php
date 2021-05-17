@@ -3,7 +3,7 @@
 use backend\assets\AppAsset;
 use artsoft\assets\MetisMenuAsset;
 use artsoft\assets\ArtAsset;
-use artsoft\models\Menu;
+use artsoft\user\controllers\DefaultController;
 use artsoft\widgets\LanguageSelector;
 use artsoft\widgets\Nav;
 use yii\bootstrap\NavBar;
@@ -55,13 +55,20 @@ MetisMenuAsset::register($this);
 
         if (Yii::$app->user->isGuest) {
             $menuItems[] = ['label' => '<i class="fa fa-sign-in" style="margin-right: 5px;"></i>' . Yii::t('art', 'Login'), 'url' => ['/auth/login']];
-        } else {
+        } elseif (!Yii::$app->session->has(DefaultController::ORIGINAL_USER_SESSION_KEY)) {
             $menuItems[] = [
                 'label' => '<i class="fa fa-sign-out" style="margin-right: 5px;"></i>' . Yii::t('art', 'Logout {username}', ['username' => Yii::$app->user->identity->username]),
                 'url' => Yii::$app->urlManager->hostInfo . '/auth/logout',
                 'linkOptions' => ['data-method' => 'post']
             ];
+        } else {
+            $menuItems[] = [
+                'label' => '<span style="color: orange;"><i class="fa fa-user-secret" style="margin-right: 5px;"></i>' . Yii::t('art', 'Logout {username}', ['username' => Yii::$app->user->identity->username]) . '</span>',
+                'url' => 'user/default/impersonate',
+                'linkOptions' => ['data-method' => 'post']
+            ];
         }
+
 
         echo Nav::widget([
             'encodeLabels' => false,

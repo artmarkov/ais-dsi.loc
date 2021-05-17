@@ -42,7 +42,7 @@ use kartik\date\DatePicker;
                             'phone',
                             'phone_optional',
                             'snils',
-                            'info:ntext',
+//                            'info:ntext',
                             [
                                 'attribute' => 'status',
                                 'value' => \common\models\user\UserCommon::getStatusValue($model->userCommon->status),
@@ -88,7 +88,7 @@ use kartik\date\DatePicker;
                 <?php if (!$model->isNewRecord): ?>
                     <div class="panel-footer">
                         <div class="form-group btn-group">
-                            <?= Html::a('<i class="fa fa-envelope-o" aria-hidden="true"></i> ' . Yii::t('art', 'Send registration data'),
+                            <?= Html::a('<i class="fa fa-envelope-o" aria-hidden="true"></i> ' . Yii::t('art', 'Reset your password and send registration data'),
                                 ['/user/default/send-login', 'id' => $model->id],
                                 [
                                     'class' => 'btn btn-default btn-sm',
@@ -100,7 +100,7 @@ use kartik\date\DatePicker;
                             ?>
 
                             <?= Html::a('<i class="fa fa-user-secret" aria-hidden="true"></i> ' . Yii::t('art', 'Login as user'),
-                                ['/user/default/secret-login', 'id' => $model->id],
+                                ['/user/default/impersonate', 'id' => $model->id],
                                 [
                                     'class' => 'btn btn-warning btn-sm',
 

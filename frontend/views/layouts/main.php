@@ -43,7 +43,7 @@ AvatarAsset::register($this);
         <?php
         $logo = $assetBundle->baseUrl . '/images/art-logo-inverse.png';
         NavBar::begin([
-            'brandLabel' => Html::img($logo, ['class' => 'art-logo', 'alt' => 'ArtCMS']) . '<b>' .Yii::t('art', 'AIS'). '</b> ' . Yii::$app->settings->get('general.title', 'Art Site', Yii::$app->language),
+            'brandLabel' => Html::img($logo, ['class' => 'art-logo', 'alt' => 'ArtCMS']) . '<b>' . Yii::t('art', 'AIS') . '</b> ' . Yii::$app->settings->get('general.title', 'Art Site', Yii::$app->language),
             'brandUrl' => Yii::$app->homeUrl,
             'options' => [
                 'class' => 'navbar-inverse navbar-static-top',
@@ -55,35 +55,44 @@ AvatarAsset::register($this);
         ]);
 
         $menuItems = [
-            ['label' => '<i class="fa fa-home"></i>&nbsp;' . Yii::t('art', 'Home') , 'url' => Yii::$app->urlManager->hostInfo],
+            ['label' => '<i class="fa fa-home" style="margin-right: 5px;"></i>' . Yii::t('art', 'Home'), 'url' => Yii::$app->urlManager->hostInfo],
         ];
-       // $menuItems = Menu::getMenuItems('main-menu');
-        if (Yii::$app->user->isGuest){
+        // $menuItems = Menu::getMenuItems('main-menu');
+        if (Yii::$app->user->isGuest) {
 
             $menuItems[] = [
-                'label' => '<i class="fa fa-paper-plane-o"></i>&nbsp;' . Yii::t('art/auth', 'Contact'),
-                'url' => \yii\helpers\Url::to(['/site/contact']) 
-                ];
+                'label' => '<i class="fa fa-paper-plane-o" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Contact'),
+                'url' => \yii\helpers\Url::to(['/site/contact'])
+            ];
             $menuItems[] = [
-                'label' => '<i class="fa fa-user-plus"></i>&nbsp;' . Yii::t('art/auth', 'Signup'),
+                'label' => '<i class="fa fa-user-plus" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Signup'),
                 'url' => \yii\helpers\Url::to(['/auth/default/finding'])
             ];
             $menuItems[] = [
-                'label' => '<i class="fa fa-sign-in"></i>&nbsp;' . Yii::t('art/auth', 'Enter'),
+                'label' => '<i class="fa fa-sign-in" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Enter'),
                 'url' => \yii\helpers\Url::to(['/auth/default/login'])
             ];
         } else {
             $avatar = ($userAvatar = Yii::$app->user->identity->getAvatar('small')) ? $userAvatar : AvatarAsset::getDefaultAvatar('small');
             $menuItems[] = [
-                'label' => '<img src="'.$avatar.'" class="user-image" alt="User Image"/>' . Yii::$app->user->identity->username,
+                'label' => '<img src="' . $avatar . '" class="user-image" alt="User Image"/>' . Yii::$app->user->identity->username,
                 'url' => ['/auth/default/profile'],
             ];
 
-            $menuItems[] = [
-                'label' => '<i class="fa fa-sign-out"></i>&nbsp;' . Yii::t('art/auth', 'Logout'),
-                'url' => ['/auth/default/logout', 'language' => false],
-                'linkOptions' => ['data-method' => 'post']
-            ];
+            if (!Yii::$app->session->has(\artsoft\user\controllers\DefaultController::ORIGINAL_USER_SESSION_KEY)) {
+                $menuItems[] = [
+                    'label' => '<i class="fa fa-sign-out" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Logout'),
+                    'url' => ['/auth/default/logout', 'language' => false],
+                    'linkOptions' => ['data-method' => 'post']
+                ];
+            } else {
+                $menuItems[] = [
+                    'label' => '<span style="color: orange;"><i class="fa fa-user-secret" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Logout') . '</span>',
+                    'url' => 'admin/user/default/impersonate',
+                    'linkOptions' => ['data-method' => 'post']
+                ];
+            }
+
             $menuItems[] = [
                 'label' => '<i class="fa fa-cogs"></i>',
                 'url' => \yii\helpers\Url::to(['/admin'])
@@ -145,12 +154,15 @@ AvatarAsset::register($this);
 </div>
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; <?= '<b>' .Yii::t('art', 'AIS'). '</b> ' . Html::encode(Yii::$app->settings->get('general.title', 'Art Site', Yii::$app->language)) ?> 2009-<?= date('Y') ?></p>
+        <p class="pull-left">
+            &copy; <?= '<b>' . Yii::t('art', 'AIS') . '</b> ' . Html::encode(Yii::$app->settings->get('general.title', 'Art Site', Yii::$app->language)) ?>
+            2009-<?= date('Y') ?></p>
 
-        <p class="pull-right"><?= Yii::powered() ?>, <?= artsoft\Art::powered() . ' ' . Yii::$app->params['version'] ?></p>
+        <p class="pull-right"><?= Yii::powered() ?>
+            , <?= artsoft\Art::powered() . ' ' . Yii::$app->params['version'] ?></p>
     </div>
 </footer>
-    
+
 <!--кнопка вверх-->
 <?= \artsoft\widgets\ScrollupWidget::widget() ?>
 <?php $this->endBody() ?>

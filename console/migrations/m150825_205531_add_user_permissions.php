@@ -48,6 +48,22 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                         '/admin/user/default/toggle-attribute',
                     ],
                 ],
+                'impersonateUsers' => [
+                    'title' => 'Вход под пользователем',
+                    'roles' => [self::ROLE_ADMIN],
+                    'childs' => ['viewUsers'],
+                    'links' => [
+                        '/admin/user/default/impersonate',
+                    ],
+                ],
+                'sendLoginUsers' => [
+                    'title' => 'Отправлять регистрационные данные',
+                    'roles' => [self::ROLE_ADMIN],
+                    'childs' => ['viewUsers'],
+                    'links' => [
+                        '/admin/user/default/send-login',
+                    ],
+                ],
                 'createUsers' => [
                     'title' => 'Добавление учетной записи',
                     'roles' => [self::ROLE_ADMIN],

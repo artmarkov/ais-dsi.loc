@@ -152,7 +152,7 @@ return [
     'Full Name' => 'Полное имя',
     'User Category' => 'Группа',
     'Login as user' => 'Войти под пользователем',
-    'Send registration data' => 'Отправить регистрационные данные',
+    'Reset your password and send registration data' => 'Сбросить пароль и отправить регистрационные данные',
     'Are you sure you want to send registration data?' => 'Вы уверены, что хотите отправить регистрационные данные?',
     'Previous successful login' => 'Предыдущий успешный вход',
 ];
