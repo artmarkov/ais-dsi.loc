@@ -13,6 +13,7 @@ use yii\widgets\MaskedInput;
 /**
  * @var yii\web\View $this
  * @var artsoft\auth\models\forms\SetEmailForm $model
+ * @var artsoft\auth\models\forms\ProfileForm $user_common
  */
 $this->title = Yii::t('art/auth', 'User Profile');
 $this->params['breadcrumbs'][] = $this->title;
@@ -93,10 +94,10 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                                 <div class="form-group clearfix">
                                     <label class="control-label" style="float: left; padding-right: 5px;">
 
-                                        <?= $model->attributeLabels()['user_category'] ?>
+                                        <?= $user_common->attributeLabels()['user_category'] ?>
                                     </label>
                                     <span>
-                                    <?= \artsoft\models\User::getUserCategoryValue($model->user_category); ?>
+                                    <?= \common\models\user\UserCommon::getUserCategoryValue($user_common->user_category); ?>
 
                                 </div>
                                 <div class="form-group clearfix">
@@ -138,7 +139,7 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                         <div class="panel-body">
                             <div class="row">
                                 <?= $form->field($model, 'username')->textInput(['maxlength' => 255, 'autofocus' => false, 'readonly' => true]) ?>
-                                <?= $form->field($model, 'snils')->textInput(['readonly' => true])->hint('Может потребоваться для восстановления учетных данных.') ?>
+                                <?= $form->field($user_common, 'snils')->textInput(['readonly' => true])->hint('Может потребоваться для восстановления учетных данных.') ?>
                                 <?= $form->field($model, 'email')->textInput(['maxlength' => 255, 'autofocus' => false])->hint(Yii::t('art/auth', 'After changing the E-mail confirmation is required')) ?>
                             </div>
                         </div>
@@ -146,14 +147,13 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div class="row">
-                                <?= $form->field($model, 'last_name')->textInput(['maxlength' => 124]) ?>
-                                <?= $form->field($model, 'first_name')->textInput(['maxlength' => 124]) ?>
-                                <?= $form->field($model, 'middle_name')->textInput(['maxlength' => 124]) ?>
-                                <?= $form->field($model, 'gender')->dropDownList(artsoft\models\User::getGenderList()) ?>
-                                <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(\kartik\date\DatePicker::classname()); ?>
-                                <?= $form->field($model, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                                <?= $form->field($model, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                                <?= $form->field($model, 'info')->textarea(['rows' => 10, 'maxlength' => 1024]) ?>
+                                <?= $form->field($user_common, 'last_name')->textInput(['maxlength' => 124]) ?>
+                                <?= $form->field($user_common, 'first_name')->textInput(['maxlength' => 124]) ?>
+                                <?= $form->field($user_common, 'middle_name')->textInput(['maxlength' => 124]) ?>
+                                <?= $form->field($user_common, 'gender')->dropDownList(\common\models\user\UserCommon::getGenderList()) ?>
+                                <?= $form->field($user_common, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(\kartik\date\DatePicker::classname()); ?>
+                                <?= $form->field($user_common, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                                <?= $form->field($user_common, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                             </div>
                         </div>
                     </div>

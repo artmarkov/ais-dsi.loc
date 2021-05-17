@@ -219,10 +219,15 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             ['teachers_fullname', 'teachers_view', 'teachers_id', 'fullname', 'fullname', 'status', null, 'Преподаватели (Фамилия Имя Отчество)'],
         ])->execute();
 
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['teachers_users', 'teachers_view', 'teachers_id', 'user_id', 'teachers_id', 'status', null, 'Преподаватели (ссылка на id учетной записи)'],
+        ])->execute();
+
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_users'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_fullname'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_fio'])->execute();
         $this->db->createCommand()->dropView('teachers_view')->execute();

@@ -45,10 +45,38 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
         $this->db->createCommand()->resetSequence('students', 1000)->execute();
         $this->addForeignKey('student_ibfk_1', 'students', 'position_id', 'guide_student_position', 'id', 'NO ACTION', 'NO ACTION');
 
+        $this->db->createCommand()->createView('students_view', '
+         SELECT users.id AS user_id, user_common.id AS user_common_id, students.id AS students_id, users.username, users.email, users.status AS user_status, 
+                user_common.status, position_id, user_common.last_name,user_common.first_name,user_common.middle_name, 
+                CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) AS fullname, 
+                CONCAT(user_common.last_name ,\' \', left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'.\') as fio, 
+                CONCAT(left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'. \', user_common.last_name) as iof
+        FROM students 
+        INNER JOIN user_common ON user_common.id = students.user_common_id 
+        LEFT JOIN users ON user_common.user_id = users.id 
+        WHERE user_common.user_category=\'students\'
+        ORDER BY user_common.last_name, user_common.first_name
+        ')->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['students_fio', 'students_view', 'students_id', 'fio', 'fio', 'status', null, 'Ученики (Фамилия И.О.)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['students_fullname', 'students_view', 'students_id', 'fullname', 'fullname', 'status', null, 'Ученики (Фамилия Имя Отчество)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['students_users', 'students_view', 'students_id', 'user_id', 'students_id', 'status', null, 'Ученики (ссылка на id учетной записи)'],
+        ])->execute();
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'students_users'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'students_fullname'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'students_fio'])->execute();
+        $this->db->createCommand()->dropView('students_view')->execute();
         $this->dropForeignKey('student_ibfk_1', 'student');
         $this->dropTable('student');
         $this->dropTable('guide_student_position');

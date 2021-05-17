@@ -56,7 +56,7 @@
     "artsoft/yii2-date-range-picker": "*",
     "wbraganca/yii2-dynamicform": "*",
     "kartik-v/yii2-tree-manager": "@dev",
-    "box/spout": "^3.2",
+    "box/spout": "^3.3",
     "tinybutstrong/opentbs": "^1.10"
 
   },

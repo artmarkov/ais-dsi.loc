@@ -1,5 +1,7 @@
 <?php
 
+use artsoft\helpers\Html;
+use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
@@ -32,6 +34,17 @@ use common\models\user\UserCommon;
             Информация о родителе (официальном представителе)
             <?php if (!$userCommon->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/parents/default/history', 'id' => $model->id]); ?></span>
+                <?php $user_id = RefBook::find('parents_users')->getValue($model->id); ?>
+                <?php if ($user_id): ?>
+                    <span class="pull-right"> <?= Html::a('<i class="fa fa-user-o" aria-hidden="true"></i> Регистрационные данные',
+                            ['user/default/update', 'id' => $user_id],
+                            [
+                                'target' => '_blank',
+                                'class' => 'btn btn-default ',
+                            ]
+                        ); ?>
+                    </span>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
         <div class="panel-body">

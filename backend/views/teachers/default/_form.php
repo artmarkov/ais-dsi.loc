@@ -8,6 +8,7 @@ use yii\widgets\MaskedInput;
 use wbraganca\dynamicform\DynamicFormWidget;
 use common\models\user\UserCommon;
 use common\models\own\Department;
+use artsoft\helpers\RefBook;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\teachers\Teachers */
@@ -98,6 +99,17 @@ EOF;
             Информация о преподавателе
             <?php if (!$userCommon->isNewRecord):?>
             <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/teachers/default/history', 'id' => $model->id]); ?></span>
+               <?php $user_id = RefBook::find('teachers_users')->getValue($model->id); ?>
+                <?php if ($user_id): ?>
+                    <span class="pull-right"> <?= Html::a('<i class="fa fa-user-o" aria-hidden="true"></i> Регистрационные данные',
+                            ['user/default/update', 'id' => $user_id],
+                            [
+                                'target' => '_blank',
+                                'class' => 'btn btn-default ',
+                            ]
+                        ); ?>
+                    </span>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
         <div class="panel-body">

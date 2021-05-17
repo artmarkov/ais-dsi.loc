@@ -37,10 +37,68 @@ class m210406_145345_create_table_employees_parents extends \artsoft\db\BaseMigr
         ], $tableOptions);
 
         $this->db->createCommand()->resetSequence('parents', 1000)->execute();
+
+        $this->db->createCommand()->createView('employees_view', '
+         SELECT users.id AS user_id, user_common.id AS user_common_id, employees.id AS employees_id, users.username, users.email, users.status AS user_status, 
+                user_common.status, user_common.last_name, user_common.first_name, user_common.middle_name, 
+                CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) AS fullname, 
+                CONCAT(user_common.last_name ,\' \', left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'.\') as fio, 
+                CONCAT(left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'. \', user_common.last_name) as iof
+        FROM employees 
+        INNER JOIN user_common ON user_common.id = employees.user_common_id 
+        LEFT JOIN users ON user_common.user_id = users.id 
+        WHERE user_common.user_category=\'employees\'
+        ORDER BY user_common.last_name, user_common.first_name
+        ')->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['employees_fio', 'employees_view', 'employees_id', 'fio', 'fio', 'status', null, 'Сотрудники (Фамилия И.О.)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['employees_fullname', 'employees_view', 'employees_id', 'fullname', 'fullname', 'status', null, 'Сотрудники (Фамилия Имя Отчество)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['employees_users', 'employees_view', 'employees_id', 'user_id', 'employees_id', 'status', null, 'Сотрудники (ссылка на id учетной записи)'],
+        ])->execute();
+
+        $this->db->createCommand()->createView('parents_view', '
+         SELECT users.id AS user_id, user_common.id AS user_common_id, parents.id AS parents_id, users.username, users.email, users.status AS user_status, 
+                user_common.status, user_common.last_name, user_common.first_name, user_common.middle_name, 
+                CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) AS fullname, 
+                CONCAT(user_common.last_name ,\' \', left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'.\') as fio, 
+                CONCAT(left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'. \', user_common.last_name) as iof
+        FROM parents 
+        INNER JOIN user_common ON user_common.id = parents.user_common_id 
+        LEFT JOIN users ON user_common.user_id = users.id 
+        WHERE user_common.user_category=\'parents\'
+        ORDER BY user_common.last_name, user_common.first_name
+        ')->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['parents_fio', 'parents_view', 'parents_id', 'fio', 'fio', 'status', null, 'Родители (Фамилия И.О.)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['parents_fullname', 'parents_view', 'parents_id', 'fullname', 'fullname', 'status', null, 'Родители (Фамилия Имя Отчество)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['parents_users', 'parents_view', 'parents_id', 'user_id', 'parents_id', 'status', null, 'Родители (ссылка на id учетной записи)'],
+        ])->execute();
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'parents_users'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'parents_fullname'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'parents_fio'])->execute();
+        $this->db->createCommand()->dropView('parents_view')->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'employees_users'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'employees_fullname'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'employees_fio'])->execute();
+        $this->db->createCommand()->dropView('employees_view')->execute();
         $this->dropTableWithHistory('parents');
         $this->dropTableWithHistory('employees');
 

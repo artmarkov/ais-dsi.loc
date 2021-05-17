@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 use common\models\teachers\Teachers;
 use artsoft\helpers\Html;
@@ -34,6 +35,17 @@ use common\models\user\UserCommon;
             Информация об ученике
             <?php if (!$userCommon->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/students/default/history', 'id' => $model->id]); ?></span>
+                <?php $user_id = RefBook::find('students_users')->getValue($model->id); ?>
+                <?php if ($user_id): ?>
+                    <span class="pull-right"> <?= Html::a('<i class="fa fa-user-o" aria-hidden="true"></i> Регистрационные данные',
+                            ['user/default/update', 'id' => $user_id],
+                            [
+                                'target' => '_blank',
+                                'class' => 'btn btn-default ',
+                            ]
+                        ); ?>
+                    </span>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
         <div class="panel-body">

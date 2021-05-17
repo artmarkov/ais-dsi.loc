@@ -87,15 +87,17 @@ AvatarAsset::register($this);
                 ];
             } else {
                 $menuItems[] = [
-                    'label' => '<span style="color: orange;"><i class="fa fa-user-secret" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Logout') . '</span>',
+                    'label' => '<span style="color: white;"><i class="fa fa-user-secret" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Logout') . '</span>',
                     'url' => 'admin/user/default/impersonate',
-                    'linkOptions' => ['data-method' => 'post']
+                    'linkOptions' => ['data-method' => 'post'],
+                    'options' => ['style' => 'background-color: #e28b00;'],
                 ];
             }
 
             $menuItems[] = [
                 'label' => '<i class="fa fa-cogs"></i>',
-                'url' => \yii\helpers\Url::to(['/admin'])
+                'url' => \yii\helpers\Url::to(['/admin']),
+                'visible' => \artsoft\models\User::hasRole('viewDashboard'),
             ];
         }
         echo Nav::widget([

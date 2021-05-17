@@ -22,6 +22,7 @@ use artsoft\controllers\BaseController;
 use artsoft\models\User;
 use artsoft\components\AuthEvent;
 use artsoft\widgets\ActiveForm;
+use common\models\user\UserCommon;
 use Yii;
 use yii\base\DynamicModel;
 use yii\filters\VerbFilter;
@@ -591,12 +592,16 @@ class DefaultController extends BaseController
         }
 
         $model = User::findIdentity(Yii::$app->user->id);
-
+        $user_common = $model->userCommon;
+        if(!$user_common) {
+            $user_common = new UserCommon();
+        }
+//        echo '<pre>' . print_r($user_common, true) . '</pre>';
         if ($model->load(Yii::$app->request->post())) {
             $model->save();
         }
 
-        return $this->renderIsAjax('profile', compact('model'));
+        return $this->renderIsAjax('profile', ['model' => $model, 'user_common' => $user_common]);
     }
 
     public function actionUploadAvatar()
