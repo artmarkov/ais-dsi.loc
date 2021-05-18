@@ -77,6 +77,11 @@ class DefaultController extends BaseController
         ]);
     }
 
+    /**
+     * @param $client
+     * @return \yii\console\Response|Response
+     * @throws \yii\db\Exception
+     */
     public function onAuthSuccess($client)
     {
         $source = $client->getId();
@@ -122,7 +127,9 @@ class DefaultController extends BaseController
     }
 
     /**
-     * @return string|\yii\web\Response
+     * @return array|string|\yii\console\Response|Response
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
      */
     public function actionSetEmail()
     {
@@ -149,7 +156,9 @@ class DefaultController extends BaseController
     }
 
     /**
-     * @return string|\yii\web\Response
+     * @return array|string|\yii\console\Response|Response
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
      */
     public function actionSetUsername()
     {
@@ -176,7 +185,9 @@ class DefaultController extends BaseController
     }
 
     /**
-     * @return string|\yii\web\Response
+     * @return array|string|\yii\console\Response|Response
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
      */
     public function actionSetPassword()
     {
@@ -202,6 +213,11 @@ class DefaultController extends BaseController
         return $this->renderIsAjax('set-password', compact('model'));
     }
 
+    /**
+     * @param $attributes
+     * @return \yii\console\Response|Response
+     * @throws \yii\db\Exception
+     */
     protected function createUser($attributes)
     {
         $auth = [
@@ -260,7 +276,8 @@ class DefaultController extends BaseController
     /**
      * Login form
      *
-     * @return string
+     * @return array|string|Response
+     * @throws NotFoundHttpException
      */
     public function actionLogin()
     {
@@ -296,9 +313,9 @@ class DefaultController extends BaseController
     /**
      * Finding User before registration
      *
-     * @return string
+     * @return string|Response
+     * @throws NotFoundHttpException
      */
-
     public function actionFinding()
     {
         if (!Yii::$app->user->isGuest) {
@@ -320,9 +337,10 @@ class DefaultController extends BaseController
     /**
      * Signup page after finding user params
      *
-     * @return string
+     * @param $auth_key
+     * @return bool|string|Response
+     * @throws NotFoundHttpException
      */
-
     public function actionSignup($auth_key)
     {
         if (!Yii::$app->user->isGuest) {
@@ -377,8 +395,8 @@ class DefaultController extends BaseController
      *
      * @param string $token
      *
-     * @throws \yii\web\NotFoundHttpException
      * @return string|\yii\web\Response
+     * @throws \yii\web\NotFoundHttpException
      */
     public function actionConfirmRegistrationEmail($token)
     {
@@ -397,9 +415,9 @@ class DefaultController extends BaseController
 
     /**
      * Change your own password
-     *
-     * @throws \yii\web\ForbiddenHttpException
-     * @return string|\yii\web\Response
+     * @return array|string|Response
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
      */
     public function actionUpdatePassword()
     {
@@ -430,8 +448,8 @@ class DefaultController extends BaseController
 
     /**
      * Action to reset password
-     *
-     * @return string|\yii\web\Response
+     * @return bool|string|Response
+     * @throws NotFoundHttpException
      */
     public function actionResetPassword()
     {
@@ -466,8 +484,8 @@ class DefaultController extends BaseController
      *
      * @param string $token
      *
-     * @throws \yii\web\NotFoundHttpException
      * @return string|\yii\web\Response
+     * @throws \yii\web\NotFoundHttpException
      */
     public function actionResetPasswordRequest($token)
     {
@@ -499,7 +517,8 @@ class DefaultController extends BaseController
     }
 
     /**
-     * @return string|\yii\web\Response
+     * @return array|string|Response
+     * @throws NotFoundHttpException
      */
     public function actionConfirmEmail()
     {
@@ -543,8 +562,8 @@ class DefaultController extends BaseController
      *
      * @param string $token
      *
-     * @throws \yii\web\NotFoundHttpException
      * @return string|\yii\web\Response
+     * @throws \yii\web\NotFoundHttpException
      */
     public function actionConfirmEmailReceive($token)
     {
@@ -579,7 +598,9 @@ class DefaultController extends BaseController
     }
 
     /**
-     * @return string|\yii\web\Response
+     * @return string|Response
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
      */
     public function actionProfile()
     {
@@ -591,19 +612,36 @@ class DefaultController extends BaseController
             throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
         }
 
-        $model = User::findIdentity(Yii::$app->user->id);
-        $user_common = $model->userCommon;
-        if(!$user_common) {
-            $user_common = new UserCommon();
+        $user = User::findIdentity(Yii::$app->user->id);
+        $userCommon = $user->userCommon;
+        if (!$userCommon) {
+            Yii::$app->session->addFlash('error', 'Недостаточно данных для загрузки формы.');
+            return $this->goHome();
         }
-//        echo '<pre>' . print_r($user_common, true) . '</pre>';
-        if ($model->load(Yii::$app->request->post())) {
-            $model->save();
+        if ($userCommon->load(Yii::$app->request->post()) && $user->load(Yii::$app->request->post())) {
+            // validate all models
+            $valid = $userCommon->validate();
+            $valid = $user->validate() && $valid;
+            if ($valid) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try {
+                    if ($user->save(false) && $userCommon->save(false)) {
+                        $transaction->commit();
+                        Yii::$app->session->addFlash('success', 'Данные успешно сохранены.');
+                        return $this->goHome();
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                }
+            }
         }
-
-        return $this->renderIsAjax('profile', ['model' => $model, 'user_common' => $user_common]);
+        return $this->renderIsAjax('profile', ['model' => $user, 'userCommon' => $userCommon]);
     }
 
+    /**
+     * @return string|void
+     * @throws NotFoundHttpException
+     */
     public function actionUploadAvatar()
     {
         if (Yii::$app->user->isGuest) {
@@ -634,6 +672,10 @@ class DefaultController extends BaseController
         return;
     }
 
+    /**
+     * @return bool|string|void
+     * @throws NotFoundHttpException
+     */
     public function actionRemoveAvatar()
     {
         if (Yii::$app->user->isGuest) {
@@ -654,6 +696,11 @@ class DefaultController extends BaseController
         return;
     }
 
+    /**
+     * @param null $redirectUrl
+     * @return Response
+     * @throws NotFoundHttpException
+     */
     public function actionUnlinkOauth($redirectUrl = null)
     {
         if (Yii::$app->user->isGuest) {
