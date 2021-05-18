@@ -40,8 +40,8 @@ class m210316_181416_create_table_user_relation extends BaseMigration
         $this->createIndex('parent_id', 'student_dependence', 'parent_id');
         $this->createIndex('relation_id', 'student_dependence', 'relation_id');
 
-        $this->addForeignKey('student_dependence_ibfk_1', 'student_dependence', 'student_id', 'users', 'id', 'RESTRICT', 'RESTRICT');
-        $this->addForeignKey('student_dependence_ibfk_2', 'student_dependence', 'parent_id', 'users', 'id', 'RESTRICT', 'RESTRICT');
+        $this->addForeignKey('student_dependence_ibfk_1', 'student_dependence', 'student_id', 'students', 'id', 'RESTRICT', 'RESTRICT');
+        $this->addForeignKey('student_dependence_ibfk_2', 'student_dependence', 'parent_id', 'parents', 'id', 'RESTRICT', 'RESTRICT');
         $this->addForeignKey('student_dependence_ibfk_3', 'student_dependence', 'relation_id', 'guide_user_relation', 'id', 'RESTRICT', 'RESTRICT');
 
     }

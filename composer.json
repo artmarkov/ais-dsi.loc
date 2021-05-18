@@ -57,7 +57,8 @@
     "wbraganca/yii2-dynamicform": "*",
     "kartik-v/yii2-tree-manager": "@dev",
     "box/spout": "^3.3",
-    "tinybutstrong/opentbs": "^1.10"
+    "tinybutstrong/opentbs": "^1.10",
+    "loveorigami/yii2-modal-ajax": "@dev"
 
   },
   "require-dev": {

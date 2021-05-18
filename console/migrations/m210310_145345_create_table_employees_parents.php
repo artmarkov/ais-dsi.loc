@@ -1,6 +1,6 @@
 <?php
 
-class m210406_145345_create_table_employees_parents extends \artsoft\db\BaseMigration
+class m210310_145345_create_table_employees_parents extends \artsoft\db\BaseMigration
 {
     public function up()
     {

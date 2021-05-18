@@ -5,6 +5,8 @@ namespace common\models\students;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\traits\DateTimeTrait;
+use common\models\history\ParentsHistory;
+use common\models\parents\Parents;
 use common\models\user\UserCommon;
 use common\models\user\UserFamily;
 use Yii;
@@ -181,10 +183,10 @@ class Student extends \yii\db\ActiveRecord
      * @return \yii\db\ActiveQuery
      */
 
-//    public function getUserFamily()
-//    {
-//        return $this->hasMany(UserFamily::className(), ['user_main_id' => 'user_id']);
-//    }
+    public function getStudentDependence()
+    {
+        return $this->hasMany(StudentDependence::className(), ['student_id' => 'id']);
+    }
     /**
      * Список родителей ученика
      * @param type $user_id

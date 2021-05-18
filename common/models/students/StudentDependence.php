@@ -2,9 +2,12 @@
 
 namespace common\models\students;
 
-use Yii;
+use artsoft\models\User;
+use common\models\guidesys\UserRelation;
+use common\models\parents\Parents;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use Yii;
 
 /**
  * This is the model class for table "student_dependence".
@@ -20,9 +23,9 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $updated_by
  * @property int $version
  *
- * @property GuideUserRelation $relation0
- * @property Users $student
- * @property Users $parent
+ * @property UserRelation $relation0
+ * @property User $student
+ * @property User $parent
  */
 class StudentDependence extends \artsoft\db\ActiveRecord
 {
@@ -50,12 +53,12 @@ class StudentDependence extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['relation_id', 'student_id', 'parent_id'], 'required'],
+            [['relation_id', 'parent_id'], 'required'],
             [['relation_id', 'student_id', 'parent_id', 'signer_flag', 'version'], 'integer'],
             [['created_at', 'created_by', 'updated_at', 'updated_by',], 'safe'],
-            [['relation_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuideUserRelation::className(), 'targetAttribute' => ['relation_id' => 'id']],
-            [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['student_id' => 'id']],
-            [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['parent_id' => 'id']],
+            [['relation_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserRelation::className(), 'targetAttribute' => ['relation_id' => 'id']],
+            [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::className(), 'targetAttribute' => ['student_id' => 'id']],
+            [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => Parents::className(), 'targetAttribute' => ['parent_id' => 'id']],
         ];
     }
 
@@ -66,10 +69,10 @@ class StudentDependence extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art/students', 'ID'),
-            'relation_id' => Yii::t('art/students', 'Relation ID'),
-            'student_id' => Yii::t('art/students', 'Student ID'),
-            'parent_id' => Yii::t('art/students', 'Parent ID'),
-            'signer_flag' => Yii::t('art/students', 'Signer Flag'),
+            'relation_id' => Yii::t('art/students', 'Relation'),
+            'student_id' => Yii::t('art/students', 'Student'),
+            'parent_id' => Yii::t('art/students', 'Parent'),
+            'signer_flag' => Yii::t('art/students', 'Signer'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -90,7 +93,7 @@ class StudentDependence extends \artsoft\db\ActiveRecord
      */
     public function getRelation0()
     {
-        return $this->hasOne(GuideUserRelation::className(), ['id' => 'relation_id']);
+        return $this->hasOne(UserRelation::className(), ['id' => 'relation_id']);
     }
 
     /**
@@ -100,7 +103,7 @@ class StudentDependence extends \artsoft\db\ActiveRecord
      */
     public function getStudent()
     {
-        return $this->hasOne(Users::className(), ['id' => 'student_id']);
+        return $this->hasOne(User::className(), ['id' => 'student_id']);
     }
 
     /**
@@ -110,6 +113,6 @@ class StudentDependence extends \artsoft\db\ActiveRecord
      */
     public function getParent()
     {
-        return $this->hasOne(Users::className(), ['id' => 'parent_id']);
+        return $this->hasOne(User::className(), ['id' => 'parent_id']);
     }
 }
