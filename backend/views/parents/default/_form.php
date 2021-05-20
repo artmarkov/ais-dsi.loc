@@ -22,7 +22,7 @@ use common\models\user\UserCommon;
         'fieldConfig' => [
             'inputOptions' => ['readonly' => $readonly]
         ],
-        'id' => 'student-form',
+        'id' => 'parents-form',
         'validateOnBlur' => false,
         'options' => ['enctype' => 'multipart/form-data'],
     ])

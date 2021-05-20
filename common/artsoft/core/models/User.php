@@ -435,10 +435,6 @@ class User extends UserIdentity
             if (!Yii::$app->user->isSuperadmin AND $this->superadmin == 1) {
                 return false;
             }
-            // запрет на удаление если есть связи
-            if ($this->getUserCommon()) {
-                return false;
-            }
         }
 
         return parent::beforeDelete();

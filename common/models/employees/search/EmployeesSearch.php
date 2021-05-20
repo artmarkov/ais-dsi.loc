@@ -75,6 +75,8 @@ class EmployeesSearch extends Employees
             // $query->where('0=1');
             return $dataProvider;
         }
+//        жадная загрузка
+        $query->joinWith(['user']);
 
         $query->andFilterWhere([
             'id' => $this->id,
