@@ -2,15 +2,11 @@
 
 namespace backend\controllers\students;
 
-use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use backend\models\Model;
 use common\models\history\StudentsHistory;
-use common\models\parents\Parents;
 use common\models\students\StudentDependence;
-use common\models\teachers\TeachersActivity;
 use common\models\user\UserCommon;
-use common\models\user\UserParents;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use Yii;
@@ -35,7 +31,7 @@ class DefaultController extends MainController
         $user = new User();
         $userCommon = new UserCommon();
         $model = new $this->modelClass;
-        $modelsDependence = [new StudentDependence];
+        $modelsDependence = [new StudentDependence(['scenario' => StudentDependence::SCENARIO_PARENT])];
 
         if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
@@ -45,7 +41,7 @@ class DefaultController extends MainController
             // validate all models
             $valid = $userCommon->validate();
             $valid = $model->validate() && $valid;
-            //$valid = Model::validateMultiple($modelsDependence) && $valid;
+            $valid = Model::validateMultiple($modelsDependence) && $valid;
             //$valid = true;
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
@@ -102,7 +98,7 @@ class DefaultController extends MainController
      */
     public function actionUpdate($id, $readonly = false)
     {
-        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['tabMenu'] = $this->getMenu($id);
 
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_STUDENTS]);
@@ -112,7 +108,9 @@ class DefaultController extends MainController
         }
 
         $modelsDependence = $model->studentDependence;
-
+        foreach ($modelsDependence as $m) {
+            $m->scenario = StudentDependence::SCENARIO_PARENT;
+        }
         if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
             $oldIDs = ArrayHelper::map($modelsDependence, 'id', 'id');
@@ -170,72 +168,22 @@ class DefaultController extends MainController
      */
     public function actionHistory($id)
     {
-        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['tabMenu'] = $this->getMenu($id);
         $model = $this->findModel($id);
         $data = new StudentsHistory($id);
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
-    public function actionRemove()
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getMenu($id)
     {
-        $id = Yii::$app->request->get('id');
-        $model = \common\models\user\UserFamily::findOne($id);
-        if (empty($model)) return false;
-        $model->delete();
-        Yii::$app->session->setFlash('crudMessage', Yii::t('art', 'Your item has been deleted.'));
-        return $this->redirect(Yii::$app->request->referrer);
-    }
-
-    public function actionCreateParent($id)
-    {
-        $this->view->params['tabMenu'] = $this->tabMenu;
-
-        $user = new User();
-        $userCommon = new UserParents();
-        $model = new Parents();
-
-        if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
-
-            // validate all models
-            $valid = $userCommon->validate();
-            $valid = $model->validate() && $valid;
-            //$valid = true;
-            if ($valid) {
-                $transaction = \Yii::$app->db->beginTransaction();
-                try {
-                    $user->username = $userCommon->generateUsername();
-                    $user->generateAuthKey();
-
-                    if (Yii::$app->art->emailConfirmationRequired) {
-                        $user->status = User::STATUS_INACTIVE;
-                        $user->generateConfirmationToken();
-                    }
-                    if ($flag = $user->save(false)) {
-                        $user->assignRoles(['user', 'curator']);
-                        $userCommon->user_category = UserParents::USER_CATEGORY_PARENTS;
-                        $userCommon->user_id = $user->id;
-                        if ($flag = $userCommon->save(false)) {
-                            $model->user_common_id = $userCommon->id;
-                                $flag = $model->save(false);
-                        }
-                    }
-                    if ($flag) {
-                        $transaction->commit();
-                        if (Yii::$app->request->isAjax) {
-                            // JSON response is expected in case of successful save
-                            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                            return ['success' => true, 'ids' => $model->id, 'title' => RefBook::find('parents_fullname')->getValue($model->id)];
-                        }
-                        return $this->redirect(['update', 'id' => $id]);
-                    }
-                } catch (Exception $e) {
-                    $transaction->rollBack();
-                }
-            }
-        }
-
-        return $this->renderIsAjax('_parents_modal_form', [
-            'userCommon' => $userCommon,
-            'model' => $model,
-        ]);
+        return [
+            ['label' => 'Карточка ученика',  'url' => ['/students/default/update', 'id' => $id]],
+            ['label' => 'Индивидуальные планы',  'url' => ['/students/default/study-plan', 'id' => $id]],
+            ['label' => 'История',  'url' => ['/students/default/history', 'id' => $id]],
+        ];
     }
 }

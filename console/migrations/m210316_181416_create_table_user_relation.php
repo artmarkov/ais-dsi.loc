@@ -21,6 +21,8 @@ class m210316_181416_create_table_user_relation extends BaseMigration
             [2, 'Отец', 'Отец'],
             [3, 'Бабушка', 'Баб'],
             [4, 'Дедушка', 'Дед'],
+            [5, 'Опекун', 'Опек'],
+            [6, 'Офмциальный представитель', 'Офиц.пр.'],
         ])->execute();
 
         $this->createTableWithHistory('student_dependence', [
@@ -28,7 +30,6 @@ class m210316_181416_create_table_user_relation extends BaseMigration
             'relation_id' => $this->integer()->notNull(),
             'student_id' => $this->integer()->notNull(),
             'parent_id' => $this->integer()->notNull(),
-            'signer_flag' => $this->tinyInteger(2)->defaultValue(1),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

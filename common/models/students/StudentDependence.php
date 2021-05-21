@@ -16,7 +16,6 @@ use Yii;
  * @property int|null $relation_id
  * @property int|null $student_id
  * @property int|null $parent_id
- * @property int|null $signer_flag
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -29,6 +28,8 @@ use Yii;
  */
 class StudentDependence extends \artsoft\db\ActiveRecord
 {
+    const SCENARIO_STUDENT = 'student';
+    const SCENARIO_PARENT = 'parent';
     /**
      * {@inheritdoc}
      */
@@ -53,8 +54,10 @@ class StudentDependence extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['relation_id', 'parent_id'], 'required'],
-            [['relation_id', 'student_id', 'parent_id', 'signer_flag', 'version'], 'integer'],
+            ['student_id', 'required', 'on' => self::SCENARIO_STUDENT],
+            ['parent_id', 'required', 'on' => self::SCENARIO_PARENT],
+            [['relation_id'], 'required'],
+            [['relation_id', 'student_id', 'parent_id', 'version'], 'integer'],
             [['created_at', 'created_by', 'updated_at', 'updated_by',], 'safe'],
             [['relation_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserRelation::className(), 'targetAttribute' => ['relation_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::className(), 'targetAttribute' => ['student_id' => 'id']],
@@ -68,11 +71,10 @@ class StudentDependence extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('art/students', 'ID'),
-            'relation_id' => Yii::t('art/students', 'Relation'),
-            'student_id' => Yii::t('art/students', 'Student'),
-            'parent_id' => Yii::t('art/students', 'Parent'),
-            'signer_flag' => Yii::t('art/students', 'Signer'),
+            'id' => Yii::t('art', 'ID'),
+            'relation_id' => Yii::t('art/student', 'Relation'),
+            'student_id' => Yii::t('art/student', 'Student'),
+            'parent_id' => Yii::t('art/student', 'Parent'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),

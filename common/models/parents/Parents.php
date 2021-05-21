@@ -5,6 +5,7 @@ namespace common\models\parents;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
 use artsoft\traits\DateTimeTrait;
+use common\models\students\StudentDependence;
 use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -159,6 +160,14 @@ class Parents extends \artsoft\db\ActiveRecord
     public function getUpdatedBy()
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStudentDependence()
+    {
+        return $this->hasMany(StudentDependence::className(), ['parent_id' => 'id']);
     }
 
 }

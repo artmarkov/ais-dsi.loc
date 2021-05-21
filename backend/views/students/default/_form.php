@@ -14,12 +14,12 @@ use wbraganca\dynamicform\DynamicFormWidget;
 /* @var $modelsDependence \common\models\students\StudentDependence */
 /* @var $readonly */
 /* @var $form artsoft\widgets\ActiveForm */
-$this->registerJs(<<<JS
-$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
-	    $( "#student-form" ).submit(); // вызываем событие submit на элементе <form>
-	  });
-JS
-    , \yii\web\View::POS_END);
+//$this->registerJs(<<<JS
+//$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
+//	    $( "#student-form" ).submit(); // вызываем событие submit на элементе <form>
+//	  });
+//JS
+//    , \yii\web\View::POS_END);
 $js = '
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
@@ -56,11 +56,7 @@ JS
     ])
 
     ?>
-    <?php \yii\widgets\Pjax::begin([
-        'id' => 'grid-parent-pjax',
-        'timeout' => 5000,
-    ]);
-    ?>
+
     <div class="panel">
         <div class="panel-heading">
             Информация об ученике
@@ -135,7 +131,6 @@ JS
                 'formFields' => [
                     'relation_id',
                     'parent_id',
-                    'signer_flag',
                 ],
             ]); ?>
             <div class="panel panel-primary">
@@ -164,34 +159,12 @@ JS
                                     }
                                     ?>
                                     <?= $form->field($modelDependence, "[{$index}]relation_id")->dropDownList(\common\models\guidesys\UserRelation::getRelationList(), [
-                                        'prompt' => Yii::t('art/teachers', 'Select Relations...'),
-                                       // 'id' => 'relation_id'
-                                    ]);
+                                        'prompt' => Yii::t('art/student', 'Select Relations...'),
+                                    ])->label(Yii::t('art/student', 'Relation'));
                                     ?>
-                                    <?php
-                                    $JSSelect = <<<EOF
-        function(e) {
-         console.log('select2:select', e.params.data);
-          //$( "#student-form" ).submit(); 
-         if(e.params.data.id == '0') {
-         console.log('New');
-         var elems = document.getElementsByClassName("click");
-        elems[0].click();
-         //window.open('/admin/parents/create');
-         }
-        
-}
-EOF;
-
-
-                                    ?>
-
-
-
 
                                     <?= $form->field($modelDependence, "[{$index}]parent_id")->widget(\kartik\select2\Select2::class, [
                                         'data' => ['0' => '--Новая запись--'] + RefBook::find('parents_fullname', $model->isNewRecord ? \common\models\user\UserCommon::STATUS_ACTIVE : '')->getList(),
-//                                      'data' => RefBook::find('parents_fullname', $model->isNewRecord ? \common\models\user\UserCommon::STATUS_ACTIVE : '')->getList(),
                                         'options' => [
                                             'disabled' => $readonly,
                                             'placeholder' => Yii::t('art/parents', 'Select Parents...'),
@@ -201,13 +174,13 @@ EOF;
                                             'allowClear' => true
                                         ],
                                         'pluginEvents' => [
-                                            "select2:select" => new \yii\web\JsExpression($JSSelect),
+                                            "select2:select" => new \yii\web\JsExpression("function(e) {
+                                                 if(e.params.data.id == '0') {
+                                                 window.open('/admin/parents/create');
+                                                 }
+                                        }"),
                                         ]
-                                    ]);
-                                    ?>
-
-
-                                    <?= $form->field($modelDependence, "[{$index}]signer_flag")->checkbox();
+                                    ])->label(Yii::t('art/student', 'Parent'));
                                     ?>
                                 </div>
                             </div>
@@ -235,58 +208,5 @@ EOF;
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>
-<?php \yii\widgets\Pjax::end();?>
     <?php ActiveForm::end(); ?>
 </div>
-<?php
-echo ModalAjax::widget([
-    'id' => 'createParent',
-    'header' => 'Новая запись',
-    'toggleButton' => [
-        'label' => 'Новая запись',
-        'class' => 'click',
-        'style' => 'display:none;'
-    ],
-//                                        'selector' => '.select2',
-    'url' => \yii\helpers\Url::to(['/students/default/create-parent', 'id' => $model->id]), // Ajax view with form to load
-    'ajaxSubmit' => true, // Submit the contained form as ajax, true by default
-    // ... any other yii2 bootstrap modal option you need
-    'size' => ModalAjax::SIZE_LARGE,
-    //'options' => ['class' => 'header-primary'],
-    'autoClose' => true,
-    'pjaxContainer' => '#grid-parent-pjax',
-    'events' => [
-        ModalAjax::EVENT_MODAL_SHOW => new \yii\web\JsExpression("
-                                            function(event, data, status, xhr, selector) {
-                                                 console.log('EVENT_MODAL_SHOW');
-                                            }
-                                       "),
-        ModalAjax::EVENT_MODAL_SUBMIT => new \yii\web\JsExpression("
-                                            function(event, data, status, xhr, selector) {
-                                                console.log('EVENT_MODAL_SUBMIT');
-                                            }
-                                        "),
-        ModalAjax::EVENT_MODAL_SHOW_COMPLETE => new \yii\web\JsExpression("
-                                            function(event, xhr, textStatus) {
-                                                 console.log('EVENT_MODAL_SHOW_COMPLETE');
-                                            }
-                                        "),
-        ModalAjax::EVENT_MODAL_SUBMIT_COMPLETE => new \yii\web\JsExpression("
-                                            function(event, xhr, textStatus) {
-                                            $('#createParent').modal('hide');
-                                                   console.log('EVENT_MODAL_SUBMIT_COMPLETE');
-                                                   console.log(xhr);
-                                                   console.log(event);
-                                                   console.log(xhr.responseJSON.ids);
-                                                   console.log(xhr.responseJSON.title);
-                                                   var s2 = $('#studentdependence-1-parent_id');
-                                                    d = $(s2).select2('data'); 
-                                                   console.log(d);
-                                                      $(s2).select2('close');
-                                                      d.push({id: xhr.responseJSON.ids, text: xhr.responseJSON.title}); 
-                                                      $(s2).select2('data', d);
-                                            }
-                                        ")
-    ]
-]);
-?>
