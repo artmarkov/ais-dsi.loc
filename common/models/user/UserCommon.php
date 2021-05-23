@@ -5,7 +5,7 @@ namespace common\models\user;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
 use artsoft\traits\DateTimeTrait;
-use common\models\student\Student;
+use common\models\students\Student;
 use dosamigos\transliterator\TransliteratorHelper;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;

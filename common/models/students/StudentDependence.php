@@ -59,9 +59,9 @@ class StudentDependence extends \artsoft\db\ActiveRecord
             [['relation_id'], 'required'],
             [['relation_id', 'student_id', 'parent_id', 'version'], 'integer'],
             [['created_at', 'created_by', 'updated_at', 'updated_by',], 'safe'],
-            [['relation_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserRelation::className(), 'targetAttribute' => ['relation_id' => 'id']],
-            [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::className(), 'targetAttribute' => ['student_id' => 'id']],
-            [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => Parents::className(), 'targetAttribute' => ['parent_id' => 'id']],
+            [['relation_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserRelation::class, 'targetAttribute' => ['relation_id' => 'id']],
+            [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
+            [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => Parents::class, 'targetAttribute' => ['parent_id' => 'id']],
         ];
     }
 
@@ -95,7 +95,7 @@ class StudentDependence extends \artsoft\db\ActiveRecord
      */
     public function getRelation0()
     {
-        return $this->hasOne(UserRelation::className(), ['id' => 'relation_id']);
+        return $this->hasOne(UserRelation::class, ['id' => 'relation_id']);
     }
 
     /**
@@ -105,7 +105,7 @@ class StudentDependence extends \artsoft\db\ActiveRecord
      */
     public function getStudent()
     {
-        return $this->hasOne(User::className(), ['id' => 'student_id']);
+        return $this->hasOne(Student::class, ['id' => 'student_id']);
     }
 
     /**
@@ -115,6 +115,6 @@ class StudentDependence extends \artsoft\db\ActiveRecord
      */
     public function getParent()
     {
-        return $this->hasOne(User::className(), ['id' => 'parent_id']);
+        return $this->hasOne(Parents::class, ['id' => 'parent_id']);
     }
 }

@@ -2,11 +2,9 @@
 
 namespace common\models\students;
 
-use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\db\ActiveRecord;
 use artsoft\traits\DateTimeTrait;
-use common\models\history\ParentsHistory;
-use common\models\parents\Parents;
 use common\models\user\UserCommon;
 use common\models\user\UserFamily;
 use Yii;
@@ -27,9 +25,9 @@ use yii\behaviors\TimestampBehavior;
  * @property string $sert_date
  *
  * @property StudentPosition $position
- * @property User $user
+ * @property UserCommon $user
  */
-class Student extends \yii\db\ActiveRecord
+class Student extends ActiveRecord
 {
     use DateTimeTrait;
 
@@ -54,10 +52,6 @@ class Student extends \yii\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
-//            [
-//                'class' => ArrayFieldBehavior::class,
-//                'attributes' => ['bonus_list', 'department_list'],
-//            ],
             [
                 'class' => DateFieldBehavior::class,
                 'attributes' => ['sert_date'],
@@ -147,12 +141,12 @@ class Student extends \yii\db\ActiveRecord
 
     public function getUserStatus()
     {
-        return $this->user->status;
+        return $this->user ? $this->user->status : null;
     }
 
     public function getUserBirthDate()
     {
-        return $this->user->birth_date;
+        return $this->user ? $this->user->birth_date : null;
     }
 
     /**
@@ -160,7 +154,7 @@ class Student extends \yii\db\ActiveRecord
      */
     public function getFullName()
     {
-        return $this->user->fullName;
+        return $this->user ? $this->user->fullName : null;
     }
 
     /**
@@ -187,6 +181,28 @@ class Student extends \yii\db\ActiveRecord
     {
         return $this->hasMany(StudentDependence::className(), ['student_id' => 'id']);
     }
+
+    /**
+     * @return bool
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function beforeDelete()
+    {
+        $model = UserCommon::findOne($this->user_common_id);
+        if (!$model->delete(false)) {
+            return false;
+        }
+        foreach (StudentDependence::findAll(['student_id' => $this->id]) as $model) {
+            if (!$model->delete(false)) {
+                break;
+                return false;
+            }
+        }
+
+        return parent::beforeDelete();
+    }
+
     /**
      * Список родителей ученика
      * @param type $user_id

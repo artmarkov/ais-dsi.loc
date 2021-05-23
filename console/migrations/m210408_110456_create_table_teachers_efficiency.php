@@ -61,7 +61,7 @@ class m210408_110456_create_table_teachers_efficiency extends \artsoft\db\BaseMi
         $this->db->createCommand()->resetSequence(self::TABLE_NAME_TREE, 12)->execute();
 
         $this->createTableWithHistory(self::TABLE_NAME, [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 999999)',
             'class' => $this->string(),
             'item_id' => $this->integer(),
             'efficiency_id' => $this->integer()->notNull(),

@@ -52,14 +52,13 @@ class ParentsSearch extends Parents
             'pagination' => [
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
-            'sort' => [
-                'defaultOrder' => [
-                    'id' => SORT_DESC,
-                ],
-            ],
         ]);
 
         $dataProvider->setSort([
+            'defaultOrder' => [
+                'userStatus' => SORT_DESC,
+                'fullName' => SORT_ASC,
+            ],
             'attributes' => [
                 'id',
                 'sert_date',
@@ -67,6 +66,10 @@ class ParentsSearch extends Parents
                 'sert_series',
                 'sert_num',
                 'sert_organ',
+                'userStatus' => [
+                    'asc' => ['user_common.status' => SORT_ASC],
+                    'desc' => ['user_common.status' => SORT_DESC],
+                ],
                 'fullName' => [
                     'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
                     'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],
@@ -80,6 +83,9 @@ class ParentsSearch extends Parents
             // $query->where('0=1');
             return $dataProvider;
         }
+
+        //        жадная загрузка
+        $query->joinWith(['user']);
 
         $query->andFilterWhere([
             'id' => $this->id,

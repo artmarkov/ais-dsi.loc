@@ -47,19 +47,20 @@ class StudentSearch extends Student
     public function search($params)
     {
         $query = Student::find();
+//        жадная загрузка
+        $query->joinWith(['user']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
-            'sort' => [
-                'defaultOrder' => [
-                    'fullName' => SORT_ASC,
-                ],
-            ],
         ]);
         $dataProvider->setSort([
+            'defaultOrder' => [
+                'userStatus' => SORT_DESC,
+                'fullName' => SORT_ASC,
+            ],
             'attributes' => [
                 'id',
                 'position_id',
@@ -85,8 +86,7 @@ class StudentSearch extends Student
             return $dataProvider;
         }
 
-//        жадная загрузка
-        $query->joinWith(['user']);
+
 
         $query->andFilterWhere([
             'id' => $this->id,

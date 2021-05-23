@@ -26,7 +26,7 @@ class m210302_153750_create_table_routine extends \artsoft\db\BaseMigration
         ])->execute();
 
         $this->createTableWithHistory('routine', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 999999)',
             'description' => $this->string(1024)->notNull(),
             'cat_id' => $this->integer()->notNull(),
             'start_date' => $this->integer()->notNull(),

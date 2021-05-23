@@ -2,6 +2,7 @@
 
 namespace common\models\history;
 
+use artsoft\helpers\RefBook;
 use common\models\efficiency\TeachersEfficiency;
 use common\widgets\history\BaseHistory;
 
@@ -31,8 +32,7 @@ class EfficiencyHistory extends BaseHistory
      * @param $model
      * @param $name
      * @param $value
-     * @return string|null
-     * @throws \yii\base\InvalidConfigException
+     * @return null
      */
     protected static function getDisplayValue($model, $name, $value)
     {
@@ -40,7 +40,7 @@ class EfficiencyHistory extends BaseHistory
             case 'efficiency_id':
                 return isset($model->efficiency_id) ? $model->getEfficiencyName() : $value;
             case 'teachers_id':
-                return isset($model->teachers_id) ? $model->getTeachersName() : $value;
+                return isset($model->teachers_id) ? RefBook::find('teachers_fio')->getValue($model->teachers_id) : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }

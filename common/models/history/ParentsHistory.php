@@ -55,10 +55,10 @@ class ParentsHistory extends BaseHistory
         $vf = new UserCommonHistory($id);
         $selfHistory = array_merge($selfHistory, $vf->getHistory());
 
-//        foreach (TeachersActivityHistory::getLinkedIdList('teachers_id', $this->objId) as $teachersId) {
-//            $vf = new TeachersActivityHistory($teachersId);
-//            $selfHistory = array_merge($selfHistory, $vf->getHistory());
-//        }
+      foreach (ParentDependenceHistory::getLinkedIdList('parent_id', $this->objId) as $parentId) {
+            $vf = new ParentDependenceHistory($parentId);
+            $selfHistory = array_merge($selfHistory, $vf->getHistory());
+        }
 
         krsort($selfHistory);
         return $selfHistory;

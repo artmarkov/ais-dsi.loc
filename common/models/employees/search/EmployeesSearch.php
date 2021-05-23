@@ -51,17 +51,19 @@ class EmployeesSearch extends Employees
             'pagination' => [
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
-            'sort' => [
-                'defaultOrder' => [
-                    'id' => SORT_DESC,
-                ],
-            ],
         ]);
         $dataProvider->setSort([
+            'defaultOrder' => [
+                'userStatus' => SORT_DESC,
+                'fullName' => SORT_ASC,
+            ],
             'attributes' => [
                 'id',
                 'position',
-                'userStatus',
+                'userStatus' => [
+                    'asc' => ['user_common.status' => SORT_ASC],
+                    'desc' => ['user_common.status' => SORT_DESC],
+                ],
                 'fullName' => [
                     'asc' => ['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC],
                     'desc' => ['last_name' => SORT_DESC, 'first_name' => SORT_DESC, 'middle_name' => SORT_DESC],

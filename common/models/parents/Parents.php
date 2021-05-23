@@ -52,10 +52,6 @@ class Parents extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
-//            [
-//                'class' => ArrayFieldBehavior::class,
-//                'attributes' => ['bonus_list', 'department_list'],
-//            ],
             [
                 'class' => DateFieldBehavior::class,
                 'attributes' => ['sert_date'],
@@ -130,12 +126,12 @@ class Parents extends \artsoft\db\ActiveRecord
 
     public function getUserStatus()
     {
-        return $this->user->status;
+        return $this->user ? $this->user->status : null;
     }
 
     public function getUserBirthDate()
     {
-        return $this->user->birth_date;
+        return $this->user ? $this->user->birth_date : null;
     }
 
     /**
@@ -143,7 +139,7 @@ class Parents extends \artsoft\db\ActiveRecord
      */
     public function getFullName()
     {
-        return $this->user->fullName;
+        return $this->user ? $this->user->fullName : null;
     }
 
     /**
@@ -170,4 +166,23 @@ class Parents extends \artsoft\db\ActiveRecord
         return $this->hasMany(StudentDependence::className(), ['parent_id' => 'id']);
     }
 
+    /**
+     * @return bool
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function beforeDelete()
+    {
+        $model = UserCommon::findOne($this->user_common_id);
+        if (!$model->delete(false)) {
+            return false;
+        }
+        foreach (StudentDependence::findAll(['parent_id' => $this->id]) as $model) {
+            if (!$model->delete(false)) {
+                break;
+                return false;
+            }
+        }
+        return parent::beforeDelete();
+    }
 }

@@ -9,7 +9,7 @@ class m210310_145345_create_table_employees_parents extends \artsoft\db\BaseMigr
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
         $this->createTableWithHistory('employees', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
             'user_common_id' => $this->integer(),
             'position' => $this->string(256),
             'created_at' => $this->integer()->notNull(),
@@ -22,7 +22,7 @@ class m210310_145345_create_table_employees_parents extends \artsoft\db\BaseMigr
         $this->db->createCommand()->resetSequence('employees', 1000)->execute();
 
         $this->createTableWithHistory('parents', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
             'user_common_id' => $this->integer(),
             'sert_name' => $this->string(32),
             'sert_series' => $this->string(32),

@@ -58,7 +58,7 @@ class m210301_150355_create_table_own extends \artsoft\db\BaseMigration
         $this->addForeignKey('department_ibfk_1', 'guide_department', 'division_id', 'guide_division', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('invoices', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
             'name' => $this->string(512)->notNull(),
             'recipient' => $this->string(512)->notNull(),
             'inn' => $this->string(32)->notNull(),

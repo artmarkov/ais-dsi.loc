@@ -153,7 +153,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->addForeignKey('guide_teachers_bonus_ibfk_1', 'guide_teachers_bonus', 'bonus_category_id', 'guide_teachers_bonus_category', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('teachers', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
             'user_common_id' => $this->integer(),
             'position_id' => $this->integer(),
             'level_id' => $this->integer(),
@@ -184,7 +184,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'teachers_id' => $this->integer()->notNull(),
             'work_id' => $this->integer()->notNull(),
             'direction_id' => $this->integer()->notNull(),
-            'stake_id' => $this->integer()->notNull(),
+            'stake_id' => $this->integer(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

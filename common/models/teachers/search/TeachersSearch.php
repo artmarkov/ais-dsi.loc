@@ -47,19 +47,21 @@ class TeachersSearch extends Teachers
     public function search($params)
     {
         $query = Teachers::find();
+//        жадная загрузка
+        $query->joinWith(['user']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
-            'sort' => [
-                'defaultOrder' => [
-                    'id' => SORT_DESC,
-                ],
-            ],
+
         ]);
         $dataProvider->setSort([
+            'defaultOrder' => [
+                'userStatus' => SORT_DESC,
+                'fullName' => SORT_ASC,
+            ],
             'attributes' => [
                 'id',
                 'position_id',
@@ -67,9 +69,10 @@ class TeachersSearch extends Teachers
                 'level_id',
                 'tab_num',
                 'bonus_summ',
-                'userStatus',
-//                'bonus_list',
-//                'department_list',
+                'userStatus' => [
+                    'asc' => ['user_common.status' => SORT_ASC],
+                    'desc' => ['user_common.status' => SORT_DESC],
+                ],
                 'year_serv',
                 'year_serv_spec',
                 'fullName' => [
@@ -85,8 +88,6 @@ class TeachersSearch extends Teachers
             // $query->where('0=1');
             return $dataProvider;
         }
-//        жадная загрузка
-        $query->joinWith(['user']);
 
         $query->andFilterWhere([
             'teachers.id' => $this->id,
