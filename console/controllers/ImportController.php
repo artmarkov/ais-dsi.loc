@@ -31,7 +31,7 @@ class ImportController extends Controller
     {
         $this->stdout("\n");
 
-//        $this->addEmployees();
+        $this->addEmployees();
         $this->stdout("\n");
 
         $this->addTeachers();
