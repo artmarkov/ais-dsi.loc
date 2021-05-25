@@ -3,6 +3,7 @@
 namespace backend\controllers\efficiency;
 
 use common\models\efficiency\EfficiencyTree;
+use common\models\efficiency\TeachersEfficiency;
 use common\models\history\EfficiencyHistory;
 use Yii;
 
@@ -29,5 +30,14 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         $data = new EfficiencyHistory($id);
         return $this->renderIsAjax('history', compact(['model', 'data']));
+    }
+
+    public function actionSummary()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $models = $this->modelClass::find()->asArray()->all();
+       // $tree = EfficiencyTree::find()->roots()->asArray()->all();;
+        $tree = EfficiencyTree::find()->leaves()->asArray()->all();;
+        return $this->renderIsAjax('summary', compact(['models', 'tree']));
     }
 }

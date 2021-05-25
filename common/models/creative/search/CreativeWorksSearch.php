@@ -68,15 +68,14 @@ class CreativeWorksSearch extends CreativeWorks
         
 
         $query->andFilterWhere([
-            'id' => $this->id,
+            'creative_works.id' => $this->id,
             'category_id' => $this->category_id,
             'status' => $this->status,
             ]);
 
         $query->andFilterWhere([($this->published_at_operand) ? $this->published_at_operand : '=', 'published_at', ($this->published_at) ? strtotime($this->published_at) : null]);
 
-        $query->andFilterWhere(['like', 'category_id', $this->category_id])
-            ->andFilterWhere(['like', 'creative_works.name', $this->name])
+        $query->andFilterWhere(['like', 'creative_works.name', $this->name])
             ->andFilterWhere(['like', 'department_list', $this->department_list])
             ->andFilterWhere(['like', 'teachers_list', $this->teachers_list])
             ->andFilterWhere(['like', 'description', $this->description]);

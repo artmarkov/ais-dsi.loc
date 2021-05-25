@@ -62,6 +62,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 Url::to(['bulk-delete']) => Yii::t('yii', 'Delete'),
                             ]
                         ],
+                        'rowOptions' => function(CreativeWorks $model) {
+                            if($model->getFilesCount() > 0) {
+                                return ['class' => 'success'];
+                            }
+                            return [];
+                        },
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [

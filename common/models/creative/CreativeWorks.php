@@ -6,12 +6,9 @@ use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\traits\DateTimeTrait;
 use common\models\efficiency\TeachersEfficiency;
-use common\models\teachers\Teachers;
-use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\helpers\ArrayHelper;
 use artsoft\models\User;
 
 /**

@@ -55,6 +55,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             'gridId' => 'teachers-grid',
                             'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
+                        'rowOptions' => function(Teachers $model) {
+                            if($model->userStatus == UserCommon::STATUS_ARCHIVE) {
+                                return ['class' => 'danger'];
+                            }
+                            return [];
+                        },
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
