@@ -43,8 +43,27 @@ class EfficiencyTree extends \kartik\tree\models\Tree
         return $attr;
     }
 
+    /**
+     * @return mixed
+     */
     public static function getEfficiencyList()
     {
         return  self::find()->where(['disabled' => false])->select(['name', 'id'])->indexBy('id')->column();
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getEfficiencyRoots()
+    {
+        return  self::find()->roots()->select(['name', 'id'])->indexBy('id')->column();
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getEfficiencyLiaves()
+    {
+        return  self::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
     }
 }

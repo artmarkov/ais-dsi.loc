@@ -36,8 +36,8 @@ class DefaultController extends MainController
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
         $models = $this->modelClass::find()->asArray()->all();
-       // $tree = EfficiencyTree::find()->roots()->asArray()->all();;
-        $tree = EfficiencyTree::find()->leaves()->asArray()->all();;
-        return $this->renderIsAjax('summary', compact(['models', 'tree']));
+        $root = EfficiencyTree::find()->roots()->select(['name', 'id'])->indexBy('id')->column();
+        $tree = EfficiencyTree::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
+        return $this->renderIsAjax('summary', compact(['models', 'root', 'tree']));
     }
 }
