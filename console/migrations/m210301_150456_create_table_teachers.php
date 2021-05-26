@@ -22,6 +22,17 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             [2, 'Концертмейстерская', 'Конц-я'],
         ])->execute();
 
+        $this->createTable('guide_teachers_direction_vid', [
+            'id' =>  $this->primaryKey(),
+            'name' => $this->string(128),
+            'slug' => $this->string(32),
+        ], $tableOptions);
+
+        $this->db->createCommand()->batchInsert('guide_teachers_direction_vid', ['id', 'name', 'slug'], [
+            [1, 'Основная', 'Осн-я'],
+            [2, 'Дополнительная(внутреннее совмещение)', 'Доп-я'],
+        ])->execute();
+
         $this->createTable('guide_teachers_stake', [
             'id' => $this->primaryKey(),
             'name' => $this->string(128)->notNull(),
@@ -73,9 +84,8 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->db->createCommand()->batchInsert('guide_teachers_work', ['id', 'name', 'slug'], [
-            [1, 'Основная', 'Осн'],
+            [1, 'На постоянной основе', 'Пост'],
             [2, 'По совместительству', 'Совм'],
-            [3, 'Внутреннее совмещение', 'Вн.совм.'],
         ])->execute();
 
         $this->createTable('guide_teachers_position', [
@@ -156,6 +166,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
             'user_common_id' => $this->integer(),
             'position_id' => $this->integer(),
+            'work_id' => $this->integer(),
             'level_id' => $this->integer(),
             'tab_num' => $this->string(16),
             'department_list' => $this->string(1024),
@@ -174,15 +185,17 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
 
         $this->db->createCommand()->resetSequence('teachers', 1000)->execute();
         $this->createIndex('position_id', 'teachers', 'position_id');
+        $this->createIndex('work_id', 'teachers', 'work_id');
         $this->createIndex('user_common_id', 'teachers', 'user_common_id');
         $this->createIndex('level_id', 'teachers', 'level_id');
         $this->addForeignKey('teachers_ibfk_1', 'teachers', 'level_id', 'guide_teachers_level', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('teachers_ibfk_2', 'teachers', 'position_id', 'guide_teachers_position', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('teachers_ibfk_3', 'teachers', 'work_id', 'guide_teachers_work', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('teachers_activity', [
             'id' => $this->primaryKey(),
             'teachers_id' => $this->integer()->notNull(),
-            'work_id' => $this->integer()->notNull(),
+            'direction_vid_id' => $this->integer()->notNull(),
             'direction_id' => $this->integer()->notNull(),
             'stake_id' => $this->integer(),
             'created_at' => $this->integer()->notNull(),
@@ -192,8 +205,8 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->createIndex('work_id', 'teachers_activity', 'work_id');
-        $this->addForeignKey('teachers_activity_ibfk_1', 'teachers_activity', 'work_id', 'guide_teachers_work', 'id', 'RESTRICT', 'RESTRICT');
+        $this->createIndex('direction_vid_id', 'teachers_activity', 'direction_vid_id');
+        $this->addForeignKey('teachers_activity_ibfk_1', 'teachers_activity', 'direction_vid_id', 'guide_teachers_direction_vid', 'id', 'RESTRICT', 'RESTRICT');
         $this->addForeignKey('teachers_activity_ibfk_2', 'teachers_activity', 'direction_id', 'guide_teachers_direction', 'id', 'RESTRICT', 'RESTRICT');
         $this->addForeignKey('teachers_activity_ibfk_3', 'teachers_activity', 'stake_id', 'guide_teachers_stake', 'id', 'RESTRICT', 'RESTRICT');
         $this->addForeignKey('teachers_activity_ibfk_4', 'teachers_activity', 'teachers_id', 'teachers', 'id', 'CASCADE', 'CASCADE');
@@ -223,10 +236,21 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             ['teachers_users', 'teachers_view', 'teachers_id', 'user_id', 'teachers_id', 'status', null, 'Преподаватели (ссылка на id учетной записи)'],
         ])->execute();
 
+        $this->db->createCommand()->createView('teachers_stake_view', '
+        SELECT teachers_activity.teachers_id, teachers_activity.stake_id, teachers_cost.stake_value
+        FROM teachers_activity INNER JOIN teachers_cost  ON teachers_activity.stake_id = teachers_cost.id
+        WHERE teachers_activity.direction_vid_id = 1;   
+        ')->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['teachers_stake', 'teachers_stake_view', 'teachers_id', 'stake_value', 'stake_value', null, null, 'Преподаватели (Основная ставка)'],
+        ])->execute();
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_stake'])->execute();
+        $this->db->createCommand()->dropView('teachers_stake_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_users'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_fullname'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_fio'])->execute();
@@ -236,6 +260,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->dropForeignKey('guide_teachers_bonus_ibfk_1', 'guide_teachers_bonus');
         $this->dropForeignKey('teachers_ibfk_1', 'teachers');
         $this->dropForeignKey('teachers_ibfk_2', 'teachers');
+        $this->dropForeignKey('teachers_ibfk_3', 'teachers');
         $this->dropForeignKey('teachers_activity_ibfk_1', 'teachers_activity');
         $this->dropForeignKey('teachers_activity_ibfk_2', 'teachers_activity');
         $this->dropForeignKey('teachers_activity_ibfk_3', 'teachers_activity');
@@ -244,6 +269,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->dropTableWithHistory('teachers');
         $this->dropTable('guide_teachers_bonus_category');
         $this->dropTable('guide_teachers_bonus');
+        $this->dropTable('guide_teachers_direction_vid');
         $this->dropTable('guide_teachers_direction');
         $this->dropTable('guide_teachers_level');
         $this->dropTable('guide_teachers_position');

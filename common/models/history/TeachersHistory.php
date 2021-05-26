@@ -25,6 +25,7 @@ class TeachersHistory extends BaseHistory
         return [
             'position_id',
             'level_id',
+            'work_id',
             'tab_num',
             'department_list',
             'year_serv',
@@ -66,6 +67,8 @@ class TeachersHistory extends BaseHistory
                 return isset($model->level_id) ? $model->level->name : $value;
             case 'position_id':
                 return isset($model->position_id) ? $model->position->name : $value;
+            case 'work_id':
+                return isset($model->position_id) ? $model->work->name : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }

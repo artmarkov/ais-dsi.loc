@@ -4,18 +4,18 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\guidejob\Work;
+use common\models\guidejob\DirectionVid;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/teachers', 'Work');
+$this->title = Yii::t('art/teachers', 'Direction Vid');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['guidejob/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="work-index">
+<div class="direction-vid-index">
     <div class="panel">
         <div class="panel-heading">
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
@@ -28,29 +28,29 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
                             /* echo GridQuickLinks::widget([
-                                'model' => Work::className(),
+                                'model' => Direction::className(),
                                 'searchModel' => $searchModel,
                             ])*/
                             ?>
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?php /*=  GridPageSize::widget(['pjaxId' => 'work-grid-pjax']) */ ?>
+                            <?php /*=  GridPageSize::widget(['pjaxId' => 'direction-grid-pjax'])*/ ?>
                         </div>
                     </div>
 
                     <?php
                     Pjax::begin([
-                        'id' => 'work-grid-pjax',
+                        'id' => 'direction-grid-pjax',
                     ])
                     ?>
 
                     <?=
                     GridView::widget([
-                        'id' => 'work-grid',
+                        'id' => 'direction-grid',
                         'dataProvider' => $dataProvider,
                         'bulkActionOptions' => [
-                            'gridId' => 'work-grid',
+                            'gridId' => 'direction-grid',
                             'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
                         'columns' => [
@@ -59,13 +59,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'name',
-                                'controller' => '/guidejob/default',
-                                'title' => function (Work $model) {
+                                'controller' => '/guidejob/direction-vid',
+                                'title' => function (DirectionVid $model) {
                                     return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
-
+//
 //            'id',
 //            'name',
                             'slug',

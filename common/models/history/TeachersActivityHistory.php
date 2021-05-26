@@ -20,7 +20,7 @@ class TeachersActivityHistory extends BaseHistory
     protected function getFields()
     {
         return [
-            'work_id',
+            'direction_vid_id',
             'direction_id',
             'stake_id',
         ];
@@ -36,8 +36,8 @@ class TeachersActivityHistory extends BaseHistory
     protected static function getDisplayValue($model, $name, $value)
     {
         switch ($name) {
-            case 'work_id':
-                return isset($model->work_id) ? $model->work->name : $value;
+            case 'direction_vid_id':
+                return isset($model->direction_vid_id) ? $model->directionVid->name : $value;
             case 'direction_id':
                 return isset($model->direction_id) ? $model->direction->name : $value;
             case 'stake_id':

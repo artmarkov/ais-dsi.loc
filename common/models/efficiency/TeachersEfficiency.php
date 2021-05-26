@@ -40,6 +40,7 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     {
         return 'teachers_efficiency';
     }
+
     /**
      * @inheritdoc
      */
@@ -93,10 +94,12 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
             'version' => Yii::t('art', 'Version'),
         ];
     }
+
     public function optimisticLock()
     {
         return 'version';
     }
+
     /**
      * Gets query for [[Efficiency]].
      *
@@ -113,10 +116,12 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     {
         return $this->efficiency->name;
     }
+
     public function getTeachersName()
     {
         return $this->teachers->getFullName();
     }
+
     /**
      * Gets query for [[Teachers]].
      *
@@ -147,4 +152,34 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
         return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
+    /**
+     * @param $model_date
+     * @return array
+     */
+    public static function getSummaryData($model_date)
+    {
+
+        $timestamp_up = Yii::$app->formatter->asTimestamp($model_date->date_in);
+        $timestamp_end = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86400;
+
+        $models = self::find()
+            ->where(['between', 'date_in', $timestamp_up, $timestamp_end])
+            ->asArray()->all();
+
+        $tree = EfficiencyTree::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
+
+        $res = [];
+        foreach ($models as $model) {
+            $res[$model['teachers_id']][$tree[$model['efficiency_id']]] = isset($res[$model['teachers_id']][$tree[$model['efficiency_id']]]) ? $res[$model['teachers_id']][$tree[$model['efficiency_id']]] + $model['bonus'] : $model['bonus'];
+            $res[$model['teachers_id']]['total'] = isset($res[$model['teachers_id']]['total']) ? $res[$model['teachers_id']]['total'] + $model['bonus'] : $model['bonus'];
+        }
+        $data = [];
+        foreach (\artsoft\helpers\RefBook::find('teachers_fio', \common\models\user\UserCommon::STATUS_ACTIVE)->getList() as $id => $name) {
+            $data[$id] = $res[$id] ?? ['total' => null];
+            $data[$id]['id'] = $id;
+            $data[$id]['name'] = $name;
+            $data[$id]['stake'] = \artsoft\helpers\RefBook::find('teachers_stake')->getValue($id);
+        }
+        return $data;
+    }
 }

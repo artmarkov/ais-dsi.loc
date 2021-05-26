@@ -6,6 +6,7 @@ use common\models\efficiency\EfficiencyTree;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\history\EfficiencyHistory;
 use Yii;
+use yii\base\DynamicModel;
 
 
 /**
@@ -13,7 +14,7 @@ use Yii;
  */
 class DefaultController extends MainController
 {
-    public $modelClass       = 'common\models\efficiency\TeachersEfficiency';
+    public $modelClass = 'common\models\efficiency\TeachersEfficiency';
     public $modelSearchClass = 'common\models\efficiency\search\TeachersEfficiencySearch';
 
     public function actionSelect()
@@ -32,12 +33,38 @@ class DefaultController extends MainController
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 
+    /**
+     * @return string|\yii\web\Response
+     * @throws \yii\base\InvalidConfigException
+     */
     public function actionSummary()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
-        $models = $this->modelClass::find()->asArray()->all();
+        $student_day_executors_in = 21;
+        $student_day_executors_out = 20;
+
+        $model_date = new DynamicModel(['date_in', 'date_out']);
+        $model_date->addRule(['date_in', 'date_out'], 'required')
+            ->addRule(['date_in', 'date_out'], 'date');
+
         $root = EfficiencyTree::find()->roots()->select(['name', 'id'])->indexBy('id')->column();
-        $tree = EfficiencyTree::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
-        return $this->renderIsAjax('summary', compact(['models', 'root', 'tree']));
+
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $mon = date('d') > $student_day_executors_in ? (date('m') + 1 > 12 ? date('m') - 11 : date('m') + 1) : date('m');
+            $year = $mon > 12 ? date('Y') + 1 : date('Y');
+            $model_date->date_in = Yii::$app->formatter->asDate($student_day_executors_in . '.' . ($mon - 1) . '.' . $year, 'php:d.m.Y');
+            $model_date->date_out = Yii::$app->formatter->asDate( $student_day_executors_out . '.' . $mon . '.' . $year, 'php:d.m.Y');
+        }
+
+        $data = TeachersEfficiency::getSummaryData($model_date);
+
+        $dataProvider = new \yii\data\ArrayDataProvider([
+            'allModels' => $data,
+            'sort' => [
+                'attributes' => array_merge(['id', 'name', 'total', 'stake'], array_keys($root))
+            ],
+            'pagination' => false,
+        ]);
+        return $this->renderIsAjax('summary', compact(['dataProvider', 'root', 'model_date']));
     }
 }

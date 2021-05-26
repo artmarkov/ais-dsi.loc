@@ -96,6 +96,7 @@ class ImportController extends Controller
                             $model->position_id = $this->getPositionId($v[10]);
                             $model->level_id = $this->getLevelId($v[11]);
                             $model->tab_num = $v[13];
+                            $model->work_id = $v[14] == 'Основная' ? 1 : 2;
                             $dep = [];
                             foreach (explode(';', $v[19]) as $name) {
                                 if ($name != '') {
@@ -121,7 +122,7 @@ class ImportController extends Controller
                                 if ($v[21] != '') {
                                     $activity = new TeachersActivity();
                                     $activity->teachers_id = $model->id;
-                                    $activity->work_id = $v[14] == 'Основная' ? 1 : 2;
+                                    $activity->direction_vid_id = 1;
                                     $activity->direction_id = $v[21] == 'Педагогическая' ? 1 : 2;
                                     $activity->stake_id = $this->getStakeId($v[22]);
                                     if (!($flag = $activity->save(false))) {
@@ -132,7 +133,7 @@ class ImportController extends Controller
                                 if ($v[23] != '') {
                                     $activity = new TeachersActivity();
                                     $activity->teachers_id = $model->id;
-                                    $activity->work_id = $v[14] == 'Основная' ? 1 : 2;
+                                    $activity->direction_vid_id = 2;
                                     $activity->direction_id = $v[23] == 'Педагогическая' ? 1 : 2;
                                     $activity->stake_id = $this->getStakeId($v[24]);
 
@@ -270,7 +271,7 @@ class ImportController extends Controller
                             $userCommon->phone = str_replace('-', ' ', $v[6]);
                             $userCommon->phone_optional = str_replace('-', ' ', $v[7]);
                             $userCommon->address = $v[8];
-                            $userCommon->snils = $v[15];
+                            $userCommon->snils = str_replace('-', '.', $v[15]);
                             if ($flag = $userCommon->save(false)) {
                                 $model->user_common_id = $userCommon->id;
                                 $model->position_id = $this->getPosId($v[18]);
@@ -278,10 +279,12 @@ class ImportController extends Controller
                                 $model->sert_series = $v[11];
                                 $model->sert_num = $v[12];
                                 $model->sert_organ = $v[13];
-                                if (is_a($v[14], 'DateTime')) { // если объект DateTime
-                                    $v[14] = $v[14]->format('d-m-Y');
+                                if($v[14]) {
+                                    if (is_a($v[14], 'DateTime')) { // если объект DateTime
+                                        $v[14] = $v[14]->format('d-m-Y');
+                                    }
+                                    $model->sert_date = \Yii::$app->formatter->asDate($this->getDate($v[14]), 'php:d.m.Y');
                                 }
-                                $model->sert_date = \Yii::$app->formatter->asDate($this->getDate($v[14]), 'php:d.m.Y');
                                 if (!($flag = $model->save(false))) {
                                     $transaction->rollBack();
                                     break;
@@ -352,7 +355,7 @@ class ImportController extends Controller
                                 $userCommon->birth_date = \Yii::$app->formatter->asDate($this->getDate($v[9]), 'php:d.m.Y');
                                 $userCommon->phone = str_replace('-', ' ', $v[12]);
                                 $userCommon->phone_optional = $v[10] ? str_replace('-', ' ', $v[10]) : str_replace('-', ' ', $v[11]);
-                                $userCommon->snils = $v[14];
+                                $userCommon->snils = str_replace('-', '.', $v[14]);
                                 if ($flag = $userCommon->save(false)) {
                                     $model->user_common_id = $userCommon->id;
 

@@ -18,8 +18,10 @@ return [
     'Work' => 'Вид работы',
     'Direction' => 'Направление деятельности',
     'Name Direction' => 'Деятельность',
+    'Name Direction Vid' => 'Вид деятельности',
     'Name Stake' => 'Ставка',
     'Select Direction...' => 'Выберите деятельность...',
+    'Select Direction Vid...' => 'Выберите вид деятельности...',
     'Select Stake...' => 'Выберите ставку...',
     'Stake' => 'Ставка',
     'Bonus' => 'Достижения',
@@ -41,6 +43,6 @@ return [
     'Select Work...' => 'Выберите вид работы...',
     'Select Level...' => 'Выберите уровень образования...',
     'Experience in the specialty can not be more than t...' => 'Стаж работы по специальности не может быть больше ...',
-    'The main activity may not be the same as the secon...' => 'Основной вид деятельности не может быть таким же, ...',
+    'The primary activity cannot but coincide with the secondary one' => 'Основная деятельность не может совпадать с дополнительной',
 
 ];

@@ -138,6 +138,13 @@ EOF;
                                 'disabled' => $readonly,
                             ])->label(Yii::t('art/teachers', 'Name Level'));
                             ?>
+                            <?php
+                            echo $form->field($model, 'work_id')->dropDownList(common\models\guidejob\Work::getWorkList(), [
+                                'prompt' => Yii::t('art/teachers', 'Select Work...'),
+                                'id' => 'work_id',
+                                'disabled' => $readonly,
+                            ])->label(Yii::t('art/teachers', 'Name Work'));
+                            ?>
                             <?= $form->field($model, 'tab_num')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'year_serv')->textInput() ?>
                             <?= $form->field($model, 'date_serv')->widget(DatePicker::class,['disabled' => $readonly])->label(Yii::t('art/teachers', 'For date')); ?>
@@ -170,7 +177,7 @@ EOF;
                 'model' => $modelsActivity[0],
                 'formId' => 'teachers-form',
                 'formFields' => [
-                    'work_id',
+                    'direction_vid_id',
                     'direction_id',
                     'stake_id',
                 ],
@@ -207,10 +214,10 @@ EOF;
                                         echo Html::activeHiddenInput($modelActivity, "[{$index}]id");
                                     }
                                     ?>
-                                    <?= $form->field($modelActivity, "[{$index}]work_id")->dropDownList(common\models\guidejob\Work::getWorkList(), [
-                                        'prompt' => Yii::t('art/teachers', 'Select Work...'),
+                                    <?= $form->field($modelActivity, "[{$index}]direction_vid_id")->dropDownList(common\models\guidejob\DirectionVid::getDirectionVidList(), [
+                                        'prompt' => Yii::t('art/teachers', 'Select Direction Vid...'),
                                         'id' => 'work_id'
-                                    ])->label(Yii::t('art/teachers', 'Name Work'));
+                                    ])->label(Yii::t('art/teachers', 'Name Direction Vid'));
                                     ?>
                                     <?= $form->field($modelActivity, "[{$index}]direction_id")->dropDownList(\common\models\guidejob\Direction::getDirectionList(), [
                                         'prompt' => Yii::t('art/teachers', 'Select Direction...'),

@@ -9,6 +9,7 @@ use artsoft\models\User;
 use artsoft\traits\DateTimeTrait;
 use common\models\guidejob\Level;
 use common\models\guidejob\Position;
+use common\models\guidejob\Work;
 use common\models\user\UserCommon;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -20,6 +21,7 @@ use Yii;
  * @property int $id
  * @property int $user_common_id
  * @property int $position_id
+ * @property int $work_id
  * @property int $level_id
  * @property string $tab_num
  * @property int $year_serv
@@ -35,8 +37,9 @@ use Yii;
  * @property string $bonus_list
  * @property string $department_list
  *
- * @property TeachersLevel $level
- * @property TeachersPosition $position
+ * @property Level $level
+ * @property Work $work
+ * @property Position $position
  * @property UserCommon $status
  */
 class Teachers extends ActiveRecord
@@ -76,11 +79,12 @@ class Teachers extends ActiveRecord
     public function rules()
     {
         return [
-            [['position_id', 'department_list', 'level_id'], 'required'],
-            [['position_id', 'level_id', 'user_common_id'], 'integer'],
+            [['position_id', 'department_list', 'level_id', 'work_id'], 'required'],
+            [['position_id', 'level_id', 'user_common_id', 'work_id'], 'integer'],
             [['tab_num'], 'string', 'max' => 16],
             ['bonus_summ', 'safe'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['work_id'], 'exist', 'skipOnError' => true, 'targetClass' => Work::class, 'targetAttribute' => ['work_id' => 'id']],
             [['level_id'], 'exist', 'skipOnError' => true, 'targetClass' => Level::class, 'targetAttribute' => ['level_id' => 'id']],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::class, 'targetAttribute' => ['position_id' => 'id']],
             [['bonus_list', 'department_list', 'date_serv', 'date_serv_spec'], 'safe'],
@@ -113,6 +117,7 @@ class Teachers extends ActiveRecord
             'id' => Yii::t('art/teachers', 'ID'),
             'position_id' => Yii::t('art/teachers', 'Position'),
             'level_id' => Yii::t('art/teachers', 'Level'),
+            'work_id' => Yii::t('art/teachers', 'Work'),
             'tab_num' => Yii::t('art/teachers', 'Tab Num'),
             'date_serv' => Yii::t('art/teachers', 'Date Serv'),
             'date_serv_spec' => Yii::t('art/teachers', 'Date Serv Spec'),
@@ -143,6 +148,14 @@ class Teachers extends ActiveRecord
     public function getLevel()
     {
         return $this->hasOne(Level::class, ['id' => 'level_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getWork()
+    {
+        return $this->hasOne(Work::class, ['id' => 'work_id']);
     }
 
     /**

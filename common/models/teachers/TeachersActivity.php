@@ -2,7 +2,9 @@
 
 namespace common\models\teachers;
 
+use common\models\guidejob\Cost;
 use common\models\guidejob\Direction;
+use common\models\guidejob\DirectionVid;
 use common\models\guidejob\Stake;
 use common\models\guidejob\Work;
 use yii\behaviors\BlameableBehavior;
@@ -15,11 +17,11 @@ use Yii;
  *
  * @property int $id
  * @property int $teachers_id
- * @property int $work_id
+ * @property int $direction_vid_id
  * @property int $direction_id
  * @property int $stake_id
  *
- * @property TeachersWork $work
+ * @property TeachersDirectionVid $directionVid
  * @property TeachersDirection $direction
  * @property TeachersStake $stake
  * @property Teachers $teachers
@@ -51,11 +53,11 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['work_id', 'direction_id', 'stake_id'], 'required'],
-            [['teachers_id', 'work_id', 'direction_id', 'stake_id'], 'integer'],
+            [['direction_vid_id', 'direction_id', 'stake_id'], 'required'],
+            [['teachers_id', 'direction_vid_id', 'direction_id', 'stake_id'], 'integer'],
 //            ['work_id', 'unique', 'targetAttribute' => ['teachers_id', 'work_id'], 'message' => Yii::t('art/teachers', 'The main activity may not be the same as the secondary one.')],
-//            ['direction_id', 'compareDirection'],
-            [['work_id'], 'exist', 'skipOnError' => true, 'targetClass' => Work::class, 'targetAttribute' => ['work_id' => 'id']],
+            ['direction_id', 'compareDirection'],
+            [['direction_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => DirectionVid::class, 'targetAttribute' => ['direction_vid_id' => 'id']],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['stake_id'], 'exist', 'skipOnError' => true, 'targetClass' => Stake::class, 'targetAttribute' => ['stake_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
@@ -80,7 +82,7 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
                 ->andWhere(['direction_id' => $this->direction_id])
                 ->count();
             if ($count != 0) {
-                $this->addError('direction_id', Yii::t('art/teachers', 'The primary activity cannot but coincide with the secondary one.'));
+                $this->addError('direction_id', Yii::t('art/teachers', 'The primary activity cannot but coincide with the secondary one'));
             }
         }
     }
@@ -92,20 +94,20 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/teachers', 'ID'),
             'teachers_id' => Yii::t('art/teachers', 'Teachers ID'),
-            'work_id' => Yii::t('art/teachers', 'Name Work'),
+            'direction_vid_id' => Yii::t('art/teachers', 'Name Direction Vid'),
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
             'stake_id' => Yii::t('art/teachers', 'Name Stake'),
         ];
     }
 
     /**
-     * Gets query for [[Work]].
+     * Gets query for [[DirectionVid]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getWork()
+    public function getDirectionVid()
     {
-        return $this->hasOne(Work::class, ['id' => 'work_id']);
+        return $this->hasOne(DirectionVid::class, ['id' => 'direction_vid_id']);
     }
 
     /**
@@ -128,6 +130,10 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
         return $this->hasOne(Stake::class, ['id' => 'stake_id']);
     }
 
+    public function getCost()
+    {
+        return $this->hasMany(Cost::class, ['id' => 'stake_id']);
+    }
     /**
      * Gets query for [[Teachers]].
      *
