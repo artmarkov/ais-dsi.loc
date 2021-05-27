@@ -64,13 +64,13 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     {
         return [
             [['efficiency_id', 'teachers_id', 'date_in', 'bonus'], 'required'],
-            [['efficiency_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'item_id'], 'integer'],
-            [['date_in'], 'safe'],
+            [['efficiency_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'item_id'], 'integer'],
+            [['date_in', 'teachers_id'], 'safe'],
             [['version'], 'default', 'value' => 0],
             [['bonus'], 'string', 'max' => 127],
             ['class', 'string'],
             [['efficiency_id'], 'exist', 'skipOnError' => true, 'targetClass' => EfficiencyTree::class, 'targetAttribute' => ['efficiency_id' => 'id']],
-            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
+           // [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
 
@@ -160,7 +160,7 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     {
 
         $timestamp_in = Yii::$app->formatter->asTimestamp($model_date->date_in);
-        $timestamp_out = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86400;
+        $timestamp_out = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86399;
 
         $models = self::find()
             ->where(['between', 'date_in', $timestamp_in, $timestamp_out])

@@ -1,7 +1,9 @@
 <?php
 
+use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
+use common\models\user\UserCommon;
 use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
@@ -45,11 +47,11 @@ use kartik\date\DatePicker;
                 ]);
                 ?>
                 <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
-                    'data' => \common\models\teachers\Teachers::getTeachersList(),
+                    'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
                     'options' => [
                         // 'disabled' => $readonly,
                         'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
-                        // 'multiple' => false,
+                         'multiple' => $model->isNewRecord ? true : false,
                     ],
                     'pluginOptions' => [
                         'allowClear' => true
@@ -59,17 +61,7 @@ use kartik\date\DatePicker;
 
                 <?= $form->field($model, 'bonus')->textInput(['maxlength' => true, 'readonly' => !Yii::$app->user->isSuperadmin]) ?>
 
-                <?= $form->field($model, 'date_in')->widget(DatePicker::class, [
-                    'type' => DatePicker::TYPE_INPUT,
-                    'options' => ['placeholder' => ''],
-                    'convertFormat' => true,
-                    'pluginOptions' => [
-                        'format' => 'dd.MM.yyyy',
-                        'minViewMode' => 1,
-                        'maxViewMode' => 2,
-                        'autoclose' => true,
-                    ]
-                ])->textInput(['autocomplete' => 'off']); ?>
+                <?= $form->field($model, 'date_in')->widget(DatePicker::class)->textInput(['autocomplete' => 'off']); ?>
             </div>
         </div>
     </div>

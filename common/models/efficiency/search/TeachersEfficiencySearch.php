@@ -18,8 +18,8 @@ class TeachersEfficiencySearch extends TeachersEfficiency
     public function rules()
     {
         return [
-            [['id', 'efficiency_id', 'teachers_id', 'date_in', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['bonus'], 'safe'],
+            [['id', 'efficiency_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['bonus', 'date_in'], 'safe'],
         ];
     }
 
@@ -62,12 +62,18 @@ class TeachersEfficiencySearch extends TeachersEfficiency
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        if ($this->date_in) {
+            $tmp = explode(' - ', $this->date_in);
+            if (isset($tmp[0], $tmp[1])) {
+                $query->andFilterWhere(['between', static::tableName() . '.date_in',
+                    strtotime($tmp[0]), strtotime($tmp[1])]);
+            }
+        }
         $query->andFilterWhere([
             'id' => $this->id,
             'efficiency_id' => $this->efficiency_id,
             'teachers_id' => $this->teachers_id,
-            'date_in' => $this->date_in,
+//            'date_in' => $this->date_in,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,
             'updated_at' => $this->updated_at,
