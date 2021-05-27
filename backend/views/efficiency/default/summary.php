@@ -6,16 +6,33 @@ use artsoft\widgets\ActiveForm;
 use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
-/* @var $dataProvider yii\data\ArrayDataProvider */
+/* @var $data */
 /* @var $model_date */
 /* @var $root */
 
 $this->title = Yii::t('art/guide', 'Efficiencies');
 $this->params['breadcrumbs'][] = $this->title;
 
+$dataProvider = new \yii\data\ArrayDataProvider([
+    'allModels' => $data['data'],
+    'sort' => [
+        'attributes' => array_merge(['id', 'name', 'total', 'total_sum', 'stake'], array_keys($root))
+    ],
+    'pagination' => false,
+]);
+
 $columns = [];
 $columns[] = ['class' => 'yii\grid\SerialColumn'];
-$columns[] = ['attribute' => 'name', 'label' => 'Фамилия И.О.', 'options' => ['style' => 'width:250px'], 'headerOptions' => ['class' => "grid"]];
+$columns[] = [
+    'attribute' => 'name',
+    'label' => 'Фамилия И.О.',
+    'value' => function ($data) {
+        return Html::a($data['name'], ['details', 'id' => $data['id'], 'date_in' => $data['date_in'], 'date_out' => $data['date_out']], ['data-pjax' => 0]);
+    },
+    'format' => 'raw',
+    'options' => ['style' => 'width:250px'],
+    'headerOptions' => ['class' => "grid"]
+];
 
 foreach ($root as $id => $name) {
     $columns[] = ['attribute' => $id, 'label' => $name, 'headerOptions' => ['class' => "grid"]];
@@ -32,12 +49,12 @@ $columns[] = [
     'headerOptions' => ['class' => "grid"]
 ];
 $columns[] = [
-    'attribute' => 'total',
+    'attribute' => 'total_sum',
     'label' => 'Сумма руб.',
     'value' => function ($data) {
-        return number_format($data['total'] * $data['stake'] * 0.01, 2);
+        return number_format($data['total_sum'], 2);
     },
-    'footer' => 444,
+    'footer' => number_format($data['all_summ'], 2),
     'headerOptions' => ['class' => "grid"]
 ];
 ?>

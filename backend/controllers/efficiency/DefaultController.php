@@ -40,31 +40,33 @@ class DefaultController extends MainController
     public function actionSummary()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
-        $student_day_executors_in = 21;
-        $student_day_executors_out = 20;
+        $day_in = 21;
+        $day_out = 20;
 
         $model_date = new DynamicModel(['date_in', 'date_out']);
         $model_date->addRule(['date_in', 'date_out'], 'required')
             ->addRule(['date_in', 'date_out'], 'date');
 
-        $root = EfficiencyTree::find()->roots()->select(['name', 'id'])->indexBy('id')->column();
 
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-            $mon = date('d') > $student_day_executors_in ? (date('m') + 1 > 12 ? date('m') - 11 : date('m') + 1) : date('m');
+            $mon = date('d') > $day_in ? (date('m') + 1 > 12 ? date('m') - 11 : date('m') + 1) : date('m');
             $year = $mon > 12 ? date('Y') + 1 : date('Y');
-            $model_date->date_in = Yii::$app->formatter->asDate($student_day_executors_in . '.' . ($mon - 1) . '.' . $year, 'php:d.m.Y');
-            $model_date->date_out = Yii::$app->formatter->asDate( $student_day_executors_out . '.' . $mon . '.' . $year, 'php:d.m.Y');
+            $model_date->date_in = Yii::$app->formatter->asDate($day_in . '.' . ($mon - 1) . '.' . $year, 'php:d.m.Y');
+            $model_date->date_out = Yii::$app->formatter->asDate($day_out . '.' . $mon . '.' . $year, 'php:d.m.Y');
         }
 
+        $root = EfficiencyTree::find()->roots()->select(['name', 'id'])->indexBy('id')->column();
         $data = TeachersEfficiency::getSummaryData($model_date);
 
-        $dataProvider = new \yii\data\ArrayDataProvider([
-            'allModels' => $data,
-            'sort' => [
-                'attributes' => array_merge(['id', 'name', 'total', 'stake'], array_keys($root))
-            ],
-            'pagination' => false,
-        ]);
-        return $this->renderIsAjax('summary', compact(['dataProvider', 'root', 'model_date']));
+        return $this->renderIsAjax('summary', compact(['data', 'root', 'model_date']));
+    }
+
+    public function actionDetails($id, $date_in, $date_out)
+    {
+        $models = $this->modelClass::find()
+            ->where(['between', 'date_in', $date_in, $date_out])
+            ->andWhere(['=', 'teachers_id', $id])
+            ->all();
+        echo '<pre>' . print_r($models, true) . '</pre>';
     }
 }

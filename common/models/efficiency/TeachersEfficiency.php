@@ -159,16 +159,17 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     public static function getSummaryData($model_date)
     {
 
-        $timestamp_up = Yii::$app->formatter->asTimestamp($model_date->date_in);
-        $timestamp_end = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86400;
+        $timestamp_in = Yii::$app->formatter->asTimestamp($model_date->date_in);
+        $timestamp_out = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86400;
 
         $models = self::find()
-            ->where(['between', 'date_in', $timestamp_up, $timestamp_end])
+            ->where(['between', 'date_in', $timestamp_in, $timestamp_out])
             ->asArray()->all();
 
         $tree = EfficiencyTree::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
 
         $res = [];
+        $all_summ = 0;
         foreach ($models as $model) {
             $res[$model['teachers_id']][$tree[$model['efficiency_id']]] = isset($res[$model['teachers_id']][$tree[$model['efficiency_id']]]) ? $res[$model['teachers_id']][$tree[$model['efficiency_id']]] + $model['bonus'] : $model['bonus'];
             $res[$model['teachers_id']]['total'] = isset($res[$model['teachers_id']]['total']) ? $res[$model['teachers_id']]['total'] + $model['bonus'] : $model['bonus'];
@@ -179,7 +180,11 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
             $data[$id]['id'] = $id;
             $data[$id]['name'] = $name;
             $data[$id]['stake'] = \artsoft\helpers\RefBook::find('teachers_stake')->getValue($id);
+            $data[$id]['total_sum'] = $data[$id]['total'] * $data[$id]['stake'] * 0.01;
+            $all_summ += $data[$id]['total_sum'];
+            $data[$id]['date_in'] = $timestamp_in;
+            $data[$id]['date_out'] = $timestamp_out;
         }
-        return $data;
+        return ['data' => $data, 'all_summ' => $all_summ];
     }
 }
