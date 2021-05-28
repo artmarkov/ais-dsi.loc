@@ -102,11 +102,28 @@ class DefaultController extends MainController
             $model_date->date_in = Yii::$app->formatter->asDate(mktime(0, 0, 0, ($mon - 1), $day_in, $year), 'php:d.m.Y');
             $model_date->date_out = Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
         }
-
-        $root = EfficiencyTree::find()->roots()->select(['name', 'id'])->indexBy('id')->column();
         $data = TeachersEfficiency::getSummaryData($model_date);
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            ini_set('memory_limit', '512M');
+            try {
+                $x = new ExcelObjectList($data['attributes']);
+                foreach ($data['data'] as $item) { // данные
+                    $x->addData($item);
+                }
 
-        return $this->renderIsAjax('summary', compact(['data', 'root', 'model_date']));
+                \Yii::$app->response
+                    ->sendContentAsFile($x, 'list.xlsx', ['mimeType' => 'application/vnd.ms-excel'])
+                    ->send();
+                exit;
+            } catch (\PhpOffice\PhpSpreadsheet\Exception | \yii\web\RangeNotSatisfiableHttpException $e) {
+                \Yii::error('Ошибка формирования xlsx: ' . $e->getMessage());
+                \Yii::error($e);
+                Yii::$app->session->setFlash('error', 'Ошибка формирования xlsx-выгрузки');
+                return true;
+            }
+        }
+//        echo '<pre>' . print_r($data, true) . '</pre>';
+        return $this->renderIsAjax('summary', compact(['data', 'model_date']));
     }
 
     public
@@ -130,38 +147,4 @@ class DefaultController extends MainController
         return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel'));
     }
 
-    public function actionExcel()
-    {
-        ini_set('memory_limit', '512M');
-//        $dp = $this->getList($searchCondition, false);
-//        $list = $dp->getModels();
-//        if ($dp->getTotalCount() > self::MAX_EXPORTED_ROWS) {
-//            \fdoc\ui\Notice::registerWarning('Превышено ограничение в ' . self::MAX_EXPORTED_ROWS . ' элементов на длину списка, отмена экспорта');
-//            return true;
-//        }
-
-        try {
-//            $columnList = $this->getColumnList();
-//            $columns = array_reduce($this->columns, function ($result, $item) use ($columnList) {
-//                if ('command' !== $item) {
-//                    $result[$item] = $columnList[$item]['name'];
-//                }
-//                return $result;
-//            }, []);
-//            $x = new ExcelObjectList($columns);
-//            foreach ($list as $id) { // данные
-//                $x->addData($this->getData($id, false)['data']);
-//            }
-
-            \Yii::$app->response
-                ->sendContentAsFile('',  'list.xlsx', ['mimeType' => 'application/vnd.ms-excel'])
-                ->send();
-            exit;
-        } catch (\PhpOffice\PhpSpreadsheet\Exception | \yii\web\RangeNotSatisfiableHttpException $e) {
-            \Yii::error('Ошибка формирования xlsx: ' . $e->getMessage());
-            \Yii::error($e);
-            Yii::$app->session->setFlash('error', 'Ошибка формирования xlsx-выгрузки');
-            return true;
-        }
-    }
 }

@@ -3,24 +3,16 @@
 use artsoft\grid\GridView;
 use artsoft\helpers\Html;
 use artsoft\widgets\ActiveForm;
+use common\models\efficiency\EfficiencyTree;
 use kartik\date\DatePicker;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $data */
 /* @var $model_date */
-/* @var $root */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['efficiency/default/index']];
 $this->params['breadcrumbs'][] = 'Сводная таблица';
-
-$dataProvider = new \yii\data\ArrayDataProvider([
-    'allModels' => $data['data'],
-    'sort' => [
-        'attributes' => array_merge(['id', 'name', 'total', 'total_sum', 'stake'], array_keys($root))
-    ],
-    'pagination' => false,
-]);
 
 $columns = [];
 $columns[] = ['class' => 'yii\grid\SerialColumn'];
@@ -35,28 +27,27 @@ $columns[] = [
             ]);
     },
     'format' => 'raw',
-
     'options' => ['style' => 'width:250px'],
     'headerOptions' => ['class' => "grid"]
 ];
 
-foreach ($root as $id => $name) {
+foreach ($data['root'] as $id => $name) {
     $columns[] = ['attribute' => $id, 'label' => $name, 'headerOptions' => ['class' => "grid"]];
 }
 $columns[] = [
     'attribute' => 'stake',
-    'label' => 'Ставка руб.',
+    'label' => $data['attributes']['stake'],
     'headerOptions' => ['class' => "grid"]
 ];
 $columns[] = [
     'attribute' => 'total',
-    'label' => 'Надбавка %',
+    'label' => $data['attributes']['total'],
     'footer' => 'Итого:',
     'headerOptions' => ['class' => "grid"]
 ];
 $columns[] = [
     'attribute' => 'total_sum',
-    'label' => 'Сумма руб.',
+    'label' => $data['attributes']['total_sum'],
     'value' => function ($data) {
         return number_format($data['total_sum'], 2);
     },
@@ -82,12 +73,8 @@ $form = ActiveForm::begin([
                         <?= $form->field($model_date, "date_in")->widget(DatePicker::class)->label('Дата начала периода'); ?>
                         <?= $form->field($model_date, "date_out")->widget(DatePicker::class)->label('Дата окончания периода'); ?>
                         <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary']); ?>
-                        <?= \yii\helpers\Html::a('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel',
-                            ['efficiency/default/excel'],
-                            [
-                                'class' => 'btn btn-default ',
-                            ]
-                        ); ?>
+                        <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
+
                     </div>
                 </div>
                 <div class="panel panel-primary">
@@ -97,7 +84,13 @@ $form = ActiveForm::begin([
                     <div class="panel-body">
                         <?= GridView::widget([
                             'id' => 'teachers-efficiency-summary',
-                            'dataProvider' => $dataProvider,
+                            'dataProvider' => new \yii\data\ArrayDataProvider([
+                                'allModels' => $data['data'],
+                                'sort' => [
+                                    'attributes' => array_keys($data['attributes'] + $data['root'])
+                                ],
+                                'pagination' => false,
+                            ]),
                             'columns' => $columns,
                             'showFooter' => true,
                         ]);

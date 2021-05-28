@@ -70,7 +70,7 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
             [['bonus'], 'string', 'max' => 127],
             ['class', 'string'],
             [['efficiency_id'], 'exist', 'skipOnError' => true, 'targetClass' => EfficiencyTree::class, 'targetAttribute' => ['efficiency_id' => 'id']],
-           // [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
+            // [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
 
@@ -162,11 +162,18 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
         $timestamp_in = Yii::$app->formatter->asTimestamp($model_date->date_in);
         $timestamp_out = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86399;
 
+        $tree = EfficiencyTree::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
+        $root = EfficiencyTree::find()->roots()->select(['name', 'id'])->indexBy('id')->column();
+        $attributes = [
+            'name' => 'Фамилия И.О.',
+            'stake' => 'Ставка руб.',
+            'total' => 'Надбавка %',
+            'total_sum' => 'Сумма руб.'
+        ];
+
         $models = self::find()
             ->where(['between', 'date_in', $timestamp_in, $timestamp_out])
             ->asArray()->all();
-
-        $tree = EfficiencyTree::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
 
         $res = [];
         $all_summ = 0;
@@ -185,6 +192,6 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
             $data[$id]['date_in'] = $timestamp_in;
             $data[$id]['date_out'] = $timestamp_out;
         }
-        return ['data' => $data, 'all_summ' => $all_summ];
+        return ['data' => $data, 'all_summ' => $all_summ, 'attributes' => $attributes, 'root' => $root];
     }
 }
