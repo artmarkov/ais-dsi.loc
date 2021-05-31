@@ -18,6 +18,7 @@ abstract class SettingsBaseController extends BaseController
         ['url' => ['/settings/default/index'], 'label' => 'Основные настройки'],
         ['url' => ['/settings/reading/index'], 'label' => 'Настройки форм'],
         ['url' => ['/settings/own/index'], 'label' => 'Сведения об организации'],
+        ['url' => ['/settings/module/index'], 'label' => 'Настройки модулей'],
     ];
 
     /**

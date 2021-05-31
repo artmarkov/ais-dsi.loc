@@ -18,7 +18,7 @@ class m210310_145345_create_table_employees_parents extends \artsoft\db\BaseMigr
             'updated_by' => $this->integer(),
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
-
+        $this->addCommentOnTable('employees' ,'Сотрудники');
         $this->db->createCommand()->resetSequence('employees', 1000)->execute();
 
         $this->createTableWithHistory('parents', [
@@ -36,6 +36,7 @@ class m210310_145345_create_table_employees_parents extends \artsoft\db\BaseMigr
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
+        $this->addCommentOnTable('parents' ,'Родители');
         $this->db->createCommand()->resetSequence('parents', 1000)->execute();
 
         $this->db->createCommand()->createView('employees_view', '

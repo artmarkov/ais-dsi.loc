@@ -42,6 +42,7 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
+        $this->addCommentOnTable('students' ,'Ученики');
         $this->db->createCommand()->resetSequence('students', 1000)->execute();
         $this->addForeignKey('student_ibfk_1', 'students', 'position_id', 'guide_student_position', 'id', 'NO ACTION', 'NO ACTION');
 

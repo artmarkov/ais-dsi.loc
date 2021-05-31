@@ -17,6 +17,7 @@ class m210302_153750_create_table_routine extends \artsoft\db\BaseMigration
             'plan_flag' => $this->tinyInteger(1)->notNull()->comment('Учитывать при планировании'),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_routine_cat' ,'Категории производственного календаря');
         $this->db->createCommand()->batchInsert('guide_routine_cat', ['name', 'color', 'plan_flag'], [
             ['Каникулы', '#0000ff', 1],
             ['Праздники', '#ff0000', 1],
@@ -33,6 +34,7 @@ class m210302_153750_create_table_routine extends \artsoft\db\BaseMigration
             'end_date' => $this->integer()->notNull(),
         ], $tableOptions);
 
+        $this->addCommentOnTable('routine' ,'Производственный календарь');
         $this->db->createCommand()->resetSequence('routine', 1000)->execute();
 
         $this->addForeignKey('routine_ibfk_1', 'routine', 'cat_id', 'guide_routine_cat', 'id', 'RESTRICT', 'RESTRICT');

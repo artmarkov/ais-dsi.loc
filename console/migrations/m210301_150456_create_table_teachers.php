@@ -17,6 +17,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'slug' => $this->string(32),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_teachers_direction' ,'Направление деятельности');
         $this->db->createCommand()->batchInsert('guide_teachers_direction', ['id', 'name', 'slug'], [
             [1, 'Педагогическая', 'Пед-я'],
             [2, 'Концертмейстерская', 'Конц-я'],
@@ -28,6 +29,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'slug' => $this->string(32),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_teachers_direction_vid' ,'Вид деятельности');
         $this->db->createCommand()->batchInsert('guide_teachers_direction_vid', ['id', 'name', 'slug'], [
             [1, 'Основная', 'Осн-я'],
             [2, 'Дополнительная(внутреннее совмещение)', 'Доп-я'],
@@ -40,6 +42,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'status' => $this->integer()->notNull(),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_teachers_stake' ,'Ставки');
         $this->db->createCommand()->batchInsert('guide_teachers_stake', ['id', 'name', 'slug', 'status'], [
             [1, 'Без категории', 'БК', 1],
             [2, 'Соответствие категории', 'СК', 1],
@@ -59,6 +62,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
+        $this->addCommentOnTable('teachers_cost' ,'Значения ставки');
         $this->db->createCommand()->resetSequence('teachers_cost', 1)->execute();
 
         $this->db->createCommand()->batchInsert('teachers_cost', ['direction_id', 'stake_id', 'stake_value', 'created_at', 'updated_at', 'created_by', 'updated_by'], [
@@ -83,6 +87,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'slug' => $this->string(32),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_teachers_work' ,'Вмд работы');
         $this->db->createCommand()->batchInsert('guide_teachers_work', ['id', 'name', 'slug'], [
             [1, 'На постоянной основе', 'Пост'],
             [2, 'По совместительству', 'Совм'],
@@ -94,6 +99,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'slug' => $this->string(32),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_teachers_position' ,'Должность');
         $this->db->createCommand()->batchInsert('guide_teachers_position', ['id', 'name', 'slug'], [
             [1, 'Директор', 'Дир'],
             [2, 'Заместитель директора', 'Зам.'],
@@ -107,6 +113,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'slug' => $this->string(32),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_teachers_level' ,'Образование');
         $this->db->createCommand()->batchInsert('guide_teachers_level', ['id', 'name', 'slug'], [
             [1, 'Высшее образование', 'ВО'],
             [2, 'Высшее непроф', 'ВН'],
@@ -121,6 +128,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'multiple' =>$this->integer()->notNull(),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_teachers_bonus_category' ,'Категории достижений');
         $this->db->createCommand()->batchInsert('guide_teachers_bonus_category', ['id', 'name', 'slug', 'multiple'], [
             [1, 'Ученая степень', 'Уч.ст', 0],
             [2, 'Звание', 'Звание', 0],
@@ -138,6 +146,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'status' => $this->integer()->notNull(),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_teachers_bonus' ,'Достижения');
         $this->db->createCommand()->batchInsert('guide_teachers_bonus', ['id', 'bonus_category_id', 'name', 'slug', 'value_default', 'status'], [
             [1, 1, 'Кандидат наук', 'КН', '20', 1],
             [2, 1, 'Доктор наук', 'ДН', '30', 1],
@@ -183,6 +192,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
+        $this->addCommentOnTable('teachers' ,'Преподаватели');
         $this->db->createCommand()->resetSequence('teachers', 1000)->execute();
         $this->createIndex('position_id', 'teachers', 'position_id');
         $this->createIndex('work_id', 'teachers', 'work_id');
@@ -205,6 +215,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
+        $this->addCommentOnTable('teachers_activity' ,'Сведения о трудовой деятельности');
         $this->createIndex('direction_vid_id', 'teachers_activity', 'direction_vid_id');
         $this->addForeignKey('teachers_activity_ibfk_1', 'teachers_activity', 'direction_vid_id', 'guide_teachers_direction_vid', 'id', 'RESTRICT', 'RESTRICT');
         $this->addForeignKey('teachers_activity_ibfk_2', 'teachers_activity', 'direction_id', 'guide_teachers_direction', 'id', 'RESTRICT', 'RESTRICT');

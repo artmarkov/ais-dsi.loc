@@ -73,6 +73,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
+        $this->addCommentOnTable('subject' ,'Дисциплины школы');
         $this->db->createCommand()->resetSequence('subject', 1000)->execute();
         $this->db->createCommand()->batchInsert('subject', ['name', 'slug', 'status', 'created_at', 'updated_at', 'created_by', 'updated_by'], [
             ['Академический вокал', 'Акад.вок.', 1, time(), time(), 1000, 1000],

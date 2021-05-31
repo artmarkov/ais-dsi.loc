@@ -20,6 +20,7 @@ class m210408_110456_create_table_teachers_efficiency extends \artsoft\db\BaseMi
             'name' => $this->string(512)->notNull(),
             'description' => $this->string(1024),
             'value_default' => $this->string(127),
+            'class' => $this->string(127),
             'icon' => $this->string(255),
             'icon_type' => $this->smallInteger(1)->notNull()->defaultValue(1),
             'active' => $this->boolean()->notNull()->defaultValue(true),
@@ -45,18 +46,18 @@ class m210408_110456_create_table_teachers_efficiency extends \artsoft\db\BaseMi
         $this->createIndex('tree_NK4', self::TABLE_NAME_TREE, 'lvl');
         $this->createIndex('tree_NK5', self::TABLE_NAME_TREE, 'active');
 
-        $this->db->createCommand()->batchInsert(self::TABLE_NAME_TREE, ['id', 'root', 'lft', 'rgt', 'lvl', 'name', 'description', 'value_default', 'icon', 'icon_type', 'active', 'selected', 'disabled', 'readonly', 'visible', 'collapsed', 'movable_u', 'movable_d', 'movable_l', 'movable_r', 'removable', 'removable_all', 'child_allowed'], [
-            [1, 1, 1, 2, 0, "Результативность участия учащихся и педагогических работников в мероприятиях методической и творческой напровленности", "За каждого участника Уровень мероприятия: окружной, городской, российский, международный. Подтверждающие документы: Грамоты, дипломы и пр.", 3, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
-            [2, 2, 1, 2, 0, "Участие в организации и проведении мероприятий имеющий образовательную направленность(конференция; педагогические чтения; семинары; мастер-классы и др.)", "Документальное подтверждение участия в организации и проведении мероприятия", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
-            [3, 3, 1, 8, 0, "Выполнение творческих работ(создание партитур; переложений; оранжировок в образовательных целях в зависимости от объема)", "Фактически выполненные работы", 0, "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true],
-            [4, 3, 2, 3, 1, "Выполнение творческих работ объемом 1 - 2 стр.", "", 3, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
-            [5, 3, 4, 5, 1, "Выполнение творческих работ объемом 3 - 4 стр.", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
-            [6, 3, 6, 7, 1, "Выполнение творческих работ объемом 5 - 6 стр.", "", 15, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
-            [7, 7, 1, 8, 0, "Выполнение показателей качества профессиональной деятельности", "Мониторинг качества профессиональной деятельности по результатам(успеваемость – по результатам учебного полугодия)", 0, "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true],
-            [8, 7, 2, 3, 1, "Выполнение показателей качества профессиональной деятельности - отсутствие обоснованных жалоб от учащихся и родителей", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
-            [9, 7, 4, 5, 1, "Выполнение показателей качества профессиональной деятельности - сохранность контингента учащихся", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
-            [10, 7, 6, 7, 1, "Выполнение показателей качества профессиональной деятельности - отсутствие неудовлетворительных результатов промежуточной и итоговой аттестации учащихся", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
-            [11, 11, 1, 2, 0, "Дистанционная работа (освоение новых технологий; увеличение объема работ по проверке выполненных заданий и др.)", "Применяется при переводе всех педагогических работников на дистанционную работу по инициативе работодателя в исключительных случаях", 5, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true],
+        $this->db->createCommand()->batchInsert(self::TABLE_NAME_TREE, ['id', 'root', 'lft', 'rgt', 'lvl', 'name', 'description', 'value_default', 'icon', 'icon_type', 'active', 'selected', 'disabled', 'readonly', 'visible', 'collapsed', 'movable_u', 'movable_d', 'movable_l', 'movable_r', 'removable', 'removable_all', 'child_allowed', 'class'], [
+            [1, 1, 1, 2, 0, "Результативность участия учащихся и педагогических работников в мероприятиях методической и творческой напровленности", "За каждого участника Уровень мероприятия: окружной, городской, российский, международный. Подтверждающие документы: Грамоты, дипломы и пр.", 3, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true, ''],
+            [2, 2, 1, 2, 0, "Участие в организации и проведении мероприятий имеющий образовательную направленность(конференция; педагогические чтения; семинары; мастер-классы и др.)", "Документальное подтверждение участия в организации и проведении мероприятия", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true, ''],
+            [3, 3, 1, 8, 0, "Выполнение творческих работ(создание партитур; переложений; оранжировок в образовательных целях в зависимости от объема)", "Фактически выполненные работы", 0, "", 1, true, false, true, false, true, false, false, false, false, false, false, false, true, 'CreativeWorks'],
+            [4, 3, 2, 3, 1, "Выполнение творческих работ объемом 1 - 2 стр.", "", 3, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true, 'CreativeWorks'],
+            [5, 3, 4, 5, 1, "Выполнение творческих работ объемом 3 - 4 стр.", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true, 'CreativeWorks'],
+            [6, 3, 6, 7, 1, "Выполнение творческих работ объемом 5 - 6 стр.", "", 15, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true, 'CreativeWorks'],
+            [7, 7, 1, 8, 0, "Выполнение показателей качества профессиональной деятельности", "Мониторинг качества профессиональной деятельности по результатам(успеваемость – по результатам учебного полугодия)", 0, "", 1, true, false, true, false, true, false, false, false, false, false, false, false, true, ''],
+            [8, 7, 2, 3, 1, "Выполнение показателей качества профессиональной деятельности - отсутствие обоснованных жалоб от учащихся и родителей", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true, ''],
+            [9, 7, 4, 5, 1, "Выполнение показателей качества профессиональной деятельности - сохранность контингента учащихся", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true, ''],
+            [10, 7, 6, 7, 1, "Выполнение показателей качества профессиональной деятельности - отсутствие неудовлетворительных результатов промежуточной и итоговой аттестации учащихся", "", 10, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true, ''],
+            [11, 11, 1, 2, 0, "Дистанционная работа (освоение новых технологий; увеличение объема работ по проверке выполненных заданий и др.)", "Применяется при переводе всех педагогических работников на дистанционную работу по инициативе работодателя в исключительных случаях", 5, "", 1, true, false, false, false, true, false, true, true, true, true, true, false, true, ''],
         ])->execute();
         $this->db->createCommand()->resetSequence(self::TABLE_NAME_TREE, 12)->execute();
 

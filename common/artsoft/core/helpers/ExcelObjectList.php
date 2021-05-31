@@ -45,9 +45,11 @@ class ExcelObjectList
     public function addData($data)
     {
         foreach (array_keys($this->columns) as $k => $name) {
-            $this->spreadsheet->getActiveSheet()->setCellValueExplicit($this->cc[$k] . $this->rowIndex, $data[$name], DataType::TYPE_STRING);
-            if (mb_strlen($data[$name]) > $this->columnsLength[$name]) {
-                $this->columnsLength[$name] = mb_strlen($data[$name]);
+            if(isset($data[$name])) {
+                $this->spreadsheet->getActiveSheet()->setCellValueExplicit($this->cc[$k] . $this->rowIndex, $data[$name], DataType::TYPE_STRING);
+                if (mb_strlen($data[$name]) > $this->columnsLength[$name]) {
+                    $this->columnsLength[$name] = mb_strlen($data[$name]);
+                }
             }
         }
         $this->rowIndex++;

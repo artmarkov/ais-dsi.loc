@@ -37,6 +37,7 @@ class m210301_151052_create_table_creative extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
+        $this->addCommentOnTable('creative_works' ,'Творческие и методические работы, сертификаты');
         $this->db->createCommand()->resetSequence('creative_works', 1000)->execute();
 
         $this->addForeignKey('creative_works_ibfk_1', 'creative_works', 'category_id', 'guide_creative_category', 'id', 'NO ACTION', 'NO ACTION');

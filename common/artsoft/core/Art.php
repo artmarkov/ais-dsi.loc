@@ -289,8 +289,8 @@ class Art extends Component
      */
     protected function initFormatter()
     {
-        date_default_timezone_set(Yii::$app->settings->get('general.timezone', 'UTC'));
-        Yii::$app->formatter->timeZone = Yii::$app->settings->get('general.timezone', 'UTC');
+        date_default_timezone_set(Yii::$app->settings->get('general.timezone', 'Atlantic/Azores'));
+        Yii::$app->formatter->timeZone = Yii::$app->settings->get('general.timezone', 'Atlantic/Azores');
         Yii::$app->formatter->dateFormat = Yii::$app->settings->get('general.dateformat', "yyyy-MM-dd");
         Yii::$app->formatter->timeFormat = Yii::$app->settings->get('general.timeformat', "HH:mm");
         Yii::$app->formatter->datetimeFormat = Yii::$app->formatter->dateFormat . " " . Yii::$app->formatter->timeFormat;

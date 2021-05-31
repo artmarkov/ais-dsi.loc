@@ -3,8 +3,10 @@
 namespace common\models\efficiency;
 
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\ExcelObjectList;
 use artsoft\models\User;
 use artsoft\traits\DateTimeTrait;
+use common\models\creative\CreativeWorks;
 use Yii;
 use common\models\teachers\Teachers;
 use yii\behaviors\BlameableBehavior;
@@ -153,23 +155,47 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Связи с моделями где применяется надбавка
+     *
+     * @return array|bool
+     */
+    public function getDependence()
+    {
+        switch ($this->class) {
+            case 'CreativeWorks':
+                return [
+                    'model' => \common\models\creative\CreativeWorks::findOne($this->item_id),
+                    'attributes' => [
+                        'name',
+                        'description',
+                        'published_at',
+                    ],
+                    'link' => ['/creative/default/view', 'id' => $this->item_id],
+                    'title' => 'Сведения о работе',
+                ];
+            default:
+                return false;
+        }
+    }
+
+    /**
      * @param $model_date
      * @return array
      */
     public static function getSummaryData($model_date)
     {
-
+//        echo '<pre>' . print_r($model_date, true) . '</pre>';
         $timestamp_in = Yii::$app->formatter->asTimestamp($model_date->date_in);
         $timestamp_out = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86399;
 
-        $tree = EfficiencyTree::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
-        $root = EfficiencyTree::find()->roots()->select(['name', 'id'])->indexBy('id')->column();
-        $attributes = [
-            'name' => 'Фамилия И.О.',
-            'stake' => 'Ставка руб.',
-            'total' => 'Надбавка %',
-            'total_sum' => 'Сумма руб.'
-        ];
+        $tree = EfficiencyTree::getEfficiencyRoots();
+        $root = EfficiencyTree::getEfficiencyLiaves();
+
+        $attributes = ['name' => 'Фамилия И.О.'];
+        $attributes += $root;
+        $attributes += ['stake' => 'Ставка руб.'];
+        $attributes += ['total' => 'Надбавка %'];
+        $attributes += ['total_sum' => 'Сумма руб.'];
 
         $models = self::find()
             ->where(['between', 'date_in', $timestamp_in, $timestamp_out])
@@ -183,15 +209,43 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
         }
         $data = [];
         foreach (\artsoft\helpers\RefBook::find('teachers_fio', \common\models\user\UserCommon::STATUS_ACTIVE)->getList() as $id => $name) {
-            $data[$id] = $res[$id] ?? ['total' => null];
-            $data[$id]['id'] = $id;
-            $data[$id]['name'] = $name;
-            $data[$id]['stake'] = \artsoft\helpers\RefBook::find('teachers_stake')->getValue($id);
-            $data[$id]['total_sum'] = $data[$id]['total'] * $data[$id]['stake'] * 0.01;
-            $all_summ += $data[$id]['total_sum'];
-            $data[$id]['date_in'] = $timestamp_in;
-            $data[$id]['date_out'] = $timestamp_out;
+            if (!($model_date->hidden_flag && !isset($res[$id]))) { // скрываем пустые строки
+                $data[$id] = $res[$id] ?? ['total' => null];
+                $data[$id]['id'] = $id;
+                $data[$id]['name'] = $name;
+                $data[$id]['stake'] = \artsoft\helpers\RefBook::find('teachers_stake')->getValue($id);
+                $data[$id]['total_sum'] = $data[$id]['total'] * $data[$id]['stake'] * 0.01;
+                $all_summ += $data[$id]['total_sum'];
+                $data[$id]['date_in'] = $timestamp_in;
+                $data[$id]['date_out'] = $timestamp_out;
+            }
         }
         return ['data' => $data, 'all_summ' => $all_summ, 'attributes' => $attributes, 'root' => $root];
+    }
+
+    /**
+     * @param $data
+     * @return bool
+     */
+    public static function sendXlsx($data)
+    {
+        ini_set('memory_limit', '512M');
+        try {
+            $x = new ExcelObjectList($data['attributes']);
+            foreach ($data['data'] as $item) { // данные
+                $x->addData($item);
+            }
+            $x->addData(['total' => 'Итого', 'total_sum' => $data['all_summ']]);
+
+            \Yii::$app->response
+                ->sendContentAsFile($x, strtotime('now') . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '_teachers_efficiency.xlsx', ['mimeType' => 'application/vnd.ms-excel'])
+                ->send();
+            exit;
+        } catch (\PhpOffice\PhpSpreadsheet\Exception | \yii\web\RangeNotSatisfiableHttpException $e) {
+            \Yii::error('Ошибка формирования xlsx: ' . $e->getMessage());
+            \Yii::error($e);
+            Yii::$app->session->setFlash('error', 'Ошибка формирования xlsx-выгрузки');
+            return true;
+        }
     }
 }

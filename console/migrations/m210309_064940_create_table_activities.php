@@ -17,6 +17,7 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
             'description' => $this->string(256),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_activities_cat' ,'Категории мероприятий');
         $this->db->createCommand()->batchInsert('guide_activities_cat', ['name', 'color'], [
             ['Согласно плану работы', '#0000ff'],
             ['Согласно расписанию', '#ff0000'],
@@ -36,6 +37,7 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
             'all_day' => $this->tinyInteger(1)->defaultValue('0'),
         ], $tableOptions);
 
+        $this->addCommentOnTable('activities' ,'Календарь мероприятий');
         $this->db->createCommand()->resetSequence('activities', 1000)->execute();
 
         $this->addForeignKey('activities_ibfk_1', 'activities', 'category_id', 'guide_activities_cat', 'id', 'RESTRICT', 'RESTRICT');

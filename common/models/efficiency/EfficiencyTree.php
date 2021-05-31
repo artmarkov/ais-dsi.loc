@@ -27,6 +27,7 @@ class EfficiencyTree extends \kartik\tree\models\Tree
         $rules[] =  ['description', 'string', 'max' => 1024];
         $rules[] =  ['value_default', 'string','max' => 127];
         $rules[] =  ['value_default', 'default', 'value' => 0];
+        $rules[] =  ['class', 'string','max' => 127];
 
         return $rules;
     }
@@ -39,6 +40,7 @@ class EfficiencyTree extends \kartik\tree\models\Tree
         $attr = parent::attributeLabels();
         $attr['description'] = Yii::t('art', 'Description');
         $attr['value_default'] = Yii::t('art/guide', 'Bonus %');
+        $attr['class'] = Yii::t('art/guide', 'Class');
 
         return $attr;
     }

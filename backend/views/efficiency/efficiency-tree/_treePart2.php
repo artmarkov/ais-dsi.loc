@@ -1,5 +1,4 @@
 <?php 
-use artsoft\widgets\ActiveForm;
 /**
  * @var Tree $node
 */
@@ -10,6 +9,7 @@ use artsoft\widgets\ActiveForm;
 
         <?= $form->field($node, 'description')->textarea(['rows' => 3]) ?>
         <?= $form->field($node, 'value_default')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($node, 'class')->textInput(['maxlength' => true]) ?>
 
     </div>
 </div>
