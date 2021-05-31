@@ -19,6 +19,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             'sort_order' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_subject_category' ,'Раздел дисциплины');
         $this->db->createCommand()->batchInsert('guide_subject_category', ['id', 'name', 'slug', 'sort_order', 'status'], [
             [1, 'Специальность', 'Спец.', 1, 1],
             [2, 'Музыкальный инструмент', 'Инстр', 2, 1],
@@ -38,11 +39,11 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             'info' => $this->text()->notNull(),
             'status' => $this->tinyInteger(1)->notNull(),
         ], $tableOptions);
-
+        $this->addCommentOnTable('guide_subject_vid' ,'Форма занятий');
         $this->db->createCommand()->batchInsert('guide_subject_vid', ['name', 'slug','qty_min','qty_max','info','status'], [
-            ['Индивидуальные', 'Инд.', 0, 1,'',1],
-            ['Мелкогрупповые', 'Мелк-гр.', 0, 1,'',1],
-            ['Групповые', 'Гр.', 0, 1,'',1],
+            ['Индивидуальная', 'Инд.', 0, 1,'',1],
+            ['Мелкогрупповая', 'Мелк-гр.', 0, 1,'',1],
+            ['Групповая', 'Гр.', 0, 1,'',1],
         ])->execute();
 
 
@@ -53,6 +54,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             'status' => $this->tinyInteger(1)->unsigned()->notNull(),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_subject_type' ,'Тип занятий');
         $this->db->createCommand()->batchInsert('guide_subject_type', ['name', 'slug', 'status'], [
             ['Бюджет', 'Бюд.', 1],
             ['Хозрасчет', 'х/р.', 1],

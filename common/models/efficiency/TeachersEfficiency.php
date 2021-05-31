@@ -6,7 +6,6 @@ use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\ExcelObjectList;
 use artsoft\models\User;
 use artsoft\traits\DateTimeTrait;
-use common\models\creative\CreativeWorks;
 use Yii;
 use common\models\teachers\Teachers;
 use yii\behaviors\BlameableBehavior;
@@ -184,12 +183,12 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
      */
     public static function getSummaryData($model_date)
     {
-//        echo '<pre>' . print_r($model_date, true) . '</pre>';
         $timestamp_in = Yii::$app->formatter->asTimestamp($model_date->date_in);
         $timestamp_out = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86399;
 
-        $tree = EfficiencyTree::getEfficiencyRoots();
-        $root = EfficiencyTree::getEfficiencyLiaves();
+        $root = EfficiencyTree::getEfficiencyRoots();
+        $tree = EfficiencyTree::getEfficiencyLiaves();
+//        echo '<pre>' . print_r($tree, true) . '</pre>';
 
         $attributes = ['name' => 'Фамилия И.О.'];
         $attributes += $root;
