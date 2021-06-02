@@ -1,6 +1,6 @@
 <?php
 
-class m210531_1095635_create_table_education extends \artsoft\db\BaseMigration
+class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
 {
     public function up()
     {
@@ -17,7 +17,7 @@ class m210531_1095635_create_table_education extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_education_cat', 'Наименование образовательной программы');
-        $this->db->createCommand()->batchInsert('guide_subject_category', ['id', 'name', 'short_name', 'status'], [
+        $this->db->createCommand()->batchInsert('guide_education_cat', ['id', 'name', 'short_name', 'status'], [
             [1, 'Дополнительная общеобразовательная общеразвивающая программа', 'ОП.', 1],
             [2, 'Дополнительная предпрофессиональная общеобразовательная программа', 'ПП.', 1],
         ])->execute();
@@ -45,7 +45,7 @@ class m210531_1095635_create_table_education extends \artsoft\db\BaseMigration
             'status' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 
-        $this->addCommentOnTable('guide_education_speciality', 'Специализации');
+        $this->addCommentOnTable('education_speciality', 'Специализации');
 
         $this->createTableWithHistory('education_programm', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
@@ -69,9 +69,9 @@ class m210531_1095635_create_table_education extends \artsoft\db\BaseMigration
         $this->addForeignKey('education_programm_ibfk_1', 'education_programm', 'education_cat_id', 'guide_education_cat', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->resetSequence('education_programm', 1000)->execute();
-        $this->db->createCommand()->batchInsert('education_programm', ['name', 'slug', 'status', 'created_at', 'updated_at', 'created_by', 'updated_by'], [
-            ['Академический вокал', 'Акад.вок.', 1, time(), time(), 1000, 1000],
-        ])->execute();
+//        $this->db->createCommand()->batchInsert('education_programm', ['name', 'slug', 'status', 'created_at', 'updated_at', 'created_by', 'updated_by'], [
+//
+//            ])->execute();
     }
 
     public function down()
