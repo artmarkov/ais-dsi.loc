@@ -3,6 +3,7 @@
 use artsoft\widgets\ActiveForm;
 use common\models\education\EducationSpeciality;
 use artsoft\helpers\Html;
+use common\models\own\Department;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\education\EducationSpeciality */
@@ -33,11 +34,32 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'department_list')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
+                        'data' => Department::getDepartmentList(),
+                        'options' => [
+                            // 'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/guide', 'Select Department...'),
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Department'));
+                    ?>
+                    <?= $form->field($model, 'subject_type_list')->widget(\kartik\select2\Select2::className(), [
+                        'data' => \common\models\subject\SubjectType::getTypeList(),
+                        'options' => [
+                            // 'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/guide', 'Select Subject Type...'),
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Subject Type'));
+                    ?>
 
-                    <?= $form->field($model, 'subject_type_list')->textInput(['maxlength' => true]) ?>
-
-                    <?= $form->field($model, 'status')->textInput() ?>
+                    <?= $form->field($model, 'status')->dropDownList(EducationSpeciality::getStatusList()) ?>
 
                 </div>
             </div>

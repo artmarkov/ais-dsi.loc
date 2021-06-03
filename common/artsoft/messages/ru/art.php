@@ -113,6 +113,7 @@ return [
     'Spam' => 'Спам',
     'Start' => 'Старт',
     'Status' => 'Статус',
+    'Short Name' => 'Сокращенное название',
     'Superadmin' => 'Суперадмин',
     'System Info' => 'Подробности Системы',
     'The changes have been saved.' => 'Изменения были успешно сохранены.',

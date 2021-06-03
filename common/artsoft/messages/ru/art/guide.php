@@ -74,5 +74,9 @@ return [
     'Efficiency' => 'Показатель эффективности',
     'Bonus' => 'Бонус',
     'Date Bonus In' => 'Дата начисления',
+    'Education Cats' => 'Образовательные программы',
+    'Education Levels' => 'Образовательный уровень',
+    'Education Specialities' => 'Специализации',
+
 ];
 ?>

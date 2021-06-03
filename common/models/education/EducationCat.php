@@ -16,6 +16,9 @@ use Yii;
  */
 class EducationCat extends \artsoft\db\ActiveRecord
 {
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+
     /**
      * {@inheritdoc}
      */
@@ -30,7 +33,7 @@ class EducationCat extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['short_name', 'status'], 'required'],
+            [['name', 'short_name', 'status'], 'required'],
             [['status'], 'default', 'value' => null],
             [['status'], 'integer'],
             [['name'], 'string', 'max' => 127],
@@ -44,13 +47,24 @@ class EducationCat extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('art/guide', 'ID'),
-            'name' => Yii::t('art/guide', 'Name'),
-            'short_name' => Yii::t('art/guide', 'Short Name'),
-            'status' => Yii::t('art/guide', 'Status'),
+            'id' => Yii::t('art', 'ID'),
+            'name' => Yii::t('art', 'Name'),
+            'short_name' => Yii::t('art', 'Short Name'),
+            'status' => Yii::t('art', 'Status'),
         ];
     }
 
+    /**
+     * getStatusList
+     * @return array
+     */
+    public static function getStatusList()
+    {
+        return array(
+            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
+            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
+        );
+    }
     /**
      * Gets query for [[EducationProgramms]].
      *

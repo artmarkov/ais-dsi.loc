@@ -1,5 +1,6 @@
 <?php
 
+use common\models\own\Department;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -57,21 +58,56 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'attribute' => 'id',
+                                'attribute' => 'name',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/education/education-speciality',
                                 'title' => function (EducationSpeciality $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
-                                'buttonsTemplate' => '{update} {view} {delete}',
+                                'buttonsTemplate' => '{update} {delete}',
                             ],
-
-                            'name',
                             'short_name',
-                            'department_list',
-                            'subject_type_list',
-                            'status',
-
+                            [
+                                'attribute' => 'department_list',
+                                'filter' => Department::getDepartmentList(),
+                                'value' => function (EducationSpeciality $model) {
+                                    $v = [];
+                                    foreach ($model->department_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = Department::findOne($id)->name;
+                                    }
+                                    return implode('<br/> ', $v);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'subject_type_list',
+                                'filter' => \common\models\subject\SubjectType::getTypeList(),
+                                'value' => function (EducationSpeciality $model) {
+                                    $v = [];
+                                    foreach ($model->subject_type_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = \common\models\subject\SubjectType::findOne($id)->name;
+                                    }
+                                    return implode('<br/> ', $v);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'status',
+                                'optionsArray' => [
+                                    [EducationSpeciality::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
+                                    [EducationSpeciality::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                ],
+                                'options' => ['style' => 'width:150px']
+                            ],
                         ],
                     ]);
                     ?>

@@ -3,6 +3,7 @@
 namespace common\models\subject;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "guide_subject_type".
@@ -73,5 +74,16 @@ class SubjectType extends \yii\db\ActiveRecord
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
+    /**
+     * @return array
+     */
+    public static function getTypeList()
+    {
+        return ArrayHelper::map(self::find()
+            ->andWhere(['status' => self::STATUS_ACTIVE])
+            ->select('id, name')
+            ->orderBy('id')
+            ->asArray()->all(), 'id', 'name');
+    }
 
 }

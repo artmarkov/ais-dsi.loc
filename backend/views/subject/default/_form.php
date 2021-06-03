@@ -34,7 +34,7 @@ use common\models\own\Department;
                         'data' => Department::getDepartmentList(),
                         'options' => [
                             // 'disabled' => $readonly,
-                            'placeholder' => Yii::t('art/teachers', 'Select Department...'),
+                            'placeholder' => Yii::t('art/guide', 'Select Department...'),
                             'multiple' => true,
                         ],
                         'pluginOptions' => [

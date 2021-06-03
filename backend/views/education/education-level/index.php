@@ -55,23 +55,27 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'attribute' => 'id',
+                                'attribute' => 'name',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/education/education-level',
                                 'title' => function (EducationLevel $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
-                                'buttonsTemplate' => '{update} {view} {delete}',
+                                'buttonsTemplate' => '{update} {delete}',
                             ],
-
-                            'name',
                             'short_name',
-                            'status',
-
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'status',
+                                'optionsArray' => [
+                                    [EducationLevel::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
+                                    [EducationLevel::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                ],
+                                'options' => ['style' => 'width:150px']
+                            ],
                         ],
                     ]);
                     ?>
-
                     <?php Pjax::end() ?>
                 </div>
             </div>

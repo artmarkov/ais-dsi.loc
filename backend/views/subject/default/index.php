@@ -96,7 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = Department::findOne($id)->name;
+                                        $v[] = SubjectCategory::findOne($id)->name;
                                     }
                                     return implode('<br/> ', $v);
                                 },
@@ -112,7 +112,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = Department::findOne($id)->name;
+                                        $v[] = SubjectVid::findOne($id)->name;
                                     }
                                     return implode('<br/> ', $v);
                                 },

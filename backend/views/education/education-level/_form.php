@@ -30,7 +30,7 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'status')->textInput() ?>
+                    <?= $form->field($model, 'status')->dropDownList(EducationLevel::getStatusList()) ?>
 
                 </div>
             </div>
