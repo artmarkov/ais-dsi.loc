@@ -19,7 +19,6 @@ use yii\behaviors\TimestampBehavior;
  * @property string|null $speciality_list
  * @property int|null $period_study
  * @property string|null $description
- * @property string|null $category_list
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -51,7 +50,7 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             TimestampBehavior::class,
             [
                 'class' => ArrayFieldBehavior::class,
-                'attributes' => ['speciality_list', 'category_list'],
+                'attributes' => ['speciality_list'],
             ],
 //            [
 //                'class' => DateFieldBehavior::class,
@@ -65,12 +64,12 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'slug', 'education_cat_id', 'speciality_list', 'category_list'], 'required'],
+            [['name', 'slug', 'education_cat_id', 'speciality_list'], 'required'],
             [['education_cat_id', 'period_study', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'default', 'value' => null],
             [['education_cat_id', 'period_study', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['name'], 'string', 'max' => 127],
             [['slug'], 'string', 'max' => 32],
-            [['speciality_list', 'description', 'category_list'], 'string', 'max' => 1024],
+            [['speciality_list', 'description'], 'string', 'max' => 1024],
             [['education_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationCat::className(), 'targetAttribute' => ['education_cat_id' => 'id']],
         ];
     }
@@ -88,7 +87,6 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             'speciality_list' => Yii::t('art/guide', 'Speciality'),
             'period_study' => Yii::t('art/guide', 'Period Study'),
             'description' => Yii::t('art/guide', 'Description'),
-            'category_list' => Yii::t('art/guide', 'Category'),
             'status' => Yii::t('art', 'Status'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),

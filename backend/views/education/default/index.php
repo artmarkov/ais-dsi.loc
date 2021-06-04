@@ -72,8 +72,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             'speciality_list',
                             'period_study',
                             'description',
-                            'category_list',
-
                         ],
                     ]);
                     ?>

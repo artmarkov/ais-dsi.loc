@@ -41,8 +41,6 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'category_list')->textInput(['maxlength' => true]) ?>
-
                     <?= $form->field($model, 'status')->dropDownList(EducationProgramm::getStatusList()) ?>
 
 
