@@ -74,9 +74,12 @@ return [
     'Efficiency' => 'Показатель эффективности',
     'Bonus' => 'Бонус',
     'Date Bonus In' => 'Дата начисления',
+    'Period Study' => 'Период обучения',
+    'Education Cat' => 'Образовательная программа',
     'Education Cats' => 'Образовательные программы',
     'Education Levels' => 'Образовательный уровень',
-    'Education Specialities' => 'Специализации',
+    'Education Specializations' => 'Специализации',
+    'Select Education Specializations...' => 'Выберите специализации...',
 
 ];
 ?>

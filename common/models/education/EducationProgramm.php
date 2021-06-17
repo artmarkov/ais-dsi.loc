@@ -65,11 +65,12 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     {
         return [
             [['name', 'slug', 'education_cat_id', 'speciality_list'], 'required'],
-            [['education_cat_id', 'period_study', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'default', 'value' => null],
+            [['education_cat_id', 'period_study', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status'], 'default', 'value' => null],
             [['education_cat_id', 'period_study', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['name'], 'string', 'max' => 127],
             [['slug'], 'string', 'max' => 32],
-            [['speciality_list', 'description'], 'string', 'max' => 1024],
+            [['description'], 'string', 'max' => 1024],
+            [['speciality_list'], 'safe'],
             [['education_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationCat::className(), 'targetAttribute' => ['education_cat_id' => 'id']],
         ];
     }
@@ -84,9 +85,9 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             'education_cat_id' => Yii::t('art/guide', 'Education Cat'),
             'name' => Yii::t('art', 'Name'),
             'slug' => Yii::t('art', 'Slug'),
-            'speciality_list' => Yii::t('art/guide', 'Speciality'),
+            'speciality_list' => Yii::t('art/guide', 'Education Specializations'),
             'period_study' => Yii::t('art/guide', 'Period Study'),
-            'description' => Yii::t('art/guide', 'Description'),
+            'description' => Yii::t('art', 'Description'),
             'status' => Yii::t('art', 'Status'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -148,6 +149,13 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
      */
     public function getEducationCat()
     {
-        return $this->hasOne(EducationCat::className(), ['id' => 'education_cat_id']);
+        return $this->hasOne(EducationCat::class, ['id' => 'education_cat_id']);
+    }
+    /**
+     * @return string
+     */
+    public function getCatName()
+    {
+        return $this->educationCat->name;
     }
 }

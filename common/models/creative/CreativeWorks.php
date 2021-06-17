@@ -133,6 +133,10 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
     {
         return $this->hasOne(CreativeCategory::class, ['id' => 'category_id']);
     }
+
+    /**
+     * @return string
+     */
     public function getCategoryName()
     {
         return $this->category->name;

@@ -13,7 +13,7 @@ use artsoft\grid\GridPageSize;
 /* @var $searchModel common\models\education\search\EducationSpecialitySearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/education', 'Education Specialities');
+$this->title = Yii::t('art/guide', 'Education Specializations');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="education-speciality-index">

@@ -115,10 +115,41 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->addForeignKey('education_programm_ibfk_1', 'education_programm', 'education_cat_id', 'guide_education_cat', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->resetSequence('education_programm', 1000)->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['education_cat', 'guide_education_cat', 'id', 'name', 'id', 'status', null, 'Образовательные программы'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['education_cat_short', 'guide_education_cat', 'id', 'short_name', 'id', 'status', null, 'Образовательные программы сокр.'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['education_speciality', 'education_speciality', 'id', 'name', 'id', 'status', null, 'Специализации'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['education_speciality_short', 'education_speciality', 'id', 'short_name', 'id', 'status', null, 'Специализации сокр.'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['education_level', 'guide_education_level', 'id', 'name', 'id', 'status', null, 'Образовательный уровень'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['education_level_short', 'guide_education_level', 'id', 'short_name', 'id', 'status', null, 'Образовательный уровень сокр.'],
+        ])->execute();
+
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'education_level_short'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'education_level'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'education_speciality_short'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'education_speciality'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'education_cat_short'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'education_cat'])->execute();
         $this->dropTableWithHistory('education_programm');
         $this->dropTable('guide_education_level');
         $this->dropTable('education_speciality');

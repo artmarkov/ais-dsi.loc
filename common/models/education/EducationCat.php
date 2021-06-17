@@ -72,6 +72,14 @@ class EducationCat extends \artsoft\db\ActiveRecord
      */
     public function getEducationProgramms()
     {
-        return $this->hasMany(EducationProgramm::className(), ['education_cat_id' => 'id']);
+        return $this->hasMany(EducationProgramm::class, ['education_cat_id' => 'id']);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getEducationCatList()
+    {
+        return  self::find()->select(['name', 'id'])->indexBy('id')->column();
     }
 }
