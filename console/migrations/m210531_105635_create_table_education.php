@@ -98,7 +98,6 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'education_cat_id' => $this->integer()->notNull(),
             'name' => $this->string(127),
-            'slug' => $this->string(32),
             'speciality_list' => $this->string(1024),
             'period_study' => $this->integer(),
             'description' => $this->string(1024),
@@ -115,6 +114,42 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->addForeignKey('education_programm_ibfk_1', 'education_programm', 'education_cat_id', 'guide_education_cat', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->resetSequence('education_programm', 1000)->execute();
+
+        $this->createTableWithHistory('education_programm_subject', [
+            'id' => $this->primaryKey(),
+            'programm_id' => $this->integer()->notNull(),
+            'subject_cat_id' => $this->integer()->notNull(),
+            'subject_id' => $this->integer()->notNull(),
+            'created_at' => $this->integer()->notNull(),
+            'created_by' => $this->integer(),
+            'updated_at' => $this->integer()->notNull(),
+            'updated_by' => $this->integer(),
+            'version' => $this->bigInteger()->notNull()->defaultValue(0),
+        ], $tableOptions);
+
+        $this->addCommentOnTable('education_programm_subject', 'Дисциплины учебной программы');
+        $this->createIndex('programm_id', 'education_programm_subject', 'programm_id');
+        $this->addForeignKey('education_programm_subject_ibfk_1', 'education_programm_subject', 'programm_id', 'education_programm', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('education_programm_subject_ibfk_2', 'education_programm_subject', 'subject_cat_id', 'guide_subject_category', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('education_programm_subject_ibfk_3', 'education_programm_subject', 'subject_id', 'subject', 'id', 'NO ACTION', 'NO ACTION');
+
+        $this->createTableWithHistory('education_programm_subject_time', [
+            'id' => $this->primaryKey(),
+            'programm_subject_id' => $this->integer()->notNull(),
+            'cource' => $this->integer()->notNull(),
+            'week_time' => $this->float(),
+            'year_time' => $this->float(),
+            'created_at' => $this->integer()->notNull(),
+            'created_by' => $this->integer(),
+            'updated_at' => $this->integer()->notNull(),
+            'updated_by' => $this->integer(),
+            'version' => $this->bigInteger()->notNull()->defaultValue(0),
+        ], $tableOptions);
+
+        $this->addCommentOnTable('education_programm_subject_time', 'Нагрузка дисциплины учебной программы');
+        $this->createIndex('programm_subject_id', 'education_programm_subject_time', 'programm_subject_id');
+        $this->addForeignKey('education_programm_subject_time_ibfk_1', 'education_programm_subject_time', 'programm_subject_id', 'education_programm_subject', 'id', 'CASCADE', 'CASCADE');
+
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['education_cat', 'guide_education_cat', 'id', 'name', 'id', 'status', null, 'Образовательные программы'],
@@ -150,6 +185,9 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_speciality'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_cat_short'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_cat'])->execute();
+        $this->dropForeignKey('education_programm_subject_ibfk_3');
+        $this->dropForeignKey('education_programm_subject_ibfk_2');
+        $this->dropForeignKey('education_programm_subject_ibfk_1');
         $this->dropTableWithHistory('education_programm');
         $this->dropTable('guide_education_level');
         $this->dropTable('education_speciality');

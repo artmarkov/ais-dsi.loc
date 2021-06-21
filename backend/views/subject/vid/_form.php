@@ -32,20 +32,20 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'qty_min')->widget(kartik\touchspin\TouchSpin::classname(), [
                         'pluginOptions' => [
-                            'buttonup_class' => 'btn btn-primary',
+                            'buttonup_class' => 'btn btn-danger',
                             'buttondown_class' => 'btn btn-info',
-                            'buttonup_txt' => '<i class="glyphicon glyphicon-plus-sign"></i>',
-                            'buttondown_txt' => '<i class="glyphicon glyphicon-minus-sign"></i>'
+                            'buttonup_txt' => '<i class="fa fa-plus" aria-hidden="true"></i>',
+                            'buttondown_txt' => '<i class="fa fa-minus" aria-hidden="true"></i>'
                         ],
                     ]);
                     ?>
 
                     <?= $form->field($model, 'qty_max')->widget(kartik\touchspin\TouchSpin::classname(), [
                         'pluginOptions' => [
-                            'buttonup_class' => 'btn btn-primary',
+                            'buttonup_class' => 'btn btn-danger',
                             'buttondown_class' => 'btn btn-info',
-                            'buttonup_txt' => '<i class="glyphicon glyphicon-plus-sign"></i>',
-                            'buttondown_txt' => '<i class="glyphicon glyphicon-minus-sign"></i>'
+                            'buttonup_txt' => '<i class="fa fa-plus" aria-hidden="true"></i>',
+                            'buttondown_txt' => '<i class="fa fa-minus" aria-hidden="true"></i>'
                         ],
                     ]);
                     ?>

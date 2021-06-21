@@ -75,7 +75,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
 
                             'name',
-                            'slug',
                             [
                                 'attribute' => 'speciality_list',
                                 'filter' => RefBook::find('education_speciality')->getList(),

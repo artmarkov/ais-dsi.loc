@@ -83,7 +83,7 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
 
         if (!isset($model)) {
-            throw new NotFoundHttpException("The user was not found.");
+            throw new NotFoundHttpException("The CreativeWorks was not found.");
         }
 
         $modelsEfficiency = $model->teachersEfficiency;

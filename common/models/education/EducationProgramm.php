@@ -3,11 +3,11 @@
 namespace common\models\education;
 
 use artsoft\behaviors\ArrayFieldBehavior;
-use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use artsoft\traits\DateTimeTrait;
 
 /**
  * This is the model class for table "education_programm".
@@ -15,7 +15,6 @@ use yii\behaviors\TimestampBehavior;
  * @property int $id
  * @property int $education_cat_id
  * @property string|null $name
- * @property string|null $slug
  * @property string|null $speciality_list
  * @property int|null $period_study
  * @property string|null $description
@@ -26,10 +25,12 @@ use yii\behaviors\TimestampBehavior;
  * @property int $status
  * @property int $version
  *
- * @property GuideEducationCat $educationCat
+ * @property EducationCat $educationCat
  */
 class EducationProgramm extends \artsoft\db\ActiveRecord
 {
+    use DateTimeTrait;
+
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
 
@@ -52,10 +53,6 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
                 'class' => ArrayFieldBehavior::class,
                 'attributes' => ['speciality_list'],
             ],
-//            [
-//                'class' => DateFieldBehavior::class,
-//                'attributes' => ['date_serv', 'date_serv_spec'],
-//            ],
         ];
     }
     /**
@@ -64,14 +61,16 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'slug', 'education_cat_id', 'speciality_list'], 'required'],
-            [['education_cat_id', 'period_study', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status'], 'default', 'value' => null],
+            [['name', 'education_cat_id', 'speciality_list', 'period_study', 'status'], 'required'],
+            [['education_cat_id', 'period_study', 'status'], 'default', 'value' => null],
             [['education_cat_id', 'period_study', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['name'], 'string', 'max' => 127],
-            [['slug'], 'string', 'max' => 32],
             [['description'], 'string', 'max' => 1024],
             [['speciality_list'], 'safe'],
-            [['education_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationCat::className(), 'targetAttribute' => ['education_cat_id' => 'id']],
+            [['education_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationCat::class, 'targetAttribute' => ['education_cat_id' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
+
         ];
     }
 
@@ -84,7 +83,6 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art/guide', 'ID'),
             'education_cat_id' => Yii::t('art/guide', 'Education Cat'),
             'name' => Yii::t('art', 'Name'),
-            'slug' => Yii::t('art', 'Slug'),
             'speciality_list' => Yii::t('art/guide', 'Education Specializations'),
             'period_study' => Yii::t('art/guide', 'Period Study'),
             'description' => Yii::t('art', 'Description'),
@@ -157,5 +155,13 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     public function getCatName()
     {
         return $this->educationCat->name;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProgrammSubject()
+    {
+        return $this->hasMany(EducationProgrammSubject::class, ['programm_id' => 'id']);
     }
 }
