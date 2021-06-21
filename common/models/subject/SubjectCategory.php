@@ -36,7 +36,7 @@ class SubjectCategory extends \yii\db\ActiveRecord
     {
         return [
             'grid-sort' => [
-                'class' => SortableGridBehavior::className(),
+                'class' => SortableGridBehavior::class,
                 'sortableAttribute' => 'sort_order',
             ],
         ];
@@ -98,7 +98,7 @@ class SubjectCategory extends \yii\db\ActiveRecord
      */
     public function getSubjectCategories()
     {
-        return $this->hasMany(SubjectCategory::className(), ['category_id' => 'id']);
+        return $this->hasMany(SubjectCategory::class, ['category_id' => 'id']);
     }
 
     /**

@@ -112,7 +112,7 @@ class Subject extends \yii\db\ActiveRecord
      */
     public function getSubjectCategories()
     {
-        return $this->hasMany(SubjectCategory::className(), ['subject_id' => 'id']);
+        return $this->hasMany(SubjectCategory::class, ['subject_id' => 'id']);
     }
 
     /**
@@ -120,7 +120,7 @@ class Subject extends \yii\db\ActiveRecord
      */
     public function getSubjectDepartments()
     {
-        return $this->hasMany(SubjectDepartment::className(), ['subject_id' => 'id']);
+        return $this->hasMany(SubjectDepartment::class, ['subject_id' => 'id']);
     }
 
     /**
@@ -128,7 +128,7 @@ class Subject extends \yii\db\ActiveRecord
      */
     public function getSubjectVids()
     {
-        return $this->hasMany(SubjectVid::className(), ['subject_id' => 'id']);
+        return $this->hasMany(SubjectVid::class, ['subject_id' => 'id']);
     }
 
     /**
@@ -138,5 +138,26 @@ class Subject extends \yii\db\ActiveRecord
     public static function find()
     {
         return new SubjectQuery(get_called_class());
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * Полный список городов страны по id
+     */
+    public static function getSubjectById($category_id) {
+        $data = self::find()->select(['id','name'])
+            ->where(['like', 'category_list', $category_id])
+            ->asArray()->all();
+
+        return $data;
+    }
+
+    public static function getSubjectByCategory($category_id)
+    {
+        $data = self::find()->select(['name', 'id']);
+        $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
+        $data = $data->indexBy('id')->column();
+
+        return $data;
     }
 }

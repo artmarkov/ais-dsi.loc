@@ -5,12 +5,25 @@ use common\models\education\EducationProgramm;
 use common\models\education\EducationCat;
 use common\models\education\EducationSpeciality;
 use artsoft\helpers\RefBook;
+use common\models\venue\VenueSity;
+use kartik\depdrop\DepDrop;
 use wbraganca\dynamicform\DynamicFormWidget;
 use artsoft\helpers\Html;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\education\EducationProgramm */
 /* @var $form artsoft\widgets\ActiveForm */
+/* @var $readonly */
+/* @var $modelsSubject */
+/* @var $modelsTime */
+
+//$this->registerJs(<<<JS
+//$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
+//	    $( "#education-programm-form" ).submit(); // вызываем событие submit на элементе <form>
+//	  });
+//JS
+//    , \yii\web\View::POS_END);
 
 $js = <<<JS
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
@@ -135,9 +148,30 @@ $this->registerJs($js);
                                     }
                                     ?>
 
-                                    <?= $form->field($modelSubject, "[{$index}]subject_cat_id")->textInput() ?>
-
-                                    <?= $form->field($modelSubject, "[{$index}]subject_id")->textInput() ?>
+                                    <?= $form->field($modelSubject, "[{$index}]subject_cat_id")->widget(\kartik\select2\Select2::class, [
+                                        'data' => \common\models\subject\SubjectCategory::getCategoryList(),
+                                        'options' => [
+                                            'id' => $index.'_subject_cat_id',
+                                            'disabled' => $readonly,
+                                            'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
+                                        ],
+                                        'pluginOptions' => [
+                                            'allowClear' => true
+                                        ],
+                                    ]);
+                                    ?>
+                                    <?= $form->field($modelSubject, "[{$index}]subject_id")->widget(DepDrop::class, [
+                                        'data' => \common\models\subject\Subject::getSubjectByCategory($modelSubject->subject_cat_id),
+                                        'options' => ['prompt' => Yii::t('art/guide', 'Select Subject...'),
+                                            //'id' => 'sity_id'
+                                        ],
+                                        'pluginOptions' => [
+                                            'depends' => [$index.'_subject_cat_id'],
+                                            'placeholder' => Yii::t('art/guide', 'Select Subject...'),
+                                            'url' => Url::to(['/subject/default/subject'])
+                                        ]
+                                    ]);
+                                    ?>
 
                                     <div class="col-sm-3">
                                         <label class="control-label">Нагрузка</label>

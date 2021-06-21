@@ -53,7 +53,7 @@ use yii\helpers\Url;
                             ],
                         ])->label(Yii::t('art/guide', 'Name Country'));
                         ?>
-                        <?= $form->field($model, 'sity_id')->widget(DepDrop::classname(), [
+                        <?= $form->field($model, 'sity_id')->widget(DepDrop::class, [
                             'data' => VenueSity::getSityByName($model->country_id),
                             'options' => ['prompt' => Yii::t('art/guide', 'Select Sity...'), 'id' => 'sity_id'],
                             'pluginOptions' => [
@@ -63,7 +63,7 @@ use yii\helpers\Url;
                             ]
                         ])->label(Yii::t('art/guide', 'Name Sity'));
                         ?>
-                        <?= $form->field($model, 'district_id')->widget(DepDrop::classname(), [
+                        <?= $form->field($model, 'district_id')->widget(DepDrop::class, [
                         'data' => VenueDistrict::getDistrictByName($model->sity_id),
                         'options' => ['prompt' => Yii::t('art/guide', 'Select District...')],
                         'pluginOptions' => [
