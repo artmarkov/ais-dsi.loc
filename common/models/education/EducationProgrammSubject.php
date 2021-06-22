@@ -54,7 +54,7 @@ class EducationProgrammSubject extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['programm_id', 'subject_cat_id', 'subject_id', 'created_at', 'updated_at'], 'required'],
+            [['programm_id', 'subject_cat_id'], 'required'],
             [['programm_id', 'subject_cat_id', 'subject_id'], 'default', 'value' => null],
             [['programm_id', 'subject_cat_id', 'subject_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['programm_id' => 'id']],
@@ -70,9 +70,9 @@ class EducationProgrammSubject extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art/guide', 'ID'),
-            'programm_id' => Yii::t('art/guide', 'Programm ID'),
-            'subject_cat_id' => Yii::t('art/guide', 'Subject Cat ID'),
-            'subject_id' => Yii::t('art/guide', 'Subject ID'),
+            'programm_id' => Yii::t('art/guide', 'Programm Name'),
+            'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
+            'subject_id' => Yii::t('art/guide', 'Subject Name'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),

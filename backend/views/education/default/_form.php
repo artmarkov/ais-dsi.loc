@@ -18,12 +18,11 @@ use yii\helpers\Url;
 /* @var $modelsSubject */
 /* @var $modelsTime */
 
-//$this->registerJs(<<<JS
-//$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
-//	    $( "#education-programm-form" ).submit(); // вызываем событие submit на элементе <form>
-//	  });
-//JS
-//    , \yii\web\View::POS_END);
+$this->registerJs(<<<JS
+function initSelect2Loading(a,b){ initS2Loading(a,b); }
+function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
+JS
+    , \yii\web\View::POS_END);
 
 $js = <<<JS
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
@@ -100,7 +99,9 @@ $this->registerJs($js);
 
                     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
-                    <?= $form->field($model, 'status')->dropDownList(EducationProgramm::getStatusList()) ?>
+                    <?= $form->field($model, 'status')->dropDownList(EducationProgramm::getStatusList(), [
+                        'disabled' => $readonly
+                    ]) ?>
 
                 </div>
             </div>
@@ -108,7 +109,7 @@ $this->registerJs($js);
                 'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items', // required: css class selector
                 'widgetItem' => '.item', // required: css class
-                'limit' => 999, // the maximum times, an element can be added (default 999)
+                'limit' => 10, // the maximum times, an element can be added (default 999)
                 'min' => 1, // 0 or 1 (default 1)
                 'insertButton' => '.add-item', // css class
                 'deleteButton' => '.remove-item', // css class
@@ -147,11 +148,9 @@ $this->registerJs($js);
                                         echo Html::activeHiddenInput($modelSubject, "[{$index}]id");
                                     }
                                     ?>
-
                                     <?= $form->field($modelSubject, "[{$index}]subject_cat_id")->widget(\kartik\select2\Select2::class, [
                                         'data' => \common\models\subject\SubjectCategory::getCategoryList(),
                                         'options' => [
-                                            'id' => $index.'_subject_cat_id',
                                             'disabled' => $readonly,
                                             'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
                                         ],
@@ -162,12 +161,12 @@ $this->registerJs($js);
                                     ?>
                                     <?= $form->field($modelSubject, "[{$index}]subject_id")->widget(DepDrop::class, [
                                         'data' => \common\models\subject\Subject::getSubjectByCategory($modelSubject->subject_cat_id),
-                                        'options' => ['prompt' => Yii::t('art/guide', 'Select Subject...'),
-                                            //'id' => 'sity_id'
+                                        'options' => ['prompt' => Yii::t('art/guide', 'Select Subject Name...'),
+                                            'disabled' => $readonly,
                                         ],
                                         'pluginOptions' => [
-                                            'depends' => [$index.'_subject_cat_id'],
-                                            'placeholder' => Yii::t('art/guide', 'Select Subject...'),
+                                            'depends' => ['educationprogrammsubject-' . $index . '-subject_cat_id'],
+                                            'placeholder' => Yii::t('art/guide', 'Select Subject Name...'),
                                             'url' => Url::to(['/subject/default/subject'])
                                         ]
                                     ]);
@@ -181,6 +180,8 @@ $this->registerJs($js);
                                             'form' => $form,
                                             'index' => $index,
                                             'modelsTime' => $modelsTime[$index],
+                                            'readonly' => $readonly,
+                                            'count' => $model->period_study,
                                         ]) ?>
                                     </div>
                                 </div>

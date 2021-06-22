@@ -51,7 +51,6 @@ class EducationProgrammSubjectTime extends \artsoft\db\ActiveRecord
     {
         return [
             [['cource', 'week_time', 'year_time'], 'required'],
-            [['programm_subject_id', 'cource'], 'default', 'value' => null],
             [['programm_subject_id', 'cource', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['week_time', 'year_time'], 'number'],
             [['programm_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgrammSubject::class, 'targetAttribute' => ['programm_subject_id' => 'id']],

@@ -55,6 +55,7 @@ return [
     'Subject Type' => 'Тип занятий',
     'Select Department...' => 'Выберите отдел...',
     'Select Subject Category...' => 'Выберите категорию дисциплины...',
+    'Select Subject Name...' => 'Выберите дисциплину...',
     'Select Subject Vid...' => 'Выберите вид дисциплины...',
     'Name Division' => 'Название отделения',
     'Category' => 'Категория',
@@ -82,6 +83,9 @@ return [
     'Education Levels' => 'Образовательный уровень',
     'Education Specializations' => 'Специализации',
     'Select Education Specializations...' => 'Выберите специализации...',
+    'Cource' => 'Курс',
+    'Week Time' => 'Часов в неделю',
+    'Year Time' => 'Часов в год',
 
 ];
 ?>

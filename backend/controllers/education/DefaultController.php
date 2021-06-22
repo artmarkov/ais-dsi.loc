@@ -156,7 +156,7 @@ class DefaultController extends MainController
                             EducationProgrammSubjectTime::deleteAll(['id' => $deletedTimesIDs]);
                         }
 
-                        if (! empty($deletedHouseIDs)) {
+                        if (! empty($deletedSubjectIDs)) {
                             EducationProgrammSubject::deleteAll(['id' => $deletedSubjectIDs]);
                         }
 
@@ -199,7 +199,7 @@ class DefaultController extends MainController
             'model' => $model,
             'modelsSubject' => (empty($modelsSubject)) ? [new EducationProgrammSubject] : $modelsSubject,
             'modelsTime' => (empty($modelsTime)) ? [[new EducationProgrammSubjectTime]] : $modelsTime,
-            'readonly' => false
+            'readonly' => $readonly
         ]);
     }
 

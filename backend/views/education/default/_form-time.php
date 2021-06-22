@@ -3,13 +3,18 @@
 use yii\helpers\Html;
 use wbraganca\dynamicform\DynamicFormWidget;
 
+/* @var $modelsTime */
+/* @var $index */
+/* @var $count */
+/* @var $readonly */
+
 ?>
 
 <?php DynamicFormWidget::begin([
     'widgetContainer' => 'dynamicform_inner',
     'widgetBody' => '.container-time',
     'widgetItem' => '.room-item',
-    'limit' => 4,
+    'limit' => $count,
     'min' => 1,
     'insertButton' => '.add-time',
     'deleteButton' => '.remove-time',
@@ -24,11 +29,13 @@ use wbraganca\dynamicform\DynamicFormWidget;
 <table class="table">
     <thead>
     <tr>
-        <th class="text-center">Cource</th>
-        <th class="text-center">Week Time</th>
-        <th class="text-center">Year Time</th>
+        <th class="text-center">Курс</th>
+        <th class="text-center">Обязательная и вариативная часть</br>часов в неделю</th>
+        <th class="text-center">Консультации</br>часов в год</th>
         <th class="text-center">
-            <button type="button" class="add-time btn btn-success btn-xs"><span class="fa fa-plus"></span></button>
+            <?php if (!$readonly): ?>
+                <button type="button" class="add-time btn btn-success btn-xs"><span class="fa fa-plus"></span></button>
+            <?php endif; ?>
         </th>
     </tr>
     </thead>
@@ -51,8 +58,10 @@ use wbraganca\dynamicform\DynamicFormWidget;
                 <?= $form->field($modelTime, "[{$index}][{$indexTime}]year_time")->label(false)->textInput(['maxlength' => true]) ?>
             </td>
             <td class="vcenter">
-                <button type="button" class="remove-time btn btn-danger btn-xs"><span
-                            class="fa fa-minus"></span></button>
+                <?php if (!$readonly): ?>
+                    <button type="button" class="remove-time btn btn-danger btn-xs"><span
+                                class="fa fa-minus"></span></button>
+                <?php endif; ?>
             </td>
         </tr>
     <?php endforeach; ?>

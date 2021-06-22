@@ -24,7 +24,6 @@ class EducationProgrammHistory extends BaseHistory
         return [
             'education_cat_id',
             'name',
-            'slug',
             'speciality_list',
             'period_study',
             'description',
@@ -57,4 +56,19 @@ class EducationProgrammHistory extends BaseHistory
         return parent::getDisplayValue($model, $name, $value);
     }
 
+    /**
+     * @return array
+     */
+    public function getHistory()
+    {
+        $selfHistory = parent::getHistory();
+
+        foreach (EducationProgrammSubjectHistory::getLinkedIdList('programm_id', $this->objId) as $subjectId) {
+            $vf = new EducationProgrammSubjectHistory($subjectId);
+            $selfHistory = array_merge($selfHistory, $vf->getHistory());
+        }
+
+        krsort($selfHistory);
+        return $selfHistory;
+    }
 }

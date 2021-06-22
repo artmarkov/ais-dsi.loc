@@ -119,7 +119,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey(),
             'programm_id' => $this->integer()->notNull(),
             'subject_cat_id' => $this->integer()->notNull(),
-            'subject_id' => $this->integer()->notNull(),
+            'subject_id' => $this->integer(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
