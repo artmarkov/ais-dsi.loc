@@ -122,7 +122,7 @@ $this->registerJs($js);
                 ],
             ]); ?>
 
-            <div class="panel panel-info">
+            <div class="panel panel-primary">
                 <div class="panel-heading">
                     Дисциплины программы
                 </div>

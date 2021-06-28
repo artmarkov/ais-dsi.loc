@@ -14,6 +14,7 @@ use Yii;
  * @property int $programm_subject_id
  * @property int $cource
  * @property float|null $week_time
+ * @property float|null $cost_week_hour
  * @property float|null $year_time
  * @property int $created_at
  * @property int|null $created_by
@@ -52,7 +53,7 @@ class EducationProgrammSubjectTime extends \artsoft\db\ActiveRecord
         return [
             [['cource', 'week_time', 'year_time'], 'required'],
             [['programm_subject_id', 'cource', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['week_time', 'year_time'], 'number'],
+            [['week_time', 'cost_week_hour', 'year_time'], 'number'],
             [['programm_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgrammSubject::class, 'targetAttribute' => ['programm_subject_id' => 'id']],
         ];
     }
@@ -67,6 +68,7 @@ class EducationProgrammSubjectTime extends \artsoft\db\ActiveRecord
             'programm_subject_id' => Yii::t('art/guide', 'Programm Subject'),
             'cource' => Yii::t('art/guide', 'Cource'),
             'week_time' => Yii::t('art/guide', 'Week Time'),
+            'cost_week_hour' => Yii::t('art/guide', 'Cost Week Hour'),
             'year_time' => Yii::t('art/guide', 'Year Time'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),

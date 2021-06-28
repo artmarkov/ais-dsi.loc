@@ -22,6 +22,7 @@ class EducationProgrammSubjectTimeHistory extends BaseHistory
         return [
             'cource',
             'week_time',
+            'cost_week_hour',
             'year_time',
         ];
     }

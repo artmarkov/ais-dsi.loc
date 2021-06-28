@@ -85,6 +85,7 @@ return [
     'Select Education Specializations...' => 'Выберите специализации...',
     'Cource' => 'Курс',
     'Week Time' => 'Часов в неделю',
+    'Cost Week Hour' => 'Стоимость часа',
     'Year Time' => 'Часов в год',
 
 ];

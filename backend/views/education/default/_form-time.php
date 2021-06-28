@@ -30,7 +30,8 @@ use wbraganca\dynamicform\DynamicFormWidget;
     <thead>
     <tr>
         <th class="text-center">Курс</th>
-        <th class="text-center">Обязательная и вариативная часть</br>часов в неделю</th>
+        <th class="text-center">Часов в неделю</th>
+        <th class="text-center">Стоимость часа</th>
         <th class="text-center">Консультации</br>часов в год</th>
         <th class="text-center">
             <?php if (!$readonly): ?>
@@ -53,6 +54,9 @@ use wbraganca\dynamicform\DynamicFormWidget;
             </td>
             <td>
                 <?= $form->field($modelTime, "[{$index}][{$indexTime}]week_time")->label(false)->textInput(['maxlength' => true]) ?>
+            </td>
+             <td>
+                <?= $form->field($modelTime, "[{$index}][{$indexTime}]cost_week_hour")->label(false)->textInput(['maxlength' => true]) ?>
             </td>
             <td>
                 <?= $form->field($modelTime, "[{$index}][{$indexTime}]year_time")->label(false)->textInput(['maxlength' => true]) ?>
