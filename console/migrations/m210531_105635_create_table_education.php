@@ -48,7 +48,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->addCommentOnTable('education_speciality', 'Специализации');
 
         $this->db->createCommand()->batchInsert('education_speciality', ['department_list', 'subject_type_list', 'name', 'short_name', 'status'], [
-            ['2', '0,1,2', 'Фортепиано', 'Ф-но', 1],
+            ['2', '1,2', 'Фортепиано', 'Ф-но', 1],
             ['9', '1,2', 'Инструменты эстрадного оркестра', 'Эстр', 1],
             ['4', '1,2', 'Духовые и ударные инструменты', 'Дух', 1],
             ['5', '1,2', 'Народные инструменты', 'Нар', 1],
@@ -81,7 +81,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             ['15', '2', 'Body ballet', 'Body ballet', 1],
             ['15', '2', 'Латина соло', 'Латина', 1],
             ['12', '2', 'Группа раннего развития углубл.(художники)', 'ГРРУ худ', 1],
-            ['2,3,4,5,7,8,9,10', '0,1', '6 класс(МО)', '6 класс(МО)', 1],
+            ['2,3,4,5,7,8,9,10', '1,2', '6 класс(МО)', '6 класс(МО)', 1],
             ['15', '2', 'Классическая хореография (раннее развитие)', 'Классич. хореогр.(ранн.разв.)', 1],
             ['20', '2', 'Сценическое мастерство', 'Сцен. маст-во', 1],
             ['20', '2', 'Сценическое мастерство (подгот. отд.)', 'Сцен.маст-во(ПО)', 1],
@@ -176,10 +176,15 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             ['education_level_short', 'guide_education_level', 'id', 'short_name', 'id', 'status', null, 'Образовательный уровень сокр.'],
         ])->execute();
 
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['education_programm_name', 'education_programm', 'id', 'name', 'id', 'status', null, 'Образовательные программы.'],
+        ])->execute();
+
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'education_programm_name'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_level_short'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_level'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_speciality_short'])->execute();

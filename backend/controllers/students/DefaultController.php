@@ -2,11 +2,14 @@
 
 namespace backend\controllers\students;
 
+use artsoft\helpers\ArtHelper;
+use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use backend\models\Model;
 use common\models\history\StudentsHistory;
 use common\models\students\StudentDependence;
 use common\models\user\UserCommon;
+use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use Yii;
@@ -174,6 +177,26 @@ class DefaultController extends MainController
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 
+    public function actionStudentExamination($id)
+    {
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+//        $this->view->params['tabMenu'] = $this->tabMenu;
+//        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['efficiency/default/index']];
+//        $this->view->params['breadcrumbs'][] = ['label' => 'Сводная таблица', 'url' => ['/efficiency/default/summary']];
+
+        $modelClass = $this->modelClass;
+        $searchModel = null;
+        $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+            && !User::hasPermission($modelClass::getFullAccessPermission()));
+
+        $restrictParams = ($restrictAccess) ? [$modelClass::getOwnerField() => Yii::$app->user->identity->id] : [];
+        $dataProvider = new ActiveDataProvider(['query' => $modelClass::find()->where($restrictParams)
+            ->andWhere(['=', 'teachers_id', $id]), 'pagination' => false
+        ]);
+
+        return $this->renderIsAjax('examination', compact('dataProvider', 'searchModel'));
+    }
+
     /**
      * @param $id
      * @return array
@@ -182,7 +205,8 @@ class DefaultController extends MainController
     {
         return [
             ['label' => 'Карточка ученика',  'url' => ['/students/default/update', 'id' => $id]],
-            ['label' => 'Индивидуальные планы',  'url' => ['/students/default/study-plan', 'id' => $id]],
+            ['label' => 'Индивидуальные планы',  'url' => ['/students/default/student-studyplan', 'id' => $id]],
+            ['label' => 'Испытания',  'url' => ['/students/default/student-examination', 'id' => $id]],
             ['label' => 'История',  'url' => ['/students/default/history', 'id' => $id]],
         ];
     }
