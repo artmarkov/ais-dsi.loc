@@ -2,6 +2,7 @@
 
 namespace common\models\studyplan;
 
+use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\education\EducationProgramm;
 use common\models\subject\Subject;
@@ -153,5 +154,25 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     public function getSubject()
     {
         return $this->hasOne(Subject::class, ['id' => 'subject_id']);
+    }
+
+    public static function getStudyplanSubjectByCategory($category_id, $departments)
+    {
+        $data = (new \yii\db\Query())
+            ->select(['subject_dep_name', 'subject_id'])
+            ->from('subject_view')
+            ->where(['subject_category_id' => $category_id, 'department_id' => $departments])
+            ->indexBy('subject_id')->column();
+        return $data;
+    }
+
+    public static function getStudyplanSubjectById($category_id) {
+        $data = (new \yii\db\Query())
+            ->select(['subject_dep_name as name', 'subject_id as id'])
+            ->from('subject_view')
+            ->where(['subject_category_id' => $category_id, 'department_id' => array_values(RefBook::find('programm_department', 1000)->getList())])
+            ->all();
+
+        return $data;
     }
 }

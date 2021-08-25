@@ -4,8 +4,9 @@ use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 use common\models\studyplan\Studyplan;
 use artsoft\helpers\Html;
-
+use yii\helpers\Url;
 use kartik\date\DatePicker;
+use kartik\depdrop\DepDrop;
 use wbraganca\dynamicform\DynamicFormWidget;
 
 /* @var $this yii\web\View */
@@ -143,9 +144,28 @@ $this->registerJs($js);
                                         echo Html::activeHiddenInput($modelDependence, "[{$index}]id");
                                     }
                                     ?>
-
-                                    <?= $form->field($modelDependence, "[{$index}]subject_cat_id")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
-                                    <?= $form->field($modelDependence, "[{$index}]subject_id")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
+                                    <?= $form->field($modelDependence, "[{$index}]subject_cat_id")->widget(\kartik\select2\Select2::class, [
+                                        'data' => RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                                        'options' => [
+                                            'id' => 'subject_cat_id',
+                                            'disabled' => $readonly,
+                                            'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
+                                        ],
+                                        'pluginOptions' => [
+                                            'allowClear' => true
+                                        ],
+                                    ])->label(Yii::t('art/guide', 'Subject Category'));
+                                    ?>
+                                    <?= $form->field($modelDependence, "[{$index}]subject_id")->widget(DepDrop::class, [
+                                        'data' => \common\models\studyplan\StudyplanSubject::getStudyplanSubjectByCategory($modelDependence->subject_cat_id, array_values(RefBook::find('programm_department', $model->programm_id)->getList())),
+                                        'options' => ['prompt' => Yii::t('art/guide', 'Select Subject...')],
+                                        'pluginOptions' => [
+                                            'depends' => ['subject_cat_id'],
+                                            'placeholder' => Yii::t('art/guide', 'Select Subject...'),
+                                            'url' => Url::to(['/studyplan/default/subject'])
+                                        ]
+                                    ])->label(Yii::t('art/guide', 'Subject'));
+                                    ?>
                                     <?= $form->field($modelDependence, "[{$index}]subject_type_id")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
                                     <?= $form->field($modelDependence, "[{$index}]week_time")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
                                     <?= $form->field($modelDependence, "[{$index}]year_time")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>

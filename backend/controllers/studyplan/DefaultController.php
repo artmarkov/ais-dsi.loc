@@ -141,4 +141,24 @@ class DefaultController extends MainController
         $data = new StudyplanHistory($id);
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
+
+    /**
+     *  формируем список дисциплин для widget DepDrop::classname()
+     * @return false|string
+     */
+    public function actionSubject()
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $cat_id = $parents[0];
+                $out = StudyplanSubject::getStudyplanSubjectById($cat_id);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
 }
