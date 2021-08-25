@@ -130,6 +130,10 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $this->hasOne(EducationProgramm::class, ['id' => 'programm_id']);
     }
 
+    public function getStudyplanSubject()
+    {
+        return $this->hasMany(StudyplanSubject::class, ['studyplan_id' => 'id']);
+    }
     /**
      * Gets query for [[Student]].
      *

@@ -180,14 +180,30 @@ class ArtHelper
             return @rmdir($path);
         }
     }
-    
+
     public static function getMonthsList($format = 'MMMM')
     {
         for ($i = 1; $i <= 12; $i++) {
             $months[$i] = \Yii::$app->formatter->asDate(mktime(0, 0, 0, $i), $format);
         }
-        
+
         return $months;
+    }
+
+    public static function getStudyYearsList($start = 10)
+    {
+        $list = [];
+        $year = self::getStudyYearDefault();
+        for ($i = ($year - $start); $i < ($year + 1); $i++) {
+            $list[$i] = $i . '/' . ($i + 1);
+        }
+
+        return $list;
+    }
+
+    public static function getStudyYearDefault($month_dev = 6)
+    {
+        return date("n") < $month_dev ? date("Y") - 1 : date("Y");
     }
 
 }

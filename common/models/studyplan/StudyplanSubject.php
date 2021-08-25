@@ -2,11 +2,14 @@
 
 namespace common\models\studyplan;
 
+use artsoft\models\User;
 use common\models\education\EducationProgramm;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "studyplan_subject".
@@ -41,13 +44,22 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class,
+            BlameableBehavior::class,
+        ];
+    }
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['studyplan_id', 'subject_cat_id', 'created_at', 'updated_at'], 'required'],
-            [['studyplan_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'default', 'value' => null],
+            [['subject_cat_id', 'subject_id', 'subject_type_id', 'week_time', 'year_time'], 'required'],
             [['studyplan_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['week_time', 'year_time'], 'number'],
             [['studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['studyplan_id' => 'id']],
@@ -70,15 +82,39 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
             'subject_type_id' => Yii::t('art/studyplan', 'Subject Type ID'),
             'week_time' => Yii::t('art/studyplan', 'Week Time'),
             'year_time' => Yii::t('art/studyplan', 'Year Time'),
-            'created_at' => Yii::t('art/studyplan', 'Created At'),
-            'created_by' => Yii::t('art/studyplan', 'Created By'),
-            'updated_at' => Yii::t('art/studyplan', 'Updated At'),
-            'updated_by' => Yii::t('art/studyplan', 'Updated By'),
-            'status' => Yii::t('art/studyplan', 'Status'),
-            'version' => Yii::t('art/studyplan', 'Version'),
+            'created_at' => Yii::t('art', 'Created'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'updated_by' => Yii::t('art', 'Updated By'),
+            'status' => Yii::t('art', 'Status'),
+            'version' => Yii::t('art', 'Version'),
         ];
     }
 
+    public function optimisticLock()
+    {
+        return 'version';
+    }
+
+    /**
+     * Gets query for [[CreatedBy]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatedBy()
+    {
+        return $this->hasOne(User::class, ['id' => 'created_by']);
+    }
+
+    /**
+     * Gets query for [[UpdatedBy]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUpdatedBy()
+    {
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
+    }
     /**
      * Gets query for [[Studyplan]].
      *
