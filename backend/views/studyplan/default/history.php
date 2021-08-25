@@ -1,6 +1,6 @@
 <?php
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
-$this->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/view', 'id' => $model->id]];
 $this->title = 'История изменений: ' . sprintf('#%06d', $model->id);
 $this->params['breadcrumbs'][] = $this->title;
 

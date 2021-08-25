@@ -33,6 +33,7 @@ class DefaultController extends MainController
 
         $user = new User();
         $userCommon = new UserCommon();
+        $userCommon->scenario = UserCommon::SCENARIO_NEW;
         $model = new $this->modelClass;
         $modelsDependence = [new StudentDependence(['scenario' => StudentDependence::SCENARIO_PARENT])];
 
@@ -105,6 +106,7 @@ class DefaultController extends MainController
 
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_STUDENTS]);
+        $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
 
         if (!isset($model, $userCommon)) {
             throw new NotFoundHttpException("The user was not found.");

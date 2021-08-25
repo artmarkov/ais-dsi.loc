@@ -3,6 +3,7 @@
 namespace common\models\studyplan;
 
 use artsoft\models\User;
+use artsoft\traits\DateTimeTrait;
 use common\models\education\EducationProgramm;
 use common\models\students\Student;
 use Yii;
@@ -30,6 +31,8 @@ use yii\behaviors\TimestampBehavior;
  */
 class Studyplan extends \artsoft\db\ActiveRecord
 {
+    use DateTimeTrait;
+
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
 

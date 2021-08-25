@@ -13,7 +13,7 @@ use artsoft\grid\GridPageSize;
 /* @var $searchModel common\models\studyplan\search\StudyplanSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/studyplan', 'Studyplans');
+$this->title = Yii::t('art/studyplan', 'Individual plans');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="studyplan-index">

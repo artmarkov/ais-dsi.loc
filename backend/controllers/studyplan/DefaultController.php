@@ -13,6 +13,11 @@ class DefaultController extends MainController
     public $modelClass       = 'common\models\studyplan\Studyplan';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanSearch';
 
+    public function actionView($id)
+    {
+        return $this->actionUpdate($id, true);
+    }
+
     public function actionHistory($id)
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
