@@ -81,6 +81,18 @@ $this->registerJs($js);
                         ]
                     ])->label(Yii::t('art/studyplan', 'Education Programm'));
                     ?>
+                    <?= $form->field($model, "speciality_id")->widget(\kartik\select2\Select2::class, [
+                        'data' => RefBook::find('education_speciality', $model->isNewRecord ? \common\models\education\EducationSpeciality::STATUS_ACTIVE : '')->getList(),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/studyplan', 'Select Education Speciality...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ]
+                    ])->label(Yii::t('art/studyplan', 'Education Speciality'));
+                    ?>
 
                     <?= $form->field($model, 'course')->textInput() ?>
 
@@ -156,16 +168,16 @@ $this->registerJs($js);
                                         ],
                                     ])->label(Yii::t('art/guide', 'Subject Category'));
                                     ?>
-                                    <?= $form->field($modelDependence, "[{$index}]subject_id")->widget(DepDrop::class, [
-                                        'data' => \common\models\studyplan\StudyplanSubject::getStudyplanSubjectByCategory($modelDependence->subject_cat_id, array_values(RefBook::find('programm_department', $model->programm_id)->getList())),
-                                        'options' => ['prompt' => Yii::t('art/guide', 'Select Subject...')],
-                                        'pluginOptions' => [
-                                            'depends' => ['subject_cat_id'],
-                                            'placeholder' => Yii::t('art/guide', 'Select Subject...'),
-                                            'url' => Url::to(['/studyplan/default/subject'])
-                                        ]
-                                    ])->label(Yii::t('art/guide', 'Subject'));
-                                    ?>
+<!--                                    --><?//= $form->field($modelDependence, "[{$index}]subject_id")->widget(DepDrop::class, [
+//                                        'data' => $model->getSubjectByCategory($modelDependence->subject_cat_id),
+//                                        'options' => ['prompt' => Yii::t('art/guide', 'Select Subject...')],
+//                                        'pluginOptions' => [
+//                                            'depends' => ['studyplansubject-' . $index . '-subject_cat_id'],
+//                                            'placeholder' => Yii::t('art/guide', 'Select Subject...'),
+//                                            'url' => Url::to(['/studyplan/default/subject', 'id' => $model->id])
+//                                        ]
+//                                    ])->label(Yii::t('art/guide', 'Subject'));
+//                                    ?>
                                     <?= $form->field($modelDependence, "[{$index}]subject_type_id")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
                                     <?= $form->field($modelDependence, "[{$index}]week_time")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
                                     <?= $form->field($modelDependence, "[{$index}]year_time")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>

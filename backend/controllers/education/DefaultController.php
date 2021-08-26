@@ -217,9 +217,12 @@ class DefaultController extends MainController
         $data = new EducationProgrammHistory($id);
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
+
     /**
-     *  формируем список дисциплин для widget DepDrop::classname()
-     * @return false|string
+     * формируем список дисциплин для widget DepDrop::classname()
+     * @param $id
+     * @return string
+     * @throws \yii\web\NotFoundHttpException
      */
     public function actionSubject($id)
     {

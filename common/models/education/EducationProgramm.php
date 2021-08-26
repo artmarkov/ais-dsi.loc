@@ -43,6 +43,7 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     {
         return 'education_programm';
     }
+
     /**
      * @return array
      */
@@ -57,6 +58,7 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             ],
         ];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -113,6 +115,7 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
         );
     }
+
     /**
      * getStatusValue
      *
@@ -126,6 +129,7 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
 
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -151,6 +155,7 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     {
         return $this->hasOne(EducationCat::class, ['id' => 'education_cat_id']);
     }
+
     /**
      * @return string
      */
@@ -168,45 +173,50 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
-     * Полный список городов страны по id
+     * @param $category_id
+     * @return array|Subject[]|\common\models\subject\SubjectQuery
      */
-    public  function getSubjectById($category_id) {
-        $query = [];
-        $data = Subject::find()->select(['id','name']);
-        $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
+    public function getSubjectById($category_id)
+    {
+        $data = Subject::find()->select(['id', 'name']);
         foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-            $query += ['like', 'department_list', $department_id];
+            $data->orWhere(['like', 'department_list', $department_id]);
+
         }
-        $data = $data->andWhere(['OR', $query]);
+        $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
+        $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
         $data = $data->asArray()->all();
 
         return $data;
     }
 
+    /**
+     * Получаем возможные дисциплины программы выбранной категории
+     * @param $category_id
+     * @return array|\common\models\subject\SubjectQuery
+     */
     public function getSubjectByCategory($category_id)
     {
-        $query = [];
         $data = Subject::find()->select(['name', 'id']);
-        $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
         foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-          //  $query += ['like', 'department_list', $department_id];
-            array_push($query, ['like', 'department_list', $department_id]);
+            $data->orWhere(['like', 'department_list', $department_id]);
+
         }
-        print_r(array_values($query));
-           // $data = $data->andWhere(['OR', array_keys($query)]);
+        $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
+        $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
         $data = $data->indexBy('id')->column();
 
         return $data;
     }
 
     /**
+     * Получаем все отделы из всех спецификаций Программы
      * @return array
      */
     public function getSpecialityDepartments()
     {
         $data = [];
-        if($this->speciality_list) {
+        if ($this->speciality_list) {
             foreach ($this->speciality_list as $item => $speciality_id) {
                 $department_list = EducationSpeciality::find()->select(['department_list'])->where(['=', 'id', $speciality_id])->scalar();
 

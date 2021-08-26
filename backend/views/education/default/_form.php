@@ -149,7 +149,7 @@ $this->registerJs($js);
                                     }
                                     ?>
                                     <?= $form->field($modelSubject, "[{$index}]subject_cat_id")->widget(\kartik\select2\Select2::class, [
-                                        'data' => \common\models\subject\SubjectCategory::getCategoryList(),
+                                        'data' => RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
                                         'options' => [
                                             'disabled' => $readonly,
                                             'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),

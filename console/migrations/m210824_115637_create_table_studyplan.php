@@ -13,6 +13,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
             'student_id' => $this->integer()->notNull(),
             'programm_id' => $this->integer()->notNull(),
+            'speciality_id' => $this->integer()->notNull(),
             'course' => $this->integer(),
             'plan_year' => $this->integer(),
             'description' => $this->string(1024),
@@ -27,6 +28,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->addCommentOnTable('studyplan', 'Индивидуальные планы ученика');
         $this->addForeignKey('studyplan_ibfk_1', 'studyplan', 'student_id', 'students', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('studyplan_ibfk_2', 'studyplan', 'programm_id', 'education_programm', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('studyplan_ibfk_3', 'studyplan', 'speciality_id', 'education_speciality', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->resetSequence('studyplan', 1000)->execute();
 
@@ -64,6 +66,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->dropForeignKey('studyplan_subject_ibfk_4', 'studyplan_subject');
         $this->dropForeignKey('studyplan_ibfk_1', 'studyplan');
         $this->dropForeignKey('studyplan_ibfk_2', 'studyplan');
+        $this->dropForeignKey('studyplan_ibfk_3', 'studyplan');
         $this->dropTableWithHistory('studyplan_subject');
         $this->dropTableWithHistory('studyplan');
 
