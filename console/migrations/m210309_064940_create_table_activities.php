@@ -10,7 +10,7 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
         $this->createTable('guide_activities_cat', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 999999)',
             'name' => $this->string(128)->notNull(),
             'color' => $this->string(32),
             'rendering' => $this->tinyInteger(1)->notNull()->defaultValue('0')->comment('как фон или бар'),
@@ -18,6 +18,7 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_activities_cat' ,'Категории мероприятий');
+        $this->db->createCommand()->resetSequence('guide_activities_cat', 1000)->execute();
         $this->db->createCommand()->batchInsert('guide_activities_cat', ['name', 'color'], [
             ['Согласно плану работы', '#0000ff'],
             ['Согласно расписанию', '#ff0000'],

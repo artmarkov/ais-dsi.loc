@@ -4,6 +4,8 @@ namespace common\models\education;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\models\User;
+use common\models\own\Department;
+use common\models\subject\Subject;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -163,5 +165,55 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     public function getProgrammSubject()
     {
         return $this->hasMany(EducationProgrammSubject::class, ['programm_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * Полный список городов страны по id
+     */
+    public  function getSubjectById($category_id) {
+        $query = [];
+        $data = Subject::find()->select(['id','name']);
+        $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
+        foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+            $query += ['like', 'department_list', $department_id];
+        }
+        $data = $data->andWhere(['OR', $query]);
+        $data = $data->asArray()->all();
+
+        return $data;
+    }
+
+    public function getSubjectByCategory($category_id)
+    {
+        $query = [];
+        $data = Subject::find()->select(['name', 'id']);
+        $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
+        foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+          //  $query += ['like', 'department_list', $department_id];
+            array_push($query, ['like', 'department_list', $department_id]);
+        }
+        print_r(array_values($query));
+           // $data = $data->andWhere(['OR', array_keys($query)]);
+        $data = $data->indexBy('id')->column();
+
+        return $data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSpecialityDepartments()
+    {
+        $data = [];
+        if($this->speciality_list) {
+            foreach ($this->speciality_list as $item => $speciality_id) {
+                $department_list = EducationSpeciality::find()->select(['department_list'])->where(['=', 'id', $speciality_id])->scalar();
+
+                $data = array_merge($data, explode(',', $department_list));
+            }
+        }
+        sort($data);
+        return array_unique($data);
     }
 }

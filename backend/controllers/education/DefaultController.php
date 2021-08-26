@@ -2,10 +2,12 @@
 
 namespace backend\controllers\education;
 
+use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammSubject;
 use common\models\education\EducationProgrammSubjectTime;
 use common\models\history\EducationProgrammHistory;
 use backend\models\Model;
+use common\models\subject\Subject;
 use yii\helpers\ArrayHelper;
 use Yii;
 
@@ -214,5 +216,25 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         $data = new EducationProgrammHistory($id);
         return $this->renderIsAjax('history', compact(['model', 'data']));
+    }
+    /**
+     *  формируем список дисциплин для widget DepDrop::classname()
+     * @return false|string
+     */
+    public function actionSubject($id)
+    {
+        $model = $this->findModel($id);
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $cat_id = $parents[0];
+                $out = $model->getSubjectById($cat_id);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
     }
 }

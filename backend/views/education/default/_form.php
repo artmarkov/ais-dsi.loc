@@ -159,15 +159,16 @@ $this->registerJs($js);
                                         ],
                                     ]);
                                     ?>
+
                                     <?= $form->field($modelSubject, "[{$index}]subject_id")->widget(DepDrop::class, [
-                                        'data' => \common\models\subject\Subject::getSubjectByCategory($modelSubject->subject_cat_id),
+                                        'data' => $model->getSubjectByCategory($modelSubject->subject_cat_id),
                                         'options' => ['prompt' => Yii::t('art/guide', 'Select Subject Name...'),
                                             'disabled' => $readonly,
                                         ],
                                         'pluginOptions' => [
                                             'depends' => ['educationprogrammsubject-' . $index . '-subject_cat_id'],
                                             'placeholder' => Yii::t('art/guide', 'Select Subject Name...'),
-                                            'url' => Url::to(['/subject/default/subject'])
+                                            'url' => Url::to(['/education/default/subject', 'id' => $model->id])
                                         ]
                                     ]);
                                     ?>

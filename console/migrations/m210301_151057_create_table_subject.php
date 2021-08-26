@@ -12,7 +12,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
         }
 
           $this->createTable('guide_subject_category', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'name' => $this->string(127),
             'slug' => $this->string(64)->notNull(),
             'status' => $this->tinyInteger(2)->unsigned()->notNull(),
@@ -20,18 +20,20 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_subject_category' ,'Раздел дисциплины');
-        $this->db->createCommand()->batchInsert('guide_subject_category', ['id', 'name', 'slug', 'sort_order', 'status'], [
-            [1, 'Специальность', 'Спец.', 1, 1],
-            [2, 'Музыкальный инструмент', 'Инстр', 2, 1],
-            [3, 'Дисциплины отдела', 'Дис.отд.', 3, 1],
-            [4, 'Общие дисциплины', 'Общ.', 4, 1],
-            [5, 'Предмет по выбору', 'П/в.', 5, 1],
-            [6, 'Коллективное музицирование', 'Кол.муз.', 6, 1],
-            [7, 'Сводные репетиции', 'Св.реп', 7, 1],
+        $this->db->createCommand()->resetSequence('guide_subject_category', 1000)->execute();
+
+        $this->db->createCommand()->batchInsert('guide_subject_category', ['name', 'slug', 'sort_order', 'status'], [
+            ['Специальность', 'Спец.', 1000, 1],
+            ['Музыкальный инструмент', 'Инстр', 1001, 1],
+            ['Дисциплины отдела', 'Дис.отд.', 1002, 1],
+            ['Общие дисциплины', 'Общ.', 1003, 1],
+            ['Предмет по выбору', 'П/в.', 1004, 1],
+            ['Коллективное музицирование', 'Кол.муз.', 1005, 1],
+            ['Сводные репетиции', 'Св.реп', 1006, 1],
         ])->execute();
 
         $this->createTable('guide_subject_vid', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'name' => $this->string(64)->notNull(),
             'slug' => $this->string(32)->notNull(),
             'qty_min' => $this->smallInteger(3)->unsigned()->notNull(),
@@ -40,6 +42,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             'status' => $this->tinyInteger(1)->notNull(),
         ], $tableOptions);
         $this->addCommentOnTable('guide_subject_vid' ,'Форма занятий');
+        $this->db->createCommand()->resetSequence('guide_subject_vid', 1000)->execute();
         $this->db->createCommand()->batchInsert('guide_subject_vid', ['name', 'slug','qty_min','qty_max','info','status'], [
             ['Индивидуальная', 'Инд.', 0, 1,'',1],
             ['Мелкогрупповая', 'Мелк-гр.', 0, 1,'',1],
@@ -48,13 +51,14 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
 
 
         $this->createTable('guide_subject_type', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'name' => $this->string(127)->notNull(),
             'slug' => $this->string(64)->notNull(),
             'status' => $this->tinyInteger(1)->unsigned()->notNull(),
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_subject_type' ,'Тип занятий');
+        $this->db->createCommand()->resetSequence('guide_subject_type', 1000)->execute();
         $this->db->createCommand()->batchInsert('guide_subject_type', ['name', 'slug', 'status'], [
             ['Бюджет', 'Бюд.', 1],
             ['Хозрасчет', 'х/р.', 1],

@@ -12,18 +12,20 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
         }
 
         $this->createTable('guide_student_position', [
-            'id' => $this->primaryKey(8),
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'name' => $this->string(128),
             'slug' => $this->string(32),
-            'status' => $this->smallInteger(1)->unsigned()->notNull(),
+            'status' => $this->integer()->unsigned()->notNull(),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_student_position','Состояние ученика');
+        $this->db->createCommand()->resetSequence('guide_student_position', 1000)->execute();
         $this->db->createCommand()->batchInsert('guide_student_position', ['id', 'name', 'slug', 'status'], [
-            [1, 'Абитуриенты', 'Абит', 1],
-            [2, 'Ученики школы', 'Уч-к', 1],
-            [3, 'Выпускники школы', 'Вып', 1],
-            [4, 'Отчислены из школы', 'Отч', 1],
-            [5, 'Не прошли испытания', 'Не прошел', 1],
+            [1000, 'Абитуриенты', 'Абит', 1],
+            [1001, 'Ученики школы', 'Уч-к', 1],
+            [1002, 'Выпускники школы', 'Вып', 1],
+            [1003, 'Отчислены из школы', 'Отч', 1],
+            [1004, 'Не прошли испытания', 'Не прошел', 1],
         ])->execute();
 
         $this->createTableWithHistory('students', [
@@ -78,8 +80,8 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
         $this->db->createCommand()->delete('refbooks', ['name' => 'students_fullname'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'students_fio'])->execute();
         $this->db->createCommand()->dropView('students_view')->execute();
-        $this->dropForeignKey('student_ibfk_1', 'student');
-        $this->dropTable('student');
+        $this->dropForeignKey('student_ibfk_1', 'students');
+        $this->dropTableWithHistory('students');
         $this->dropTable('guide_student_position');
     }
 }

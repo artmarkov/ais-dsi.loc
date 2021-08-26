@@ -92,7 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = \common\models\subject\SubjectType::findOne($id)->name;
+                                        $v[] = \common\models\subject\SubjectType::findOne($id) ? \common\models\subject\SubjectType::findOne($id)->name : '';
                                     }
                                     return implode('<br/> ', $v);
                                 },

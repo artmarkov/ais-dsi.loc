@@ -11,13 +11,14 @@ class m210302_153750_create_table_routine extends \artsoft\db\BaseMigration
         }
 
         $this->createTable('guide_routine_cat', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 999999)',
             'name' => $this->string(255)->notNull(),
             'color' => $this->string(127)->notNull(),
-            'plan_flag' => $this->tinyInteger(1)->notNull()->comment('Учитывать при планировании'),
+            'plan_flag' => $this->integer()->notNull()->comment('Учитывать при планировании'),
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_routine_cat' ,'Категории производственного календаря');
+        $this->db->createCommand()->resetSequence('guide_routine_cat', 1000)->execute();
         $this->db->createCommand()->batchInsert('guide_routine_cat', ['name', 'color', 'plan_flag'], [
             ['Каникулы', '#0000ff', 1],
             ['Праздники', '#ff0000', 1],
@@ -42,7 +43,7 @@ class m210302_153750_create_table_routine extends \artsoft\db\BaseMigration
 
     public function down()
     {
-        $this->dropTable('routine');
+        $this->dropTableWithHistory('routine');
         $this->dropTable('guide_routine_cat');
     }
 }

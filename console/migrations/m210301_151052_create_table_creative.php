@@ -10,20 +10,22 @@ class m210301_151052_create_table_creative extends \artsoft\db\BaseMigration
         }
         
         $this->createTable('guide_creative_category', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'name' => $this->string(256)->notNull(),
             'description' => $this->string(1024)->notNull(),
         ], $tableOptions);
 
+        $this->addCommentOnTable('guide_creative_category' ,'Категории творческих работ');
+        $this->db->createCommand()->resetSequence('guide_creative_category', 1000)->execute();
         $this->db->createCommand()->batchInsert('guide_creative_category', ['id', 'name', 'description'], [
-            [1, 'Творческие работы', ''],
-            [2, 'Методические работы', ''],
-            [3, 'Сертификаты', ''],
+            [1000, 'Творческие работы', ''],
+            [1001, 'Методические работы', ''],
+            [1002, 'Сертификаты', ''],
         ])->execute();
 
         $this->createTableWithHistory('creative_works', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
-            'category_id' => $this->tinyInteger(2)->unsigned()->notNull(),
+            'category_id' => $this->integer()->unsigned()->notNull(),
             'name' => $this->string(1024)->notNull(),
             'description' => $this->string(512),
             'department_list' => $this->string(1024),
@@ -33,7 +35,7 @@ class m210301_151052_create_table_creative extends \artsoft\db\BaseMigration
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
             'updated_by' => $this->integer(),
-            'status' => $this->smallInteger()->notNull()->defaultValue(1),
+            'status' => $this->integer()->notNull()->defaultValue(1),
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
