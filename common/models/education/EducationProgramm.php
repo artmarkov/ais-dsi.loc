@@ -178,15 +178,17 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
      */
     public function getSubjectById($category_id)
     {
-        $data = Subject::find()->select(['id', 'name']);
-        foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-            $data->orWhere(['like', 'department_list', $department_id]);
+        $data = [];
+        if ($category_id) {
+            $data = Subject::find()->select(['id', 'name']);
+            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+                $data->orWhere(['like', 'department_list', $department_id]);
 
+            }
+            $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
+            $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
+            $data = $data->asArray()->all();
         }
-        $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
-        $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
-        $data = $data->asArray()->all();
-
         return $data;
     }
 
@@ -197,15 +199,17 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
      */
     public function getSubjectByCategory($category_id)
     {
-        $data = Subject::find()->select(['name', 'id']);
-        foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-            $data->orWhere(['like', 'department_list', $department_id]);
+        $data = [];
+        if ($category_id) {
+            $data = Subject::find()->select(['name', 'id']);
+            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+                $data->orWhere(['like', 'department_list', $department_id]);
 
+            }
+            $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
+            $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
+            $data = $data->indexBy('id')->column();
         }
-        $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
-        $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
-        $data = $data->indexBy('id')->column();
-
         return $data;
     }
 
@@ -230,25 +234,27 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     public static function getSpecialityByProgramm($programm_id)
     {
         $data = [];
-        $speciality_list = self::find()->select(['speciality_list'])->andFilterWhere(['=', 'programm_id', $programm_id])->scalar();
-        foreach (explode(',', $speciality_list) as $item => $speciality_id) {
-            $data[$speciality_id] = EducationSpeciality::find()->select(['name'])->where(['=', 'id', $speciality_id])->scalar();
+        if ($programm_id) {
+            $speciality_list = self::find()->select(['speciality_list'])->where(['=', 'id', $programm_id])->scalar();
+            foreach (explode(',', $speciality_list) as $item => $speciality_id) {
+                $data[$speciality_id] = EducationSpeciality::find()->select(['name'])->where(['=', 'id', $speciality_id])->scalar();
+            }
         }
-
         return $data;
     }
 
     public static function getSpecialityByProgrammId($programm_id)
     {
         $data = [];
-        $speciality_list = self::find()->select(['speciality_list'])->andFilterWhere(['=', 'programm_id', $programm_id])->scalar();
-        foreach (explode(',', $speciality_list) as $item => $speciality_id) {
-            $data[] = [
-                'id' => $speciality_id,
-                'name' => EducationSpeciality::find()->select(['name'])->where(['=', 'id', $speciality_id])->scalar(),
+        if ($programm_id) {
+            $speciality_list = self::find()->select(['speciality_list'])->where(['=', 'id', $programm_id])->scalar();
+            foreach (explode(',', $speciality_list) as $item => $speciality_id) {
+                $data[] = [
+                    'id' => $speciality_id,
+                    'name' => EducationSpeciality::find()->select(['name'])->where(['=', 'id', $speciality_id])->scalar(),
                 ];
+            }
         }
-
         return $data;
     }
 }

@@ -69,10 +69,6 @@ $this->registerJs($js);
                         ]
                     ])->label(Yii::t('art/student', 'Student'));
                     ?>
-                    <!--                    --><?php //print_r(\common\models\education\EducationProgramm::getSpecialityByProgramm($model->programm_id))?>
-                    <!--                    --><?php //print_r(\common\models\education\EducationProgramm::getSpecialityByProgrammId($model->programm_id))?>
-                    <!--                    --><?php //print_r(\common\models\subject\Subject::getSubjectByCategory(1000))?>
-                    <!--                    --><?php //print_r(\common\models\subject\Subject::getSubjectById(1000))?>
                     <?= $form->field($model, "programm_id")->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('education_programm_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
                         'options' => [
