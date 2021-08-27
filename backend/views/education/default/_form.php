@@ -67,14 +67,14 @@ $this->registerJs($js);
                 <div class="col-sm-12">
 
                     <?= $form->field($model, 'education_cat_id')->dropDownList(RefBook::find('education_cat', $model->isNewRecord ? EducationCat::STATUS_ACTIVE : '')->getList(),
-                        ['prompt' => '', 'encodeSpaces' => true, 'disabled' => $readonly]) ?>
+                        ['prompt' => '', 'encodeSpaces' => true, 'disabled' =>  $model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true]) ?>
 
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'speciality_list')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('education_speciality', $model->isNewRecord ? EducationSpeciality::STATUS_ACTIVE : '')->getList(),
                         'options' => [
-                            'disabled' => $readonly,
+                            'disabled' => $model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true,
                             'placeholder' => Yii::t('art/guide', 'Select Education Specializations...'),
                             'multiple' => true,
                         ],
@@ -92,7 +92,7 @@ $this->registerJs($js);
                             'buttondown_txt' => '<i class="fa fa-minus" aria-hidden="true"></i>'
                         ],
                         'options' => [
-                            'disabled' => $readonly,
+                            'disabled' => $model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true,
                         ],
                     ]);
                     ?>
@@ -105,6 +105,7 @@ $this->registerJs($js);
 
                 </div>
             </div>
+            <?php if (!$model->isNewRecord): ?>
             <?php DynamicFormWidget::begin([
                 'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items', // required: css class selector
@@ -202,6 +203,7 @@ $this->registerJs($js);
                 <?php endif; ?>
                 <?php DynamicFormWidget::end(); ?>
             </div>
+                <?php endif; ?>
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">

@@ -69,9 +69,14 @@ $this->registerJs($js);
                         ]
                     ])->label(Yii::t('art/student', 'Student'));
                     ?>
+                    <!--                    --><?php //print_r(\common\models\education\EducationProgramm::getSpecialityByProgramm($model->programm_id))?>
+                    <!--                    --><?php //print_r(\common\models\education\EducationProgramm::getSpecialityByProgrammId($model->programm_id))?>
+                    <!--                    --><?php //print_r(\common\models\subject\Subject::getSubjectByCategory(1000))?>
+                    <!--                    --><?php //print_r(\common\models\subject\Subject::getSubjectById(1000))?>
                     <?= $form->field($model, "programm_id")->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('education_programm_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
                         'options' => [
+                            'id' => 'programm_id',
                             'disabled' => $readonly,
                             'placeholder' => Yii::t('art/studyplan', 'Select Education Programm...'),
                             'multiple' => false,
@@ -81,17 +86,18 @@ $this->registerJs($js);
                         ]
                     ])->label(Yii::t('art/studyplan', 'Education Programm'));
                     ?>
-                    <?= $form->field($model, "speciality_id")->widget(\kartik\select2\Select2::class, [
-                        'data' => RefBook::find('education_speciality', $model->isNewRecord ? \common\models\education\EducationSpeciality::STATUS_ACTIVE : '')->getList(),
-                        'options' => [
+
+                    <?= $form->field($model, "speciality_id")->widget(DepDrop::class, [
+                        'data' => \common\models\education\EducationProgramm::getSpecialityByProgramm($model->programm_id),
+                        'options' => ['prompt' => Yii::t('art/studyplan', 'Select Education Speciality...'),
                             'disabled' => $readonly,
-                            'placeholder' => Yii::t('art/studyplan', 'Select Education Speciality...'),
-                            'multiple' => false,
                         ],
                         'pluginOptions' => [
-                            'allowClear' => true
+                            'depends' => ['programm_id'],
+                            'placeholder' => Yii::t('art/guide', 'Select Education Speciality...'),
+                            'url' => Url::to(['/studyplan/default/speciality'])
                         ]
-                    ])->label(Yii::t('art/studyplan', 'Education Speciality'));
+                    ]);
                     ?>
 
                     <?= $form->field($model, 'course')->textInput() ?>
@@ -110,96 +116,96 @@ $this->registerJs($js);
 
                 </div>
             </div>
-            <!--                --><?php //if (!$model->isNewRecord) : ?>
-            <?php DynamicFormWidget::begin([
-                'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-                'widgetBody' => '.container-items', // required: css class selector
-                'widgetItem' => '.item', // required: css class
-                'limit' => 999, // the maximum times, an element can be added (default 999)
-                'min' => 1, // 0 or 1 (default 1)
-                'insertButton' => '.add-item', // css class
-                'deleteButton' => '.remove-item', // css class
-                'model' => $modelsDependence[0],
-                'formId' => 'studyplan-form',
-                'formFields' => [
-                    'subject_cat_id',
-                    'subject_id',
-                    'subject_type_id',
-                    'week_time',
-                    'year_time',
-                ],
-            ]); ?>
+            <?php if (!$model->isNewRecord) : ?>
+                <?php DynamicFormWidget::begin([
+                    'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
+                    'widgetBody' => '.container-items', // required: css class selector
+                    'widgetItem' => '.item', // required: css class
+                    'limit' => 999, // the maximum times, an element can be added (default 999)
+                    'min' => 1, // 0 or 1 (default 1)
+                    'insertButton' => '.add-item', // css class
+                    'deleteButton' => '.remove-item', // css class
+                    'model' => $modelsDependence[0],
+                    'formId' => 'studyplan-form',
+                    'formFields' => [
+                        'subject_cat_id',
+                        'subject_id',
+                        'subject_type_id',
+                        'week_time',
+                        'year_time',
+                    ],
+                ]); ?>
 
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    Дисциплины
-                </div>
-                <div class="panel-body">
-                    <div class="container-items"><!-- widgetBody -->
-                        <?php foreach ($modelsDependence as $index => $modelDependence): ?>
-                            <div class="item panel panel-info"><!-- widgetItem -->
-                                <div class="panel-heading">
-                                    <span class="panel-title-activities">Дисциплина: <?= ($index + 1) ?></span>
-                                    <?php if (!$readonly): ?>
-                                        <div class="pull-right">
-                                            <button type="button" class="remove-item btn btn-default btn-xs">
-                                                удалить
-                                            </button>
-                                        </div>
-                                    <?php endif; ?>
-                                    <div class="clearfix"></div>
-                                </div>
-                                <div class="panel-body">
-                                    <?php
-                                    // necessary for update action.
-                                    if (!$modelDependence->isNewRecord) {
-                                        echo Html::activeHiddenInput($modelDependence, "[{$index}]id");
-                                    }
-                                    ?>
-                                    <?= $form->field($modelDependence, "[{$index}]subject_cat_id")->widget(\kartik\select2\Select2::class, [
-                                        'data' => RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
-                                        'options' => [
-                                            'id' => 'subject_cat_id',
-                                            'disabled' => $readonly,
-                                            'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
-                                        ],
-                                        'pluginOptions' => [
-                                            'allowClear' => true
-                                        ],
-                                    ])->label(Yii::t('art/guide', 'Subject Category'));
-                                    ?>
-<!--                                    --><?//= $form->field($modelDependence, "[{$index}]subject_id")->widget(DepDrop::class, [
-//                                        'data' => $model->getSubjectByCategory($modelDependence->subject_cat_id),
-//                                        'options' => ['prompt' => Yii::t('art/guide', 'Select Subject...')],
-//                                        'pluginOptions' => [
-//                                            'depends' => ['studyplansubject-' . $index . '-subject_cat_id'],
-//                                            'placeholder' => Yii::t('art/guide', 'Select Subject...'),
-//                                            'url' => Url::to(['/studyplan/default/subject', 'id' => $model->id])
-//                                        ]
-//                                    ])->label(Yii::t('art/guide', 'Subject'));
-//                                    ?>
-                                    <?= $form->field($modelDependence, "[{$index}]subject_type_id")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
-                                    <?= $form->field($modelDependence, "[{$index}]week_time")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
-                                    <?= $form->field($modelDependence, "[{$index}]year_time")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Дисциплины
                     </div>
-                </div><!-- .panel -->
-                <?php if (!$readonly): ?>
-                    <div class="panel-footer">
-                        <div class="form-group btn-group">
-
-                            <button type="button" class="add-item btn btn-success btn-sm pull-right">
-                                <i class="glyphicon glyphicon-plus"></i> Добавить
-                            </button>
+                    <div class="panel-body">
+                        <div class="container-items"><!-- widgetBody -->
+                            <?php foreach ($modelsDependence as $index => $modelDependence): ?>
+                                <div class="item panel panel-info"><!-- widgetItem -->
+                                    <div class="panel-heading">
+                                        <span class="panel-title-activities">Дисциплина: <?= ($index + 1) ?></span>
+                                        <?php if (!$readonly): ?>
+                                            <div class="pull-right">
+                                                <button type="button" class="remove-item btn btn-default btn-xs">
+                                                    удалить
+                                                </button>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <?php
+                                        // necessary for update action.
+                                        if (!$modelDependence->isNewRecord) {
+                                            echo Html::activeHiddenInput($modelDependence, "[{$index}]id");
+                                        }
+                                        ?>
+                                        <?= $form->field($modelDependence, "[{$index}]subject_cat_id")->widget(\kartik\select2\Select2::class, [
+                                            'data' => RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                                            'options' => [
+                                                'id' => 'subject_cat_id',
+                                                'disabled' => $readonly,
+                                                'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ])->label(Yii::t('art/guide', 'Subject Category'));
+                                        ?>
+                                        <!--                                    --><? //= $form->field($modelDependence, "[{$index}]subject_id")->widget(DepDrop::class, [
+                                        //                                        'data' => $model->getSubjectByCategory($modelDependence->subject_cat_id),
+                                        //                                        'options' => ['prompt' => Yii::t('art/guide', 'Select Subject...')],
+                                        //                                        'pluginOptions' => [
+                                        //                                            'depends' => ['studyplansubject-' . $index . '-subject_cat_id'],
+                                        //                                            'placeholder' => Yii::t('art/guide', 'Select Subject...'),
+                                        //                                            'url' => Url::to(['/studyplan/default/subject', 'id' => $model->id])
+                                        //                                        ]
+                                        //                                    ])->label(Yii::t('art/guide', 'Subject'));
+                                        //                                    ?>
+                                        <?= $form->field($modelDependence, "[{$index}]subject_type_id")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
+                                        <?= $form->field($modelDependence, "[{$index}]week_time")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
+                                        <?= $form->field($modelDependence, "[{$index}]year_time")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
-                    </div>
-                <?php endif; ?>
-                <?php DynamicFormWidget::end(); ?>
-                <!--                    --><?php //endif; ?>
+                    </div><!-- .panel -->
+                    <?php if (!$readonly): ?>
+                        <div class="panel-footer">
+                            <div class="form-group btn-group">
 
-            </div>
+                                <button type="button" class="add-item btn btn-success btn-sm pull-right">
+                                    <i class="glyphicon glyphicon-plus"></i> Добавить
+                                </button>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php DynamicFormWidget::end(); ?>
+                </div>
+            <?php endif; ?>
+
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">

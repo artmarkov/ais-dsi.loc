@@ -3,6 +3,7 @@
 namespace backend\controllers\studyplan;
 
 use backend\models\Model;
+use common\models\education\EducationProgramm;
 use common\models\history\StudyplanHistory;
 use common\models\studyplan\StudyplanSubject;
 use yii\helpers\ArrayHelper;
@@ -146,7 +147,7 @@ class DefaultController extends MainController
      *  формируем список дисциплин для widget DepDrop::classname()
      * @return false|string
      */
-    public function actionSubject()
+    public function actionSpeciality()
     {
         $out = [];
         if (isset($_POST['depdrop_parents'])) {
@@ -154,7 +155,7 @@ class DefaultController extends MainController
 
             if (!empty($parents)) {
                 $cat_id = $parents[0];
-                $out = StudyplanSubject::getStudyplanSubjectById($cat_id);
+                $out = EducationProgramm::getSpecialityByProgrammId($cat_id);
 
                 return json_encode(['output' => $out, 'selected' => '']);
             }

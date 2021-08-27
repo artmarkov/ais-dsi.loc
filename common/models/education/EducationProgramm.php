@@ -226,4 +226,29 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
         sort($data);
         return array_unique($data);
     }
+
+    public static function getSpecialityByProgramm($programm_id)
+    {
+        $data = [];
+        $speciality_list = self::find()->select(['speciality_list'])->andFilterWhere(['=', 'programm_id', $programm_id])->scalar();
+        foreach (explode(',', $speciality_list) as $item => $speciality_id) {
+            $data[$speciality_id] = EducationSpeciality::find()->select(['name'])->where(['=', 'id', $speciality_id])->scalar();
+        }
+
+        return $data;
+    }
+
+    public static function getSpecialityByProgrammId($programm_id)
+    {
+        $data = [];
+        $speciality_list = self::find()->select(['speciality_list'])->andFilterWhere(['=', 'programm_id', $programm_id])->scalar();
+        foreach (explode(',', $speciality_list) as $item => $speciality_id) {
+            $data[] = [
+                'id' => $speciality_id,
+                'name' => EducationSpeciality::find()->select(['name'])->where(['=', 'id', $speciality_id])->scalar(),
+                ];
+        }
+
+        return $data;
+    }
 }
