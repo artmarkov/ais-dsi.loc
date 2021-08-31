@@ -78,7 +78,7 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/studyplan', 'ID'),
             'studyplan_id' => Yii::t('art/guide', 'Studyplan'),
-            'subject_cat_id' => Yii::t('art/guide', 'Subject Cat'),
+            'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
             'subject_id' => Yii::t('art/guide', 'Subject Name'),
             'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
             'week_time' => Yii::t('art/guide', 'Week Time'),

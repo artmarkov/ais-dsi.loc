@@ -42,6 +42,7 @@ class StudyplanSearch extends Studyplan
     public function search($params)
     {
         $query = Studyplan::find();
+        $query->joinWith(['student']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

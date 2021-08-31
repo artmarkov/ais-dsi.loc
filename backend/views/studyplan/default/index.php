@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="studyplan-index">
     <div class="panel">
         <div class="panel-heading">
-            <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
+            <?= \artsoft\helpers\ButtonHelper::createButton('studyplan/default/create'); ?>
         </div>
         <div class="panel-body">
             <div class="panel panel-default">
@@ -82,7 +82,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'plan_year',
                             'course',
-                            'status',
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'status',
+                                'optionsArray' => [
+                                    [Studyplan::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
+                                    [Studyplan::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
+                                ],
+                                'options' => ['style' => 'width:120px']
+                            ],
                         ],
                     ]);
                     ?>

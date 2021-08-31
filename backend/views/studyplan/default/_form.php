@@ -172,7 +172,7 @@ $this->registerJs($js);
                                             'pluginOptions' => [
                                                 'allowClear' => true
                                             ],
-                                        ])->label(Yii::t('art/guide', 'Subject Category'));
+                                        ]);
                                         ?>
                                         <?= $form->field($modelDependence, "[{$index}]subject_id")->widget(DepDrop::class, [
                                             'data' => $model->getSubjectByCategory($modelDependence->subject_cat_id),

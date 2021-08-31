@@ -8,9 +8,11 @@ use artsoft\models\User;
 use backend\models\Model;
 use common\models\history\StudentsHistory;
 use common\models\students\StudentDependence;
+use common\models\studyplan\search\StudyplanSearch;
 use common\models\user\UserCommon;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
+use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
 use Yii;
 
@@ -197,6 +199,28 @@ class DefaultController extends MainController
         ]);
 
         return $this->renderIsAjax('examination', compact('dataProvider', 'searchModel'));
+    }
+
+    public function actionStudentStudyplan($id)
+    {
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        $modelClass = 'common\models\studyplan\Studyplan';
+        $searchModel = new StudyplanSearch();
+
+        $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+            && !User::hasPermission($modelClass::getFullAccessPermission()));
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+
+            if ($restrictAccess) {
+                $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+                $params[$searchName]['student_id'] = $id;
+
+            $dataProvider = $searchModel->search($params);
+
+        return $this->renderIsAjax('@backend/views/studyplan/default/index', compact('dataProvider', 'searchModel'));
     }
 
     /**
