@@ -180,13 +180,13 @@ class CreativeController extends Controller
 
         switch ($name) {
             case 'Творческие работы' :
-                $stake_id = 1;
+                $stake_id = 1000;
                 break;
             case 'Методические работы' :
-                $stake_id = 2;
+                $stake_id = 1001;
                 break;
             case 'Сертификаты' :
-                $stake_id = 3;
+                $stake_id = 1002;
                 break;
         }
         return $stake_id;

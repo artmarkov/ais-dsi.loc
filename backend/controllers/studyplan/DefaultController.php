@@ -4,6 +4,7 @@ namespace backend\controllers\studyplan;
 
 use backend\models\Model;
 use common\models\education\EducationProgramm;
+use common\models\education\EducationProgrammSubject;
 use common\models\history\StudyplanHistory;
 use common\models\studyplan\StudyplanSubject;
 use yii\helpers\ArrayHelper;
@@ -12,9 +13,9 @@ use Yii;
 /**
  * DefaultController implements the CRUD actions for common\models\studyplan\Studyplan model.
  */
-class DefaultController extends MainController 
+class DefaultController extends MainController
 {
-    public $modelClass       = 'common\models\studyplan\Studyplan';
+    public $modelClass = 'common\models\studyplan\Studyplan';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanSearch';
 
     /**
@@ -26,25 +27,28 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = new $this->modelClass;
-        $modelsDependence = [new StudyplanSubject()];
 
         if ($model->load(Yii::$app->request->post())) {
-
-            $modelsDependence = Model::createMultiple(StudyplanSubject::class);
-            Model::loadMultiple($modelsDependence, Yii::$app->request->post());
-
             // validate all models
             $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsDependence) && $valid;
             //$valid = true;
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
 
                     if ($flag = $model->save(false)) {
-                        foreach ($modelsDependence as $modelDependence) {
-                            $modelDependence->studyplan_id = $model->id;
-                            if (!($flag = $modelDependence->save(false))) {
+                        $modelsProgrammSubject = EducationProgrammSubject::find()->where(['programm_id' => $model->programm_id])->all();
+
+                        foreach ($modelsProgrammSubject as $modelProgrammSubject) {
+                            $modelSub = new StudyplanSubject();
+                            $modelSub->studyplan_id = $model->id;
+                            $modelSub->subject_cat_id = $modelProgrammSubject->subject_cat_id;
+                            $modelSub->subject_id = $modelProgrammSubject->subject_id;
+                            $modelSub->subject_type_id = $model->getTypeScalar();
+                            $modelSubTime = $modelProgrammSubject->getProgrammSubjectTimesForCourse($model->course);
+                            $modelSub->week_time = $modelSubTime->week_time;
+                            $modelSub->year_time = $modelSubTime->year_time;
+                            if (!($flag = $modelSub->save(false))) {
                                 $transaction->rollBack();
                                 break;
                             }
@@ -63,7 +67,7 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax('create', [
             'model' => $model,
-            'modelsDependence' => (empty($modelsDependence)) ? [new StudyplanSubject] : $modelsDependence,
+            'modelsDependence' => [new StudyplanSubject],
             'readonly' => false
         ]);
     }
@@ -156,6 +160,29 @@ class DefaultController extends MainController
             if (!empty($parents)) {
                 $cat_id = $parents[0];
                 $out = EducationProgramm::getSpecialityByProgrammId($cat_id);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
+
+    /**
+     * формируем список дисциплин для widget DepDrop::classname()
+     * @param $id
+     * @return string
+     * @throws \yii\web\NotFoundHttpException
+     */
+    public function actionSubject($id)
+    {
+        $model = $this->findModel($id);
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $cat_id = $parents[0];
+                $out = $model->getSubjectById($cat_id);
 
                 return json_encode(['output' => $out, 'selected' => '']);
             }

@@ -5,7 +5,6 @@ use common\models\education\EducationProgramm;
 use common\models\education\EducationCat;
 use common\models\education\EducationSpeciality;
 use artsoft\helpers\RefBook;
-use common\models\venue\VenueSity;
 use kartik\depdrop\DepDrop;
 use wbraganca\dynamicform\DynamicFormWidget;
 use artsoft\helpers\Html;

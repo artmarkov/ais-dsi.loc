@@ -7,6 +7,7 @@ use artsoft\traits\DateTimeTrait;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationSpeciality;
 use common\models\students\Student;
+use common\models\subject\Subject;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -56,13 +57,14 @@ class Studyplan extends \artsoft\db\ActiveRecord
             BlameableBehavior::class,
         ];
     }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['student_id', 'programm_id', 'speciality_id'], 'required'],
+            [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year'], 'required'],
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['description'], 'string', 'max' => 1024],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['programm_id' => 'id']],
@@ -118,12 +120,14 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
-    public static function getStatusList() {
+    public static function getStatusList()
+    {
         return array(
             self::STATUS_ACTIVE => Yii::t('art', 'Active'),
             self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
         );
     }
+
     /**
      * Gets query for [[Programm]].
      *
@@ -142,10 +146,28 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $this->hasOne(EducationSpeciality::class, ['id' => 'speciality_id']);
     }
 
+    /**
+     * Получаем первую категорию дисциплины из спецификации
+     * @return array
+     */
+    public  function getTypeScalar()
+    {
+        $subject_type_list = EducationSpeciality::find()
+            ->select(['subject_type_list'])
+            ->where(['=', 'id', $this->speciality_id])
+            ->scalar();
+        $subject_type = explode(',', $subject_type_list);
+        return $subject_type[0];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getStudyplanSubject()
     {
         return $this->hasMany(StudyplanSubject::class, ['studyplan_id' => 'id']);
     }
+
     /**
      * Gets query for [[Student]].
      *
@@ -155,4 +177,60 @@ class Studyplan extends \artsoft\db\ActiveRecord
     {
         return $this->hasOne(Student::class, ['id' => 'student_id']);
     }
+
+    /**
+     * @param $category_id
+     * @return array|Subject[]|\common\models\subject\SubjectQuery
+     */
+    public function getSubjectById($category_id)
+    {
+        $data = [];
+        if ($category_id) {
+            $data = Subject::find()->select(['id', 'name']);
+            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+                $data->orWhere(['like', 'department_list', $department_id]);
+
+            }
+            $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
+            $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
+            $data = $data->asArray()->all();
+        }
+        return $data;
+    }
+    /**
+     * Получаем возможные дисциплины программы выбранной категории
+     * @param $category_id
+     * @return array|\common\models\subject\SubjectQuery
+     */
+    public function getSubjectByCategory($category_id)
+    {
+        $data = [];
+        if ($category_id) {
+            $data = Subject::find()->select(['name', 'id']);
+            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+                $data->orWhere(['like', 'department_list', $department_id]);
+
+            }
+            $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
+            $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
+            $data = $data->indexBy('id')->column();
+        }
+        return $data;
+    }
+
+    /**
+     * Получаем все отделы из спецификации
+     * @return array
+     */
+    public function getSpecialityDepartments()
+    {
+        $department_list = EducationSpeciality::find()
+            ->select(['department_list'])
+            ->where(['=', 'id', $this->speciality_id])
+            ->scalar();
+        $data = explode(',', $department_list);
+        sort($data);
+        return $data;
+    }
+
 }

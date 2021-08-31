@@ -127,6 +127,10 @@ class EducationProgrammSubject extends \artsoft\db\ActiveRecord
         return $this->hasMany(EducationProgrammSubjectTime::class, ['programm_subject_id' => 'id']);
     }
 
+    public function getProgrammSubjectTimesForCourse($course)
+    {
+        return EducationProgrammSubjectTime::find()->where(['programm_subject_id' => $this->id])->andWhere(['=', 'cource', $course])->one();
+    }
     /**
      * @return \yii\db\ActiveQuery
      */

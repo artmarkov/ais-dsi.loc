@@ -50,7 +50,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
 
         $this->addCommentOnTable( 'studyplan_subject', 'Дисциплины индивидуального плана');
         $this->createIndex('studyplan_id', 'studyplan_subject', 'studyplan_id');
-        $this->addForeignKey('studyplan_subject_ibfk_1', 'studyplan_subject', 'studyplan_id', 'education_programm', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('studyplan_subject_ibfk_1', 'studyplan_subject', 'studyplan_id', 'studyplan', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('studyplan_subject_ibfk_2', 'studyplan_subject', 'subject_cat_id', 'guide_subject_category', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('studyplan_subject_ibfk_3', 'studyplan_subject', 'subject_id', 'subject', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('studyplan_subject_ibfk_4', 'studyplan_subject', 'subject_type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
