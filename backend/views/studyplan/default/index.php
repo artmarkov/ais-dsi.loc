@@ -53,7 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'studyplan-grid',
-                            'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
+                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
@@ -74,13 +74,19 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw'
                             ],
                             [
-                                'attribute' => 'programm_id',
+                                'attribute' => 'programmName',
                                 'value' => function (Studyplan $model) {
                                     return RefBook::find('education_programm_name')->getValue($model->programm_id);
                                 },
                                 'format' => 'raw'
                             ],
-                            'plan_year',
+                            [
+                                'attribute' => 'plan_year',
+                                'value' => function (Studyplan $model) {
+                                    return \artsoft\helpers\ArtHelper::getStudyYearsList()[$model->plan_year];
+                                },
+                                'format' => 'raw'
+                            ],
                             'course',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',

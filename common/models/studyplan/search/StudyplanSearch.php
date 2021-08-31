@@ -12,14 +12,16 @@ use common\models\studyplan\Studyplan;
  */
 class StudyplanSearch extends Studyplan
 {
+    public $programmName;
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'student_id', 'programm_id', 'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
-            [['description'], 'safe'],
+            [['id', 'student_id', 'course', 'plan_year', 'status'], 'integer'],
+            [['description', 'programmName'], 'safe'],
         ];
     }
 
@@ -42,20 +44,33 @@ class StudyplanSearch extends Studyplan
     public function search($params)
     {
         $query = Studyplan::find();
-        $query->joinWith(['student']);
+        $query->joinWith(['programm','student']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
-            'sort' => [
-                'defaultOrder' => [
-                    'id' => SORT_DESC,
-                ],
-            ],
         ]);
+        $dataProvider->setSort([
+            'defaultOrder' => [
+                'id' => SORT_DESC,
+            ],
+            'attributes' => [
+                'id',
+                'status',
+                'plan_year',
+                'course',
+                'student_id',
 
+                'programmName' => [
+                    'asc' => ['education_programm.name' => SORT_ASC],
+                    'desc' => ['education_programm.name' => SORT_DESC],
+                ],
+
+            ]
+        ]);
+        $this->load($params);
         $this->load($params);
 
         if (!$this->validate()) {
@@ -67,7 +82,6 @@ class StudyplanSearch extends Studyplan
         $query->andFilterWhere([
             'id' => $this->id,
             'student_id' => $this->student_id,
-            'programm_id' => $this->programm_id,
             'course' => $this->course,
             'plan_year' => $this->plan_year,
             'created_at' => $this->created_at,
@@ -79,6 +93,10 @@ class StudyplanSearch extends Studyplan
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);
+        if ($this->programmName) {
+            $query->andFilterWhere(['like', 'education_programm.name', $this->programmName]);
+
+        }
 
         return $dataProvider;
     }
