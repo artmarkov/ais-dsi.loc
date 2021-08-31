@@ -31,8 +31,8 @@ class ImportController extends Controller
     {
         $this->stdout("\n");
 
-        $this->addEmployees();
-        $this->stdout("\n");
+//        $this->addEmployees();
+//        $this->stdout("\n");
 
         $this->addTeachers();
         $this->stdout("\n");
@@ -96,7 +96,7 @@ class ImportController extends Controller
                             $model->position_id = $this->getPositionId($v[10]);
                             $model->level_id = $this->getLevelId($v[11]);
                             $model->tab_num = $v[13];
-                            $model->work_id = $v[14] == 'Основная' ? 1 : 2;
+                            $model->work_id = $v[14] == 'Основная' ? 1000 : 1001;
                             $dep = [];
                             foreach (explode(';', $v[19]) as $name) {
                                 if ($name != '') {
@@ -122,8 +122,8 @@ class ImportController extends Controller
                                 if ($v[21] != '') {
                                     $activity = new TeachersActivity();
                                     $activity->teachers_id = $model->id;
-                                    $activity->direction_vid_id = 1;
-                                    $activity->direction_id = $v[21] == 'Педагогическая' ? 1 : 2;
+                                    $activity->direction_vid_id = 1000;
+                                    $activity->direction_id = $v[21] == 'Педагогическая' ? 1000 : 1001;
                                     $activity->stake_id = $this->getStakeId($v[22]);
                                     if (!($flag = $activity->save(false))) {
                                          $transaction->rollBack();
@@ -133,8 +133,8 @@ class ImportController extends Controller
                                 if ($v[23] != '') {
                                     $activity = new TeachersActivity();
                                     $activity->teachers_id = $model->id;
-                                    $activity->direction_vid_id = 2;
-                                    $activity->direction_id = $v[23] == 'Педагогическая' ? 1 : 2;
+                                    $activity->direction_vid_id = 1001;
+                                    $activity->direction_id = $v[23] == 'Педагогическая' ? 1000 : 1001;
                                     $activity->stake_id = $this->getStakeId($v[24]);
 
                                     if (!($flag = $activity->save(false))) {
@@ -427,16 +427,16 @@ class ImportController extends Controller
 
         switch ($name) {
             case 'БК' :
-                $stake_id = 1;
+                $stake_id = 1000;
                 break;
             case 'СК' :
-                $stake_id = 2;
+                $stake_id = 1001;
                 break;
             case 'ПК' :
-                $stake_id = 3;
+                $stake_id = 1002;
                 break;
             case 'ВК' :
-                $stake_id = 4;
+                $stake_id = 1003;
                 break;
         }
         return $stake_id;
@@ -448,16 +448,16 @@ class ImportController extends Controller
 
         switch ($name) {
             case 'Директор' :
-                $position_id = 1;
+                $position_id = 1000;
                 break;
             case 'Заместители директора' :
-                $position_id = 2;
+                $position_id = 1001;
                 break;
             case 'Руководители отделов' :
-                $position_id = 3;
+                $position_id = 1002;
                 break;
             case 'Преподаватели' :
-                $position_id = 4;
+                $position_id = 1003;
                 break;
         }
         return $position_id;
@@ -469,16 +469,16 @@ class ImportController extends Controller
 
         switch ($name) {
             case 'Высшее образование' :
-                $level_id = 1;
+                $level_id = 1000;
                 break;
             case 'Высшее непроф' :
-                $level_id = 2;
+                $level_id = 1001;
                 break;
             case 'Неполное высшее' :
-                $level_id = 3;
+                $level_id = 1002;
                 break;
             case 'Среднее проф' :
-                $level_id = 4;
+                $level_id = 1003;
                 break;
         }
         return $level_id;
@@ -490,19 +490,19 @@ class ImportController extends Controller
 
         switch ($name) {
             case 'Абитуриенты' :
-                $position_id = 1;
+                $position_id = 1000;
                 break;
             case 'Ученики школы' :
-                $position_id = 2;
+                $position_id = 1001;
                 break;
             case 'Выпускники школы' :
-                $position_id = 3;
+                $position_id = 1002;
                 break;
             case 'Отчислены из школы' :
-                $position_id = 4;
+                $position_id = 1003;
                 break;
             case 'Не прошли испытания' :
-                $position_id = 5;
+                $position_id = 1004;
                 break;
         }
         return $position_id;
