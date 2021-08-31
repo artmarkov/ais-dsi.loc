@@ -5,6 +5,7 @@ namespace common\models\studyplan;
 use artsoft\models\User;
 use artsoft\traits\DateTimeTrait;
 use common\models\education\EducationProgramm;
+use common\models\education\EducationSpeciality;
 use common\models\students\Student;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -16,6 +17,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $id
  * @property int $student_id
  * @property int $programm_id
+ * @property int speciality_id
  * @property int|null $course
  * @property int|null $plan_year
  * @property string|null $description
@@ -60,10 +62,11 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['student_id', 'programm_id'], 'required'],
-            [['student_id', 'programm_id', 'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
+            [['student_id', 'programm_id', 'speciality_id'], 'required'],
+            [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['description'], 'string', 'max' => 1024],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['programm_id' => 'id']],
+            [['speciality_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationSpeciality::class, 'targetAttribute' => ['speciality_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
         ];
     }
@@ -77,6 +80,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art/studyplan', 'ID'),
             'student_id' => Yii::t('art/student', 'Student'),
             'programm_id' => Yii::t('art/studyplan', 'Education Programm'),
+            'speciality_id' => Yii::t('art/studyplan', 'Speciality Name'),
             'course' => Yii::t('art/studyplan', 'Course'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'description' => Yii::t('art', 'Description'),
@@ -128,6 +132,14 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function getProgramm()
     {
         return $this->hasOne(EducationProgramm::class, ['id' => 'programm_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSpeciality()
+    {
+        return $this->hasOne(EducationSpeciality::class, ['id' => 'speciality_id']);
     }
 
     public function getStudyplanSubject()
