@@ -8,7 +8,7 @@ use yii\helpers\Html;
 /* @var $readonly */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/employees', 'Employees'), 'url' => ['employees/default/index']];
-$this->params['breadcrumbs'][] = $model->fullName;
+$this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 ?>
 <div class="employees-update">
     <?= $this->render('_form', [
