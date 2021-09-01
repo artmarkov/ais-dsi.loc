@@ -1,5 +1,4 @@
 <?php
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/user', 'Users'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->getDirectionName() . ' (' . $model->getStakeName() . ')', 'url' => ['/guidejob/cost/update', 'id' => $model->id]];
 $this->title = 'История изменений: ' . $model->getDirectionName() . ' (' . $model->getStakeName() . ')';
 $this->params['breadcrumbs'][] = $this->title;

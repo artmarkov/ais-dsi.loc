@@ -12,7 +12,6 @@ use artsoft\grid\GridPageSize;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/teachers', 'Work');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['guidejob/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="work-index">

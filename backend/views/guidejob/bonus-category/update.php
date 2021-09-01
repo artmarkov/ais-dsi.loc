@@ -6,7 +6,6 @@ use yii\helpers\Html;
 /* @var $model common\models\teachers\BonusCategory */
 
 $this->title = Yii::t('art','Update'). ' : ' . ' ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers','Teachers'), 'url' => ['teachers/default/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers','Bonus Category'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = Yii::t('art','Update');
 ?>

@@ -19,6 +19,7 @@ return [
     'Direction' => 'Направление деятельности',
     'Name Direction' => 'Деятельность',
     'Name Direction Vid' => 'Вид деятельности',
+    'Direction Vid' => 'Вид деятельности',
     'Name Stake' => 'Ставка',
     'Select Direction...' => 'Выберите деятельность...',
     'Select Direction Vid...' => 'Выберите вид деятельности...',
