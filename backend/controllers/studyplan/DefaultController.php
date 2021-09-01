@@ -27,6 +27,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = new $this->modelClass;
+        $model->student_id = Yii::$app->request->get('student_id') ?: null;
 
         if ($model->load(Yii::$app->request->post())) {
             // validate all models
@@ -126,7 +127,10 @@ class DefaultController extends MainController
                 }
             }
         }
+        if (Yii::$app->request->post('submitAction') == 'doc') {
 
+            
+        }
         return $this->render('update', [
             'model' => $model,
             'modelsDependence' => (empty($modelsDependence)) ? [new StudyplanSubject] : $modelsDependence,

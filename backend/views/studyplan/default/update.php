@@ -9,8 +9,7 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('art', 'Update "{item}"', ['item' => $model->id]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
-$this->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 ?>
 <div class="studyplan-update">
     <?= $this->render('_form', [

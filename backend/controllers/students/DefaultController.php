@@ -181,29 +181,37 @@ class DefaultController extends MainController
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 
-    public function actionStudentExamination($id)
+    public function actionExamination($id)
     {
+        $model = $this->findModel($id);
         $this->view->params['tabMenu'] = $this->getMenu($id);
-//        $this->view->params['tabMenu'] = $this->tabMenu;
-//        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['efficiency/default/index']];
-//        $this->view->params['breadcrumbs'][] = ['label' => 'Сводная таблица', 'url' => ['/efficiency/default/summary']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/student','Students'), 'url' => ['index']];
+        $this->view->params['breadcrumbs'][] = ['label' => $model->fullName, 'url' => ['students/default/view', 'id' => $id]];
 
-        $modelClass = $this->modelClass;
-        $searchModel = null;
+        $modelClass = 'common\models\studyplan\Studyplan';
+        $searchModel = new StudyplanSearch();
+
         $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
             && !User::hasPermission($modelClass::getFullAccessPermission()));
+        $searchName = StringHelper::basename($searchModel::className());
+        $params = Yii::$app->request->getQueryParams();
 
-        $restrictParams = ($restrictAccess) ? [$modelClass::getOwnerField() => Yii::$app->user->identity->id] : [];
-        $dataProvider = new ActiveDataProvider(['query' => $modelClass::find()->where($restrictParams)
-            ->andWhere(['=', 'teachers_id', $id]), 'pagination' => false
-        ]);
+        if ($restrictAccess) {
+            $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+        }
+        $params[$searchName]['student_id'] = $id;
+
+        $dataProvider = $searchModel->search($params);
 
         return $this->renderIsAjax('examination', compact('dataProvider', 'searchModel'));
     }
 
-    public function actionStudentStudyplan($id)
+    public function actionStudyplan($id)
     {
+        $model = $this->findModel($id);
         $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/student','Students'), 'url' => ['index']];
+        $this->view->params['breadcrumbs'][] = ['label' => $model->fullName, 'url' => ['students/default/view', 'id' => $id]];
 
         $modelClass = 'common\models\studyplan\Studyplan';
         $searchModel = new StudyplanSearch();
@@ -220,7 +228,7 @@ class DefaultController extends MainController
 
             $dataProvider = $searchModel->search($params);
 
-        return $this->renderIsAjax('@backend/views/studyplan/default/index', compact('dataProvider', 'searchModel'));
+        return $this->renderIsAjax('studyplan', compact('dataProvider', 'searchModel', 'id'));
     }
 
     /**
@@ -231,9 +239,8 @@ class DefaultController extends MainController
     {
         return [
             ['label' => 'Карточка ученика',  'url' => ['/students/default/update', 'id' => $id]],
-            ['label' => 'Индивидуальные планы',  'url' => ['/students/default/student-studyplan', 'id' => $id]],
-            ['label' => 'Испытания',  'url' => ['/students/default/student-examination', 'id' => $id]],
-            ['label' => 'История',  'url' => ['/students/default/history', 'id' => $id]],
+            ['label' => 'Индивидуальные планы',  'url' => ['/students/default/studyplan', 'id' => $id]],
+            ['label' => 'Испытания',  'url' => ['/students/default/examination', 'id' => $id]],
         ];
     }
 }

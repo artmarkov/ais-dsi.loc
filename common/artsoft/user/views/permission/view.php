@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="panel-heading">
             <?= Html::encode($this->title) ?>
             <?= \artsoft\helpers\ButtonHelper::updateButton($item, ['update', 'id' => $item->name]);?>
-            <?= \artsoft\helpers\ButtonHelper::createButton( 'create');?>
+            <?= \artsoft\helpers\ButtonHelper::createButton(['create']);?>
         </div>
         <div class="panel-body">
             <div class="panel panel-default">

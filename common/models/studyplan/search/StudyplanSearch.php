@@ -88,7 +88,7 @@ class StudyplanSearch extends Studyplan
             'created_by' => $this->created_by,
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
-            'status' => $this->status,
+            'studyplan.status' => $this->status,
             'version' => $this->version,
         ]);
 

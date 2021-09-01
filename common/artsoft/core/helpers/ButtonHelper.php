@@ -66,11 +66,10 @@ class ButtonHelper
      * @param $createAction
      * @return string
      */
-    public static function createButton($createAction = null)
+    public static function createButton($createAction = null, $options = [])
     {
-        $createAction = $createAction == null ? self::getAction('create') : $createAction;
-
-        return Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('art', 'Add New'), [$createAction], ['class' => 'btn btn-sm btn-success']);
+        $createAction = $createAction == null ? [self::getAction('create')] : $createAction;
+        return Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('art', 'Add New'), $createAction, array_merge(['class' => 'btn btn-sm btn-success'], $options));
     }
 
     /**

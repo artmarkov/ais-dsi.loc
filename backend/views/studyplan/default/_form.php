@@ -220,6 +220,9 @@ $this->registerJs($js);
         <div class="panel-footer">
             <div class="form-group btn-group">
                 <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+                <?php if (!$model->isNewRecord): ?>
+                    <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Выгрузить в Word', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'doc']); ?>
+                <?php endif; ?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

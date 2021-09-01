@@ -6,6 +6,7 @@ use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $form artsoft\widgets\ActiveForm */
+/* @var $model_date */
 ?>
 
 <?php
