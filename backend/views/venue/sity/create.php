@@ -6,6 +6,7 @@ use yii\helpers\Html;
 /* @var $model common\models\venue\VenueSity */
 
 $this->title = Yii::t('art','Create');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide','Venue Place'), 'url' => ['venue/default/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide','Sity'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

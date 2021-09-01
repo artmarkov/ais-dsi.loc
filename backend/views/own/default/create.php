@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model common\models\own\Invoices */
 
 $this->title = Yii::t('art', 'Create');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Invoices'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Invoices'), 'url' => ['own/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

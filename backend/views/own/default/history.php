@@ -1,5 +1,5 @@
 <?php
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Invoices'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Invoices'), 'url' => ['own/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

@@ -7,7 +7,7 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('art','Update'). ' : ' . ' ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide','Auditory'), 'url' => ['auditory/default/index']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide','Buildung'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide','Building'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = Yii::t('art','Update');
 ?>
 <div class="auditory-building-update">

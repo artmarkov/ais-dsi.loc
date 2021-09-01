@@ -7,8 +7,7 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('art','Update'). ' : ' . ' ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'User Relations'), 'url' => ['guidesys/default/index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['guidesys/default/update', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = Yii::t('art','Update');
 ?>
 <div class="user-relation-update">
     <?= $this->render('_form', compact('model')) ?>

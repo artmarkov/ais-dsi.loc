@@ -7,7 +7,7 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('art','Create');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/creative','Creative Works'), 'url' => ['creative/default/index']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/creative','Category'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/creative','Creative Category'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

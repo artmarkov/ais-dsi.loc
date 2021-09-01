@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model common\models\education\EducationSpeciality */
 
 $this->title = Yii::t('art', 'Create');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Education Specializations'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Education Specializations'), 'url' => ['education/education-speciality/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

@@ -7,7 +7,7 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('art', 'Update "{item}"', ['item' => $model->name]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/calendar', 'Activities Cats'), 'url' => ['activities/activities-cat/index']];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = Yii::t('art','Update');
 ?>
 <div class="activities-cat-update">
     <?= $this->render('_form', compact('model')) ?>
