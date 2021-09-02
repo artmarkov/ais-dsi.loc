@@ -7,7 +7,7 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('art','Update'). ' : ' . ' ' . sprintf('#%06d', $model->id);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Education Programms'), 'url' => ['education/default/index']];
-$this->params['breadcrumbs'][] = Yii::t('art','Update');
+$this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 ?>
 <div class="education-programm-update">
     <?= $this->render('_form', [

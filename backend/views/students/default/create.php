@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\student\Student */
+/* @var $model common\models\students\Student */
 /* @var $userCommon common\models\user\UserCommon */
 /* @var $modelsDependence common\models\students\StudentDependence */
 /* @var $readonly */
