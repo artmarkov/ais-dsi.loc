@@ -27,6 +27,8 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
+                    <?= $form->field($model, 'dep_flag')->checkbox() ?>
+
                     <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(SubjectCategory::getStatusList()) ?>
 
                 </div>

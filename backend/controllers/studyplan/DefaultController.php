@@ -128,8 +128,9 @@ class DefaultController extends MainController
             }
         }
         if (Yii::$app->request->post('submitAction') == 'doc') {
+            echo '<pre>' . print_r($model, true) . '</pre>';
+            echo '<pre>' . print_r($modelsDependence, true) . '</pre>';
 
-            
         }
         return $this->render('update', [
             'model' => $model,

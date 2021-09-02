@@ -67,6 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
                             'slug',
+                            'dep_flag',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'status',

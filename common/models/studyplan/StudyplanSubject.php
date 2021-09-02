@@ -61,9 +61,8 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     {
         return [
             [['subject_cat_id', 'subject_id', 'subject_type_id', 'week_time', 'year_time'], 'required'],
-            [['studyplan_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
+            [['studyplan_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'status', 'version'], 'integer'],
             [['week_time', 'year_time'], 'number'],
-            [['studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['studyplan_id' => 'id']],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
             [['subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => Subject::class, 'targetAttribute' => ['subject_id' => 'id']],

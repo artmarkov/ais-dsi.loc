@@ -13,6 +13,7 @@ use yii\helpers\ArrayHelper;
  * @property string $name
  * @property string $slug
  * @property int $sortOrder
+ * @property int $dep_flag
  *
  * @property SubjectCategory[] $subjectCategories
  */
@@ -50,7 +51,7 @@ class SubjectCategory extends \yii\db\ActiveRecord
         return [
             [['slug', 'name', 'status'], 'required'],
             [['slug', 'name'], 'unique'],
-            [['sort_order', 'status'], 'integer'],
+            [['sort_order', 'status', 'dep_flag'], 'integer'],
             [['name'], 'string', 'max' => 127],
             [['slug'], 'string', 'max' => 64],
             
@@ -66,6 +67,7 @@ class SubjectCategory extends \yii\db\ActiveRecord
             'id' => Yii::t('art/guide', 'ID'),
             'name' => Yii::t('art/guide', 'Name'),
             'slug' => Yii::t('art/guide', 'Slug'),
+            'dep_flag' => Yii::t('art/guide', 'Department Dependence'),
             'sort_order' => Yii::t('art/guide', 'Order'),
             'status' => Yii::t('art/guide', 'Status'),
         ];

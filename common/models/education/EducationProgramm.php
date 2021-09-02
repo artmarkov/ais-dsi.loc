@@ -6,6 +6,7 @@ use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\models\User;
 use common\models\own\Department;
 use common\models\subject\Subject;
+use common\models\subject\SubjectCategory;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -180,10 +181,15 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     {
         $data = [];
         if ($category_id) {
+            $dep_flag = SubjectCategory::find()->select(['dep_flag'])
+                ->andFilterWhere(['=', 'id', $category_id])
+                ->scalar(); // зависимость от выбора отдела
             $data = Subject::find()->select(['id', 'name']);
-            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-                $data->orWhere(['like', 'department_list', $department_id]);
+            if ($dep_flag) {
+                foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+                    $data->orWhere(['like', 'department_list', $department_id]);
 
+                }
             }
             $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
             $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
@@ -201,10 +207,15 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     {
         $data = [];
         if ($category_id) {
+            $dep_flag = SubjectCategory::find()->select(['dep_flag'])
+                ->andFilterWhere(['=', 'id', $category_id])
+                ->scalar(); // зависимость от выбора отдела
             $data = Subject::find()->select(['name', 'id']);
-            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-                $data->orWhere(['like', 'department_list', $department_id]);
+            if ($dep_flag) {
+                foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+                    $data->orWhere(['like', 'department_list', $department_id]);
 
+                }
             }
             $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
             $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);

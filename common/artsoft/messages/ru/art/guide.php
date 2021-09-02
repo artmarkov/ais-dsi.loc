@@ -8,6 +8,7 @@ return [
     'Area Auditory' => 'Площадь аудитории',
     'Capacity Auditory' => 'Вместимость',
     'Description Auditory' => 'Описание аудитории',
+    'Department Dependence' => 'Зависит от выбора отдела',
     'Order' => 'Сортировка',
     'Name Building' => 'Здание',
     'Name Auditory Category' => 'Категория аудиторий',
