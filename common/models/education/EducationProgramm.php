@@ -168,9 +168,9 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getProgrammSubject()
+    public function getProgrammLevel()
     {
-        return $this->hasMany(EducationProgrammSubject::class, ['programm_id' => 'id']);
+        return $this->hasMany(EducationProgrammLevel::class, ['programm_id' => 'id']);
     }
 
     /**

@@ -26,13 +26,13 @@ JS
 $js = <<<JS
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("Дисциплина: " + (index + 1))
+        jQuery(this).html("Уровень: " + (index + 1))
     });
 });
 
 jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("Дисциплина: " + (index + 1))
+        jQuery(this).html("Уровень: " + (index + 1))
     });
 });
 
@@ -117,21 +117,20 @@ $this->registerJs($js);
                 'formId' => 'education-programm-form',
                 'formFields' => [
                     'programm_id',
-                    'subject_cat_id',
-                    'subject_id',
+                    'course_list',
                 ],
             ]); ?>
 
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    Дисциплины программы
+                    Уровни программы
                 </div>
                 <div class="panel-body">
                     <div class="container-items"><!-- widgetBody -->
                         <?php foreach ($modelsSubject as $index => $modelSubject): ?>
                             <div class="item panel panel-info"><!-- widgetItem -->
                                 <div class="panel-heading">
-                                    <span class="panel-title-activities">Дисциплина: <?= ($index + 1) ?></span>
+                                    <span class="panel-title-activities">Уровень: <?= ($index + 1) ?></span>
                                     <?php if (!$readonly): ?>
                                         <div class="pull-right">
                                             <button type="button" class="remove-item btn btn-default btn-xs">
@@ -148,29 +147,17 @@ $this->registerJs($js);
                                         echo Html::activeHiddenInput($modelSubject, "[{$index}]id");
                                     }
                                     ?>
-                                    <?= $form->field($modelSubject, "[{$index}]subject_cat_id")->widget(\kartik\select2\Select2::class, [
-                                        'data' => RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                                    <?= $form->field($modelSubject, 'course_list')->widget(\kartik\select2\Select2::className(), [
+                                        'data' => ['1' => '1'],
                                         'options' => [
-                                            'disabled' => $readonly,
-                                            'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
+                                            // 'disabled' => $readonly,
+                                            'placeholder' => Yii::t('art/guide', 'Select Course...'),
+                                            'multiple' => true,
                                         ],
                                         'pluginOptions' => [
                                             'allowClear' => true
                                         ],
-                                    ]);
-                                    ?>
-
-                                    <?= $form->field($modelSubject, "[{$index}]subject_id")->widget(DepDrop::class, [
-                                        'data' => $model->getSubjectByCategory($modelSubject->subject_cat_id),
-                                        'options' => ['prompt' => Yii::t('art/guide', 'Select Subject Name...'),
-                                            'disabled' => $readonly,
-                                        ],
-                                        'pluginOptions' => [
-                                            'depends' => ['educationprogrammsubject-' . $index . '-subject_cat_id'],
-                                            'placeholder' => Yii::t('art/guide', 'Select Subject Name...'),
-                                            'url' => Url::to(['/education/default/subject', 'id' => $model->id])
-                                        ]
-                                    ]);
+                                    ])->label(Yii::t('art/guide', 'Course'));
                                     ?>
 
                                     <div class="col-sm-3">

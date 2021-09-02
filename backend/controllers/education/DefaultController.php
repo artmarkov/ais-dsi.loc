@@ -3,8 +3,8 @@
 namespace backend\controllers\education;
 
 use common\models\education\EducationProgramm;
-use common\models\education\EducationProgrammSubject;
-use common\models\education\EducationProgrammSubjectTime;
+use common\models\education\EducationProgrammLevel;
+use common\models\education\EducationProgrammLevelSubject;
 use common\models\history\EducationProgrammHistory;
 use backend\models\Model;
 use common\models\subject\Subject;
@@ -25,23 +25,23 @@ class DefaultController extends MainController
 
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
-        $modelsSubject = [new EducationProgrammSubject];
-        $modelsTime = [[new EducationProgrammSubjectTime]];
+        $modelsSubject = [new EducationProgrammLevel];
+        $modelsTime = [[new EducationProgrammLevelSubject]];
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $modelsSubject = Model::createMultiple(EducationProgrammSubject::class);
+            $modelsSubject = Model::createMultiple(EducationProgrammLevel::class);
             Model::loadMultiple($modelsSubject, Yii::$app->request->post());
 
             // validate person and houses models
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsSubject) && $valid;
 
-            if (isset($_POST['EducationProgrammSubjectTime'][0][0])) {
-                foreach ($_POST['EducationProgrammSubjectTime'] as $index => $times) {
+            if (isset($_POST['EducationProgrammLevelSubject'][0][0])) {
+                foreach ($_POST['EducationProgrammLevelSubject'] as $index => $times) {
                     foreach ($times as $indexTime => $time) {
-                        $data['EducationProgrammSubjectTime'] = $time;
-                        $modelTime = new EducationProgrammSubjectTime;
+                        $data['EducationProgrammLevelSubject'] = $time;
+                        $modelTime = new EducationProgrammLevelSubject;
                         $modelTime->load($data);
                         $modelsTime[$index][$indexTime] = $modelTime;
                         $valid = $modelTime->validate();
@@ -90,8 +90,8 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax($this->createView, [
                 'model' => $model,
-                'modelsSubject' => (empty($modelsSubject)) ? [new EducationProgrammSubject] : $modelsSubject,
-                'modelsTime' => (empty($modelsTime)) ? [[new EducationProgrammSubjectTime]] : $modelsTime,
+                'modelsSubject' => (empty($modelsSubject)) ? [new EducationProgrammLevel] : $modelsSubject,
+                'modelsTime' => (empty($modelsTime)) ? [[new EducationProgrammLevelSubject]] : $modelsTime,
                 'readonly' => false
             ]
         );
@@ -107,13 +107,13 @@ class DefaultController extends MainController
             throw new NotFoundHttpException("The EducationProgramm was not found.");
         }
 
-        $modelsSubject = $model->programmSubject;
+        $modelsSubject = $model->programmLevel;
         $modelsTime = [];
         $oldTimes = [];
 
         if (!empty($modelsSubject)) {
             foreach ($modelsSubject as $index => $modelSubject) {
-                $times = $modelSubject->educationProgrammSubjectTimes;
+                $times = $modelSubject->EducationProgrammLevelSubjects;
                 $modelsTime[$index] = $times;
                 $oldTimes = ArrayHelper::merge(ArrayHelper::index($times, 'id'), $oldTimes);
             }
@@ -125,7 +125,7 @@ class DefaultController extends MainController
             $modelsTime = [];
 
             $oldSubjectIDs = ArrayHelper::map($modelsSubject, 'id', 'id');
-            $modelsSubject = Model::createMultiple(EducationProgrammSubject::class, $modelsSubject);
+            $modelsSubject = Model::createMultiple(EducationProgrammLevel::class, $modelsSubject);
             Model::loadMultiple($modelsSubject, Yii::$app->request->post());
             $deletedSubjectIDs = array_diff($oldSubjectIDs, array_filter(ArrayHelper::map($modelsSubject, 'id', 'id')));
 
@@ -133,12 +133,12 @@ class DefaultController extends MainController
             $valid = Model::validateMultiple($modelsSubject) && $valid;
 
             $timesIDs = [];
-            if (isset($_POST['EducationProgrammSubjectTime'][0][0])) {
-                foreach ($_POST['EducationProgrammSubjectTime'] as $index => $times) {
+            if (isset($_POST['EducationProgrammLevelSubject'][0][0])) {
+                foreach ($_POST['EducationProgrammLevelSubject'] as $index => $times) {
                     $timesIDs = ArrayHelper::merge($timesIDs, array_filter(ArrayHelper::getColumn($times, 'id')));
                     foreach ($times as $indexTime => $time) {
-                        $data['EducationProgrammSubjectTime'] = $time;
-                        $modelTime = (isset($time['id']) && isset($oldTimes[$time['id']])) ? $oldTimes[$time['id']] : new EducationProgrammSubjectTime;
+                        $data['EducationProgrammLevelSubject'] = $time;
+                        $modelTime = (isset($time['id']) && isset($oldTimes[$time['id']])) ? $oldTimes[$time['id']] : new EducationProgrammLevelSubject;
                         $modelTime->load($data);
                         $modelsTime[$index][$indexTime] = $modelTime;
                         $valid = $modelTime->validate();
@@ -155,11 +155,11 @@ class DefaultController extends MainController
                     if ($flag = $model->save(false)) {
 
                         if (! empty($deletedTimesIDs)) {
-                            EducationProgrammSubjectTime::deleteAll(['id' => $deletedTimesIDs]);
+                            EducationProgrammLevelSubject::deleteAll(['id' => $deletedTimesIDs]);
                         }
 
                         if (! empty($deletedSubjectIDs)) {
-                            EducationProgrammSubject::deleteAll(['id' => $deletedSubjectIDs]);
+                            EducationProgrammLevel::deleteAll(['id' => $deletedSubjectIDs]);
                         }
 
                         foreach ($modelsSubject as $index => $modelSubject) {
@@ -199,8 +199,8 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax($this->updateView, [
             'model' => $model,
-            'modelsSubject' => (empty($modelsSubject)) ? [new EducationProgrammSubject] : $modelsSubject,
-            'modelsTime' => (empty($modelsTime)) ? [[new EducationProgrammSubjectTime]] : $modelsTime,
+            'modelsSubject' => (empty($modelsSubject)) ? [new EducationProgrammLevel] : $modelsSubject,
+            'modelsTime' => (empty($modelsTime)) ? [[new EducationProgrammLevelSubject]] : $modelsTime,
             'readonly' => $readonly
         ]);
     }

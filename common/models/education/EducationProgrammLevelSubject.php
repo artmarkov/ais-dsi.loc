@@ -2,17 +2,20 @@
 
 namespace common\models\education;
 
+use common\models\subject\Subject;
+use common\models\subject\SubjectCategory;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use artsoft\models\User;
 use Yii;
 
 /**
- * This is the model class for table "education_programm_subject_time".
+ * This is the model class for table "education_programm_level_subject".
  *
  * @property int $id
- * @property int $programm_subject_id
- * @property int $cource
+ * @property int $programm_level_id
+ * @property int $subject_cat_id
+ * @property int $subject_id
  * @property float|null $week_time
  * @property float|null $cost_week_hour
  * @property float|null $year_time
@@ -22,16 +25,16 @@ use Yii;
  * @property int|null $updated_by
  * @property int $version
  *
- * @property EducationProgrammSubject $programmSubject
+ * @property EducationProgrammLevel $programmLevel
  */
-class EducationProgrammSubjectTime extends \artsoft\db\ActiveRecord
+class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'education_programm_subject_time';
+        return 'education_programm_level_subject';
     }
 
     /**
@@ -51,10 +54,13 @@ class EducationProgrammSubjectTime extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['cource', 'week_time', 'year_time'], 'required'],
-            [['programm_subject_id', 'cource', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['subject_cat_id', 'subject_id', 'week_time', 'year_time'], 'required'],
+            [['programm_subject_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['week_time', 'cost_week_hour', 'year_time'], 'number'],
-            [['programm_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgrammSubject::class, 'targetAttribute' => ['programm_subject_id' => 'id']],
+            [['programm_level_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgrammLevel::class, 'targetAttribute' => ['programm_subject_id' => 'id']],
+            [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
+            [['subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => Subject::class, 'targetAttribute' => ['subject_id' => 'id']],
+
         ];
     }
 
@@ -65,8 +71,9 @@ class EducationProgrammSubjectTime extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art/guide', 'ID'),
-            'programm_subject_id' => Yii::t('art/guide', 'Programm Subject'),
-            'cource' => Yii::t('art/guide', 'Cource'),
+            'programm_level_id' => Yii::t('art/guide', 'Programm Level'),
+            'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
+            'subject_id' => Yii::t('art/guide', 'Subject Name'),
             'week_time' => Yii::t('art/guide', 'Week Time'),
             'cost_week_hour' => Yii::t('art/guide', 'Cost Week Hour'),
             'year_time' => Yii::t('art/guide', 'Year Time'),
@@ -78,20 +85,22 @@ class EducationProgrammSubjectTime extends \artsoft\db\ActiveRecord
         ];
     }
 
-
+    /**
+     * @return string
+     */
     public function optimisticLock()
     {
         return 'version';
     }
 
     /**
-     * Gets query for [[ProgrammSubject]].
+     * Gets query for [[ProgrammLevel]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getProgrammSubject()
+    public function getProgrammLevel()
     {
-        return $this->hasOne(EducationProgrammSubject::class, ['id' => 'programm_subject_id']);
+        return $this->hasOne(EducationProgrammLevel::class, ['id' => 'programm_level_id']);
     }
 
     /**

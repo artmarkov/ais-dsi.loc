@@ -37,8 +37,7 @@ class Subject extends \yii\db\ActiveRecord
     }
 
     /**
-     * Реализация поведения многое ко многим
-     * @return  mixed
+     * @return array
      */
     public function behaviors()
     {
