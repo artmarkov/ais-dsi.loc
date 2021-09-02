@@ -2,6 +2,8 @@
 
 namespace backend\controllers\studyplan;
 
+use artsoft\helpers\ArtHelper;
+use artsoft\helpers\DocTemplate;
 use backend\models\Model;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammSubject;
@@ -128,70 +130,91 @@ class DefaultController extends MainController
             }
         }
         if (Yii::$app->request->post('submitAction') == 'doc') {
-            echo '<pre>' . print_r($model, true) . '</pre>';
-            echo '<pre>' . print_r($modelsDependence, true) . '</pre>';
+//            echo '<pre>' . print_r($model, true) . '</pre>';
+//            echo '<pre>' . print_r($modelsDependence, true) . '</pre>';
+            $template = 'document/contract_student_2021.docx';
+            $save_as = '123';
+            $data = array();
 
+            $data[] = [
+                'rank' => 'doc',
+                'doc_date' => date('j') . ' '. ArtHelper::getMonthsList()[date('n')] . ' ' . date('Y'),
+
+            ];
+
+            $output_file_name = str_replace('.', '_' . date('Y-m-d') . $save_as . '.', basename($template));
+
+            $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data) {
+                /* @var $tbs clsTinyButStrong */
+                $tbs->MergeBlock('doc', $data);
+
+            })->prepare();
+                $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);
+                exit;
         }
-        return $this->render('update', [
-            'model' => $model,
-            'modelsDependence' => (empty($modelsDependence)) ? [new StudyplanSubject] : $modelsDependence,
-            'readonly' => $readonly
-        ]);
+            return $this->render('update', [
+                'model' => $model,
+                'modelsDependence' => (empty($modelsDependence)) ? [new StudyplanSubject] : $modelsDependence,
+                'readonly' => $readonly
+            ]);
     }
 
-    public function actionView($id)
-    {
-        return $this->actionUpdate($id, true);
-    }
+        public  function actionView($id)
+        {
+            return $this->actionUpdate($id, true);
+        }
 
-    public function actionHistory($id)
-    {
-        $this->view->params['tabMenu'] = $this->tabMenu;
-        $model = $this->findModel($id);
-        $data = new StudyplanHistory($id);
-        return $this->renderIsAjax('history', compact(['model', 'data']));
-    }
+        public
+        function actionHistory($id)
+        {
+            $this->view->params['tabMenu'] = $this->tabMenu;
+            $model = $this->findModel($id);
+            $data = new StudyplanHistory($id);
+            return $this->renderIsAjax('history', compact(['model', 'data']));
+        }
 
-    /**
-     *  формируем список дисциплин для widget DepDrop::classname()
-     * @return false|string
-     */
-    public function actionSpeciality()
-    {
-        $out = [];
-        if (isset($_POST['depdrop_parents'])) {
-            $parents = $_POST['depdrop_parents'];
+        /**
+         *  формируем список дисциплин для widget DepDrop::classname()
+         * @return false|string
+         */
+        public
+        function actionSpeciality()
+        {
+            $out = [];
+            if (isset($_POST['depdrop_parents'])) {
+                $parents = $_POST['depdrop_parents'];
 
-            if (!empty($parents)) {
-                $cat_id = $parents[0];
-                $out = EducationProgramm::getSpecialityByProgrammId($cat_id);
+                if (!empty($parents)) {
+                    $cat_id = $parents[0];
+                    $out = EducationProgramm::getSpecialityByProgrammId($cat_id);
 
-                return json_encode(['output' => $out, 'selected' => '']);
+                    return json_encode(['output' => $out, 'selected' => '']);
+                }
             }
+            return json_encode(['output' => '', 'selected' => '']);
         }
-        return json_encode(['output' => '', 'selected' => '']);
-    }
 
-    /**
-     * формируем список дисциплин для widget DepDrop::classname()
-     * @param $id
-     * @return string
-     * @throws \yii\web\NotFoundHttpException
-     */
-    public function actionSubject($id)
-    {
-        $model = $this->findModel($id);
-        $out = [];
-        if (isset($_POST['depdrop_parents'])) {
-            $parents = $_POST['depdrop_parents'];
+        /**
+         * формируем список дисциплин для widget DepDrop::classname()
+         * @param $id
+         * @return string
+         * @throws \yii\web\NotFoundHttpException
+         */
+        public
+        function actionSubject($id)
+        {
+            $model = $this->findModel($id);
+            $out = [];
+            if (isset($_POST['depdrop_parents'])) {
+                $parents = $_POST['depdrop_parents'];
 
-            if (!empty($parents)) {
-                $cat_id = $parents[0];
-                $out = $model->getSubjectById($cat_id);
+                if (!empty($parents)) {
+                    $cat_id = $parents[0];
+                    $out = $model->getSubjectById($cat_id);
 
-                return json_encode(['output' => $out, 'selected' => '']);
+                    return json_encode(['output' => $out, 'selected' => '']);
+                }
             }
+            return json_encode(['output' => '', 'selected' => '']);
         }
-        return json_encode(['output' => '', 'selected' => '']);
     }
-}
