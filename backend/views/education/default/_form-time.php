@@ -77,7 +77,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
 //            ]);
 //            ?>
             <td>
-                <?= $form->field($modelTime, "[{$index}][{$indexTime}]subject_cat_id")->label(false)->textInput(['maxlength' => true]) ?>
+                <?= $form->field($modelTime, "[{$index}][{$indexTime}]subject_cat_id",['template' => '{input}{error}{label}'])->label(false)->textInput(['maxlength' => true]) ?>
             </td>
             <td>
                 <?= $form->field($modelTime, "[{$index}][{$indexTime}]subject_id")->label(false)->textInput(['maxlength' => true]) ?>

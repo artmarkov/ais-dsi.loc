@@ -148,7 +148,7 @@ $this->registerJs($js);
                                     }
                                     ?>
                                     <?= $form->field($modelSubject, 'course_list')->widget(\kartik\select2\Select2::className(), [
-                                        'data' => ['1' => '1'],
+                                        'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                                         'options' => [
                                             // 'disabled' => $readonly,
                                             'placeholder' => Yii::t('art/guide', 'Select Course...'),

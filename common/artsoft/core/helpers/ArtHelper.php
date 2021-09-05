@@ -181,6 +181,11 @@ class ArtHelper
         }
     }
 
+    /**
+     * @param string $format
+     * @return mixed
+     * @throws \yii\base\InvalidConfigException
+     */
     public static function getMonthsList($format = 'MMMM')
     {
         for ($i = 1; $i <= 12; $i++) {
@@ -190,6 +195,10 @@ class ArtHelper
         return $months;
     }
 
+    /**
+     * @param int $start
+     * @return array
+     */
     public static function getStudyYearsList($start = 10)
     {
         $list = [];
@@ -201,9 +210,26 @@ class ArtHelper
         return $list;
     }
 
+    /**
+     * @param int $month_dev
+     * @return false|int|string
+     */
     public static function getStudyYearDefault($month_dev = 6)
     {
         return date("n") < $month_dev ? date("Y") - 1 : date("Y");
     }
 
+    /**
+     * @param int $min
+     * @param int $max
+     * @return array
+     */
+    public static function getCourseList($min = 1, $max = 8)
+    {
+        $course = [];
+        for ($i = $min; $i <= $max; $i++) {
+            $course[$i] = $i . ' курс';
+        }
+        return $course;
+    }
 }
