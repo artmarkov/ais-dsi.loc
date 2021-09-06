@@ -22,6 +22,12 @@ function initSelect2Loading(a,b){ initS2Loading(a,b); }
 function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
 JS
     , \yii\web\View::POS_END);
+$this->registerJs(<<<JS
+$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
+	    $( "#education-programm-form" ).submit(); // вызываем событие submit на элементе <form>
+	  });
+JS
+    , \yii\web\View::POS_END);
 
 $js = <<<JS
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
@@ -116,7 +122,7 @@ $this->registerJs($js);
                 'model' => $modelsSubject[0],
                 'formId' => 'education-programm-form',
                 'formFields' => [
-                    'programm_id',
+                    //'programm_id',
                     'course_list',
                 ],
             ]); ?>
@@ -147,10 +153,10 @@ $this->registerJs($js);
                                         echo Html::activeHiddenInput($modelSubject, "[{$index}]id");
                                     }
                                     ?>
-                                    <?= $form->field($modelSubject, 'course_list')->widget(\kartik\select2\Select2::className(), [
+                                    <?= $form->field($modelSubject, "[{$index}]course_list")->widget(\kartik\select2\Select2::className(), [
                                         'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                                         'options' => [
-                                            // 'disabled' => $readonly,
+                                            'disabled' => $readonly,
                                             'placeholder' => Yii::t('art/guide', 'Select Course...'),
                                             'multiple' => true,
                                         ],
@@ -160,16 +166,16 @@ $this->registerJs($js);
                                     ])->label(Yii::t('art/guide', 'Course'));
                                     ?>
 
-                                    <div class="col-sm-3">
-                                        <label class="control-label">Нагрузка</label>
-                                    </div>
-                                    <div class="col-sm-9">
+<!--                                    <div class="col-sm-3">-->
+<!--                                        <label class="control-label">Нагрузка</label>-->
+<!--                                    </div>-->
+                                    <div class="col-sm-12">
                                         <?= $this->render('_form-time', [
                                             'form' => $form,
                                             'index' => $index,
+                                            'model' => $model,
                                             'modelsTime' => $modelsTime[$index],
                                             'readonly' => $readonly,
-                                            'count' => $model->period_study,
                                         ]) ?>
                                     </div>
                                 </div>

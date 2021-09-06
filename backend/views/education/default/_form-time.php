@@ -4,8 +4,8 @@ use yii\helpers\Html;
 use wbraganca\dynamicform\DynamicFormWidget;
 
 /* @var $modelsTime */
+/* @var $model */
 /* @var $index */
-/* @var $count */
 /* @var $readonly */
 
 ?>
@@ -14,7 +14,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
     'widgetContainer' => 'dynamicform_inner',
     'widgetBody' => '.container-time',
     'widgetItem' => '.room-item',
-    'limit' => $count,
+    'limit' => $model->period_study,
     'min' => 1,
     'insertButton' => '.add-time',
     'deleteButton' => '.remove-time',
@@ -31,7 +31,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
 <table class="table">
     <thead>
     <tr>
-        <th class="text-center">Категория</th>
+        <th class="text-center">Раздел дисциплины</th>
         <th class="text-center">Дисциплина</th>
         <th class="text-center">Часов в неделю</th>
         <th class="text-center">Стоимость часа</th>
@@ -52,37 +52,34 @@ use wbraganca\dynamicform\DynamicFormWidget;
                 echo Html::activeHiddenInput($modelTime, "[{$index}][{$indexTime}]id");
             }
             ?>
-<!--            --><?//= $form->field($modelTime, "[{$index}]subject_cat_id")->widget(\kartik\select2\Select2::class, [
-//                'data' => RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
-//                'options' => [
-//                    'disabled' => $readonly,
-//                    'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
-//                ],
-//                'pluginOptions' => [
-//                    'allowClear' => true
-//                ],
-//            ]);
-//            ?>
-<!---->
-<!--            --><?//= $form->field($modelTime, "[{$index}]subject_id")->widget(DepDrop::class, [
-//                'data' => $model->getSubjectByCategory($modelSubject->subject_cat_id),
-//                'options' => ['prompt' => Yii::t('art/guide', 'Select Subject Name...'),
-//                    'disabled' => $readonly,
-//                ],
-//                'pluginOptions' => [
-//                    'depends' => ['educationprogrammsubject-' . $index . '-subject_cat_id'],
-//                    'placeholder' => Yii::t('art/guide', 'Select Subject Name...'),
-//                    'url' => Url::to(['/education/default/subject', 'id' => $model->id])
-//                ]
-//            ]);
-//            ?>
             <td>
-                <?= $form->field($modelTime, "[{$index}][{$indexTime}]subject_cat_id",['template' => '{input}{error}{label}'])->label(false)->textInput(['maxlength' => true]) ?>
-            </td>
-            <td>
-                <?= $form->field($modelTime, "[{$index}][{$indexTime}]subject_id")->label(false)->textInput(['maxlength' => true]) ?>
-            </td>
+            <?= $form->field($modelTime, "[{$index}][{$indexTime}]subject_cat_id")->widget(\kartik\select2\Select2::class, [
+                'data' => \artsoft\helpers\RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                'options' => [
 
+                    'disabled' => $readonly,
+                    'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
+                ],
+                'pluginOptions' => [
+                    'allowClear' => true
+                ],
+            ])->label(false);
+            ?>
+            </td>
+            <td>
+            <?= $form->field($modelTime, "[{$index}][{$indexTime}]subject_id")->widget(\kartik\depdrop\DepDrop::class, [
+                'data' => $model->getSubjectByCategory($modelTime->subject_cat_id),
+                'options' => ['prompt' => Yii::t('art/guide', 'Select Subject Name...'),
+                    'disabled' => $readonly,
+                ],
+                'pluginOptions' => [
+                    'depends' => ['educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_cat_id'],
+                    'placeholder' => Yii::t('art/guide', 'Select Subject Name...'),
+                    'url' => \yii\helpers\Url::to(['/education/default/subject', 'id' => $model->id])
+                ]
+            ])->label(false);
+            ?>
+            </td>
             <td>
                 <?= $form->field($modelTime, "[{$index}][{$indexTime}]week_time")->label(false)->textInput(['maxlength' => true]) ?>
             </td>
