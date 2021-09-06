@@ -91,7 +91,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-                            'period_study',
                             'description',
                         ],
                     ]);

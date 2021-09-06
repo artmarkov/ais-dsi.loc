@@ -14,7 +14,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
     'widgetContainer' => 'dynamicform_inner',
     'widgetBody' => '.container-time',
     'widgetItem' => '.room-item',
-    'limit' => $model->period_study,
+    'limit' => 8,
     'min' => 1,
     'insertButton' => '.add-time',
     'deleteButton' => '.remove-time',
@@ -23,9 +23,13 @@ use wbraganca\dynamicform\DynamicFormWidget;
     'formFields' => [
         'subject_cat_id',
         'subject_id',
+        'subject_vid_id',
         'week_time',
         'year_time',
-        'cost_week_hour'
+        'cost_hour',
+        'cost_month_summ',
+        'cost_year_summ',
+        'year_time_consult'
     ],
 ]); ?>
 <table class="table">
@@ -33,9 +37,13 @@ use wbraganca\dynamicform\DynamicFormWidget;
     <tr>
         <th class="text-center">Раздел дисциплины</th>
         <th class="text-center">Дисциплина</th>
+        <th class="text-center">Форма занятий</th>
         <th class="text-center">Часов в неделю</th>
+        <th class="text-center">Часов в год</th>
         <th class="text-center">Стоимость часа</th>
-        <th class="text-center">Консультации</br>часов в год</th>
+        <th class="text-center">Оплата в месяц</th>
+        <th class="text-center">Сумма в рублях за учебный год</th>
+        <th class="text-center">Консультации - </br>часов в год</th>
         <th class="text-center">
             <?php if (!$readonly): ?>
                 <button type="button" class="add-time btn btn-success btn-xs"><span class="fa fa-plus"></span></button>
@@ -53,41 +61,148 @@ use wbraganca\dynamicform\DynamicFormWidget;
             }
             ?>
             <td>
-            <?= $form->field($modelTime, "[{$index}][{$indexTime}]subject_cat_id")->widget(\kartik\select2\Select2::class, [
-                'data' => \artsoft\helpers\RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
-                'options' => [
+                <?php
+                $field = $form->field($modelTime, "[{$index}][{$indexTime}]subject_cat_id");
+                echo $field->begin();
+                ?>
+                <div class="col-sm-12">
+                    <?= \kartik\select2\Select2::widget(
+                        [
+                            'model' => $modelTime,
+                            'attribute' => "[{$index}][{$indexTime}]subject_cat_id",
+                            'id' => 'educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_cat_id',
+                            'data' => \artsoft\helpers\RefBook::find('subject_category_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                            'options' => [
 
-                    'disabled' => $readonly,
-                    'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
-                ],
-                'pluginOptions' => [
-                    'allowClear' => true
-                ],
-            ])->label(false);
-            ?>
+                                'disabled' => $readonly,
+                                'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ]
+                    ) ?>
+                    <p class="help-block help-block-error"></p>
+                </div>
+                <?= $field->end(); ?>
             </td>
             <td>
-            <?= $form->field($modelTime, "[{$index}][{$indexTime}]subject_id")->widget(\kartik\depdrop\DepDrop::class, [
-                'data' => $model->getSubjectByCategory($modelTime->subject_cat_id),
-                'options' => ['prompt' => Yii::t('art/guide', 'Select Subject Name...'),
-                    'disabled' => $readonly,
-                ],
-                'pluginOptions' => [
-                    'depends' => ['educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_cat_id'],
-                    'placeholder' => Yii::t('art/guide', 'Select Subject Name...'),
-                    'url' => \yii\helpers\Url::to(['/education/default/subject', 'id' => $model->id])
-                ]
-            ])->label(false);
-            ?>
+                <?php
+                $field = $form->field($modelTime, "[{$index}][{$indexTime}]subject_id");
+                echo $field->begin();
+                ?>
+                <div class="col-sm-12">
+                    <?= \kartik\depdrop\DepDrop::widget(
+                        [
+                            'model' => $modelTime,
+                            'attribute' => "[{$index}][{$indexTime}]subject_id",
+                            'id' => ['educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_id'],
+                            'data' => $model->getSubjectByCategory($modelTime->subject_cat_id),
+                            'options' => ['prompt' => Yii::t('art/guide', 'Select Subject Name...'),
+                                'disabled' => $readonly,
+                            ],
+                            'pluginOptions' => [
+                                'depends' => ['educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_cat_id'],
+                                'placeholder' => Yii::t('art/guide', 'Select Subject Name...'),
+                                'url' => \yii\helpers\Url::to(['/education/default/subject', 'id' => $model->id])
+                            ]
+                        ]
+                    ) ?>
+                    <p class="help-block help-block-error"></p>
+                </div>
+                <?= $field->end(); ?>
             </td>
             <td>
-                <?= $form->field($modelTime, "[{$index}][{$indexTime}]week_time")->label(false)->textInput(['maxlength' => true]) ?>
+                <?php
+                $field = $form->field($modelTime, "[{$index}][{$indexTime}]subject_vid_id");
+                echo $field->begin();
+                ?>
+                <div class="col-sm-12">
+                    <?= \kartik\select2\Select2::widget(
+                        [
+                            'model' => $modelTime,
+                            'attribute' => "[{$index}][{$indexTime}]subject_vid_id",
+                            'data' => \artsoft\helpers\RefBook::find('subject_vid_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                            'options' => [
+
+                                'disabled' => $readonly,
+                                'placeholder' => Yii::t('art/guide', 'Select Subject Vid Name...'),
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ]
+                    ) ?>
+                    <p class="help-block help-block-error"></p>
+                </div>
+                <?= $field->end(); ?>
             </td>
-             <td>
-                <?= $form->field($modelTime, "[{$index}][{$indexTime}]cost_week_hour")->label(false)->textInput(['maxlength' => true]) ?>
+
+            <td>
+                <?php
+                $field = $form->field($modelTime, "[{$index}][{$indexTime}]week_time");
+                echo $field->begin();
+                ?>
+                <div class="col-sm-12">
+                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]week_time", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                    <p class="help-block help-block-error"></p>
+                </div>
+                <?= $field->end(); ?>
             </td>
             <td>
-                <?= $form->field($modelTime, "[{$index}][{$indexTime}]year_time")->label(false)->textInput(['maxlength' => true]) ?>
+                <?php
+                $field = $form->field($modelTime, "[{$index}][{$indexTime}]year_time");
+                echo $field->begin();
+                ?>
+                <div class="col-sm-12">
+                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]year_time", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                    <p class="help-block help-block-error"></p>
+                </div>
+                <?= $field->end(); ?>
+            </td>
+            <td>
+                <?php
+                $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_hour");
+                echo $field->begin();
+                ?>
+                <div class="col-sm-12">
+                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_hour", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                    <p class="help-block help-block-error"></p>
+                </div>
+                <?= $field->end(); ?>
+            </td>
+            <td>
+                <?php
+                $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_month_summ");
+                echo $field->begin();
+                ?>
+                <div class="col-sm-12">
+                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_month_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                    <p class="help-block help-block-error"></p>
+                </div>
+                <?= $field->end(); ?>
+            </td>
+            <td>
+                <?php
+                $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_year_summ");
+                echo $field->begin();
+                ?>
+                <div class="col-sm-12">
+                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_year_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                    <p class="help-block help-block-error"></p>
+                </div>
+                <?= $field->end(); ?>
+            </td>
+            <td>
+                <?php
+                $field = $form->field($modelTime, "[{$index}][{$indexTime}]year_time_consult");
+                echo $field->begin();
+                ?>
+                <div class="col-sm-12">
+                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]year_time_consult", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                    <p class="help-block help-block-error"></p>
+                </div>
+                <?= $field->end(); ?>
             </td>
             <td class="vcenter">
                 <?php if (!$readonly): ?>

@@ -2,26 +2,26 @@
 
 namespace common\models\history;
 
-use common\models\education\EducationProgrammSubject;
+use common\models\education\EducationProgrammLevel;
 use common\widgets\history\BaseHistory;
 
-class EducationProgrammSubjectHistory extends BaseHistory
+class EducationProgrammLevelHistory extends BaseHistory
 {
     public static function getTableName()
     {
-        return 'education_programm_subject_hist';
+        return 'education_programm_level_hist';
     }
 
     public static function getModelName()
     {
-        return EducationProgrammSubject::class;
+        return EducationProgrammLevel::class;
     }
 
     protected function getFields()
     {
         return [
-            'subject_cat_id',
-            'subject_id',
+            'course',
+            'level_id',
         ];
     }
 
@@ -34,10 +34,8 @@ class EducationProgrammSubjectHistory extends BaseHistory
     protected static function getDisplayValue($model, $name, $value)
     {
         switch ($name) {
-            case 'subject_cat_id':
-                return isset($model->subject_cat_id) ? $model->subjectCat->name : $value;
-            case 'subject_id':
-                return isset($model->subject_id) ? $model->subject->name : $value;
+            case 'level_id':
+                return isset($model->level_id) ? $model->level->name : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }
@@ -48,8 +46,8 @@ class EducationProgrammSubjectHistory extends BaseHistory
     {
         $selfHistory = parent::getHistory();
 
-        foreach (EducationProgrammSubjectTimeHistory::getLinkedIdList('programm_subject_id', $this->objId) as $timeId) {
-            $vf = new EducationProgrammSubjectTimeHistory($timeId);
+        foreach (EducationProgrammLevelSubjectHistory::getLinkedIdList('programm_level_id', $this->objId) as $timeId) {
+            $vf = new EducationProgrammLevelSubjectHistory($timeId);
             $selfHistory = array_merge($selfHistory, $vf->getHistory());
         }
 

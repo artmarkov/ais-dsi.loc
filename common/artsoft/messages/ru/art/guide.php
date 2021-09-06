@@ -9,6 +9,8 @@ return [
     'Capacity Auditory' => 'Вместимость',
     'Description Auditory' => 'Описание аудитории',
     'Department Dependence' => 'Зависит от выбора отдела',
+    'Education Level' => 'Образовательный уровень',
+    'Select Education Level...' => 'Выберите образовательный уровень...',
     'Order' => 'Сортировка',
     'Name Building' => 'Здание',
     'Name Auditory Category' => 'Категория аудиторий',
@@ -60,6 +62,8 @@ return [
     'Select Subject Vid...' => 'Выберите вид дисциплины...',
     'Name Division' => 'Название отделения',
     'Category' => 'Категория',
+    'Course' => 'Курс',
+    'Select Course...' => 'Выберите курс',
     'Name purpose' => 'Назначение',
     'Recipient' => 'Получатель',
     'Inn' => 'ИНН',
@@ -88,6 +92,11 @@ return [
     'Week Time' => 'Часов в неделю',
     'Cost Week Hour' => 'Стоимость часа',
     'Year Time' => 'Часов в год',
+    'Month Summ' => 'Оплата в месяц',
+    'Year Summ' => 'Сумма в рублях за учебный год',
+    'Year Time Consult' => 'Консультации - часов в год',
+    'Subject Vid Name' => 'Форма занятий',
+    'Select Subject Vid Name...' => 'Выберите форму занятий',
 
 ];
 ?>

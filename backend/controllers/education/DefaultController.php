@@ -113,7 +113,7 @@ class DefaultController extends MainController
 
         if (!empty($modelsSubject)) {
             foreach ($modelsSubject as $index => $modelSubject) {
-                $times = $modelSubject->EducationProgrammLevelSubjects;
+                $times = $modelSubject->educationProgrammLevelSubject;
                 $modelsTime[$index] = $times;
                 $oldTimes = ArrayHelper::merge(ArrayHelper::index($times, 'id'), $oldTimes);
             }
@@ -176,7 +176,7 @@ class DefaultController extends MainController
 
                             if (isset($modelsTime[$index]) && is_array($modelsTime[$index])) {
                                 foreach ($modelsTime[$index] as $indexTime => $modelTime) {
-                                    $modelTime->programm_subject_id = $modelSubject->id;
+                                    $modelTime->programm_level_id = $modelSubject->id;
                                     if (!($flag = $modelTime->save(false))) {
                                         break;
                                     }
@@ -240,4 +240,21 @@ class DefaultController extends MainController
         }
         return json_encode(['output' => '', 'selected' => '']);
     }
+
+//    public function actionSubjectVid($id)
+//    {
+//        $model = $this->findModel($id);
+//        $out = [];
+//        if (isset($_POST['depdrop_parents'])) {
+//            $parents = $_POST['depdrop_parents'];
+//
+//            if (!empty($parents)) {
+//                $cat_id = $parents[0];
+//                $out = $model->getSubjectVidBySubjectId($cat_id);
+//
+//                return json_encode(['output' => $out, 'selected' => '']);
+//            }
+//        }
+//        return json_encode(['output' => '', 'selected' => '']);
+//    }
 }

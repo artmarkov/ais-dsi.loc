@@ -5,10 +5,8 @@ use common\models\education\EducationProgramm;
 use common\models\education\EducationCat;
 use common\models\education\EducationSpeciality;
 use artsoft\helpers\RefBook;
-use kartik\depdrop\DepDrop;
 use wbraganca\dynamicform\DynamicFormWidget;
 use artsoft\helpers\Html;
-use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\education\EducationProgramm */
@@ -20,12 +18,6 @@ use yii\helpers\Url;
 $this->registerJs(<<<JS
 function initSelect2Loading(a,b){ initS2Loading(a,b); }
 function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
-JS
-    , \yii\web\View::POS_END);
-$this->registerJs(<<<JS
-$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
-	    $( "#education-programm-form" ).submit(); // вызываем событие submit на элементе <form>
-	  });
 JS
     , \yii\web\View::POS_END);
 
@@ -89,19 +81,6 @@ $this->registerJs($js);
                     ]);
                     ?>
 
-                    <?= $form->field($model, 'period_study')->widget(kartik\touchspin\TouchSpin::classname(), [
-                        'pluginOptions' => [
-                            'buttonup_class' => 'btn btn-danger',
-                            'buttondown_class' => 'btn btn-info',
-                            'buttonup_txt' => '<i class="fa fa-plus" aria-hidden="true"></i>',
-                            'buttondown_txt' => '<i class="fa fa-minus" aria-hidden="true"></i>'
-                        ],
-                        'options' => [
-                            'disabled' => $model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true,
-                        ],
-                    ]);
-                    ?>
-
                     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
                     <?= $form->field($model, 'status')->dropDownList(EducationProgramm::getStatusList(), [
@@ -122,8 +101,8 @@ $this->registerJs($js);
                 'model' => $modelsSubject[0],
                 'formId' => 'education-programm-form',
                 'formFields' => [
-                    //'programm_id',
-                    'course_list',
+                    'level_id',
+                    'course',
                 ],
             ]); ?>
 
@@ -153,22 +132,30 @@ $this->registerJs($js);
                                         echo Html::activeHiddenInput($modelSubject, "[{$index}]id");
                                     }
                                     ?>
-                                    <?= $form->field($modelSubject, "[{$index}]course_list")->widget(\kartik\select2\Select2::className(), [
+                                    <?= $form->field($modelSubject, "[{$index}]level_id")->widget(\kartik\select2\Select2::className(), [
+                                        'data' => RefBook::find('education_level')->getList(),
+                                        'options' => [
+                                            'disabled' => $readonly,
+                                            'placeholder' => Yii::t('art/guide', 'Select Education Level...'),
+                                            'multiple' => false,
+                                        ],
+                                        'pluginOptions' => [
+                                            'allowClear' => true
+                                        ],
+                                    ]);
+                                    ?>
+                                    <?= $form->field($modelSubject, "[{$index}]course")->widget(\kartik\select2\Select2::className(), [
                                         'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                                         'options' => [
                                             'disabled' => $readonly,
                                             'placeholder' => Yii::t('art/guide', 'Select Course...'),
-                                            'multiple' => true,
+                                            'multiple' => false,
                                         ],
                                         'pluginOptions' => [
                                             'allowClear' => true
                                         ],
                                     ])->label(Yii::t('art/guide', 'Course'));
                                     ?>
-
-<!--                                    <div class="col-sm-3">-->
-<!--                                        <label class="control-label">Нагрузка</label>-->
-<!--                                    </div>-->
                                     <div class="col-sm-12">
                                         <?= $this->render('_form-time', [
                                             'form' => $form,

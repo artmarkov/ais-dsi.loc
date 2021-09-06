@@ -25,7 +25,6 @@ class EducationProgrammHistory extends BaseHistory
             'education_cat_id',
             'name',
             'speciality_list',
-            'period_study',
             'description',
             'status',
         ];
@@ -63,8 +62,8 @@ class EducationProgrammHistory extends BaseHistory
     {
         $selfHistory = parent::getHistory();
 
-        foreach (EducationProgrammSubjectHistory::getLinkedIdList('programm_id', $this->objId) as $subjectId) {
-            $vf = new EducationProgrammSubjectHistory($subjectId);
+        foreach (EducationProgrammLevelHistory::getLinkedIdList('programm_id', $this->objId) as $subjectId) {
+            $vf = new EducationProgrammLevelHistory($subjectId);
             $selfHistory = array_merge($selfHistory, $vf->getHistory());
         }
 

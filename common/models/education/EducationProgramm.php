@@ -7,6 +7,7 @@ use artsoft\models\User;
 use common\models\own\Department;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
+use common\models\subject\SubjectVid;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -19,7 +20,6 @@ use artsoft\traits\DateTimeTrait;
  * @property int $education_cat_id
  * @property string|null $name
  * @property string|null $speciality_list
- * @property int|null $period_study
  * @property string|null $description
  * @property int $created_at
  * @property int|null $created_by
@@ -66,9 +66,9 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'education_cat_id', 'speciality_list', 'period_study', 'status'], 'required'],
-            [['education_cat_id', 'period_study', 'status'], 'default', 'value' => null],
-            [['education_cat_id', 'period_study', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
+            [['name', 'education_cat_id', 'speciality_list', 'status'], 'required'],
+            [['education_cat_id', 'status'], 'default', 'value' => null],
+            [['education_cat_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['name'], 'string', 'max' => 127],
             [['description'], 'string', 'max' => 1024],
             [['speciality_list'], 'safe'],
@@ -89,7 +89,6 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             'education_cat_id' => Yii::t('art/guide', 'Education Cat'),
             'name' => Yii::t('art', 'Name'),
             'speciality_list' => Yii::t('art/guide', 'Education Specializations'),
-            'period_study' => Yii::t('art/guide', 'Period Study'),
             'description' => Yii::t('art', 'Description'),
             'status' => Yii::t('art', 'Status'),
             'created_at' => Yii::t('art', 'Created'),
@@ -268,4 +267,31 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
         }
         return $data;
     }
+//
+//    public static function getSubjectVidBySubject($subject_id)
+//    {
+//        $data = [];
+//        if ($subject_id) {
+//            $vid_list = Subject::find()->select(['vid_list'])->where(['=', 'id', $subject_id])->scalar();
+//            foreach (explode(',', $vid_list) as $item => $vid_id) {
+//                $data[$vid_id] = SubjectVid::find()->select(['name'])->where(['=', 'id', $vid_id])->scalar();
+//            }
+//        }
+//        return $data;
+//    }
+//
+//    public static function getSubjectVidBySubjectId($subject_id)
+//    {
+//        $data = [];
+//        if ($subject_id) {
+//            $vid_list = Subject::find()->select(['vid_list'])->where(['=', 'id', $subject_id])->scalar();
+//            foreach (explode(',', $vid_list) as $item => $vid_id) {
+//                $data[] = [
+//                    'id' => $vid_id,
+//                    'name' => SubjectVid::find()->select(['name'])->where(['=', 'id', $vid_id])->scalar(),
+//                ];
+//            }
+//        }
+//        return $data;
+//    }
 }

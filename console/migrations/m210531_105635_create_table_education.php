@@ -96,7 +96,6 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'education_cat_id' => $this->integer()->notNull(),
             'name' => $this->string(512),
             'speciality_list' => $this->string(1024),
-            'period_study' => $this->integer(),
             'description' => $this->string(1024),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
@@ -115,8 +114,8 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->createTableWithHistory('education_programm_level', [
             'id' => $this->primaryKey(),
             'programm_id' => $this->integer()->notNull(),
-            'level_id' => $this->integer()->notNull(),
-            'course_list' => $this->string(1024)->notNull(),
+            'level_id' => $this->integer(),
+            'course' => $this->integer(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -132,11 +131,15 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->createTableWithHistory('education_programm_level_subject', [
             'id' => $this->primaryKey(),
             'programm_level_id' => $this->integer()->notNull(),
-            'subject_cat_id' => $this->integer()->notNull(),
+            'subject_cat_id' => $this->integer(),
+            'subject_vid_id' => $this->integer(),
             'subject_id' => $this->integer(),
-            'week_time' => $this->float(),
-            'cost_week_hour' => $this->float(),
-            'year_time' => $this->float(),
+            'week_time' => $this->float()->defaultValue(0),
+            'year_time' => $this->float()->defaultValue(0),
+            'cost_hour' => $this->float()->defaultValue(0),
+            'cost_month_summ' => $this->float()->defaultValue(0),
+            'cost_year_summ' => $this->float()->defaultValue(0),
+            'year_time_consult' => $this->float()->defaultValue(0),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -149,6 +152,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->addForeignKey('education_programm_level_subject_ibfk_1', 'education_programm_level_subject', 'programm_level_id', 'education_programm_level', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('education_programm_level_subject_ibfk_2', 'education_programm_level_subject', 'subject_cat_id', 'guide_subject_category', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('education_programm_level_subject_ibfk_3', 'education_programm_level_subject', 'subject_id', 'subject', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('education_programm_level_subject_ibfk_4', 'education_programm_level_subject', 'subject_vid_id', 'guide_subject_vid', 'id', 'NO ACTION', 'NO ACTION');
 
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
@@ -190,11 +194,12 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_speciality'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_cat_short'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_cat'])->execute();
-        $this->dropForeignKey('education_programm_subject_ibfk_3', 'education_programm_subject');
-        $this->dropForeignKey('education_programm_subject_ibfk_2', 'education_programm_subject');
-        $this->dropForeignKey('education_programm_subject_ibfk_1', 'education_programm_subject');
-        $this->dropTableWithHistory('education_programm_subject_time');
-        $this->dropTableWithHistory('education_programm_subject');
+        $this->dropForeignKey('education_programm_level_subject_ibfk_1', 'education_programm_level_subject');
+        $this->dropForeignKey('education_programm_level_subject_ibfk_2', 'education_programm_level_subject');
+        $this->dropForeignKey('education_programm_level_subject_ibfk_3', 'education_programm_level_subject');
+       //$this->dropForeignKey('education_programm_level_subject_ibfk_3', 'education_programm_level_subject');
+        $this->dropTableWithHistory('education_programm_level_subject');
+        $this->dropTableWithHistory('education_programm_level');
 
         $this->dropTableWithHistory('education_programm');
         $this->dropTable('guide_education_level');

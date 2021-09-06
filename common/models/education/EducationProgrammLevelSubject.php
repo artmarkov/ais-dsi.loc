@@ -4,6 +4,7 @@ namespace common\models\education;
 
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
+use common\models\subject\SubjectVid;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use artsoft\models\User;
@@ -15,6 +16,7 @@ use Yii;
  * @property int $id
  * @property int $programm_level_id
  * @property int $subject_cat_id
+ * @property int $subject_vid_id
  * @property int $subject_id
  * @property float|null $week_time
  * @property float|null $cost_week_hour
@@ -54,11 +56,12 @@ class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_cat_id', 'subject_id', 'week_time', 'year_time'], 'required'],
-            [['programm_subject_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['week_time', 'cost_week_hour', 'year_time'], 'number'],
-            [['programm_level_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgrammLevel::class, 'targetAttribute' => ['programm_subject_id' => 'id']],
+            [['subject_cat_id', 'subject_vid_id', 'week_time', 'year_time'], 'required'],
+            [['programm_level_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'number'],
+            [['programm_level_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgrammLevel::class, 'targetAttribute' => ['programm_level_id' => 'id']],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
+            [['subject_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectVid::class, 'targetAttribute' => ['subject_vid_id' => 'id']],
             [['subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => Subject::class, 'targetAttribute' => ['subject_id' => 'id']],
 
         ];
@@ -73,10 +76,14 @@ class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art/guide', 'ID'),
             'programm_level_id' => Yii::t('art/guide', 'Programm Level'),
             'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
+            'subject_vid_id' => Yii::t('art/guide', 'Subject Vid Name'),
             'subject_id' => Yii::t('art/guide', 'Subject Name'),
             'week_time' => Yii::t('art/guide', 'Week Time'),
-            'cost_week_hour' => Yii::t('art/guide', 'Cost Week Hour'),
-            'year_time' => Yii::t('art/guide', 'Year Time'),
+            'year_time' => Yii::t('art/guide', 'Cost Week Hour'),
+            'cost_hour' => Yii::t('art/guide', 'Year Time'),
+            'cost_month_summ' => Yii::t('art/guide', 'Month Summ'),
+            'cost_year_summ' => Yii::t('art/guide', 'Year Summ'),
+            'year_time_consult' => Yii::t('art/guide', 'Year Time Consult'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -101,6 +108,21 @@ class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
     public function getProgrammLevel()
     {
         return $this->hasOne(EducationProgrammLevel::class, ['id' => 'programm_level_id']);
+    }
+
+    public function getSubject()
+    {
+        return $this->hasOne(Subject::class, ['id' => 'subject_id']);
+    }
+
+    public function getSubjectCategory()
+    {
+        return $this->hasOne(SubjectCategory::class, ['id' => 'subject_cat_id']);
+    }
+
+    public function getSubjectVid()
+    {
+        return $this->hasOne(SubjectVid::class, ['id' => 'subject_vid_id']);
     }
 
     /**

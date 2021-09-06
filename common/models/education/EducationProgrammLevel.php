@@ -15,7 +15,8 @@ use Yii;
  *
  * @property int $id
  * @property int $programm_id
- * @property string $course_list
+ * @property int $course
+ * @property int $level_id
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -45,10 +46,6 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
-            [
-                'class' => ArrayFieldBehavior::class,
-                'attributes' => ['course_list'],
-            ]
         ];
     }
 
@@ -58,10 +55,11 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['programm_id', 'subject_cat_id', 'course_list'], 'required'],
-            [['programm_id', 'subject_cat_id', 'subject_id'], 'default', 'value' => null],
-            [['programm_id', 'subject_cat_id', 'subject_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['programm_id', 'course', 'level_id'], 'required'],
+            [['programm_id'], 'default', 'value' => null],
+            [['programm_id', 'level_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['programm_id' => 'id']],
+            [['level_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationLevel::class, 'targetAttribute' => ['level_id' => 'id']],
         ];
     }
 
@@ -73,7 +71,8 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/guide', 'ID'),
             'programm_id' => Yii::t('art/guide', 'Programm Name'),
-            'course_list' => Yii::t('art/guide', 'Course'),
+            'course' => Yii::t('art/guide', 'Course'),
+            'level_id' => Yii::t('art/guide', 'Education Level'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -98,24 +97,9 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
         return $this->hasOne(EducationProgramm::class, ['id' => 'programm_id']);
     }
 
-    /**
-     * Gets query for [[SubjectCat]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSubjectCat()
+    public function getLevel()
     {
-        return $this->hasOne(SubjectCategory::class, ['id' => 'subject_cat_id']);
-    }
-
-    /**
-     * Gets query for [[Subject]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSubject()
-    {
-        return $this->hasOne(Subject::class, ['id' => 'subject_id']);
+        return $this->hasOne(EducationLevel::class, ['id' => 'level_id']);
     }
 
     /**
@@ -123,7 +107,7 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getEducationProgrammLevelTimes()
+    public function getEducationProgrammLevelSubject()
     {
         return $this->hasMany(EducationProgrammLevelSubject::class, ['programm_level_id' => 'id']);
     }
