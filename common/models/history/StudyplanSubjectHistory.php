@@ -25,6 +25,10 @@ class StudyplanSubjectHistory extends BaseHistory
             'subject_type_id',
             'week_time',
             'year_time',
+            'cost_hour',
+            'cost_month_summ',
+            'cost_year_summ',
+            'year_time_consult',
         ];
     }
 

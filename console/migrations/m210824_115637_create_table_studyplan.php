@@ -10,7 +10,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         }
 
         $this->createTableWithHistory('studyplan', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'student_id' => $this->integer()->notNull(),
             'programm_id' => $this->integer()->notNull(),
             'speciality_id' => $this->integer()->notNull(),
@@ -38,8 +38,13 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'subject_cat_id' => $this->integer()->notNull(),
             'subject_id' => $this->integer(),
             'subject_type_id' => $this->integer(),
+            'subject_vid_id' => $this->integer(),
             'week_time' => $this->float(),
             'year_time' => $this->float(),
+            'cost_hour' => $this->float(),
+            'cost_month_summ' => $this->float(),
+            'cost_year_summ' => $this->float(),
+            'year_time_consult' => $this->float(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -54,6 +59,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->addForeignKey('studyplan_subject_ibfk_2', 'studyplan_subject', 'subject_cat_id', 'guide_subject_category', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('studyplan_subject_ibfk_3', 'studyplan_subject', 'subject_id', 'subject', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('studyplan_subject_ibfk_4', 'studyplan_subject', 'subject_type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('studyplan_subject_ibfk_5', 'studyplan_subject', 'subject_vid_id', 'guide_subject_vid', 'id', 'NO ACTION', 'NO ACTION');
 
 
     }
@@ -64,6 +70,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->dropForeignKey('studyplan_subject_ibfk_2', 'studyplan_subject');
         $this->dropForeignKey('studyplan_subject_ibfk_3', 'studyplan_subject');
         $this->dropForeignKey('studyplan_subject_ibfk_4', 'studyplan_subject');
+        //$this->dropForeignKey('studyplan_subject_ibfk_5', 'studyplan_subject');
         $this->dropForeignKey('studyplan_ibfk_1', 'studyplan');
         $this->dropForeignKey('studyplan_ibfk_2', 'studyplan');
         $this->dropForeignKey('studyplan_ibfk_3', 'studyplan');

@@ -2,6 +2,7 @@
 
 namespace common\models\education;
 
+use common\models\subject\SubjectType;
 use Yii;
 
 /**
@@ -10,6 +11,7 @@ use Yii;
  * @property int $id
  * @property string|null $name
  * @property string $short_name
+ * @property int $type_id
  * @property int $status
  *
  * @property EducationProgramm[] $educationProgramms
@@ -33,11 +35,13 @@ class EducationCat extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'short_name', 'status'], 'required'],
+            [['name', 'short_name', 'type_id', 'status'], 'required'],
             [['status'], 'default', 'value' => null],
-            [['status'], 'integer'],
+            [['status', 'type_id'], 'integer'],
             [['name'], 'string', 'max' => 127],
             [['short_name'], 'string', 'max' => 64],
+            [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['type_id' => 'id']],
+
         ];
     }
 
@@ -50,6 +54,7 @@ class EducationCat extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art', 'ID'),
             'name' => Yii::t('art', 'Name'),
             'short_name' => Yii::t('art', 'Short Name'),
+            'type_id' => Yii::t('art/guide', 'Subject Type Name'),
             'status' => Yii::t('art', 'Status'),
         ];
     }
@@ -81,5 +86,13 @@ class EducationCat extends \artsoft\db\ActiveRecord
     public static function getEducationCatList()
     {
         return  self::find()->select(['name', 'id'])->indexBy('id')->column();
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubjectType()
+    {
+        return $this->hasOne(SubjectType::class, ['id' => 'type_id']);
     }
 }

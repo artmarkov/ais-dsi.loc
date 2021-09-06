@@ -19,8 +19,11 @@ use Yii;
  * @property int $subject_vid_id
  * @property int $subject_id
  * @property float|null $week_time
- * @property float|null $cost_week_hour
  * @property float|null $year_time
+ * @property float|null $cost_hour
+ * @property float|null $cost_month_summ
+ * @property float|null $cost_year_summ
+ * @property float|null $year_time_consult
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at

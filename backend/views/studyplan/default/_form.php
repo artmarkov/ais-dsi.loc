@@ -101,7 +101,18 @@ $this->registerJs($js);
                     ]);
                     ?>
 
-                    <?= $form->field($model, 'course')->textInput() ?>
+                    <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
+                        'data' => \artsoft\helpers\ArtHelper::getCourseList(),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/guide', 'Select Course...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Course'));
+                    ?>
 
                     <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                         [
@@ -134,6 +145,10 @@ $this->registerJs($js);
                         'subject_type_id',
                         'week_time',
                         'year_time',
+                        'cost_hour',
+                        'cost_month_summ',
+                        'cost_year_summ',
+                        'year_time_consult',
                     ],
                 ]); ?>
 
@@ -195,8 +210,24 @@ $this->registerJs($js);
                                             ],
                                         ]);
                                         ?>
+
+                                        <?= $form->field($modelDependence, "[{$index}]subject_vid_id")->widget(\kartik\select2\Select2::class, [
+                                            'data' => \artsoft\helpers\RefBook::find('subject_vid_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                                            'options' => [
+                                                'disabled' => $readonly,
+                                                'placeholder' => Yii::t('art/studyplan', 'Select Subject Vid...'),
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ]);
+                                        ?>
                                         <?= $form->field($modelDependence, "[{$index}]week_time")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
                                         <?= $form->field($modelDependence, "[{$index}]year_time")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
+                                        <?= $form->field($modelDependence, "[{$index}]cost_hour")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
+                                        <?= $form->field($modelDependence, "[{$index}]cost_month_summ")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
+                                        <?= $form->field($modelDependence, "[{$index}]cost_year_summ")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
+                                        <?= $form->field($modelDependence, "[{$index}]year_time_consult")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>

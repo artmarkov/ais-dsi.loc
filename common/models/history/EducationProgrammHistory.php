@@ -24,6 +24,7 @@ class EducationProgrammHistory extends BaseHistory
         return [
             'education_cat_id',
             'name',
+            'short_name',
             'speciality_list',
             'description',
             'status',

@@ -112,10 +112,6 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
         return $this->hasMany(EducationProgrammLevelSubject::class, ['programm_level_id' => 'id']);
     }
 
-    public function getProgrammSubjectTimesForCourse($course)
-    {
-        return EducationProgrammLevelSubject::find()->where(['programm_level_id' => $this->id])->andWhere(['=', 'cource', $course])->one();
-    }
 
     /**
      * @return \yii\db\ActiveQuery

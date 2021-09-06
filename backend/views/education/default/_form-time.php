@@ -40,10 +40,13 @@ use wbraganca\dynamicform\DynamicFormWidget;
         <th class="text-center">Форма занятий</th>
         <th class="text-center">Часов в неделю</th>
         <th class="text-center">Часов в год</th>
-        <th class="text-center">Стоимость часа</th>
-        <th class="text-center">Оплата в месяц</th>
-        <th class="text-center">Сумма в рублях за учебный год</th>
-        <th class="text-center">Консультации - </br>часов в год</th>
+        <?php if ($model->catType != 1000): ?>
+            <th class="text-center">Стоимость часа</th>
+            <th class="text-center">Оплата в месяц</th>
+            <th class="text-center">Сумма в рублях за учебный год</th>
+        <?php else: ?>
+            <th class="text-center">Консультации - часов в год</th>
+        <?php endif; ?>
         <th class="text-center">
             <?php if (!$readonly): ?>
                 <button type="button" class="add-time btn btn-success btn-xs"><span class="fa fa-plus"></span></button>
@@ -75,7 +78,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
                             'options' => [
 
                                 'disabled' => $readonly,
-                                'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
+                                'placeholder' => Yii::t('art', 'Select...'),
                             ],
                             'pluginOptions' => [
                                 'allowClear' => true
@@ -98,12 +101,13 @@ use wbraganca\dynamicform\DynamicFormWidget;
                             'attribute' => "[{$index}][{$indexTime}]subject_id",
                             'id' => ['educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_id'],
                             'data' => $model->getSubjectByCategory($modelTime->subject_cat_id),
-                            'options' => ['prompt' => Yii::t('art/guide', 'Select Subject Name...'),
+                            'options' => [
+                                'prompt' => Yii::t('art', 'Select...'),
                                 'disabled' => $readonly,
                             ],
                             'pluginOptions' => [
                                 'depends' => ['educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_cat_id'],
-                                'placeholder' => Yii::t('art/guide', 'Select Subject Name...'),
+                                'placeholder' => Yii::t('art', 'Select...'),
                                 'url' => \yii\helpers\Url::to(['/education/default/subject', 'id' => $model->id])
                             ]
                         ]
@@ -126,7 +130,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
                             'options' => [
 
                                 'disabled' => $readonly,
-                                'placeholder' => Yii::t('art/guide', 'Select Subject Vid Name...'),
+                                'placeholder' => Yii::t('art', 'Select...'),
                             ],
                             'pluginOptions' => [
                                 'allowClear' => true
@@ -160,50 +164,53 @@ use wbraganca\dynamicform\DynamicFormWidget;
                 </div>
                 <?= $field->end(); ?>
             </td>
-            <td>
-                <?php
-                $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_hour");
-                echo $field->begin();
-                ?>
-                <div class="col-sm-12">
-                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_hour", ['class' => 'form-control', 'disabled' => $readonly]); ?>
-                    <p class="help-block help-block-error"></p>
-                </div>
-                <?= $field->end(); ?>
-            </td>
-            <td>
-                <?php
-                $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_month_summ");
-                echo $field->begin();
-                ?>
-                <div class="col-sm-12">
-                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_month_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
-                    <p class="help-block help-block-error"></p>
-                </div>
-                <?= $field->end(); ?>
-            </td>
-            <td>
-                <?php
-                $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_year_summ");
-                echo $field->begin();
-                ?>
-                <div class="col-sm-12">
-                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_year_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
-                    <p class="help-block help-block-error"></p>
-                </div>
-                <?= $field->end(); ?>
-            </td>
-            <td>
-                <?php
-                $field = $form->field($modelTime, "[{$index}][{$indexTime}]year_time_consult");
-                echo $field->begin();
-                ?>
-                <div class="col-sm-12">
-                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]year_time_consult", ['class' => 'form-control', 'disabled' => $readonly]); ?>
-                    <p class="help-block help-block-error"></p>
-                </div>
-                <?= $field->end(); ?>
-            </td>
+            <?php if ($model->catType != 1000): ?>
+                <td>
+                    <?php
+                    $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_hour");
+                    echo $field->begin();
+                    ?>
+                    <div class="col-sm-12">
+                        <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_hour", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                        <p class="help-block help-block-error"></p>
+                    </div>
+                    <?= $field->end(); ?>
+                </td>
+                <td>
+                    <?php
+                    $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_month_summ");
+                    echo $field->begin();
+                    ?>
+                    <div class="col-sm-12">
+                        <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_month_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                        <p class="help-block help-block-error"></p>
+                    </div>
+                    <?= $field->end(); ?>
+                </td>
+                <td>
+                    <?php
+                    $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_year_summ");
+                    echo $field->begin();
+                    ?>
+                    <div class="col-sm-12">
+                        <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_year_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                        <p class="help-block help-block-error"></p>
+                    </div>
+                    <?= $field->end(); ?>
+                </td>
+            <?php else: ?>
+                <td>
+                    <?php
+                    $field = $form->field($modelTime, "[{$index}][{$indexTime}]year_time_consult");
+                    echo $field->begin();
+                    ?>
+                    <div class="col-sm-12">
+                        <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]year_time_consult", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                        <p class="help-block help-block-error"></p>
+                    </div>
+                    <?= $field->end(); ?>
+                </td>
+            <?php endif; ?>
             <td class="vcenter">
                 <?php if (!$readonly): ?>
                     <button type="button" class="remove-time btn btn-danger btn-xs"><span

@@ -8,6 +8,7 @@ use common\models\education\EducationProgramm;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
+use common\models\subject\SubjectVid;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -20,8 +21,13 @@ use yii\behaviors\TimestampBehavior;
  * @property int $subject_cat_id
  * @property int|null $subject_id
  * @property int|null $subject_type_id
+ * @property int|null $subject_vid_id
  * @property float|null $week_time
  * @property float|null $year_time
+ * @property float|null $cost_hour
+ * @property float|null $cost_month_summ
+ * @property float|null $cost_year_summ
+ * @property float|null $year_time_consult
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -54,17 +60,19 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
             BlameableBehavior::class,
         ];
     }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['subject_cat_id', 'subject_id', 'subject_type_id', 'week_time', 'year_time'], 'required'],
-            [['studyplan_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'status', 'version'], 'integer'],
-            [['week_time', 'year_time'], 'number'],
+            [['subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'week_time', 'year_time'], 'required'],
+            [['studyplan_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'status', 'version'], 'integer'],
+            [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'number'],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
+            [['subject_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectVid::class, 'targetAttribute' => ['subject_vid_id' => 'id']],
             [['subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => Subject::class, 'targetAttribute' => ['subject_id' => 'id']],
         ];
     }
@@ -80,8 +88,13 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
             'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
             'subject_id' => Yii::t('art/guide', 'Subject Name'),
             'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
+            'subject_vid_id' => Yii::t('art/guide', 'Subject Vid'),
             'week_time' => Yii::t('art/guide', 'Week Time'),
-            'year_time' => Yii::t('art/guide', 'Year Time'),
+            'year_time' => Yii::t('art/guide', 'Cost Week Hour'),
+            'cost_hour' => Yii::t('art/guide', 'Year Time'),
+            'cost_month_summ' => Yii::t('art/guide', 'Month Summ'),
+            'cost_year_summ' => Yii::t('art/guide', 'Year Summ'),
+            'year_time_consult' => Yii::t('art/guide', 'Year Time Consult'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -115,6 +128,7 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
+
     /**
      * Gets query for [[Studyplan]].
      *

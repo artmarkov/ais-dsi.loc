@@ -13,10 +13,13 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey(),
             'name' => $this->string(127),
             'short_name' => $this->string(64)->notNull(),
+            'type_id' => $this->integer(),
             'status' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_education_cat', 'Наименование образовательной программы');
+        $this->addForeignKey('guide_education_cat_ibfk_1', 'guide_education_cat', 'type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
+
         $this->db->createCommand()->batchInsert('guide_education_cat', ['id', 'name', 'short_name', 'status'], [
             [1, 'Дополнительная общеобразовательная общеразвивающая программа', 'ОП.', 1],
             [2, 'Дополнительная предпрофессиональная общеобразовательная программа', 'ПП.', 1],
@@ -95,6 +98,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'education_cat_id' => $this->integer()->notNull(),
             'name' => $this->string(512),
+            'short_name' => $this->string(512),
             'speciality_list' => $this->string(1024),
             'description' => $this->string(1024),
             'created_at' => $this->integer()->notNull(),
@@ -194,10 +198,11 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_speciality'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_cat_short'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_cat'])->execute();
+        $this->dropForeignKey('guide_education_cat_ibfk_1', 'guide_education_cat');
         $this->dropForeignKey('education_programm_level_subject_ibfk_1', 'education_programm_level_subject');
         $this->dropForeignKey('education_programm_level_subject_ibfk_2', 'education_programm_level_subject');
         $this->dropForeignKey('education_programm_level_subject_ibfk_3', 'education_programm_level_subject');
-       //$this->dropForeignKey('education_programm_level_subject_ibfk_3', 'education_programm_level_subject');
+        $this->dropForeignKey('education_programm_level_subject_ibfk_4', 'education_programm_level_subject');
         $this->dropTableWithHistory('education_programm_level_subject');
         $this->dropTableWithHistory('education_programm_level');
 

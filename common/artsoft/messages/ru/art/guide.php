@@ -97,6 +97,7 @@ return [
     'Year Time Consult' => 'Консультации - часов в год',
     'Subject Vid Name' => 'Форма занятий',
     'Select Subject Vid Name...' => 'Выберите форму занятий',
+    'Subject Type Name' => 'Тип занятий',
 
 ];
 ?>
