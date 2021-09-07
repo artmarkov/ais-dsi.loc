@@ -40,7 +40,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
         <th class="text-center">Форма занятий</th>
         <th class="text-center">Часов в неделю</th>
         <th class="text-center">Часов в год</th>
-        <?php if ($model->catType != 1000): ?>
+        <?php if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
             <th class="text-center">Стоимость часа</th>
             <th class="text-center">Оплата в месяц</th>
             <th class="text-center">Сумма в рублях за учебный год</th>
@@ -164,7 +164,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
                 </div>
                 <?= $field->end(); ?>
             </td>
-            <?php if ($model->catType != 1000): ?>
+            <?php if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
                 <td>
                     <?php
                     $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_hour");

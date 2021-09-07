@@ -17,6 +17,9 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'course' => $this->integer(),
             'plan_year' => $this->integer(),
             'description' => $this->string(1024),
+            'year_time_total' => $this->float()->defaultValue(0),
+            'cost_month_total' => $this->float()->defaultValue(0),
+            'cost_year_total' => $this->float()->defaultValue(0),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -70,7 +73,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->dropForeignKey('studyplan_subject_ibfk_2', 'studyplan_subject');
         $this->dropForeignKey('studyplan_subject_ibfk_3', 'studyplan_subject');
         $this->dropForeignKey('studyplan_subject_ibfk_4', 'studyplan_subject');
-        //$this->dropForeignKey('studyplan_subject_ibfk_5', 'studyplan_subject');
+        $this->dropForeignKey('studyplan_subject_ibfk_5', 'studyplan_subject');
         $this->dropForeignKey('studyplan_ibfk_1', 'studyplan');
         $this->dropForeignKey('studyplan_ibfk_2', 'studyplan');
         $this->dropForeignKey('studyplan_ibfk_3', 'studyplan');

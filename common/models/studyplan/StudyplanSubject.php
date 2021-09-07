@@ -150,6 +150,16 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Gets query for [[SubjectVid]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubjectVid()
+    {
+        return $this->hasOne(SubjectVid::class, ['id' => 'subject_vid_id']);
+    }
+
+    /**
      * Gets query for [[SubjectType]].
      *
      * @return \yii\db\ActiveQuery

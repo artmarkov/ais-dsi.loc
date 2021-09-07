@@ -22,6 +22,9 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $course
  * @property int|null $plan_year
  * @property string|null $description
+ * @property float|null $year_time_total
+ * @property float|null $cost_month_total
+ * @property float|null $cost_year_total
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -67,6 +70,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year'], 'required'],
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['description'], 'string', 'max' => 1024],
+            [['year_time_total','cost_month_total','cost_year_total'], 'number'],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['programm_id' => 'id']],
             [['speciality_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationSpeciality::class, 'targetAttribute' => ['speciality_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
@@ -87,6 +91,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'course' => Yii::t('art/studyplan', 'Course'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'description' => Yii::t('art', 'Description'),
+            'year_time_total' => Yii::t('art/guide', 'Year Time Total'),
+            'cost_month_total' => Yii::t('art/guide', 'Cost Month Total'),
+            'cost_year_total' => Yii::t('art/guide', 'Cost Year Total'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),

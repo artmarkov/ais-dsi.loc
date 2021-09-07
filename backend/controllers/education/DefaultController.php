@@ -2,12 +2,11 @@
 
 namespace backend\controllers\education;
 
-use common\models\education\EducationProgramm;
+use common\models\education\EducationCat;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\EducationProgrammLevelSubject;
 use common\models\history\EducationProgrammHistory;
 use backend\models\Model;
-use common\models\subject\Subject;
 use yii\helpers\ArrayHelper;
 use Yii;
 
@@ -68,6 +67,13 @@ class DefaultController extends MainController
                             if (isset($modelsTime[$index]) && is_array($modelsTime[$index])) {
                                 foreach ($modelsTime[$index] as $indexTime => $modelTime) {
                                     $modelTime->programm_subject_id = $modelSubject->id;
+                                    if ($model->catType == EducationCat::BASIS_FREE) {
+                                        $modelTime->cost_hour = 0;
+                                        $modelTime->cost_month_summ = 0;
+                                        $modelTime->cost_year_summ = 0;
+                                    } else {
+                                        $modelTime->year_time_consult = 0;
+                                    }
                                     if (!($flag = $modelTime->save(false))) {
                                         break;
                                     }
@@ -154,11 +160,11 @@ class DefaultController extends MainController
                 try {
                     if ($flag = $model->save(false)) {
 
-                        if (! empty($deletedTimesIDs)) {
+                        if (!empty($deletedTimesIDs)) {
                             EducationProgrammLevelSubject::deleteAll(['id' => $deletedTimesIDs]);
                         }
 
-                        if (! empty($deletedSubjectIDs)) {
+                        if (!empty($deletedSubjectIDs)) {
                             EducationProgrammLevel::deleteAll(['id' => $deletedSubjectIDs]);
                         }
 
@@ -174,20 +180,41 @@ class DefaultController extends MainController
                                 break;
                             }
 
+                            $modelSubject = EducationProgrammLevel::findOne(['id' => $modelSubject->id]);
+
+                            $modelSubject->year_time_total = 0;
+                            $modelSubject->cost_month_total = 0;
+                            $modelSubject->cost_year_total = 0;
+
                             if (isset($modelsTime[$index]) && is_array($modelsTime[$index])) {
                                 foreach ($modelsTime[$index] as $indexTime => $modelTime) {
                                     $modelTime->programm_level_id = $modelSubject->id;
+                                    if ($model->catType == EducationCat::BASIS_FREE) {
+                                        $modelTime->cost_hour = 0;
+                                        $modelTime->cost_month_summ = 0;
+                                        $modelTime->cost_year_summ = 0;
+                                    } else {
+                                        $modelTime->year_time_consult = 0;
+                                    }
+
                                     if (!($flag = $modelTime->save(false))) {
                                         break;
                                     }
+                                    $modelSubject->year_time_total += $modelTime->year_time;
+                                    $modelSubject->cost_month_total += $modelTime->cost_month_summ;
+                                    $modelSubject->cost_year_total += $modelTime->cost_year_summ;
                                 }
+                                if (!($flag = $modelSubject->save(false))) {
+                                    break;
+                                }
+
                             }
                         }
                     }
 
                     if ($flag) {
                         $transaction->commit();
-                        return  $this->getSubmitAction($model);
+                        return $this->getSubmitAction($model);
                     } else {
                         $transaction->rollBack();
                     }

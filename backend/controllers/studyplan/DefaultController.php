@@ -38,29 +38,37 @@ class DefaultController extends MainController
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
-
+                    $modelProgrammLevel = EducationProgrammLevel::find()
+                        ->where(['programm_id' => $model->programm_id])
+                        ->andWhere(['course' => $model->course])
+                        ->one();
+                    if ($modelProgrammLevel) {
+                        $model->year_time_total = $modelProgrammLevel->year_time_total;
+                        $model->cost_month_total = $modelProgrammLevel->cost_month_total;
+                        $model->cost_year_total = $modelProgrammLevel->cost_year_total;
+                    }
                     if ($flag = $model->save(false)) {
-                        $modelProgrammLevel = EducationProgrammLevel::find()
-                            ->where(['programm_id' => $model->programm_id])
-                            ->andWhere(['course' => $model->course])
-                            ->one();
-                        $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;
-                        foreach ($modelsSubTime as $modelSubTime) {
-                            $modelSub = new StudyplanSubject();
-                            $modelSub->studyplan_id = $model->id;
-                            $modelSub->subject_cat_id = $modelSubTime->subject_cat_id;
-                            $modelSub->subject_id = $modelSubTime->subject_id;
-                            $modelSub->subject_type_id = $model->getTypeScalar();
-                            $modelSub->subject_vid_id = $modelSubTime->subject_vid_id;
-                            $modelSub->week_time = $modelSubTime->week_time;
-                            $modelSub->year_time = $modelSubTime->year_time;
-                            $modelSub->cost_hour = $modelSubTime->cost_hour;
-                            $modelSub->cost_month_summ = $modelSubTime->cost_month_summ;
-                            $modelSub->cost_year_summ = $modelSubTime->cost_year_summ;
-                            $modelSub->year_time_consult = $modelSubTime->year_time_consult;
-                            if (!($flag = $modelSub->save(false))) {
-                                $transaction->rollBack();
-                                break;
+
+                        if (isset($modelProgrammLevel->educationProgrammLevelSubject)) {
+                            $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;
+                            foreach ($modelsSubTime as $modelSubTime) {
+                                $modelSub = new StudyplanSubject();
+                                $modelSub->studyplan_id = $model->id;
+                                $modelSub->subject_cat_id = $modelSubTime->subject_cat_id;
+                                $modelSub->subject_id = $modelSubTime->subject_id;
+                                $modelSub->subject_type_id = $model->getTypeScalar();
+                                $modelSub->subject_vid_id = $modelSubTime->subject_vid_id;
+                                $modelSub->week_time = $modelSubTime->week_time;
+                                $modelSub->year_time = $modelSubTime->year_time;
+                                $modelSub->cost_hour = $modelSubTime->cost_hour;
+                                $modelSub->cost_month_summ = $modelSubTime->cost_month_summ;
+                                $modelSub->cost_year_summ = $modelSubTime->cost_year_summ;
+                                $modelSub->year_time_consult = $modelSubTime->year_time_consult;
+
+                                if (!($flag = $modelSub->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
                             }
                         }
                     }

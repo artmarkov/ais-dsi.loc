@@ -98,6 +98,11 @@ return [
     'Subject Vid Name' => 'Форма занятий',
     'Select Subject Vid Name...' => 'Выберите форму занятий',
     'Subject Type Name' => 'Тип занятий',
+    'Basis Free' => 'На бесплатной основе',
+    'Basis Pay' => 'На платной основе',
+    'Year Time Total' => 'Всего учебных часов в год',
+    'Cost Month Total' => 'Сумма в рублях за месяц',
+    'Cost Year Total' => 'Сумма в рублях за учебный год',
 
 ];
 ?>

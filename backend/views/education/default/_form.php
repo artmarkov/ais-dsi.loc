@@ -24,13 +24,13 @@ JS
 $js = <<<JS
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("Уровень: " + (index + 1))
+        jQuery(this).html("Этап: " + (index + 1))
     });
 });
 
 jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("Уровень: " + (index + 1))
+        jQuery(this).html("Этап: " + (index + 1))
     });
 });
 
@@ -64,7 +64,7 @@ $this->registerJs($js);
                 <div class="col-sm-12">
 
                     <?= $form->field($model, 'education_cat_id')->dropDownList(RefBook::find('education_cat', $model->isNewRecord ? EducationCat::STATUS_ACTIVE : '')->getList(),
-                        ['prompt' => '', 'encodeSpaces' => true, 'disabled' =>  $model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true]) ?>
+                        ['prompt' => '', 'encodeSpaces' => true, 'disabled' => $model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true]) ?>
 
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
@@ -92,99 +92,107 @@ $this->registerJs($js);
                 </div>
             </div>
             <?php if (!$model->isNewRecord): ?>
-            <?php DynamicFormWidget::begin([
-                'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-                'widgetBody' => '.container-items', // required: css class selector
-                'widgetItem' => '.item', // required: css class
-                'limit' => 10, // the maximum times, an element can be added (default 999)
-                'min' => 1, // 0 or 1 (default 1)
-                'insertButton' => '.add-item', // css class
-                'deleteButton' => '.remove-item', // css class
-                'model' => $modelsSubject[0],
-                'formId' => 'education-programm-form',
-                'formFields' => [
-                    'level_id',
-                    'course',
-                ],
-            ]); ?>
+                <?php DynamicFormWidget::begin([
+                    'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
+                    'widgetBody' => '.container-items', // required: css class selector
+                    'widgetItem' => '.item', // required: css class
+                    'limit' => 10, // the maximum times, an element can be added (default 999)
+                    'min' => 1, // 0 or 1 (default 1)
+                    'insertButton' => '.add-item', // css class
+                    'deleteButton' => '.remove-item', // css class
+                    'model' => $modelsSubject[0],
+                    'formId' => 'education-programm-form',
+                    'formFields' => [
+                        'level_id',
+                        'course',
+                    ],
+                ]); ?>
 
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Уровни программы
-                </div>
-                <div class="panel-body">
-                    <div class="container-items"><!-- widgetBody -->
-                        <?php foreach ($modelsSubject as $index => $modelSubject): ?>
-                            <div class="item panel panel-info"><!-- widgetItem -->
-                                <div class="panel-heading">
-                                    <span class="panel-title-activities">Уровень: <?= ($index + 1) ?></span>
-                                    <?php if (!$readonly): ?>
-                                        <div class="pull-right">
-                                            <button type="button" class="remove-item btn btn-default btn-xs">
-                                                удалить
-                                            </button>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Этапы программы
+                    </div>
+                    <div class="panel-body">
+                        <div class="container-items"><!-- widgetBody -->
+                            <?php foreach ($modelsSubject as $index => $modelSubject): ?>
+                                <div class="item panel panel-info"><!-- widgetItem -->
+                                    <div class="panel-heading">
+                                        <span class="panel-title-activities">Этап: <?= ($index + 1) ?></span>
+                                        <?php if (!$readonly): ?>
+                                            <div class="pull-right">
+                                                <button type="button" class="remove-item btn btn-default btn-xs">
+                                                    удалить
+                                                </button>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <?php
+                                        // necessary for update action.
+                                        if (!$modelSubject->isNewRecord) {
+                                            echo Html::activeHiddenInput($modelSubject, "[{$index}]id");
+                                        }
+                                        ?>
+                                        <?= $form->field($modelSubject, "[{$index}]level_id")->widget(\kartik\select2\Select2::class, [
+                                            'data' => RefBook::find('education_level')->getList(),
+                                            'options' => [
+                                                'disabled' => $readonly,
+                                                'placeholder' => Yii::t('art/guide', 'Select Education Level...'),
+                                                'multiple' => false,
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ]);
+                                        ?>
+                                        <?= $form->field($modelSubject, "[{$index}]course")->widget(\kartik\select2\Select2::class, [
+                                            'data' => \artsoft\helpers\ArtHelper::getCourseList(),
+                                            'options' => [
+                                                'disabled' => $readonly,
+                                                'placeholder' => Yii::t('art/guide', 'Select Course...'),
+                                                'multiple' => false,
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ])->label(Yii::t('art/guide', 'Course'));
+                                        ?>
+                                        <div class="col-sm-12">
+                                            <?= $this->render('_form-time', [
+                                                'form' => $form,
+                                                'index' => $index,
+                                                'model' => $model,
+                                                'modelsTime' => $modelsTime[$index],
+                                                'readonly' => $readonly,
+                                            ]) ?>
                                         </div>
-                                    <?php endif; ?>
-                                    <div class="clearfix"></div>
-                                </div>
-                                <div class="panel-body">
-                                    <?php
-                                    // necessary for update action.
-                                    if (!$modelSubject->isNewRecord) {
-                                        echo Html::activeHiddenInput($modelSubject, "[{$index}]id");
-                                    }
-                                    ?>
-                                    <?= $form->field($modelSubject, "[{$index}]level_id")->widget(\kartik\select2\Select2::className(), [
-                                        'data' => RefBook::find('education_level')->getList(),
-                                        'options' => [
-                                            'disabled' => $readonly,
-                                            'placeholder' => Yii::t('art/guide', 'Select Education Level...'),
-                                            'multiple' => false,
-                                        ],
-                                        'pluginOptions' => [
-                                            'allowClear' => true
-                                        ],
-                                    ]);
-                                    ?>
-                                    <?= $form->field($modelSubject, "[{$index}]course")->widget(\kartik\select2\Select2::className(), [
-                                        'data' => \artsoft\helpers\ArtHelper::getCourseList(),
-                                        'options' => [
-                                            'disabled' => $readonly,
-                                            'placeholder' => Yii::t('art/guide', 'Select Course...'),
-                                            'multiple' => false,
-                                        ],
-                                        'pluginOptions' => [
-                                            'allowClear' => true
-                                        ],
-                                    ])->label(Yii::t('art/guide', 'Course'));
-                                    ?>
-                                    <div class="col-sm-12">
-                                        <?= $this->render('_form-time', [
-                                            'form' => $form,
-                                            'index' => $index,
-                                            'model' => $model,
-                                            'modelsTime' => $modelsTime[$index],
-                                            'readonly' => $readonly,
-                                        ]) ?>
+                                        <div class="col-sm-12">
+                                            <?= $form->field($modelSubject, "[{$index}]year_time_total")->textInput(['maxlength' => true, 'disabled' => true]) ?>
+
+                                            <?= $form->field($modelSubject, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => true]) ?>
+
+                                            <?= $form->field($modelSubject, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => true]) ?>
+
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div><!-- .panel -->
-                <?php if (!$readonly): ?>
-                    <div class="panel-footer">
-                        <div class="form-group btn-group">
-
-                            <button type="button" class="add-item btn btn-success btn-sm pull-right">
-                                <i class="glyphicon glyphicon-plus"></i> Добавить
-                            </button>
+                            <?php endforeach; ?>
                         </div>
-                    </div>
-                <?php endif; ?>
-                <?php DynamicFormWidget::end(); ?>
-            </div>
-                <?php endif; ?>
+                    </div><!-- .panel -->
+                    <?php if (!$readonly): ?>
+                        <div class="panel-footer">
+                            <div class="form-group btn-group">
+
+                                <button type="button" class="add-item btn btn-success btn-sm pull-right">
+                                    <i class="glyphicon glyphicon-plus"></i> Добавить
+                                </button>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php DynamicFormWidget::end(); ?>
+                </div>
+            <?php endif; ?>
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">

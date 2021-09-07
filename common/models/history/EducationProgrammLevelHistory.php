@@ -22,6 +22,9 @@ class EducationProgrammLevelHistory extends BaseHistory
         return [
             'course',
             'level_id',
+            'year_time_total',
+            'cost_month_total',
+            'cost_year_total',
         ];
     }
 

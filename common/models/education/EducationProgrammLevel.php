@@ -17,6 +17,9 @@ use Yii;
  * @property int $programm_id
  * @property int $course
  * @property int $level_id
+ * @property float|null $year_time_total
+ * @property float|null $cost_month_total
+ * @property float|null $cost_year_total
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -26,7 +29,7 @@ use Yii;
  * @property EducationProgramm $programm
  * @property GuideSubjectCategory $subjectCat
  * @property Subject $subject
- * @property EducationProgrammLevelTime[] $EducationProgrammLevelSubject
+ * @property EducationProgrammLevelSubject[] $EducationProgrammLevelSubject
  */
 class EducationProgrammLevel extends \artsoft\db\ActiveRecord
 {
@@ -57,6 +60,8 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
         return [
             [['programm_id', 'course', 'level_id'], 'required'],
             [['programm_id'], 'default', 'value' => null],
+            [['year_time_total', 'cost_month_total', 'cost_year_total'], 'number'],
+            [['year_time_total', 'cost_month_total', 'cost_year_total'], 'default', 'value' => 0],
             [['programm_id', 'level_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['programm_id' => 'id']],
             [['level_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationLevel::class, 'targetAttribute' => ['level_id' => 'id']],
@@ -73,6 +78,9 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
             'programm_id' => Yii::t('art/guide', 'Programm Name'),
             'course' => Yii::t('art/guide', 'Course'),
             'level_id' => Yii::t('art/guide', 'Education Level'),
+            'year_time_total' => Yii::t('art/guide', 'Year Time Total'),
+            'cost_month_total' => Yii::t('art/guide', 'Cost Month Total'),
+            'cost_year_total' => Yii::t('art/guide', 'Cost Year Total'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),

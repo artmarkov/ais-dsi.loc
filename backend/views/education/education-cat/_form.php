@@ -30,7 +30,7 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'type_id')->dropDownList(\artsoft\helpers\RefBook::find('subject_type_name')->getList()) ?>
+                    <?= $form->field($model, 'type_id')->dropDownList(EducationCat::getBasisList()) ?>
 
                     <?= $form->field($model, 'status')->dropDownList(EducationCat::getStatusList()) ?>
 

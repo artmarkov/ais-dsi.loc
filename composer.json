@@ -59,7 +59,8 @@
     "box/spout": "^3.3",
     "tinybutstrong/opentbs": "^1.10",
     "loveorigami/yii2-modal-ajax": "@dev",
-    "phpoffice/phpspreadsheet": "^1.17"
+    "phpoffice/phpspreadsheet": "^1.17",
+    "kartik-v/yii2-money": "*"
 
   },
   "require-dev": {

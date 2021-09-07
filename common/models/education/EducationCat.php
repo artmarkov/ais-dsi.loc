@@ -20,6 +20,8 @@ class EducationCat extends \artsoft\db\ActiveRecord
 {
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
+    const BASIS_FREE = 0;
+    const BASIS_PAY = 1;
 
     /**
      * {@inheritdoc}
@@ -40,7 +42,6 @@ class EducationCat extends \artsoft\db\ActiveRecord
             [['status', 'type_id'], 'integer'],
             [['name'], 'string', 'max' => 127],
             [['short_name'], 'string', 'max' => 64],
-            [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['type_id' => 'id']],
 
         ];
     }
@@ -63,6 +64,18 @@ class EducationCat extends \artsoft\db\ActiveRecord
      * getStatusList
      * @return array
      */
+    public static function getBasisList()
+    {
+        return array(
+            self::BASIS_FREE => Yii::t('art/guide', 'Basis Free'),
+            self::BASIS_PAY => Yii::t('art/guide', 'Basis Pay'),
+        );
+    }
+
+    /**
+     * getStatusList
+     * @return array
+     */
     public static function getStatusList()
     {
         return array(
@@ -70,6 +83,7 @@ class EducationCat extends \artsoft\db\ActiveRecord
             self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
         );
     }
+
     /**
      * Gets query for [[EducationProgramms]].
      *
@@ -85,14 +99,7 @@ class EducationCat extends \artsoft\db\ActiveRecord
      */
     public static function getEducationCatList()
     {
-        return  self::find()->select(['name', 'id'])->indexBy('id')->column();
+        return self::find()->select(['name', 'id'])->indexBy('id')->column();
     }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSubjectType()
-    {
-        return $this->hasOne(SubjectType::class, ['id' => 'type_id']);
-    }
+    
 }
