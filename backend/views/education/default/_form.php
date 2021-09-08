@@ -70,6 +70,8 @@ $this->registerJs($js);
 
                     <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
 
+                    <?= $form->field($model, 'term_mastering')->textInput(['maxlength' => true]) ?>
+
                     <?= $form->field($model, 'speciality_list')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('education_speciality', $model->isNewRecord ? EducationSpeciality::STATUS_ACTIVE : '')->getList(),
                         'options' => [

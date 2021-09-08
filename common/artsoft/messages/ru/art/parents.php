@@ -6,4 +6,5 @@ return [
     'Sertificate Num' => 'Номер',
     'Sertificate Organ' => 'Кем выдан',
     'Sertificate Date' => 'Дата выдачи',
+    'Select Parents...' => 'Выберите родителя...',
     ];

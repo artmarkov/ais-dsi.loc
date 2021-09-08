@@ -134,6 +134,22 @@ class Parents extends \artsoft\db\ActiveRecord
         return $this->user ? $this->user->birth_date : null;
     }
 
+    public function getUserPhone()
+    {
+        return $this->user ? ($this->user->phone ? $this->user->phone : $this->user->phone_optional) : null;
+    }
+
+    public function getUserAddress()
+    {
+        return $this->user ? $this->user->address : null;
+    }
+
+    public static function getDocumentValue($val)
+    {
+        $ar = self::PARENT_DOC;
+
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
     /**
      * Геттер полного имени юзера
      */

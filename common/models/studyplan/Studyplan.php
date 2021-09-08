@@ -2,10 +2,12 @@
 
 namespace common\models\studyplan;
 
+use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
 use artsoft\traits\DateTimeTrait;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationSpeciality;
+use common\models\parents\Parents;
 use common\models\students\Student;
 use common\models\subject\Subject;
 use Yii;
@@ -26,6 +28,12 @@ use yii\behaviors\TimestampBehavior;
  * @property float|null $cost_month_total
  * @property float|null $cost_year_total
  * @property int $created_at
+ * @property int $doc_date
+ * @property int $doc_contract_start
+ * @property int $doc_contract_end
+ * @property int $doc_signer
+ * @property int $doc_received_flag
+ * @property int $doc_sent_flag
  * @property int|null $created_by
  * @property int $updated_at
  * @property int|null $updated_by
@@ -58,6 +66,10 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return [
             TimestampBehavior::class,
             BlameableBehavior::class,
+            [
+                'class' => DateFieldBehavior::class,
+                'attributes' => ['doc_date','doc_contract_start','doc_contract_end'],
+            ],
         ];
     }
 
@@ -69,11 +81,15 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return [
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year'], 'required'],
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
+            [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
+            [['doc_date','doc_contract_start','doc_contract_end'], 'safe'],
+            ['doc_date', 'default', 'value' => date('d.m.Y')],
             [['description'], 'string', 'max' => 1024],
             [['year_time_total','cost_month_total','cost_year_total'], 'number'],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['programm_id' => 'id']],
             [['speciality_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationSpeciality::class, 'targetAttribute' => ['speciality_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
+            [['doc_signer'], 'exist', 'skipOnError' => true, 'targetClass' => Parents::class, 'targetAttribute' => ['doc_signer' => 'id']],
         ];
     }
 
@@ -94,6 +110,12 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'year_time_total' => Yii::t('art/guide', 'Year Time Total'),
             'cost_month_total' => Yii::t('art/guide', 'Cost Month Total'),
             'cost_year_total' => Yii::t('art/guide', 'Cost Year Total'),
+            'doc_date' => Yii::t('art/guide', 'Doc Date'),
+            'doc_contract_start' => Yii::t('art/guide', 'Doc Contract Start'),
+            'doc_contract_end' => Yii::t('art/guide', 'Doc Contract End'),
+            'doc_signer' => Yii::t('art/guide', 'Doc Signer'),
+            'doc_received_flag' => Yii::t('art/guide', 'Doc Received'),
+            'doc_sent_flag' => Yii::t('art/guide', 'Doc Sent'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -184,6 +206,11 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function getStudent()
     {
         return $this->hasOne(Student::class, ['id' => 'student_id']);
+    }
+
+    public function getParent()
+    {
+        return $this->hasOne(Parents::class, ['id' => 'doc_signer']);
     }
 
     /**

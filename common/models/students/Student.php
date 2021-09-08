@@ -6,7 +6,6 @@ use artsoft\behaviors\DateFieldBehavior;
 use artsoft\db\ActiveRecord;
 use artsoft\traits\DateTimeTrait;
 use common\models\user\UserCommon;
-use common\models\user\UserFamily;
 use Yii;
 use artsoft\models\User;
 use yii\behaviors\BlameableBehavior;
@@ -149,6 +148,22 @@ class Student extends ActiveRecord
         return $this->user ? $this->user->birth_date : null;
     }
 
+    public function getUserPhone()
+    {
+        return $this->user ? ($this->user->phone ? $this->user->phone : $this->user->phone_optional) : null;
+    }
+
+    public function getUserAddress()
+    {
+        return $this->user ? $this->user->address : null;
+    }
+
+    public static function getDocumentValue($val)
+    {
+        $ar = self::STUDENT_DOC;
+
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
     /**
      * Геттер полного имени юзера
      */
@@ -203,28 +218,4 @@ class Student extends ActiveRecord
         return parent::beforeDelete();
     }
 
-    /**
-     * Список родителей ученика
-     * @param type $user_id
-     * @return array
-     */
-
-//    public static function getFamilyList($user_id)
-//    {
-//        $data = UserFamily::find()
-//            ->innerJoin('user_relation', 'user_relation.id = user_family.relation_id')
-//            ->innerJoin('user', 'user.id = user_family.user_slave_id')
-//            ->andWhere(['in', 'user_family.user_main_id' , $user_id])
-//            ->select(['user.id as user_id',
-//                      'user_family.id as id',
-//                      "CONCAT(user.last_name, ' ',user.first_name, ' ',user.middle_name) AS parent",
-//                      'user_relation.name as relation',
-//                      'user.phone as phone',
-//                      'user.email as email'
-//                ])
-//            ->orderBy('user.last_name')
-//            ->asArray()->all();
-//
-//      return $data;
-//    }
 }

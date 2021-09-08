@@ -32,7 +32,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
         'year_time_consult'
     ],
 ]); ?>
-<table class="table">
+<table class="table table-bordered table-striped">
     <thead>
     <tr>
         <th class="text-center">Раздел дисциплины</th>

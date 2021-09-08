@@ -4,9 +4,11 @@ use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 use common\models\studyplan\Studyplan;
 use artsoft\helpers\Html;
+use kartik\date\DatePicker;
 use yii\helpers\Url;
 use kartik\depdrop\DepDrop;
 use wbraganca\dynamicform\DynamicFormWidget;
+use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\studyplan\Studyplan */
@@ -20,23 +22,6 @@ function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev)
 JS
     , \yii\web\View::POS_END);
 
-//$js = <<<JS
-//jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
-//    jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-//        jQuery(this).html("Дисциплина: " + (index + 1))
-//    });
-//});
-//
-//jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
-//    jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-//        jQuery(this).html("Дисциплина: " + (index + 1))
-//    });
-//});
-//
-//
-//JS;
-//
-//$this->registerJs($js);
 ?>
 
 <div class="studyplan-form">
@@ -158,7 +143,7 @@ JS
                                     'year_time_consult',
                                 ],
                             ]); ?>
-                            <table class="table">
+                            <table class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
                                     <th class="text-center">Раздел дисциплины</th>
@@ -218,6 +203,10 @@ JS
                                             <?= $field->end(); ?>
                                         </td>
                                         <td>
+                                            <?php
+                                            $field = $form->field($modelDependence, "[{$index}]subject_id");
+                                            echo $field->begin();
+                                            ?>
                                             <div class="col-sm-12">
                                                 <?= \kartik\depdrop\DepDrop::widget(
                                                     [
@@ -379,14 +368,54 @@ JS
                     </div>
                 </div>
             </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Документы
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <?= $form->field($model, 'doc_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => $readonly]); ?>
+
+                            <?= $form->field($model, 'doc_contract_start')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => $readonly]); ?>
+
+                            <?= $form->field($model, 'doc_contract_end')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => $readonly]); ?>
+
+                            <?= $form->field($model, "doc_signer")->widget(\kartik\select2\Select2::class, [
+                                'data' => RefBook::find('parents_dependence_fio', $model->student_id)->getList(),
+                                'options' => [
+                                    'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art/parents', 'Select Parents...'),
+                                    'multiple' => false,
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ]
+                            ]);
+                            ?>
+
+                            <?= $form->field($model, 'doc_received_flag')->checkbox() ?>
+
+                            <?= $form->field($model, 'doc_sent_flag')->checkbox() ?>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="form-group btn-group">
+                        <?php if (!$model->isNewRecord): ?>
+                            <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Скачать договор', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'doc_contract']); ?>
+                            <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Скачать заявление', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'doc_statement']); ?>
+                            <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить документы на электронную почту', ['class' => 'btn btn-sm btn-warning', 'name' => 'submitAction', 'value' => 'doc_send']); ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
             <?php endif; ?>
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
                 <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
-                <?php if (!$model->isNewRecord): ?>
-                    <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Выгрузить в Word', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'doc']); ?>
-                <?php endif; ?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

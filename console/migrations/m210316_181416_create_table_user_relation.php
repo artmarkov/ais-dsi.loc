@@ -47,10 +47,40 @@ class m210316_181416_create_table_user_relation extends BaseMigration
         $this->addForeignKey('student_dependence_ibfk_2', 'student_dependence', 'parent_id', 'parents', 'id', 'RESTRICT', 'RESTRICT');
         $this->addForeignKey('student_dependence_ibfk_3', 'student_dependence', 'relation_id', 'guide_user_relation', 'id', 'RESTRICT', 'RESTRICT');
 
+        $this->db->createCommand()->createView('parents_dependence_view', '
+         SELECT student_id, 
+                parent_id,
+                CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) AS fullname, 
+                CONCAT(user_common.last_name ,\' \', left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'.\') as fio, 
+                CONCAT(left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'. \', user_common.last_name) as iof
+        FROM students 
+        INNER JOIN student_dependence ON student_dependence.student_id = students.id 
+		INNER JOIN parents ON student_dependence.parent_id = parents.id 
+		INNER JOIN user_common ON user_common.id = parents.user_common_id
+		WHERE user_common.user_category=\'parents\' 
+		ORDER BY user_common.last_name, user_common.first_name
+        ')->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['parents_dependence_fio', 'parents_dependence_view', 'parent_id', 'fio', 'fio', 'student_id', null, 'Родители (Фамилия И.О.)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['parents_dependence_iof', 'parents_dependence_view', 'parent_id', 'iof', 'fio', 'student_id', null, 'Родители ( И.О. Фамилия)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['parents_dependence_fullname', 'parents_dependence_view', 'parent_id', 'fullname', 'fullname', 'student_id', null, 'Родители (Фамилия Имя Отчество)'],
+        ])->execute();
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'parents_dependence_fullname'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'parents_dependence_iof'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'parents_dependence_fio'])->execute();
+        $this->db->createCommand()->dropView('parents_dependence_view')->execute();
+
         $this->dropTableWithHistory('student_dependence');
         $this->dropTable('guide_user_relation');
     }

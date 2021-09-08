@@ -20,6 +20,7 @@ use artsoft\traits\DateTimeTrait;
  * @property int $education_cat_id
  * @property string|null $name
  * @property string|null $short_name
+ * @property string|null $term_mastering
  * @property string|null $speciality_list
  * @property string|null $description
  * @property int $created_at
@@ -67,10 +68,10 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'short_name', 'education_cat_id', 'speciality_list', 'status'], 'required'],
+            [['name', 'short_name', 'term_mastering', 'education_cat_id', 'speciality_list', 'status'], 'required'],
             [['education_cat_id', 'status'], 'default', 'value' => null],
             [['education_cat_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
-            [['name', 'short_name'], 'string', 'max' => 512],
+            [['name', 'short_name', 'term_mastering'], 'string', 'max' => 512],
             [['description'], 'string', 'max' => 1024],
             [['speciality_list'], 'safe'],
             [['education_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationCat::class, 'targetAttribute' => ['education_cat_id' => 'id']],
@@ -90,6 +91,7 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             'education_cat_id' => Yii::t('art/guide', 'Education Cat'),
             'name' => Yii::t('art', 'Name'),
             'short_name' => Yii::t('art', 'Short Name'),
+            'term_mastering' => Yii::t('art/guide', 'Term Mastering'),
             'speciality_list' => Yii::t('art/guide', 'Education Specializations'),
             'description' => Yii::t('art', 'Description'),
             'status' => Yii::t('art', 'Status'),

@@ -98,6 +98,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'education_cat_id' => $this->integer()->notNull(),
             'name' => $this->string(512),
             'short_name' => $this->string(512),
+            'term_mastering' => $this->string(512),
             'speciality_list' => $this->string(1024),
             'description' => $this->string(1024),
             'created_at' => $this->integer()->notNull(),
