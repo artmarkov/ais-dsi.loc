@@ -22,7 +22,7 @@ use Yii;
  * @property int|null $updated_by
  * @property int $version
  *
- * @property UserRelation $relation0
+ * @property UserRelation $userRelation
  * @property User $student
  * @property User $parent
  */
@@ -30,6 +30,7 @@ class StudentDependence extends \artsoft\db\ActiveRecord
 {
     const SCENARIO_STUDENT = 'student';
     const SCENARIO_PARENT = 'parent';
+
     /**
      * {@inheritdoc}
      */
@@ -48,6 +49,7 @@ class StudentDependence extends \artsoft\db\ActiveRecord
             TimestampBehavior::class,
         ];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -89,11 +91,11 @@ class StudentDependence extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Relation0]].
+     * Gets query for [[Relation]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getRelation0()
+    public function getUserRelation()
     {
         return $this->hasOne(UserRelation::class, ['id' => 'relation_id']);
     }

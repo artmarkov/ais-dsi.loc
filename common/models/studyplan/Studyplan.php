@@ -3,9 +3,14 @@
 namespace common\models\studyplan;
 
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\ArtHelper;
+use artsoft\helpers\DocTemplate;
+use artsoft\helpers\PriceHelper;
+use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use artsoft\traits\DateTimeTrait;
 use common\models\education\EducationProgramm;
+use common\models\education\EducationProgrammLevel;
 use common\models\education\EducationSpeciality;
 use common\models\parents\Parents;
 use common\models\students\Student;
@@ -68,7 +73,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             BlameableBehavior::class,
             [
                 'class' => DateFieldBehavior::class,
-                'attributes' => ['doc_date','doc_contract_start','doc_contract_end'],
+                'attributes' => ['doc_date', 'doc_contract_start', 'doc_contract_end'],
             ],
         ];
     }
@@ -80,12 +85,13 @@ class Studyplan extends \artsoft\db\ActiveRecord
     {
         return [
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year'], 'required'],
+            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required'],
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
-            [['doc_date','doc_contract_start','doc_contract_end'], 'safe'],
+            [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
             ['doc_date', 'default', 'value' => date('d.m.Y')],
             [['description'], 'string', 'max' => 1024],
-            [['year_time_total','cost_month_total','cost_year_total'], 'number'],
+            [['year_time_total', 'cost_month_total', 'cost_year_total'], 'number'],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['programm_id' => 'id']],
             [['speciality_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationSpeciality::class, 'targetAttribute' => ['speciality_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
@@ -180,7 +186,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
      * Получаем первую категорию дисциплины из спецификации
      * @return array
      */
-    public  function getTypeScalar()
+    public function getTypeScalar()
     {
         $subject_type_list = EducationSpeciality::find()
             ->select(['subject_type_list'])
@@ -232,6 +238,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
         }
         return $data;
     }
+
     /**
      * Получаем возможные дисциплины программы выбранной категории
      * @param $category_id
@@ -268,4 +275,81 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $data;
     }
 
+    /**
+     * @param $template
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function makeDocx($template)
+    {
+        $model = $this;
+        $modelsDependence = $model->studyplanSubject;
+        $modelProgrammLevel = EducationProgrammLevel::find()
+            ->where(['programm_id' => $model->programm_id])
+            ->andWhere(['course' => $model->course])
+            ->one();
+
+        $save_as = str_replace(' ', '_', $model->student->fullName);
+
+        $data[] = [
+            'rank' => 'doc',
+            'doc_date' => date('j', strtotime($model->doc_date)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_date))] . ' ' . date('Y', strtotime($model->doc_date)), // дата договора
+            'doc_signer' => $model->parent->fullName, // Полное имя подписанта-родителя
+            'doc_signer_fio' => RefBook::find('parents_fio')->getValue($model->parent->id),
+            'doc_student' => $model->student->fullName, // Полное имя ученика
+            'student_birth_date' => $model->student->userBirthDate, // День рождения ученика
+            'student_relation' => mb_strtolower(RefBook::find('parents_dependence_relation_name', $model->student_id)->getValue($model->parent->id), 'UTF-8'),
+            'doc_contract_start' => date('j', strtotime($model->doc_contract_start)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_start))] . ' ' . date('Y', strtotime($model->doc_contract_start)), // дата начала договора
+            'doc_contract_end' => date('j', strtotime($model->doc_contract_end)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_end))] . ' ' . date('Y', strtotime($model->doc_contract_end)), $model->doc_contract_end, // Дата окончания договора
+            'programm_name' => $model->programm->name, // название программы
+            'programm_level' => $modelProgrammLevel->level->name, // уровень программы
+            'term_mastering' => 'Срок обучения:' . $model->programm->term_mastering, // Срок освоения образовательной программы
+            'course' => $model->course . ' класс',
+            'year_time_total' => $model->year_time_total,
+            'cost_month_total' => $model->cost_month_total,
+            'cost_year_total' => $model->cost_year_total, // Полная стоимость обучения
+            'cost_year_total_str' => PriceHelper::num2str($model->cost_year_total), // Полная стоимость обучения прописью
+            'student_address' => $model->student->userAddress,
+            'student_phone' => $model->student->userPhone,
+            'student_sert_name' => Student::getDocumentValue($model->student->sert_name),
+            'student_sert_series' => $model->student->sert_series,
+            'student_sert_num' => $model->student->sert_num,
+            'student_sert_organ' => $model->student->sert_organ,
+            'student_sert_date' => $model->student->sert_date,
+            'parent_address' => $model->parent->userAddress,
+            'parent_phone' => $model->parent->userPhone,
+            'parent_sert_name' => Parents::getDocumentValue($model->parent->sert_name),
+            'parent_sert_series' => $model->parent->sert_series,
+            'parent_sert_num' => $model->parent->sert_num,
+            'parent_sert_organ' => $model->parent->sert_organ,
+            'parent_sert_date' => $model->parent->sert_date,
+
+        ];
+        $items = [];
+        foreach ($modelsDependence as $item => $modelDep) {
+            $items[] = [
+                'rank' => 'dep',
+                'item' => $item + 1,
+                'subject_cat_name' => $modelDep->subjectCat->name,
+                'subject_name' => '(' . $modelDep->subject->name . ')',
+                'subject_type_name' => $modelDep->subjectType->name,
+                'subject_vid_name' => $modelDep->subjectVid->name,
+                'week_time' => $modelDep->week_time,
+                'year_time' => $modelDep->year_time,
+                'cost_hour' => $modelDep->cost_hour,
+                'cost_month_summ' => $modelDep->cost_month_summ,
+                'cost_year_summ' => $modelDep->cost_year_summ,
+                'year_time_consult' => $modelDep->year_time_consult,
+            ];
+        }
+        $output_file_name = str_replace('.', '_' . $save_as . '_' . $model->doc_date . '.', basename($template));
+
+        $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data, $items) {
+            /* @var $tbs clsTinyButStrong */
+            $tbs->MergeBlock('doc', $data);
+            $tbs->MergeBlock('dep', $items);
+
+        })->prepare();
+        $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);
+        exit;
+    }
 }

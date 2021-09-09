@@ -2,15 +2,10 @@
 
 namespace backend\controllers\studyplan;
 
-use artsoft\helpers\ArtHelper;
-use artsoft\helpers\DocTemplate;
-use artsoft\helpers\PriceHelper;
 use backend\models\Model;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\history\StudyplanHistory;
-use common\models\parents\Parents;
-use common\models\students\Student;
 use common\models\studyplan\StudyplanSubject;
 use yii\helpers\ArrayHelper;
 use Yii;
@@ -148,59 +143,9 @@ class DefaultController extends MainController
             }
         }
         if (Yii::$app->request->post('submitAction') == 'doc_contract') {
-//            echo '<pre>' . print_r($model->programm, true) . '</pre>';
-           // echo '<pre>' . print_r($model->student, true) . '</pre>';
-//            echo '<pre>' . print_r($model->parent, true) . '</pre>';
-//            echo '<pre>' . print_r($modelsDependence, true) . '</pre>';
-            $modelProgrammLevel = EducationProgrammLevel::find()
-                ->where(['programm_id' => $model->programm_id])
-                ->andWhere(['course' => $model->course])
-                ->one();
-            // echo '<pre>' . print_r($modelProgrammLevel->level->name, true) . '</pre>';
-            $template = 'document/contract_student.docx';
-            $save_as = str_replace(' ', '_', $model->student->fullName);
-            $data = array();
-
-            $data[] = [
-                'rank' => 'doc',
-                'doc_date' => date('j', strtotime($model->doc_date)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_date))] . ' ' . date('Y', strtotime($model->doc_date)), // дата договора
-                'doc_signer' => $model->parent->fullName, // Полное имя подписанта-родителя
-                'doc_student' => $model->student->fullName, // Полное имя ученика
-                'doc_contract_start' => date('j', strtotime($model->doc_contract_start)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_start))] . ' ' . date('Y', strtotime($model->doc_contract_start)), // дата начала договора
-                'doc_contract_end' => date('j', strtotime($model->doc_contract_end)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_end))] . ' ' . date('Y', strtotime($model->doc_contract_end)),$model->doc_contract_end, // Дата окончания договора
-                'programm_name' => $model->programm->name, // название программы
-                'programm_level' => $modelProgrammLevel->level->name, // уровень программы
-                'term_mastering' => $model->programm->term_mastering, // Срок освоения образовательной программы
-                'cost_year_total' => $model->cost_year_total, // Полная стоимость обучения
-                'cost_year_total_str' => PriceHelper::num2str($model->cost_year_total), // Полная стоимость обучения прописью
-                'student_address' => $model->student->userAddress,
-                'student_phone' => $model->student->userPhone,
-                'student_sert_name' => Student::getDocumentValue($model->student->sert_name),
-                'student_sert_series' => $model->student->sert_series,
-                'student_sert_num' => $model->student->sert_num,
-                'student_sert_organ' => $model->student->sert_organ,
-                'student_sert_date' => $model->student->sert_date,
-                'parent_address' => $model->parent->userAddress,
-                'parent_phone' => $model->parent->userPhone,
-                'parent_sert_name' => Parents::getDocumentValue($model->parent->sert_name),
-                'parent_sert_series' => $model->parent->sert_series,
-                'parent_sert_num' => $model->parent->sert_num,
-                'parent_sert_organ' => $model->parent->sert_organ,
-                'parent_sert_date' => $model->parent->sert_date,
-
-
-
-            ];
-//            echo '<pre>' . print_r($data, true) . '</pre>';
-            $output_file_name = str_replace('.', '_' . $save_as . '_' . $model->doc_date . '.', basename($template));
-
-            $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data) {
-                /* @var $tbs clsTinyButStrong */
-                $tbs->MergeBlock('doc', $data);
-
-            })->prepare();
-            $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);
-            exit;
+            $model->makeDocx('document/contract_student.docx');
+        } elseif (Yii::$app->request->post('submitAction') == 'doc_statement') {
+            $model->makeDocx('document/statement_student.docx');
         }
         return $this->render('update', [
             'model' => $model,
