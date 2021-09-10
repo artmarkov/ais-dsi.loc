@@ -82,6 +82,10 @@ class m210310_145345_create_table_employees_parents extends \artsoft\db\BaseMigr
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['parents_iof', 'parents_view', 'parents_id', 'iof', 'iof', 'status', null, 'Родители ( И.О. Фамилия)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['parents_fullname', 'parents_view', 'parents_id', 'fullname', 'fullname', 'status', null, 'Родители (Фамилия Имя Отчество)'],
         ])->execute();
 
@@ -95,6 +99,7 @@ class m210310_145345_create_table_employees_parents extends \artsoft\db\BaseMigr
         $this->db->createCommand()->delete('refbooks', ['name' => 'parents_users'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'parents_fullname'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'parents_fio'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'parents_iof'])->execute();
         $this->db->createCommand()->dropView('parents_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'employees_users'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'employees_fullname'])->execute();

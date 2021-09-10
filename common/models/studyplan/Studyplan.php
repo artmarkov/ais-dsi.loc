@@ -18,6 +18,7 @@ use common\models\subject\Subject;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use function morphos\Russian\inflectName;
 
 /**
  * This is the model class for table "studyplan".
@@ -289,13 +290,15 @@ class Studyplan extends \artsoft\db\ActiveRecord
             ->one();
 
         $save_as = str_replace(' ', '_', $model->student->fullName);
-
         $data[] = [
             'rank' => 'doc',
             'doc_date' => date('j', strtotime($model->doc_date)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_date))] . ' ' . date('Y', strtotime($model->doc_date)), // дата договора
             'doc_signer' => $model->parent->fullName, // Полное имя подписанта-родителя
-            'doc_signer_fio' => RefBook::find('parents_fio')->getValue($model->parent->id),
+            'doc_signer_iof' => RefBook::find('parents_iof')->getValue( $model->parent->id),
+            'doc_signer_gen' => inflectName($model->parent->fullName, 'родительный'), // Полное имя подписанта-родителя родительный
             'doc_student' => $model->student->fullName, // Полное имя ученика
+            'doc_student_gen' => inflectName($model->student->fullName, 'родительный'), // Полное имя ученика родительный
+            'doc_student_acc' => inflectName($model->student->fullName, 'винительный'), // Полное имя ученика винительный
             'student_birth_date' => $model->student->userBirthDate, // День рождения ученика
             'student_relation' => mb_strtolower(RefBook::find('parents_dependence_relation_name', $model->student_id)->getValue($model->parent->id), 'UTF-8'),
             'doc_contract_start' => date('j', strtotime($model->doc_contract_start)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_start))] . ' ' . date('Y', strtotime($model->doc_contract_start)), // дата начала договора
