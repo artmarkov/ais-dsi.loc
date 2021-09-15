@@ -52,6 +52,8 @@ class EducationProgrammHistory extends BaseHistory
 
             case 'education_cat_id':
                 return isset($model->education_cat_id) ? RefBook::find('education_cat')->getValue($value) : $value;
+            case 'status':
+                return isset($model->status) ? EducationProgramm::getStatusValue($value) : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }

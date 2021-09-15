@@ -38,7 +38,7 @@ class ParentDependenceHistory extends BaseHistory
             case 'student_id':
                 return isset($model->parent_id) ? $model->student->fullName : $value;
             case 'relation_id':
-                return isset($model->relation_id) ? $model->relation0->name : $value;
+                return isset($model->relation_id) ? $model->userRelation->name : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }

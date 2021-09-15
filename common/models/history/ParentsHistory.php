@@ -25,6 +25,7 @@ class ParentsHistory extends BaseHistory
             'sert_num',
             'sert_organ',
             'sert_date',
+            'sert_code',
         ];
     }
 

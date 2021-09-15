@@ -21,6 +21,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string|null $sert_num
  * @property string|null $sert_organ
  * @property int|null $sert_date
+ * @property string|null $sert_code
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -69,7 +70,7 @@ class Parents extends \artsoft\db\ActiveRecord
         return [
             [['user_common_id', 'version'], 'integer'],
             [['created_at', 'created_by', 'updated_at', 'updated_by', 'sert_date'], 'safe'],
-            [['sert_name', 'sert_series', 'sert_num'], 'string', 'max' => 32],
+            [['sert_name', 'sert_series', 'sert_num', 'sert_code'], 'string', 'max' => 32],
             [['sert_organ'], 'string', 'max' => 127],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
             [['sert_series', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
@@ -103,6 +104,7 @@ class Parents extends \artsoft\db\ActiveRecord
             'sert_num' => Yii::t('art/parents', 'Sertificate Num'),
             'sert_organ' => Yii::t('art/parents', 'Sertificate Organ'),
             'sert_date' => Yii::t('art/parents', 'Sertificate Date'),
+            'sert_code' => Yii::t('art/parents', 'Sertificate Code'),
             'fullName' => Yii::t('art', 'Full Name'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),

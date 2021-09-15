@@ -89,7 +89,8 @@ $this->registerJs($js);
                             <?= $form->field($model, 'sert_series')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'sert_num')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'sert_organ')->textInput(['maxlength' => true]) ?>
-                            <?= $form->field($model, 'sert_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => $readonly]); ?>
+                            <?= $form->field($model, 'sert_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => $readonly]); ?>
+                            <?= $form->field($model, 'sert_code')->textInput(['maxlength' => true]) ?>
                             <?php if (!$model->isNewRecord) : ?>
                                 <div class="form-group field-parents-attachment">
                                     <div class="col-sm-3">

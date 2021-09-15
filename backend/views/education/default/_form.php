@@ -170,11 +170,11 @@ $this->registerJs($js);
                                             ]) ?>
                                         </div>
                                         <div class="col-sm-12">
-                                            <?= $form->field($modelSubject, "[{$index}]year_time_total")->textInput(['maxlength' => true, 'disabled' => true]) ?>
+                                            <?= $form->field($modelSubject, "[{$index}]year_time_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
 
-                                            <?= $form->field($modelSubject, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => true]) ?>
+                                            <?= $form->field($modelSubject, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
 
-                                            <?= $form->field($modelSubject, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => true]) ?>
+                                            <?= $form->field($modelSubject, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
 
                                         </div>
                                     </div>
