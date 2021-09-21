@@ -68,10 +68,12 @@ $config =  [
                 //art cms and other modules routes
                 '/' => 'site/index',
                 '<module:[\w_\-]+>/' => '<module>/default/index',
-                '<module:[\w_\-]+>/<action:[\w_\-]+>/<id:\d+>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<mode:(create)>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<action:(create)>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<controller:[\w_\-]+>' => '<module>/<controller>/index',
-                '<module:[\w_\-]+>/<controller:[\w_\-]+>/<action:[\w_\-]+>/<id:\d+>' => '<module>/<controller>/<action>',
+                '<module:[\w_\-]+>/<controller:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>' => '<module>/<controller>/<action>',
                 '<module:[\w_\-]+>/<controller:[\w_\-]+>/<action:[\w_\-]+>' => '<module>/<controller>/<action>',
             ]
         ],

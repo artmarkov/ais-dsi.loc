@@ -169,6 +169,7 @@ class DefaultController extends MainController
     {
         return $this->actionUpdate($id, true);
     }
+
     /**
      * Удаляет связь студент - родитель
      * Элемент Родитель при это не удаляется
@@ -185,7 +186,7 @@ class DefaultController extends MainController
     {
         $model = $this->findModel($id);
         $this->view->params['tabMenu'] = $this->getMenu($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/student','Students'), 'url' => ['index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/student', 'Students'), 'url' => ['index']];
         $this->view->params['breadcrumbs'][] = ['label' => $model->fullName, 'url' => ['students/default/view', 'id' => $id]];
 
         $modelClass = 'common\models\studyplan\Studyplan';
@@ -206,29 +207,41 @@ class DefaultController extends MainController
         return $this->renderIsAjax('examination', compact('dataProvider', 'searchModel'));
     }
 
-    public function actionStudyplan($id)
+    public function actionStudyplan($id, $objectId = null, $mode = null)
     {
         $model = $this->findModel($id);
         $this->view->params['tabMenu'] = $this->getMenu($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/student','Students'), 'url' => ['index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/student', 'Students'), 'url' => ['index']];
         $this->view->params['breadcrumbs'][] = ['label' => $model->fullName, 'url' => ['students/default/view', 'id' => $id]];
 
-        $modelClass = 'common\models\studyplan\Studyplan';
-        $searchModel = new StudyplanSearch();
+        if ('create' == $mode) {
+            $this->view->params['breadcrumbs'][] = 'Добавление индивидуального плана';
 
-        $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
-            && !User::hasPermission($modelClass::getFullAccessPermission()));
+
+
+        } elseif ($objectId) {
+            $this->view->params['breadcrumbs'][] = 'Редактирование индивидуального плана';
+
+
+        } else {
+            $this->view->params['breadcrumbs'][] = Yii::t('art/studyplan', 'Individual plans');
+            $modelClass = 'common\models\studyplan\Studyplan';
+            $searchModel = new StudyplanSearch();
+
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();
 
             if ($restrictAccess) {
                 $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
             }
-                $params[$searchName]['student_id'] = $id;
+            $params[$searchName]['student_id'] = $id;
 
             $dataProvider = $searchModel->search($params);
 
-        return $this->renderIsAjax('studyplan', compact('dataProvider', 'searchModel', 'id'));
+            return $this->renderIsAjax('studyplan', compact('dataProvider', 'searchModel', 'id'));
+        }
     }
 
     /**
@@ -238,9 +251,9 @@ class DefaultController extends MainController
     public function getMenu($id)
     {
         return [
-            ['label' => 'Карточка ученика',  'url' => ['/students/default/update', 'id' => $id]],
-            ['label' => 'Индивидуальные планы',  'url' => ['/students/default/studyplan', 'id' => $id]],
-            ['label' => 'Испытания',  'url' => ['/students/default/examination', 'id' => $id]],
+            ['label' => 'Карточка ученика', 'url' => ['/students/default/update', 'id' => $id]],
+            ['label' => 'Индивидуальные планы', 'url' => ['/students/default/studyplan', 'id' => $id]],
+            ['label' => 'Испытания', 'url' => ['/students/default/examination', 'id' => $id]],
         ];
     }
 }

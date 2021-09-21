@@ -14,14 +14,14 @@ use lo\widgets\modal\ModalAjax;
 /* @var $searchModel common\models\studyplan\search\StudyplanSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/studyplan', 'Individual plans');
+
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="studyplan-index">
 
     <div class="panel">
         <div class="panel-heading">
-            <?= \artsoft\helpers\ButtonHelper::createButton(['studyplan/default/create', 'student_id' => $id ], ['target'=>'_blank']); ?>
+            <?= \artsoft\helpers\ButtonHelper::createButton(['students/default/studyplan', 'id' => $id, 'mode' => 'create']); ?>
         </div>
         <div class="panel-body">
             <div class="panel panel-default">
@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'id',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/studyplan/default',
+                                'controller' => '/students/default',
                                 'title' => function (Studyplan $model) {
                                     return Html::a(sprintf('#%06d', $model->id), ['/studyplan/default/view', 'id' => $model->id], ['data-pjax' => 0, 'target'=>'_blank']);
                                 },
@@ -70,21 +70,19 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttons' => [
                                     'update' => function ($url, $model, $key) {
                                         return  Html::a(Yii::t('art', 'Edit'),
-                                            Url::to(['/studyplan/default/update', 'id' => $model->id]), [
+                                            Url::to(['/students/default/studyplan', 'id' => $model->student_id, 'objectId' => $model->id]), [
                                                 'title' => Yii::t('art', 'Edit'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
-                                                'target'=>'_blank'
                                             ]
                                         );
                                     },
                                     'view' => function ($url, $model, $key) {
                                         return  Html::a(Yii::t('art', 'View'),
-                                            Url::to(['/studyplan/default/view', 'id' => $model->id]), [
+                                            Url::to(['/students/default/studyplan', 'id' => $model->student_id, 'objectId' => $model->id]), [
                                                 'title' => Yii::t('art', 'View'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
-                                                'target'=>'_blank'
                                             ]
                                         );
                                     },
@@ -96,7 +94,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
-                                                'target'=>'_blank'
                                             ]
                                         );
                                     },
