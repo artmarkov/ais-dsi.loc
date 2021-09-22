@@ -415,7 +415,7 @@ JS
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model, $indexAction) : \artsoft\helpers\ButtonHelper::viewButtons($model, $indexAction); ?>
+                <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

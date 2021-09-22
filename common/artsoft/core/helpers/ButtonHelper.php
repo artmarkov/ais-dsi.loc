@@ -3,6 +3,7 @@
 namespace artsoft\helpers;
 
 use Yii;
+use yii\helpers\Url;
 
 /**
  * Submit Button in form
@@ -26,6 +27,7 @@ class ButtonHelper
         $result .= self::saveButton('submitAction', 'save', 'Save', $buttonClass);
         $result .= $model->isNewRecord ? self::saveButton('submitAction', 'savenext', 'Save & Add', $buttonClass) : self::deleteButton($model, $deleteAction, $buttonClass);
 
+        print_r(self::getResolve());
         return $result;
     }
 
@@ -58,7 +60,7 @@ class ButtonHelper
         $result = self::exitButton($indexAction, $buttonClass);
         $result .= self::updateButton($model, $editAction, $buttonClass);
         $result .= !$model->isNewRecord ? self::deleteButton($model, $deleteAction, $buttonClass) : null;
-
+        print_r(self::getResolve());
         return $result;
     }
 
@@ -80,7 +82,7 @@ class ButtonHelper
      */
     public static function updateButton($model, $editAction = null, $buttonClass = self::buttonClass)
     {
-        $editAction = $editAction == null ? [self::getAction('update'), 'id' => $model->id] : $editAction;
+        $editAction = $editAction == null ? self::getEditAction($model) : $editAction;
 
         return Html::a(
             '<i class="fa fa-pencil" aria-hidden="true"></i> ' . Yii::t('art', 'Edit'),
@@ -98,7 +100,7 @@ class ButtonHelper
      */
     public static function exitButton($indexAction = null, $buttonClass = self::buttonClass)
     {
-        $indexAction = $indexAction == null ? [self::getAction('index')] : $indexAction;
+        $indexAction = $indexAction == null ? self::getIndexAction() : $indexAction;
 
         return Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'),
             $indexAction,
@@ -130,7 +132,7 @@ class ButtonHelper
      */
     public static function deleteButton($model, $deleteAction = null, $buttonClass = self::buttonClass)
     {
-        $deleteAction = $deleteAction == null ? [self::getAction('delete'), 'id' => $model->id] : $deleteAction;
+        $deleteAction = $deleteAction == null ? self::getDeleteAction($model) : $deleteAction;
 
         return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'),
             $deleteAction,
@@ -184,5 +186,54 @@ class ButtonHelper
     protected static function getAction($action)
     {
         return '/' . Yii::$app->controller->id . '/' . $action;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getResolve()
+    {
+        return Yii::$app->request->resolve();
+    }
+
+    public static function getIndexAction()
+    {
+        $url = self::getResolve();
+        $arr[] = $url[0];
+        isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
+
+        return $arr;
+    }
+
+    public static function getEditAction($model)
+    {
+        $url = self::getResolve();
+        isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : $model->id;
+        if (isset($url[1]['objectId'])) {
+            $arr[] = $url[0];
+            $arr['objectId'] = $url[1]['objectId'];
+            $arr['mode'] = 'update';
+        } else {
+            $arr[] = str_replace('view', 'update', $url[0]);
+
+        }
+
+        return $arr;
+    }
+
+    public static function getDeleteAction($model)
+    {
+        $url = self::getResolve();
+        isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : $model->id;
+        if (isset($url[1]['objectId'])) {
+            $arr[] = $url[0];
+            $arr['objectId'] = $url[1]['objectId'];
+            $arr['mode'] = 'delete';
+        } else {
+            $arr[] = str_replace('update', 'delete', $url[0]);
+
+        }
+
+        return $arr;
     }
 }

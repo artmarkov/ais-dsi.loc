@@ -3,6 +3,7 @@
 namespace artsoft\controllers\admin;
 
 use artsoft\helpers\ArtHelper;
+use artsoft\helpers\ButtonHelper;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use Yii;
@@ -391,16 +392,16 @@ abstract class BaseController extends \artsoft\controllers\BaseController
         switch ($action) {
             case 'index':
             case 'delete':
-                return ['index'];
+                return ButtonHelper::getIndexAction();
                 break;
             case 'update':
-                return ['update', 'id' => $model->id];
+                return ButtonHelper::getEditAction($model);
                 break;
             case 'create':
-                return ['create', 'id' => $model->id];
+                return ['create'];
                 break;
             default:
-                return ['index'];
+                return ButtonHelper::getIndexAction();
         }
     }
 
