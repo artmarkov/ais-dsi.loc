@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'delete' => function ($url, $model, $key) {
                                         return Html::a(Yii::t('art', 'Delete'),
-                                            Url::to(['/studyplan/default/delete', 'id' => $model->id]), [
+                                            Url::to(['/students/default/studyplan/delete', 'id' => $model->student_id, 'objectId' => $model->id]), [
                                                 'title' => Yii::t('art', 'Delete'),
                                                 'aria-label' => Yii::t('art', 'Delete'),
                                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),

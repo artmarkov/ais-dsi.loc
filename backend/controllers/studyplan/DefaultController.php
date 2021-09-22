@@ -27,7 +27,6 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = new $this->modelClass;
-        $model->student_id = Yii::$app->request->get('student_id') ?: null;
 
         if ($model->load(Yii::$app->request->post())) {
             // validate all models
@@ -84,7 +83,8 @@ class DefaultController extends MainController
         return $this->renderIsAjax('create', [
             'model' => $model,
             'modelsDependence' => [new StudyplanSubject],
-            'readonly' => false
+            'readonly' => false,
+            'indexAction' => null
         ]);
     }
 
@@ -150,7 +150,8 @@ class DefaultController extends MainController
         return $this->render('update', [
             'model' => $model,
             'modelsDependence' => (empty($modelsDependence)) ? [new StudyplanSubject] : $modelsDependence,
-            'readonly' => $readonly
+            'readonly' => $readonly,
+            'indexAction' => null
         ]);
     }
 
@@ -159,8 +160,7 @@ class DefaultController extends MainController
         return $this->actionUpdate($id, true);
     }
 
-    public
-    function actionHistory($id)
+    public function actionHistory($id)
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
         $model = $this->findModel($id);
@@ -172,8 +172,7 @@ class DefaultController extends MainController
      *  формируем список дисциплин для widget DepDrop::classname()
      * @return false|string
      */
-    public
-    function actionSpeciality()
+    public function actionSpeciality()
     {
         $out = [];
         if (isset($_POST['depdrop_parents'])) {
@@ -195,8 +194,7 @@ class DefaultController extends MainController
      * @return string
      * @throws \yii\web\NotFoundHttpException
      */
-    public
-    function actionSubject($id)
+    public function actionSubject($id)
     {
         $model = $this->findModel($id);
         $out = [];

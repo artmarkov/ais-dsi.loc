@@ -98,10 +98,10 @@ class ButtonHelper
      */
     public static function exitButton($indexAction = null, $buttonClass = self::buttonClass)
     {
-        $indexAction = $indexAction == null ? self::getAction('index') : $indexAction;
+        $indexAction = $indexAction == null ? [self::getAction('index')] : $indexAction;
 
         return Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Go to list'),
-            [$indexAction],
+            $indexAction,
             [
                 'class' => 'btn btn-default ' . $buttonClass
             ]);

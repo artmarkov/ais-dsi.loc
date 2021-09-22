@@ -6,9 +6,12 @@ use artsoft\helpers\ArtHelper;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use backend\models\Model;
+use common\models\education\EducationProgrammLevel;
 use common\models\history\StudentsHistory;
 use common\models\students\StudentDependence;
 use common\models\studyplan\search\StudyplanSearch;
+use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubject;
 use common\models\user\UserCommon;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
@@ -215,13 +218,129 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => $model->fullName, 'url' => ['students/default/view', 'id' => $id]];
 
         if ('create' == $mode) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['/students/default/studyplan', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = 'Добавление индивидуального плана';
+            $model = new Studyplan();
+            $model->student_id = Yii::$app->request->get('id') ?: null;
 
+            if ($model->load(Yii::$app->request->post())) {
+                // validate all models
+                $valid = $model->validate();
+                $valid = true;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        $modelProgrammLevel = EducationProgrammLevel::find()
+                            ->where(['programm_id' => $model->programm_id])
+                            ->andWhere(['course' => $model->course])
+                            ->one();
+                        if ($modelProgrammLevel) {
+                            $model->year_time_total = $modelProgrammLevel->year_time_total;
+                            $model->cost_month_total = $modelProgrammLevel->cost_month_total;
+                            $model->cost_year_total = $modelProgrammLevel->cost_year_total;
+                        }
+                        if ($flag = $model->save(false)) {
+
+                            if (isset($modelProgrammLevel->educationProgrammLevelSubject)) {
+                                $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;
+                                foreach ($modelsSubTime as $modelSubTime) {
+                                    $modelSub = new StudyplanSubject();
+                                    $modelSub->studyplan_id = $model->id;
+                                    $modelSub->subject_cat_id = $modelSubTime->subject_cat_id;
+                                    $modelSub->subject_id = $modelSubTime->subject_id;
+                                    $modelSub->subject_type_id = $model->getTypeScalar();
+                                    $modelSub->subject_vid_id = $modelSubTime->subject_vid_id;
+                                    $modelSub->week_time = $modelSubTime->week_time;
+                                    $modelSub->year_time = $modelSubTime->year_time;
+                                    $modelSub->cost_hour = $modelSubTime->cost_hour;
+                                    $modelSub->cost_month_summ = $modelSubTime->cost_month_summ;
+                                    $modelSub->cost_year_summ = $modelSubTime->cost_year_summ;
+                                    $modelSub->year_time_consult = $modelSubTime->year_time_consult;
+
+                                    if (!($flag = $modelSub->save(false))) {
+                                        $transaction->rollBack();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction($model);
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+            }
+
+            return $this->renderIsAjax('/studyplan/default/_form', [
+                'model' => $model,
+                'modelsDependence' => [new StudyplanSubject],
+                'readonly' => false,
+                'indexAction' => ['/students/default/studyplan', 'id' => $id]
+            ]);
 
 
         } elseif ($objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['/students/default/studyplan', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = 'Редактирование индивидуального плана';
+            $model = Studyplan::findOne($objectId);
+            $readonly = false;
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The StudyplanSubject was not found.");
+            }
 
+            $modelsDependence = $model->studyplanSubject;
+
+            if ($model->load(Yii::$app->request->post())) {
+
+                $oldIDs = ArrayHelper::map($modelsDependence, 'id', 'id');
+                $modelsDependence = Model::createMultiple(StudyplanSubject::class, $modelsDependence);
+                Model::loadMultiple($modelsDependence, Yii::$app->request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsDependence, 'id', 'id')));
+
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsDependence) && $valid;
+
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        if ($flag = $model->save(false)) {
+                            if (!empty($deletedIDs)) {
+                                StudyplanSubject::deleteAll(['id' => $deletedIDs]);
+                            }
+                            foreach ($modelsDependence as $modelDependence) {
+                                $modelDependence->studyplan_id = $model->id;
+                                if (!($flag = $modelDependence->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                           // $this->redirect(['/students/default/studyplan', 'id' => $id]); // saveexit
+                            $this->redirect(['/students/default/studyplan', 'id' => $id, 'objectId' => $objectId]); // save
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+            }
+            if (Yii::$app->request->post('submitAction') == 'doc_contract') {
+                $model->makeDocx('document/contract_student.docx');
+            } elseif (Yii::$app->request->post('submitAction') == 'doc_statement') {
+                $model->makeDocx('document/statement_student.docx');
+            }
+            return $this->render('/studyplan/default/_form', [
+                'model' => $model,
+                'modelsDependence' => (empty($modelsDependence)) ? [new StudyplanSubject] : $modelsDependence,
+                'readonly' => $readonly,
+                'indexAction' => ['/students/default/studyplan', 'id' => $id]
+            ]);
 
         } else {
             $this->view->params['breadcrumbs'][] = Yii::t('art/studyplan', 'Individual plans');
