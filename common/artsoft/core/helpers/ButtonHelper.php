@@ -198,10 +198,14 @@ class ButtonHelper
 
     public static function getIndexAction()
     {
+        $arr = [];
         $url = self::getResolve();
-        $arr[] = $url[0];
-        isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
-
+        if (!empty(preg_filter("/\/view|\/update/", "", $url[0]))) {
+            $arr[] = preg_filter("/\/view|\/update/", "", $url[0]);
+        } else {
+            $arr[] = $url[0];
+            isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
+        }
         return $arr;
     }
 
