@@ -360,21 +360,20 @@ abstract class BaseController extends \artsoft\controllers\BaseController
     /**
      * Define redirect page after submit save action
      *
-     * @param null $model
      * @return \yii\web\Response
      */
-    protected function getSubmitAction($model = null, $submitAction = null)
+    protected function getSubmitAction($submitAction = null)
     {
         $submitAction = $submitAction == null ? Yii::$app->request->post('submitAction', 'save') : $submitAction;
         switch ($submitAction) {
             case 'savenext':
-                return $this->redirect($this->getRedirectPage('create', $model));
+                return $this->redirect($this->getRedirectPage('create'));
                 break;
             case 'saveexit':
                 return $this->redirect($this->getRedirectPage('index'));
                 break;
             default:
-                $this->redirect($this->getRedirectPage('update', $model));
+                $this->redirect($this->getRedirectPage('update'));
 
         }
 
@@ -383,11 +382,10 @@ abstract class BaseController extends \artsoft\controllers\BaseController
      * Define redirect page after update, create, delete, etc
      *
      * @param string $action
-     * @param ActiveRecord $model
      *
      * @return string|array
      */
-    protected function getRedirectPage($action, $model = null)
+    protected function getRedirectPage($action)
     {
         switch ($action) {
             case 'index':
@@ -395,10 +393,10 @@ abstract class BaseController extends \artsoft\controllers\BaseController
                 return ButtonHelper::getIndexAction();
                 break;
             case 'update':
-                return ButtonHelper::getEditAction($model);
+                return ButtonHelper::getEditAction();
                 break;
             case 'create':
-                return ['create'];
+                return ButtonHelper::getCreateAction();
                 break;
             default:
                 return ButtonHelper::getIndexAction();

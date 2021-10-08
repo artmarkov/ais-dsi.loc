@@ -25,24 +25,23 @@ class ButtonHelper
         $result = self::exitButton($indexAction, $buttonClass);
         $result .= self::saveButton('submitAction', 'saveexit', 'Save & Exit', $buttonClass);
         $result .= self::saveButton('submitAction', 'save', 'Save', $buttonClass);
-        $result .= $model->isNewRecord ? self::saveButton('submitAction', 'savenext', 'Save & Add', $buttonClass) : self::deleteButton($model, $deleteAction, $buttonClass);
+        $result .= $model->isNewRecord ? self::saveButton('submitAction', 'savenext', 'Save & Add', $buttonClass) : self::deleteButton($deleteAction, $buttonClass);
 
         print_r(self::getResolve());
         return $result;
     }
 
     /**
-     * @param $model
      * @param $class
      * @param null $deleteAction
      * @param string $buttonClass
      * @return string
      */
-    public static function modalButtons($model, $class = 'cancel-event', $deleteAction = null, $buttonClass = self::buttonClass)
+    public static function modalButtons($class = 'cancel-event', $deleteAction = null, $buttonClass = self::buttonClass)
     {
         $result = self::closeButton($class, $buttonClass);
         $result .= self::saveButton('submitAction', 'save', 'Save', $buttonClass);
-        $result .= self::deleteButton($model, $deleteAction, $buttonClass);
+        $result .= self::deleteButton($deleteAction, $buttonClass);
 
         return $result;
     }
@@ -58,8 +57,8 @@ class ButtonHelper
     public static function viewButtons($model, $indexAction = null, $editAction = null, $deleteAction = null, $buttonClass = self::buttonClass)
     {
         $result = self::exitButton($indexAction, $buttonClass);
-        $result .= self::updateButton($model, $editAction, $buttonClass);
-        $result .= !$model->isNewRecord ? self::deleteButton($model, $deleteAction, $buttonClass) : null;
+        $result .= self::updateButton($editAction, $buttonClass);
+        $result .= !$model->isNewRecord ? self::deleteButton($deleteAction, $buttonClass) : null;
         print_r(self::getResolve());
         return $result;
     }
@@ -70,19 +69,18 @@ class ButtonHelper
      */
     public static function createButton($createAction = null, $options = [])
     {
-        $createAction = $createAction == null ? [self::getAction('create')] : $createAction;
+        $createAction = $createAction == null ? self::getCreateAction() : $createAction;
         return Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('art', 'Add New'), $createAction, array_merge(['class' => 'btn btn-sm btn-success'], $options));
     }
 
     /**
-     * @param $model
      * @param null $editAction
      * @param string $buttonClass
      * @return string
      */
-    public static function updateButton($model, $editAction = null, $buttonClass = self::buttonClass)
+    public static function updateButton($editAction = null, $buttonClass = self::buttonClass)
     {
-        $editAction = $editAction == null ? self::getEditAction($model) : $editAction;
+        $editAction = $editAction == null ? self::getEditAction() : $editAction;
 
         return Html::a(
             '<i class="fa fa-pencil" aria-hidden="true"></i> ' . Yii::t('art', 'Edit'),
@@ -130,9 +128,9 @@ class ButtonHelper
      * @param string $buttonClass
      * @return string
      */
-    public static function deleteButton($model, $deleteAction = null, $buttonClass = self::buttonClass)
+    public static function deleteButton($deleteAction = null, $buttonClass = self::buttonClass)
     {
-        $deleteAction = $deleteAction == null ? self::getDeleteAction($model) : $deleteAction;
+        $deleteAction = $deleteAction == null ? self::getDeleteAction() : $deleteAction;
 
         return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'),
             $deleteAction,
@@ -147,8 +145,10 @@ class ButtonHelper
 
     /**
      * @param string $name
-     * @param string $value save & saveexit
+     * @param string $value
+     * @param string $message
      * @param string $buttonClass
+     * @return string
      */
     public static function saveButton($name = 'submitAction', $value = 'save', $message = 'Save', $buttonClass = self::buttonClass)
     {
@@ -196,12 +196,15 @@ class ButtonHelper
         return Yii::$app->request->resolve();
     }
 
+    /**
+     * @return array
+     */
     public static function getIndexAction()
     {
         $arr = [];
         $url = self::getResolve();
-        if (!empty(preg_filter("/\/view|\/update/", "", $url[0]))) {
-            $arr[] = preg_filter("/\/view|\/update/", "", $url[0]);
+        if (!empty(preg_filter("/\/view|\/update|\/create|\/delete/", "", $url[0]))) {
+            $arr[] = preg_filter("/\/view|\/update|\/create|\/delete/", "", $url[0]);
         } else {
             $arr[] = $url[0];
             isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
@@ -209,10 +212,14 @@ class ButtonHelper
         return $arr;
     }
 
-    public static function getEditAction($model)
+    /**
+     * @param $model
+     * @return array
+     */
+    public static function getEditAction()
     {
         $url = self::getResolve();
-        isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : $model->id;
+        isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
         if (isset($url[1]['objectId'])) {
             $arr[] = $url[0];
             $arr['objectId'] = $url[1]['objectId'];
@@ -225,10 +232,14 @@ class ButtonHelper
         return $arr;
     }
 
-    public static function getDeleteAction($model)
+    /**
+     * @param $model
+     * @return array
+     */
+    public static function getDeleteAction()
     {
         $url = self::getResolve();
-        isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : $model->id;
+        isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
         if (isset($url[1]['objectId'])) {
             $arr[] = $url[0];
             $arr['objectId'] = $url[1]['objectId'];
@@ -238,6 +249,22 @@ class ButtonHelper
 
         }
 
+        return $arr;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getCreateAction()
+    {
+        $url = self::getResolve();
+        if (isset($url[1]['id'])) {
+            $arr[] = $url[0];
+            $arr['id'] = $url[1]['id'];
+            $arr['mode'] = 'create';
+        } else {
+            $arr[] = str_replace('index', 'create', $url[0]);
+        }
         return $arr;
     }
 }

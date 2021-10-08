@@ -175,10 +175,6 @@ class DefaultController extends MainController
         return $this->actionUpdate($id, true);
     }
 
-    /**
-     * Удаляет связь студент - родитель
-     * Элемент Родитель при это не удаляется
-     */
     public function actionHistory($id)
     {
         $this->view->params['tabMenu'] = $this->getMenu($id);
@@ -220,9 +216,6 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => $model->fullName, 'url' => ['students/default/view', 'id' => $id]];
 
         if ('create' == $mode) {
-
-
-
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['/students/default/studyplan', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = 'Добавление индивидуального плана';
             $model = new Studyplan();
@@ -283,8 +276,7 @@ class DefaultController extends MainController
             return $this->renderIsAjax('/studyplan/default/_form', [
                 'model' => $model,
                 'modelsDependence' => [new StudyplanSubject],
-                'readonly' => $readonly,
-                'indexAction' => ['/students/default/studyplan', 'id' => $id]
+                'readonly' => $readonly
             ]);
 
 
@@ -343,8 +335,7 @@ class DefaultController extends MainController
             return $this->render('/studyplan/default/_form', [
                 'model' => $model,
                 'modelsDependence' => (empty($modelsDependence)) ? [new StudyplanSubject] : $modelsDependence,
-                'readonly' => $readonly,
-                'indexAction' => ['/students/default/studyplan', 'id' => $id]
+                'readonly' => $readonly
             ]);
 
         } elseif ('view' == $mode && $objectId) {
