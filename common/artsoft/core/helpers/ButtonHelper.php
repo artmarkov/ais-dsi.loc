@@ -25,7 +25,7 @@ class ButtonHelper
         $result .= self::saveButton('submitAction', 'saveexit', 'Save & Exit', $buttonClass);
         $result .= self::saveButton('submitAction', 'save', 'Save', $buttonClass);
         $result .= $model->isNewRecord ? self::saveButton('submitAction', 'savenext', 'Save & Add', $buttonClass) : self::deleteButton($deleteAction, $buttonClass);
-       // print_r(self::getResolve());
+        // print_r(self::getResolve());
         return $result;
     }
 
@@ -201,7 +201,7 @@ class ButtonHelper
         $arr = [];
         $url = self::getResolve();
         if (!empty(preg_filter("/\/view|\/update|\/create|\/delete/", "", $url[0]))) {
-            $arr[] = preg_filter("/\/view|\/update|\/create|\/delete/", "", $url[0]);
+            $arr[] = preg_filter("/\/view|\/update|\/create|\/delete/", "", $url[0]) . '/index';
         } else {
             $arr[] = $url[0];
             isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
@@ -217,13 +217,14 @@ class ButtonHelper
     {
         $url = self::getResolve();
         isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
-        if (isset($url[1]['objectId'])) {
+        if (isset($url[1]['mode'])) {
             $arr[] = $url[0];
-            $arr['objectId'] = $url[1]['objectId'];
+            $arr['objectId'] = isset($url[1]['objectId']) ? $url[1]['objectId'] : $model->id;
             $arr['mode'] = 'update';
         } else {
+            $url[0] = str_replace('create', 'update', $url[0]);
             $arr[] = str_replace('view', 'update', $url[0]);
-
+            $arr['id'] = $model->id;
         }
 
         return $arr;
@@ -237,13 +238,12 @@ class ButtonHelper
     {
         $url = self::getResolve();
         isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
-        if (isset($url[1]['objectId'])) {
+        if (isset($url[1]['mode'])) {
             $arr[] = $url[0];
-            $arr['objectId'] = $url[1]['objectId'];
+            $arr['objectId'] = isset($url[1]['objectId']) ? $url[1]['objectId'] : null;
             $arr['mode'] = 'delete';
         } else {
             $arr[] = str_replace('update', 'delete', $url[0]);
-
         }
 
         return $arr;
@@ -274,9 +274,9 @@ class ButtonHelper
         $arr = [];
         $url = self::getResolve();
         isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
-        if (isset($url[1]['objectId'])) {
+        if (isset($url[1]['mode'])) {
             $arr[] = $url[0];
-            $arr['objectId'] = $url[1]['objectId'];
+            $arr['objectId'] = isset($url[1]['objectId']) ? $url[1]['objectId'] : null;
             $arr['mode'] = 'history';
         } else {
             if (!empty(preg_filter("/\/view|\/update|\/create/", "", $url[0]))) {

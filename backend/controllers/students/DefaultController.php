@@ -3,7 +3,6 @@
 namespace backend\controllers\students;
 
 use artsoft\helpers\ArtHelper;
-use artsoft\helpers\ButtonHelper;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use backend\models\Model;
@@ -15,10 +14,8 @@ use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\user\UserCommon;
-use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
-use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 use Yii;
 
@@ -254,7 +251,7 @@ class DefaultController extends MainController
 
                         if ($flag) {
                             $transaction->commit();
-                            $this->getSubmitAction();
+                            $this->getSubmitAction($model);
                         }
                     } catch (Exception $e) {
                         $transaction->rollBack();
@@ -326,7 +323,7 @@ class DefaultController extends MainController
                         }
                         if ($flag) {
                             $transaction->commit();
-                            $this->getSubmitAction();
+                            $this->getSubmitAction($model);
                         }
                     } catch (Exception $e) {
                         $transaction->rollBack();
@@ -358,7 +355,6 @@ class DefaultController extends MainController
                 $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
             }
             $params[$searchName]['student_id'] = $id;
-
             $dataProvider = $searchModel->search($params);
 
             return $this->renderIsAjax('studyplan', compact('dataProvider', 'searchModel', 'id'));

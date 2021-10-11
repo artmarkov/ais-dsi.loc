@@ -163,7 +163,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
-            $this->getSubmitAction();
+            $this->getSubmitAction($model);
         }
 
         return $this->renderIsAjax($this->createView, compact('model'));
@@ -185,8 +185,8 @@ abstract class BaseController extends \artsoft\controllers\BaseController
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) AND $model->save()) {
-            Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been updated.'));
-            $this->getSubmitAction();
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+            $this->getSubmitAction($model);
         }
 
         return $this->renderIsAjax($this->updateView, compact('model'));
@@ -359,34 +359,32 @@ abstract class BaseController extends \artsoft\controllers\BaseController
 
     /**
      * Define redirect page after submit save action
-     *
+     * @param null $model
+     * @param null $submitAction
      * @return \yii\web\Response
      */
-    protected function getSubmitAction($submitAction = null, $model = null)
+    protected function getSubmitAction($model = null, $submitAction = null)
     {
         $submitAction = $submitAction == null ? Yii::$app->request->post('submitAction', 'save') : $submitAction;
         switch ($submitAction) {
             case 'savenext':
-                return $this->redirect($this->getRedirectPage('create'));
+                return $this->redirect($this->getRedirectPage('create', $model));
                 break;
             case 'saveexit':
                 return $this->redirect($this->getRedirectPage('index'));
                 break;
-             case 'save':
-                 $this->redirect($this->getRedirectPage('update', $model));
-                break;
             default:
-                $this->redirect($this->getRedirectPage('update'));
+                return $this->redirect($this->getRedirectPage('update', $model));
 
         }
 
     }
+
     /**
      * Define redirect page after update, create, delete, etc
-     *
-     * @param string $action
-     *
-     * @return string|array
+     * @param $action
+     * @param null $model
+     * @return array
      */
     protected function getRedirectPage($action, $model = null)
     {
@@ -399,7 +397,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
                 return ButtonHelper::getEditAction($model);
                 break;
             case 'create':
-                return ButtonHelper::getCreateAction();
+                return ButtonHelper::getCreateAction($model);
                 break;
             default:
                 return ButtonHelper::getIndexAction();

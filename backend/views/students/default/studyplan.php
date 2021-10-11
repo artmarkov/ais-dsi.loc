@@ -63,8 +63,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'id',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/students/default',
-                                'title' => function (Studyplan $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['/studyplan/default/view', 'id' => $model->id, 'objectId' => $model->id, 'mode' => 'view'], ['data-pjax' => 0]);
+                                'title' => function ($model) {
+                                    return Html::a(sprintf('#%06d', $model->id), ['/students/default/studyplan', 'id' => $model->student_id, 'objectId' => $model->id, 'mode' => 'view'], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                                 'buttons' => [
