@@ -163,7 +163,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
-            $this->getSubmitAction($model);
+            $this->getSubmitAction();
         }
 
         return $this->renderIsAjax($this->createView, compact('model'));
@@ -186,7 +186,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
 
         if ($model->load(Yii::$app->request->post()) AND $model->save()) {
             Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been updated.'));
-            $this->getSubmitAction($model);
+            $this->getSubmitAction();
         }
 
         return $this->renderIsAjax($this->updateView, compact('model'));
@@ -362,7 +362,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
      *
      * @return \yii\web\Response
      */
-    protected function getSubmitAction($submitAction = null)
+    protected function getSubmitAction($submitAction = null, $model = null)
     {
         $submitAction = $submitAction == null ? Yii::$app->request->post('submitAction', 'save') : $submitAction;
         switch ($submitAction) {
@@ -371,6 +371,9 @@ abstract class BaseController extends \artsoft\controllers\BaseController
                 break;
             case 'saveexit':
                 return $this->redirect($this->getRedirectPage('index'));
+                break;
+             case 'save':
+                 $this->redirect($this->getRedirectPage('update', $model));
                 break;
             default:
                 $this->redirect($this->getRedirectPage('update'));
@@ -385,7 +388,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
      *
      * @return string|array
      */
-    protected function getRedirectPage($action)
+    protected function getRedirectPage($action, $model = null)
     {
         switch ($action) {
             case 'index':
@@ -393,7 +396,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
                 return ButtonHelper::getIndexAction();
                 break;
             case 'update':
-                return ButtonHelper::getEditAction();
+                return ButtonHelper::getEditAction($model);
                 break;
             case 'create':
                 return ButtonHelper::getCreateAction();

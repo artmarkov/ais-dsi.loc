@@ -55,7 +55,7 @@ $this->registerJs($js);
         <div class="panel-heading">
             Информация о родителе (официальном представителе)
             <?php if (!$userCommon->isNewRecord): ?>
-                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/parents/default/history', 'id' => $model->id]); ?></span>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
                 <?php $user_id = RefBook::find('parents_users')->getValue($model->id); ?>
                 <?php if ($user_id): ?>
                     <span class="pull-right"> <?= Html::a('<i class="fa fa-user-o" aria-hidden="true"></i> Регистрационные данные',

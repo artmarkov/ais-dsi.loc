@@ -16,4 +16,19 @@ class SessionController extends MainController
     public $modelSearchClass = 'artsoft\logs\models\search\SessionSearch';
     public $disabledActions = ['view', 'create', 'update'];
 
+    /**
+     * @param string $action
+     * @param null $model
+     * @return array|string
+     */
+    protected function getRedirectPage($action, $model = null)
+    {
+        switch ($action) {
+            case 'delete':
+                return ['index'];
+                break;
+            default:
+                return ['index'];
+        }
+    }
 }

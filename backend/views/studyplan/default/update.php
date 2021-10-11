@@ -7,15 +7,11 @@ use yii\helpers\Html;
 /* @var $readonly */
 /* @var $modelsDependence */
 
-//$this->title = Yii::t('art', 'Update "{item}"', ['item' => sprintf('#%06d', $model->id)]);
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
-//$this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 ?>
 <div class="studyplan-update">
     <?= $this->render('_form', [
         'model' => $model,
         'modelsDependence' => $modelsDependence,
-        'readonly' => $readonly,
-        'indexAction' => $indexAction
+        'readonly' => $readonly
     ]) ?>
 </div>

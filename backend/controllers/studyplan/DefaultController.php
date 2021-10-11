@@ -24,6 +24,9 @@ class DefaultController extends MainController
      */
     public function actionCreate()
     {
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = Yii::t('art', 'Create');
+
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = new $this->modelClass;
@@ -31,7 +34,7 @@ class DefaultController extends MainController
         if ($model->load(Yii::$app->request->post())) {
             // validate all models
             $valid = $model->validate();
-            //$valid = true;
+           // $valid = true;
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
@@ -40,9 +43,7 @@ class DefaultController extends MainController
                         ->andWhere(['course' => $model->course])
                         ->one();
                     if ($modelProgrammLevel) {
-                        $model->year_time_total = $modelProgrammLevel->year_time_total;
-                        $model->cost_month_total = $modelProgrammLevel->cost_month_total;
-                        $model->cost_year_total = $modelProgrammLevel->cost_year_total;
+                        $model->copyAttributes($modelProgrammLevel);
                     }
                     if ($flag = $model->save(false)) {
 
@@ -50,17 +51,7 @@ class DefaultController extends MainController
                             $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;
                             foreach ($modelsSubTime as $modelSubTime) {
                                 $modelSub = new StudyplanSubject();
-                                $modelSub->studyplan_id = $model->id;
-                                $modelSub->subject_cat_id = $modelSubTime->subject_cat_id;
-                                $modelSub->subject_id = $modelSubTime->subject_id;
-                                $modelSub->subject_type_id = $model->getTypeScalar();
-                                $modelSub->subject_vid_id = $modelSubTime->subject_vid_id;
-                                $modelSub->week_time = $modelSubTime->week_time;
-                                $modelSub->year_time = $modelSubTime->year_time;
-                                $modelSub->cost_hour = $modelSubTime->cost_hour;
-                                $modelSub->cost_month_summ = $modelSubTime->cost_month_summ;
-                                $modelSub->cost_year_summ = $modelSubTime->cost_year_summ;
-                                $modelSub->year_time_consult = $modelSubTime->year_time_consult;
+                                $modelSub->copyAttributes($model, $modelSubTime);
 
                                 if (!($flag = $modelSub->save(false))) {
                                     $transaction->rollBack();
@@ -72,7 +63,7 @@ class DefaultController extends MainController
 
                     if ($flag) {
                         $transaction->commit();
-                        $this->getSubmitAction($model);
+                        $this->getSubmitAction();
                     }
                 } catch (Exception $e) {
                     $transaction->rollBack();
@@ -83,8 +74,7 @@ class DefaultController extends MainController
         return $this->renderIsAjax('create', [
             'model' => $model,
             'modelsDependence' => [new StudyplanSubject],
-            'readonly' => false,
-            'indexAction' => null
+            'readonly' => false
         ]);
     }
 
@@ -97,9 +87,10 @@ class DefaultController extends MainController
      */
     public function actionUpdate($id, $readonly = false)
     {
-        $this->view->params['tabMenu'] = $this->tabMenu;
-
         $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
+        $this->view->params['tabMenu'] = $this->tabMenu;
 
         if (!isset($model)) {
             throw new NotFoundHttpException("The StudyplanSubject was not found.");
@@ -135,7 +126,7 @@ class DefaultController extends MainController
                     }
                     if ($flag) {
                         $transaction->commit();
-                        $this->getSubmitAction($model);
+                        $this->getSubmitAction();
                     }
                 } catch (Exception $e) {
                     $transaction->rollBack();
@@ -150,8 +141,7 @@ class DefaultController extends MainController
         return $this->render('update', [
             'model' => $model,
             'modelsDependence' => (empty($modelsDependence)) ? [new StudyplanSubject] : $modelsDependence,
-            'readonly' => $readonly,
-            'indexAction' => null
+            'readonly' => $readonly
         ]);
     }
 
@@ -162,8 +152,10 @@ class DefaultController extends MainController
 
     public function actionHistory($id)
     {
-        $this->view->params['tabMenu'] = $this->tabMenu;
         $model = $this->findModel($id);
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
         $data = new StudyplanHistory($id);
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }

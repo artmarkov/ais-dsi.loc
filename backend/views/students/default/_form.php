@@ -61,7 +61,7 @@ JS
         <div class="panel-heading">
             Информация об ученике
             <?php if (!$userCommon->isNewRecord): ?>
-                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/students/default/history', 'id' => $model->id]); ?></span>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
                 <?php $user_id = RefBook::find('students_users')->getValue($model->id); ?>
                 <?php if ($user_id): ?>
                     <span class="pull-right"> <?= Html::a('<i class="fa fa-user-o" aria-hidden="true"></i> Регистрационные данные',

@@ -86,7 +86,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
     {
         return [
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year'], 'required'],
-            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required'],
+           // [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required'],
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
@@ -354,5 +354,15 @@ class Studyplan extends \artsoft\db\ActiveRecord
         })->prepare();
         $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);
         exit;
+    }
+
+    /**
+     * @param $modelProgrammLevel
+     */
+    public function copyAttributes($modelProgrammLevel)
+    {
+        $this->year_time_total = $modelProgrammLevel->year_time_total;
+        $this->cost_month_total = $modelProgrammLevel->cost_month_total;
+        $this->cost_year_total = $modelProgrammLevel->cost_year_total;
     }
 }

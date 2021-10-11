@@ -86,4 +86,23 @@ class DefaultController extends BaseController
         return $this->redirect($this->getRedirectPage('index', $this->modelClass));
     }
 
+    /**
+     * @param string $action
+     * @param null $model
+     * @return array|string
+     */
+    protected function getRedirectPage($action, $model = null)
+    {
+        switch ($action) {
+            case 'delete':
+                return ['index'];
+                break;
+            case 'create':
+                return ['update', 'id' => $model->id];
+                break;
+            default:
+                return ['index'];
+        }
+    }
+
 }

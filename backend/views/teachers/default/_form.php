@@ -98,7 +98,7 @@ EOF;
         <div class="panel-heading">
             Информация о преподавателе
             <?php if (!$userCommon->isNewRecord):?>
-            <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/teachers/default/history', 'id' => $model->id]); ?></span>
+            <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
                <?php $user_id = RefBook::find('teachers_users')->getValue($model->id); ?>
                 <?php if ($user_id): ?>
                     <span class="pull-right"> <?= Html::a('<i class="fa fa-user-o" aria-hidden="true"></i> Регистрационные данные',

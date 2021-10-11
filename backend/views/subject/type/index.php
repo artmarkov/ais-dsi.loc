@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <? /*=  GridPageSize::widget(['pjaxId' => 'subject-type-grid-pjax'])*/ ?>
+                            <?php /*echo  GridPageSize::widget(['pjaxId' => 'subject-type-grid-pjax'])*/ ?>
                         </div>
                     </div>
 

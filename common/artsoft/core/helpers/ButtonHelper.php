@@ -3,7 +3,6 @@
 namespace artsoft\helpers;
 
 use Yii;
-use yii\helpers\Url;
 
 /**
  * Submit Button in form
@@ -26,8 +25,7 @@ class ButtonHelper
         $result .= self::saveButton('submitAction', 'saveexit', 'Save & Exit', $buttonClass);
         $result .= self::saveButton('submitAction', 'save', 'Save', $buttonClass);
         $result .= $model->isNewRecord ? self::saveButton('submitAction', 'savenext', 'Save & Add', $buttonClass) : self::deleteButton($deleteAction, $buttonClass);
-
-        print_r(self::getResolve());
+       // print_r(self::getResolve());
         return $result;
     }
 
@@ -57,9 +55,8 @@ class ButtonHelper
     public static function viewButtons($model, $indexAction = null, $editAction = null, $deleteAction = null, $buttonClass = self::buttonClass)
     {
         $result = self::exitButton($indexAction, $buttonClass);
-        $result .= self::updateButton($editAction, $buttonClass);
+        $result .= self::updateButton($model, $editAction, $buttonClass);
         $result .= !$model->isNewRecord ? self::deleteButton($deleteAction, $buttonClass) : null;
-        print_r(self::getResolve());
         return $result;
     }
 
@@ -78,9 +75,9 @@ class ButtonHelper
      * @param string $buttonClass
      * @return string
      */
-    public static function updateButton($editAction = null, $buttonClass = self::buttonClass)
+    public static function updateButton($model, $editAction = null, $buttonClass = self::buttonClass)
     {
-        $editAction = $editAction == null ? self::getEditAction() : $editAction;
+        $editAction = $editAction == null ? self::getEditAction($model) : $editAction;
 
         return Html::a(
             '<i class="fa fa-pencil" aria-hidden="true"></i> ' . Yii::t('art', 'Edit'),
@@ -168,9 +165,9 @@ class ButtonHelper
      * @param string $buttonClass
      * @return string
      */
-    public static function historyButton($model, $historyAction = null, $buttonClass = self::buttonClass)
+    public static function historyButton($historyAction = null, $buttonClass = self::buttonClass)
     {
-        $historyAction = $historyAction == null ? [self::getAction('history'), 'id' => $model->id] : $historyAction;
+        $historyAction = $historyAction == null ? self::getHistoryAction() : $historyAction;
         return Html::a('<i class="fa fa-history" aria-hidden="true"></i> ' . Yii::t('art', 'History'),
             $historyAction,
             [
@@ -216,7 +213,7 @@ class ButtonHelper
      * @param $model
      * @return array
      */
-    public static function getEditAction()
+    public static function getEditAction($model)
     {
         $url = self::getResolve();
         isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
@@ -257,6 +254,7 @@ class ButtonHelper
      */
     public static function getCreateAction()
     {
+        $arr = [];
         $url = self::getResolve();
         if (isset($url[1]['id'])) {
             $arr[] = $url[0];
@@ -265,6 +263,27 @@ class ButtonHelper
         } else {
             $arr[] = str_replace('index', 'create', $url[0]);
         }
+        return $arr;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getHistoryAction()
+    {
+        $arr = [];
+        $url = self::getResolve();
+        isset($url[1]['id']) ? $arr['id'] = $url[1]['id'] : null;
+        if (isset($url[1]['objectId'])) {
+            $arr[] = $url[0];
+            $arr['objectId'] = $url[1]['objectId'];
+            $arr['mode'] = 'history';
+        } else {
+            if (!empty(preg_filter("/\/view|\/update|\/create/", "", $url[0]))) {
+                $arr[] = preg_filter("/\/view|\/update|\/create/", "", $url[0]) . '/history';
+            }
+        }
+
         return $arr;
     }
 }

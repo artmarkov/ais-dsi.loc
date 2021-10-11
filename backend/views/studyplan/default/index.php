@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="studyplan-index">
     <div class="panel">
         <div class="panel-heading">
-            <?= \artsoft\helpers\ButtonHelper::createButton('studyplan/default/create'); ?>
+            <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
         </div>
         <div class="panel-body">
             <div class="panel panel-default">

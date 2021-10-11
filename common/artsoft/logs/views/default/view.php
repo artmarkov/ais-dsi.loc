@@ -48,8 +48,8 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?= \artsoft\helpers\ButtonHelper::exitButton('/logs/default/index');?>
-                <?= \artsoft\helpers\ButtonHelper::deleteButton($model, ['/logs/default/delete', 'id' => $model->id]);?>
+                <?= \artsoft\helpers\ButtonHelper::exitButton(['/logs/default/index']);?>
+                <?= \artsoft\helpers\ButtonHelper::deleteButton(['/logs/default/delete', 'id' => $model->id]);?>
             </div>
         </div>
     </div>

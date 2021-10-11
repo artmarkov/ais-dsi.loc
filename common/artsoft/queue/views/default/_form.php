@@ -48,7 +48,7 @@ use artsoft\models\User;
                 </div>
                 <div class="panel-footer">
                     <div class="form-group btn-group">
-                        <?= \artsoft\helpers\ButtonHelper::submitButtons($model,'/queue-schedule/default/index', ['/queue-schedule/default/delete', 'id' => $model->id]); ?>
+                        <?= \artsoft\helpers\ButtonHelper::submitButtons($model, ['/queue-schedule/default/index'], ['/queue-schedule/default/delete', 'id' => $model->id]); ?>
                     </div>
                     <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
                 </div>

@@ -20,7 +20,7 @@ use kartik\date\DatePicker;
     <div class="panel">
         <div class="panel-heading">
             <?php if (!$model->isNewRecord): ?>
-                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/efficiency/default/history', 'id' => $model->id]); ?></span>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
             <?php endif; ?>
         </div>
         <div class="panel-body">

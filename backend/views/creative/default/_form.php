@@ -90,7 +90,7 @@ JS
         <div class="panel-heading">
             Сведения о работе
             <?php if (!$model->isNewRecord): ?>
-                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton($model, ['/creative/default/history', 'id' => $model->id]); ?></span>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
             <?php endif; ?>
         </div>
         <div class="panel-body">

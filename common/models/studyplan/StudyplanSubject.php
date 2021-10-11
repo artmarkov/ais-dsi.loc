@@ -179,4 +179,22 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
         return $this->hasOne(Subject::class, ['id' => 'subject_id']);
     }
 
+    /**
+     * @param $model
+     * @param $modelSubTime
+     */
+    public function copyAttributes($model, $modelSubTime)
+    {
+        $this->studyplan_id = $model->id;
+        $this->subject_cat_id = $modelSubTime->subject_cat_id;
+        $this->subject_id = $modelSubTime->subject_id;
+        $this->subject_type_id = $model->getTypeScalar();
+        $this->subject_vid_id = $modelSubTime->subject_vid_id;
+        $this->week_time = $modelSubTime->week_time;
+        $this->year_time = $modelSubTime->year_time;
+        $this->cost_hour = $modelSubTime->cost_hour;
+        $this->cost_month_summ = $modelSubTime->cost_month_summ;
+        $this->cost_year_summ = $modelSubTime->cost_year_summ;
+        $this->year_time_consult = $modelSubTime->year_time_consult;
+    }
 }

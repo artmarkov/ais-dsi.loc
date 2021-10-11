@@ -72,6 +72,7 @@ $config =  [
                 '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(view)>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(update)>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(delete)>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(history)>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<action:(create)>' => '<module>/default/<action>',

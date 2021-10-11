@@ -30,10 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-6">
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
-                            echo GridQuickLinks::widget([
+                            /*echo GridQuickLinks::widget([
                                 'model' => Studyplan::className(),
                                 'searchModel' => $searchModel,
-                            ])
+                            ])*/
                             ?>
                         </div>
 
@@ -53,12 +53,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'studyplan-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                        'bulkActionOptions' => [
-                            'gridId' => 'studyplan-grid',
-                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-                        ],
+//                        'bulkActionOptions' => [
+//                            'gridId' => 'studyplan-grid',
+//                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
+//                        ],
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+//                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'delete' => function ($url, $model, $key) {
                                         return Html::a(Yii::t('art', 'Delete'),
-                                            Url::to(['/students/default/studyplan/delete', 'id' => $model->student_id, 'objectId' => $model->id, 'mode' => 'delete']), [
+                                            Url::to(['/students/default/studyplan', 'id' => $model->student_id, 'objectId' => $model->id, 'mode' => 'delete']), [
                                                 'title' => Yii::t('art', 'Delete'),
                                                 'aria-label' => Yii::t('art', 'Delete'),
                                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
