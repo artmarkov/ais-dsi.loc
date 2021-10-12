@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\controllers\activities;
+namespace backend\controllers\guidesys;
 
 use artsoft\widgets\ActiveForm;
 use yii\web\Response;

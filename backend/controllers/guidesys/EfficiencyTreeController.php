@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\controllers\efficiency;
+namespace backend\controllers\guidesys;
 
 use Yii;
 

@@ -8,6 +8,5 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Список мероприятий',  'url' => ['/activities/default/index']],
         ['label' => 'Календарь мероприятий',  'url' => ['/activities/default/calendar']],
         ['label' => 'Календарь по аудиториям',  'url' => ['/activities/schedule/index']],
-        ['label' => 'Категории мероприятий',  'url' => ['/activities/activities-cat/index']],
     ];
 }

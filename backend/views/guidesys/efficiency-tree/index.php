@@ -54,9 +54,9 @@ HTML;
                         'cacheSettings' => [
                             'enableCache' => true
                         ],
-                        'nodeView' => '@backend/views/efficiency/efficiency-tree/_form', //переопределено
+                        'nodeView' => '@backend/views/guidesys/efficiency-tree/_form', //переопределено
                         'nodeAddlViews' => [
-                            Module::VIEW_PART_2 => '@backend/views/efficiency/efficiency-tree/_treePart2',
+                            Module::VIEW_PART_2 => '@backend/views/guidesys/efficiency-tree/_treePart2',
                         ],
                         'nodeActions' => [
                             Module::NODE_MANAGE => Url::to(['/treemanager/node/manage']),

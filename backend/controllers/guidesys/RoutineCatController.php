@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\controllers\routine;
+namespace backend\controllers\guidesys;
 
 use yii\web\Controller;
 

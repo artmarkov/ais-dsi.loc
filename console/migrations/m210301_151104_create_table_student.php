@@ -20,16 +20,16 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
 
         $this->addCommentOnTable('guide_student_position','Состояние ученика');
         $this->db->createCommand()->resetSequence('guide_student_position', 1000)->execute();
-        $this->db->createCommand()->batchInsert('guide_student_position', ['id', 'name', 'slug', 'status'], [
-            [1000, 'Абитуриенты', 'Абит', 1],
-            [1001, 'Ученики школы', 'Уч-к', 1],
-            [1002, 'Выпускники школы', 'Вып', 1],
-            [1003, 'Отчислены из школы', 'Отч', 1],
-            [1004, 'Не прошли испытания', 'Не прошел', 1],
+        $this->db->createCommand()->batchInsert('guide_student_position', ['name', 'slug', 'status'], [
+            ['Абитуриенты', 'Абит', 1],
+            ['Ученики школы', 'Уч-к', 1],
+            ['Выпускники школы', 'Вып', 1],
+            ['Отчислены из школы', 'Отч', 1],
+            ['Не прошли испытания', 'Не прошел', 1],
         ])->execute();
 
         $this->createTableWithHistory('students', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 999999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'user_common_id' => $this->integer(),
             'position_id' => $this->integer(),
             'sert_name' => $this->string(32),

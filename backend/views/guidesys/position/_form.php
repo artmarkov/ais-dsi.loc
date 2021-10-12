@@ -1,11 +1,11 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\students\StudentPosition;
+use common\models\guidesys\StudentPosition;
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\students\StudentPosition */
+/* @var $model common\models\guidesys\StudentPosition */
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 

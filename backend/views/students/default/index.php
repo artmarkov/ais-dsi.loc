@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'position_id',
                                 'value' => 'position.name',
                                 'label' => Yii::t('art/student', 'Position'),
-                                'filter' => common\models\students\StudentPosition::getPositionList(),
+                                'filter' => common\models\guidesys\StudentPosition::getPositionList(),
                             ],
                             [
                                 'class' => 'artsoft\grid\columns\DateFilterColumn',

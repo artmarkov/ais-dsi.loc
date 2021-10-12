@@ -6,6 +6,7 @@ use artsoft\behaviors\DateFieldBehavior;
 use artsoft\db\ActiveRecord;
 use artsoft\traits\DateTimeTrait;
 use common\models\user\UserCommon;
+use common\models\guidesys\StudentPosition;
 use Yii;
 use artsoft\models\User;
 use yii\behaviors\BlameableBehavior;
@@ -15,7 +16,6 @@ use yii\behaviors\TimestampBehavior;
  * This is the model class for table "students".
  *
  * @property int $id
- * @property int $user_id
  * @property int $position_id
  * @property string $sert_name
  * @property string $sert_series
@@ -72,7 +72,7 @@ class Student extends ActiveRecord
             [['sert_date'], 'safe'],
             [['sert_name', 'sert_series', 'sert_num'], 'string', 'max' => 32],
             [['sert_organ'], 'string', 'max' => 127],
-            [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudentPosition::className(), 'targetAttribute' => ['position_id' => 'id']],
+            [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudentPosition::class, 'targetAttribute' => ['position_id' => 'id']],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
             [['sert_series', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_name != NULL;
@@ -127,7 +127,7 @@ class Student extends ActiveRecord
      */
     public function getPosition()
     {
-        return $this->hasOne(StudentPosition::className(), ['id' => 'position_id']);
+        return $this->hasOne(StudentPosition::class, ['id' => 'position_id']);
     }
 
     /**

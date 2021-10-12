@@ -1,21 +1,23 @@
+
 <?php
 
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\students\StudentPosition;
+use common\models\subject\SubjectCategory;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
+use common\models\routine\RoutineCat;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/student', 'Position');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/student', 'Students'), 'url' => ['students/default/index']];
+$this->title = Yii::t('art/routine', 'Routine Cats');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/routine', 'Routine'), 'url' => ['routine/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="student-position-index">
+<div class="routine-cat-index">
     <div class="panel">
         <div class="panel-heading">
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
@@ -28,30 +30,30 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
                             /* echo GridQuickLinks::widget([
-                                'model' => StudentPosition::className(),
-                                'searchModel' => $searchModel,
-                            ])*/
+                              'model' => RoutineCat::className(),
+                              'searchModel' => $searchModel,
+                              ]) */
                             ?>
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?= GridPageSize::widget(['pjaxId' => 'student-position-grid-pjax']) ?>
+                            <?= GridPageSize::widget(['pjaxId' => 'routine-cat-grid-pjax']) ?>
                         </div>
                     </div>
 
                     <?php
                     Pjax::begin([
-                        'id' => 'student-position-grid-pjax',
+                        'id' => 'routine-cat-grid-pjax',
                     ])
                     ?>
 
                     <?=
                     GridView::widget([
-                        'id' => 'student-position-grid',
+                        'id' => 'routine-cat-grid',
                         'dataProvider' => $dataProvider,
                         'bulkActionOptions' => [
-                            'gridId' => 'student-position-grid',
-//                    'actions' => [ Url::to(['bulk-delete']) => Yii::t('art','Delete')] //Configure here you bulk actions
+                            'gridId' => 'routine-cat-grid',
+                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art','Delete')] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
@@ -59,21 +61,27 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'name',
-                                'controller' => '/students/position',
-                                'title' => function (StudentPosition $model) {
+                                'controller' => '/guidesys/routine-cat',
+                                'title' => function (RoutineCat $model) {
                                     return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
-                            'slug',
+                            [
+                                'attribute' => 'color',
+                                'value' => function(RoutineCat $model){
+                                    return '<div style="background-color:' . $model->color . '">&nbsp;</div>';
+                                },
+                                'format' => 'html',
+                            ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
-                                'attribute' => 'status',
+                                'attribute' => 'plan_flag',
                                 'optionsArray' => [
-                                    [StudentPosition::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
-                                    [StudentPosition::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                    [RoutineCat::FLAG_ACTIVE, Yii::t('art', 'Yes'), 'primary'],
+                                    [RoutineCat::FLAG_INACTIVE, Yii::t('art', 'No'), 'info'],
                                 ],
-                                'options' => ['style' => 'width:60px']
+                                'options' => ['style' => 'width:150px']
                             ],
                         ],
                     ]);

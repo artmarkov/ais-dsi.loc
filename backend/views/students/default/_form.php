@@ -76,7 +76,7 @@ JS
             <?php endif; ?>
         </div>
         <div class="panel-body">
-            <?= $form->field($model, 'position_id')->dropDownList(\common\models\students\StudentPosition::getPositionList(), [
+            <?= $form->field($model, 'position_id')->dropDownList(\common\models\guidesys\StudentPosition::getPositionList(), [
                 'prompt' => Yii::t('art/student', 'Select Position...'),
                 'id' => 'position_id',
                 'disabled' => $readonly

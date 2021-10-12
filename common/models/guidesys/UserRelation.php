@@ -29,6 +29,7 @@ class UserRelation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['name', 'slug'], 'required'],
             [['name'], 'string', 'max' => 127],
             [['slug'], 'string', 'max' => 64],
         ];

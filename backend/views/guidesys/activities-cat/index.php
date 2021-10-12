@@ -57,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'name',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/activities/activities-cat',
+                                'controller' => '/guidesys/activities-cat',
                                 'title' => function(ActivitiesCat $model) {
                                     return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },

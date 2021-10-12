@@ -1,6 +1,6 @@
 <?php
 
-namespace common\models\students;
+namespace common\models\guidesys;
 
 use Yii;
 
@@ -33,6 +33,7 @@ class StudentPosition extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['name', 'slug'], 'required'],
             [['name'], 'string', 'max' => 128],
             [['slug'], 'string', 'max' => 32],
             ['status', 'integer'],

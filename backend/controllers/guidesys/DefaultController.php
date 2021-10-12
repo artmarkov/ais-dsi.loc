@@ -6,7 +6,7 @@ use Yii;
 
 
 /**
- * MeasureController implements the CRUD actions for backend\models\Measure model.
+ * MeasureController implements the CRUD actions for common\models\guidesys\UserRelation model.
  */
 class DefaultController extends MainController
 {
