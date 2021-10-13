@@ -1,6 +1,6 @@
 <?php
 
-namespace common\models\guidesys;
+namespace common\models\students;
 
 use Yii;
 
@@ -82,7 +82,7 @@ class StudentPosition extends \yii\db\ActiveRecord
      */
     public function getStudents()
     {
-        return $this->hasMany(Student::className(), ['position_id' => 'id']);
+        return $this->hasMany(Student::class, ['position_id' => 'id']);
     }
 
     public static function getPositionList()

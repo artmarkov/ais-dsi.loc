@@ -6,7 +6,7 @@ use artsoft\behaviors\DateFieldBehavior;
 use artsoft\db\ActiveRecord;
 use artsoft\traits\DateTimeTrait;
 use common\models\user\UserCommon;
-use common\models\guidesys\StudentPosition;
+use common\models\students\StudentPosition;
 use Yii;
 use artsoft\models\User;
 use yii\behaviors\BlameableBehavior;

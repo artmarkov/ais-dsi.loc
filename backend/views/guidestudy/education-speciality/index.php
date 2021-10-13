@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'name',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/guidesys/education-speciality',
+                                'controller' => '/guidestudy/education-speciality',
                                 'title' => function (EducationSpeciality $model) {
                                     return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },

@@ -62,7 +62,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
         $this->db->createCommand()->resetSequence('guide_subject_type', 1000)->execute();
         $this->db->createCommand()->batchInsert('guide_subject_type', ['name', 'slug', 'status'], [
             ['Бюджет', 'Бюд.', 1],
-            ['Хозрасчет', 'х/р.', 1],
+            ['Внебюджет', 'Внеб.', 1],
         ])->execute();
 
         $this->createTableWithHistory('subject', [
@@ -234,7 +234,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             ['Эстрадно-джазовое пение', 'Эст.дж.пен.', 1, time(), time(), 1000, 1000],
             ['Эстрадно-джазовый оркестр', 'Джаз.орк.', 1, time(), time(), 1000, 1000],
             ['Эстрадный вокал', 'Эстр.вок', 1, time(), time(), 1000, 1000],
-            ['Эстрадный танец', 'эстр.тан.', 1, time(), time(), 1000, 1000],
+            ['Эстрадный танец', 'Эстр.тан.', 1, time(), time(), 1000, 1000],
             ['Body Ballet', 'Body Ballet', 1, time(), time(), 1000, 1000],
             ['"Всезнайки" - класс раннего развития', '"Всезнайки"', 1, time(), time(), 1000, 1000],
             ['"Знайки" - класс раннего развития', '"Знайки"', 1, time(), time(), 1000, 1000],

@@ -76,6 +76,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Дисциплины', 'icon' => 'fa fa-minus', 'url' => ['/subject/default/index']],
                     ['label' => 'Кадровая служба', 'icon' => 'fa fa-minus', 'url' => ['/guidejob/default/index']],
                     ['label' => 'Структура организации', 'icon' => 'fa fa-minus', 'url' => ['/own/default/index']],
+                    ['label' => 'Учебные справочники', 'icon' => 'fa fa-minus', 'url' => ['/guidestudy/default/index']],
                     ['label' => 'Системные справочники', 'icon' => 'fa fa-minus', 'url' => ['/guidesys/default/index']],
                 ],
             ],

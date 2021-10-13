@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\controllers\guidesys;
+namespace backend\controllers\guidestudy;
 
 use Yii;
 use artsoft\controllers\admin\BaseController;
