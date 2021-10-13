@@ -36,6 +36,8 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             [1, 'Стартовый', 'Старт.', 1],
             [2, 'Базовый', 'База.', 1],
             [3, 'Продвинутый', 'Прод.', 1],
+            [4, 'Основной', 'Осн.', 1],
+            [5, 'Углубленный', 'Углуб.', 1],
         ])->execute();
 
         $this->createTable('education_speciality', [

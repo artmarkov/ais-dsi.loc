@@ -228,7 +228,7 @@ class ArtHelper
     {
         $course = [];
         for ($i = $min; $i <= $max; $i++) {
-            $course[$i] = $i . ' курс';
+            $course[$i] = $i . ' класс';
         }
         return $course;
     }

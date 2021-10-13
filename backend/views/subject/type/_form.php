@@ -27,6 +27,8 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
+                    <?= $form->field($model, 'type_id')->dropDownList(SubjectType::getBasisList()) ?>
+
                     <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(SubjectType::getStatusList()) ?>
 
                 </div>

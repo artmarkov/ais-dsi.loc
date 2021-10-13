@@ -27,8 +27,6 @@ use Yii;
  * @property int $version
  *
  * @property EducationProgramm $programm
- * @property GuideSubjectCategory $subjectCat
- * @property Subject $subject
  * @property EducationProgrammLevelSubject[] $EducationProgrammLevelSubject
  */
 class EducationProgrammLevel extends \artsoft\db\ActiveRecord
@@ -58,7 +56,7 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['programm_id', 'course', 'level_id'], 'required'],
+            [['programm_id', 'course'], 'required'],
             [['programm_id'], 'default', 'value' => null],
             [['year_time_total', 'cost_month_total', 'cost_year_total'], 'number'],
             [['year_time_total', 'cost_month_total', 'cost_year_total'], 'default', 'value' => 0],
@@ -135,5 +133,18 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
     public function getUpdatedBy()
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if ($this->programm->catType == \common\models\education\EducationCat::BASIS_FREE) {
+            $this->level_id = null;
+            $this->cost_month_total = 0;
+        }
+        return parent::beforeSave($insert);
     }
 }

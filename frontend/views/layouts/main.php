@@ -43,7 +43,7 @@ AvatarAsset::register($this);
         <?php
         $logo = $assetBundle->baseUrl . '/images/art-logo-inverse.png';
         NavBar::begin([
-            'brandLabel' => Html::img($logo, ['class' => 'art-logo', 'alt' => 'ArtCMS']) . '<b>' . Yii::t('art', 'AIS') . '</b> ' . Yii::$app->settings->get('general.title', 'Art Site', Yii::$app->language),
+            'brandLabel' => Html::img($logo, ['class' => 'art-logo', 'alt' => 'ArtCMS']) . '<b>' . Yii::t('art', 'AIS') . '</b> ' . Yii::$app->settings->get('general.title', 'Art Site'),
             'brandUrl' => Yii::$app->homeUrl,
             'options' => [
                 'class' => 'navbar-inverse navbar-static-top',
@@ -157,7 +157,7 @@ AvatarAsset::register($this);
 <footer class="footer">
     <div class="container">
         <p class="pull-left">
-            &copy; <?= '<b>' . Yii::t('art', 'AIS') . '</b> ' . Html::encode(Yii::$app->settings->get('general.title', 'Art Site', Yii::$app->language)) ?>
+            &copy; <?= '<b>' . Yii::t('art', 'AIS') . '</b> ' . Html::encode(Yii::$app->settings->get('general.title', 'Art Site')) ?>
             2009-<?= date('Y') ?></p>
 
         <p class="pull-right"><?= Yii::powered() ?>

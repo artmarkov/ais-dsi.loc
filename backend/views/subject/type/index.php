@@ -76,7 +76,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'options' => ['style' => 'width:150px']
                             ],
-
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'type_id',
+                                'optionsArray' => [
+                                    [SubjectType::BASIS_FREE, Yii::t('art/guide', 'Basis Free'), 'success'],
+                                    [SubjectType::BASIS_PAY, Yii::t('art/guide', 'Basis Pay'), 'info'],
+                                ],
+                                'options' => ['style' => 'width:150px']
+                            ],
                         ],
                     ]);
                     ?>

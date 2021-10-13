@@ -55,6 +55,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'name' => $this->string(127)->notNull(),
             'slug' => $this->string(64)->notNull(),
+            'type_id' => $this->integer(),
             'status' => $this->tinyInteger(1)->unsigned()->notNull(),
         ], $tableOptions);
 

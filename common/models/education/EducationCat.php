@@ -20,6 +20,7 @@ class EducationCat extends \artsoft\db\ActiveRecord
 {
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
+
     const BASIS_FREE = 0;
     const BASIS_PAY = 1;
 

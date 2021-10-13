@@ -47,7 +47,6 @@ class DefaultController extends MainController
                     }
                 }
             }
-
             if ($valid) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
@@ -57,7 +56,6 @@ class DefaultController extends MainController
                             if ($flag === false) {
                                 break;
                             }
-
                             $modelSubject->programm_id = $model->id;
 
                             if (!($flag = $modelSubject->save(false))) {
@@ -67,13 +65,6 @@ class DefaultController extends MainController
                             if (isset($modelsTime[$index]) && is_array($modelsTime[$index])) {
                                 foreach ($modelsTime[$index] as $indexTime => $modelTime) {
                                     $modelTime->programm_subject_id = $modelSubject->id;
-                                    if ($model->catType == EducationCat::BASIS_FREE) {
-                                        $modelTime->cost_hour = 0;
-                                        $modelTime->cost_month_summ = 0;
-                                        $modelTime->cost_year_summ = 0;
-                                    } else {
-                                        $modelTime->year_time_consult = 0;
-                                    }
                                     if (!($flag = $modelTime->save(false))) {
                                         break;
                                     }
@@ -173,41 +164,21 @@ class DefaultController extends MainController
                             if ($flag === false) {
                                 break;
                             }
-
                             $modelSubject->programm_id = $model->id;
-
                             if (!($flag = $modelSubject->save(false))) {
                                 break;
                             }
 
                             $modelSubject = EducationProgrammLevel::findOne(['id' => $modelSubject->id]);
 
-                            $modelSubject->year_time_total = 0;
-                            $modelSubject->cost_month_total = 0;
-                            $modelSubject->cost_year_total = 0;
-
                             if (isset($modelsTime[$index]) && is_array($modelsTime[$index])) {
                                 foreach ($modelsTime[$index] as $indexTime => $modelTime) {
                                     $modelTime->programm_level_id = $modelSubject->id;
-                                    if ($model->catType == EducationCat::BASIS_FREE) {
-                                        $modelTime->cost_hour = 0;
-                                        $modelTime->cost_month_summ = 0;
-                                        $modelTime->cost_year_summ = 0;
-                                    } else {
-                                        $modelTime->year_time_consult = 0;
-                                    }
 
                                     if (!($flag = $modelTime->save(false))) {
                                         break;
                                     }
-                                    $modelSubject->year_time_total += $modelTime->year_time;
-                                    $modelSubject->cost_month_total += $modelTime->cost_month_summ;
-                                    $modelSubject->cost_year_total += $modelTime->cost_year_summ;
                                 }
-                                if (!($flag = $modelSubject->save(false))) {
-                                    break;
-                                }
-
                             }
                         }
                     }

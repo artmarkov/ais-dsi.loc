@@ -70,7 +70,7 @@ $this->registerJs($js);
 
                     <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'term_mastering')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'term_mastering')->textInput(['maxlength' => true])->hint('Укажите период освоения программы. Например: 5 лет или 3/5/7 лет.') ?>
 
                     <?= $form->field($model, 'speciality_list')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('education_speciality', $model->isNewRecord ? EducationSpeciality::STATUS_ACTIVE : '')->getList(),
@@ -136,18 +136,20 @@ $this->registerJs($js);
                                             echo Html::activeHiddenInput($modelSubject, "[{$index}]id");
                                         }
                                         ?>
-                                        <?= $form->field($modelSubject, "[{$index}]level_id")->widget(\kartik\select2\Select2::class, [
-                                            'data' => RefBook::find('education_level')->getList(),
-                                            'options' => [
-                                                'disabled' => $readonly,
-                                                'placeholder' => Yii::t('art/guide', 'Select Education Level...'),
-                                                'multiple' => false,
-                                            ],
-                                            'pluginOptions' => [
-                                                'allowClear' => true
-                                            ],
-                                        ]);
-                                        ?>
+                                        <?php if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
+                                            <?= $form->field($modelSubject, "[{$index}]level_id")->widget(\kartik\select2\Select2::class, [
+                                                'data' => RefBook::find('education_level')->getList(),
+                                                'options' => [
+                                                    'disabled' => $readonly,
+                                                    'placeholder' => Yii::t('art/guide', 'Select Education Level...'),
+                                                    'multiple' => false,
+                                                ],
+                                                'pluginOptions' => [
+                                                    'allowClear' => true
+                                                ],
+                                            ]);
+                                            ?>
+                                        <?php endif; ?>
                                         <?= $form->field($modelSubject, "[{$index}]course")->widget(\kartik\select2\Select2::class, [
                                             'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                                             'options' => [
@@ -172,10 +174,12 @@ $this->registerJs($js);
                                         <div class="col-sm-12">
                                             <?= $form->field($modelSubject, "[{$index}]year_time_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
 
-                                            <?= $form->field($modelSubject, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
-
-                                            <?= $form->field($modelSubject, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
-
+                                            <?php if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
+                                                <?= $form->field($modelSubject, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
+                                                <?= $form->field($modelSubject, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
+                                            <?php else: ?>
+                                                <?= $form->field($modelSubject, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false])->label('Сумма в рублях за учебный год из средств бюджета') ?>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>

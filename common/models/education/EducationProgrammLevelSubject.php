@@ -62,6 +62,7 @@ class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
             [['subject_cat_id', 'subject_vid_id', 'week_time', 'year_time'], 'required'],
             [['programm_level_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'number'],
+            [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'default', 'value' => 0],
             [['programm_level_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgrammLevel::class, 'targetAttribute' => ['programm_level_id' => 'id']],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectVid::class, 'targetAttribute' => ['subject_vid_id' => 'id']],
@@ -142,5 +143,21 @@ class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
     public function getUpdatedBy()
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if ($this->programmLevel->programm->catType != \common\models\education\EducationCat::BASIS_FREE) {
+            $this->year_time_consult = 0;
+        } else {
+            $this->cost_hour = 0;
+            $this->cost_month_summ = 0;
+            $this->cost_year_summ = 0;
+        }
+        return parent::beforeSave($insert);
     }
 }
