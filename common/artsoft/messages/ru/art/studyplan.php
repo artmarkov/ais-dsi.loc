@@ -1,6 +1,6 @@
 <?php
 return [
-    'Course' => 'Курс',
+    'Course' => 'Класс',
     'Education Programm' => 'Учебная программа',
     'Speciality Name' => 'Специализация',
     'Individual plans' => 'Индивидуальные планы',

@@ -48,6 +48,7 @@ class DefaultController extends MainController
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     $user->username = $userCommon->generateUsername();
+                    $user->email = $userCommon->email;
                     $user->generateAuthKey();
 
                     if (Yii::$app->art->emailConfirmationRequired) {

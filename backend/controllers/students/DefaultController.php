@@ -56,6 +56,7 @@ class DefaultController extends MainController
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     $user->username = $userCommon->generateUsername();
+                    $user->email = $userCommon->email;
                     $user->generateAuthKey();
 
                     if (Yii::$app->art->emailConfirmationRequired) {
@@ -368,9 +369,11 @@ class DefaultController extends MainController
     public function getMenu($id)
     {
         return [
+            ['label' => 'Монитор ученика', 'url' => ['/students/default/monitor', 'id' => $id]],
             ['label' => 'Карточка ученика', 'url' => ['/students/default/update', 'id' => $id]],
             ['label' => 'Индивидуальные планы', 'url' => ['/students/default/studyplan', 'id' => $id]],
             ['label' => 'Испытания', 'url' => ['/students/default/examination', 'id' => $id]],
+            ['label' => 'История обучения', 'url' => ['/students/default/education-history', 'id' => $id]],
         ];
     }
 }

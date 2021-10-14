@@ -29,6 +29,7 @@ use common\models\user\UserCommon;
                 <?= $form->field($model, 'address')->textInput(['maxlength' => 1024]) ?>
                 <?= $form->field($model, 'phone')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                 <?= $form->field($model, 'phone_optional')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                <?= $form->field($model, 'email')->textInput(['maxlength' => 124]) ?>
             </div>
         </div>
     </div>

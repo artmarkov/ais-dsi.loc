@@ -156,7 +156,8 @@ abstract class AbstractItem extends ActiveRecord
             ['description', 'required', 'on' => 'webInput'],
             ['description', 'string', 'max' => 255],
             ['name', 'required'],
-            ['name', 'validateUniqueName'],
+//            ['name', 'validateUniqueName'],
+            ['name', 'unique'],
             [['name', 'rule_name', 'group_code'], 'string', 'max' => 64],
             [['rule_name', 'description', 'group_code', 'data'], 'default', 'value' => null],
             ['type', 'integer'],
@@ -167,15 +168,15 @@ abstract class AbstractItem extends ActiveRecord
     /**
      * Default unique validator search only within specific class (Role, Route or Permission) because of the overwritten find() method
      */
-    public function validateUniqueName($attribute)
-    {
-        if (Role::find()->where(['name' => $this->name])->exists()) {
-            $this->addError('name', Yii::t('yii', '{attribute} "{value}" has already been taken.', [
-                        'attribute' => $this->getAttributeLabel($attribute),
-                        'value' => $this->$attribute,
-            ]));
-        }
-    }
+//    public function validateUniqueName($attribute)
+//    {
+//        if (Role::find()->where(['name' => $this->name])->exists()) {
+//            $this->addError('name', Yii::t('yii', '{attribute} "{value}" has already been taken.', [
+//                        'attribute' => $this->getAttributeLabel($attribute),
+//                        'value' => $this->$attribute,
+//            ]));
+//        }
+//    }
 
     /**
      * @inheritdoc

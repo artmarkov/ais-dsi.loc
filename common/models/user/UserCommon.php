@@ -30,6 +30,7 @@ use yii\helpers\Url;
  * @property string|null $phone_optional
  * @property string|null $snils
  * @property string|null $info
+ * @property string|null $email
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -97,7 +98,7 @@ class UserCommon extends ActiveRecord
             [['first_name', 'last_name', 'birth_date'], 'required'],
             [['gender', 'status', 'version'], 'integer'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
-            [['user_category', 'first_name', 'middle_name', 'last_name', 'address'], 'string', 'max' => 124],
+            [['user_category', 'first_name', 'middle_name', 'last_name', 'address', 'email'], 'string', 'max' => 124],
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             ['last_name', 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'],
@@ -130,6 +131,7 @@ class UserCommon extends ActiveRecord
             'phone_optional' => Yii::t('art', 'Phone Optional'),
             'snils' => Yii::t('art', 'Snils'),
             'info' => Yii::t('art', 'Info'),
+            'email' => Yii::t('art', 'E-mail'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),

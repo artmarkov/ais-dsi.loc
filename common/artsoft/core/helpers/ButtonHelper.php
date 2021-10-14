@@ -224,7 +224,7 @@ class ButtonHelper
         } else {
             $url[0] = str_replace('create', 'update', $url[0]);
             $arr[] = str_replace('view', 'update', $url[0]);
-            $arr['id'] = $model->id;
+            isset($model->id) ? $arr['id'] = $model->id : false;
         }
 
         return $arr;

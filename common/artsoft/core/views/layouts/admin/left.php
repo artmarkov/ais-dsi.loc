@@ -1,5 +1,7 @@
 <?php
+
 use artsoft\widgets\Nav;
+
 ?>
 <!-- SIDEBAR NAV -->
 <div class="navbar-default sidebar metismenu" role="navigation">
@@ -11,11 +13,22 @@ use artsoft\widgets\Nav;
             ['class' => 'nav nav-second-level'],
             ['class' => 'nav nav-third-level']
         ],
-        'items'  => [
+        'items' => [
             [
                 'label' => 'Главная',
                 'icon' => 'fa fa-th',
                 'url' => '/admin',
+            ],
+            [
+                'label' => 'Информационный ресурс',
+                'icon' => 'fa fa-inbox',
+                'url' => '#',
+                'items' => [
+                    ['label' => 'Каталог файлов', 'icon' => 'fa fa-minus', 'url' => ['/info/default/index']],
+                    ['label' => 'Объявления', 'icon' => 'fa fa-minus', 'url' => ['/info/adverts']],
+                    ['label' => 'Формы и заявки', 'icon' => 'fa fa-minus', 'url' => ['/info/forms'],
+                    ],
+                ],
             ],
             [
                 'label' => 'Реестры',
@@ -50,8 +63,10 @@ use artsoft\widgets\Nav;
                     ['label' => 'Индивидуальные планы', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
                     ['label' => 'Движение учеников', 'icon' => 'fa fa-minus', 'url' => ['/transfer/default/index']],
                     ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/schedule/default/index']],
+                    ['label' => 'Расписание консультаций', 'icon' => 'fa fa-minus', 'url' => ['/consult/default/index']],
                     ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/index']],
                     ['label' => 'Журнал успеваемости', 'icon' => 'fa fa-minus', 'url' => ['/progress/default/index']],
+                    ['label' => 'Учебные группы', 'icon' => 'fa fa-minus', 'url' => ['/studygroups/default/index']],
                 ],
             ],
             [
@@ -64,6 +79,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Показатели эфективности', 'icon' => 'fa fa-minus', 'url' => ['/efficiency/default/index']],
                     ['label' => 'Портфолио преподавателей', 'icon' => 'fa fa-minus', 'url' => ['/portfolio/default/index']],
                     ['label' => 'Контроль исполнения', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/index']],
+                    ['label' => 'Сводная успеваемость', 'icon' => 'fa fa-minus', 'url' => ['/summary-progress/default/index']],
                 ],
             ],
             [
@@ -114,6 +130,5 @@ use artsoft\widgets\Nav;
             ],
         ],
     ]) ?>
-<!--    --><?php //print_r(Menu::getMenuItems('admin-menu'))?>
 </div>
 <!-- !SIDEBAR NAV -->

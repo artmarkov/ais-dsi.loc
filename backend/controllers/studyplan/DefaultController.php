@@ -34,7 +34,7 @@ class DefaultController extends MainController
         if ($model->load(Yii::$app->request->post())) {
             // validate all models
             $valid = $model->validate();
-           // $valid = true;
+            // $valid = true;
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
@@ -90,7 +90,7 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
         $this->view->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
-        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if (!isset($model)) {
             throw new NotFoundHttpException("The StudyplanSubject was not found.");
@@ -153,7 +153,7 @@ class DefaultController extends MainController
     public function actionHistory($id)
     {
         $model = $this->findModel($id);
-        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['tabMenu'] = $this->getMenu($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
         $data = new StudyplanHistory($id);
@@ -201,5 +201,21 @@ class DefaultController extends MainController
             }
         }
         return json_encode(['output' => '', 'selected' => '']);
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getMenu($id)
+    {
+        return [
+            ['label' => 'Карточка индивидуального плана', 'url' => ['/studyplan/default/update', 'id' => $id]],
+            ['label' => 'Расписание занятий', 'url' => ['/studyplan/default/studyplan-schedule', 'id' => $id]],
+            ['label' => 'Расписание консультаций', 'url' => ['/studyplan/default/studyplan-consult', 'id' => $id]],
+            ['label' => 'Характеристики по предметам', 'url' => ['/studyplan/default/studyplan-characteristic', 'id' => $id]],
+            ['label' => 'Дневник успеваемости', 'url' => ['/studyplan/default/studyplan-progress', 'id' => $id]],
+            ['label' => 'Оплата за обучение', 'url' => ['/studyplan/default/studyplan-invoices', 'id' => $id]],
+        ];
     }
 }

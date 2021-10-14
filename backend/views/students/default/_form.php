@@ -76,7 +76,7 @@ JS
             <?php endif; ?>
         </div>
         <div class="panel-body">
-            <?= $form->field($model, 'position_id')->dropDownList(\common\models\guidesys\StudentPosition::getPositionList(), [
+            <?= $form->field($model, 'position_id')->dropDownList(\common\models\students\StudentPosition::getPositionList(), [
                 'prompt' => Yii::t('art/student', 'Select Position...'),
                 'id' => 'position_id',
                 'disabled' => $readonly
@@ -102,6 +102,7 @@ JS
                             <?= $form->field($model, 'sert_num')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'sert_organ')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'sert_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname(), ['disabled' => $readonly]); ?>
+
                             <?php if (!$model->isNewRecord) : ?>
                                 <div class="form-group field-student-attachment">
                                     <div class="col-sm-3">

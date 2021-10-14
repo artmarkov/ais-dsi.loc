@@ -49,6 +49,7 @@ class DefaultController extends MainController
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     $user->username = $userCommon->generateUsername();
+                    $user->email = $userCommon->email;
                     $user->generateAuthKey();
 
                     if (Yii::$app->art->emailConfirmationRequired) {
@@ -100,7 +101,7 @@ class DefaultController extends MainController
      */
     public function actionUpdate($id, $readonly = false)
     {
-        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['tabMenu'] = $this->getMenu($id);
 
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_TEACHERS]);
@@ -174,10 +175,24 @@ class DefaultController extends MainController
 
     public function actionHistory($id)
     {
-        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['tabMenu'] = $this->getMenu($id);
         $model = $this->findModel($id);
         $data = new TeachersHistory($id);
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
-
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getMenu($id)
+    {
+        return [
+            ['label' => 'Монитор преподавателя', 'url' => ['/teachers/default/monitor', 'id' => $id]],
+            ['label' => 'Карточка преподавателя', 'url' => ['/teachers/default/update', 'id' => $id]],
+            ['label' => 'Расписание занятий', 'url' => ['/teachers/default/schedule', 'id' => $id]],
+            ['label' => 'Расписание консультаций', 'url' => ['/teachers/default/consult', 'id' => $id]],
+            ['label' => 'Табель учета', 'url' => ['/teachers/default/timesheet', 'id' => $id]],
+            ['label' => 'Журнал успеваемости', 'url' => ['/teachers/default/progress', 'id' => $id]],
+        ];
+    }
 }
