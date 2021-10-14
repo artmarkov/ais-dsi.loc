@@ -45,6 +45,7 @@ class m130524_201442_init extends BaseMigration
             'phone_optional' => $this->string(24),
             'snils' => $this->string(16),
             'info' => $this->text(),
+            'email' => $this->string(124),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
