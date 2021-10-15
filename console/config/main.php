@@ -22,10 +22,10 @@ return [
         'migration' => [
             'class' => 'bizley\migration\controllers\MigrationController',
         ],
-//        'monitor' => [
-//            'class' => \zhuravljov\yii\queue\monitor\console\GcController::class,
-//            'silent' => false,
-//        ],
+        'monitor' => [
+            'class' => \zhuravljov\yii\queue\monitor\console\GcController::class,
+            'silent' => false,
+        ],
     ],
     'components' => [
         'log' => [

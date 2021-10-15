@@ -6,6 +6,7 @@
 
 namespace console\controllers;
 
+use artsoft\queue\models\QueueSchedule;
 use yii\console\Controller;
 use Yii;
 
@@ -17,11 +18,20 @@ class ScheduleController extends Controller {
             'text' => "test job run " . date('d.m.Y H:i:s', time()) . " \n",
             'file' => __DIR__ . '/test.txt',
         ]));
-        Yii::$app->queue->push(new \artsoft\mailbox\jobs\MessageNewEmailJob());
-        Yii::$app->queue->push(new \artsoft\mailbox\jobs\ClianDeletedMailJob());
-        Yii::$app->queue->push(new \artsoft\mailbox\jobs\TrashMailJob());
+//        Yii::$app->queue->push(new \artsoft\mailbox\jobs\MessageNewEmailJob());
+//        Yii::$app->queue->push(new \artsoft\mailbox\jobs\ClianDeletedMailJob());
+//        Yii::$app->queue->push(new \artsoft\mailbox\jobs\TrashMailJob());
 
         $queue = Yii::$app->queue;
         $queue->run(false);
     }
+
+//    public function actionIndex()
+//    {
+//        foreach (QueueSchedule::find()->all() as $task) {
+//            Yii::$app->queue->push(new $task->class);
+//        }
+//        $queue = Yii::$app->queue;
+//        $queue->run(false);
+//    }
 }
