@@ -25,7 +25,7 @@ class ButtonHelper
         $result .= self::saveButton('submitAction', 'saveexit', 'Save & Exit', $buttonClass);
         $result .= self::saveButton('submitAction', 'save', 'Save', $buttonClass);
         $result .= $model->isNewRecord ? self::saveButton('submitAction', 'savenext', 'Save & Add', $buttonClass) : self::deleteButton($deleteAction, $buttonClass);
-         print_r(self::getResolve());
+//         print_r(self::getResolve());
         return $result;
     }
 

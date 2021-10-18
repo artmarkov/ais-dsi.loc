@@ -25,8 +25,8 @@ use artsoft\widgets\Nav;
                 'url' => '#',
                 'items' => [
                     ['label' => 'Каталог файлов', 'icon' => 'fa fa-minus', 'url' => ['/info/default/index']],
-                    ['label' => 'Объявления', 'icon' => 'fa fa-minus', 'url' => ['/info/adverts']],
-                    ['label' => 'Формы и заявки', 'icon' => 'fa fa-minus', 'url' => ['/info/forms'],
+                    ['label' => 'Объявления', 'icon' => 'fa fa-minus', 'url' => ['/info/board/index']],
+                    ['label' => 'Формы и заявки', 'icon' => 'fa fa-minus', 'url' => ['/info/forms/index'],
                     ],
                 ],
             ],
