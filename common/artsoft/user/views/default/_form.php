@@ -129,7 +129,7 @@ use kartik\date\DatePicker;
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?= \artsoft\helpers\ButtonHelper::submitButtons($model, '/user/default/index', ['/user/default/delete', 'id' => $model->id]); ?>
+                <?= \artsoft\helpers\ButtonHelper::submitButtons($model, '/admin/user/default/index', ['/user/default/delete', 'id' => $model->id]); ?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

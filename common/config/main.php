@@ -76,8 +76,8 @@ return [
 //            'tableName' => '{{%queue_push}}', // Table name
 //            'channel' => 'default', // Queue channel key
             'mutex' => \yii\mutex\PgsqlMutex::class, // Mutex used to sync queries
-            'as jobMonitor' => \zhuravljov\yii\queue\monitor\JobMonitor::class,
-            'as workerMonitor' => \zhuravljov\yii\queue\monitor\WorkerMonitor::class,
+//            'as jobMonitor' => \zhuravljov\yii\queue\monitor\JobMonitor::class,
+//            'as workerMonitor' => \zhuravljov\yii\queue\monitor\WorkerMonitor::class,
             'as queueSchedule' => \artsoft\queue\JobSchedule::class,
         ],
     ],

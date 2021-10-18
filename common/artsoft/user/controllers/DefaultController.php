@@ -104,4 +104,21 @@ class DefaultController extends MainController
 
         return $this->goHome();
     }
+
+    protected function getRedirectPage($action, $model = null)
+    {
+        switch ($action) {
+            case 'index':
+            case 'delete':
+                return ['index'];
+                break;
+            case 'create':
+            case 'update':
+                return ['update', 'id' => $model->id];
+                break;
+            default:
+                return ['index'];
+        }
+    }
+
 }
