@@ -111,7 +111,7 @@ textarea.form-control {
     resize: none !important;
 }
 div.panel-body {
-    overflow: auto !important;
+    /* overflow: auto !important; */
 }
 .navbar-default .navbar-nav > li > a {
     color: #f8f8ff;

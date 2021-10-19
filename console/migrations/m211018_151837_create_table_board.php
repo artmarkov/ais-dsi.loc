@@ -28,7 +28,7 @@ class m211018_151837_create_table_board extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('board', 'Доска объявлений');
-        $this->addForeignKey('board_ibfk_1', 'board', 'author_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('board_ibfk_1', 'board', 'author_id', 'user_common', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->resetSequence('board', 1000)->execute();
     }

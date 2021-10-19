@@ -91,8 +91,6 @@ class Board extends \artsoft\db\ActiveRecord
             [['author_id', 'category_id', 'delete_date'], 'default', 'value' => null],
             [['author_id', 'category_id', 'importance_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['board_date', 'delete_date', 'recipients_list'], 'safe'],
-            ['board_date', 'default', 'value' => date('d.m.Y')],
-            ['importance_id', 'default', 'value' => self::IMPORTANCE_NORM],
             [['title'], 'string', 'max' => 127],
             [['description'], 'string', 'max' => 1024],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['author_id' => 'id']],
@@ -175,6 +173,13 @@ class Board extends \artsoft\db\ActiveRecord
             self::CAT_PARENTS => Yii::t('art/info', 'Parents personal account'),
             self::CAT_SELECT => Yii::t('art/info', 'Selectively'),
         );
+    }
+
+    public static function getCategoryValue($val)
+    {
+        $ar = self::getCategoryList();
+
+        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     /**

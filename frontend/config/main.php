@@ -14,6 +14,9 @@ $config =  [
         'auth' => [
             'class' => 'artsoft\auth\AuthModule',
         ],
+        'fileinput' => [
+            'class' => 'artsoft\fileinput\FileInputModule',
+        ],
     ],
     'components' => [
         'view' => [
@@ -27,26 +30,49 @@ $config =  [
             'cookieValidationKey' => env('FRONTEND_COOKIE_VALIDATION_KEY'),
             'baseUrl' => '',
         ],
+        'assetManager' => [
+            'bundles' => [
+                'yii\bootstrap\BootstrapAsset' => [
+                    // 'sourcePath' => '@artsoft/assets/theme/bootswatch/custom',
+                    'sourcePath' => '@artsoft/assets/theme/bootstrap/dist/css',
+                    'css' => ['bootstrap.css']
+                ],
+            ],
+        ],
         'urlManager' => [
             'class' => 'artsoft\web\MultilingualUrlManager',
             'showScriptName' => false,
             'enablePrettyUrl' => true,
-            'rules' => array(
-                '<module:auth>/<action:(logout|captcha)>' => '<module>/default/<action>',
+            'rules' => [
+                '<module:auth>/<action:(logout|captcha|login)>' => '<module>/default/<action>',
                 '<module:auth>/<action:(oauth)>/<authclient:\w+>' => '<module>/default/<action>',
-            ),
-            'multilingualRules' => [
-                '<module:auth>/<action:\w+>' => '<module>/default/<action>',
-                '<controller:(category|tag)>/<slug:[\w \-]+>' => '<controller>/index',
-                '<controller:(category|tag)>' => '<controller>/index',
-//                '<slug:[\w \-]+>' => 'site/index/',
                 '/' => 'site/index',
                 '<action:[\w \-]+>' => 'site/<action>',
-                '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+                '<module:[\w_\-]+>/' => '<module>/default/index',
+                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<mode:(create)>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(view)>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(update)>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(delete)>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(history)>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<action:(create)>' => '<module>/default/<action>',
+                '<module:[\w_\-]+>/<controller:[\w_\-]+>' => '<module>/<controller>/index',
+                '<module:[\w_\-]+>/<controller:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>' => '<module>/<controller>/<action>',
+                '<module:[\w_\-]+>/<controller:[\w_\-]+>/<action:[\w_\-]+>' => '<module>/<controller>/<action>',
             ],
-            'nonMultilingualUrls' => [
-                'auth/default/oauth',
-            ],
+//            'multilingualRules' => [
+//                '<module:auth>/<action:\w+>' => '<module>/default/<action>',
+//                '<controller:(category|tag)>/<slug:[\w \-]+>' => '<controller>/index',
+//                '<controller:(category|tag)>' => '<controller>/index',
+////                '<slug:[\w \-]+>' => 'site/index/',
+//                '/' => 'site/index',
+//                '<action:[\w \-]+>' => 'site/<action>',
+//                '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+//            ],
+//            'nonMultilingualUrls' => [
+//                'auth/default/oauth',
+//            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

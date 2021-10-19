@@ -12,7 +12,7 @@ use artsoft\grid\GridPageSize;
 /* @var $searchModel common\models\info\search\BoardSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/info', 'Boards');
+$this->title = Yii::t('art/info', 'Board');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="board-index">
@@ -52,7 +52,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'board-grid',
-                            'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
@@ -71,8 +70,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
+                            [
+                                'attribute' => 'category_id',
+                                'value' => function (Board $model) {
+                                    return Board::getCategoryValue($model->category_id);
+                                },
 
-                            'category_id',
+                            ],
                             'author_id',
                             [
                                 'attribute' => 'recipients_list',
@@ -92,8 +96,25 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'board_date',
                             'delete_date',
-                            'importance_id',
-                            'status',
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'importance_id',
+                                'optionsArray' => [
+                                    [Board::IMPORTANCE_HI, Yii::t('art/info', 'Hi'), 'success'],
+                                    [Board::IMPORTANCE_NORM, Yii::t('art/info', 'Normal'), 'primary'],
+                                    [Board::IMPORTANCE_LOW, Yii::t('art/info', 'Low'), 'default'],
+                                ],
+                                'options' => ['style' => 'width:120px']
+                            ],
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'status',
+                                'optionsArray' => [
+                                    [Board::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
+                                    [Board::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
+                                ],
+                                'options' => ['style' => 'width:120px']
+                            ],
                         ],
                     ]);
                     ?>

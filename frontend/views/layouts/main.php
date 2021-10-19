@@ -8,7 +8,7 @@ use artsoft\assets\ArtAsset;
 use artsoft\models\Menu;
 use artsoft\widgets\LanguageSelector;
 use artsoft\widgets\Nav as Navigation;
-use yii\bootstrap\Nav;
+use artsoft\widgets\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
@@ -62,11 +62,13 @@ AvatarAsset::register($this);
 
             $menuItems[] = [
                 'label' => '<i class="fa fa-paper-plane-o" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Contact'),
-                'url' => \yii\helpers\Url::to(['/site/contact'])
+                'url' => \yii\helpers\Url::to(['/site/contact']),
+                'visible' => true
             ];
             $menuItems[] = [
                 'label' => '<i class="fa fa-user-plus" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Signup'),
-                'url' => \yii\helpers\Url::to(['/auth/default/finding'])
+                'url' => \yii\helpers\Url::to(['/auth/default/finding']),
+                'visible' => true
             ];
             $menuItems[] = [
                 'label' => '<i class="fa fa-sign-in" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Enter'),
@@ -110,44 +112,42 @@ AvatarAsset::register($this);
 
         NavBar::end();
         ?>
-        <!-- SIDEBAR NAV -->
-        <div class="navbar-default sidebar metismenu" role="navigation">
-            <?php
-            $menuItemsKey = Yii::$app->user->isGuest ? '__guestMenuItems' . Yii::$app->language : '__mainMenuItems' . Yii::$app->language;
-            if (!$menuItems = Yii::$app->cache->get($menuItemsKey)) {
-                Yii::$app->cache->set($menuItemsKey, $menuItems, 3600);
-            }
-            echo Navigation::widget([
-                'encodeLabels' => false,
-                'dropDownCaret' => '<span class="arrow"></span>',
-                'options' => [
-                    ['class' => 'nav side-menu'],
-                    ['class' => 'nav nav-second-level'],
-                    ['class' => 'nav nav-third-level']
-                ],
-                'items' => [],
-            ])
-            ?>
-        </div>
-        <!-- !SIDEBAR NAV -->
+        <?= $this->render('left.php') ?>
     </nav>
 
     <div id="page-wrapper">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12">
+                    <?= \yii2mod\notify\BootstrapNotify::widget([
+                        'clientOptions' => [
+                            'offset' => [
+                                'x' => 20,
+                                'y' => 50,
+                            ],
+                        ]
+                    ]);
+                    ?>
                     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+                    <?php if (isset($this->params['tabMenu']) && $this->params['tabMenu']): ?>
+                        <div class="nav-tabs-custom">
+                            <?= \artsoft\widgets\Nav::widget([
+                                'encodeLabels' => false,
+                                'activeClass' => 'active',
+                                'options' => [
+                                    ['class' => 'nav nav-tabs'],
+                                    ['class' => 'dropdown-menu'],
+                                ],
+                                'items' => $this->params['tabMenu'],
+                            ]) ?>
 
-                    <?php if (Yii::$app->session->hasFlash('crudMessage')): ?>
-                        <div class="alert alert-info alert-dismissible alert-crud" role="alert">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            <?= Yii::$app->session->getFlash('crudMessage') ?>
+                            <div class="tab-content">
+                                <?= $content ?>
+                            </div>
                         </div>
+                    <?php else: ?>
+                        <?= $content ?>
                     <?php endif; ?>
-                    <?= Alert::widget() ?>
-                    <?= $content ?>
                 </div>
             </div>
         </div>
