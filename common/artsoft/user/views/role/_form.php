@@ -33,7 +33,9 @@ use artsoft\widgets\ActiveForm;
                 </div>
                     <div class="form-group">
                         <div class="form-group btn-group">
-                            <?= \artsoft\helpers\ButtonHelper::submitButtons($model, ['/user/role/index'], ['delete', 'id' => $model->name]); ?>
+                            <?= \artsoft\helpers\ButtonHelper::exitButton(['/user/role/index']);?>
+                            <?= \artsoft\helpers\ButtonHelper::saveButton();?>
+                            <?= \artsoft\helpers\ButtonHelper::deleteButton(['delete', 'id' => $model->name]);?>
                         </div>
                     </div>
                 </div>

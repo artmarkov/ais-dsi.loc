@@ -17,7 +17,7 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
         $this->addRole(self::ROLE_EMPLOYEES, 'Сотрудник');
         $this->addRole(self::ROLE_TEACHER, 'Преподаватель');
         $this->addRole(self::ROLE_STUDENT, 'Ученик');
-        $this->addRole(self::ROLE_CURATOR, 'Опекун');
+        $this->addRole(self::ROLE_CURATOR, 'Родитель');
 
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'user', 'child' => 'teacher']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'user', 'child' => 'student']);

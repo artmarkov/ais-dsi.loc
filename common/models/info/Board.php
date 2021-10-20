@@ -4,6 +4,7 @@ namespace common\models\info;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use artsoft\traits\DateTimeTrait;
 use common\models\user\UserCommon;
@@ -33,7 +34,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property Users $author
  */
-class Board extends \artsoft\db\ActiveRecord
+class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
 {
     use DateTimeTrait;
 
@@ -88,7 +89,7 @@ class Board extends \artsoft\db\ActiveRecord
     {
         return [
             [['author_id', 'category_id', 'title', 'description', 'board_date', 'delete_date'], 'required'],
-            [['author_id', 'category_id', 'delete_date'], 'default', 'value' => null],
+            [['category_id', 'delete_date'], 'default', 'value' => null],
             [['author_id', 'category_id', 'importance_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['board_date', 'delete_date', 'recipients_list'], 'safe'],
             [['title'], 'string', 'max' => 127],
@@ -199,5 +200,21 @@ class Board extends \artsoft\db\ActiveRecord
             ->select(['id', 'CONCAT(last_name, \' \',first_name, \' \',middle_name) as fullname', 'user_category as category'])
             ->orderBy('fullname')
             ->asArray()->all(), 'id', 'fullname', 'category');
+    }
+    /**
+     *
+     * @inheritdoc
+     */
+    public static function getOwnerField()
+    {
+        return 'created_by';
+    }
+    /**
+     *
+     * @inheritdoc
+     */
+    public static function getFullAccessPermission()
+    {
+        return 'fullBoardAccess';
     }
 }

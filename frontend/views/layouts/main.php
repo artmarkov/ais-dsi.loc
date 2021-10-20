@@ -7,7 +7,6 @@ use artsoft\assets\MetisMenuAsset;
 use artsoft\assets\ArtAsset;
 use artsoft\models\Menu;
 use artsoft\widgets\LanguageSelector;
-use artsoft\widgets\Nav as Navigation;
 use artsoft\widgets\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
@@ -79,13 +78,15 @@ AvatarAsset::register($this);
             $menuItems[] = [
                 'label' => '<img src="' . $avatar . '" class="user-image" alt="User Image"/>' . Yii::$app->user->identity->username,
                 'url' => ['/auth/default/profile'],
+                'visible' => true
             ];
 
             if (!Yii::$app->session->has(\artsoft\user\controllers\DefaultController::ORIGINAL_USER_SESSION_KEY)) {
                 $menuItems[] = [
                     'label' => '<i class="fa fa-sign-out" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Logout'),
                     'url' => ['/auth/default/logout', 'language' => false],
-                    'linkOptions' => ['data-method' => 'post']
+                    'linkOptions' => ['data-method' => 'post'],
+                    'visible' => true
                 ];
             } else {
                 $menuItems[] = [
@@ -93,6 +94,7 @@ AvatarAsset::register($this);
                     'url' => '/admin/user/default/impersonate',
                     'linkOptions' => ['data-method' => 'post'],
                     'options' => ['style' => 'background-color: #e28b00;'],
+                    'visible' => true
                 ];
             }
 
@@ -119,15 +121,8 @@ AvatarAsset::register($this);
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12">
-                    <?= \yii2mod\notify\BootstrapNotify::widget([
-                        'clientOptions' => [
-                            'offset' => [
-                                'x' => 20,
-                                'y' => 50,
-                            ],
-                        ]
-                    ]);
-                    ?>
+                    <?= Alert::widget() ?>
+
                     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
                     <?php if (isset($this->params['tabMenu']) && $this->params['tabMenu']): ?>
                         <div class="nav-tabs-custom">

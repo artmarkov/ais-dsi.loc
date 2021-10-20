@@ -18,7 +18,7 @@ class BoardSearch extends Board
     public function rules()
     {
         return [
-            [['id', 'author_id', 'category_id', 'importance_id', 'board_date', 'delete_date', 'status', 'version'], 'integer'],
+            [['id', 'author_id', 'category_id', 'importance_id', 'board_date', 'delete_date', 'status', 'version', 'created_by'], 'integer'],
             [['title', 'description', 'recipients_list'], 'safe'],
         ];
     }
@@ -72,6 +72,7 @@ class BoardSearch extends Board
             'delete_date' => $this->delete_date,
             'status' => $this->status,
             'version' => $this->version,
+            'created_by' => $this->created_by,
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title])

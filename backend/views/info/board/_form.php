@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
+use artsoft\models\User;
 use common\models\info\Board;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
@@ -34,7 +35,7 @@ use kartik\date\DatePicker;
                         'data' => Board::getRecipientsList(),
                         'options' => [
                             'value' => \common\models\user\UserCommon::findOne(['user_id' => Yii::$app->user->identity->getId()])->id ?? null,
-                            'disabled' => Yii::$app->user->isSuperAdmin ? false : true,
+                            'disabled' => User::hasPermission('editBoardAuthor') ? false : true,
                             'placeholder' => Yii::t('art/info', 'Select Authors...'),
                             'multiple' => false,
                         ],

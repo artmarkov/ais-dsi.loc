@@ -73,7 +73,7 @@ class AccessFilter extends ActionFilter
 
             //Check access for owners
             if ($modelClass && ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME) && !User::hasPermission($modelClass::getFullAccessPermission()) && $modelId) {
-                $model = $modelClass::findOne(["{$modelClass::tableName()}.[[id]]" => $modelId]);
+                $model = $modelClass::findOne(["{$modelClass::tableName()}.id" => $modelId]);
                 if ($model && Yii::$app->user->identity->id == $model->{$modelClass::getOwnerField()}) {
                     return true;
                 }

@@ -157,4 +157,18 @@ class PermissionController extends MainController
 
         return $this->renderIsAjax('update', compact('model'));
     }
+
+    protected function getRedirectPage($action, $model = null)
+    {
+        switch ($action) {
+            case 'delete':
+                return ['index'];
+                break;
+            case 'create':
+                return ['update', 'id' => $model->code];
+                break;
+            default:
+                return ['index'];
+        }
+    }
 }

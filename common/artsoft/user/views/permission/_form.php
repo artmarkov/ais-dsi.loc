@@ -39,7 +39,9 @@ use artsoft\widgets\ActiveForm;
                 </div>
                 <div class="panel-footer">
                     <div class="form-group btn-group">
-                        <?= \artsoft\helpers\ButtonHelper::submitButtons($model, '/user/permission/index', ['delete', 'id' => $model->name]); ?>
+                        <?= \artsoft\helpers\ButtonHelper::exitButton(['/user/permission/index']);?>
+                        <?= \artsoft\helpers\ButtonHelper::saveButton();?>
+                        <?= \artsoft\helpers\ButtonHelper::deleteButton(['delete', 'id' => $model->name]);?>
                     </div>
                 </div>
             </div>
