@@ -79,7 +79,7 @@ class ImportController extends Controller
                     $user->generateAuthKey();
                     $user->status = $v[20] == 0 ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
                     if ($flag = $user->save(false)) {
-                        $user->assignRoles(['user', 'teacher']);
+                        $user->assignRoles(['teacher']);
 
                         $userCommon->user_id = $user->id;
                         $userCommon->user_category = UserCommon::USER_CATEGORY_TEACHERS;
@@ -189,7 +189,7 @@ class ImportController extends Controller
                     $user->generateAuthKey();
                     $user->status = User::STATUS_ACTIVE;
                     if ($flag = $user->save(false)) {
-                        $user->assignRoles(['user', 'employees']);
+                        $user->assignRoles(['employees']);
 
                         $userCommon->user_id = $user->id;
                         $userCommon->user_category = UserCommon::USER_CATEGORY_EMPLOYEES;
@@ -255,7 +255,7 @@ class ImportController extends Controller
                         $user->generateAuthKey();
                         $user->status = ($v[18] == 'Абитуриенты' || $v[18] == 'Ученики школы') ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
                         if ($flag = $user->save(false)) {
-                            $user->assignRoles(['user', 'student']);
+                            $user->assignRoles(['student']);
 
                             $userCommon->user_id = $user->id;
                             $userCommon->user_category = UserCommon::USER_CATEGORY_STUDENTS;
@@ -340,7 +340,7 @@ class ImportController extends Controller
                             $user->generateAuthKey();
                             $user->status = $v[15] ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
                             if ($flag = $user->save(false)) {
-                                $user->assignRoles(['user', 'curator']);
+                                $user->assignRoles(['parents']);
 
                                 $userCommon->user_id = $user->id;
                                 $userCommon->user_category = UserCommon::USER_CATEGORY_PARENTS;

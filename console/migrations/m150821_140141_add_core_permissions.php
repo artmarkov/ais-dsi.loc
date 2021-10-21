@@ -11,24 +11,23 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
         $this->addPermissionsGroup('userCommonPermissions', 'Общий доступ');
 
         $this->addRole(self::ROLE_ADMIN, 'Администратор');
-        $this->addRole(self::ROLE_MODERATOR, 'Модератор');
-        $this->addRole(self::ROLE_AUTHOR, 'Автор');
+        $this->addRole(self::ROLE_SYSTEM, 'Системный администратор');
+        $this->addRole(self::ROLE_DEV, 'Разработчик');
         $this->addRole(self::ROLE_USER, 'Пользователь');
         $this->addRole(self::ROLE_EMPLOYEES, 'Сотрудник');
         $this->addRole(self::ROLE_TEACHER, 'Преподаватель');
+        $this->addRole(self::ROLE_DEPARTMENT, 'Руководитель отдела');
         $this->addRole(self::ROLE_STUDENT, 'Ученик');
-        $this->addRole(self::ROLE_CURATOR, 'Родитель');
+        $this->addRole(self::ROLE_PARENTS, 'Родитель');
 
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'user', 'child' => 'teacher']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'user', 'child' => 'student']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'user', 'child' => 'curator']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'author', 'child' => 'user']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'moderator', 'child' => 'user']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'moderator', 'child' => 'employees']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'moderator', 'child' => 'author']);
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'employees', 'child' => 'user']);
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'teacher', 'child' => 'user']);
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'department', 'child' => 'user']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'user']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'author']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'moderator']);
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'student']);
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'parents']);
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'system', 'child' => 'administrator']);
+        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'developer', 'child' => 'system']);
     }
 
     public function afterDown()
@@ -37,13 +36,14 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
         $this->deletePermissionsGroup('userCommonPermissions');
 
         $this->deleteRole(self::ROLE_ADMIN);
-        $this->deleteRole(self::ROLE_MODERATOR);
-        $this->deleteRole(self::ROLE_AUTHOR);
+        $this->deleteRole(self::ROLE_SYSTEM);
+        $this->deleteRole(self::ROLE_DEV);
         $this->deleteRole(self::ROLE_USER);
         $this->deleteRole(self::ROLE_EMPLOYEES);
         $this->deleteRole(self::ROLE_TEACHER);
+        $this->deleteRole(self::ROLE_DEPARTMENT);
         $this->deleteRole(self::ROLE_STUDENT);
-        $this->deleteRole(self::ROLE_CURATOR);
+        $this->deleteRole(self::ROLE_PARENT);
     }
 
     public function getPermissions()
@@ -56,7 +56,7 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
                 ],
                 'viewDashboard' => [
                     'title' => 'Просмотр главной панели',
-                    'roles' => [self::ROLE_MODERATOR],
+                    'roles' => [self::ROLE_ADMIN],
                     'links' => [
                         '/admin',
                         '/admin/site/index',
@@ -66,7 +66,7 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
             'userCommonPermissions' => [
                 'commonPermission' => [
                     'title' => 'Общий доступ',
-                    'roles' => [self::ROLE_MODERATOR],
+                    'roles' => [self::ROLE_ADMIN],
                 ],
                 'changeOwnPassword' => [
                     'title' => 'Изменение своего пароля',

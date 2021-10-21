@@ -26,27 +26,27 @@ class m150825_212310_add_settings_permissions extends PermissionsMigration
                 'changeGeneralSettings' => [
                     'title' => 'Изменение Общих настроек',
                     'links' => ['/admin/settings/default/index'],
-                    'roles' => [self::ROLE_ADMIN],
+                    'roles' => [self::ROLE_SYSTEM],
                 ],
                 'changeReadingSettings' => [
                     'title' => 'Изменение Настроек Форм',
                     'links' => ['/admin/settings/reading/index'],
-                    'roles' => [self::ROLE_ADMIN],
+                    'roles' => [self::ROLE_SYSTEM],
                 ],
                 'changeOwnSettings' => [
                     'title' => 'Изменение Сведений об Организации',
                     'links' => ['/admin/settings/own/index'],
-                    'roles' => [self::ROLE_MODERATOR],
+                    'roles' => [self::ROLE_SYSTEM],
                 ],
                 'changeModuleSettings' => [
                     'title' => 'Изменение Настроек Модулей',
                     'links' => ['/admin/settings/module/index'],
-                    'roles' => [self::ROLE_ADMIN],
+                    'roles' => [self::ROLE_SYSTEM],
                 ],
                 'flushCache' => [
                     'title' => 'Очистка Кэша',
                     'links' => ['/admin/settings/cache/flush'],
-                    'roles' => [self::ROLE_ADMIN],
+                    'roles' => [self::ROLE_SYSTEM],
                 ],
             ],
         ];

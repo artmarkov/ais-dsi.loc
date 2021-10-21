@@ -11,14 +11,15 @@ abstract class PermissionsMigration extends \yii\db\Migration
     const AUTH_ITEM_TABLE = 'auth_item';
     const AUTH_ITEM_GROUP_TABLE = 'auth_item_group';
     const AUTH_ITEM_CHILD_TABLE = 'auth_item_child';
-    const ROLE_AUTHOR = 'author';
     const ROLE_ADMIN = 'administrator';
-    const ROLE_MODERATOR = 'moderator';
+    const ROLE_SYSTEM = 'system';
+    const ROLE_DEV = 'developer';
     const ROLE_USER = 'user';
     const ROLE_EMPLOYEES = 'employees';
     const ROLE_TEACHER = 'teacher';
+    const ROLE_DEPARTMENT = 'department';
     const ROLE_STUDENT = 'student';
-    const ROLE_CURATOR = 'curator';
+    const ROLE_PARENTS = 'parents';
 
     public function safeUp()
     {

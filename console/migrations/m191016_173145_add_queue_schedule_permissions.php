@@ -33,7 +33,7 @@ class m191016_173145_add_queue_schedule_permissions extends PermissionsMigration
                         '/admin/queue-schedule/default/grid-page-size',
                     ],
                     'roles' => [
-                        self::ROLE_MODERATOR,
+                        self::ROLE_SYSTEM,
                     ],
                 ],
                 'editQueue' => [
@@ -48,7 +48,7 @@ class m191016_173145_add_queue_schedule_permissions extends PermissionsMigration
                         '/admin/queue-schedule/default/bulk-deactivate',
                     ],
                     'roles' => [
-                        self::ROLE_ADMIN,
+                        self::ROLE_SYSTEM,
                     ],
                     'childs' => [
                         'viewQueue',
@@ -61,7 +61,7 @@ class m191016_173145_add_queue_schedule_permissions extends PermissionsMigration
                         
                     ],
                     'roles' => [
-                        self::ROLE_ADMIN,
+                        self::ROLE_SYSTEM,
                     ],
                     'childs' => [
                         'viewQueue',
@@ -74,7 +74,7 @@ class m191016_173145_add_queue_schedule_permissions extends PermissionsMigration
                         '/admin/queue-schedule/default/bulk-delete',
                     ],
                     'roles' => [
-                        self::ROLE_ADMIN,
+                        self::ROLE_SYSTEM,
                     ],
                     'childs' => [
                         'createQueue',
@@ -83,7 +83,7 @@ class m191016_173145_add_queue_schedule_permissions extends PermissionsMigration
                 'editClassJob' => [
                     'title' => 'Редактировать класс задания',
                     'roles' => [
-                        self::ROLE_ADMIN
+                        self::ROLE_SYSTEM
                     ],
                 ],
             ],

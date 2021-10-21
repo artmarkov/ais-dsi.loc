@@ -21,10 +21,9 @@ class m211020_123245_add_board_permissions extends PermissionsMigration
             'boardManagement' => [
                 'links' => [
                     '/info/board/*',
-                    '/admin/info/board/*',
                 ],
                 'viewBoard' => [
-                    'title' => 'Просмотр объявления',
+                    'title' => 'Просмотр объявлений',
                     'links' => [
                         '/info/board/index',
                         '/info/board/view',
@@ -32,19 +31,7 @@ class m211020_123245_add_board_permissions extends PermissionsMigration
                         '/info/board/grid-page-size',
                     ],
                     'roles' => [
-                        self::ROLE_AUTHOR,
-                    ],
-                ],
-                'viewBoardAdmin' => [
-                    'title' => 'Просмотр объявления(админ)',
-                    'links' => [
-                        '/admin/info/board/index',
-                        '/admin/info/board/view',
-                        '/admin/info/board/grid-sort',
-                        '/admin/info/board/grid-page-size',
-                    ],
-                    'roles' => [
-                        self::ROLE_MODERATOR,
+                        self::ROLE_USER,
                     ],
                 ],
                 'editBoard' => [
@@ -57,26 +44,10 @@ class m211020_123245_add_board_permissions extends PermissionsMigration
                         '/info/board/bulk-deactivate',
                     ],
                     'roles' => [
-                        self::ROLE_AUTHOR,
+                        self::ROLE_USER,
                     ],
                     'childs' => [
                         'viewBoard',
-                    ],
-                ],
-                'editBoardAdmin' => [
-                    'title' => 'Редактирование объявлений(админ)',
-                    'links' => [
-                        '/admin/info/board/update',
-                        '/admin/info/board/activate',
-                        '/admin/info/board/deactivate',
-                        '/admin/info/board/bulk-activate',
-                        '/admin/info/board/bulk-deactivate',
-                    ],
-                    'roles' => [
-                        self::ROLE_MODERATOR,
-                    ],
-                    'childs' => [
-                        'viewBoardAdmin',
                     ],
                 ],
                 'createBoard' => [
@@ -85,22 +56,10 @@ class m211020_123245_add_board_permissions extends PermissionsMigration
                         '/info/board/create',
                     ],
                     'roles' => [
-                        self::ROLE_AUTHOR,
+                        self::ROLE_USER,
                     ],
                     'childs' => [
                         'viewBoard',
-                    ],
-                ],
-                'createBoardAdmin' => [
-                    'title' => 'Добавление объявлений(админ)',
-                    'links' => [
-                        '/admin/info/board/create',
-                    ],
-                    'roles' => [
-                        self::ROLE_MODERATOR,
-                    ],
-                    'childs' => [
-                        'viewBoardAdmin',
                     ],
                 ],
                 'deleteBoard' => [
@@ -110,23 +69,10 @@ class m211020_123245_add_board_permissions extends PermissionsMigration
                         '/info/board/bulk-delete',
                     ],
                     'roles' => [
-                        self::ROLE_AUTHOR,
+                        self::ROLE_USER,
                     ],
                     'childs' => [
                         'createBoard',
-                    ],
-                ],
-                'deleteBoardAdmin' => [
-                    'title' => 'Удаление объявлений(админ)',
-                    'links' => [
-                        '/admin/info/board/delete',
-                        '/admin/info/board/bulk-delete',
-                    ],
-                    'roles' => [
-                        self::ROLE_MODERATOR,
-                    ],
-                    'childs' => [
-                        'viewBoardAdmin',
                     ],
                 ],
                 'editBoardAuthor' => [
@@ -138,7 +84,7 @@ class m211020_123245_add_board_permissions extends PermissionsMigration
                 'fullBoardAccess' => [
                     'title' => 'Полный доступ к объявлениям',
                     'roles' => [
-                        self::ROLE_MODERATOR,
+                        self::ROLE_ADMIN,
                     ],
                 ],
             ],

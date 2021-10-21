@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/info/board',
                                 'title' => function (Board $model) {
-                                    return Html::a(sprintf($model->title), ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return $model->title;
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],

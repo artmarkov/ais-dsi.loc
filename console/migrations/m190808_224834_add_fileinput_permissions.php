@@ -24,14 +24,14 @@ class m190808_224834_add_fileinput_permissions extends PermissionsMigration
                 ],
                 'uploadFile' => [
                     'title' => 'Загрузка файлов',
-                    'roles' => [self::ROLE_AUTHOR],
+                    'roles' => [self::ROLE_USER],
                     'links' => [
                         '/admin/fileinput/file-manager/file-upload',
                     ],
                 ],   
                 'sortFile' => [
                     'title' => 'Сортировка файлов',
-                    'roles' => [self::ROLE_AUTHOR],
+                    'roles' => [self::ROLE_USER],
                     'links' => [
                         '/admin/fileinput/file-manager/sort-file',
                     ],
@@ -41,7 +41,7 @@ class m190808_224834_add_fileinput_permissions extends PermissionsMigration
                 ],   
                 'deleteFile' => [
                     'title' => 'Удаление файлов',
-                    'roles' => [self::ROLE_AUTHOR],
+                    'roles' => [self::ROLE_USER],
                     'links' => [
                         '/admin/fileinput/file-manager/delete-file',
                     ],
@@ -52,7 +52,7 @@ class m190808_224834_add_fileinput_permissions extends PermissionsMigration
                 ],   
                 'fullFileinputAccess' => [
                     'title' => 'Полный доступ к файлам',
-                    'roles' => [self::ROLE_MODERATOR],
+                    'roles' => [self::ROLE_ADMIN],
                 ],
             ],
         ];
