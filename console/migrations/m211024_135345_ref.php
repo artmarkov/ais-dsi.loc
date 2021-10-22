@@ -1,7 +1,7 @@
 <?php
 
 
-class m210824_135345_ref extends \artsoft\db\BaseMigration
+class m211024_135345_ref extends \artsoft\db\BaseMigration
 {
     public function up()
     {

@@ -79,8 +79,7 @@ class ImportController extends Controller
                     $user->generateAuthKey();
                     $user->status = $v[20] == 0 ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
                     if ($flag = $user->save(false)) {
-                        $user->assignRoles(['teacher']);
-
+                        $user->assignRoles($this->getTeachersRole($v[10]));
                         $userCommon->user_id = $user->id;
                         $userCommon->user_category = UserCommon::USER_CATEGORY_TEACHERS;
                         $userCommon->status = $v[20] == 0 ? UserCommon::STATUS_ACTIVE : UserCommon::STATUS_ARCHIVE;
@@ -94,6 +93,7 @@ class ImportController extends Controller
                         if ($flag = $userCommon->save(false)) {
                             $model->user_common_id = $userCommon->id;
                             $model->position_id = $this->getPositionId($v[10]);
+
                             $model->level_id = $this->getLevelId($v[11]);
                             $model->tab_num = $v[13];
                             $model->work_id = $v[14] == 'Основная' ? 1000 : 1001;
@@ -126,7 +126,7 @@ class ImportController extends Controller
                                     $activity->direction_id = $v[21] == 'Педагогическая' ? 1000 : 1001;
                                     $activity->stake_id = $this->getStakeId($v[22]);
                                     if (!($flag = $activity->save(false))) {
-                                         $transaction->rollBack();
+                                        $transaction->rollBack();
                                         break;
                                     }
                                 }
@@ -138,7 +138,7 @@ class ImportController extends Controller
                                     $activity->stake_id = $this->getStakeId($v[24]);
 
                                     if (!($flag = $activity->save(false))) {
-                                         $transaction->rollBack();
+                                        $transaction->rollBack();
                                         break;
                                     }
                                 }
@@ -146,7 +146,7 @@ class ImportController extends Controller
                         }
                     }
                     if ($flag) {
-                    $transaction->commit();
+                        $transaction->commit();
                         $this->stdout('Добавлен преподаватель: ' . $userCommon->last_name . ' ' . $userCommon->first_name . ' ' . $userCommon->middle_name . " ", Console::FG_GREY);
                         $this->stdout("\n");
                     }
@@ -240,13 +240,13 @@ class ImportController extends Controller
 //                }
                 /* @var $row Row */
                 $v = $row->toArray();
-               // print_r($v);
+                // print_r($v);
                 $user = new User();
                 $userCommon = new UserCommon();
                 $model = new Student();
 
-                if($v[18] == 'Абитуриенты' || $v[18] == 'Ученики школы') {
-                $transaction = \Yii::$app->db->beginTransaction();
+                if ($v[18] == 'Абитуриенты' || $v[18] == 'Ученики школы') {
+                    $transaction = \Yii::$app->db->beginTransaction();
                     try {
                         $user->username = $this->generateUsername($v[19], $v[1], $v[2], $v[3]);
                         $user->password = $v[20];
@@ -279,7 +279,7 @@ class ImportController extends Controller
                                 $model->sert_series = $v[11];
                                 $model->sert_num = $v[12];
                                 $model->sert_organ = $v[13];
-                                if($v[14]) {
+                                if ($v[14]) {
                                     if (is_a($v[14], 'DateTime')) { // если объект DateTime
                                         $v[14] = $v[14]->format('d-m-Y');
                                     }
@@ -328,7 +328,7 @@ class ImportController extends Controller
 
                 $student_id = $this->findByStudent($v[5], $v[6], $v[7]);
                 $parent_id = $this->findByParent($v[1], $v[2], $v[3]);
-                if(!$parent_id) {
+                if (!$parent_id) {
                     if ($student_id) {
                         $transaction = \Yii::$app->db->beginTransaction();
                         try {
@@ -384,8 +384,7 @@ class ImportController extends Controller
                             $transaction->rollBack();
                         }
                     }
-                }
-                else {
+                } else {
                     if ($student_id) {
                         $studentDependence = new StudentDependence();
                         $studentDependence->student_id = $student_id;
@@ -405,6 +404,7 @@ class ImportController extends Controller
             }
         }
     }
+
     /**
      * @param $name
      * @return bool|int
@@ -463,6 +463,27 @@ class ImportController extends Controller
         return $position_id;
     }
 
+    public function getTeachersRole($name)
+    {
+        $role = [];
+
+        switch ($name) {
+            case 'Директор' :
+                $role = ['administrator'];
+                break;
+            case 'Заместители директора' :
+                $role = ['administrator'];
+                break;
+            case 'Руководители отделов' :
+                $role = ['department'];
+                break;
+            case 'Преподаватели' :
+                $role = ['teacher'];
+                break;
+        }
+        return $role;
+    }
+
     public function getLevelId($name)
     {
         $level_id = null;
@@ -507,6 +528,7 @@ class ImportController extends Controller
         }
         return $position_id;
     }
+
     /**
      * @param $last_name
      * @param $first_name
@@ -515,10 +537,10 @@ class ImportController extends Controller
      */
     public function generateUsername($name, $last_name, $first_name, $middle_name)
     {
-       if(!User::findByUsername($name)){
-           return $name;
-       }
-       $i = 0;
+        if (!User::findByUsername($name)) {
+            return $name;
+        }
+        $i = 0;
         $last_name = $this->slug($last_name);
         $first_name = $this->slug($first_name);
         $middle_name = $this->slug($middle_name);
@@ -536,7 +558,8 @@ class ImportController extends Controller
         return $lowercase ? mb_strtolower($string) : $string;
     }
 
-    protected function getDate($date){
+    protected function getDate($date)
+    {
         if (is_a($date, 'DateTime')) { // если объект DateTime
             $date = $date->format('d-m-Y');
             return $date;
@@ -551,11 +574,11 @@ class ImportController extends Controller
                                                     WHERE last_name=:last_name 
                                                     AND first_name=:first_name 
                                                     AND middle_name=:middle_name',
-                                                    [
-                                                        'last_name' => $last_name,
-                                                        'first_name' => $first_name,
-                                                        'middle_name' => $middle_name
-                                                    ])->queryOne();
+            [
+                'last_name' => $last_name,
+                'first_name' => $first_name,
+                'middle_name' => $middle_name
+            ])->queryOne();
         return $user['students_id'];
     }
 
@@ -606,7 +629,8 @@ class ImportController extends Controller
         return $stake_id;
     }
 
-    public function getGender($name){
+    public function getGender($name)
+    {
         return $name == 'М' ? 1 : ($name == 'Ж' ? 2 : 0);
     }
 }

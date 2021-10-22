@@ -614,6 +614,7 @@ class DefaultController extends BaseController
 
         $user = User::findIdentity(Yii::$app->user->id);
         $userCommon = $user->userCommon;
+        $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
         if (!$userCommon) {
             Yii::$app->session->addFlash('error', 'Недостаточно данных для загрузки формы.');
             return $this->goHome();
@@ -628,7 +629,7 @@ class DefaultController extends BaseController
                     if ($user->save(false) && $userCommon->save(false)) {
                         $transaction->commit();
                         Yii::$app->session->addFlash('success', 'Данные успешно сохранены.');
-                        return $this->goHome();
+                        return $this->redirect(['profile']);
                     }
                 } catch (Exception $e) {
                     $transaction->rollBack();
