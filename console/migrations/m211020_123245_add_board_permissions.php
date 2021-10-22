@@ -87,6 +87,43 @@ class m211020_123245_add_board_permissions extends PermissionsMigration
                         self::ROLE_ADMIN,
                     ],
                 ],
+                'boardCatAllAccess' => [
+                    'title' => 'Отправлять всем пользователям',
+                    'roles' => [
+                        self::ROLE_ADMIN,
+                    ],
+                ],
+                'boardCatStudentAccess' => [
+                    'title' => 'Отправлять всем ученикам',
+                    'roles' => [
+                        self::ROLE_ADMIN,
+                    ],
+                ],
+                'boardCatEmployeesAccess' => [
+                    'title' => 'Отправлять всем сотрудникам',
+                    'roles' => [
+                        self::ROLE_ADMIN,
+                    ],
+                ],
+                'boardCatTeachersAccess' => [
+                    'title' => 'Отправлять всем преподавателям',
+                    'roles' => [
+                        self::ROLE_ADMIN,
+                    ],
+                ],
+                'boardCatParentsAccess' => [
+                    'title' => 'Отправлять всем родителям',
+                    'roles' => [
+                        self::ROLE_ADMIN,
+                    ],
+                ],
+                'boardCatSelectAccess' => [
+                    'title' => 'Право выбирать из списка',
+                    'roles' => [
+                        self::ROLE_ADMIN,
+                        self::ROLE_USER,
+                    ],
+                ],
             ],
         ];
     }

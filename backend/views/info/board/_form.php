@@ -31,11 +31,12 @@ use kartik\date\DatePicker;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
+
                     <?= $form->field($model, 'author_id')->widget(\kartik\select2\Select2::class, [
                         'data' => Board::getRecipientsList(),
                         'options' => [
                             'value' => \common\models\user\UserCommon::findOne(['user_id' => Yii::$app->user->identity->getId()])->id ?? null,
-                            'disabled' => User::hasPermission('editBoardAuthor') ? false : true,
+                           // 'disabled' => User::hasPermission('editBoardAuthor') ? false : true,
                             'placeholder' => Yii::t('art/info', 'Select Authors...'),
                             'multiple' => false,
                         ],
@@ -44,7 +45,8 @@ use kartik\date\DatePicker;
                         ],
                     ]);
                     ?>
-                    <?= $form->field($model, 'category_id')->dropDownList(Board::getCategoryList()) ?>
+
+                    <?= $form->field($model, 'category_id')->dropDownList(Board::getCategoryListRuleFilter()) ?>
 
                     <?= $form->field($model, 'importance_id')->dropDownList(Board::getImportanceList(), [
                         'options' => [

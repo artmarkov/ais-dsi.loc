@@ -176,6 +176,36 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
         );
     }
 
+    /**
+     * @return array
+     */
+    public static function getCategoryListRuleFilter()
+    {
+        $data = self::getCategoryList();
+        foreach (self::getCategoryRule() as $id => $item){
+            if(!User::hasPermission($item)){
+                ArrayHelper::remove($data, $id);
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Права на отправку объявлений категории пользователей
+     * @return array
+     */
+    public static function getCategoryRule()
+    {
+        return array(
+            self::CAT_ALL => 'boardCatAllAccess',
+            self::CAT_STUDENTS => 'boardCatStudentAccess',
+            self::CAT_EMPLOYEES => 'boardCatEmployeesAccess',
+            self::CAT_TEACHERS => 'boardCatTeachersAccess',
+            self::CAT_PARENTS => 'boardCatParentsAccess',
+            self::CAT_SELECT => 'boardCatSelectAccess',
+        );
+    }
+
     public static function getCategoryValue($val)
     {
         $ar = self::getCategoryList();
@@ -201,6 +231,7 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
             ->orderBy('fullname')
             ->asArray()->all(), 'id', 'fullname', 'category');
     }
+
     /**
      *
      * @inheritdoc
@@ -209,6 +240,7 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
     {
         return 'created_by';
     }
+
     /**
      *
      * @inheritdoc

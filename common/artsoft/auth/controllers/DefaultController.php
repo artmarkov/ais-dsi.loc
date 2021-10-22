@@ -614,11 +614,11 @@ class DefaultController extends BaseController
 
         $user = User::findIdentity(Yii::$app->user->id);
         $userCommon = $user->userCommon;
-        $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
         if (!$userCommon) {
             Yii::$app->session->addFlash('error', 'Недостаточно данных для загрузки формы.');
             return $this->goHome();
         }
+        $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
         if ($userCommon->load(Yii::$app->request->post()) && $user->load(Yii::$app->request->post())) {
             // validate all models
             $valid = $userCommon->validate();
