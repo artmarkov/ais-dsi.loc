@@ -101,7 +101,7 @@ AvatarAsset::register($this);
             $menuItems[] = [
                 'label' => '<i class="fa fa-cogs"></i>',
                 'url' => \yii\helpers\Url::to(['/admin']),
-                'visible' => \artsoft\models\User::hasRole('viewDashboard'),
+                'visible' => \artsoft\models\User::hasRole(['developer','system','administrator']),
             ];
         }
         echo Nav::widget([
