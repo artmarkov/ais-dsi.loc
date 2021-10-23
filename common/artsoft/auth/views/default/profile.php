@@ -3,7 +3,7 @@
 use artsoft\auth\assets\AvatarAsset;
 use artsoft\auth\assets\AvatarUploaderAsset;
 use artsoft\auth\widgets\AuthChoice;
-//use yii\bootstrap\ActiveForm;
+use artsoft\models\User;
 use artsoft\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -12,7 +12,7 @@ use yii\widgets\MaskedInput;
 
 /**
  * @var yii\web\View $this
- * @var artsoft\auth\models\forms\SetEmailForm $model
+ * @var artsoft\auth\models\forms\SetEmailForm $user
  * @var artsoft\auth\models\forms\ProfileForm $userCommon
  */
 $this->title = Yii::t('art/auth', 'User Profile');
@@ -32,7 +32,9 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                     <span class="h4"><?= $this->title ?></span>
                 </div>
                 <div class="text-right col-md-3">
-                    <?= Html::a(Yii::t('art/auth', 'Update Password'), ['/auth/default/update-password'], ['class' => 'btn btn-primary btn-sm']) ?>
+                    <?php if (User::hasPermission('changeOwnPassword')): ?>
+                        <?= Html::a(Yii::t('art/auth', 'Update Password'), ['/auth/default/update-password'], ['class' => 'btn btn-primary btn-sm']) ?>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -61,18 +63,18 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                                     <?= Html::fileInput('image', null, ['class' => 'image-input']) ?>
                                 </span>
 
-                                <?=
-                                Html::submitButton('<i class="fa fa-save"></i>', [
-                                    'class' => 'btn btn-primary image-submit',
-                                    'title' => Yii::t('art/auth', 'Save profile picture'),
-                                    'data-toggle' => 'tooltip',
-                                    'data-placement' => 'bottom',
-                                ])
-                                ?>
-                                <span class="btn btn-primary image-remove"
-                                      data-action="<?= Url::to(['/auth/default/remove-avatar']) ?>"
-                                      title="<?= Yii::t('art/auth', 'Remove profile picture') ?>"
-                                      data-toggle="tooltip" data-placement="bottom">
+                                    <?=
+                                    Html::submitButton('<i class="fa fa-save"></i>', [
+                                        'class' => 'btn btn-primary image-submit',
+                                        'title' => Yii::t('art/auth', 'Save profile picture'),
+                                        'data-toggle' => 'tooltip',
+                                        'data-placement' => 'bottom',
+                                    ])
+                                    ?>
+                                    <span class="btn btn-primary image-remove"
+                                          data-action="<?= Url::to(['/auth/default/remove-avatar']) ?>"
+                                          title="<?= Yii::t('art/auth', 'Remove profile picture') ?>"
+                                          data-toggle="tooltip" data-placement="bottom">
                                 <i class="fa fa-remove"></i>
                                 </span>
                                 </div>
@@ -87,9 +89,9 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                             <div class="record-info">
                                 <div class="form-group clearfix">
                                     <label class="control-label" style="float: left; padding-right: 5px;">
-                                        <?= $model->attributeLabels()['username'] ?> :
+                                        <?= $user->attributeLabels()['username'] ?> :
                                     </label>
-                                    <span><?= $model->username; ?></span>
+                                    <span><?= $user->username; ?></span>
                                 </div>
                                 <div class="form-group clearfix">
                                     <label class="control-label" style="float: left; padding-right: 5px;">
@@ -102,17 +104,17 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                                 </div>
                                 <div class="form-group clearfix">
                                     <label class="control-label" style="float: left; padding-right: 5px;">
-                                        <?= $model->attributeLabels()['created_at'] ?> :
+                                        <?= $user->attributeLabels()['created_at'] ?> :
                                     </label>
-                                    <span><?= $model->createdDatetime; ?></span>
+                                    <span><?= $user->createdDatetime; ?></span>
                                 </div>
                                 <div class="form-group clearfix">
                                     <label class="control-label" style="float: left; padding-right: 5px;">
-                                        <?= $model->attributeLabels()['updated_at'] ?> :
+                                        <?= $user->attributeLabels()['updated_at'] ?> :
                                     </label>
-                                    <span><?= $model->updatedDatetime; ?></span>
+                                    <span><?= $user->updatedDatetime; ?></span>
                                 </div>
-                            <hr>
+                                <hr>
                                 <div class="form-group clearfix">
                                     <label class="control-label" style="float: left; padding-right: 5px;">
                                         <?= Yii::t('art', 'Previous successful login') ?> :
@@ -138,9 +140,9 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div class="row">
-                                <?= $form->field($model, 'username')->textInput(['maxlength' => 255, 'autofocus' => false, 'readonly' => true]) ?>
-                                <?= $form->field($userCommon, 'snils')->textInput(['readonly' => true])->hint('Может потребоваться для восстановления учетных данных.') ?>
-                                <?= $form->field($model, 'email')->textInput(['maxlength' => 255, 'autofocus' => false])->hint(Yii::t('art/auth', 'After changing the E-mail confirmation is required')) ?>
+                                <?= $form->field($user, 'username')->textInput(['maxlength' => 255, 'autofocus' => false, 'readonly' => true]) ?>
+                                <?= $form->field($userCommon, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput(['readonly' => $userCommon->snils == '' ? false : true])->hint('Может потребоваться для восстановления учетных данных.') ?>
+                                <?= $form->field($user, 'email')->textInput(['maxlength' => 255, 'autofocus' => false])->hint(Yii::t('art/auth', 'After changing the E-mail confirmation is required')) ?>
                             </div>
                         </div>
                     </div>
@@ -154,6 +156,7 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                                 <?= $form->field($userCommon, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(\kartik\date\DatePicker::classname()); ?>
                                 <?= $form->field($userCommon, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                                 <?= $form->field($userCommon, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                                <?= $form->field($userCommon, 'address')->textInput(['maxlength' => 124]) ?>
                             </div>
                         </div>
                     </div>

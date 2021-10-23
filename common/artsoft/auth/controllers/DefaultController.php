@@ -377,7 +377,7 @@ class DefaultController extends BaseController
                         Yii::$app->session->setFlash('info', Yii::t('art/auth', 'Check your e-mail {email} for instructions to activate account', ['email' => '<b>' . $user->email . '</b>']));
                         //return $this->renderIsAjax('signup-confirmation', compact('user'));
                     } else {
-                       // $user->assignRoles(Yii::$app->art->defaultRoles);
+                        // $user->assignRoles(Yii::$app->art->defaultRoles);
 
                         Yii::$app->user->login($user);
 
@@ -424,7 +424,9 @@ class DefaultController extends BaseController
         if (Yii::$app->user->isGuest) {
             throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
         }
-
+        if (!User::hasPermission('changeOwnPassword')) {
+            throw new ForbiddenHttpException(Yii::t('art/auth', 'You do not have the rights to perform this action.'));
+        }
         $user = User::getCurrentUser();
 
         if ($user->status != User::STATUS_ACTIVE) {
@@ -440,7 +442,9 @@ class DefaultController extends BaseController
 
         if ($model->load(Yii::$app->request->post()) AND $model->updatePassword(false)) {
             Yii::$app->user->logout();
-            return $this->renderIsAjax('update-password-success');
+            Yii::$app->session->setFlash('success', Yii::t('art/auth', 'Password has been updated'));
+            return $this->redirect('login');
+            //return $this->renderIsAjax('update-password-success');
         }
 
         return $this->renderIsAjax('update-password', compact('model'));
@@ -618,8 +622,9 @@ class DefaultController extends BaseController
             Yii::$app->session->addFlash('error', 'Недостаточно данных для загрузки формы.');
             return $this->goHome();
         }
-        $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
+        $userCommon->scenario = UserCommon::SCENARIO_DEFAULT;
         if ($userCommon->load(Yii::$app->request->post()) && $user->load(Yii::$app->request->post())) {
+            //echo '<pre>' . print_r(Yii::$app->request->post(), true) . '</pre>';
             // validate all models
             $valid = $userCommon->validate();
             $valid = $user->validate() && $valid;
@@ -636,7 +641,7 @@ class DefaultController extends BaseController
                 }
             }
         }
-        return $this->renderIsAjax('profile', ['model' => $user, 'userCommon' => $userCommon]);
+        return $this->renderIsAjax('profile', compact(['user', 'userCommon']));
     }
 
     /**

@@ -37,9 +37,12 @@ class m170529_050554_create_table_system extends Migration
         $this->addCommentOnTable('mail_queue','Таблица файлов');
 
         $this->createTable('session', [
-            'id' => $this->char(64)->notNull(),
-            'expire' => $this->integer(),
-            'data' => $this->text()
+            'id'                => $this->char(64)->notNull(),
+            'expire'            => $this->integer(),
+            'data'              => $this->binary(),
+            'user_id'           => $this->integer(),
+            'user_ip'           => $this->string(50),
+            'run_at'            => $this->integer()
         ]);
         $this->addPrimaryKey('session_pk', 'session', 'id');;
         $this->addCommentOnTable('session','Сессии');

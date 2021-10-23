@@ -9,14 +9,15 @@ use Yii;
  * This is the model class for table "session".
  *
  * @property string $id
+ * @property integer $run_at
  * @property integer $expire
+ * @property integer $user_id
+ * @property string $user_ip
  * @property resource $data
  */
 class Session extends \artsoft\db\ActiveRecord
 {
     public $status;
-    public $ip;
-    public $run_at;
 
     /**
      * @inheritdoc
@@ -33,9 +34,9 @@ class Session extends \artsoft\db\ActiveRecord
     {
         return [
             [['id'], 'required'],
-            [['expire'], 'integer'],
+            [['expire', 'user_id'], 'integer'],
             [['data'], 'safe'],
-            [['status','ip','run_at'], 'string'],
+            [['status', 'user_ip', 'run_at'], 'string'],
             [['id'], 'string', 'max' => 255],
         ];
     }
@@ -49,21 +50,16 @@ class Session extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art', 'ID'),
             'expire' => Yii::t('art/user', 'Expire'),
             'status' => Yii::t('art', 'Status'),
+            'run_at' => Yii::t('art', 'Run At'),
             'last_attempt' => Yii::t('art/user', 'Last Attempt'),
         ];
     }
 
-    public function getSessionVars()
-    {
-        return SessionDecoder::unserialize($this->getAttribute('data'));
-    }
-
     public function getStatus()
     {
-        $vars = $this->getSessionVars();
-        $user = isset($vars['__id']) ? User::findOne($vars['__id']) : null;
+        $user = isset($this->user_id) ? User::findOne($this->user_id) : null;
         $expired = time() - $this->expire > 0 || $user === null;
-        $current = $this->id == Yii::$app->session->getId();
+        $current = $this->user_id == Yii::$app->session->getId();
         return $expired ? 'waiting' : ($current ? 'current' : 'active');
     }
 
@@ -88,21 +84,19 @@ class Session extends \artsoft\db\ActiveRecord
 
     public function getUsername()
     {
-        $vars = $this->getSessionVars();
-        $user = isset($vars['__id']) ? User::findOne($vars['__id']) : null;
+        $user = isset($this->user_id) ? User::findOne($this->user_id) : null;
 
         return $user ? $user->username : '';
     }
 
-    public function getIP()
+    public function getIp()
     {
-        $vars = $this->getSessionVars();
-        return isset($vars['__ipaddr']) ? $vars['__ipaddr'] : null;
+        return isset($this->user_ip) ? $this->user_ip : null;
     }
+
     public function getRunAt()
     {
-        $vars = $this->getSessionVars();
-        return isset($vars['__run_at']) ? $vars['__run_at'] : null;
+        return isset($this->run_at) ? $this->run_at : null;
     }
 
 }

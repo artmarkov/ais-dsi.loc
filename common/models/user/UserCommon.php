@@ -55,8 +55,7 @@ class UserCommon extends ActiveRecord
     const USER_CATEGORY_STUDENTS = 'students';
     const USER_CATEGORY_PARENTS = 'parents';
 
-    const SCENARIO_UPDATE = 'updateInfo';
-    const SCENARIO_NEW = 'new';
+    const SCENARIO_DEFAULT = 'default';
 
     /**
      * @inheritdoc
@@ -81,14 +80,6 @@ class UserCommon extends ActiveRecord
         ];
     }
 
-    public function scenarios()
-    {
-        return [
-            self::SCENARIO_UPDATE => ['first_name', 'last_name', 'birth_date'],
-            self::SCENARIO_NEW => ['first_name', 'last_name', 'birth_date'],
-            ];
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -101,10 +92,7 @@ class UserCommon extends ActiveRecord
             [['user_category', 'first_name', 'middle_name', 'last_name', 'address', 'email'], 'string', 'max' => 124],
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
-            ['last_name', 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'],
-                'when' => function () {
-                    return !$this->scenario == self::SCENARIO_UPDATE;
-                },
+            [['last_name', 'first_name', 'middle_name'], 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'],
                 'message' => Yii::t('art/auth', 'The user with the entered data already exists.')],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             [['snils'], 'string', 'max' => 16],

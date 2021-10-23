@@ -1,8 +1,8 @@
 <?php
-Yii::$container->set(\yii\widgets\DetailView::class,[
+Yii::$container->set(\yii\widgets\DetailView::class, [
     'options' => ['class' => 'table detail-view'],
     'template' => '<tr><th style="width:30%;text-align:right;" {captionOptions}>{label}</th><td {contentOptions}>{value}</td></tr>',
-    ]);
+]);
 
 Yii::$container->set(\kartik\date\DatePicker::class, [
     'type' => \kartik\date\DatePicker ::TYPE_INPUT,
@@ -51,6 +51,13 @@ return [
         ],
         'session' => [
             'class' => 'yii\web\DbSession',
+            'writeCallback' => function ($session) {
+                return [
+                    'user_id' => Yii::$app->user->id,
+                    'user_ip' => Yii::$app->request->userIP,
+                    'run_at' => time()
+                ];
+            },
             'name' => 'art',
             'timeout' => '86400'
         ],

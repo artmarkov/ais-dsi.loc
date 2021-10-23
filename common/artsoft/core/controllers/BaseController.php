@@ -132,9 +132,6 @@ abstract class BaseController extends Controller
      */
     public function beforeAction($action)
     {
-        $session = Yii::$app->session;
-        $session['__ipaddr'] = Yii::$app->request->userIP;
-        $session['__run_at'] = time();
         if (!Yii::$app->getUser()->isGuest) {
             Request::register(Yii::$app->request,Yii::$app->user);
             register_shutdown_function(array('\artsoft\models\Request', 'close'));
