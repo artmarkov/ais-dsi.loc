@@ -249,10 +249,6 @@ class User extends UserIdentity
 
         $baseRoute = AuthHelper::unifyRoute($route);
 
-        if (Yii::$app->session->has(DefaultController::ORIGINAL_USER_SESSION_KEY) && $baseRoute == '/user/default/impersonate'){
-            return true;
-        }
-
         if (substr($baseRoute, 0, 4) === "http") {
             return true;
         }

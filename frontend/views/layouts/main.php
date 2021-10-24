@@ -5,7 +5,7 @@ use frontend\assets\AppAsset;
 use frontend\assets\ThemeAsset;
 use artsoft\assets\MetisMenuAsset;
 use artsoft\assets\ArtAsset;
-use artsoft\models\Menu;
+use artsoft\user\controllers\DefaultController;
 use artsoft\widgets\LanguageSelector;
 use artsoft\widgets\Nav;
 use yii\bootstrap\NavBar;
@@ -81,7 +81,7 @@ AvatarAsset::register($this);
                 'visible' => true
             ];
 
-            if (!Yii::$app->session->has(\artsoft\user\controllers\DefaultController::ORIGINAL_USER_SESSION_KEY)) {
+            if (!Yii::$app->session->has(DefaultController::ORIGINAL_USER_SESSION_KEY)) {
                 $menuItems[] = [
                     'label' => '<i class="fa fa-sign-out" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Logout'),
                     'url' => ['/auth/default/logout', 'language' => false],

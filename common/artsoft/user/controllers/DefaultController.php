@@ -14,6 +14,8 @@ class DefaultController extends MainController
 {
     const ORIGINAL_USER_SESSION_KEY = 'original_user';
 
+    public $freeAccessActions = ['impersonate'];
+
     /**
      * @var User
      */
@@ -70,9 +72,8 @@ class DefaultController extends MainController
 
     /**
      * @param null $id
-     * @return Response
-     * @throws \yii\web\NotFoundHttpException
      * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
      */
     public function actionImpersonate($id = null)
     {
@@ -80,6 +81,7 @@ class DefaultController extends MainController
             $user = $this->findModel(Yii::$app->session->get(self::ORIGINAL_USER_SESSION_KEY));
 
             Yii::$app->session->remove(self::ORIGINAL_USER_SESSION_KEY);
+            Yii::$app->user->logout(true);
         } else {
             if (!Yii::$app->user->identity->isAdmin()) {
                 throw new ForbiddenHttpException();
@@ -89,17 +91,16 @@ class DefaultController extends MainController
             Yii::$app->session->set(self::ORIGINAL_USER_SESSION_KEY, Yii::$app->user->id);
         }
 
-        Yii::$app->user->switchIdentity($user, 3600);
-        $this->response->redirect('/');
+        Yii::$app->user->login($user);
+        $this->goHome();
     }
 
     /**
      * @param null $id
      * @return \yii\web\Response
      */
-    public function actionSendLogin($id = null){
-
-
+    public function actionSendLogin($id = null)
+    {
 
 
         return $this->goHome();

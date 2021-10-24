@@ -67,6 +67,7 @@ MetisMenuAsset::register($this);
                 'url' => 'user/default/impersonate',
                 'linkOptions' => ['data-method' => 'post'],
                 'options' => ['style' => 'background-color: #e28b00;'],
+                'visible' => true
             ];
         }
 
