@@ -9,7 +9,6 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\models\User;
-use common\models\user\UserCommon;
 
 /**
  * @var yii\web\View $this
@@ -32,6 +31,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?= GridQuickLinks::widget([
                                 'model' => User::className(),
                                 'searchModel' => $searchModel,
+                                'options' => [
+                                    ['label' => Yii::t('art', 'All'), 'filterWhere' => []],
+                                    ['label' => Yii::t('art', 'Active'), 'filterWhere' => ['status' => 10]],
+                                    ['label' => Yii::t('art', 'Inactive'), 'filterWhere' => ['status' => 0]],
+                                    ['label' => Yii::t('art', 'Banned'), 'filterWhere' => ['status' => -1]],
+                                ]
                             ]) ?>
                         </div>
 
@@ -93,7 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'permissions' => function ($url, $model, $key) {
                                         return Html::a(Yii::t('art/user', 'Permissions'),
-                                            Url::to(['user-permission/set', 'id' => $model->id]), [
+                                            ['user-permission/set', 'id' => $model->id], [
                                                 'title' => Yii::t('art/user', 'Permissions'),
                                                 'data-pjax' => '0'
                                             ]
@@ -101,7 +106,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'password' => function ($url, $model, $key) {
                                         return Html::a(Yii::t('art/user', 'Password'),
-                                            Url::to(['default/change-password', 'id' => $model->id]), [
+                                            ['/user/default/change-password', 'id' => $model->id], [
                                                 'title' => Yii::t('art/user', 'Password'),
                                                 'data-pjax' => '0'
                                             ]
@@ -124,7 +129,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'gridRoleSearch',
-                                'filter' => ArrayHelper::map(Role::getAvailableRoles(Yii::$app->user->isSuperAdmin),
+                                'filter' => ArrayHelper::map(Role::getAvailableRoles(true),
                                     'name', 'description'),
                                 'value' => function (User $model) {
                                     return implode(', ',
@@ -134,7 +139,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                                 'visible' => User::hasPermission('viewUserRoles'),
                             ],
-                            /*  [
+                              [
                               'attribute' => 'registration_ip',
                               'value' => function(User $model) {
                               return Html::a($model->registration_ip,
@@ -143,7 +148,7 @@ $this->params['breadcrumbs'][] = $this->title;
                               },
                               'format' => 'raw',
                               'visible' => User::hasPermission('viewRegistrationIp'),
-                              ], */
+                              ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'superadmin',
@@ -156,7 +161,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'optionsArray' => [
                                     [User::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
                                     [User::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
-                                    [User::STATUS_BANNED, Yii::t('art', 'Banned'), 'default'],
+                                    [User::STATUS_BANNED, Yii::t('art', 'Banned'), 'danger'],
                                 ],
                                 'options' => ['style' => 'width:60px']
                             ],

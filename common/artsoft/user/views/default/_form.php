@@ -76,9 +76,10 @@ use kartik\date\DatePicker;
                                 <?= $form->field($model, 'email')->textInput(['maxlength' => 255]) ?>
                                 <?= $form->field($model, 'email_confirmed')->checkbox() ?>
                             <?php endif; ?>
-
                             <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(User::getStatusList()) ?>
-                            <?= $form->field($model, 'registration_ip')->textInput(['readonly' => true]) ?>
+                            <?php if (User::hasPermission('viewRegistrationIp')): ?>
+                                <?= $form->field($model, 'registration_ip')->textInput(['readonly' => true]) ?>
+                            <?php endif; ?>
                             <?php if (User::hasPermission('bindUserToIp')): ?>
                                 <?= $form->field($model, 'bind_to_ip')->textInput(['maxlength' => 255])->hint(Yii::t('art', 'For example') . ' : 123.34.56.78, 234.123.89.78') ?>
                             <?php endif; ?>
@@ -116,7 +117,7 @@ use kartik\date\DatePicker;
                             ?>
 
                             <?= Html::a('<i class="fa fa-key" aria-hidden="true"></i> ' . Yii::t('art/user', 'Password'),
-                                ['default/change-password', 'id' => $model->id],
+                                ['/user/default/change-password', 'id' => $model->id],
                                 [
                                     'class' => 'btn btn-danger btn-sm',
 

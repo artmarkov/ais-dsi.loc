@@ -26,11 +26,10 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                     '/admin/user/permission/*',
                     '/admin/user/permission-groups/*',
                     '/admin/user/user-permission/*',
-                    '/admin/user/visit-log/*',
                 ],
                 'viewUsers' => [
                     'title' => 'Просмотр учетной записи',
-                    'roles' => [self::ROLE_SYSTEM],
+                    'roles' => [self::ROLE_ADMIN],
                     'links' => [
                         '/admin/user/default/index',
                         '/admin/user/default/grid-sort',
@@ -66,7 +65,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                 ],
                 'createUsers' => [
                     'title' => 'Добавление учетной записи',
-                    'roles' => [self::ROLE_SYSTEM],
+                    'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUsers'],
                     'links' => [
                         '/admin/user/default/create',
@@ -91,7 +90,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                 ],
                 'viewRolesAndPermissions' => [
                     'title' => 'Просмотр Ролей И Прав',
-                    'roles' => [self::ROLE_SYSTEM],
+                    'roles' => [self::ROLE_ADMIN],
                     'childs' => ['viewUsers', 'viewUserRoles'],
                     'links' => [
                         '/admin/user/permission-groups/index',
@@ -140,37 +139,6 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                         '/admin/user/user-permission/set-roles',
                     ],
                 ],
-                'viewVisitLog' => [
-                    'title' => 'Просмотр Журнала посещений',
-                    'roles' => [self::ROLE_SYSTEM],
-                    'childs' => ['viewUsers'],
-                    'links' => [
-                        '/admin/user/visit-log/index',
-                        '/admin/user/visit-log/view',
-                        '/admin/user/visit-log/grid-sort',
-                        '/admin/user/visit-log/grid-page-size',
-                    ],
-                ],
-                'viewSession' => [
-                    'title' => 'Просмотр Сессий',
-                    'roles' => [self::ROLE_SYSTEM],
-                    'childs' => ['viewUsers'],
-                    'links' => [
-                        '/admin/user/session/index',
-                        '/admin/user/session/grid-sort',
-                        '/admin/user/session/grid-page-size',
-                    ],
-                ],
-                'viewRequest' => [
-                    'title' => 'Просмотр Запросов',
-                    'roles' => [self::ROLE_SYSTEM],
-                    'childs' => ['viewUsers'],
-                    'links' => [
-                        '/admin/user/request/index',
-                        '/admin/user/request/grid-sort',
-                        '/admin/user/request/grid-page-size',
-                    ],
-                ],
                 'bindUserToIp' => [
                     'title' => 'Привязка Пользователя К IP',
                     'roles' => [self::ROLE_ADMIN],
@@ -187,7 +155,7 @@ class m150825_205531_add_user_permissions extends PermissionsMigration
                 ],
                 'viewRegistrationIp' => [
                     'title' => 'Просмотр Регистрационного IP-адреса',
-                    'roles' => [self::ROLE_ADMIN],
+                    'roles' => [self::ROLE_SYSTEM],
                 ],
                 'viewUserEmail' => [
                     'title' => 'Просмотр Email Пользователя',

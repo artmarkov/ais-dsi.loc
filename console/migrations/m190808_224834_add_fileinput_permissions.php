@@ -20,12 +20,14 @@ class m190808_224834_add_fileinput_permissions extends PermissionsMigration
         return [
             'fileinputManagement' => [
                 'links' => [
+                    '/fileinput/file-manager/*',
                     '/admin/fileinput/file-manager/*',
                 ],
                 'uploadFile' => [
                     'title' => 'Загрузка файлов',
                     'roles' => [self::ROLE_USER],
                     'links' => [
+                        '/fileinput/file-manager/file-upload',
                         '/admin/fileinput/file-manager/file-upload',
                     ],
                 ],   
@@ -33,6 +35,7 @@ class m190808_224834_add_fileinput_permissions extends PermissionsMigration
                     'title' => 'Сортировка файлов',
                     'roles' => [self::ROLE_USER],
                     'links' => [
+                        '/fileinput/file-manager/sort-file',
                         '/admin/fileinput/file-manager/sort-file',
                     ],
                     'childs' => [
@@ -43,6 +46,7 @@ class m190808_224834_add_fileinput_permissions extends PermissionsMigration
                     'title' => 'Удаление файлов',
                     'roles' => [self::ROLE_USER],
                     'links' => [
+                        '/fileinput/file-manager/delete-file',
                         '/admin/fileinput/file-manager/delete-file',
                     ],
                     'childs' => [

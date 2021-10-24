@@ -17,7 +17,8 @@ use artsoft\widgets\Nav;
             [
                 'label' => 'Главная',
                 'icon' => 'fa fa-th',
-                'url' => '/admin',
+                'url' => '',
+                'visible' => \artsoft\models\User::hasPermission('viewDashboard')
             ],
             [
                 'label' => 'Информационный ресурс',

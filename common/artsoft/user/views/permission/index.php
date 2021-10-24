@@ -56,11 +56,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/user/permission',
                                 'title' => function ($model) {
-                                    return Html::a(
-                                        $model->description,
-                                        ['view', 'id' => $model->name],
-                                        (($model->name == Yii::$app->art->commonPermissionName)) ? ['data-pjax' => 0, 'class' => 'label label-primary'] : ['data-pjax' => 0]
-                                    );
+                                    if (\artsoft\models\User::hasPermission('manageRolesAndPermissions')) {
+                                        return Html::a(
+                                            $model->description,
+                                            ['view', 'id' => $model->name],
+                                            (($model->name == Yii::$app->art->commonPermissionName)) ? ['data-pjax' => 0, 'class' => 'label label-primary'] : ['data-pjax' => 0]
+                                        );
+                                    } else {
+                                        return $model->description;
+                                    }
                                 },
                                 'buttons' => [
                                     'view' => function ($url, $model, $key) {

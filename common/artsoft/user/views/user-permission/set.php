@@ -38,7 +38,7 @@ BootstrapPluginAsset::register($this);
 
                             <?= Html::checkboxList('roles',
                                 ArrayHelper::map(Role::getUserRoles($user->id), 'name', 'name'),
-                                ArrayHelper::map(Role::getAvailableRoles(), 'name', 'description'),
+                                ArrayHelper::map(Role::getAvailableRoles(true, false), 'name', 'description'),
                                 [
                                     'item' => function ($index, $label, $name, $checked, $value) {
                                         $list = '<ul style="padding-left: 10px">';

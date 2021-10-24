@@ -61,6 +61,5 @@ return [
     'You could not login from this IP' => 'Вы не можете войти с этого IP',
     'After changing the E-mail confirmation is required' => 'После изменения адреса электронной почты требуется подтверждение',
     'User not found or blocked in the system' => 'Пользователь не найден или заблокирован в системе',
-    'You do not have the rights to perform this action.' => 'У вас нет прав для выполнения данного действия.',
     'The user with the entered data already exists.' => 'Пользователь с введенными данными уже существует.',
 ];

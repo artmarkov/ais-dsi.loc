@@ -425,12 +425,12 @@ class DefaultController extends BaseController
             throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
         }
         if (!User::hasPermission('changeOwnPassword')) {
-            throw new ForbiddenHttpException(Yii::t('art/auth', 'You do not have the rights to perform this action.'));
+            throw new ForbiddenHttpException(Yii::t('art', 'You are not allowed to perform this action.'));
         }
         $user = User::getCurrentUser();
 
         if ($user->status != User::STATUS_ACTIVE) {
-            throw new ForbiddenHttpException();
+            throw new ForbiddenHttpException(Yii::t('art', 'You are not allowed to perform this action.'));
         }
 
         $model = new UpdatePasswordForm(compact('user'));

@@ -61,7 +61,6 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
                     ],
                     'links' => [
                         '/admin',
-                        '/admin/site/index',
                     ],
                 ],
             ],
