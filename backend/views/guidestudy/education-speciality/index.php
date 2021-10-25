@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/guidestudy/education-speciality',
                                 'title' => function (EducationSpeciality $model) {
-                                    return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->name, ['/guidestudy/education-speciality/update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],

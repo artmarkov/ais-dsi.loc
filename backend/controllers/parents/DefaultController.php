@@ -4,7 +4,6 @@ namespace backend\controllers\parents;
 
 use artsoft\models\User;
 use backend\models\Model;
-use common\models\history\ParentsHistory;
 use common\models\students\StudentDependence;
 use common\models\user\UserCommon;
 use yii\helpers\ArrayHelper;
@@ -19,6 +18,7 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\parents\Parents';
     public $modelSearchClass = 'common\models\parents\search\ParentsSearch';
+    public $modelHistoryClass = 'common\models\history\ParentsHistory';
 
     /**
      * @return mixed|string|\yii\web\Response
@@ -30,7 +30,7 @@ class DefaultController extends MainController
 
         $user = new User();
         $userCommon = new UserCommon();
-        $userCommon->scenario = UserCommon::SCENARIO_NEW;
+//        $userCommon->scenario = UserCommon::SCENARIO_NEW;
         $model = new $this->modelClass;
         $modelsDependence = [new StudentDependence(['scenario' => StudentDependence::SCENARIO_STUDENT])];
 
@@ -104,7 +104,7 @@ class DefaultController extends MainController
 
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_PARENTS]);
-        $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
+//        $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
 
         if (!isset($model, $userCommon)) {
             throw new NotFoundHttpException("The user was not found.");
@@ -166,11 +166,4 @@ class DefaultController extends MainController
         return $this->actionUpdate($id, true);
     }
 
-    public function actionHistory($id)
-    {
-        $this->view->params['tabMenu'] = $this->tabMenu;
-        $model = $this->findModel($id);
-        $data = new ParentsHistory($id);
-        return $this->renderIsAjax('history', compact(['model', 'data']));
-    }
 }

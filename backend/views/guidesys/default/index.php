@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'controller' => '/guidesys/default',
                                 'options' => ['style' => 'width:300px'],
                                 'title' => function (UserRelation $model) {
-                                    return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->name, ['/guidesys/default/update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],

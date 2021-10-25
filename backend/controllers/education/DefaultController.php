@@ -5,7 +5,6 @@ namespace backend\controllers\education;
 use common\models\education\EducationCat;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\EducationProgrammLevelSubject;
-use common\models\history\EducationProgrammHistory;
 use backend\models\Model;
 use yii\helpers\ArrayHelper;
 use Yii;
@@ -17,6 +16,7 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\education\EducationProgramm';
     public $modelSearchClass = 'common\models\education\search\EducationProgrammSearch';
+    public $modelHistoryClass = 'common\models\history\EducationProgrammHistory';
 
     public function actionCreate()
     {
@@ -206,14 +206,6 @@ class DefaultController extends MainController
     public function actionView($id)
     {
         return $this->actionUpdate($id, true);
-    }
-
-    public function actionHistory($id)
-    {
-        $this->view->params['tabMenu'] = $this->tabMenu;
-        $model = $this->findModel($id);
-        $data = new EducationProgrammHistory($id);
-        return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 
     /**

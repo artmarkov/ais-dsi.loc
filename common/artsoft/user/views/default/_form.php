@@ -99,15 +99,14 @@ use kartik\date\DatePicker;
                                     ],
                                 ]);
                             ?>
-
-                            <?= Html::a('<i class="fa fa-user-secret" aria-hidden="true"></i> ' . Yii::t('art', 'Login as user'),
-                                ['/user/default/impersonate', 'id' => $model->id],
-                                [
-                                    'class' => 'btn btn-warning btn-sm',
-
-                                ]);
-                            ?>
-
+                            <?php if ($model->status == User::STATUS_ACTIVE): ?>
+                                <?= Html::a('<i class="fa fa-user-secret" aria-hidden="true"></i> ' . Yii::t('art', 'Login as user'),
+                                    ['/user/default/impersonate', 'id' => $model->id],
+                                    [
+                                        'class' => 'btn btn-warning btn-sm',
+                                    ]);
+                                ?>
+                            <?php endif; ?>
                             <?= Html::a('<i class="fa fa-shield" aria-hidden="true"></i> ' . Yii::t('art/user', 'Permissions'),
                                 ['user-permission/set', 'id' => $model->id],
                                 [

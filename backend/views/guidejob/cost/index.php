@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:300px'],
                                 'controller' => '/guidejob/cost',
                                 'title' => function (Cost $model) {
-                                    return Html::a($model->directionName . ' - ' . $model->stakeSlug, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->directionName . ' - ' . $model->stakeSlug, ['/guidejob/cost/update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],

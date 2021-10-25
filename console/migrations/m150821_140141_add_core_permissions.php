@@ -61,6 +61,34 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
                     ],
                     'links' => [
                         '/admin',
+                        '/admin/site/index',
+                    ],
+                ],
+                'viewAdmintools' => [
+                    'title' => 'Инструменты админа',
+                    'roles' => [
+                        self::ROLE_SYSTEM
+                    ],
+                    'links' => [
+                        '/admin/admintools',
+                    ],
+                ],
+                'viewDebug' => [
+                    'title' => 'Доступ к Debug-панели',
+                    'roles' => [
+                        self::ROLE_DEV
+                    ],
+                    'links' => [
+                        '/admin/debug',
+                    ],
+                ],
+                'viewGii' => [
+                    'title' => 'Доступ к Gii-панели',
+                    'roles' => [
+                        self::ROLE_DEV
+                    ],
+                    'links' => [
+                        '/admin/gii',
                     ],
                 ],
             ],

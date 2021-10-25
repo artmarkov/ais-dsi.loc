@@ -31,6 +31,7 @@ class UserCommonHistory extends BaseHistory
             'snils',
             'info',
             'user_category',
+            'email'
         ];
     }
 

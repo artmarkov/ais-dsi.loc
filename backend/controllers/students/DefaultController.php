@@ -7,7 +7,6 @@ use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use backend\models\Model;
 use common\models\education\EducationProgrammLevel;
-use common\models\history\StudentsHistory;
 use common\models\history\StudyplanHistory;
 use common\models\students\StudentDependence;
 use common\models\studyplan\search\StudyplanSearch;
@@ -27,6 +26,7 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\students\Student';
     public $modelSearchClass = 'common\models\students\search\StudentSearch';
+    public $modelHistoryClass = 'common\models\history\StudentsHistory';
 
     /**
      * @return mixed|string|\yii\web\Response
@@ -38,7 +38,7 @@ class DefaultController extends MainController
 
         $user = new User();
         $userCommon = new UserCommon();
-        $userCommon->scenario = UserCommon::SCENARIO_NEW;
+       // $userCommon->scenario = UserCommon::SCENARIO_NEW;
         $model = new $this->modelClass;
         $modelsDependence = [new StudentDependence(['scenario' => StudentDependence::SCENARIO_PARENT])];
 
@@ -112,7 +112,7 @@ class DefaultController extends MainController
 
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_STUDENTS]);
-        $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
+       // $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
 
         if (!isset($model, $userCommon)) {
             throw new NotFoundHttpException("The user was not found.");
@@ -172,14 +172,6 @@ class DefaultController extends MainController
     public function actionView($id)
     {
         return $this->actionUpdate($id, true);
-    }
-
-    public function actionHistory($id)
-    {
-        $this->view->params['tabMenu'] = $this->getMenu($id);
-        $model = $this->findModel($id);
-        $data = new StudentsHistory($id);
-        return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 
     public function actionExamination($id)

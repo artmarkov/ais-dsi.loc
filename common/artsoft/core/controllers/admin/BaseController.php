@@ -28,6 +28,12 @@ abstract class BaseController extends \artsoft\controllers\BaseController
     public $modelSearchClass;
 
     /**
+     * @var ActiveRecord
+     */
+    public $modelHistoryClass;
+
+
+    /**
      * Actions that will be disabled
      *
      * List of available actions:
@@ -210,6 +216,19 @@ abstract class BaseController extends \artsoft\controllers\BaseController
         return $this->redirect($this->getRedirectPage('delete', $model));
     }
 
+    /**
+     * History action
+     * @param $id
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
+     */
+    public function actionHistory($id)
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $model = $this->findModel($id);
+        $data = new $this->modelHistoryClass($id);
+        return $this->renderIsAjax('history', compact(['model', 'data']));
+    }
     /**
      * @param string $attribute
      * @param int $id

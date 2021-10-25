@@ -92,7 +92,7 @@ class DefaultController extends MainController
         }
 
         Yii::$app->user->login($user);
-        $this->goHome();
+        $this->redirect('/');
     }
 
     /**

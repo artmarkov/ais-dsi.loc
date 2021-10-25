@@ -97,6 +97,7 @@ class UserCommon extends ActiveRecord
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             [['snils'], 'string', 'max' => 16],
             ['info', 'string'],
+            ['email', 'email'],
         ];
     }
 

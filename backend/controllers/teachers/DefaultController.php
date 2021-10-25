@@ -4,7 +4,6 @@ namespace backend\controllers\teachers;
 
 use artsoft\models\User;
 use common\models\guidejob\Bonus;
-use common\models\history\TeachersHistory;
 use common\models\teachers\TeachersActivity;
 use common\models\user\UserCommon;
 use yii\web\NotFoundHttpException;
@@ -20,6 +19,7 @@ class DefaultController extends MainController
 
     public $modelClass = 'common\models\teachers\Teachers';
     public $modelSearchClass = 'common\models\teachers\search\TeachersSearch';
+    public $modelHistoryClass = 'common\models\history\TeachersHistory';
 
     /**
      * @return mixed|string|\yii\web\Response
@@ -31,7 +31,7 @@ class DefaultController extends MainController
 
         $user = new User();
         $userCommon = new UserCommon();
-        $userCommon->scenario = UserCommon::SCENARIO_NEW;
+       // $userCommon->scenario = UserCommon::SCENARIO_NEW;
         $model = new $this->modelClass;
         $modelsActivity = [new TeachersActivity];
 
@@ -105,7 +105,7 @@ class DefaultController extends MainController
 
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_TEACHERS]);
-        $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
+       // $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
 
         if (!isset($model, $userCommon)) {
             throw new NotFoundHttpException("The user was not found.");
@@ -173,13 +173,6 @@ class DefaultController extends MainController
         return $model->value_default;
     }
 
-    public function actionHistory($id)
-    {
-        $this->view->params['tabMenu'] = $this->getMenu($id);
-        $model = $this->findModel($id);
-        $data = new TeachersHistory($id);
-        return $this->renderIsAjax('history', compact(['model', 'data']));
-    }
     /**
      * @param $id
      * @return array

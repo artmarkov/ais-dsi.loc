@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'attribute' => 'name',
                             'controller' => '/own/division',
                             'title' => function (Division $model) {
-                                return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                return Html::a($model->name, ['/own/division/update', 'id' => $model->id], ['data-pjax' => 0]);
                             },
                             'buttonsTemplate' => '{update} {delete}',
                         ],

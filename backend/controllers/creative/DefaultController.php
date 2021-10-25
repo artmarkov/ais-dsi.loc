@@ -4,8 +4,6 @@ namespace backend\controllers\creative;
 
 use Yii;
 use common\models\efficiency\TeachersEfficiency;
-use common\models\history\CreativeHistory;
-use common\models\efficiency\EfficiencyTree;
 use backend\models\Model;
 use yii\helpers\ArrayHelper;
 
@@ -16,6 +14,7 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\creative\CreativeWorks';
     public $modelSearchClass = 'common\models\creative\search\CreativeWorksSearch';
+    public $modelHistoryClass = 'common\models\history\CreativeHistory';
 
     /**
      * @return mixed|string|\yii\web\Response
@@ -136,14 +135,5 @@ class DefaultController extends MainController
     {
         return $this->actionUpdate($id, true);
     }
-
-    public function actionHistory($id)
-    {
-        $this->view->params['tabMenu'] = $this->tabMenu;
-        $model = $this->findModel($id);
-        $data = new CreativeHistory($id);
-        return $this->renderIsAjax('history', compact(['model', 'data']));
-    }
-
 
 }

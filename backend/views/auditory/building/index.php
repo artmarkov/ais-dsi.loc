@@ -63,7 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                 'controller' => '/auditory/building',
                                 'title' => function (AuditoryBuilding $model) {
-                                    return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->name, ['/auditory/building/update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],

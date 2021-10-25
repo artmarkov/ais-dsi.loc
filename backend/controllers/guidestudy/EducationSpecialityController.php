@@ -2,9 +2,6 @@
 
 namespace backend\controllers\guidestudy;
 
-use Yii;
-use artsoft\controllers\admin\BaseController;
-
 /**
  * EducationSpecialityController implements the CRUD actions for common\models\education\EducationSpeciality model.
  */

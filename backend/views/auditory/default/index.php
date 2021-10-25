@@ -65,7 +65,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'id',
                                 'controller' => '/auditory/default',
                                 'title' => function (Auditory $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a(sprintf('#%06d', $model->id), ['/auditory/default/update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
