@@ -18,9 +18,6 @@ use Yii;
  */
 class EducationSpeciality extends \artsoft\db\ActiveRecord
 {
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
-
     /**
      * {@inheritdoc}
      */
@@ -66,31 +63,6 @@ class EducationSpeciality extends \artsoft\db\ActiveRecord
             'subject_type_list' => Yii::t('art/guide', 'Subject Type'),
             'status' => Yii::t('art', 'Status'),
         ];
-    }
-    /**
-     * getStatusList
-     * @return array
-     */
-    public static function getStatusList()
-    {
-        return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
-            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
-        );
-    }
-
-    /**
-     * getStatusValue
-     *
-     * @param string $val
-     *
-     * @return string
-     */
-    public static function getStatusValue($val)
-    {
-        $ar = self::getStatusList();
-
-        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     /**

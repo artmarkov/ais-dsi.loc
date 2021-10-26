@@ -7,7 +7,6 @@ use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectVid;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
-use artsoft\models\User;
 use Yii;
 
 /**
@@ -127,22 +126,6 @@ class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
     public function getSubjectVid()
     {
         return $this->hasOne(SubjectVid::class, ['id' => 'subject_vid_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**

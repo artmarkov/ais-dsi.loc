@@ -6,7 +6,6 @@ use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
-use artsoft\traits\DateTimeTrait;
 use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -36,11 +35,6 @@ use yii\helpers\ArrayHelper;
  */
 class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
 {
-    use DateTimeTrait;
-
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
-
     const IMPORTANCE_HI = 1;
     const IMPORTANCE_NORM = 0;
     const IMPORTANCE_LOW = -1;
@@ -125,34 +119,6 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
     public function optimisticLock()
     {
         return 'version';
-    }
-
-    /**
-     * Gets query for [[CreatedBy]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * Gets query for [[UpdatedBy]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
-    }
-
-    public static function getStatusList()
-    {
-        return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
-            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
-        );
     }
 
     public static function getImportanceList()

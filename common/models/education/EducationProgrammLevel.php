@@ -2,12 +2,8 @@
 
 namespace common\models\education;
 
-use artsoft\behaviors\ArrayFieldBehavior;
-use common\models\subject\Subject;
-use common\models\subject\SubjectCategory;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
-use artsoft\models\User;
 use Yii;
 
 /**
@@ -116,23 +112,6 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
     public function getEducationProgrammLevelSubject()
     {
         return $this->hasMany(EducationProgrammLevelSubject::class, ['programm_level_id' => 'id']);
-    }
-
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**

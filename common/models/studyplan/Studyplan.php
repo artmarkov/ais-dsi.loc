@@ -8,7 +8,6 @@ use artsoft\helpers\DocTemplate;
 use artsoft\helpers\PriceHelper;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
-use artsoft\traits\DateTimeTrait;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\EducationSpeciality;
@@ -51,10 +50,6 @@ use function morphos\Russian\inflectName;
  */
 class Studyplan extends \artsoft\db\ActiveRecord
 {
-    use DateTimeTrait;
-
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
 
     /**
      * {@inheritdoc}
@@ -135,34 +130,6 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function optimisticLock()
     {
         return 'version';
-    }
-
-    /**
-     * Gets query for [[CreatedBy]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * Gets query for [[UpdatedBy]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
-    }
-
-    public static function getStatusList()
-    {
-        return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
-            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
-        );
     }
 
     /**

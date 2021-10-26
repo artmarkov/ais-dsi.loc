@@ -110,26 +110,6 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[CreatedBy]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * Gets query for [[UpdatedBy]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
-    }
-
-    /**
      * Gets query for [[Studyplan]].
      *
      * @return \yii\db\ActiveQuery

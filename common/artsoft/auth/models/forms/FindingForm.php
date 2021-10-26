@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Артур
- * Date: 17.06.2018
- * Time: 19:58
- */
 
 namespace artsoft\auth\models\forms;
 

@@ -4,7 +4,6 @@ namespace  common\models\creative;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
-use artsoft\traits\DateTimeTrait;
 use common\models\efficiency\TeachersEfficiency;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -26,7 +25,6 @@ use artsoft\models\User;
  * @property int|null $updated_by
  * @property int|null $published_at
  * @property int $status
- * @property int $view_rights
  * @property int $version
  *
  * @property CreativeRevision[] $creativeRevisions
@@ -36,8 +34,6 @@ use artsoft\models\User;
  */
 class CreativeWorks extends \artsoft\db\ActiveRecord
 {
-    use DateTimeTrait;
-
     const VIEW_CLOSE = 0;
     const VIEW_OPEN = 1;
 
@@ -148,26 +144,6 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
     public function getTeachersEfficiency()
     {
         return $this->hasMany(TeachersEfficiency::class, ['item_id' => 'id'])->andWhere(['class' => \yii\helpers\StringHelper::basename(get_class($this))]);
-    }
-
-    /**
-     * Gets query for [[CreatedBy]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * Gets query for [[UpdatedBy]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**

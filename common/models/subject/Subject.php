@@ -3,10 +3,8 @@
 namespace common\models\subject;
 
 use artsoft\behaviors\ArrayFieldBehavior;
-use common\models\own\Department;
+use artsoft\db\ActiveRecord;
 use Yii;
-use yii\helpers\ArrayHelper;
-use common\models\subject\SubjectQuery;
 
 /**
  * This is the model class for table "subject".
@@ -18,16 +16,12 @@ use common\models\subject\SubjectQuery;
  * @property string $category_list
  * @property string $vid_list
  * @property int $status
- *
  * @property SubjectCategory[] $subjectCategories
  * @property SubjectDepartment[] $subjectDepartments
  * @property SubjectVid[] $subjectVids
  */
-class Subject extends \yii\db\ActiveRecord
+class Subject extends ActiveRecord
 {
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
-
     /**
      * {@inheritdoc}
      */
@@ -78,32 +72,6 @@ class Subject extends \yii\db\ActiveRecord
             'category_list' => Yii::t('art/guide', 'Subject Category'),
             'vid_list' => Yii::t('art/guide', 'Subject Vid'),
         ];
-    }
-
-    /**
-     * getStatusList
-     * @return array
-     */
-    public static function getStatusList()
-    {
-        return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
-            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
-        );
-    }
-
-    /**
-     * getStatusValue
-     *
-     * @param string $val
-     *
-     * @return string
-     */
-    public static function getStatusValue($val)
-    {
-        $ar = self::getStatusList();
-
-        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     /**

@@ -5,7 +5,6 @@ namespace common\models\auditory;
 use himiklab\sortablegrid\SortableGridBehavior;
 use artsoft\db\ActiveRecord;
 use Yii;
-use artsoft\traits\DateTimeTrait;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 
@@ -17,12 +16,10 @@ use yii\behaviors\TimestampBehavior;
  * @property int $cat_id
  * @property int $num
  * @property string $name
- * @property string $slug
  * @property string $floor
  * @property double $area
  * @property int $capacity
  * @property string $description
- * @property int $order
  * @property int $created_at
  * @property int $updated_at
  * @property int $created_by
@@ -32,7 +29,6 @@ use yii\behaviors\TimestampBehavior;
  */
 class Auditory extends ActiveRecord
 {
-    use DateTimeTrait;
 
     /**
      * {@inheritdoc}
@@ -135,19 +131,4 @@ class Auditory extends ActiveRecord
         return Auditory::find()->select(['CONCAT(num,\' - \',name) as name', 'id'])->indexBy('id')->column();
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(self::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(self::class, ['id' => 'updated_by']);
-    }
 }

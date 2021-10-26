@@ -6,7 +6,7 @@ use artsoft\behaviors\DateFieldBehavior;
 use Yii;
 use common\widgets\yearcalendar\data\DataItem;
 use common\widgets\yearcalendar\data\JsExpressionHelper;
-use yii\db\ActiveRecord;
+use artsoft\db\ActiveRecord;
 
 /**
  * This is the model class for table "routine".

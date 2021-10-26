@@ -6,7 +6,6 @@ use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\db\ActiveRecord;
 use artsoft\models\User;
-use artsoft\traits\DateTimeTrait;
 use common\models\guidejob\Level;
 use common\models\guidejob\Position;
 use common\models\guidejob\Work;
@@ -44,7 +43,6 @@ use Yii;
  */
 class Teachers extends ActiveRecord
 {
-    use DateTimeTrait;
 
     /**
      * {@inheritdoc}
@@ -192,22 +190,6 @@ class Teachers extends ActiveRecord
     public function getFullName()
     {
         return $this->user ? $this->user->fullName : null;
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**

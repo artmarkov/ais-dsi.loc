@@ -3,7 +3,7 @@
 namespace common\models\activities;
 
 use Yii;
-use yii\db\ActiveRecord;
+use artsoft\db\ActiveRecord;
 use common\models\auditory\Auditory;
 use artsoft\behaviors\DateFieldBehavior;
 

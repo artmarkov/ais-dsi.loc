@@ -2,6 +2,7 @@
 
 namespace artsoft\models;
 
+use artsoft\auth\helpers\AvatarHelper;
 use artsoft\behaviors\DateToTimeBehavior;
 use artsoft\helpers\AuthHelper;
 use artsoft\helpers\ArtHelper;
@@ -36,11 +37,8 @@ use yii\helpers\ArrayHelper;
  * @property int|null $updated_by
  *
  */
-
 class User extends UserIdentity
 {
-    use DateTimeTrait;
-
     const STATUS_ACTIVE = 10;
     const STATUS_INACTIVE = 0;
     const STATUS_BANNED = -1;
@@ -61,6 +59,7 @@ class User extends UserIdentity
      */
     public $repeat_password;
     public $userCategory;
+
     /**
      * @inheritdoc
      */
@@ -104,7 +103,6 @@ class User extends UserIdentity
         ];
     }
 
-   
 
     /**
      * Store result in session to prevent multiple db requests with multiple calls
@@ -478,24 +476,9 @@ class User extends UserIdentity
      */
     public function removeAvatar()
     {
+        AvatarHelper::deleteAvatar($this->avatar);
         $this->avatar = '';
         return $this->save();
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(self::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(self::class, ['id' => 'updated_by']);
     }
 
     /**
@@ -508,7 +491,8 @@ class User extends UserIdentity
         return $this->hasOne(UserCommon::class, ['user_id' => 'id']);
     }
 
-    public function isAdmin() {
+    public function isAdmin()
+    {
         return $this->hasRole('administrator');
     }
 }

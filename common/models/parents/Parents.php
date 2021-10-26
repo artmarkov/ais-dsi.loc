@@ -3,8 +3,6 @@
 namespace common\models\parents;
 
 use artsoft\behaviors\DateFieldBehavior;
-use artsoft\models\User;
-use artsoft\traits\DateTimeTrait;
 use common\models\students\StudentDependence;
 use common\models\user\UserCommon;
 use Yii;
@@ -30,8 +28,6 @@ use yii\behaviors\TimestampBehavior;
  */
 class Parents extends \artsoft\db\ActiveRecord
 {
-    use DateTimeTrait;
-
     const PARENT_DOC = [
         'password' => 'Паспорт',
         'military_card' => 'Военный билет',
@@ -62,6 +58,7 @@ class Parents extends \artsoft\db\ActiveRecord
             ],
         ];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -114,10 +111,12 @@ class Parents extends \artsoft\db\ActiveRecord
             'userStatus' => Yii::t('art', 'Status'),
         ];
     }
+
     public function optimisticLock()
     {
         return 'version';
     }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -152,28 +151,13 @@ class Parents extends \artsoft\db\ActiveRecord
 
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
+
     /**
      * Геттер полного имени юзера
      */
     public function getFullName()
     {
         return $this->user ? $this->user->fullName : null;
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**

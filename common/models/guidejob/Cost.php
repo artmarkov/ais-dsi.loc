@@ -2,8 +2,6 @@
 
 namespace common\models\guidejob;
 
-use artsoft\models\User;
-use artsoft\traits\DateTimeTrait;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -26,9 +24,6 @@ use yii\behaviors\TimestampBehavior;
  */
 class Cost extends \yii\db\ActiveRecord
 {
-
-    use DateTimeTrait;
-
     /**
      * {@inheritdoc}
      */
@@ -166,20 +161,4 @@ class Cost extends \yii\db\ActiveRecord
     return NULL;
     }
 
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
-    }
 }

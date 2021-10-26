@@ -15,7 +15,7 @@ use yii\helpers\Url;
  * @property int $sort
  * @property string $alt
  */
-class ImageManager extends \yii\db\ActiveRecord {
+class ImageManager extends \artsoft\db\ActiveRecord {
 
     public $attachment;
    

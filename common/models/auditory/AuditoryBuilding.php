@@ -12,7 +12,7 @@ use Yii;
  * @property string $slug
  * @property string $address
  */
-class AuditoryBuilding extends \yii\db\ActiveRecord
+class AuditoryBuilding extends \artsoft\db\ActiveRecord
 {
     /**
      * {@inheritdoc}

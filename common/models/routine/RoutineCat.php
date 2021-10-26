@@ -2,6 +2,7 @@
 
 namespace common\models\routine;
 
+use artsoft\db\ActiveRecord;
 use Yii;
 
 /**
@@ -14,7 +15,7 @@ use Yii;
  *
  * @property Routine[] $routines
  */
-class RoutineCat extends \yii\db\ActiveRecord
+class RoutineCat extends ActiveRecord
 {
     const FLAG_ACTIVE = 1;
     const FLAG_INACTIVE = 0;

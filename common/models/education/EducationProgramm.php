@@ -11,7 +11,6 @@ use common\models\subject\SubjectVid;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
-use artsoft\traits\DateTimeTrait;
 
 /**
  * This is the model class for table "education_programm".
@@ -34,10 +33,6 @@ use artsoft\traits\DateTimeTrait;
  */
 class EducationProgramm extends \artsoft\db\ActiveRecord
 {
-    use DateTimeTrait;
-
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
 
     /**
      * {@inheritdoc}
@@ -108,17 +103,6 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
         return 'version';
     }
 
-    /**
-     * getStatusList
-     * @return array
-     */
-    public static function getStatusList()
-    {
-        return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
-            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
-        );
-    }
 
     /**
      * getStatusValue
@@ -132,22 +116,6 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
         $ar = self::getStatusList();
 
         return isset($ar[$val]) ? $ar[$val] : $val;
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**

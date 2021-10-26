@@ -13,11 +13,8 @@ use Yii;
  *
  * @property Student[] $students
  */
-class StudentPosition extends \yii\db\ActiveRecord
+class StudentPosition extends \artsoft\db\ActiveRecord
 {
-    
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
 
     /**
      * {@inheritdoc}
@@ -52,31 +49,7 @@ class StudentPosition extends \yii\db\ActiveRecord
             'status' => Yii::t('art/guide', 'Status'),
         ];
     }
-    /**
-     * getStatusList
-     * @return array
-     */
-    public static function getStatusList()
-    {
-        return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
-            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
-        );
-    }
 
-    /**
-     * getStatusValue
-     *
-     * @param string $val
-     *
-     * @return string
-     */
-    public static function getStatusValue($val)
-    {
-        $ar = self::getStatusList();
-
-        return isset($ar[$val]) ? $ar[$val] : $val;
-    }
     /**
      * @return \yii\db\ActiveQuery
      */

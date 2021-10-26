@@ -2,6 +2,7 @@
 
 namespace common\models\subject;
 
+use artsoft\db\ActiveRecord;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -14,11 +15,8 @@ use yii\helpers\ArrayHelper;
  * @property int $type_id
  * @property int $status
  */
-class SubjectType extends \yii\db\ActiveRecord
+class SubjectType extends ActiveRecord
 {
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
-
     const BASIS_FREE = 0;
     const BASIS_PAY = 1;
 
@@ -67,28 +65,6 @@ class SubjectType extends \yii\db\ActiveRecord
             self::BASIS_FREE => Yii::t('art/guide', 'Basis Free'),
             self::BASIS_PAY => Yii::t('art/guide', 'Basis Pay'),
         );
-    }
-    /**
-     * getStatusList
-     * @return array
-     */
-    public static function getStatusList() {
-        return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
-            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
-        );
-    }
-    /**
-     * getStatusValue
-     *
-     * @param string $val
-     *
-     * @return string
-     */
-    public static function getStatusValue($val) {
-        $ar = self::getStatusList();
-
-        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     /**

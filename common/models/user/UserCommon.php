@@ -4,7 +4,6 @@ namespace common\models\user;
 
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
-use artsoft\traits\DateTimeTrait;
 use common\models\students\Student;
 use dosamigos\transliterator\TransliteratorHelper;
 use yii\behaviors\BlameableBehavior;
@@ -41,11 +40,6 @@ use yii\helpers\Url;
  */
 class UserCommon extends ActiveRecord
 {
-    use DateTimeTrait;
-
-    const STATUS_ACTIVE = 1;
-    const STATUS_ARCHIVE = 0;
-
     const GENDER_NOT_SET = 0;
     const GENDER_MALE = 1;
     const GENDER_FEMALE = 2;
@@ -192,32 +186,6 @@ class UserCommon extends ActiveRecord
     }
 
     /**
-     * getStatusList
-     * @return array
-     */
-    public static function getStatusList()
-    {
-        return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
-            self::STATUS_ARCHIVE => Yii::t('art', 'Archive'),
-        );
-    }
-
-    /**
-     * getStatusValue
-     *
-     * @param string $val
-     *
-     * @return string
-     */
-    public static function getStatusValue($val)
-    {
-        $ar = self::getStatusList();
-
-        return isset($ar[$val]) ? $ar[$val] : $val;
-    }
-
-    /**
      * Get gender list
      * @return array
      */
@@ -314,22 +282,6 @@ class UserCommon extends ActiveRecord
             ->select(['user_common.id as user_id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
             ->orderBy('user_common.last_name')
             ->asArray()->all(), 'user_id', 'name');
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(self::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(self::class, ['id' => 'updated_by']);
     }
 
     /**

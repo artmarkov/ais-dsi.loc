@@ -16,7 +16,7 @@ use Yii;
  * @property VenuePlace[] $venuePlaces
  * @property VenueSity[] $venueSities
  */
-class VenueCountry extends \yii\db\ActiveRecord
+class VenueCountry extends \artsoft\db\ActiveRecord
 {
 
     /**

@@ -2,6 +2,7 @@
 
 namespace common\models\guidesys;
 
+use artsoft\db\ActiveRecord;
 use Yii;
 
 /**
@@ -13,7 +14,7 @@ use Yii;
  *
  * @property UserFamily[] $userFamilies
  */
-class UserRelation extends \yii\db\ActiveRecord
+class UserRelation extends ActiveRecord
 {
     /**
      * {@inheritdoc}

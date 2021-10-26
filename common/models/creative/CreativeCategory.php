@@ -2,6 +2,7 @@
 
 namespace common\models\creative;
 
+use artsoft\db\ActiveRecord;
 use Yii;
 
 /**
@@ -13,7 +14,7 @@ use Yii;
  *
  * @property CreativeWorks[] $creativeWorks
  */
-class CreativeCategory extends \yii\db\ActiveRecord
+class CreativeCategory extends ActiveRecord
 {
     /**
      * {@inheritdoc}

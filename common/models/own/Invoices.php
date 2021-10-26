@@ -2,8 +2,6 @@
 
 namespace common\models\own;
 
-use artsoft\models\User;
-use artsoft\traits\DateTimeTrait;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -31,7 +29,6 @@ use yii\behaviors\TimestampBehavior;
  */
 class Invoices extends \artsoft\db\ActiveRecord
 {
-    use DateTimeTrait;
 
     /**
      * {@inheritdoc}
@@ -93,21 +90,5 @@ class Invoices extends \artsoft\db\ActiveRecord
     public function optimisticLock()
     {
         return 'version';
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 }

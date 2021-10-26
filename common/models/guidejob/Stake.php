@@ -13,12 +13,8 @@ use Yii;
  *
  * @property TeachersCost[] $teachersCosts
  */
-class Stake extends \yii\db\ActiveRecord
+class Stake extends \artsoft\db\ActiveRecord
 {
-
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
-
     /**
      * {@inheritdoc}
      */
@@ -52,32 +48,6 @@ class Stake extends \yii\db\ActiveRecord
             'slug' => Yii::t('art/teachers', 'Slug'),
             'status' => Yii::t('art/teachers', 'Status'),
         ];
-    }
-
-    /**
-     * getStatusList
-     * @return array
-     */
-    public static function getStatusList()
-    {
-        return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
-            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
-        );
-    }
-
-    /**
-     * getStatusValue
-     *
-     * @param string $val
-     *
-     * @return string
-     */
-    public static function getStatusValue($val)
-    {
-        $ar = self::getStatusList();
-
-        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     /**

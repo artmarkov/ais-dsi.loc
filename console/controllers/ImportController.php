@@ -82,7 +82,7 @@ class ImportController extends Controller
                         $user->assignRoles($this->getTeachersRole($v[10]));
                         $userCommon->user_id = $user->id;
                         $userCommon->user_category = UserCommon::USER_CATEGORY_TEACHERS;
-                        $userCommon->status = $v[20] == 0 ? UserCommon::STATUS_ACTIVE : UserCommon::STATUS_ARCHIVE;
+                        $userCommon->status = $v[20] == 0 ? UserCommon::STATUS_ACTIVE : UserCommon::STATUS_INACTIVE;
                         $userCommon->last_name = $v[1];
                         $userCommon->first_name = $v[2];
                         $userCommon->middle_name = $v[3];
@@ -259,7 +259,7 @@ class ImportController extends Controller
 
                             $userCommon->user_id = $user->id;
                             $userCommon->user_category = UserCommon::USER_CATEGORY_STUDENTS;
-                            $userCommon->status = ($v[18] == 'Абитуриенты' || $v[18] == 'Ученики школы') ? UserCommon::STATUS_ACTIVE : UserCommon::STATUS_ARCHIVE;
+                            $userCommon->status = ($v[18] == 'Абитуриенты' || $v[18] == 'Ученики школы') ? UserCommon::STATUS_ACTIVE : UserCommon::STATUS_INACTIVE;
                             $userCommon->last_name = $v[1];
                             $userCommon->first_name = $v[2];
                             $userCommon->middle_name = $v[3];

@@ -12,7 +12,7 @@ use Yii;
  * @property string $description
  * @property string $study_flag
  */
-class AuditoryCat extends \yii\db\ActiveRecord
+class AuditoryCat extends \artsoft\db\ActiveRecord
 {
     /**
      * {@inheritdoc}

@@ -11,7 +11,7 @@ use Yii;
  * @property string $name
  * @property string $slug
  */
-class Division extends \yii\db\ActiveRecord
+class Division extends \artsoft\db\ActiveRecord
 {
     /**
      * {@inheritdoc}

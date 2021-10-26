@@ -15,7 +15,7 @@ use Yii;
  * @property CreativeWorks $works
  * @property User $user
  */
-class CreativeRevision extends \yii\db\ActiveRecord
+class CreativeRevision extends \artsoft\db\ActiveRecord
 {
     /**
      * {@inheritdoc}

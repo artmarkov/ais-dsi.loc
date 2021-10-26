@@ -4,8 +4,6 @@ namespace common\models\efficiency;
 
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\ExcelObjectList;
-use artsoft\models\User;
-use artsoft\traits\DateTimeTrait;
 use Yii;
 use common\models\teachers\Teachers;
 use yii\behaviors\BlameableBehavior;
@@ -32,7 +30,6 @@ use yii\behaviors\TimestampBehavior;
  */
 class TeachersEfficiency extends \artsoft\db\ActiveRecord
 {
-    use DateTimeTrait;
 
     /**
      * {@inheritdoc}
@@ -131,26 +128,6 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     public function getTeachers()
     {
         return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
-    }
-
-    /**
-     * Gets query for [[CreatedBy]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * Gets query for [[UpdatedBy]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**

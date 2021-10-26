@@ -4,7 +4,6 @@ namespace common\models\students;
 
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\db\ActiveRecord;
-use artsoft\traits\DateTimeTrait;
 use common\models\user\UserCommon;
 use common\models\students\StudentPosition;
 use Yii;
@@ -28,8 +27,6 @@ use yii\behaviors\TimestampBehavior;
  */
 class Student extends ActiveRecord
 {
-    use DateTimeTrait;
-
     const STUDENT_DOC = [
         'password' => 'Паспорт',
         'birth_cert' => 'Свидетельство о рождении',
@@ -170,22 +167,6 @@ class Student extends ActiveRecord
     public function getFullName()
     {
         return $this->user ? $this->user->fullName : null;
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**

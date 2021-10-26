@@ -2,6 +2,7 @@
 
 namespace common\models\guidejob;
 
+use artsoft\db\ActiveRecord;
 use Yii;
 
 /**
@@ -14,7 +15,7 @@ use Yii;
  *
  * @property TeachersBonus[] $teachersBonus
  */
-class BonusCategory extends \yii\db\ActiveRecord
+class BonusCategory extends ActiveRecord
 {
     /**
      * {@inheritdoc}

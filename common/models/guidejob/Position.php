@@ -2,6 +2,7 @@
 
 namespace common\models\guidejob;
 
+use artsoft\db\ActiveRecord;
 use Yii;
 
 /**
@@ -13,7 +14,7 @@ use Yii;
  *
  * @property Teachers[] $teachers
  */
-class Position extends \yii\db\ActiveRecord
+class Position extends ActiveRecord
 {
     /**
      * {@inheritdoc}

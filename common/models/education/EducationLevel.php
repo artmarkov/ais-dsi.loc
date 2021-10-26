@@ -14,8 +14,6 @@ use Yii;
  */
 class EducationLevel extends \artsoft\db\ActiveRecord
 {
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
 
     /**
      * {@inheritdoc}
@@ -50,16 +48,5 @@ class EducationLevel extends \artsoft\db\ActiveRecord
             'short_name' => Yii::t('art', 'Short Name'),
             'status' => Yii::t('art', 'Status'),
         ];
-    }
-    /**
-     * getStatusList
-     * @return array
-     */
-    public static function getStatusList()
-    {
-        return array(
-            self::STATUS_ACTIVE => Yii::t('art', 'Active'),
-            self::STATUS_INACTIVE => Yii::t('art', 'Inactive'),
-        );
     }
 }

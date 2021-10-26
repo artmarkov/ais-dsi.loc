@@ -16,7 +16,7 @@ use yii\helpers\ArrayHelper;
  * @property VenueSity $sity
  * @property VenuePlace[] $venuePlaces
  */
-class VenueDistrict extends \yii\db\ActiveRecord
+class VenueDistrict extends \artsoft\db\ActiveRecord
 {
     /**
      * {@inheritdoc}

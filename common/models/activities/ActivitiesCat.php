@@ -15,7 +15,7 @@ use Yii;
  *
  * @property Event[] $events
  */
-class ActivitiesCat extends \yii\db\ActiveRecord
+class ActivitiesCat extends \artsoft\db\ActiveRecord
 {
     /**
      * {@inheritdoc}

@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'userStatus',
                                 'optionsArray' => [
                                     [UserCommon::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
-                                    [UserCommon::STATUS_ARCHIVE, Yii::t('art', 'Archive'), 'danger'],
+                                    [UserCommon::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
                                 ],
                                 'options' => ['style' => 'width:120px']
                             ],

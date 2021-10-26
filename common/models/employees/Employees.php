@@ -2,8 +2,6 @@
 
 namespace common\models\employees;
 
-use artsoft\models\User;
-use artsoft\traits\DateTimeTrait;
 use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -23,7 +21,6 @@ use yii\behaviors\TimestampBehavior;
  */
 class Employees extends \artsoft\db\ActiveRecord
 {
-    use DateTimeTrait;
     /**
      * {@inheritdoc}
      */
@@ -92,21 +89,6 @@ class Employees extends \artsoft\db\ActiveRecord
     public function getFullName()
     {
         return $this->user ? $this->user->fullName : null;
-    }
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy()
-    {
-        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**

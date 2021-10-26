@@ -33,15 +33,25 @@ class AvatarHelper
             'medium ' => 96,
             'large' => 144,
         ];
-
+        $avatars['orig'] = "/$sourceFile";
         foreach ($sizes as $alias => $size) {
             $avatarUrl = "$uploadPath/$fileName-{$size}x{$size}$extension";
             Imagine::thumbnail($sourceFile, $size, $size)->save($avatarUrl);
             $avatars[$alias] = "/$avatarUrl";
-            Yii::$app->user->identity->setAvatars($avatars);
         }
+        Yii::$app->user->identity->setAvatars($avatars);
 
         return $avatars;
+    }
+
+    public static function deleteAvatar($avatar)
+    {
+        foreach (json_decode($avatar) as $item => $avatarUrl) {
+            $avatarUrl = ltrim($avatarUrl, '/');
+            if (file_exists($avatarUrl)) {
+                unlink($avatarUrl);
+            }
+        }
     }
 
     /**
