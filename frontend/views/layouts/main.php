@@ -34,7 +34,7 @@ AvatarAsset::register($this);
 </head>
 <body>
 <?php $this->beginBody() ?>
-
+<?= artsoft\widgets\PaceWidget::widget(); ?>
 <div class="wrap">
 
     <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
@@ -91,7 +91,7 @@ AvatarAsset::register($this);
             } else {
                 $menuItems[] = [
                     'label' => '<span style="color: white;"><i class="fa fa-user-secret" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Logout') . '</span>',
-                    'url' => '/admin/user/default/impersonate',
+                    'url' => \yii\helpers\Url::to('/admin/user/default/impersonate'),
                     'linkOptions' => ['data-method' => 'post'],
                     'options' => ['style' => 'background-color: #e28b00;'],
                     'visible' => true

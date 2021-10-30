@@ -2,21 +2,12 @@
 
 use dosamigos\chartjs\ChartJs;
 
-/* @var $this yii\web\View */
-/* @var $data */
-/* @var $model_date */
 
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['efficiency/default/index']];
-$this->params['breadcrumbs'][] = 'График';
 ?>
-
-<div class="teachers-efficiency-summary">
+<div class="teachers-efficiency-bar">
     <div class="panel">
-        <div class="panel-heading">
-            График эффективности
-        </div>
+
         <div class="panel-body">
-            <?= $this->render('_search', compact('model_date')) ?>
             <div class="panel">
                 <div class="panel-body">
 
@@ -34,12 +25,12 @@ $this->params['breadcrumbs'][] = 'График';
                             ]
                         ],
                         'data' => [
-                            'labels' => array_column($data['data'], 'name'),
+                            'labels' => $labels,
                             'datasets' => [
                                 [
-                                    'label' => "Бонусы за период",
+                                    'label' => "Показатели эффективности",
                                     'backgroundColor' => "rgba(255,0,0,0.9)",
-                                    'data' => array_column($data['data'], 'total'),
+                                    'data' => $data,
                                 ]
                             ]
                         ]
@@ -50,4 +41,3 @@ $this->params['breadcrumbs'][] = 'График';
         </div>
     </div>
 </div>
-

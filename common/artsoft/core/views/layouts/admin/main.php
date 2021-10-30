@@ -64,7 +64,7 @@ MetisMenuAsset::register($this);
         } else {
             $menuItems[] = [
                 'label' => '<span style="color: white;"><i class="fa fa-user-secret" style="margin-right: 5px;"></i>' . Yii::t('art', 'Logout {username}', ['username' => Yii::$app->user->identity->username]) . '</span>',
-                'url' => 'user/default/impersonate',
+                'url' => \yii\helpers\Url::to('/admin/user/default/impersonate'),
                 'linkOptions' => ['data-method' => 'post'],
                 'options' => ['style' => 'background-color: #e28b00;'],
                 'visible' => true

@@ -67,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:30px'],
                                 'attribute' => 'id',
                                 'value' => function (Teachers $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a(sprintf('#%06d', $model->id), ['monitor', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'format' => 'raw'
                             ],
@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'controller' => '/teachers/default',
 
                                 'title' => function (Teachers $model) {
-                                    return Html::a($model->fullName, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->fullName, ['monitor', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                             ],

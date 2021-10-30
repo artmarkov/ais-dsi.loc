@@ -15,19 +15,39 @@ $this->params['breadcrumbs'][] = 'Сводная таблица';
 //echo '<pre>' . print_r($model_date, true) . '</pre>';
 $columns = [];
 $columns[] = ['class' => 'yii\grid\SerialColumn'];
+
 $columns[] = [
     'attribute' => 'name',
     'label' => $data['attributes']['name'],
-    'value' => function ($data) {
+    'class' => 'artsoft\grid\columns\TitleActionColumn',
+    'controller' => '/efficiency/default',
+    'title' => function ($data) {
         return Html::a($data['name'],
-            Url::to(['efficiency/default/details', 'id' => $data['id'], 'date_in' => $data['date_in'], 'date_out' => $data['date_out']]), [
+            Url::to(['efficiency/default/details', 'id' => $data['id'], 'timestamp_in' => $data['date_in'], 'timestamp_out' => $data['date_out']]), [
                 'data-method' => 'post',
                 'data-pjax' => '0',
             ]);
     },
+    'buttonsTemplate' => '{details} {bar}',
+    'buttons' => [
+        'details' => function ($url, $data, $key) {
+            return Html::a('Показатели',
+                Url::to(['efficiency/default/details', 'id' => $data['id'], 'timestamp_in' => $data['date_in'], 'timestamp_out' => $data['date_out']]), [
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                ]);
+        },
+        'bar' => function ($url, $data, $key) {
+            return Html::a('График',
+                Url::to(['efficiency/default/user-bar', 'id' => $data['id'], 'timestamp_in' => $data['date_in'], 'timestamp_out' => $data['date_out']]), [
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                ]);
+        }
+    ],
     'format' => 'raw',
     'options' => ['style' => 'width:250px'],
-    'headerOptions' => ['class' => "grid"]
+    'headerOptions' => ['class' => "grid"],
 ];
 
 foreach ($data['root'] as $id => $name) {

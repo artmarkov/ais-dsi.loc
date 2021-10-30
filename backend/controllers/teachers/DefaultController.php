@@ -31,7 +31,7 @@ class DefaultController extends MainController
 
         $user = new User();
         $userCommon = new UserCommon();
-       // $userCommon->scenario = UserCommon::SCENARIO_NEW;
+        // $userCommon->scenario = UserCommon::SCENARIO_NEW;
         $model = new $this->modelClass;
         $modelsActivity = [new TeachersActivity];
 
@@ -105,7 +105,7 @@ class DefaultController extends MainController
 
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_TEACHERS]);
-       // $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
+        // $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
 
         if (!isset($model, $userCommon)) {
             throw new NotFoundHttpException("The user was not found.");
@@ -173,6 +173,91 @@ class DefaultController extends MainController
         return $model->value_default;
     }
 
+
+    public function actions()
+    {
+        $id = \Yii::$app->request->get('id');
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+            $widgets = [
+                [
+                    [
+                        'class' => 'col-md-3',
+                        'content' => [
+                            'common\widgets\EfficiencyUserBarWidget',
+                        ],
+                    ],
+                    [
+                        'class' => 'col-md-3',
+                        'content' => [
+                            'common\widgets\EfficiencyUserBarWidget',
+
+                        ],
+                    ],
+                    [
+                        'class' => 'col-md-3',
+                        'content' => [
+                            'common\widgets\EfficiencyUserBarWidget',
+
+                        ],
+                    ],
+                    [
+                        'class' => 'col-md-3',
+                        'content' => [
+                            'common\widgets\EfficiencyUserBarWidget',
+
+                        ],
+                    ],
+                ],
+                [
+                    [
+                        'class' => 'col-md-4',
+                        'content' => [
+                            'common\widgets\EfficiencyUserBarWidget',
+                        ],
+                    ],
+                    [
+                        'class' => 'col-md-4',
+                        'content' => [
+                            'common\widgets\EfficiencyUserBarWidget',
+
+                        ],
+                    ],
+                    [
+                        'class' => 'col-md-4',
+                        'content' => [
+                            'common\widgets\EfficiencyUserBarWidget',
+
+                        ],
+                    ],
+                ],
+                [
+                    [
+                        'class' => 'col-md-6',
+                        'content' => [
+                            'common\widgets\EfficiencyUserBarWidget',
+                        ],
+                    ],
+
+                    [
+                        'class' => 'col-md-6',
+                        'content' => [
+                            'common\widgets\EfficiencyUserBarWidget',
+
+                        ],
+                    ],
+                ],
+            ];
+
+        return ArrayHelper::merge(parent::actions(), [
+            'monitor' => [
+                'class' => 'backend\actions\MonitorTeachersAction',
+                'widgets' => $widgets,
+                'id' => $id,
+            ]
+        ]);
+    }
+
     /**
      * @param $id
      * @return array
@@ -180,12 +265,14 @@ class DefaultController extends MainController
     public function getMenu($id)
     {
         return [
-            ['label' => 'Монитор преподавателя', 'url' => ['/teachers/default/monitor', 'id' => $id]],
-            ['label' => 'Карточка преподавателя', 'url' => ['/teachers/default/update', 'id' => $id]],
+            ['label' => 'Монитор', 'url' => ['/teachers/default/monitor', 'id' => $id]],
+            ['label' => 'Карточка', 'url' => ['/teachers/default/update', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/teachers/default/schedule', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/teachers/default/consult', 'id' => $id]],
             ['label' => 'Табель учета', 'url' => ['/teachers/default/timesheet', 'id' => $id]],
             ['label' => 'Журнал успеваемости', 'url' => ['/teachers/default/progress', 'id' => $id]],
+            ['label' => 'Показатели эффективности', 'url' => ['/teachers/default/efficiency', 'id' => $id]],
+            ['label' => 'Портфолио', 'url' => ['/teachers/default/portfolio', 'id' => $id]],
         ];
     }
 }

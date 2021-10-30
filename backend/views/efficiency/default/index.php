@@ -13,13 +13,11 @@ use artsoft\grid\GridPageSize;
 /* @var $searchModel common\models\efficiency\search\TeachersEfficiencySearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/guide', 'Efficiencies');
-$this->params['breadcrumbs'][] = $this->title;
 ?>
     <div class="teachers-efficiency-index">
         <div class="panel">
             <div class="panel-heading">
-                <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
+                <?= \artsoft\helpers\ButtonHelper::createButton(isset($id) ? ['/efficiency/default/create', 'id' => $id] : ''); ?>
             </div>
             <div class="panel-body">
                 <div class="panel panel-default">

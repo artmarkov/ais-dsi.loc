@@ -196,6 +196,10 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
                 $data[$id]['date_out'] = $timestamp_out;
             }
         }
+        usort($data, function ($a, $b) {
+            return $b['total'] <=> $a['total'];
+        });
+
         return ['data' => $data, 'all_summ' => $all_summ, 'attributes' => $attributes, 'root' => $root];
     }
 

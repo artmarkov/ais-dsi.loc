@@ -7,10 +7,10 @@ use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use common\models\efficiency\EfficiencyTree;
 use common\models\efficiency\TeachersEfficiency;
-use common\models\history\EfficiencyHistory;
 use Yii;
 use yii\base\DynamicModel;
 use yii\data\ActiveDataProvider;
+use yii\helpers\StringHelper;
 
 
 /**
@@ -20,13 +20,74 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\efficiency\TeachersEfficiency';
     public $modelSearchClass = 'common\models\efficiency\search\TeachersEfficiencySearch';
+    public $modelHistoryClass = 'common\models\history\EfficiencyHistory';
 
-    public function actionCreate()
+    /**
+     * @return mixed|string|\yii\web\Response
+     */
+    public function actionIndex()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies')];
+
+        $modelClass = $this->modelClass;
+        $searchModel = $this->modelSearchClass ? new $this->modelSearchClass : null;
+        $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+            && !User::hasPermission($modelClass::getFullAccessPermission()));
+
+        if ($searchModel) {
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+
+            if ($restrictAccess) {
+                $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $dataProvider = $searchModel->search($params);
+        } else {
+            $restrictParams = ($restrictAccess) ? [$modelClass::getOwnerField() => Yii::$app->user->identity->id] : [];
+            $dataProvider = new ActiveDataProvider(['query' => $modelClass::find()->where($restrictParams)]);
+        }
+
+        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel'));
+    }
+
+    /**
+     * @param $id
+     * @param $timestamp_in
+     * @param $timestamp_out
+     * @return string|\yii\web\Response
+     */
+    public function actionDetails($id, $timestamp_in, $timestamp_out)
+    {
+        $user = \common\models\teachers\Teachers::findOne($id)->getFullName();
+
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['efficiency/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => 'Сводная таблица', 'url' => ['/efficiency/default/summary']];
+        $this->view->params['breadcrumbs'][] = $user;
+        $searchModel = null;
+
+        $dataProvider = new ActiveDataProvider(['query' => TeachersEfficiency::find()
+            ->where(['between', 'date_in', $timestamp_in, $timestamp_out])
+            ->andWhere(['=', 'teachers_id', $id]), 'pagination' => false
+        ]);
+
+        return $this->renderIsAjax($this->indexView, compact(['dataProvider', 'searchModel', 'id']));
+    }
+
+    /**
+     * @param null $id
+     * @return mixed|string|\yii\web\Response
+     * @throws \yii\db\Exception
+     */
+    public function actionCreate($id = null)
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
+        $id ? $model->teachers_id = [$id] : null;
         if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
             if ($valid) {
@@ -57,20 +118,15 @@ class DefaultController extends MainController
         return $this->renderIsAjax($this->createView, compact('model'));
     }
 
+    /**
+     * @return mixed
+     */
     public function actionSelect()
     {
         $id = \Yii::$app->request->post('id');
         $model = EfficiencyTree::findOne(['id' => $id]);
 
         return $model->value_default;
-    }
-
-    public function actionHistory($id)
-    {
-        $this->view->params['tabMenu'] = $this->tabMenu;
-        $model = $this->findModel($id);
-        $data = new EfficiencyHistory($id);
-        return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 
     /**
@@ -121,33 +177,29 @@ class DefaultController extends MainController
      */
     public function actionBar()
     {
-       return $this->actionSummary('bar');
+        return $this->actionSummary('bar');
     }
 
     /**
      * @param $id
-     * @param $date_in
-     * @param $date_out
+     * @param $timestamp_in
+     * @param $timestamp_out
      * @return string|\yii\web\Response
      */
-    public function actionDetails($id, $date_in, $date_out)
+    public function actionUserBar($id, $timestamp_in, $timestamp_out)
     {
+        $user = \common\models\teachers\Teachers::findOne($id)->getFullName();
+
         $this->view->params['tabMenu'] = $this->tabMenu;
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['efficiency/default/index']];
         $this->view->params['breadcrumbs'][] = ['label' => 'Сводная таблица', 'url' => ['/efficiency/default/summary']];
-
-        $modelClass = $this->modelClass;
-        $searchModel = null;
-        $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
-            && !User::hasPermission($modelClass::getFullAccessPermission()));
-
-        $restrictParams = ($restrictAccess) ? [$modelClass::getOwnerField() => Yii::$app->user->identity->id] : [];
-        $dataProvider = new ActiveDataProvider(['query' => $modelClass::find()->where($restrictParams)
-            ->andWhere(['between', 'date_in', $date_in, $date_out])
-            ->andWhere(['=', 'teachers_id', $id]), 'pagination' => false
+        $this->view->params['breadcrumbs'][] = $user;
+        
+        return $this->renderIsAjax('user-bar', [
+            'id' => $id,
+            'timestamp_in' => $timestamp_in,
+            'timestamp_out' => $timestamp_out,
         ]);
-
-        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel'));
     }
 
 }
