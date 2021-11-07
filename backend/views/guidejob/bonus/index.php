@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'name',
-                                'controller' => '/subject/vid',
+                                'controller' => '/guidejob/bonus',
                                 'title' => function (Bonus $model) {
                                     return Html::a($model->name, ['/subject/vid/update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
