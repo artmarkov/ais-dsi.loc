@@ -125,8 +125,8 @@ use artsoft\widgets\Nav;
                 'items' => [
                     ['label' => 'Назначенные задания', 'icon' => 'fa fa-minus', 'url' => ['/queue-schedule/default/index']],
                     ['label' => 'Инструменты админа', 'icon' => 'fa fa-minus', 'url' => ['/admintools']],
-                    ['label' => 'Debug', 'icon' => 'fa fa-minus', 'url' => ['/debug'], 'visible' => isset(Yii::$app->modules['debug'])],
-                    ['label' => 'Gii', 'icon' => 'fa fa-minus', 'url' => ['/gii'], 'visible' => Yii::$app->getModule('gii') !== null],
+                    ['label' => 'Debug', 'icon' => 'fa fa-minus', 'url' => ['/debug'], 'visible' => \artsoft\models\User::hasPermission('viewDebug')],
+                    ['label' => 'Gii', 'icon' => 'fa fa-minus', 'url' => ['/gii'], 'visible' => \artsoft\models\User::hasPermission('viewGii')],
                 ],
             ],
         ],
