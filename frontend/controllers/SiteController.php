@@ -63,4 +63,18 @@ class SiteController extends \artsoft\controllers\BaseController
             ]);
         }
     }
+
+    public function actionCommonRules()
+    {
+        return $this->render('common-rules');
+        //if nothing suitable was found then throw 404 error
+        throw new \yii\web\NotFoundHttpException('Page not found.');
+    }
+
+    public function actionPrivacyPolicy()
+    {
+        return $this->render('privacy-policy');
+        //if nothing suitable was found then throw 404 error
+        throw new \yii\web\NotFoundHttpException('Page not found.');
+    }
 }

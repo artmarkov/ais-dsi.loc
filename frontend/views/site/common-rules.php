@@ -5,9 +5,10 @@ use artsoft\block\models\Block;
 
 /* @var $this yii\web\View */
 
-$this->title = 'Общая информация';
+$this->title = 'Общие правила';
+$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-index">
+<div class="common-rules">
     <?php if (Yii::$app->user->isGuest): ?>
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -16,19 +17,13 @@ $this->title = 'Общая информация';
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= Block::getHtml('login') ?>
+                        <?= Block::getHtml('common-rules', ['host' => Yii::$app->urlManager->hostInfo]) ?>
                     </div>
                 </div>
             </div>
             <div class="panel-footer">
-                <?= Html::a('Общие правила',
-                    ['/site/common-rules'],
-                    [
-                        'class' => 'btn btn-default btn-md'
-                    ]);
-                ?>
-                <?= Html::a('Политика конфиденциальности',
-                    ['/site/privacy-policy'],
+                <?= Html::a('На главную',
+                    Yii::$app->urlManager->hostInfo,
                     [
                         'class' => 'btn btn-default btn-md'
                     ]);

@@ -35,6 +35,7 @@ return [
     'Password recovery' => 'Восстановление пароля',
     'Password reset for' => 'Сброс пароля для',
     'Password' => 'Пароль',
+    'Registration - user search' => 'Регистрация - поиск данных пользователя',
     'Registration - confirm your e-mail' => 'Регистрация - подтвердите ваш e-mail',
     'Registration' => 'Регистрация',
     'Remember me' => 'Запомнить меня',

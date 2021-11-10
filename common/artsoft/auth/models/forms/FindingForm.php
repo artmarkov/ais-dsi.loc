@@ -2,23 +2,18 @@
 
 namespace artsoft\auth\models\forms;
 
-use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
-use artsoft\auth\AuthModule;
 use common\models\user\UserCommon;
 use Yii;
-use yii\base\Model;
 use dosamigos\transliterator\TransliteratorHelper;
 
 class FindingForm extends UserCommon
 {
-
     public $first_name;
     public $middle_name;
     public $last_name;
     public $birth_date;
     public $captcha;
-
 
     /**
      * @inheritdoc
@@ -26,7 +21,7 @@ class FindingForm extends UserCommon
     public function rules()
     {
         return [
-            [['first_name', 'last_name', 'birth_date'], 'required'],
+            [['first_name', 'last_name', 'birth_date', 'captcha'], 'required'],
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],

@@ -15,6 +15,9 @@ $config =  [
         'user' => [
             'class' => 'artsoft\user\UserModule',
         ],
+        'block' => [
+            'class' => 'artsoft\block\BlockModule',
+        ],
         'logs' => [
             'class' => 'artsoft\logs\LogsModule',
         ],

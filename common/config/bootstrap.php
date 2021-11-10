@@ -15,3 +15,4 @@ Yii::setAlias('artsoft/fullcalendar', dirname(__DIR__) . '/artsoft/yii2-fullcale
 Yii::setAlias('artsoft/fullcalendar-scheduler', dirname(__DIR__) . '/artsoft/yii2-fullcalendar-scheduler/src');
 Yii::setAlias('artsoft/eav', dirname(__DIR__) . '/artsoft/eav');
 Yii::setAlias('artsoft/fileinput', dirname(__DIR__) . '/artsoft/fileinput');
+Yii::setAlias('artsoft/block', dirname(__DIR__) . '/artsoft/block');
