@@ -74,7 +74,7 @@ class ResetPasswordForm extends Model
         return [
             'email' => 'E-mail',
             'username' => Yii::t('art/auth', 'Login'),
-            'reCaptcha' => Yii::t('art', 'reCaptcha'),
+            'captcha' => Yii::t('art', 'Captcha'),
         ];
     }
 

@@ -60,7 +60,7 @@ AvatarAsset::register($this);
         if (Yii::$app->user->isGuest) {
 
             $menuItems[] = [
-                'label' => '<i class="fa fa-paper-plane-o" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Contact'),
+                'label' => '<i class="fa fa-paper-plane-o" style="margin-right: 5px;"></i>' . Yii::t('art', 'Contact'),
                 'url' => \yii\helpers\Url::to(['/site/contact']),
                 'visible' => true
             ];

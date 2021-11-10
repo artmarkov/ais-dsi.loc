@@ -5,7 +5,7 @@ use artsoft\block\models\Block;
 
 /* @var $this yii\web\View */
 
-$this->title = 'Политика конфиденциальности';
+$this->title = Block::getTitle('privacy-policy');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="privacy-policy">
@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= Block::getHtml('privacy-policy', ['host' => Yii::$app->urlManager->hostInfo]) ?>
+                        <?= Block::getHtml('privacy-policy', ['host' => Yii::$app->urlManager->hostInfo, 'general_title' => Yii::$app->settings->get('general.title', 'Art Site')]) ?>
                     </div>
                 </div>
             </div>

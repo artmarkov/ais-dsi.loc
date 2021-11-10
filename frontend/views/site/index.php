@@ -5,7 +5,7 @@ use artsoft\block\models\Block;
 
 /* @var $this yii\web\View */
 
-$this->title = 'Общая информация';
+$this->title = Block::getTitle('main-info');
 ?>
 <div class="site-index">
     <?php if (Yii::$app->user->isGuest): ?>
@@ -16,7 +16,7 @@ $this->title = 'Общая информация';
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= Block::getHtml('login') ?>
+                        <?= Block::getHtml('main-info') ?>
                     </div>
                 </div>
             </div>

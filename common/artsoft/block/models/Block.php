@@ -22,7 +22,7 @@ use himiklab\sortablegrid\SortableGridBehavior;
  * @property integer $created_by
  * @property integer $created_at
  * @property integer $updated_at
- * @property integer $updated_by 
+ * @property integer $updated_by
  * @property integer $sortOrder
  *
  * @property User $createdBy
@@ -47,12 +47,12 @@ class Block extends ActiveRecord
         return [
             TimestampBehavior::className(),
             BlameableBehavior::className(),
-             [
+            [
                 'class' => SluggableBehavior::className(),
                 'in_attribute' => 'title',
                 'out_attribute' => 'slug',
-                'translit' => true           
-            ],            
+                'translit' => true
+            ],
             'grid-sort' => [
                 'class' => SortableGridBehavior::className(),
                 'sortableAttribute' => 'sortOrder',
@@ -69,7 +69,7 @@ class Block extends ActiveRecord
             [['title', 'content'], 'required'],
             ['slug', 'required', 'enableClientValidation' => false],
             ['sortOrder', 'integer'],
-            [['title','content'], 'string'],
+            [['title', 'content'], 'string'],
             [['created_by', 'updated_by'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['slug'], 'string', 'max' => 200],
@@ -105,27 +105,50 @@ class Block extends ActiveRecord
         return new BlockQuery(get_called_class());
     }
 
+    /**
+     * @param $slug
+     * @param array $variables
+     * @param null $defaultValue
+     * @return mixed|null|string
+     */
     public static function getHtml($slug, $variables = [], $defaultValue = null)
-    { 
-        if($block = self::findOne(['slug' => $slug])){
-            
+    {
+        if ($block = self::findOne(['slug' => $slug])) {
+
             $content = $block->content;
-            
-            if (is_array($variables) && !empty(is_array($variables))){
-                $keys = array_map(function($var){
+
+            if (is_array($variables) && !empty(is_array($variables))) {
+                $keys = array_map(function ($var) {
                     return '{{' . $var . '}}';
                 }, array_keys($variables));
 
-                $content= str_replace($keys, $variables, $content);
+                $content = str_replace($keys, $variables, $content);
             }
-            
+
             return $content;
         }
-        
-        return $defaultValue; 
+
+        return $defaultValue;
     }
-    
-    
+
+    /**
+     * @param $slug
+     * @param null $defaultValue
+     * @return null|string
+     */
+    public static function getTitle($slug, $defaultValue = null)
+    {
+        if ($block = self::findOne(['slug' => $slug])) {
+
+            $title = $block->title;
+
+            return $title;
+        }
+
+        return $defaultValue;
+    }
+
+
     /**
      * @return \yii\db\ActiveQuery
      */

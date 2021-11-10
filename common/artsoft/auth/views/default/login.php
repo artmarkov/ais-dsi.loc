@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <?= $form->field($model, 'rememberMe')->checkbox(['value' => true]) ?>
 
-                        <?= Html::submitButton(Yii::t('art/auth', 'Login'), ['class' => 'btn btn-primary btn-block']) ?>
+                        <?= Html::submitButton(Yii::t('art/auth', 'Enter'), ['class' => 'btn btn-primary btn-block']) ?>
 
                         <div class="row registration-block">
                             <div class="col-sm-6">

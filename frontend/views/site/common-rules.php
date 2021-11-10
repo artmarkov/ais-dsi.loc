@@ -5,7 +5,7 @@ use artsoft\block\models\Block;
 
 /* @var $this yii\web\View */
 
-$this->title = 'Общие правила';
+$this->title = Block::getTitle('common-rules');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="common-rules">
@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= Block::getHtml('common-rules', ['host' => Yii::$app->urlManager->hostInfo]) ?>
+                        <?= Block::getHtml('common-rules', ['host' => Yii::$app->urlManager->hostInfo, 'general_title' => Yii::$app->settings->get('general.title', 'Art Site')]) ?>
                     </div>
                 </div>
             </div>

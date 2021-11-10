@@ -46,7 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="row registration-block">
                             <div class="col-sm-6">
-                                <?= Html::a(Yii::t('art/auth', "Login"), ['default/login']) ?>
+                                <?= Html::a(Yii::t('art/auth', "Enter"), ['default/login']) ?>
                             </div>
                             <div class="col-sm-6 text-right">
                                 <?= Html::a(Yii::t('art/auth', "Forgot password?"), ['default/reset-password']) ?>
