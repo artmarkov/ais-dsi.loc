@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]) ?>
 
                     <div class="form-group">
-                        <?= Html::submitButton('Отправить', ['class' => 'btn btn-primary btn-block', 'name' => 'contact-button']) ?>
+                        <?= Html::submitButton('<i class="fa fa-paper-plane-o" style="margin-right: 5px;"></i>' . 'Отправить', ['class' => 'btn btn-primary btn-block', 'name' => 'contact-button']) ?>
                     </div>
 
                     <?php ActiveForm::end(); ?>

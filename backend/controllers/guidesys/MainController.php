@@ -9,5 +9,6 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Категории мероприятий',  'url' => ['/guidesys/activities-cat/index']],
         ['label' => 'Категории событий',  'url' => ['/guidesys/routine-cat/index']],
         ['label' => 'Дерево показателей',  'url' => ['/guidesys/efficiency-tree/index']],
+        ['label' => 'Руководство пользователя',  'url' => ['/guidesys/help-tree/index']],
     ];
 }

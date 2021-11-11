@@ -87,9 +87,9 @@ use artsoft\widgets\Nav;
                 'icon' => 'fa fa-question-circle',
                 'url' => '#',
                 'items' => [
-                    ['label' => 'Техническая поддержка', 'icon' => 'fa fa-minus', 'url' => ['/site/support']],
-                    ['label' => 'Руководства пользователя', 'icon' => 'fa fa-minus', 'url' => ['/site/help']],
-                    ['label' => 'О системе', 'icon' => 'fa fa-minus', 'url' => ['/site/about']],
+                    ['label' => 'Техническая поддержка', 'icon' => 'fa fa-minus', 'url' => ['/help/support/index']],
+                    ['label' => 'Руководство пользователя', 'icon' => 'fa fa-minus', 'url' => ['/help/guide-help/index']],
+                    ['label' => 'О системе', 'icon' => 'fa fa-minus', 'url' => ['/help/support/about']],
                 ],
             ],
         ],

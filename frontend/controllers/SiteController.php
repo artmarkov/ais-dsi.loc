@@ -2,9 +2,12 @@
 
 namespace frontend\controllers;
 
+use artsoft\auth\models\forms\SignupForm;
 use frontend\models\ContactForm;
 use frontend\components\NumericCaptcha;
+use frontend\models\SupportForm;
 use Yii;
+use yii\data\ActiveDataProvider;
 
 /**
  * Site controller
