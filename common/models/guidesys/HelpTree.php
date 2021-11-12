@@ -75,6 +75,9 @@ class HelpTree extends \kartik\tree\models\Tree
      */
     public function isReadonly()
     {
+        if(Yii::$app->id == 'frontend') {
+            return true;
+        }
         if (User::hasPermission('editHelp') || Yii::$app->user->isSuperadmin) {
             return false;
         }
