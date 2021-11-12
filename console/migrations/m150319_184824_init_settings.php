@@ -22,6 +22,7 @@ class m150319_184824_init_settings extends yii\db\Migration
 
         $this->insert(self::TABLE_NAME, ['group' => 'general', 'key' => 'title', 'value' => 'Школа искусств']);
         $this->insert(self::TABLE_NAME, ['group' => 'general', 'key' => 'email', 'value' => 'admin@stravinskiy.ru']);
+        $this->insert(self::TABLE_NAME, ['group' => 'general', 'key' => 'phone', 'value' => '+7 (495) 786-23-28']);
         $this->insert(self::TABLE_NAME, ['group' => 'general', 'key' => 'timezone', 'value' => 'Atlantic/Azores']);
         $this->insert(self::TABLE_NAME, ['group' => 'general', 'key' => 'dateformat', 'value' => 'dd.MM.yyyy']);
         $this->insert(self::TABLE_NAME, ['group' => 'general', 'key' => 'timeformat', 'value' => 'HH:mm']);

@@ -2,6 +2,7 @@
 
 namespace common\models\guidesys;
 
+use artsoft\models\User;
 use Yii;
 
 class HelpTree extends \kartik\tree\models\Tree
@@ -20,13 +21,14 @@ class HelpTree extends \kartik\tree\models\Tree
         $behaviors[] = ['class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class];
         return $behaviors;
     }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         $rules = parent::rules();
-        $rules[] =  ['description', 'string', 'max' => 1024];
+        $rules[] = ['description', 'string', 'max' => 1024];
 
         return $rules;
     }
@@ -45,24 +47,38 @@ class HelpTree extends \kartik\tree\models\Tree
     /**
      * @return mixed
      */
-    public static function getEfficiencyList()
+    public static function getHelpList()
     {
-        return  self::find()->where(['disabled' => false])->select(['name', 'id'])->indexBy('id')->column();
+        return self::find()->where(['disabled' => false])->select(['name', 'id'])->indexBy('id')->column();
     }
 
     /**
      * @return mixed
      */
-    public static function getEfficiencyRoots()
+    public static function getHelpRoots()
     {
-        return  self::find()->roots()->select(['name', 'id'])->indexBy('id')->column();
+        return self::find()->roots()->select(['name', 'id'])->indexBy('id')->column();
     }
 
     /**
      * @return mixed
      */
-    public static function getEfficiencyLiaves()
+    public static function getHelpLiaves()
     {
-        return  self::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
+        return self::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
     }
+
+    /**
+     * Override isReadonly method if you need as shown in the
+     * example below. You can override similarly other methods
+     * like isActive, isMovable etc.
+     */
+    public function isReadonly()
+    {
+        if (User::hasPermission('editHelp') || Yii::$app->user->isSuperadmin) {
+            return false;
+        }
+        return true;
+    }
+
 }

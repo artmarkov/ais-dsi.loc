@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\models\User;
 use kartik\tree\TreeView;
 use kartik\tree\Module;
 use yii\helpers\Url;
@@ -9,6 +10,7 @@ use yii\helpers\Url;
 
 $this->title = 'Руководство пользователя';
 $this->params['breadcrumbs'][] = $this->title;
+$readonly = (User::hasPermission('editHelp') || Yii::$app->user->isSuperadmin) ? false : true;
 $mainTemplate = <<< HTML
 <div class="panel">
     <div class="row">
@@ -34,7 +36,34 @@ HTML;
                         'query' => \common\models\guidesys\HelpTree::find()->addOrderBy('root, lft'),
                         'headingOptions' => ['label' => 'Руководство пользователя'],
                         'fontAwesome' => false, // optional
-                        'isAdmin' => true, // optional (toggle to enable admin mode)
+                        'isAdmin' => !$readonly, // optional (toggle to enable admin mode)
+                        'showFormButtons' => !$readonly,
+                        'toolbar' => [
+                            TreeView::BTN_CREATE => [
+                                 'alwaysDisabled' => $readonly,
+                            ],
+                            TreeView::BTN_CREATE_ROOT => [
+                                'alwaysDisabled' => $readonly,
+                            ],
+                            TreeView::BTN_REMOVE => [
+                                'alwaysDisabled' => $readonly,
+                            ],
+                            TreeView::BTN_MOVE_UP => [
+                                'alwaysDisabled' => $readonly,
+                            ],
+                            TreeView::BTN_MOVE_DOWN => [
+                                'alwaysDisabled' => $readonly,
+                            ],
+                            TreeView::BTN_MOVE_LEFT => [
+                                'alwaysDisabled' => $readonly,
+                            ],
+                            TreeView::BTN_MOVE_RIGHT => [
+                                'alwaysDisabled' => $readonly,
+                            ],
+                            TreeView::BTN_REFRESH => [
+                                'alwaysDisabled' => $readonly,
+                            ],
+                        ],
                         'displayValue' => 1, // initial display value
                         'softDelete' => true, // defaults to true
                         'childNodeIconOptions' => ['class' => ''],
