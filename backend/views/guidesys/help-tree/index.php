@@ -10,7 +10,7 @@ use yii\helpers\Url;
 
 $this->title = 'Руководство пользователя';
 $this->params['breadcrumbs'][] = $this->title;
-$readonly = (Yii::$app->id != 'frontend' && (User::hasPermission('editHelp') || Yii::$app->user->isSuperadmin)) ? false : true;
+$readonly = (User::hasPermission('editHelp') || Yii::$app->user->isSuperadmin) ? false : true;
 $mainTemplate = <<< HTML
 <div class="panel">
     <div class="row">
@@ -27,6 +27,9 @@ HTML;
 ?>
 <div class="tree-item-index">
     <div class="panel">
+        <div class="panel-heading">
+            <?= $this->title ?>
+        </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
@@ -34,8 +37,8 @@ HTML;
                     TreeView::widget([
                         'mainTemplate' => $mainTemplate,
                         'query' => \common\models\guidesys\HelpTree::find()->addOrderBy('root, lft'),
-                        'headingOptions' => ['label' => 'Руководство пользователя'],
-                        'fontAwesome' => false, // optional
+                        'headingOptions' => ['label' => ''],
+                        'fontAwesome' => true, // optional
                         'isAdmin' => !$readonly, // optional (toggle to enable admin mode)
                         'showFormButtons' => !$readonly,
                         'toolbar' => [

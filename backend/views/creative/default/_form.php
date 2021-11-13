@@ -202,7 +202,7 @@ JS
                                         'dropdownConfig' => [
                                             'input' => ['placeholder' => 'Выберите показатель эффективности...'],
                                         ],
-                                        'fontAwesome' => false,
+                                        'fontAwesome' => true,
                                         'multiple' => false,
                                         'rootOptions' => [
                                             'label' => '',

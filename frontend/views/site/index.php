@@ -16,7 +16,7 @@ $this->title = Block::getTitle('main-info');
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= Block::getHtml('main-info') ?>
+                        <?= Block::getHtml('main-info', ['general_title' => Yii::$app->settings->get('general.title', 'Art Site')]) ?>
                     </div>
                 </div>
             </div>

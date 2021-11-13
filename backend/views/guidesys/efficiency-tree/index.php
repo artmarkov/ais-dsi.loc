@@ -29,6 +29,9 @@ HTML;
 ?>
 <div class="tree-item-index">
     <div class="panel">
+        <div class="panel-heading">
+            <?= $this->title ?>
+        </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
@@ -36,8 +39,8 @@ HTML;
                     TreeView::widget([
                         'mainTemplate' => $mainTemplate,
                         'query' => \common\models\efficiency\EfficiencyTree::find()->addOrderBy('root, lft'),
-                        'headingOptions' => ['label' => 'Дерево показателей'],
-                        'fontAwesome' => false, // optional
+                        'headingOptions' => ['label' => ''],
+                        'fontAwesome' => true, // optional
                         'isAdmin' => true, // optional (toggle to enable admin mode)
                         'displayValue' => 1, // initial display value
                         'softDelete' => true, // defaults to true

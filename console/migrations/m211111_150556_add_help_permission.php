@@ -28,6 +28,7 @@ class m211111_150556_add_help_permission extends PermissionsMigration
                     'title' => 'Просмотр руководства',
                     'links' => [
                         '/help/guide-help/index',
+                        '/help/guide-help/check',
                     ],
                     'roles' => [
                         self::ROLE_USER,

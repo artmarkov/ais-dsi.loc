@@ -13,10 +13,12 @@ class GuideHelpController extends \frontend\controllers\DefaultController
     public $modelClass = 'common\models\guidesys\HelpTree';
     public $modelSearchClass = '';
 
-    public function init()
+    public function actionCheck()
     {
-        $this->viewPath = '@backend/views/guidesys/help-tree';
-
-        parent::init();
+        $key = Yii::$app->request->post('key');
+        $model = $this->modelClass::find()->where(['id' => $key])->one();
+        return $this->renderAjax('result', [
+            'model' => $model
+        ]);
     }
 }
