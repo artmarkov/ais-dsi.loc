@@ -1,0 +1,61 @@
+<?php
+
+use artsoft\db\PermissionsMigration;
+
+class m211113_191543_add_catalog_permissions extends PermissionsMigration
+{
+
+    public function beforeUp()
+    {
+        $this->addPermissionsGroup('catalogManagement', 'Управление каталогом файлов');
+    }
+
+    public function afterDown()
+    {
+        $this->deletePermissionsGroup('catalogManagement');
+    }
+
+    public function getPermissions()
+    {
+        return [
+            'catalogManagement' => [
+                'links' => [
+                    '/info/catalog/*',
+                    '/admin/info/catalog/*',
+                ],
+                'viewCatalog' => [
+                    'title' => 'Просмотр каталога',
+                    'links' => [
+                        '/info/catalog/index',
+                        '/info/catalog/check',
+                    ],
+                    'roles' => [
+                        self::ROLE_USER,
+                    ],
+                ],
+                'editCatalog' => [
+                    'title' => 'Редактирование каталога',
+                    'links' => [
+                        '/admin/info/catalog/index',
+                    ],
+                    'roles' => [
+                        self::ROLE_SYSTEM,
+                    ],
+                    'childs' => [
+                        'viewCatalog',
+                    ],
+                ],
+                'allowNewRootsCatalog' => [
+                    'title' => 'Создавать корневую директорию',
+                    'roles' => [
+                        self::ROLE_SYSTEM,
+                    ],
+                    'childs' => [
+                        'viewCatalog',
+                    ],
+                ],
+            ],
+        ];
+    }
+
+}

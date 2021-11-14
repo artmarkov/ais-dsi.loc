@@ -66,9 +66,9 @@ HTML;
                         'cacheSettings' => [
                             'enableCache' => true
                         ],
-                        'nodeView' => '@backend/views/guidesys/help-tree/_form', //переопределено
+                        'nodeView' => '@backend/views/guidesys/guide-help/_form', //переопределено
                         'nodeAddlViews' => [
-                            Module::VIEW_PART_2 => '@backend/views/guidesys/help-tree/_treePart2',
+                            Module::VIEW_PART_2 => '@backend/views/guidesys/guide-help/_treePart2',
                         ],
                         'nodeActions' => [
                             Module::NODE_MANAGE => Url::to(['/treemanager/node/manage']),

@@ -44,6 +44,7 @@ class UserCommon extends ActiveRecord
     const GENDER_MALE = 1;
     const GENDER_FEMALE = 2;
 
+    const USER_CATEGORY_GUESTS = 'guests';
     const USER_CATEGORY_EMPLOYEES = 'employees';
     const USER_CATEGORY_TEACHERS = 'teachers';
     const USER_CATEGORY_STUDENTS = 'students';

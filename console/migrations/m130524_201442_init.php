@@ -9,7 +9,7 @@ class m130524_201442_init extends BaseMigration
         $tableOptions = null;
 
         $this->createTable('users', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'username' => $this->string()->notNull()->unique(),
             'auth_key' => $this->string(32)->notNull(),
             'password_hash' => $this->string(),
@@ -32,7 +32,7 @@ class m130524_201442_init extends BaseMigration
         $this->db->createCommand()->resetSequence('users', 1100)->execute();
 
         $this->createTableWithHistory('user_common', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'user_id' => $this->integer(),
             'user_category' => $this->string(124)->notNull()->defaultValue(\common\models\user\UserCommon::USER_CATEGORY_EMPLOYEES),
             'last_name' => $this->string(124),

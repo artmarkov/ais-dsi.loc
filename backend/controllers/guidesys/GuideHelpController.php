@@ -2,11 +2,7 @@
 
 namespace backend\controllers\guidesys;
 
-
-/**
- * DefaultController implements the CRUD actions for common\models\guidesys\HelpTree model.
- */
-class HelpTreeController extends MainController
+class GuideHelpController extends MainController
 {
     public function actionIndex()
     {

@@ -37,7 +37,7 @@ class m211111_150556_add_help_permission extends PermissionsMigration
                 'editHelp' => [
                     'title' => 'Редактирование руководства',
                     'links' => [
-                        '/admin/guidesys/help-tree/index',
+                        '/admin/guidesys/guide-help/index',
                     ],
                     'roles' => [
                         self::ROLE_SYSTEM,

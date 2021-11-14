@@ -1,9 +1,12 @@
 <?php
 
-namespace backend\controllers\guidesys;
+namespace backend\controllers\info;
 
-class EfficiencyTreeController extends MainController
+use backend\controllers\DefaultController;
+
+class CatalogController extends DefaultController
 {
+
     public function actionIndex()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;

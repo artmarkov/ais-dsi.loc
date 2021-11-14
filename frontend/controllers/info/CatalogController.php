@@ -1,21 +1,27 @@
 <?php
 
-namespace frontend\controllers\help;
+namespace frontend\controllers\info;
 
+use artsoft\models\User;
 use frontend\models\SupportForm;
 use Yii;
 
 /**
  * HelpController implements the CRUD actions for common\models\guidesys\HelpTree model.
  */
-class GuideHelpController extends \frontend\controllers\DefaultController
+class CatalogController extends \frontend\controllers\DefaultController
 {
-    public $modelClass = 'common\models\guidesys\HelpTree';
+    public $modelClass = 'common\models\info\FilesCatalog';
     public $modelSearchClass = '';
 
-    public function actionIndexView()
+    public function actionIndex()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
+
+        if (User::hasPermission('editCatalog') || Yii::$app->user->isSuperadmin) {
+            $this->viewPath = '@backend/views/info/catalog';
+            return $this->render('index');
+        }
         return $this->render('index-view');
     }
 
