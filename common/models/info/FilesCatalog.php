@@ -102,12 +102,21 @@ class FilesCatalog extends \kartik\tree\models\Tree
      */
     public function isReadonly()
     {
-        if (User::hasPermission('editCatalog') || Yii::$app->user->isSuperadmin) {
+        if (User::hasPermission('viewCatalog') || Yii::$app->user->isSuperadmin) {
             return false;
         }
         return true;
     }
 
+    /**
+     * @return bool
+     */
+    public static function getEditAllow()
+    {
+        $user = \common\models\user\UserCommon::findOne(['user_id' => Yii::$app->user->id]);
+
+        return self::find()->where(['like', 'rules_list_edit', $user->user_category])->scalar() ? true : false;
+    }
     /**
      * @return mixed
      */

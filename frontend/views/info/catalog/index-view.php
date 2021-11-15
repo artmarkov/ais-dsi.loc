@@ -14,6 +14,7 @@ $this->title = 'Каталог файлов';
 <div class="panel">
     <div class="panel-heading">
         <?= $this->title ?>
+        <?php if(\common\models\info\FilesCatalog::getEditAllow()):?>
         <?= Html::a(
             '<i class="fa fa-pencil" aria-hidden="true"></i> ' . Yii::t('art', 'Edit'),
            ['/info/catalog/edit'],
@@ -21,6 +22,7 @@ $this->title = 'Каталог файлов';
                 'class' => 'btn btn-default btn-md',
             ]
         );?>
+        <?php endif;?>
     </div>
     <div class="panel-body">
         <div class="row">

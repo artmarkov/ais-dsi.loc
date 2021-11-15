@@ -32,6 +32,8 @@ class m211113_191543_add_catalog_permissions extends PermissionsMigration
                     ],
                     'roles' => [
                         self::ROLE_USER,
+                        self::ROLE_STUDENT,
+                        self::ROLE_PARENTS,
                     ],
                 ],
                 'editCatalog' => [
