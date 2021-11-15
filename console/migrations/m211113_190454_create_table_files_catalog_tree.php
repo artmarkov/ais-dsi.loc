@@ -50,11 +50,11 @@ class m211113_190454_create_table_files_catalog_tree extends \artsoft\db\BaseMig
 
         $this->db->createCommand()->batchInsert(self::TABLE_NAME_TREE, ['id', 'root', 'lft', 'rgt', 'lvl', 'name', 'rules_list_read',
             'rules_list_edit', 'icon', 'icon_type', 'active', 'selected', 'disabled', 'readonly', 'visible', 'collapsed', 'movable_u', 'movable_d', 'movable_l', 'movable_r', 'removable', 'removable_all', 'child_allowed', 'created_at', 'created_by'], [
-            [1, 1, 1, 2, 0, "Общая информация", "system,administrator,user,department,teacher,employees,student,parents", "system,administrator,department,teacher", "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(), 1000],
-            [2, 2, 1, 2, 0, "Информация для сотрудников", "system,administrator,employees", "system,administrator", "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(), 1000],
-            [3, 3, 1, 2, 0, "Информация для преподавателей", "system,administrator,department,teacher", "system,administrator", "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(), 1000],
-            [4, 4, 1, 2, 0, "Информация для учеников", "system,administrator,department,teacher,student,parents", "system,administrator,department,teacher", "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(), 1000],
-            [5, 5, 1, 2, 0, "Информация для родителей", "system,administrator,department,teacher,parents", "system,administrator,department", "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(), 1000],
+            [1, 1, 1, 2, 0, "Общая информация", "user,department,teacher,employees,student,parents", "department,teacher", "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(), 1000],
+            [2, 2, 1, 2, 0, "Информация для сотрудников", "employees", "", "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(), 1000],
+            [3, 3, 1, 2, 0, "Информация для преподавателей", "department,teacher", "", "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(), 1000],
+            [4, 4, 1, 2, 0, "Информация для учеников", "department,teacher,student,parents", "department,teacher", "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(), 1000],
+            [5, 5, 1, 2, 0, "Информация для родителей", "department,teacher,parents", "department,teacher", "", 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(), 1000],
         ])->execute();
         $this->db->createCommand()->resetSequence(self::TABLE_NAME_TREE, 4)->execute();
 
