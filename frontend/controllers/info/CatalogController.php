@@ -17,12 +17,17 @@ class CatalogController extends \frontend\controllers\DefaultController
     public function actionIndex()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
-
-        if (User::hasPermission('editCatalog') || Yii::$app->user->isSuperadmin) {
-            $this->viewPath = '@backend/views/info/catalog';
-            return $this->render('index');
-        }
+        $this->view->params['breadcrumbs'][] = 'Каталог файлов';
         return $this->render('index-view');
+    }
+
+    public function actionEdit()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['breadcrumbs'][] = ['label' =>'Каталог файлов', 'url' => ['/info/catalog']];;
+        $this->view->params['breadcrumbs'][] = 'Редактировать';
+        $this->viewPath = '@backend/views/info/catalog';
+        return $this->render('index');
     }
 
     public function actionCheck()

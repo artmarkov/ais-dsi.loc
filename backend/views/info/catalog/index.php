@@ -9,8 +9,7 @@ use yii\helpers\Url;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Каталог файлов';
-$this->params['breadcrumbs'][] = $this->title;
-$readonly = (User::hasPermission('editCatalog') || Yii::$app->user->isSuperadmin) ? false : true;
+$readonly = (User::hasPermission('viewCatalog') && Yii::$app->id == 'frontend') ? true : false;
 $allowNewRoots = (User::hasPermission('allowNewRootsCatalog') || Yii::$app->user->isSuperadmin) ? true : false;
 $mainTemplate = <<< HTML
 <div class="panel">
@@ -37,21 +36,21 @@ HTML;
                     <?=
                     TreeView::widget([
                         'mainTemplate' => $mainTemplate,
-                        'query' => \common\models\info\FilesCatalog::find()->addOrderBy('root, lft'),
+                        'query' => \common\models\info\FilesCatalog::getQueryEdit(),
                         'headingOptions' => ['label' => ''],
                         'fontAwesome' => true, // optional
                         'allowNewRoots' => $allowNewRoots,
                         'isAdmin' => !$readonly, // optional (toggle to enable admin mode)
-                        'showFormButtons' => !$readonly,
+                        'showFormButtons' => $readonly,
                         'toolbar' => [
-                            TreeView::BTN_CREATE =>      ['alwaysDisabled' => $readonly],
+                            TreeView::BTN_CREATE =>      ['alwaysDisabled' => false],
                             TreeView::BTN_CREATE_ROOT => ['alwaysDisabled' => $readonly],
-                            TreeView::BTN_REMOVE =>      ['alwaysDisabled' => $readonly],
-                            TreeView::BTN_MOVE_UP =>     ['alwaysDisabled' => $readonly],
-                            TreeView::BTN_MOVE_DOWN =>   ['alwaysDisabled' => $readonly],
-                            TreeView::BTN_MOVE_LEFT =>   ['alwaysDisabled' => $readonly],
-                            TreeView::BTN_MOVE_RIGHT =>  ['alwaysDisabled' => $readonly],
-                            TreeView::BTN_REFRESH =>     ['alwaysDisabled' => $readonly],
+                            TreeView::BTN_REMOVE =>      ['alwaysDisabled' => false],
+                            TreeView::BTN_MOVE_UP =>     ['alwaysDisabled' => false],
+                            TreeView::BTN_MOVE_DOWN =>   ['alwaysDisabled' => false],
+                            TreeView::BTN_MOVE_LEFT =>   ['alwaysDisabled' => false],
+                            TreeView::BTN_MOVE_RIGHT =>  ['alwaysDisabled' => false],
+                            TreeView::BTN_REFRESH =>     ['alwaysDisabled' => false],
                         ],
                         'displayValue' => 1, // initial display value
                         'softDelete' => true, // defaults to true

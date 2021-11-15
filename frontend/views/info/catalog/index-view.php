@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\helpers\Html;
 use artsoft\models\User;
 use kartik\tree\TreeView;
 use kartik\tree\Module;
@@ -9,11 +10,17 @@ use yii\helpers\Url;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Каталог файлов';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="panel">
     <div class="panel-heading">
         <?= $this->title ?>
+        <?= Html::a(
+            '<i class="fa fa-pencil" aria-hidden="true"></i> ' . Yii::t('art', 'Edit'),
+           ['/info/catalog/edit'],
+            [
+                'class' => 'btn btn-default btn-md',
+            ]
+        );?>
     </div>
     <div class="panel-body">
         <div class="row">
@@ -24,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'name' => 'kvTreeInput',
                     'id' => 'treeInput2',
                     'value' => 'true', // preselected values
-                    'query' => common\models\info\FilesCatalog::find()->addOrderBy('root, lft'),
+                    'query' => \common\models\info\FilesCatalog::getQueryRead(),
                     'headingOptions' => ['label' => ''],
                     'childNodeIconOptions' => ['class' => ''],
                     'defaultParentNodeIcon' => '',

@@ -27,6 +27,7 @@ class m211113_191543_add_catalog_permissions extends PermissionsMigration
                     'title' => 'Просмотр каталога',
                     'links' => [
                         '/info/catalog/index',
+                        '/info/catalog/edit',
                         '/info/catalog/check',
                     ],
                     'roles' => [

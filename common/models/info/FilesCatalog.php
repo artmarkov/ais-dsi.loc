@@ -49,7 +49,9 @@ class FilesCatalog extends \kartik\tree\models\Tree
         $rules = parent::rules();
         $rules[] = ['description', 'string', 'max' => 1024];
         $rules[] = ['rules_list_read', 'safe'];
+        $rules[] = ['rules_list_read', 'default', 'value' => null];
         $rules[] = ['rules_list_edit', 'safe'];
+        $rules[] = ['rules_list_edit', 'default', 'value' => null];
         $rules[] = ['created_at', 'integer'];
         $rules[] = ['created_by', 'integer'];
 
@@ -106,10 +108,49 @@ class FilesCatalog extends \kartik\tree\models\Tree
         return true;
     }
 
-    public static function getRoleList()
+    /**
+     * @return mixed
+     */
+    public static function getQueryRead()
     {
-        return ArrayHelper::map(Role::find()
-            ->select(['name', 'description'])
-            ->asArray()->all(), 'name', 'description');
+        $user = \common\models\user\UserCommon::findOne(['user_id' => Yii::$app->user->id]);
+
+        if(!$user || Yii::$app->id == 'backend') {
+            return self::find()->addOrderBy('root, lft');
+        }
+        return self::find()->where(
+            ['or',
+                ['like', 'rules_list_read', $user->user_category],
+                ['and',
+                    ['and', ['=', 'rules_list_read', ''], ['!=', 'lvl', 0]],
+                    ['in', 'root', self::find()->select('root')->where(
+                        ['and', ['like', 'rules_list_read', $user->user_category], ['=', 'lvl', 0]])->column()
+                    ]
+                ]
+            ])
+            ->addOrderBy('root, lft');
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getQueryEdit()
+    {
+        $user = \common\models\user\UserCommon::findOne(['user_id' => Yii::$app->user->id]);
+
+        if(!$user || Yii::$app->id == 'backend') {
+            return self::find()->addOrderBy('root, lft');
+        }
+        return self::find()->where(
+            ['or',
+                ['like', 'rules_list_edit', $user->user_category],
+                ['and',
+                    ['and', ['=', 'rules_list_edit', ''], ['!=', 'lvl', 0], ['=', 'created_by', Yii::$app->user->id]],
+                    ['in', 'root', self::find()->select('root')->where(
+                        ['and', ['like', 'rules_list_edit', $user->user_category], ['=', 'lvl', 0]])->column()
+                    ]
+                ]
+            ])
+            ->addOrderBy('root, lft');
     }
 }

@@ -184,7 +184,7 @@ $icons = is_array($iconsList) ? array_values($iconsList) : $iconsList;
      */
     ?>
     <div class="kv-detail-heading">
-        <?php if ($isAdmin && $showFormButtons): ?>
+        <?php if ($showFormButtons): ?>
             <div class="float-right pull-right">
                 <?= Html::resetButton(
                     ArrayHelper::getValue($nodeViewButtonLabels, 'reset', $resetTitle),

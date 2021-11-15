@@ -8,7 +8,7 @@
     <div class="col-sm-12">
 
         <?= $form->field($node, 'rules_list_read')->widget(\kartik\select2\Select2::className(), [
-            'data' => \common\models\info\FilesCatalog::getRoleList(),
+            'data' => \common\models\user\UserCommon::getUserCategoryList(),
             'showToggleAll' => false,
             'options' => [
                 'disabled' => $node->isReadonly(),
@@ -22,7 +22,7 @@
         ]);
         ?>
         <?= $form->field($node, 'rules_list_edit')->widget(\kartik\select2\Select2::className(), [
-            'data' => \common\models\info\FilesCatalog::getRoleList(),
+            'data' => \common\models\user\UserCommon::getUserCategoryList(),
             'showToggleAll' => false,
             'options' => [
                 'disabled' => $node->isReadonly(),
