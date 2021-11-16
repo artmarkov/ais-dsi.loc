@@ -32,6 +32,8 @@ class m211111_150556_add_help_permission extends PermissionsMigration
                     ],
                     'roles' => [
                         self::ROLE_USER,
+                        self::ROLE_STUDENT,
+                        self::ROLE_PARENTS,
                     ],
                 ],
                 'editHelp' => [

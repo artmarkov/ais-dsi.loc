@@ -2,7 +2,6 @@
 
 namespace frontend\controllers\help;
 
-use frontend\models\SupportForm;
 use Yii;
 
 /**
@@ -13,10 +12,10 @@ class GuideHelpController extends \frontend\controllers\DefaultController
     public $modelClass = 'common\models\guidesys\HelpTree';
     public $modelSearchClass = '';
 
-    public function actionIndexView()
+    public function actionIndex()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
-        return $this->render('index-view');
+        return $this->render('index');
     }
 
     public function actionCheck()

@@ -1,13 +1,5 @@
 <?php
 
-use artsoft\models\User;
-use kartik\tree\TreeView;
-use kartik\tree\Module;
-use yii\helpers\Url;
-
-/* @var $this yii\web\View */
-/* @var $dataProvider yii\data\ActiveDataProvider */
-
 $this->title = 'Руководство пользователя';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -24,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'name' => 'kvTreeInput',
                     'id' => 'treeInput2',
                     'value' => 'true', // preselected values
-                    'query' => common\models\guidesys\HelpTree::find()->addOrderBy('root, lft'),
+                    'query' => \common\models\guidesys\HelpTree::getQueryRead(),
                     'headingOptions' => ['label' => ''],
                     'childNodeIconOptions' => ['class' => ''],
                     'defaultParentNodeIcon' => '',

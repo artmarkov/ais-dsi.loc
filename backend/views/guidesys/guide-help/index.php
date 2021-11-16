@@ -36,7 +36,7 @@ HTML;
                     <?=
                     TreeView::widget([
                         'mainTemplate' => $mainTemplate,
-                        'query' => \common\models\guidesys\HelpTree::find()->addOrderBy('root, lft'),
+                        'query' => common\models\guidesys\HelpTree::find()->addOrderBy('root, lft'),
                         'headingOptions' => ['label' => ''],
                         'fontAwesome' => true, // optional
                         'isAdmin' => !$readonly, // optional (toggle to enable admin mode)
@@ -69,6 +69,7 @@ HTML;
                         'nodeView' => '@backend/views/guidesys/guide-help/_form', //переопределено
                         'nodeAddlViews' => [
                             Module::VIEW_PART_2 => '@backend/views/guidesys/guide-help/_treePart2',
+                            Module::VIEW_PART_3 => '@backend/views/guidesys/guide-help/_treePart3',
                         ],
                         'nodeActions' => [
                             Module::NODE_MANAGE => Url::to(['/treemanager/node/manage']),

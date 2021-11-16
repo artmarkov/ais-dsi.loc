@@ -133,6 +133,10 @@ class FilesCatalog extends \kartik\tree\models\Tree
     public static function getEditAllow()
     {
         $roles = self::getRoles();
+
+        if(Yii::$app->user->isSuperadmin) {
+            return true;
+        }
         return self::find()->where(['or like', 'rules_list_edit', $roles])->scalar() ? true : false;
     }
     /**
@@ -140,7 +144,7 @@ class FilesCatalog extends \kartik\tree\models\Tree
      */
     public static function getQueryRead()
     {
-        $roles = self::getRoles();;
+        $roles = self::getRoles();
         if(Yii::$app->user->isSuperadmin || Yii::$app->id == 'backend') {
             return self::find()->addOrderBy('root, lft');
         }
