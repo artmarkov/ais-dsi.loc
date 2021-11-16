@@ -9,8 +9,10 @@ use yii\helpers\Url;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Каталог файлов';
+$isAdmin = Yii::$app->id == 'backend';
 $readonly = (User::hasPermission('viewCatalog') && Yii::$app->id == 'frontend') ? true : false;
 $allowNewRoots = (User::hasPermission('allowNewRootsCatalog') || Yii::$app->user->isSuperadmin) ? true : false;
+$showFormButtons = (User::hasPermission('viewCatalog') || Yii::$app->user->isSuperadmin) ? true : false;
 $mainTemplate = <<< HTML
 <div class="panel">
     <div class="row">
@@ -40,8 +42,8 @@ HTML;
                         'headingOptions' => ['label' => ''],
                         'fontAwesome' => true, // optional
                         'allowNewRoots' => $allowNewRoots,
-                        'isAdmin' => !$readonly, // optional (toggle to enable admin mode)
-                        'showFormButtons' => $readonly,
+                        'isAdmin' => $isAdmin, // optional (toggle to enable admin mode)
+                        'showFormButtons' => $showFormButtons,
                         'toolbar' => [
                             TreeView::BTN_CREATE =>      ['alwaysDisabled' => false],
                             TreeView::BTN_CREATE_ROOT => ['alwaysDisabled' => $readonly],
