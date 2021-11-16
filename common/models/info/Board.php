@@ -88,7 +88,8 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
             [['board_date', 'delete_date', 'recipients_list'], 'safe'],
             [['title'], 'string', 'max' => 127],
             [['description'], 'string', 'max' => 1024],
-            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['author_id' => 'id']],
+            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['author_id' => 'id']],
+            [['author_id'], 'default', 'value' => Yii::$app->user->identity->getId()],
         ];
     }
 
@@ -186,7 +187,7 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
      */
     public function getAuthor()
     {
-        return $this->hasOne(UserCommon::class, ['id' => 'author_id']);
+        return $this->hasOne(User::class, ['id' => 'author_id']);
     }
 
     public static function getRecipientsList()

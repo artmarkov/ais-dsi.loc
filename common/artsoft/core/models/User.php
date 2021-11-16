@@ -289,14 +289,26 @@ class User extends UserIdentity
      *
      * @return array
      */
-    public static function getUsersListByCategoy($category = [])
+    public static function getUsersListByCategory($category = [])
     {
-        $users = static::find()->select(['users.id', 'CONCAT(last_name, \' \',first_name, \' \',middle_name) as fullname', 'user_common.user_category as category'])
-            ->innerJoin('user_common',"user_common.user_id = users.id")
+        $users = static::find()->select([
+            'users.id as id',
+            'CONCAT(last_name, \' \',first_name, \' \',middle_name) as fullname',
+            'user_common.user_category as category',
+            'CASE
+                  WHEN (user_category = \'employees\') THEN \'' . UserCommon::getUserCategoryValue('employees') . '\'
+                  WHEN (user_category = \'teachers\') THEN \'' . UserCommon::getUserCategoryValue('teachers') . '\'
+                  WHEN (user_category = \'students\') THEN \'' . UserCommon::getUserCategoryValue('students') . '\'
+                  WHEN (user_category = \'parents\') THEN \'' . UserCommon::getUserCategoryValue('parents') . '\'
+                  ELSE \'\'
+            END as category_name'
+        ])
+            ->innerJoin('user_common', "user_common.user_id = users.id")
             ->where(['in', 'user_common.user_category', $category])
-            ->orderBy('user_common.user_category, fullname')
+            ->andWhere(['=', 'users.status', self::STATUS_ACTIVE])
+            ->orderBy('category_name, fullname')
             ->asArray()->all();
-        return ArrayHelper::map($users, 'id', 'fullname', 'category');
+        return ArrayHelper::map($users, 'id', 'fullname', 'category_name');
     }
 
     /**

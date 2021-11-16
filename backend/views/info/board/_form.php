@@ -32,8 +32,7 @@ use kartik\date\DatePicker;
             <div class="row">
                 <div class="col-sm-12">
 
-                    <?= $form->field($model, 'author_id')->dropDownList(User::getUsersListByCategoy(['teachers','employees'])) ?>
-                    ?>
+                    <?= $form->field($model->loadDefaultValues(), 'author_id')->dropDownList(User::getUsersListByCategory(['teachers','employees'])) ?>
 
                     <?= $form->field($model, 'category_id')->dropDownList(Board::getCategoryListRuleFilter()) ?>
 
