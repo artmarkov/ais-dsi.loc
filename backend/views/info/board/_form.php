@@ -32,18 +32,7 @@ use kartik\date\DatePicker;
             <div class="row">
                 <div class="col-sm-12">
 
-                    <?= $form->field($model, 'author_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => Board::getRecipientsList(),
-                        'options' => [
-                            'value' => \common\models\user\UserCommon::findOne(['user_id' => Yii::$app->user->identity->getId()])->id ?? null,
-                           // 'disabled' => User::hasPermission('editBoardAuthor') ? false : true,
-                            'placeholder' => Yii::t('art/info', 'Select Authors...'),
-                            'multiple' => false,
-                        ],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]);
+                    <?= $form->field($model, 'author_id')->dropDownList(User::getUsersListByCategoy(['teachers','employees'])) ?>
                     ?>
 
                     <?= $form->field($model, 'category_id')->dropDownList(Board::getCategoryListRuleFilter()) ?>

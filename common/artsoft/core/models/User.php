@@ -285,6 +285,21 @@ class User extends UserIdentity
     }
 
     /**
+     * getUsersList
+     *
+     * @return array
+     */
+    public static function getUsersListByCategoy($category = [])
+    {
+        $users = static::find()->select(['users.id', 'CONCAT(last_name, \' \',first_name, \' \',middle_name) as fullname', 'user_common.user_category as category'])
+            ->innerJoin('user_common',"user_common.user_id = users.id")
+            ->where(['in', 'user_common.user_category', $category])
+            ->orderBy('user_common.user_category, fullname')
+            ->asArray()->all();
+        return ArrayHelper::map($users, 'id', 'fullname', 'category');
+    }
+
+    /**
      * getStatusValue
      *
      * @param string $val
