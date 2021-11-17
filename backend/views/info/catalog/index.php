@@ -10,7 +10,7 @@ use yii\helpers\Url;
 
 $this->title = 'Каталог файлов';
 $isAdmin = \artsoft\Art::isBackend();
-$readonly = (User::hasPermission('viewCatalog') && Yii::$app->id == 'frontend') ? true : false;
+$readonly = (User::hasPermission('viewCatalog') && \artsoft\Art::isFrontend()) ? true : false;
 $allowNewRoots = (User::hasPermission('allowNewRootsCatalog') || Yii::$app->user->isSuperadmin) ? true : false;
 $showFormButtons = (User::hasPermission('viewCatalog') || Yii::$app->user->isSuperadmin) ? true : false;
 $mainTemplate = <<< HTML
