@@ -2,6 +2,7 @@
 
 namespace common\models\info;
 
+use artsoft\Art;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\helpers\AuthHelper;
 use artsoft\models\Role;
@@ -145,7 +146,7 @@ class FilesCatalog extends \kartik\tree\models\Tree
     public static function getQueryRead()
     {
         $roles = self::getRoles();
-        if(Yii::$app->user->isSuperadmin || Yii::$app->id == 'backend') {
+        if(Yii::$app->user->isSuperadmin || Art::isBackend()) {
             return self::find()->addOrderBy('root, lft');
         }
         return self::find()->where(
@@ -167,7 +168,7 @@ class FilesCatalog extends \kartik\tree\models\Tree
     public static function getQueryEdit()
     {
         $roles = self::getRoles();
-        if(Yii::$app->user->isSuperadmin || Yii::$app->id == 'backend') {
+        if(Yii::$app->user->isSuperadmin || Art::isBackend()) {
             return self::find()->addOrderBy('root, lft');
         }
         return self::find()->where(

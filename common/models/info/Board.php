@@ -2,6 +2,7 @@
 
 namespace common\models\info;
 
+use artsoft\Art;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\OwnerAccess;
@@ -63,6 +64,10 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
             TimestampBehavior::class,
             BlameableBehavior::class,
             [
+                'class' => BlameableBehavior::class,
+                'createdByAttribute' => 'author_id',
+            ],
+            [
                 'class' => ArrayFieldBehavior::class,
                 'attributes' => ['recipients_list'],
             ],
@@ -83,7 +88,7 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
     {
         return [
             [['category_id', 'title', 'description', 'board_date', 'delete_date'], 'required'],
-            [['author_id'], 'required'],
+            [['author_id'], 'required', 'when' => function () { return Art::isBackend(); }],
             [['category_id', 'delete_date'], 'default', 'value' => null],
             [['category_id', 'importance_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['board_date', 'delete_date', 'recipients_list'], 'safe'],
@@ -143,17 +148,14 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
     }
 
     /**
-     * @return array
+     * @param $val
+     * @return mixed
      */
-    public static function getCategoryListRuleFilter()
+    public static function getCategoryValue($val)
     {
-        $data = self::getCategoryList();
-        foreach (self::getCategoryRule() as $id => $item){
-            if(!User::hasPermission($item)){
-                ArrayHelper::remove($data, $id);
-            }
-        }
-        return $data;
+        $ar = self::getCategoryList();
+
+        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     /**
@@ -168,16 +170,53 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
             self::CAT_EMPLOYEES => 'boardCatEmployeesAccess',
             self::CAT_TEACHERS => 'boardCatTeachersAccess',
             self::CAT_PARENTS => 'boardCatParentsAccess',
-            self::CAT_SELECT => 'boardCatSelectAccess',
         );
     }
 
-    public static function getCategoryValue($val)
+    /**
+     * Права на отправку при выборе пользователей категории
+     * @return array
+     */
+    public static function getCategorySelectRule()
     {
-        $ar = self::getCategoryList();
-
-        return isset($ar[$val]) ? $ar[$val] : $val;
+        return array(
+            UserCommon::USER_CATEGORY_STUDENTS => 'boardCatStudentSelectAccess',
+            UserCommon::USER_CATEGORY_EMPLOYEES => 'boardCatEmployeesSelectAccess',
+            UserCommon::USER_CATEGORY_TEACHERS => 'boardCatTeachersSelectAccess',
+            UserCommon::USER_CATEGORY_PARENTS => 'boardCatParentsSelectAccess',
+        );
     }
+
+    /**
+     * Метод флрмирования разрешенных категорий
+     * @return array
+     */
+    public static function getCategoryListRuleFilter()
+    {
+        $data = self::getCategoryList();
+        foreach (self::getCategoryRule() as $id => $item) {
+            if (!User::hasPermission($item)) {
+                ArrayHelper::remove($data, $id);
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Метод формирования разрешенных категорий пользователей
+     * @return array
+     */
+    public static function getCategorySelectListRuleFilter()
+    {
+        $data = UserCommon::getUserCategoryList();
+        foreach (self::getCategorySelectRule() as $id => $item) {
+            if (!User::hasPermission($item)) {
+                ArrayHelper::remove($data, $id);
+            }
+        }
+        return array_keys($data);
+    }
+
 
     /**
      * Gets query for [[Author]].
@@ -189,14 +228,6 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
         return $this->hasOne(User::class, ['id' => 'author_id']);
     }
 
-    public static function getRecipientsList()
-    {
-        return ArrayHelper::map(UserCommon::find()
-            ->andWhere(['status' => UserCommon::STATUS_ACTIVE])
-            ->select(['id', 'CONCAT(last_name, \' \',first_name, \' \',middle_name) as fullname', 'user_category as category'])
-            ->orderBy('fullname')
-            ->asArray()->all(), 'id', 'fullname', 'category');
-    }
 
     /**
      *
@@ -222,7 +253,7 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
      */
     public function beforeSave($insert)
     {
-        if($this->category_id != self::CAT_SELECT) {
+        if ($this->category_id != self::CAT_SELECT) {
             $this->recipients_list = null;
         }
         return parent::beforeSave($insert);

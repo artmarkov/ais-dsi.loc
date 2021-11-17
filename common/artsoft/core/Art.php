@@ -408,4 +408,19 @@ class Art extends Component
         return self::VERSION;
     }
 
+    /**
+     * @return bool
+     */
+    public static function isFrontend()
+    {
+        return Yii::$app->id == 'frontend';
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isBackend()
+    {
+        return Yii::$app->id == 'backend';
+    }
 }

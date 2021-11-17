@@ -9,7 +9,7 @@ use yii\helpers\Url;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Каталог файлов';
-$isAdmin = Yii::$app->id == 'backend';
+$isAdmin = \artsoft\Art::isBackend();
 $readonly = (User::hasPermission('viewCatalog') && Yii::$app->id == 'frontend') ? true : false;
 $allowNewRoots = (User::hasPermission('allowNewRootsCatalog') || Yii::$app->user->isSuperadmin) ? true : false;
 $showFormButtons = (User::hasPermission('viewCatalog') || Yii::$app->user->isSuperadmin) ? true : false;

@@ -30,12 +30,13 @@ use kartik\date\DatePicker;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                    <?php if (!$model->isNewRecord && User::hasPermission('editBoardAuthor')): ?>
+                    <?php if (\artsoft\Art::isBackend() && User::hasPermission('editBoardAuthor')): ?>
                         <?= $form->field($model->loadDefaultValues(), 'author_id')->widget(\kartik\select2\Select2::class, [
                             'data' => User::getUsersListByCategory(['teachers', 'employees']),
                             'showToggleAll' => false,
                             'options' => [
 //                            'disabled' => $readonly,
+                                'value' => $model->isNewRecord ? Yii::$app->user->id : $model->author_id,
                                 'placeholder' => Yii::t('art/guide', 'Select Authors...'),
                                 'multiple' => false,
                             ],
@@ -51,8 +52,9 @@ use kartik\date\DatePicker;
                     <?php
                     $options = ($model->category_id != 10) ? ['options' => ['style' => 'display:none']] : [];
                     ?>
+
                     <?= $form->field($model, 'recipients_list', $options)->widget(\kartik\select2\Select2::class, [
-                        'data' => Board::getRecipientsList(),
+                        'data' => User::getUsersListByCategory(Board::getCategorySelectListRuleFilter()),
                         'options' => [
 //                                    'disabled' => $readonly,
                             'placeholder' => Yii::t('art/info', 'Select Recipients...'),

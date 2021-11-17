@@ -3,7 +3,9 @@
 namespace common\models\history;
 
 use common\models\info\Board;
+use common\models\user\UserCommon;
 use common\widgets\history\BaseHistory;
+use yii\helpers\Json;
 
 class BoardHistory extends BaseHistory
 {
@@ -47,7 +49,14 @@ class BoardHistory extends BaseHistory
                 return isset($model->importance_id) ? $model::getImportanceList()[$value] : $value;
             case 'author_id':
                 return isset($model->author->userCommon) ? $model->author->userCommon->fullName : $value;
-
+            case 'recipients_list':
+                if (isset($model->recipients_list)) {
+                    $v = [];
+                    foreach (Json::decode($model->recipients_list) as $id) {
+                        $v[] = $id != null ? (UserCommon::findOne(['user_id' => $id]) ? UserCommon::findOne(['user_id' => $id])->getFullName() : $id) : null;
+                    }
+                    return implode(', ', $v);
+                }
         }
         return parent::getDisplayValue($model, $name, $value);
     }
