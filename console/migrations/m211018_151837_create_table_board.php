@@ -11,8 +11,8 @@ class m211018_151837_create_table_board extends \artsoft\db\BaseMigration
 
         $this->createTableWithHistory('board', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
-            'author_id' => $this->integer()->notNull(),
             'category_id' => $this->integer()->notNull()->defaultValue(0),
+            'author_id' => $this->integer(),
             'importance_id' => $this->integer()->notNull()->defaultValue(0),
             'title' => $this->string(127)->notNull(),
             'description' => $this->string(1024)->notNull(),
@@ -28,13 +28,15 @@ class m211018_151837_create_table_board extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('board', 'Доска объявлений');
-        $this->addForeignKey('board_ibfk_1', 'board', 'author_id', 'user_common', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('board_ibfk_1', 'board', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('board_ibfk_2', 'board', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->resetSequence('board', 1000)->execute();
     }
 
     public function down()
     {
+        $this->dropForeignKey('board_ibfk_2', 'board');
         $this->dropForeignKey('board_ibfk_1', 'board');
         $this->dropTableWithHistory('board');
     }

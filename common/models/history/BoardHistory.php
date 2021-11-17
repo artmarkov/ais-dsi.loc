@@ -42,7 +42,11 @@ class BoardHistory extends BaseHistory
     {
         switch ($name) {
             case 'category_id':
-                return isset($model->category_id) ? $model->getCategoryValue() : $value;
+                return isset($model->category_id) ? $model::getCategoryValue($value) : $value;
+            case 'importance_id':
+                return isset($model->importance_id) ? $model::getImportanceList()[$value] : $value;
+            case 'author_id':
+                return isset($model->author->userCommon) ? $model->author->userCommon->fullName : $value;
 
         }
         return parent::getDisplayValue($model, $name, $value);

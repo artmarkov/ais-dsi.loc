@@ -87,6 +87,7 @@ class m211020_123245_add_board_permissions extends PermissionsMigration
                     'links' => [
                         '/admin/info/board/index',
                         '/admin/info/board/view',
+                        '/admin/info/board/history',
                         '/admin/info/board/grid-sort',
                         '/admin/info/board/grid-page-size',
                         '/admin/info/board/update',
@@ -132,11 +133,34 @@ class m211020_123245_add_board_permissions extends PermissionsMigration
                         self::ROLE_ADMIN,
                     ],
                 ],
-                'boardCatSelectAccess' => [
-                    'title' => 'Право выбирать из списка',
+                'boardCatStudentSelectAccess' => [
+                    'title' => 'Отправлять выбранным ученикам',
                     'roles' => [
                         self::ROLE_ADMIN,
-                        self::ROLE_USER,
+                        self::ROLE_TEACHER,
+                        self::ROLE_DEPARTMENT,
+                    ],
+                ],
+                'boardCatEmployeesSelectAccess' => [
+                    'title' => 'Отправлять выбранным сотрудникам',
+                    'roles' => [
+                        self::ROLE_ADMIN,
+                        self::ROLE_EMPLOYEES,
+                    ],
+                ],
+                'boardCatTeachersSelectAccess' => [
+                    'title' => 'Отправлять выбранным преподавателям',
+                    'roles' => [
+                        self::ROLE_ADMIN,
+                        self::ROLE_DEPARTMENT,
+                    ],
+                ],
+                'boardCatParentsSelectAccess' => [
+                    'title' => 'Отправлять выбранным родителям',
+                    'roles' => [
+                        self::ROLE_ADMIN,
+                        self::ROLE_TEACHER,
+                        self::ROLE_DEPARTMENT,
                     ],
                 ],
             ],

@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\models\User;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -56,17 +57,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'attribute' => 'id',
-                                'value' => function (Board $model) {
-                                    return sprintf('#%06d', $model->id);
-                                },
-                            ],
-                            [
                                 'attribute' => 'title',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/info/board',
                                 'title' => function (Board $model) {
-                                    return $model->title;
+                                    return sprintf('#%06d', $model->id) . ' ' . $model->title;
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
@@ -77,24 +72,40 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
 
                             ],
-                            'author_id',
                             [
-                                'attribute' => 'recipients_list',
-                                'filter' => Board::getRecipientsList(),
+                                'attribute' => 'author_id',
+                                'filter' => artsoft\models\User::getUsersListByCategory(['teachers', 'employees']),
                                 'value' => function (Board $model) {
-                                    $v = [];
-                                    foreach ($model->recipients_list as $id) {
-                                        if (!$id) {
-                                            continue;
-                                        }
-                                        $v[] = \common\models\user\UserCommon::findOne($id)->getFullName();
-                                    }
-                                    return implode('<br/> ', $v);
+                                    return $model->author->userCommon ? $model->author->userCommon->fullName : $model->author_id;
                                 },
-                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                                'visible' => User::hasPermission('editBoardAuthor'),
+                            ],
+//                            [
+//                                'attribute' => 'recipients_list',
+//                                'filter' => Board::getRecipientsList(),
+//                                'value' => function (Board $model) {
+//                                    $v = [];
+//                                    foreach ($model->recipients_list as $id) {
+//                                        if (!$id) {
+//                                            continue;
+//                                        }
+//                                        $v[] = \common\models\user\UserCommon::findOne($id)->getFullName();
+//                                    }
+//                                    return implode('<br/> ', $v);
+//                                },
+//                                'options' => ['style' => 'width:350px'],
+//                                'format' => 'raw',
+//                            ],
+                            [
+                                'attribute' => 'board_date',
+                                'filterInputOptions' => ['class' => 'form-control', 'id' => null, 'autocomplete' => 'off'],
+                                'value' => function ($model)  {
+                                    return $model->board_date;
+                                },
+                                'options' => ['style' => 'width:270px'],
                                 'format' => 'raw',
                             ],
-                            'board_date',
                             'delete_date',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
@@ -125,5 +136,12 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
-
+<?php
+\artsoft\widgets\DateRangePicker::widget([
+    'model' => $searchModel,
+    'attribute' => 'board_date',
+    'format' => 'DD.MM.YYYY H:mm',
+    'opens' => 'left',
+])
+?>
 

@@ -18,8 +18,8 @@ class BoardSearch extends Board
     public function rules()
     {
         return [
-            [['id', 'author_id', 'category_id', 'importance_id', 'board_date', 'delete_date', 'status', 'version', 'created_by'], 'integer'],
-            [['title', 'description', 'recipients_list'], 'safe'],
+            [['id', 'category_id', 'importance_id', 'delete_date', 'status', 'version', 'created_by'], 'integer'],
+            [['title', 'description', 'recipients_list', 'board_date'], 'safe'],
         ];
     }
 
@@ -65,16 +65,20 @@ class BoardSearch extends Board
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'author_id' => $this->author_id,
             'category_id' => $this->category_id,
             'importance_id' => $this->importance_id,
-            'board_date' => $this->board_date,
             'delete_date' => $this->delete_date,
             'status' => $this->status,
             'version' => $this->version,
             'created_by' => $this->created_by,
         ]);
-
+        if ($this->board_date) {
+            $tmp = explode(' - ', $this->board_date);
+            if (isset($tmp[0], $tmp[1])) {
+                $query->andFilterWhere(['between', static::tableName() . '.board_date',
+                    strtotime($tmp[0]), strtotime($tmp[1])]);
+            }
+        }
         $query->andFilterWhere(['like', 'title', $this->title])
             ->andFilterWhere(['like', 'description', $this->description])
             ->andFilterWhere(['like', 'recipients_list', $this->recipients_list]);

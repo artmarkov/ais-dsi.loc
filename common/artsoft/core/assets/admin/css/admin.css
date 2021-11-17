@@ -328,3 +328,9 @@ img.dw-media-image {
     content: "*";
     color: red;
 }
+.required .checkbox label:after {
+    content: "";
+}
+.required .radio label:after {
+    content: "";
+}

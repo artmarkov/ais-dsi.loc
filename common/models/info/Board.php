@@ -16,8 +16,8 @@ use yii\helpers\ArrayHelper;
  * This is the model class for table "board".
  *
  * @property int $id
- * @property int $author_id
  * @property int $category_id
+ * @property int $author_id
  * @property int $importance_id
  * @property string $title
  * @property string $description
@@ -82,14 +82,13 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
     public function rules()
     {
         return [
-            [['author_id', 'category_id', 'title', 'description', 'board_date', 'delete_date'], 'required'],
+            [['category_id', 'title', 'description', 'board_date', 'delete_date'], 'required'],
+            [['author_id'], 'required'],
             [['category_id', 'delete_date'], 'default', 'value' => null],
-            [['author_id', 'category_id', 'importance_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
+            [['category_id', 'importance_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['board_date', 'delete_date', 'recipients_list'], 'safe'],
             [['title'], 'string', 'max' => 127],
             [['description'], 'string', 'max' => 1024],
-            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['author_id' => 'id']],
-            [['author_id'], 'default', 'value' => Yii::$app->user->identity->getId()],
         ];
     }
 
@@ -100,8 +99,8 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
     {
         return [
             'id' => Yii::t('art/info', 'ID'),
-            'author_id' => Yii::t('art', 'Author'),
             'category_id' => Yii::t('art', 'Category'),
+            'author_id' => Yii::t('art', 'Author'),
             'importance_id' => Yii::t('art/info', 'Importance'),
             'title' => Yii::t('art', 'Title'),
             'description' => Yii::t('art', 'Description'),
@@ -215,5 +214,17 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
     public static function getFullAccessPermission()
     {
         return 'fullBoardAccess';
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if($this->category_id != self::CAT_SELECT) {
+            $this->recipients_list = null;
+        }
+        return parent::beforeSave($insert);
     }
 }

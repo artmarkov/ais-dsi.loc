@@ -3,7 +3,6 @@
 use artsoft\widgets\ActiveForm;
 use artsoft\models\User;
 use common\models\info\Board;
-use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
@@ -31,22 +30,28 @@ use kartik\date\DatePicker;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
+                    <?php if (!$model->isNewRecord && User::hasPermission('editBoardAuthor')): ?>
+                        <?= $form->field($model->loadDefaultValues(), 'author_id')->widget(\kartik\select2\Select2::class, [
+                            'data' => User::getUsersListByCategory(['teachers', 'employees']),
+                            'showToggleAll' => false,
+                            'options' => [
+//                            'disabled' => $readonly,
+                                'placeholder' => Yii::t('art/guide', 'Select Authors...'),
+                                'multiple' => false,
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => false,
+                                'minimumInputLength' => 3,
+                            ],
 
-                    <?= $form->field($model->loadDefaultValues(), 'author_id')->dropDownList(User::getUsersListByCategory(['teachers','employees'])) ?>
-
-                    <?= $form->field($model, 'category_id')->dropDownList(Board::getCategoryListRuleFilter()) ?>
-
-                    <?= $form->field($model, 'importance_id')->dropDownList(Board::getImportanceList(), [
-                        'options' => [
-                            Board::IMPORTANCE_NORM => ['selected' => true]
-                        ]
-                    ]) ?>
-
-                    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
-
-                    <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
-
-                    <?= $form->field($model, 'recipients_list')->widget(\kartik\select2\Select2::class, [
+                        ]);
+                        ?>
+                    <?php endif; ?>
+                    <?= $form->field($model, 'category_id')->radioList(Board::getCategoryListRuleFilter()) ?>
+                    <?php
+                    $options = ($model->category_id != 10) ? ['options' => ['style' => 'display:none']] : [];
+                    ?>
+                    <?= $form->field($model, 'recipients_list', $options)->widget(\kartik\select2\Select2::class, [
                         'data' => Board::getRecipientsList(),
                         'options' => [
 //                                    'disabled' => $readonly,
@@ -58,6 +63,16 @@ use kartik\date\DatePicker;
                         ],
                     ]);
                     ?>
+                    <?= $form->field($model, 'importance_id')->dropDownList(Board::getImportanceList(), [
+                        'options' => [
+                            Board::IMPORTANCE_NORM => ['selected' => true]
+                        ]
+                    ]) ?>
+
+                    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+
+                    <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+
                     <?= $form->field($model, 'board_date')->widget(DatePicker::class, ['options' => ['value' => date('d.m.Y')]]); ?>
 
                     <?= $form->field($model, 'delete_date')->widget(DatePicker::class); ?>
@@ -91,3 +106,12 @@ use kartik\date\DatePicker;
     <?php ActiveForm::end(); ?>
 
 </div>
+<?php
+$js = <<<JS
+    $('input[name="Board[category_id]"]').click(function(){
+       $(this).val() === '10' ? $('.field-board-recipients_list').show() : $('.field-board-recipients_list').hide();
+     });
+JS;
+
+$this->registerJs($js, \yii\web\View::POS_LOAD);
+?>
