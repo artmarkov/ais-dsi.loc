@@ -7,16 +7,16 @@ use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\PriceHelper;
 use artsoft\helpers\RefBook;
-use artsoft\models\User;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\EducationSpeciality;
 use common\models\parents\Parents;
 use common\models\students\Student;
 use common\models\subject\Subject;
-use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use Yii;
+
 use function morphos\Russian\inflectName;
 
 /**
@@ -81,7 +81,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
     {
         return [
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year'], 'required'],
-           // [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required'],
+            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) { return !$model->isNewRecord; }],
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
@@ -271,7 +271,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'doc_contract_start' => date('j', strtotime($model->doc_contract_start)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_start))] . ' ' . date('Y', strtotime($model->doc_contract_start)), // дата начала договора
             'doc_contract_end' => date('j', strtotime($model->doc_contract_end)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_end))] . ' ' . date('Y', strtotime($model->doc_contract_end)), $model->doc_contract_end, // Дата окончания договора
             'programm_name' => $model->programm->name, // название программы
-            'programm_level' => $modelProgrammLevel->level->name, // уровень программы
+            'programm_level' => isset($modelProgrammLevel->level) ? $modelProgrammLevel->level->name : null, // уровень программы
             'term_mastering' => 'Срок обучения:' . $model->programm->term_mastering, // Срок освоения образовательной программы
             'course' => $model->course . ' класс',
             'year_time_total' => $model->year_time_total,

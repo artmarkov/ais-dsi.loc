@@ -3,6 +3,7 @@
 namespace backend\controllers\studyplan;
 
 use backend\models\Model;
+use common\models\education\EducationCat;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\history\StudyplanHistory;
@@ -17,6 +18,11 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\studyplan\Studyplan';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanSearch';
+
+    // Шаблоны документов
+    public $template_csf = 'document/contract_student_free.docx';
+    public $template_cs = 'document/contract_student.docx';
+    public $template_ss = 'document/statement_student.docx';
 
     /**
      * @return mixed|string|\yii\web\Response
@@ -63,7 +69,7 @@ class DefaultController extends MainController
 
                     if ($flag) {
                         $transaction->commit();
-                        $this->getSubmitAction();
+                        $this->getSubmitAction($model);
                     }
                 } catch (Exception $e) {
                     $transaction->rollBack();
@@ -134,9 +140,13 @@ class DefaultController extends MainController
             }
         }
         if (Yii::$app->request->post('submitAction') == 'doc_contract') {
-            $model->makeDocx('document/contract_student.docx');
+            if ($model->programm->catType == EducationCat::BASIS_FREE) {
+                $model->makeDocx($this->template_csf);
+            } else {
+                $model->makeDocx($this->template_cs);
+            }
         } elseif (Yii::$app->request->post('submitAction') == 'doc_statement') {
-            $model->makeDocx('document/statement_student.docx');
+            $model->makeDocx($this->template_ss);
         }
         return $this->render('update', [
             'model' => $model,

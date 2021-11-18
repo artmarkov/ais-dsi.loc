@@ -394,9 +394,9 @@ JS
                                 ]);
                                 ?>
 
-                                <?= $form->field($model, 'doc_received_flag')->checkbox() ?>
+                                <?= $form->field($model, 'doc_received_flag')->checkbox(['disabled' => $readonly]) ?>
 
-                                <?= $form->field($model, 'doc_sent_flag')->checkbox() ?>
+                                <?= $form->field($model, 'doc_sent_flag')->checkbox(['disabled' => $readonly]) ?>
 
                             </div>
                         </div>

@@ -17,7 +17,7 @@ use artsoft\widgets\Nav;
             [
                 'label' => 'Главная',
                 'icon' => 'fa fa-th',
-                'url' => Yii::$app->urlManager->baseUrl,
+                'url' => Yii::$app->homeUrl,
                 'visible' => \artsoft\models\User::hasPermission('viewDashboard')
             ],
             [

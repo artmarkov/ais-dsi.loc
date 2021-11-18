@@ -2,17 +2,15 @@
 
 namespace frontend\controllers;
 
-use artsoft\auth\models\forms\SignupForm;
 use frontend\models\ContactForm;
 use frontend\components\NumericCaptcha;
-use frontend\models\SupportForm;
+use yii\helpers\ArrayHelper;
 use Yii;
-use yii\data\ActiveDataProvider;
 
 /**
  * Site controller
  */
-class SiteController extends \artsoft\controllers\BaseController
+class SiteController extends DashboardController
 {
     public $freeAccess = true;
 
@@ -21,7 +19,7 @@ class SiteController extends \artsoft\controllers\BaseController
      */
     public function actions()
     {
-        return [
+        return ArrayHelper::merge(parent::actions(), [
             'error' => [
                 'class' => 'artsoft\web\ErrorAction',
             ],
@@ -29,16 +27,18 @@ class SiteController extends \artsoft\controllers\BaseController
                 'class' => NumericCaptcha::className(),
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
-        ];
+        ]);
     }
 
     /**
-     * Displays homepage.
-     *
-     * @return mixed
+     * @return string
+     * @throws \yii\web\NotFoundHttpException
      */
     public function actionIndex()
     {
+        if (!Yii::$app->user->isGuest) {
+            $this->redirect('dashboard');
+        }
         return $this->render('index');
         //if nothing suitable was found then throw 404 error
         throw new \yii\web\NotFoundHttpException('Page not found.');
