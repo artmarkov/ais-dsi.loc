@@ -40,11 +40,11 @@ return [
             'enablePrettyUrl' => true,
             'scriptUrl' => 'http://artsoft.loc',
         ],
-            'user' => [
-                'class' => 'artsoft\helpers\ConsoleUser',
-                'identityClass' => 'artsoft\models\User',
-                'autoUserIdentityId' => env('CONSOLE_USER_ID')
-            ],
+        'user' => [
+            'class' => 'artsoft\helpers\ConsoleUser',
+            'identityClass' => 'artsoft\models\User',
+            'autoUserIdentityId' => env('CONSOLE_USER_ID')
+        ],
     ],
     'modules' => [
         'gii' => 'yii\gii\Module',
