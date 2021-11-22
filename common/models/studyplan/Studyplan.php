@@ -50,6 +50,10 @@ use function morphos\Russian\inflectName;
  */
 class Studyplan extends \artsoft\db\ActiveRecord
 {
+// Шаблоны документов
+    const template_csf = 'document/contract_student_free.docx';
+    const template_cs = 'document/contract_student.docx';
+    const template_ss = 'document/statement_student.docx';
 
     /**
      * {@inheritdoc}
@@ -81,7 +85,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
     {
         return [
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year'], 'required'],
-            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) { return !$model->isNewRecord; }],
+            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) {
+                return !$model->isNewRecord;
+            }],
             [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
@@ -261,8 +267,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'rank' => 'doc',
             'doc_date' => date('j', strtotime($model->doc_date)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_date))] . ' ' . date('Y', strtotime($model->doc_date)), // дата договора
             'doc_signer' => $model->parent->fullName, // Полное имя подписанта-родителя
-            'doc_signer_iof' => RefBook::find('parents_iof')->getValue( $model->parent->id),
+            'doc_signer_iof' => RefBook::find('parents_iof')->getValue($model->parent->id),
             'doc_signer_gen' => inflectName($model->parent->fullName, 'родительный'), // Полное имя подписанта-родителя родительный
+            'doc_signer_dat' => inflectName($model->parent->fullName, 'дательный'), // Полное имя подписанта-родителя дательный
             'doc_student' => $model->student->fullName, // Полное имя ученика
             'doc_student_gen' => inflectName($model->student->fullName, 'родительный'), // Полное имя ученика родительный
             'doc_student_acc' => inflectName($model->student->fullName, 'винительный'), // Полное имя ученика винительный

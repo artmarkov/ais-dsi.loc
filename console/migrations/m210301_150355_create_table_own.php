@@ -15,13 +15,13 @@ class m210301_150355_create_table_own extends \artsoft\db\BaseMigration
             'slug' => $this->string(32)->notNull(),
         ], $tableOptions);
         $this->addCommentOnTable('guide_division','Отделения');
-        $this->db->createCommand()->resetSequence('guide_division', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('guide_division', ['id', 'name', 'slug'], [
             [1000, 'Музыкальное отделение', 'МО'],
             [1001, 'Художественное отделение', 'ИЗО'],
             [1002, 'Отделение "Хореография"', 'ХО'],
         ])->execute();
+        $this->db->createCommand()->resetSequence('guide_division', 1003)->execute();
 
         $this->createTable('guide_department', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
@@ -32,7 +32,6 @@ class m210301_150355_create_table_own extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_department','Отделы');
-        $this->db->createCommand()->resetSequence('guide_department', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('guide_department', ['id', 'division_id', 'name', 'slug', 'status'], [
             [1000, 1000, 'Фортепиано', 'Фно', 1],
@@ -56,11 +55,12 @@ class m210301_150355_create_table_own extends \artsoft\db\BaseMigration
             [1018, 1000, 'Сценическое мастерство', 'Сцен.маст-во', 1],
         ])->execute();
 
+        $this->db->createCommand()->resetSequence('guide_department', 1019)->execute();
         $this->createIndex('division_id', 'guide_department', 'division_id');
         $this->addForeignKey('department_ibfk_1', 'guide_department', 'division_id', 'guide_division', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('invoices', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'name' => $this->string(512)->notNull(),
             'recipient' => $this->string(512)->notNull(),
             'inn' => $this->string(32)->notNull(),

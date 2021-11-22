@@ -6,6 +6,7 @@ use artsoft\helpers\ArtHelper;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use backend\models\Model;
+use common\models\education\EducationCat;
 use common\models\education\EducationProgrammLevel;
 use common\models\history\StudyplanHistory;
 use common\models\students\StudentDependence;
@@ -324,9 +325,13 @@ class DefaultController extends MainController
                 }
             }
             if (Yii::$app->request->post('submitAction') == 'doc_contract') {
-                $model->makeDocx('document/contract_student.docx');
+                if ($model->programm->catType == EducationCat::BASIS_FREE) {
+                    $model->makeDocx(Studyplan::template_csf);
+                } else {
+                    $model->makeDocx(Studyplan::template_cs);
+                }
             } elseif (Yii::$app->request->post('submitAction') == 'doc_statement') {
-                $model->makeDocx('document/statement_student.docx');
+                $model->makeDocx(Studyplan::template_ss);
             }
             return $this->render('/studyplan/default/_form', [
                 'model' => $model,
