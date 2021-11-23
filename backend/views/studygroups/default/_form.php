@@ -49,11 +49,10 @@ use artsoft\helpers\Html;
                                 ],
                             ])->label(Yii::t('art/guide', 'Course'));
                             ?>
-                            <?php $model->union->getSubjectByProgramList();?>
                             <?= $form->field($model, 'union_id')->widget(\kartik\select2\Select2::class, [
-                                'id' => 'union_id',
                                 'data' => \artsoft\helpers\RefBook::find('union_name', $model->isNewRecord ? \common\models\education\EducationUnion::STATUS_ACTIVE : '')->getList(),
                                 'options' => [
+                                'id' => 'union_id',
 
                                     // 'disabled' => $readonly,
                                     'placeholder' => Yii::t('art', 'Select...'),
@@ -63,36 +62,52 @@ use artsoft\helpers\Html;
                                 ],
 
                             ]); ?>
-                            <?= $form->field($model, 'subject_cat_id')->widget(\kartik\select2\Select2::class, [
-                                    'id' => 'subject_cat_id',
-                                    'data' => \artsoft\helpers\RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+<!--                            --><?php //if(!$model->isNewRecord):?>
+                            <?= $form->field($model, 'subject_cat_id')->widget(\kartik\depdrop\DepDrop::class, [
+                                    'data' =>  $model::getSubjectCategoryForUnion($model->union_id),
                                     'options' => [
-
+                                    'id' => 'subject_cat_id',
                                         // 'disabled' => $readonly,
                                         'placeholder' => Yii::t('art', 'Select...'),
                                     ],
                                     'pluginOptions' => [
-                                        'allowClear' => true
+                                    'depends' => ['union_id'],
+                                        'placeholder' => Yii::t('art', 'Select...'),
+                                        'url' => \yii\helpers\Url::to(['/studygroups/default/subject-cat'])
                                     ],
 
                             ]); ?>
 
-<!--                            --><?//= $form->field($model, 'subject_id')->widget(\kartik\depdrop\DepDrop::class, [
-//                                    'data' => $model->getSubjectByCategory($model->subject_cat_id),
-//                                    'options' => [
-//                                        'prompt' => Yii::t('art', 'Select...'),
-//                                       // 'disabled' => $readonly,
-//                                    ],
-//                                    'pluginOptions' => [
-//                                        'depends' => ['subject_cat_id'],
-//                                        'placeholder' => Yii::t('art', 'Select...'),
-//                                        'url' => \yii\helpers\Url::to(['/education/default/subject', 'id' => $model->id])
-//                                    ]
-//                                ]); ?>
+                            <?= $form->field($model, 'subject_vid_id')->widget(\kartik\select2\Select2::class, [
+                                'data' =>  RefBook::find('subject_vid_name')->getList(),
+                                'options' => [
+                                    'id' => 'subject_vid_id',
+                                    // 'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
 
-                        <?= $form->field($model, 'subject_type_id')->textInput() ?>
+                            ]); ?>
 
-                        <?= $form->field($model, 'subject_vid_id')->textInput() ?>
+
+                            <?= $form->field($model, 'subject_id')->widget(\kartik\depdrop\DepDrop::class, [
+                                    'data' => $model::getSubjectForUnionAndCat($model->union_id, $model->subject_cat_id),
+                                    'options' => [
+                                        'prompt' => Yii::t('art', 'Select...'),
+                                       // 'disabled' => $readonly,
+                                    ],
+                                    'pluginOptions' => [
+                                        'depends' => ['union_id', 'subject_cat_id', 'subject_vid_id'],
+                                        'placeholder' => Yii::t('art', 'Select...'),
+                                        'url' => \yii\helpers\Url::to(['/studygroups/default/subject'])
+                                    ]
+                                ]); ?>
+
+<!--                        --><?//= $form->field($model, 'subject_type_id')->dropDownList(\common\models\subject\SubjectType::getTypeList()) ?>
+
+<!--                        --><?//= $form->field($model, 'subject_vid_id')->dropDownList(\common\models\subject\SubjectVid::getVidList()) ?>
 
                         <?= $form->field($model, 'sect_name')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'studyplan_list')->widget(\kartik\select2\Select2::className(), [
@@ -109,7 +124,7 @@ use artsoft\helpers\Html;
                             ?>
 
                         <?= $form->field($model, 'week_time')->textInput() ?>
-
+<!--                            --><?php //endif;?>
 
                     </div>
                 </div>

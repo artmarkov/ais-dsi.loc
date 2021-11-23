@@ -186,9 +186,9 @@ JS
                                                         [
                                                             'model' => $modelDependence,
                                                             'attribute' => "[{$index}]subject_cat_id",
-                                                            'id' => 'studyplansubject-' . $index . '-subject_cat_id',
                                                             'data' => \artsoft\helpers\RefBook::find('subject_category_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
                                                             'options' => [
+                                                            'id' => 'studyplansubject-' . $index . '-subject_cat_id',
 
                                                                 'disabled' => $readonly,
                                                                 'placeholder' => Yii::t('art', 'Select...'),
@@ -220,7 +220,7 @@ JS
                                                             'pluginOptions' => [
                                                                 'depends' => ['studyplansubject-' . $index . '-subject_cat_id'],
                                                                 'placeholder' => Yii::t('art', 'Select...'),
-                                                                'url' => \yii\helpers\Url::to(['/education/default/subject', 'id' => $model->id])
+                                                                'url' => \yii\helpers\Url::to(['/studyplan/default/subject', 'id' => $model->id])
                                                             ]
                                                         ]
                                                     ) ?>

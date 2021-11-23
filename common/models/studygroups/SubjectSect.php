@@ -13,6 +13,7 @@ use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "subject_sect".
@@ -75,7 +76,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
         return [
             [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id'], 'default', 'value' => null],
             [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['union_id', 'subject_cat_id', 'studyplan_list'], 'required'],
+           // [['union_id', 'subject_cat_id', 'studyplan_list'], 'required'],
             [['studyplan_list'], 'safe'],
             [['week_time'], 'number'],
             [['sect_name'], 'string', 'max' => 64],
@@ -185,5 +186,82 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function getTeachersLoads()
     {
         return $this->hasMany(TeachersLoad::class, ['sect_id' => 'id']);
+    }
+
+    /**
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getSubjectCategoryForUnion($union_id)
+    {
+        $funcSql = <<< SQL
+    select distinct subject_cat_id as id, guide_subject_category.name as name
+	from studyplan
+	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
+	inner join guide_subject_category on guide_subject_category.id = studyplan_subject.subject_cat_id
+	inner join subject on subject.id = studyplan_subject.subject_id
+	inner join guide_subject_vid on guide_subject_vid.id = studyplan_subject.subject_vid_id
+	where studyplan.programm_id = any (string_to_array((
+        select programm_list from education_union where id = {$union_id}), ',')::int[])
+        and subject_id is not null
+        and guide_subject_vid.qty_max > 1
+SQL;
+        return  $union_id ? ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'id', 'name') : [];
+    }
+    public static function getSubjectCategoryForUnionToId($union_id)
+    {
+        $funcSql = <<< SQL
+    select distinct subject_cat_id as id, guide_subject_category.name as name
+	from studyplan
+	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
+	inner join guide_subject_category on guide_subject_category.id = studyplan_subject.subject_cat_id
+	inner join subject on subject.id = studyplan_subject.subject_id
+	inner join guide_subject_vid on guide_subject_vid.id = studyplan_subject.subject_vid_id
+	where studyplan.programm_id = any (string_to_array((
+        select programm_list from education_union where id = {$union_id}), ',')::int[])
+        and subject_id is not null
+        and guide_subject_vid.qty_max > 1
+SQL;
+        return $union_id ? Yii::$app->db->createCommand($funcSql)->queryAll() : [];
+    }
+    /**
+     * @param $cat_id
+     * @return string
+     */
+    protected static function getQuery($union_id, $cat_id)
+    {
+        return <<< SQL
+    select distinct subject_id as id, subject.name as name
+	from studyplan
+	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
+	inner join guide_subject_category on guide_subject_category.id = studyplan_subject.subject_cat_id
+	inner join subject on subject.id = studyplan_subject.subject_id
+	inner join guide_subject_vid on guide_subject_vid.id = studyplan_subject.subject_vid_id
+	where studyplan.programm_id = any (string_to_array((
+        select programm_list from education_union where id = {$union_id}), ',')::int[])
+        and subject_id is not null
+        and guide_subject_vid.qty_max > 1
+        and studyplan_subject.subject_cat_id = {$cat_id}
+SQL;
+    }
+
+    /**
+     * @param $cat_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getSubjectForUnionAndCat($union_id, $cat_id)
+    {
+        return $cat_id ? ArrayHelper::map(Yii::$app->db->createCommand(self::getQuery($union_id, $cat_id))->queryAll(), 'id', 'name') : [];
+    }
+
+    /**
+     * @param $cat_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getSubjectForUnionAndCatToId($union_id, $cat_id)
+    {
+        return $cat_id ? Yii::$app->db->createCommand(self::getQuery($union_id, $cat_id))->queryAll() : [];
     }
 }

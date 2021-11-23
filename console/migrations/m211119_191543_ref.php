@@ -33,11 +33,12 @@ class m211119_191543_ref extends \artsoft\db\BaseMigration
             'union_id' => $this->integer()->notNull(),
             'course' => $this->integer(),
             'subject_cat_id' => $this->integer()->notNull(),
+            'subject_cat_id' => $this->integer(),
             'subject_id' => $this->integer(),
             'subject_type_id' => $this->integer(),
             'subject_vid_id' => $this->integer(),
             'sect_name' => $this->string(64),
-            'studyplan_list' => $this->text()->notNull(),
+            'studyplan_list' => $this->text(),
             'week_time' => $this->float(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
@@ -133,7 +134,6 @@ class m211119_191543_ref extends \artsoft\db\BaseMigration
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['union_name', 'education_union', 'id', 'union_name', 'union_name', 'status', null, 'Объединения программ'],
         ])->execute();
-
 
     }
 
