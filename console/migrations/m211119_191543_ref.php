@@ -33,7 +33,6 @@ class m211119_191543_ref extends \artsoft\db\BaseMigration
             'union_id' => $this->integer()->notNull(),
             'course' => $this->integer(),
             'subject_cat_id' => $this->integer()->notNull(),
-            'subject_cat_id' => $this->integer(),
             'subject_id' => $this->integer(),
             'subject_type_id' => $this->integer(),
             'subject_vid_id' => $this->integer(),

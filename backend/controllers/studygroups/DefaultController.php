@@ -17,7 +17,6 @@ class DefaultController  extends MainController
 
     public function actionSubject()
     {
-
         $out = [];
         if (isset($_POST['depdrop_parents'])) {
             $parents = $_POST['depdrop_parents'];
@@ -32,9 +31,9 @@ class DefaultController  extends MainController
         }
         return json_encode(['output' => '', 'selected' => '']);
     }
+
     public function actionSubjectCat()
     {
-        
         $out = [];
         if (isset($_POST['depdrop_parents'])) {
             $parents = $_POST['depdrop_parents'];

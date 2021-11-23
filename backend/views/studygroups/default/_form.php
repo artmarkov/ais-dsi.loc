@@ -105,9 +105,8 @@ use artsoft\helpers\Html;
                                     ]
                                 ]); ?>
 
-<!--                        --><?//= $form->field($model, 'subject_type_id')->dropDownList(\common\models\subject\SubjectType::getTypeList()) ?>
+                        <?= $form->field($model, 'subject_type_id')->dropDownList(\common\models\subject\SubjectType::getTypeList()) ?>
 
-<!--                        --><?//= $form->field($model, 'subject_vid_id')->dropDownList(\common\models\subject\SubjectVid::getVidList()) ?>
 
                         <?= $form->field($model, 'sect_name')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'studyplan_list')->widget(\kartik\select2\Select2::className(), [
