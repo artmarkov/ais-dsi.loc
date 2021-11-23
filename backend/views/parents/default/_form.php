@@ -29,12 +29,13 @@ jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
     });
 });
 ';
+$this->registerJs($js);
+
 $this->registerJs(<<<JS
 function initSelect2Loading(a,b){ initS2Loading(a,b); }
 function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
 JS
     , \yii\web\View::POS_END);
-$this->registerJs($js);
 ?>
 
 <div class="parents-form">

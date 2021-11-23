@@ -66,8 +66,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
-
                             'union_name',
+                            'class_index',
                             [
                                 'attribute' => 'programm_list',
                                 'filter' => RefBook::find('education_programm_name', \common\models\education\EducationProgramm::STATUS_ACTIVE)->getList(),

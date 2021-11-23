@@ -19,8 +19,6 @@ class SubjectSectSearch extends SubjectSect
     {
         return [
             [['id', 'plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id'], 'integer'],
-            [['sect_name', 'studyplan_list'], 'safe'],
-            [['week_time'], 'number'],
         ];
     }
 
@@ -73,16 +71,12 @@ class SubjectSectSearch extends SubjectSect
             'subject_id' => $this->subject_id,
             'subject_type_id' => $this->subject_type_id,
             'subject_vid_id' => $this->subject_vid_id,
-            'week_time' => $this->week_time,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
             'version' => $this->version,
         ]);
-
-        $query->andFilterWhere(['like', 'sect_name', $this->sect_name])
-            ->andFilterWhere(['like', 'studyplan_list', $this->studyplan_list]);
 
         return $dataProvider;
     }

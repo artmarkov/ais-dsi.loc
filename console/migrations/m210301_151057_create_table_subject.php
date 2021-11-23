@@ -45,9 +45,9 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
         $this->addCommentOnTable('guide_subject_vid', 'Форма занятий');
         $this->db->createCommand()->resetSequence('guide_subject_vid', 1000)->execute();
         $this->db->createCommand()->batchInsert('guide_subject_vid', ['name', 'slug', 'qty_min', 'qty_max', 'info', 'status'], [
-            ['Индивидуальная', 'Инд.', 0, 1, '', 1],
-            ['Мелкогрупповая', 'Мелк-гр.', 0, 1, '', 1],
-            ['Групповая', 'Гр.', 0, 1, '', 1],
+            ['Индивидуальная', 'Инд.', 1, 1, '', 1],
+            ['Мелкогрупповая', 'Мелк-гр.', 2, 3, '', 1],
+            ['Групповая', 'Гр.', 4, 10, '', 1],
         ])->execute();
 
 

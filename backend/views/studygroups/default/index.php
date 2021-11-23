@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-6">
-                            <?php 
+                            <?php
                             /* Uncomment this to activate GridQuickLinks */
                             /* echo GridQuickLinks::widget([
                                 'model' => SubjectSect::className(),
@@ -35,24 +35,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?=  GridPageSize::widget(['pjaxId' => 'subject-sect-grid-pjax']) ?>
+                            <?= GridPageSize::widget(['pjaxId' => 'subject-sect-grid-pjax']) ?>
                         </div>
                     </div>
 
-                    <?php 
+                    <?php
                     Pjax::begin([
                         'id' => 'subject-sect-grid-pjax',
                     ])
                     ?>
 
-                    <?= 
+                    <?=
                     GridView::widget([
                         'id' => 'subject-sect-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'subject-sect-grid',
-                            'actions' => [ Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
+                            'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
@@ -60,32 +60,21 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'id',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/studygroups/default',
-                                'title' => function(SubjectSect $model) {
+                                'title' => function (SubjectSect $model) {
                                     return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                             ],
 
-            'id',
-            'plan_year',
-            'programm_id',
-            'course',
-            'subject_cat_id',
-            // 'subject_id',
-            // 'subject_type_id',
-            // 'subject_vid_id',
-            // 'sect_name',
-            // 'studyplan_list:ntext',
-            // 'week_time',
-            // 'created_at',
-            // 'created_by',
-            // 'updated_at',
-            // 'updated_by',
-            // 'version',
-
-                ],
-            ]);
-            ?>
+                            'course',
+                            'subject_cat_id',
+                            'subject_id',
+                            'subject_type_id',
+                            'subject_vid_id',
+                            'plan_year',
+                        ],
+                    ]);
+                    ?>
 
                     <?php Pjax::end() ?>
                 </div>

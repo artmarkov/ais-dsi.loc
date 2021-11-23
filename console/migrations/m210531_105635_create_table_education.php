@@ -111,7 +111,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable('education_programm', 'Учебные программы');
+        $this->addCommentOnTable('education_programm', 'Учебные планы');
         $this->createIndex('education_cat_id', 'education_programm', 'education_cat_id');
         $this->addForeignKey('education_programm_ibfk_1', 'education_programm', 'education_cat_id', 'guide_education_cat', 'id', 'NO ACTION', 'NO ACTION');
 

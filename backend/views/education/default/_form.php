@@ -54,7 +54,7 @@ $this->registerJs($js);
 
     <div class="panel">
         <div class="panel-heading">
-            Сведения об учебной программе
+            Сведения об учебном плане
             <?php if (!$model->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
             <?php endif; ?>
@@ -112,7 +112,7 @@ $this->registerJs($js);
 
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        Этапы программы
+                        Этапы учебного плана
                     </div>
                     <div class="panel-body">
                         <div class="container-items"><!-- widgetBody -->

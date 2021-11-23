@@ -2,7 +2,6 @@
 
 namespace common\models\studygroups;
 
-use artsoft\behaviors\ArrayFieldBehavior;
 use common\models\activities\SectSchedule;
 use \common\models\education\EducationUnion;
 use common\models\subject\Subject;
@@ -26,9 +25,6 @@ use yii\helpers\ArrayHelper;
  * @property int|null $subject_id
  * @property int|null $subject_type_id
  * @property int|null $subject_vid_id
- * @property string|null $sect_name
- * @property string $studyplan_list
- * @property float|null $week_time
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -61,10 +57,6 @@ class SubjectSect extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
-            [
-                'class' => ArrayFieldBehavior::class,
-                'attributes' => ['studyplan_list'],
-            ],
         ];
     }
 
@@ -76,10 +68,8 @@ class SubjectSect extends \artsoft\db\ActiveRecord
         return [
             [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id'], 'default', 'value' => null],
             [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-           // [['union_id', 'subject_cat_id', 'studyplan_list'], 'required'],
+           // [['union_id', 'subject_cat_id'], 'required'],
             [['studyplan_list'], 'safe'],
-            [['week_time'], 'number'],
-            [['sect_name'], 'string', 'max' => 64],
             [['union_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationUnion::class, 'targetAttribute' => ['union_id' => 'id']],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
@@ -102,9 +92,6 @@ class SubjectSect extends \artsoft\db\ActiveRecord
             'subject_id' => Yii::t('art/guide', 'Subject Name'),
             'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
             'subject_vid_id' => Yii::t('art/guide', 'Subject Vid'),
-            'sect_name' => Yii::t('art/guide', 'Sect Name'),
-            'studyplan_list' => Yii::t('art/guide', 'Studyplan List'),
-            'week_time' => Yii::t('art/guide', 'Week Time'),
             'created_at' => Yii::t('art/guide', 'Created'),
             'created_by' => Yii::t('art/guide', 'Created By'),
             'updated_at' => Yii::t('art/guide', 'Updated'),
@@ -186,6 +173,16 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function getTeachersLoads()
     {
         return $this->hasMany(TeachersLoad::class, ['sect_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[SubjectSectStudyplans]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubjectSectStudyplans()
+    {
+        return $this->hasMany(SubjectSectStudyplan::className(), ['subject_sect_id' => 'id']);
     }
 
     /**

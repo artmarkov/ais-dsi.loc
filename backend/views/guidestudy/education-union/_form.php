@@ -41,7 +41,10 @@ use artsoft\helpers\Html;
                         ]
                     ])->label(Yii::t('art/studyplan', 'Education Programm'));
                     ?>
+                    <?= $form->field($model, 'class_index')->textInput(['maxlength' => true]) ?>
+
                     <?= $form->field($model, 'description')->textarea(['rows' => 3, 'maxlength' => true]) ?>
+
                     <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(EducationUnion::getStatusList()) ?>
 
                 </div>

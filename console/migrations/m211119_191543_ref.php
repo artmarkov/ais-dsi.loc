@@ -14,6 +14,7 @@ class m211119_191543_ref extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'union_name' => $this->string(64),
             'programm_list' => $this->text()->notNull(),
+            'class_index' => $this->string(32),
             'description' => $this->string(1024)->notNull(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
@@ -23,7 +24,7 @@ class m211119_191543_ref extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable('education_union', 'Объединение учебных программ'); // включает в себя учебные программы под одно название
+        $this->addCommentOnTable('education_union', 'Объединение учебных планов'); // включает в себя учебные планы под одно название
         $this->db->createCommand()->resetSequence('education_union', 1000)->execute();
 
 
@@ -36,9 +37,6 @@ class m211119_191543_ref extends \artsoft\db\BaseMigration
             'subject_id' => $this->integer(),
             'subject_type_id' => $this->integer(),
             'subject_vid_id' => $this->integer(),
-            'sect_name' => $this->string(64),
-            'studyplan_list' => $this->text(),
-            'week_time' => $this->float(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -59,6 +57,22 @@ class m211119_191543_ref extends \artsoft\db\BaseMigration
         $this->addForeignKey('subject_sect_ibfk_3', 'subject_sect', 'subject_id', 'subject', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('subject_sect_ibfk_4', 'subject_sect', 'subject_type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('subject_sect_ibfk_5', 'subject_sect', 'subject_vid_id', 'guide_subject_vid', 'id', 'NO ACTION', 'NO ACTION');
+
+        $this->createTableWithHistory('subject_sect_studyplan', [
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'subject_sect_id' => $this->integer(),
+            'studyplan_list' => $this->text(),
+            'created_at' => $this->integer()->notNull(),
+            'created_by' => $this->integer(),
+            'updated_at' => $this->integer()->notNull(),
+            'updated_by' => $this->integer(),
+            'version' => $this->bigInteger()->notNull()->defaultValue(0),
+        ], $tableOptions);
+
+        $this->addCommentOnTable('subject_sect_studyplan', 'Ученики учебной группы');
+        $this->db->createCommand()->resetSequence('subject_sect_studyplan', 10000)->execute();
+        $this->createIndex('subject_sect_id', 'subject_sect_studyplan', 'subject_sect_id');
+        $this->addForeignKey('subject_sect_studyplan_ibfk_1', 'subject_sect_studyplan', 'subject_sect_id', 'subject_sect', 'id', 'CASCADE', 'CASCADE');
 
         $this->createTableWithHistory('teachers_load', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
@@ -149,6 +163,7 @@ class m211119_191543_ref extends \artsoft\db\BaseMigration
         $this->dropForeignKey('teachers_load_ibfk_1', 'teachers_load');
         $this->dropForeignKey('teachers_load_ibfk_2', 'teachers_load');
         $this->dropForeignKey('teachers_load_ibfk_3', 'teachers_load');
+        $this->dropForeignKey('subject_sect_studyplan_ibfk_1', 'subject_sect_studyplan');
         $this->dropForeignKey('subject_sect_ibfk_1', 'subject_sect');
         $this->dropForeignKey('subject_sect_ibfk_2', 'subject_sect');
         $this->dropForeignKey('subject_sect_ibfk_3', 'subject_sect');
@@ -157,6 +172,7 @@ class m211119_191543_ref extends \artsoft\db\BaseMigration
         $this->dropTableWithHistory('teachers_plan');
         $this->dropTableWithHistory('sect_schedule');
         $this->dropTableWithHistory('teachers_load');
+        $this->dropTableWithHistory('subject_sect_studyplan');
         $this->dropTableWithHistory('subject_sect');
         $this->dropTableWithHistory('education_union');
     }
