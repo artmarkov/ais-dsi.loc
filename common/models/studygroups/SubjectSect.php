@@ -4,6 +4,7 @@ namespace common\models\studygroups;
 
 use common\models\activities\SectSchedule;
 use \common\models\education\EducationUnion;
+use common\models\studyplan\Studyplan;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
@@ -68,7 +69,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
         return [
             [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id'], 'default', 'value' => null],
             [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-           // [['union_id', 'subject_cat_id'], 'required'],
+            [['union_id', 'subject_cat_id'], 'required'],
             [['studyplan_list'], 'safe'],
             [['union_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationUnion::class, 'targetAttribute' => ['union_id' => 'id']],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
@@ -166,6 +167,15 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Геттер названия группы
+     * @return string
+     */
+    public function getClassIndex()
+    {
+        return isset($this->union) ? $this->union->class_index : 'Класс';
+    }
+
+    /**
      * Gets query for [[TeachersLoads]].
      *
      * @return \yii\db\ActiveQuery
@@ -186,41 +196,90 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Полный список учеников подгрупп данной группы
+     * @return string
+     */
+    public function getStudyplanList()
+    {
+        $data = [];
+        foreach ($this->getSubjectSectStudyplans()->asArray()->all() as $item => $model) {
+            $data[] = $model['studyplan_list'];
+        }
+        return implode(',', $data);
+    }
+
+    /**
+     * Запрос на получение претендентов на вступление в подгруппы по критериям
      * @return array
      * @throws \yii\db\Exception
      */
+    public function getStudyplanForUnion($readonly)
+    {
+        $funcSql = <<< SQL
+    select studyplan.id, student_id
+	from studyplan
+	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
+	where studyplan.programm_id = any (string_to_array((
+        select programm_list from education_union where id = {$this->union_id}), ',')::int[])
+        and subject_id = {$this->subject_id}
+		and subject_type_id = {$this->subject_type_id}
+		and subject_vid_id = {$this->subject_vid_id}
+		and subject_cat_id = {$this->subject_cat_id}
+		and course = {$this->course}
+		and plan_year = {$this->plan_year}
+		and studyplan.id != all(string_to_array('{$this->getStudyplanList()}', ',')::int[])
+SQL;
+        $data = [];
+        foreach (Yii::$app->db->createCommand($funcSql)->queryAll() as $item => $value) {
+            $model = Studyplan::findOne(['id' => $value['id']]);
+            $data[$value['id']] = [
+                'content' => isset($model->student) ? $model->student->getFullName() : '',
+                'disabled'=> $readonly
+            ];
+        }
+        return $data;
+    }
+
+    /**
+     * список категорий дисциплин заданной группы планов (кроме индивидуальных qty_max > 1)
+     * @param $union_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    /**
+     * @param $cat_id
+     * @return string
+     */
+    protected static function getQuerySub($union_id)
+    {
+        return <<< SQL
+    select distinct subject_cat_id as id, guide_subject_category.name as name
+	from studyplan
+	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
+	inner join guide_subject_category on guide_subject_category.id = studyplan_subject.subject_cat_id
+	inner join subject on subject.id = studyplan_subject.subject_id
+	inner join guide_subject_vid on guide_subject_vid.id = studyplan_subject.subject_vid_id
+	where studyplan.programm_id = any (string_to_array((
+        select programm_list from education_union where id = {$union_id}), ',')::int[])
+        and subject_id is not null
+        and guide_subject_vid.qty_max > 1
+SQL;
+    }
     public static function getSubjectCategoryForUnion($union_id)
     {
-        $funcSql = <<< SQL
-    select distinct subject_cat_id as id, guide_subject_category.name as name
-	from studyplan
-	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
-	inner join guide_subject_category on guide_subject_category.id = studyplan_subject.subject_cat_id
-	inner join subject on subject.id = studyplan_subject.subject_id
-	inner join guide_subject_vid on guide_subject_vid.id = studyplan_subject.subject_vid_id
-	where studyplan.programm_id = any (string_to_array((
-        select programm_list from education_union where id = {$union_id}), ',')::int[])
-        and subject_id is not null
-        and guide_subject_vid.qty_max > 1
-SQL;
-        return  $union_id ? ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'id', 'name') : [];
+        return $union_id ? ArrayHelper::map(Yii::$app->db->createCommand(self::getQuerySub($union_id))->queryAll(), 'id', 'name') : [];
     }
+
+    /**
+     * @param $union_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
     public static function getSubjectCategoryForUnionToId($union_id)
     {
-        $funcSql = <<< SQL
-    select distinct subject_cat_id as id, guide_subject_category.name as name
-	from studyplan
-	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
-	inner join guide_subject_category on guide_subject_category.id = studyplan_subject.subject_cat_id
-	inner join subject on subject.id = studyplan_subject.subject_id
-	inner join guide_subject_vid on guide_subject_vid.id = studyplan_subject.subject_vid_id
-	where studyplan.programm_id = any (string_to_array((
-        select programm_list from education_union where id = {$union_id}), ',')::int[])
-        and subject_id is not null
-        and guide_subject_vid.qty_max > 1
-SQL;
-        return $union_id ? Yii::$app->db->createCommand($funcSql)->queryAll() : [];
+        return $union_id ? Yii::$app->db->createCommand(self::getQuerySub($union_id))->queryAll() : [];
     }
+
     /**
      * @param $cat_id
      * @return string

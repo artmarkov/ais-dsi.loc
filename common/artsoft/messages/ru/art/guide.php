@@ -97,6 +97,7 @@ return [
     'Education Specializations' => 'Специализации',
     'Select Education Specializations...' => 'Выберите специализации...',
     'Cource' => 'Класс',
+    'Class Name' => 'Название группы',
     'Week Time' => 'Часов в неделю',
     'Cost Week Hour' => 'Стоимость часа',
     'Year Time' => 'Часов в год',

@@ -7,6 +7,7 @@ use artsoft\grid\GridQuickLinks;
 use common\models\studygroups\SubjectSect;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
+use artsoft\helpers\RefBook;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\studygroups\search\SubjectSectSearch */
@@ -65,13 +66,60 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                             ],
-
-                            'course',
-                            'subject_cat_id',
-                            'subject_id',
-                            'subject_type_id',
-                            'subject_vid_id',
-                            'plan_year',
+                            [
+                                'attribute' => 'subject_cat_id',
+                                'filter' => RefBook::find('subject_category_name')->getList(),
+                                'value' => function (SubjectSect $model) {
+                                    return RefBook::find('subject_category_name')->getValue($model->subject_cat_id);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'subject_id',
+                                'filter' => RefBook::find('subject_name')->getList(),
+                                'value' => function (SubjectSect $model) {
+                                    return RefBook::find('subject_name')->getValue($model->subject_id);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'subject_type_id',
+                                'filter' => RefBook::find('subject_type_name')->getList(),
+                                'value' => function (SubjectSect $model) {
+                                    return RefBook::find('subject_type_name')->getValue($model->subject_type_id);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'subject_vid_id',
+                                'filter' => RefBook::find('subject_vid_name')->getList(),
+                                'value' => function (SubjectSect $model) {
+                                    return RefBook::find('subject_vid_name')->getValue($model->subject_vid_id);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'course',
+                                'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
+                                'value' => function (SubjectSect $model) {
+                                    return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
+                                },
+                                'options' => ['style' => 'width:100px'],
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'plan_year',
+                                'filter' => \artsoft\helpers\ArtHelper::getStudyYearsList(),
+                                'value' => function (SubjectSect $model) {
+                                    return \artsoft\helpers\ArtHelper::getStudyYearsList()[$model->plan_year];
+                                },
+                                'options' => ['style' => 'width:100px'],
+                                'format' => 'raw',
+                            ],
                         ],
                     ]);
                     ?>

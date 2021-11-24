@@ -81,13 +81,23 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw'
                             ],
                             [
+                                'attribute' => 'course',
+                                'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
+                                'value' => function (Studyplan $model) {
+                                    return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
+                                },
+                                'options' => ['style' => 'width:100px'],
+                                'format' => 'raw',
+                            ],
+                            [
                                 'attribute' => 'plan_year',
+                                'filter' => \artsoft\helpers\ArtHelper::getStudyYearsList(),
                                 'value' => function (Studyplan $model) {
                                     return \artsoft\helpers\ArtHelper::getStudyYearsList()[$model->plan_year];
                                 },
-                                'format' => 'raw'
+                                'options' => ['style' => 'width:100px'],
+                                'format' => 'raw',
                             ],
-                            'course',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'status',

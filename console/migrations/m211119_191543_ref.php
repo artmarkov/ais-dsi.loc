@@ -62,6 +62,7 @@ class m211119_191543_ref extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'subject_sect_id' => $this->integer(),
             'studyplan_list' => $this->text(),
+            'class_name' => $this->string(64),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -148,10 +149,20 @@ class m211119_191543_ref extends \artsoft\db\BaseMigration
             ['union_name', 'education_union', 'id', 'union_name', 'union_name', 'status', null, 'Объединения программ'],
         ])->execute();
 
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['subject_name', 'subject', 'id', 'name', 'name', 'status', null, 'Дисциплины(полное)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['subject_name_dev', 'subject', 'id', 'slug', 'slug', 'status', null, 'Дисциплины(сокр)'],
+        ])->execute();
+
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'subject_name'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'subject_name_dev'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'union_name'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'users_teachers'])->execute();
 

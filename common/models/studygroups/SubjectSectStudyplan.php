@@ -2,7 +2,7 @@
 
 namespace common\models\studygroups;
 
-use artsoft\behaviors\ArrayFieldBehavior;
+use common\models\studyplan\Studyplan;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -13,6 +13,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $id
  * @property int|null $subject_sect_id
  * @property string|null $studyplan_list
+ * @property string $class_name
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -39,10 +40,6 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
-            [
-                'class' => ArrayFieldBehavior::class,
-                'attributes' => ['studyplan_list'],
-            ],
         ];
     }
 
@@ -53,7 +50,11 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     {
         return [
             [['subject_sect_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['studyplan_list', 'class_name'], 'required'],
             [['studyplan_list'], 'string'],
+            [['class_name'], 'string', 'max' => 64],
+            [['class_name'], 'trim'],
+            ['class_name', 'unique', 'targetAttribute' => ['class_name', 'subject_sect_id']],
             [['subject_sect_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSect::className(), 'targetAttribute' => ['subject_sect_id' => 'id']],
         ];
     }
@@ -67,9 +68,10 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art/guide', 'ID'),
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
             'studyplan_list' => Yii::t('art/guide', 'Studyplan List'),
-            'created_at' => Yii::t('art/guide', 'Created At'),
+            'class_name' => Yii::t('art/guide', 'Class Name'),
+            'created_at' => Yii::t('art/guide', 'Created'),
             'created_by' => Yii::t('art/guide', 'Created By'),
-            'updated_at' => Yii::t('art/guide', 'Updated At'),
+            'updated_at' => Yii::t('art/guide', 'Updated'),
             'updated_by' => Yii::t('art/guide', 'Updated By'),
             'version' => Yii::t('art/guide', 'Version'),
         ];
@@ -88,5 +90,22 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     public function getSubjectSect()
     {
         return $this->hasOne(SubjectSect::className(), ['id' => 'subject_sect_id']);
+    }
+
+    /**
+     * @return array
+     */
+    public function getStudyplan($readonly){
+        $data = [];
+        if(!empty($this->studyplan_list)) {
+            foreach (explode(',', $this->studyplan_list) as $item => $studyplan_id) {
+                $model = Studyplan::findOne(['id' => $studyplan_id]);
+                $data[$studyplan_id] = [
+                    'content' => isset($model->student) ? $model->student->getFullName() : '',
+                    'disabled'=> $readonly
+                ];
+            }
+        }
+        return $data;
     }
 }
