@@ -42,7 +42,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->db->createCommand()->resetSequence('studyplan', 1000)->execute();
 
         $this->createTableWithHistory('studyplan_subject', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'studyplan_id' => $this->integer()->notNull(),
             'subject_cat_id' => $this->integer()->notNull(),
             'subject_id' => $this->integer(),
@@ -63,6 +63,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable( 'studyplan_subject', 'Дисциплины индивидуального плана');
+        $this->db->createCommand()->resetSequence('subject_sect', 10000)->execute();
         $this->createIndex('studyplan_id', 'studyplan_subject', 'studyplan_id');
         $this->addForeignKey('studyplan_subject_ibfk_1', 'studyplan_subject', 'studyplan_id', 'studyplan', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('studyplan_subject_ibfk_2', 'studyplan_subject', 'subject_cat_id', 'guide_subject_category', 'id', 'NO ACTION', 'NO ACTION');

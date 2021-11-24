@@ -2,7 +2,9 @@
 
 namespace common\models\studygroups;
 
+use artsoft\helpers\RefBook;
 use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubject;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -98,10 +100,11 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     public function getStudyplan($readonly){
         $data = [];
         if(!empty($this->studyplan_list)) {
-            foreach (explode(',', $this->studyplan_list) as $item => $studyplan_id) {
-                $model = Studyplan::findOne(['id' => $studyplan_id]);
-                $data[$studyplan_id] = [
-                    'content' => isset($model->student) ? $model->student->getFullName() : '',
+            foreach (explode(',', $this->studyplan_list) as $item => $studyplan_subject_id) {
+                $model = StudyplanSubject::findOne(['id' => $studyplan_subject_id]);
+                $data[$studyplan_subject_id] = [
+                    'content' => '<div class="">' . RefBook::find('students_fio')->getValue($model->studyplan->student_id). '</div>'
+                        . '<div class="">' . RefBook::find('memo_1')->getValue($studyplan_subject_id) .  '</div>',
                     'disabled'=> $readonly
                 ];
             }

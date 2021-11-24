@@ -116,7 +116,7 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
      */
     public function getStudyplan()
     {
-        return $this->hasOne(EducationProgramm::class, ['id' => 'studyplan_id']);
+        return $this->hasOne(Studyplan::class, ['id' => 'studyplan_id']);
     }
 
     /**

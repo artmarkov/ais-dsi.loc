@@ -2,9 +2,11 @@
 
 namespace common\models\studygroups;
 
+use artsoft\helpers\RefBook;
 use common\models\activities\SectSchedule;
 use \common\models\education\EducationUnion;
 use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubject;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
@@ -86,9 +88,9 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art/guide', 'ID'),
-            'plan_year' => Yii::t('art/guide', 'Plan Year'),
+            'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'union_id' => Yii::t('art/guide', 'Education Union'),
-            'course' => Yii::t('art/guide', 'Course'),
+            'course' => Yii::t('art/studyplan', 'Course'),
             'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
             'subject_id' => Yii::t('art/guide', 'Subject Name'),
             'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
@@ -216,7 +218,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function getStudyplanForUnion($readonly)
     {
         $funcSql = <<< SQL
-    select studyplan.id, student_id
+    select studyplan_subject.id as id, student_id
 	from studyplan
 	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
 	where studyplan.programm_id = any (string_to_array((
@@ -227,13 +229,12 @@ class SubjectSect extends \artsoft\db\ActiveRecord
 		and subject_cat_id = {$this->subject_cat_id}
 		and course = {$this->course}
 		and plan_year = {$this->plan_year}
-		and studyplan.id != all(string_to_array('{$this->getStudyplanList()}', ',')::int[])
+		and studyplan_subject.id != all(string_to_array('{$this->getStudyplanList()}', ',')::int[])
 SQL;
         $data = [];
         foreach (Yii::$app->db->createCommand($funcSql)->queryAll() as $item => $value) {
-            $model = Studyplan::findOne(['id' => $value['id']]);
             $data[$value['id']] = [
-                'content' => isset($model->student) ? $model->student->getFullName() : '',
+                'content' => RefBook::find('students_fio')->getValue($value['student_id']).RefBook::find('memo_1')->getValue($value['id']),
                 'disabled'=> $readonly
             ];
         }
@@ -245,10 +246,6 @@ SQL;
      * @param $union_id
      * @return array
      * @throws \yii\db\Exception
-     */
-    /**
-     * @param $cat_id
-     * @return string
      */
     protected static function getQuerySub($union_id)
     {
@@ -265,6 +262,12 @@ SQL;
         and guide_subject_vid.qty_max > 1
 SQL;
     }
+
+    /**
+     * @param $union_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
     public static function getSubjectCategoryForUnion($union_id)
     {
         return $union_id ? ArrayHelper::map(Yii::$app->db->createCommand(self::getQuerySub($union_id))->queryAll(), 'id', 'name') : [];
