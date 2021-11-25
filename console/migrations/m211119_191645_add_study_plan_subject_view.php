@@ -57,13 +57,18 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['memo_1', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_1', 'studyplan_id', null, null, 'Ученики (Фамилия И.О.)'],
+            ['subject_memo_1', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_1', 'studyplan_id', null, null, 'Ученики (Фамилия И.О.)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['studyplan_subject-student', 'studyplan_subject_view', 'studyplan_subject_id', 'student_id', 'studyplan_id', null, null, 'Дисциплина плана-ученик'],
         ])->execute();
     }
 
     public function down()
     {
-        $this->db->createCommand()->delete('refbooks', ['name' => 'memo_1'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'studyplan_subject'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'subject_memo_1'])->execute();
         $this->db->createCommand()->dropView('studyplan_subject_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_name'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_name_dev'])->execute();

@@ -103,12 +103,21 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
             foreach (explode(',', $this->studyplan_list) as $item => $studyplan_subject_id) {
                 $model = StudyplanSubject::findOne(['id' => $studyplan_subject_id]);
                 $data[$studyplan_subject_id] = [
-                    'content' => '<div class="">' . RefBook::find('students_fio')->getValue($model->studyplan->student_id). '</div>'
-                        . '<div class="">' . RefBook::find('memo_1')->getValue($studyplan_subject_id) .  '</div>',
+                    'content' => $this->getSubjectContent($studyplan_subject_id),
                     'disabled'=> $readonly
                 ];
             }
         }
         return $data;
+    }
+
+    /**
+     * @param $studyplan_subject_id
+     * @return string
+     */
+    public static function getSubjectContent($studyplan_subject_id){
+        $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
+       return '<div class="">' . RefBook::find('students_fio')->getValue($student_id). '</div>'
+                        . '<div class="">' . RefBook::find('subject_memo_1')->getValue($studyplan_subject_id) .  '</div>';
     }
 }

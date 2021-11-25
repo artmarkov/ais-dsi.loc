@@ -218,7 +218,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function getStudyplanForUnion($readonly)
     {
         $funcSql = <<< SQL
-    select studyplan_subject.id as id, student_id
+    select studyplan_subject.id as id
 	from studyplan
 	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
 	where studyplan.programm_id = any (string_to_array((
@@ -234,7 +234,7 @@ SQL;
         $data = [];
         foreach (Yii::$app->db->createCommand($funcSql)->queryAll() as $item => $value) {
             $data[$value['id']] = [
-                'content' => RefBook::find('students_fio')->getValue($value['student_id']).RefBook::find('memo_1')->getValue($value['id']),
+                'content' => SubjectSectStudyplan::getSubjectContent($value['id']),
                 'disabled'=> $readonly
             ];
         }
