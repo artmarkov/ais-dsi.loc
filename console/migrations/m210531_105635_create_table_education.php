@@ -163,6 +163,22 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->addForeignKey('education_programm_level_subject_ibfk_3', 'education_programm_level_subject', 'subject_id', 'subject', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('education_programm_level_subject_ibfk_4', 'education_programm_level_subject', 'subject_vid_id', 'guide_subject_vid', 'id', 'NO ACTION', 'NO ACTION');
 
+        $this->createTableWithHistory('education_union', [
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'union_name' => $this->string(64),
+            'programm_list' => $this->text()->notNull(),
+            'class_index' => $this->string(32),
+            'description' => $this->string(1024)->notNull(),
+            'created_at' => $this->integer()->notNull(),
+            'created_by' => $this->integer(),
+            'updated_at' => $this->integer()->notNull(),
+            'updated_by' => $this->integer(),
+            'status' => $this->smallInteger()->notNull()->defaultValue(1),
+            'version' => $this->bigInteger()->notNull()->defaultValue(0),
+        ], $tableOptions);
+
+        $this->addCommentOnTable('education_union', 'Группа учебных планов'); // включает в себя учебные планы под одно название
+        $this->db->createCommand()->resetSequence('education_union', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['education_cat', 'guide_education_cat', 'id', 'name', 'id', 'status', null, 'Образовательные программы'],
@@ -207,6 +223,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->dropForeignKey('education_programm_level_subject_ibfk_2', 'education_programm_level_subject');
         $this->dropForeignKey('education_programm_level_subject_ibfk_3', 'education_programm_level_subject');
         $this->dropForeignKey('education_programm_level_subject_ibfk_4', 'education_programm_level_subject');
+        $this->dropTableWithHistory('education_union');
         $this->dropTableWithHistory('education_programm_level_subject');
         $this->dropTableWithHistory('education_programm_level');
 
