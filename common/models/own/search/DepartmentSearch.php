@@ -73,11 +73,13 @@ class DepartmentSearch extends Department
 //        жадная загрузка
         $query->joinWith(['division']);
 
-        $query->andFilterWhere(['like', 'id', $this->id])
-            ->andFilterWhere(['like', 'division_id', $this->division_id])
-            ->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'slug', $this->slug])
-            ->andFilterWhere(['like', 'status', $this->status]);
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'division_id' => $this->division_id,
+            'status' => $this->status,
+        ]);
+        $query->andFilterWhere(['like', 'guide_department.slug', $this->slug])
+              ->andFilterWhere(['like', 'guide_department.name', $this->name]);
 
         return $dataProvider;
     }

@@ -79,11 +79,10 @@ class CostSearch extends Cost
 
         $query->andFilterWhere([
             'stake_value' => $this->stake_value,
+            'id' => $this->id,
+            'direction_id' => $this->direction_id,
+            'stake_id' => $this->stake_id,
         ]);
-
-        $query->andFilterWhere(['like', 'id', $this->id])
-            ->andFilterWhere(['like', 'direction_id', $this->direction_id])
-            ->andFilterWhere(['like', 'stake_id', $this->stake_id]);
 
         return $dataProvider;
     }

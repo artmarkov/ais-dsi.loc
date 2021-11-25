@@ -18,12 +18,12 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_teachers_direction' ,'Направление деятельности');
-        $this->db->createCommand()->resetSequence('guide_teachers_direction', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('guide_teachers_direction', ['id', 'name', 'slug'], [
             [1000, 'Педагогическая', 'Пед-я'],
             [1001, 'Концертмейстерская', 'Конц-я'],
         ])->execute();
+        $this->db->createCommand()->resetSequence('guide_teachers_direction', 1002)->execute();
 
         $this->createTable('guide_teachers_direction_vid', [
             'id' =>  $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
@@ -32,13 +32,13 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_teachers_direction_vid' ,'Вид деятельности');
-        $this->db->createCommand()->resetSequence('guide_teachers_direction_vid', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('guide_teachers_direction_vid', ['id', 'name', 'slug'], [
             [1000, 'Основная', 'Осн-я'],
             [1001, 'Дополнительная(внутреннее совмещение)', 'Доп-я'],
         ])->execute();
 
+        $this->db->createCommand()->resetSequence('guide_teachers_direction_vid', 1002)->execute();
         $this->createTable('guide_teachers_stake', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'name' => $this->string(128)->notNull(),
@@ -47,14 +47,14 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_teachers_stake' ,'Ставки');
-        $this->db->createCommand()->resetSequence('guide_teachers_stake', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('guide_teachers_stake', ['id', 'name', 'slug', 'status'], [
-            [1000, 'Без категории', 'БК', 1],
+            [1000, 'Без категории', 'БК', 0],
             [1001, 'Соответствие категории', 'СК', 1],
             [1002, 'Первая категория', 'ПК', 1],
             [1003, 'Высшая категория', 'ВК', 1],
         ])->execute();
+        $this->db->createCommand()->resetSequence('guide_teachers_stake', 1004)->execute();
 
         $this->createTableWithHistory('teachers_cost', [
             'id' =>  $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
@@ -72,13 +72,11 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->db->createCommand()->resetSequence('teachers_cost', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('teachers_cost', ['direction_id', 'stake_id', 'stake_value', 'created_at', 'updated_at', 'created_by', 'updated_by'], [
-            [1000, 1000, 0, time(), time(), 1000, 1000],
-            [1000, 1001, 0, time(), time(), 1000, 1000],
-            [1000, 1002, 22200, time(), time(), 1000, 1000],
-            [1000, 1003, 21800, time(), time(), 1000, 1000],
-            [1001, 1000, 24000, time(), time(), 1000, 1000],
-            [1001, 1001, 23500, time(), time(), 1000, 1000],
-            [1001, 1002, 25700, time(), time(), 1000, 1000],
+            [1000, 1001, 22200, time(), time(), 1000, 1000],
+            [1000, 1002, 24000, time(), time(), 1000, 1000],
+            [1000, 1003, 25700, time(), time(), 1000, 1000],
+            [1001, 1001, 21800, time(), time(), 1000, 1000],
+            [1001, 1002, 23500, time(), time(), 1000, 1000],
             [1001, 1003, 25300, time(), time(), 1000, 1000],
         ])->execute();
 
@@ -94,12 +92,12 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_teachers_work' ,'Вмд работы');
-        $this->db->createCommand()->resetSequence('guide_teachers_work', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('guide_teachers_work', ['id', 'name', 'slug'], [
             [1000, 'На постоянной основе', 'Пост'],
             [1001, 'По совместительству', 'Совм'],
         ])->execute();
+        $this->db->createCommand()->resetSequence('guide_teachers_work', 1002)->execute();
 
         $this->createTable('guide_teachers_position', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
@@ -108,14 +106,15 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_teachers_position' ,'Должность');
-        $this->db->createCommand()->resetSequence('guide_teachers_position', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('guide_teachers_position', ['id', 'name', 'slug'], [
-            [1000, 'Директор', 'Дир'],
+            [1000, 'Директор', 'Дир.'],
             [1001, 'Заместитель директора', 'Зам.'],
-            [1002, 'Руководитель отдела', 'Рук.отд'],
-            [1003, 'Преподаватель', 'Преп'],
+            [1002, 'Руководитель отдела', 'Рук.отд.'],
+            [1003, 'Преподаватель', 'Преп.'],
+            [1004, 'Концертмейстер', 'Конц.'],
         ])->execute();
+        $this->db->createCommand()->resetSequence('guide_teachers_position', 1005)->execute();
 
         $this->createTable('guide_teachers_level', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
@@ -124,7 +123,6 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_teachers_level' ,'Образование');
-        $this->db->createCommand()->resetSequence('guide_teachers_level', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('guide_teachers_level', ['id', 'name', 'slug'], [
             [1000, 'Высшее образование', 'ВО'],
@@ -132,6 +130,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             [1002, 'Неполное высшее', 'НВ'],
             [1003, 'Среднее проф', 'СП'],
         ])->execute();
+        $this->db->createCommand()->resetSequence('guide_teachers_level', 1004)->execute();
 
         $this->createTable('guide_teachers_bonus_category', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
@@ -141,7 +140,6 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_teachers_bonus_category' ,'Категории достижений');
-        $this->db->createCommand()->resetSequence('guide_teachers_bonus_category', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('guide_teachers_bonus_category', ['id', 'name', 'slug', 'multiple'], [
             [1000, 'Ученая степень', 'Уч.ст', 0],
@@ -149,6 +147,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             [1002, 'Уровень специалиста', 'Уровень', 0],
             [1003, 'Специальные обязанности', 'Спец.обяз-ти', 0],
         ])->execute();
+        $this->db->createCommand()->resetSequence('guide_teachers_bonus_category', 1004)->execute();
 
 
         $this->createTable('guide_teachers_bonus', [
@@ -188,7 +187,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->addForeignKey('guide_teachers_bonus_ibfk_1', 'guide_teachers_bonus', 'bonus_category_id', 'guide_teachers_bonus_category', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('teachers', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'user_common_id' => $this->integer(),
             'position_id' => $this->integer(),
             'work_id' => $this->integer(),
@@ -220,7 +219,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->addForeignKey('teachers_ibfk_3', 'teachers', 'work_id', 'guide_teachers_work', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('teachers_activity', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'teachers_id' => $this->integer()->notNull(),
             'direction_vid_id' => $this->integer()->notNull(),
             'direction_id' => $this->integer()->notNull(),
