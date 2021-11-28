@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="panel-footer">
                     <div class="form-group btn-group">
-                        <?= \artsoft\helpers\ButtonHelper::viewButtons($model, '/queue-schedule/default/index', ['/queue-schedule/default/update', 'id' => $model->id], ['/queue-schedule/default/delete', 'id' => $model->id]); ?>
+                        <?= \artsoft\helpers\ButtonHelper::viewButtons($model, ['/queue-schedule/default/index'], ['/queue-schedule/default/update', 'id' => $model->id], ['/queue-schedule/default/delete', 'id' => $model->id]); ?>
                     </div>
                 </div>
             </div>
