@@ -87,6 +87,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
 
         $this->addCommentOnTable('subject_sect_studyplan', 'Ученики учебной группы');
         $this->db->createCommand()->resetSequence('subject_sect_studyplan', 10000)->execute();
+
         $this->createIndex('subject_sect_id', 'subject_sect_studyplan', 'subject_sect_id');
         $this->addForeignKey('subject_sect_studyplan_ibfk_1', 'subject_sect_studyplan', 'subject_sect_id', 'subject_sect', 'id', 'CASCADE', 'CASCADE');
 
@@ -112,7 +113,8 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable( 'studyplan_subject', 'Дисциплины индивидуального плана');
-        $this->db->createCommand()->resetSequence('subject_sect', 10000)->execute();
+        $this->db->createCommand()->resetSequence('studyplan_subject', 10000)->execute();
+
         $this->createIndex('studyplan_id', 'studyplan_subject', 'studyplan_id');
         $this->addForeignKey('studyplan_subject_ibfk_1', 'studyplan_subject', 'studyplan_id', 'studyplan', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('studyplan_subject_ibfk_2', 'studyplan_subject', 'subject_cat_id', 'guide_subject_category', 'id', 'NO ACTION', 'NO ACTION');

@@ -45,7 +45,8 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
                 education_programm.short_name as education_programm_short_name,
                 guide_education_cat.name as education_cat_name,
                 guide_education_cat.short_name as education_cat_short_name,
-                concat(subject.name, \'(\',guide_subject_vid.slug, \' \',guide_subject_type.slug,\') \',guide_education_cat.short_name) as memo_1
+                concat(subject.name, \'(\',guide_subject_vid.slug, \' \',guide_subject_type.slug,\') \',guide_education_cat.short_name) as memo_1,
+                concat(subject.name, \'(\',guide_subject_category.slug, \' \',guide_subject_type.slug,\')\') as memo_2
             from studyplan_subject
             inner join studyplan on studyplan.id = studyplan_subject.studyplan_id
             inner join education_programm on education_programm.id = studyplan.programm_id
@@ -57,7 +58,10 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_memo_1', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_1', 'studyplan_id', null, null, 'Ученики (Фамилия И.О.)'],
+            ['subject_memo_1', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_1', 'studyplan_id', null, null, 'Дисциплина ученика с хар-ми 1-й вид'],
+        ])->execute();
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['subject_memo_2', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_2', 'studyplan_id', null, null, 'Дисциплина ученика с хар-ми 2-й вид'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
@@ -67,7 +71,8 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
 
     public function down()
     {
-        $this->db->createCommand()->delete('refbooks', ['name' => 'studyplan_subject'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'studyplan_subject-student'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'subject_memo_2'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_memo_1'])->execute();
         $this->db->createCommand()->dropView('studyplan_subject_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_name'])->execute();

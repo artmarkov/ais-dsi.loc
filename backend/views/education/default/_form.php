@@ -66,11 +66,11 @@ $this->registerJs($js);
                     <?= $form->field($model, 'education_cat_id')->dropDownList(RefBook::find('education_cat', $model->isNewRecord ? EducationCat::STATUS_ACTIVE : '')->getList(),
                         ['prompt' => '', 'encodeSpaces' => true, 'disabled' => $model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true]) ?>
 
-                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'name')->textInput(['maxlength' => true])->hint('Укажите название учебного плана') ?>
 
-                    <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'short_name')->textInput(['maxlength' => true])->hint('Укажите сокращенное название учебного плана') ?>
 
-                    <?= $form->field($model, 'term_mastering')->textInput(['maxlength' => true])->hint('Укажите период освоения программы. Например: 5 лет или 3/5/7 лет.') ?>
+                    <?= $form->field($model, 'term_mastering')->textInput(['maxlength' => true])->hint('Укажите срок освоения программы. Например: 5 лет или 3/5/7 лет.') ?>
 
                     <?= $form->field($model, 'speciality_list')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('education_speciality', $model->isNewRecord ? EducationSpeciality::STATUS_ACTIVE : '')->getList(),
