@@ -54,7 +54,10 @@ MetisMenuAsset::register($this);
         ];
 
         if (Yii::$app->user->isGuest) {
-            $menuItems[] = ['label' => '<i class="fa fa-sign-in" style="margin-right: 5px;"></i>' . Yii::t('art', 'Login'), 'url' => ['/auth/login']];
+            $menuItems[] = [
+                'label' => '<i class="fa fa-sign-in" style="margin-right: 5px;"></i>' . Yii::t('art', 'Login'),
+                'url' => Yii::$app->urlManager->hostInfo . '/auth/login'
+            ];
         } elseif (!Yii::$app->session->has(DefaultController::ORIGINAL_USER_SESSION_KEY)) {
             $menuItems[] = [
                 'label' => '<i class="fa fa-sign-out" style="margin-right: 5px;"></i>' . Yii::t('art', 'Logout {username}', ['username' => Yii::$app->user->identity->username]),
