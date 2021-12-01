@@ -8,6 +8,7 @@ use common\models\studyplan\StudyplanSubject;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "subject_sect_studyplan".
@@ -92,6 +93,29 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     public function getSubjectSect()
     {
         return $this->hasOne(SubjectSect::className(), ['id' => 'subject_sect_id']);
+    }
+
+    /**
+     * находим все возможные группы для выбранной дисциплины
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public function getSubjectSectStudyplanAll()
+    {
+        $funcSql = <<< SQL
+    select subject_sect_studyplan.id as id,
+           subject_sect_studyplan.class_name as name
+	from subject_sect_studyplan
+	inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
+	where subject_id = {$this->subjectSect->subject_id}
+		and subject_type_id = {$this->subjectSect->subject_type_id}
+		and subject_vid_id = {$this->subjectSect->subject_vid_id}
+		and subject_cat_id = {$this->subjectSect->subject_cat_id}
+		and course = {$this->subjectSect->course}
+		and plan_year = {$this->subjectSect->plan_year}
+SQL;
+        return ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'id', 'name');
+
     }
 
     /**

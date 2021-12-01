@@ -1,6 +1,8 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use kartik\editable\Editable;
+use yii\helpers\Url;
 
 ?>
 <div class="panel">
@@ -27,12 +29,29 @@ use artsoft\helpers\RefBook;
                                     </tr>
                                     </thead>
                                     <tbody class="container-items">
-                                    <?php foreach ($modelsSubject as $index => $modelSubject): ?>
+                                    <?php foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan): ?>
                                         <tr class="item">
                                             <td>
-                                                <?= RefBook::find('subject_memo_2')->getValue($modelSubject->id) ?>
+                                                <?= RefBook::find('subject_memo_2')->getValue($modelSubjectSectStudyplan->id) ?>
                                             </td>
                                             <td>
+                                                <?= Editable::widget([
+                                                    'model' => $modelSubjectSectStudyplan,
+                                                    'attribute' => 'class_name',
+                                                    'asPopover' => true,
+                                                    'format' => Editable::FORMAT_LINK,
+                                                    'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                                                    'data'=> $modelSubjectSectStudyplan->getSubjectSectStudyplanAll(),
+//                                                    'inlineSettings' => [
+//                                                        'templateAfter' => Editable::INLINE_AFTER_1,
+//                                                        'templateBefore' => Editable::INLINE_BEFORE_2,
+//                                                    ],
+                                                    'options' => ['class' => 'form-control', 'placeholder' => 'Enter name...'],
+                                                    'formOptions' => [
+                                                        'action' => Url::toRoute(['/studygroups/default/set-group', 'id' => $modelSubjectSectStudyplan->id]),
+                                                    ],
+                                                ]);
+                                                ?>
                                             </td>
                                             <td>
                                             </td>

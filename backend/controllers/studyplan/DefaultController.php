@@ -7,6 +7,7 @@ use common\models\education\EducationCat;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\history\StudyplanHistory;
+use common\models\studygroups\SubjectSectStudyplan;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use yii\helpers\ArrayHelper;
@@ -180,19 +181,20 @@ class DefaultController extends MainController
         }
 
         $modelsSubject = $model->studyplanSubject;
+        $modelsSubjectSectStudyplan = [];
         $modelsTeachersLoad = [];
         $oldTeachersLoad = [];
-//        if (!empty($modelsSubject)) {
-//            foreach ($modelsSubject as $index => $modelSubject) {
-//                $times = $modelSubject->educationProgrammLevelSubject;
-//                $modelsTime[$index] = $times;
-//                $oldTimes = ArrayHelper::merge(ArrayHelper::index($times, 'id'), $oldTimes);
-//            }
-//        }
-
+        if (!empty($modelsSubject)) {
+            foreach ($modelsSubject as $index => $modelSubject) {
+                $subject_sect_studyplan = $modelSubject->getSubjectSectStudyplan();
+                $modelsSubjectSectStudyplan[$index] = $subject_sect_studyplan;
+            }
+        }
+//print_r($modelsSubjectSectStudyplan);
         return $this->render('studyplan-schedule', [
             'model' => $model,
             'modelsSubject' => (empty($modelsSubject)) ? [] : $modelsSubject,
+            'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan()] : $modelsSubjectSectStudyplan,
             'readonly' => $readonly
         ]);
     }

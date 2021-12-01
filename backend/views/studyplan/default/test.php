@@ -2,21 +2,21 @@
 
 use artsoft\widgets\ActiveForm;
 use kartik\editable\Editable;
-//echo Editable::widget([
-//    'model' => $model,
-//    'attribute' => 'name',
-//    'asPopover' => true,
-//    'format' => Editable::FORMAT_LINK,
-//    'inputType' => Editable::INPUT_TEXT,
-////    'inlineSettings' => [
-////        'templateAfter' =>  Editable::INLINE_AFTER_1,
-////        'templateBefore' =>  Editable::INLINE_BEFORE_2,
-////    ],
-//    'options' => ['class'=>'form-control', 'placeholder'=>'Enter name...'],
-//    'formOptions' => [
-//        'action' => yii\helpers\Url::toRoute(['/auditory/building/view', 'id' => $model->id]),
+echo Editable::widget([
+    'model' => $model,
+    'attribute' => 'name',
+    'asPopover' => true,
+    'format' => Editable::FORMAT_LINK,
+    'inputType' => Editable::INPUT_TEXT,
+//    'inlineSettings' => [
+//        'templateAfter' =>  Editable::INLINE_AFTER_1,
+//        'templateBefore' =>  Editable::INLINE_BEFORE_2,
 //    ],
-//]);
+    'options' => ['class'=>'form-control', 'placeholder'=>'Enter name...'],
+    'formOptions' => [
+        'action' => yii\helpers\Url::toRoute(['/auditory/building/view', 'id' => $model->id]),
+    ],
+]);
 
 
 $editable = Editable::begin([

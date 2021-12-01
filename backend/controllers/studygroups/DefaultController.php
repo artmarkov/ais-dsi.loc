@@ -15,6 +15,7 @@ use common\models\studygroups\SubjectSect;
 use common\models\user\UserCommon;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
 
 class DefaultController extends MainController
@@ -168,5 +169,27 @@ class DefaultController extends MainController
             }
         }
         return json_encode(['output' => '', 'selected' => '']);
+    }
+
+    public function actionSetGroup($id){
+//print_r($_POST);
+        $model = SubjectSectStudyplan::findOne($id);
+
+        if (isset($_POST['hasEditable'])) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            if ($model->load($_POST)) {
+                $value = $model->class_name;
+                //$model->save();
+                return Json::encode(['output'=>$value, 'message'=>'']);
+
+                // alternatively you can return a validation error
+                // return ['output'=>'', 'message'=>'Validation error'];
+            }
+            else {
+                return Json::encode(['output'=>'', 'message'=>'']);
+            }
+        }
+
+        return null;
     }
 }

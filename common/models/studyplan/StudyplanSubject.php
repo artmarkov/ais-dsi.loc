@@ -5,6 +5,7 @@ namespace common\models\studyplan;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\education\EducationProgramm;
+use common\models\studygroups\SubjectSectStudyplan;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
@@ -119,6 +120,16 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
         return $this->hasOne(Studyplan::class, ['id' => 'studyplan_id']);
     }
 
+    public function getCourse()
+    {
+        return isset($this->studyplan) ? $this->studyplan->course : null;
+    }
+
+    public function getPlanYear()
+    {
+        return isset($this->studyplan) ? $this->studyplan->plan_year : null;
+    }
+
     /**
      * Gets query for [[SubjectCat]].
      *
@@ -148,6 +159,17 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     {
         return $this->hasOne(SubjectType::class, ['id' => 'subject_type_id']);
     }
+
+    /**
+     * Находим группу дисциплины ученика
+     * @return int
+     * @throws \yii\db\Exception
+     */
+    public function getSubjectSectStudyplan()
+    {
+        return SubjectSectStudyplan::find()->where(['like', 'studyplan_list', $this->id])->one();
+    }
+
 
     /**
      * Gets query for [[Subject]].
