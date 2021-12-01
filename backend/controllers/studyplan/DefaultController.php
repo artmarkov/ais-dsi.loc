@@ -11,6 +11,7 @@ use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use yii\helpers\ArrayHelper;
 use Yii;
+use yii\helpers\Json;
 
 /**
  * DefaultController implements the CRUD actions for common\models\studyplan\Studyplan model.
@@ -166,6 +167,57 @@ class DefaultController extends MainController
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 
+    public function actionStudyplanSchedule($id, $readonly = false)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
+        $this->view->params['breadcrumbs'][] = 'Нагрузка преподавателей и расписание занятий';
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if (!isset($model)) {
+            throw new NotFoundHttpException("The StudyplanSubject was not found.");
+        }
+
+        $modelsSubject = $model->studyplanSubject;
+        $modelsTeachersLoad = [];
+        $oldTeachersLoad = [];
+//        if (!empty($modelsSubject)) {
+//            foreach ($modelsSubject as $index => $modelSubject) {
+//                $times = $modelSubject->educationProgrammLevelSubject;
+//                $modelsTime[$index] = $times;
+//                $oldTimes = ArrayHelper::merge(ArrayHelper::index($times, 'id'), $oldTimes);
+//            }
+//        }
+
+        return $this->render('studyplan-schedule', [
+            'model' => $model,
+            'modelsSubject' => (empty($modelsSubject)) ? [] : $modelsSubject,
+            'readonly' => $readonly
+        ]);
+    }
+
+    public function actionTest($id) {
+        $model = $this->findModel($id); // your model can be loaded here
+
+        if (isset($_POST['hasEditable'])) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+            if ($model->load($_POST)) {
+                $value = $model->name;
+                $model->save();
+                return Json::encode(['output'=>$value, 'message'=>'']);
+
+                // alternatively you can return a validation error
+                // return ['output'=>'', 'message'=>'Validation error'];
+            }
+            else {
+                return Json::encode(['output'=>'', 'message'=>'']);
+            }
+        }
+
+        return $this->render('test', ['model'=>$model]);
+    }
     /**
      *  формируем список дисциплин для widget DepDrop::classname()
      * @return false|string

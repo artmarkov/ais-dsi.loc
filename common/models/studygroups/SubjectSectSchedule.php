@@ -1,14 +1,16 @@
 <?php
 
-namespace common\models\activities;
+namespace common\models\studygroups;
 
+use common\models\guidejob\Direction;
+use common\models\teachers\Teachers;
 use Yii;
 
 /**
- * This is the model class for table "sect_schedule".
+ * This is the model class for table "subject_sect_schedule".
  *
  * @property int $id
- * @property int|null $sect_id
+ * @property int|null $subject_sect_studyplan_id
  * @property int $direction_id
  * @property int $teachers_id
  * @property int|null $week_num
@@ -22,18 +24,18 @@ use Yii;
  * @property int|null $updated_by
  * @property int $version
  *
- * @property GuideTeachersDirection $direction
- * @property SubjectSect $sect
+ * @property Direction $direction
+ * @property SubjectSectStudyplan $subjectSectStudyplan
  * @property Teachers $teachers
  */
-class SectSchedule extends \artsoft\db\ActiveRecord
+class SubjectSectSchedule extends \artsoft\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'sect_schedule';
+        return 'subject_sect_schedule';
     }
 
     /**
@@ -42,12 +44,12 @@ class SectSchedule extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['sect_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
-            [['sect_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
+            [['subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['direction_id', 'teachers_id', 'created_at', 'updated_at'], 'required'],
-            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuideTeachersDirection::className(), 'targetAttribute' => ['direction_id' => 'id']],
-            [['sect_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSect::className(), 'targetAttribute' => ['sect_id' => 'id']],
-            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
+            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
+            [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::class, 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
+            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
 
@@ -58,7 +60,7 @@ class SectSchedule extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art/guide', 'ID'),
-            'sect_id' => Yii::t('art/guide', 'Sect ID'),
+            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect ID'),
             'direction_id' => Yii::t('art/guide', 'Direction ID'),
             'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
@@ -81,7 +83,7 @@ class SectSchedule extends \artsoft\db\ActiveRecord
      */
     public function getDirection()
     {
-        return $this->hasOne(GuideTeachersDirection::className(), ['id' => 'direction_id']);
+        return $this->hasOne(Direction::class, ['id' => 'direction_id']);
     }
 
     /**
@@ -91,7 +93,7 @@ class SectSchedule extends \artsoft\db\ActiveRecord
      */
     public function getSect()
     {
-        return $this->hasOne(SubjectSect::className(), ['id' => 'sect_id']);
+        return $this->hasOne(SubjectSectStudyplan::class, ['id' => 'subject_sect_studyplan_id']);
     }
 
     /**
@@ -101,6 +103,6 @@ class SectSchedule extends \artsoft\db\ActiveRecord
      */
     public function getTeachers()
     {
-        return $this->hasOne(Teachers::className(), ['id' => 'teachers_id']);
+        return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
     }
 }

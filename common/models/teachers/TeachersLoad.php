@@ -2,13 +2,14 @@
 
 namespace common\models\teachers;
 
+use common\models\studygroups\SubjectSectStudyplan;
 use Yii;
 
 /**
  * This is the model class for table "teachers_load".
  *
  * @property int $id
- * @property int|null $sect_id
+ * @property int|null $subject_sect_studyplan_id
  * @property int $direction_id
  * @property int $teachers_id
  * @property float|null $week_time
@@ -38,12 +39,12 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['sect_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
-            [['sect_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
+            [['subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['direction_id', 'teachers_id', 'created_at', 'updated_at'], 'required'],
             [['week_time'], 'number'],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuideTeachersDirection::className(), 'targetAttribute' => ['direction_id' => 'id']],
-            [['sect_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSect::className(), 'targetAttribute' => ['sect_id' => 'id']],
+            [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::className(), 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
@@ -55,7 +56,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art/guide', 'ID'),
-            'sect_id' => Yii::t('art/guide', 'Sect ID'),
+            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect ID'),
             'direction_id' => Yii::t('art/guide', 'Direction ID'),
             'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
             'week_time' => Yii::t('art/guide', 'Week Time'),
@@ -84,7 +85,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
      */
     public function getSect()
     {
-        return $this->hasOne(SubjectSect::className(), ['id' => 'sect_id']);
+        return $this->hasOne(SubjectSectStudyplan::className(), ['id' => 'subject_sect_studyplan_id']);
     }
 
     /**

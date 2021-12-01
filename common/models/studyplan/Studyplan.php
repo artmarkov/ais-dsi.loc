@@ -25,7 +25,7 @@ use function morphos\Russian\inflectName;
  * @property int $id
  * @property int $student_id
  * @property int $programm_id
- * @property int speciality_id
+ * @property int $speciality_id
  * @property int|null $course
  * @property int|null $plan_year
  * @property string|null $description

@@ -2,11 +2,8 @@
 
 namespace common\models\studygroups;
 
-use artsoft\helpers\RefBook;
-use common\models\activities\SectSchedule;
+use common\models\activities\SubjectSectSchedule;
 use \common\models\education\EducationUnion;
-use common\models\studyplan\Studyplan;
-use common\models\studyplan\StudyplanSubject;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
@@ -34,7 +31,7 @@ use yii\helpers\ArrayHelper;
  * @property int|null $updated_by
  * @property int $version
  *
- * @property SectSchedule[] $sectSchedules
+ * @property SubjectSectSchedule[] $sectSchedules
  * @property EducationUnion $educationUnion
  * @property GuideSubjectCategory $subjectCat
  * @property GuideSubjectType $subjectType
@@ -115,7 +112,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      */
     public function getSectSchedules()
     {
-        return $this->hasMany(SectSchedule::class, ['sect_id' => 'id']);
+        return $this->hasMany(SubjectSectSchedule::class, ['sect_id' => 'id']);
     }
 
     /**
