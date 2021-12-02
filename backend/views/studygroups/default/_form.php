@@ -19,13 +19,13 @@ $class_index = $model->getClassIndex();
 $js = '
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("' . $class_index . ': " + (index + 1))
+        jQuery(this).html("Группа ' . $class_index . ': " + (index + 1))
     });
 });
 
 jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("' . $class_index . ': " + (index + 1))
+        jQuery(this).html("Группа ' . $class_index . ': " + (index + 1))
     });
 });
 ';
@@ -193,7 +193,7 @@ JS
                                         <?php foreach ($modelsDependence as $index => $modelDependence): ?>
                                             <div class="item panel panel-default"><!-- widgetItem -->
                                                 <div class="panel-heading">
-                                                    <span class="panel-title-activities"><?= $class_index ?>: <?= ($index + 1) ?></span>
+                                                    <span class="panel-title-activities">Группа <?= $class_index ?>: <?= ($index + 1) ?></span>
                                                     <?php if (!$readonly): ?>
                                                         <div class="pull-right">
                                                             <button type="button"

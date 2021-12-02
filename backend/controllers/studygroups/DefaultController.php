@@ -12,6 +12,7 @@ use artsoft\models\User;
 use backend\models\Model;
 use common\models\studygroups\SubjectSectStudyplan;
 use common\models\studygroups\SubjectSect;
+use common\models\studyplan\StudyplanSubject;
 use common\models\user\UserCommon;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -104,18 +105,18 @@ class DefaultController extends MainController
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
-                        if ($flag = $model->save(false)) {
-                            if (!empty($deletedIDs)) {
-                                SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
-                            }
-                            foreach ($modelsDependence as $modelDependence) {
-                                $modelDependence->subject_sect_id = $model->id;
-                                if (!($flag = $modelDependence->save(false))) {
-                                    $transaction->rollBack();
-                                    break;
-                                }
+                    if ($flag = $model->save(false)) {
+                        if (!empty($deletedIDs)) {
+                            SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
+                        }
+                        foreach ($modelsDependence as $modelDependence) {
+                            $modelDependence->subject_sect_id = $model->id;
+                            if (!($flag = $modelDependence->save(false))) {
+                                $transaction->rollBack();
+                                break;
                             }
                         }
+                    }
                     if ($flag) {
                         $transaction->commit();
                         $this->getSubmitAction($model);
@@ -133,11 +134,20 @@ class DefaultController extends MainController
         ]);
     }
 
+    /**
+     * @param int $id
+     * @return mixed|string
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
+     */
     public function actionView($id)
     {
         return $this->actionUpdate($id, true);
     }
 
+    /**
+     * @return false|string
+     */
     public function actionSubject()
     {
         $out = [];
@@ -155,6 +165,9 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
+    /**
+     * @return false|string
+     */
     public function actionSubjectCat()
     {
         $out = [];
@@ -171,22 +184,28 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
-    public function actionSetGroup($id){
-//print_r($_POST);
-        $model = SubjectSectStudyplan::findOne($id);
+    /**
+     * Установка группы в инд планах
+     * @return string|null
+     * @throws \yii\db\Exception
+     */
+    public function actionSetGroup()
+    {
+        $studyplan_subject_id = $_GET['studyplan_subject_id'];
 
         if (isset($_POST['hasEditable'])) {
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            if ($model->load($_POST)) {
-                $value = $model->class_name;
-                //$model->save();
-                return Json::encode(['output'=>$value, 'message'=>'']);
+            if (isset($_POST['id_' . $studyplan_subject_id])) {
+                $model = StudyplanSubject::findOne($studyplan_subject_id)->getSubjectSectStudyplan();
+                $model->removeStudyplanSubject($studyplan_subject_id);
 
-                // alternatively you can return a validation error
-                // return ['output'=>'', 'message'=>'Validation error'];
-            }
-            else {
-                return Json::encode(['output'=>'', 'message'=>'']);
+                $model = SubjectSectStudyplan::findOne($_POST['id_' . $studyplan_subject_id]);
+                $model->insertStudyplanSubject($studyplan_subject_id);
+
+                $value = $model->id;
+                return Json::encode(['output' => $value, 'message' => '']);
+            } else {
+                return Json::encode(['output' => '', 'message' => '']);
             }
         }
 

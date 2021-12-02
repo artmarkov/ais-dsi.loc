@@ -181,45 +181,14 @@ class DefaultController extends MainController
         }
 
         $modelsSubject = $model->studyplanSubject;
-        $modelsSubjectSectStudyplan = [];
-        $modelsTeachersLoad = [];
-        $oldTeachersLoad = [];
-        if (!empty($modelsSubject)) {
-            foreach ($modelsSubject as $index => $modelSubject) {
-                $subject_sect_studyplan = $modelSubject->getSubjectSectStudyplan();
-                $modelsSubjectSectStudyplan[$index] = $subject_sect_studyplan;
-            }
-        }
-//print_r($modelsSubjectSectStudyplan);
+
         return $this->render('studyplan-schedule', [
             'model' => $model,
-            'modelsSubject' => (empty($modelsSubject)) ? [] : $modelsSubject,
-            'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan()] : $modelsSubjectSectStudyplan,
+            'modelsSubject' => (empty($modelsSubject)) ? [new StudyplanSubject()] : $modelsSubject,
             'readonly' => $readonly
         ]);
     }
 
-    public function actionTest($id) {
-        $model = $this->findModel($id); // your model can be loaded here
-
-        if (isset($_POST['hasEditable'])) {
-            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
-            if ($model->load($_POST)) {
-                $value = $model->name;
-                $model->save();
-                return Json::encode(['output'=>$value, 'message'=>'']);
-
-                // alternatively you can return a validation error
-                // return ['output'=>'', 'message'=>'Validation error'];
-            }
-            else {
-                return Json::encode(['output'=>'', 'message'=>'']);
-            }
-        }
-
-        return $this->render('test', ['model'=>$model]);
-    }
     /**
      *  формируем список дисциплин для widget DepDrop::classname()
      * @return false|string

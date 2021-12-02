@@ -1,13 +1,14 @@
 <?php
-
 use artsoft\helpers\RefBook;
 use kartik\editable\Editable;
 use yii\helpers\Url;
 
+/* @var $readonly */
+/* @var $modelsSubject */
 ?>
 <div class="panel">
     <div class="panel-heading">
-        Нагрузка преподавателей и расписание занятий
+        Расписание занятий
     </div>
     <div class="panel-body">
         <div class="row">
@@ -29,26 +30,28 @@ use yii\helpers\Url;
                                     </tr>
                                     </thead>
                                     <tbody class="container-items">
-                                    <?php foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan): ?>
+                                    <?php foreach ($modelsSubject as $index => $modelSubject): ?>
                                         <tr class="item">
                                             <td>
-                                                <?= RefBook::find('subject_memo_2')->getValue($modelSubjectSectStudyplan->id) ?>
+                                                <?= RefBook::find('subject_memo_2')->getValue($modelSubject->id ?? null) ?>
                                             </td>
                                             <td>
                                                 <?= Editable::widget([
-                                                    'model' => $modelSubjectSectStudyplan,
-                                                    'attribute' => 'class_name',
+                                                    'name' => 'id_' . $modelSubject->id,
+                                                    'value' => $modelSubject->getSubjectSectStudyplan()->id,
+                                                    'attribute' => 'id',
+                                                    'header' => 'Группа',
+                                                    'displayValueConfig'=> $modelSubject->getSubjectSectStudyplanAll() ?? [],
                                                     'asPopover' => true,
                                                     'format' => Editable::FORMAT_LINK,
                                                     'inputType' => Editable::INPUT_DROPDOWN_LIST,
-                                                    'data'=> $modelSubjectSectStudyplan->getSubjectSectStudyplanAll(),
-//                                                    'inlineSettings' => [
-//                                                        'templateAfter' => Editable::INLINE_AFTER_1,
-//                                                        'templateBefore' => Editable::INLINE_BEFORE_2,
-//                                                    ],
-                                                    'options' => ['class' => 'form-control', 'placeholder' => 'Enter name...'],
+                                                    'data' => $modelSubject->getSubjectSectStudyplanAll() ?? [],
+                                                    'options' => ['class' => 'form-control'],
                                                     'formOptions' => [
-                                                        'action' => Url::toRoute(['/studygroups/default/set-group', 'id' => $modelSubjectSectStudyplan->id]),
+                                                        'action' => Url::toRoute([
+                                                            '/studygroups/default/set-group',
+                                                            'studyplan_subject_id' => $modelSubject->id ?? null
+                                                        ]),
                                                     ],
                                                 ]);
                                                 ?>

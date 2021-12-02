@@ -53,7 +53,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     {
         return [
             [['subject_sect_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['studyplan_list', 'class_name'], 'required'],
+            [['class_name'], 'required'],
             [['studyplan_list'], 'string'],
             [['class_name'], 'string', 'max' => 64],
             [['class_name'], 'trim'],
@@ -96,39 +96,17 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * находим все возможные группы для выбранной дисциплины
      * @return array
-     * @throws \yii\db\Exception
      */
-    public function getSubjectSectStudyplanAll()
+    public function getStudyplan($readonly)
     {
-        $funcSql = <<< SQL
-    select subject_sect_studyplan.id as id,
-           subject_sect_studyplan.class_name as name
-	from subject_sect_studyplan
-	inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
-	where subject_id = {$this->subjectSect->subject_id}
-		and subject_type_id = {$this->subjectSect->subject_type_id}
-		and subject_vid_id = {$this->subjectSect->subject_vid_id}
-		and subject_cat_id = {$this->subjectSect->subject_cat_id}
-		and course = {$this->subjectSect->course}
-		and plan_year = {$this->subjectSect->plan_year}
-SQL;
-        return ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'id', 'name');
-
-    }
-
-    /**
-     * @return array
-     */
-    public function getStudyplan($readonly){
         $data = [];
-        if(!empty($this->studyplan_list)) {
+        if (!empty($this->studyplan_list)) {
             foreach (explode(',', $this->studyplan_list) as $item => $studyplan_subject_id) {
                 $model = StudyplanSubject::findOne(['id' => $studyplan_subject_id]);
                 $data[$studyplan_subject_id] = [
                     'content' => $this->getSubjectContent($studyplan_subject_id),
-                    'disabled'=> $readonly
+                    'disabled' => $readonly
                 ];
             }
         }
@@ -139,9 +117,42 @@ SQL;
      * @param $studyplan_subject_id
      * @return string
      */
-    public static function getSubjectContent($studyplan_subject_id){
+    public static function getSubjectContent($studyplan_subject_id)
+    {
         $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-       return '<div class="">' . RefBook::find('students_fio')->getValue($student_id). '</div>'
-                        . '<div class="">' . RefBook::find('subject_memo_1')->getValue($studyplan_subject_id) .  '</div>';
+        return '<div class=""><div class="">' . RefBook::find('students_fio')->getValue($student_id) . '</div>'
+            . '<div class="">' . RefBook::find('subject_memo_1')->getValue($studyplan_subject_id) . '</div></div>';
+    }
+
+    /**
+     * удаляет злемент из studyplan_list
+     * @param $studyplan_subject_id
+     * @return $this
+     */
+    public function removeStudyplanSubject($studyplan_subject_id)
+    {
+        $list = [];
+        $this->studyplan_list != '' ? $list = explode(',', $this->studyplan_list) : null;
+        if (($key = array_search($studyplan_subject_id, $list)) !== false) {
+            unset($list[$key]);
+            $this->studyplan_list = implode(',', $list);
+            $this->save(false);
+        }
+        return $this;
+    }
+
+    /**
+     * добавляет злемент в studyplan_list
+     * @param $studyplan_subject_id
+     * @return $this
+     */
+    public function insertStudyplanSubject($studyplan_subject_id)
+    {
+        $list = [];
+        $this->studyplan_list != '' ? $list = explode(',', $this->studyplan_list) : null;
+        array_push($list, $studyplan_subject_id);
+        $this->studyplan_list = implode(',', $list);
+        $this->save(false);
+        return $this;
     }
 }
