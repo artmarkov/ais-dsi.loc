@@ -2,9 +2,8 @@
 
 namespace common\models\studyplan;
 
-use artsoft\helpers\RefBook;
-use artsoft\models\User;
 use common\models\education\EducationProgramm;
+use common\models\studygroups\SubjectSect;
 use common\models\studygroups\SubjectSectStudyplan;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
@@ -40,6 +39,7 @@ use yii\helpers\ArrayHelper;
  * @property EducationProgramm $studyplan
  * @property SubjectCategory $subjectCat
  * @property SubjectType $subjectType
+ * @property SubjectVid $subjectVid
  * @property Subject $subject
  */
 class StudyplanSubject extends \artsoft\db\ActiveRecord
@@ -121,11 +121,21 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
         return $this->hasOne(Studyplan::class, ['id' => 'studyplan_id']);
     }
 
+    /**
+     * геттер Курс
+     *
+     * @return mixed|null
+     */
     public function getCourse()
     {
         return isset($this->studyplan) ? $this->studyplan->course : null;
     }
 
+    /**
+     * геттер Год обучения
+     *
+     * @return mixed|null
+     */
     public function getPlanYear()
     {
         return isset($this->studyplan) ? $this->studyplan->plan_year : null;
@@ -142,6 +152,8 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Вид дисциплины: групповые/индивидуальные и пр.
+     *
      * Gets query for [[SubjectVid]].
      *
      * @return \yii\db\ActiveQuery
@@ -149,6 +161,25 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     public function getSubjectVid()
     {
         return $this->hasOne(SubjectVid::class, ['id' => 'subject_vid_id']);
+    }
+
+    /**
+     * Геттер названия вида дисциплины
+     * @return null|string
+     */
+    public function getSubjectVidName()
+    {
+        return isset($this->subjectVid) ? $this->subjectVid->name : null;
+    }
+
+    /**
+     * проверка на негрупповое занятие
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function isIndividual()
+    {
+        return $this->subjectVid->qty_max == 1 ? true : false;
     }
 
     /**
@@ -222,5 +253,35 @@ SQL;
         $this->cost_month_summ = $modelSubTime->cost_month_summ;
         $this->cost_year_summ = $modelSubTime->cost_year_summ;
         $this->year_time_consult = $modelSubTime->year_time_consult;
+    }
+
+    /**
+     * добавляем инд. занятие для ученика как группу с одним учеником
+     * т.о. достигается независимость дисциплины от плана
+     *
+     * @return bool
+     */
+    public function setAtributesSubjectSect()
+    {
+        if ($this->isIndividual()) {
+            $model = new SubjectSect();
+            $model->plan_year = $this->getCourse();
+            $model->union_id = null;
+            $model->course = $this->getPlanYear();
+            $model->subject_cat_id = $this->subject_cat_id;
+            $model->subject_id = $this->subject_id;
+            $model->subject_type_id = $this->subject_type_id;
+            $model->subject_vid_id = $this->subject_vid_id;
+            if ($flag = $model->save(false)) {
+                $model_2 = new SubjectSectStudyplan();
+                $model_2->subject_sect_id = $model->id;
+                $model_2->studyplan_list = (string)$this->id;
+                if ($flag && $model_2->save(false)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
     }
 }

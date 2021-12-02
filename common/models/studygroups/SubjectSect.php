@@ -19,7 +19,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property int|null $plan_year
- * @property int $union_id
+ * @property int|null $union_id
  * @property int|null $course
  * @property int $subject_cat_id
  * @property int|null $subject_id
@@ -66,11 +66,9 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id'], 'default', 'value' => null],
+            [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id'], 'required'],
+            [['union_id'], 'default', 'value' => null],
             [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['union_id', 'subject_cat_id'], 'required'],
-            [['studyplan_list'], 'safe'],
-            [['union_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationUnion::class, 'targetAttribute' => ['union_id' => 'id']],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
             [['subject_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectVid::class, 'targetAttribute' => ['subject_vid_id' => 'id']],

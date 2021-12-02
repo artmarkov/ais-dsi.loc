@@ -1,4 +1,5 @@
 <?php
+
 use artsoft\helpers\RefBook;
 use kartik\editable\Editable;
 use yii\helpers\Url;
@@ -36,25 +37,29 @@ use yii\helpers\Url;
                                                 <?= RefBook::find('subject_memo_2')->getValue($modelSubject->id ?? null) ?>
                                             </td>
                                             <td>
-                                                <?= Editable::widget([
-                                                    'name' => 'id_' . $modelSubject->id,
-                                                    'value' => $modelSubject->getSubjectSectStudyplan()->id,
-                                                    'attribute' => 'id',
-                                                    'header' => 'Группа',
-                                                    'displayValueConfig'=> $modelSubject->getSubjectSectStudyplanAll() ?? [],
-                                                    'asPopover' => true,
-                                                    'format' => Editable::FORMAT_LINK,
-                                                    'inputType' => Editable::INPUT_DROPDOWN_LIST,
-                                                    'data' => $modelSubject->getSubjectSectStudyplanAll() ?? [],
-                                                    'options' => ['class' => 'form-control'],
-                                                    'formOptions' => [
-                                                        'action' => Url::toRoute([
-                                                            '/studygroups/default/set-group',
-                                                            'studyplan_subject_id' => $modelSubject->id ?? null
-                                                        ]),
-                                                    ],
-                                                ]);
-                                                ?>
+                                                <?php if (!$modelSubject->isIndividual()): ?>
+                                                    <?= Editable::widget([
+                                                        'name' => 'id_' . $modelSubject->id,
+                                                        'value' => $modelSubject->getSubjectSectStudyplan()->id,
+                                                        'attribute' => 'id',
+                                                        'header' => 'Группа',
+                                                        'displayValueConfig' => $modelSubject->getSubjectSectStudyplanAll() ?? [],
+                                                        'asPopover' => true,
+                                                        'format' => Editable::FORMAT_LINK,
+                                                        'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                                                        'data' => $modelSubject->getSubjectSectStudyplanAll() ?? [],
+                                                        'options' => ['class' => 'form-control'],
+                                                        'formOptions' => [
+                                                            'action' => Url::toRoute([
+                                                                '/studygroups/default/set-group',
+                                                                'studyplan_subject_id' => $modelSubject->id ?? null
+                                                            ]),
+                                                        ],
+                                                    ]);
+                                                    ?>
+                                                <?php else: ?>
+                                                    <?= $modelSubject->getSubjectVidName(); ?>
+                                                <?php endif; ?>
                                             </td>
                                             <td>
                                             </td>
