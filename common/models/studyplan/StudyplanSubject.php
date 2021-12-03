@@ -3,7 +3,6 @@
 namespace common\models\studyplan;
 
 use common\models\education\EducationProgramm;
-use common\models\studygroups\SubjectSect;
 use common\models\studygroups\SubjectSectStudyplan;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
@@ -253,16 +252,5 @@ SQL;
         $this->cost_year_summ = $modelSubTime->cost_year_summ;
         $this->year_time_consult = $modelSubTime->year_time_consult;
     }
-     * т.о. достигается независимость дисциплины от плана
-     *
-     * @return bool
-     */
-    public function setAtributesSubjectSect()
-            $model->course = $this->getPlanYear();
-            $model->subject_cat_id = $this->subject_cat_id;
-            $model->subject_id = $this->subject_id;
-            $model->subject_type_id = $this->subject_type_id;
-            $model->subject_vid_id = $this->subject_vid_id;
-            }
-            return false;
+
 }
