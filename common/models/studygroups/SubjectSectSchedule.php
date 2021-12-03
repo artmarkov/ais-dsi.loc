@@ -3,6 +3,7 @@
 namespace common\models\studygroups;
 
 use common\models\guidejob\Direction;
+use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\Teachers;
 use Yii;
 
@@ -11,6 +12,7 @@ use Yii;
  *
  * @property int $id
  * @property int|null $subject_sect_studyplan_id
+ * @property int|null $studyplan_subject_id
  * @property int $direction_id
  * @property int $teachers_id
  * @property int|null $week_num
@@ -44,8 +46,8 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
-            [['subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['direction_id', 'teachers_id', 'created_at', 'updated_at'], 'required'],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::class, 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
@@ -94,6 +96,11 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     public function getSect()
     {
         return $this->hasOne(SubjectSectStudyplan::class, ['id' => 'subject_sect_studyplan_id']);
+    }
+
+    public function getStudyplanSubject()
+    {
+        return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
     }
 
     /**

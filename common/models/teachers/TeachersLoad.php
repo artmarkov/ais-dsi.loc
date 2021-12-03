@@ -3,6 +3,7 @@
 namespace common\models\teachers;
 
 use common\models\studygroups\SubjectSectStudyplan;
+use common\models\studyplan\StudyplanSubject;
 use Yii;
 
 /**
@@ -10,6 +11,7 @@ use Yii;
  *
  * @property int $id
  * @property int|null $subject_sect_studyplan_id
+ * @property int|null $studyplan_subject_id
  * @property int $direction_id
  * @property int $teachers_id
  * @property float|null $week_time
@@ -39,8 +41,8 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
-            [['subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['direction_id', 'teachers_id', 'created_at', 'updated_at'], 'required'],
             [['week_time'], 'number'],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuideTeachersDirection::className(), 'targetAttribute' => ['direction_id' => 'id']],
@@ -86,6 +88,11 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
     public function getSect()
     {
         return $this->hasOne(SubjectSectStudyplan::className(), ['id' => 'subject_sect_studyplan_id']);
+    }
+
+    public function getStudyplanSubject()
+    {
+        return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
     }
 
     /**
