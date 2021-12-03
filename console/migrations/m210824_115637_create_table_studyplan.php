@@ -76,7 +76,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->createTableWithHistory('subject_sect_studyplan', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'subject_sect_id' => $this->integer(),
-            'studyplan_list' => $this->text(),
+            'studyplan_subject_list' => $this->text(),
             'class_name' => $this->string(64),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),

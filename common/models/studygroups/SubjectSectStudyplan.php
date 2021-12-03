@@ -15,7 +15,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property int|null $subject_sect_id
- * @property string|null $studyplan_list
+ * @property string|null $studyplan_subject_list
  * @property string $class_name
  * @property int $created_at
  * @property int|null $created_by
@@ -54,7 +54,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
         return [
             [['subject_sect_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['class_name'], 'required'],
-            [['studyplan_list'], 'string'],
+            [['studyplan_subject_list'], 'string'],
             [['class_name'], 'string', 'max' => 64],
             [['class_name'], 'trim'],
             ['class_name', 'unique', 'targetAttribute' => ['class_name', 'subject_sect_id']],
@@ -70,7 +70,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/guide', 'ID'),
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
-            'studyplan_list' => Yii::t('art/guide', 'Studyplan List'),
+            'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
             'class_name' => Yii::t('art/guide', 'Class Name'),
             'created_at' => Yii::t('art/guide', 'Created'),
             'created_by' => Yii::t('art/guide', 'Created By'),
@@ -101,8 +101,8 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     public function getStudyplan($readonly)
     {
         $data = [];
-        if (!empty($this->studyplan_list)) {
-            foreach (explode(',', $this->studyplan_list) as $item => $studyplan_subject_id) {
+        if (!empty($this->studyplan_subject_list)) {
+            foreach (explode(',', $this->studyplan_subject_list) as $item => $studyplan_subject_id) {
                 $model = StudyplanSubject::findOne(['id' => $studyplan_subject_id]);
                 $data[$studyplan_subject_id] = [
                     'content' => $this->getSubjectContent($studyplan_subject_id),
@@ -125,33 +125,33 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * удаляет злемент из studyplan_list
+     * удаляет злемент из studyplan_subject_list
      * @param $studyplan_subject_id
      * @return $this
      */
     public function removeStudyplanSubject($studyplan_subject_id)
     {
         $list = [];
-        $this->studyplan_list != '' ? $list = explode(',', $this->studyplan_list) : null;
+        $this->studyplan_subject_list != '' ? $list = explode(',', $this->studyplan_subject_list) : null;
         if (($key = array_search($studyplan_subject_id, $list)) !== false) {
             unset($list[$key]);
-            $this->studyplan_list = implode(',', $list);
+            $this->studyplan_subject_list = implode(',', $list);
             $this->save(false);
         }
         return $this;
     }
 
     /**
-     * добавляет злемент в studyplan_list
+     * добавляет злемент в studyplan_subject_list
      * @param $studyplan_subject_id
      * @return $this
      */
     public function insertStudyplanSubject($studyplan_subject_id)
     {
         $list = [];
-        $this->studyplan_list != '' ? $list = explode(',', $this->studyplan_list) : null;
+        $this->studyplan_subject_list != '' ? $list = explode(',', $this->studyplan_subject_list) : null;
         array_push($list, $studyplan_subject_id);
-        $this->studyplan_list = implode(',', $list);
+        $this->studyplan_subject_list = implode(',', $list);
         $this->save(false);
         return $this;
     }

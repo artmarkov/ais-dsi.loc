@@ -181,7 +181,7 @@ JS
                                 'model' => $modelsDependence[0],
                                 'formId' => 'subject-sect-form',
                                 'formFields' => [
-                                    'studyplan_list',
+                                    'studyplan_subject_list',
                                 ],
                             ]); ?>
                             <div class="panel panel-success">
@@ -216,13 +216,13 @@ JS
                                                     </div>
 
                                                     <?php
-                                                    $field = $form->field($modelDependence, "[{$index}]studyplan_list");
+                                                    $field = $form->field($modelDependence, "[{$index}]studyplan_subject_list");
                                                     echo $field->begin();
                                                     ?>
                                                     <div class="col-sm-12">
                                                         <?= SortableInput::widget([
                                                             'model' => $modelDependence,
-                                                            'attribute' => "[{$index}]studyplan_list",
+                                                            'attribute' => "[{$index}]studyplan_subject_list",
                                                             'hideInput' => true,
                                                             'sortableOptions' => [
                                                                 'itemOptions' => ['class' => 'alert alert-success'],

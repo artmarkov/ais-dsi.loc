@@ -200,7 +200,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     {
         $data = [];
         foreach ($this->getSubjectSectStudyplans()->asArray()->all() as $item => $model) {
-            $model['studyplan_list'] != '' ? $data[] = $model['studyplan_list'] : null;
+            $model['studyplan_subject_list'] != '' ? $data[] = $model['studyplan_subject_list'] : null;
         }
         return implode(',', $data);
     }

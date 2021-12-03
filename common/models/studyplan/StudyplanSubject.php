@@ -197,7 +197,7 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
      */
     public function getSubjectSectStudyplan()
     {
-        return SubjectSectStudyplan::find()->where(['like', 'studyplan_list', $this->id])->one() ?? new SubjectSectStudyplan();
+        return SubjectSectStudyplan::find()->where(['like', 'studyplan_subject_list', $this->id])->one() ?? new SubjectSectStudyplan();
     }
 
     /**
