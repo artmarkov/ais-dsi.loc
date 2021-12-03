@@ -3,10 +3,12 @@
 namespace common\models\studygroups;
 
 use artsoft\helpers\RefBook;
+use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "subject_sect_studyplan".

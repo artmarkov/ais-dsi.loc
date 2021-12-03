@@ -7,10 +7,12 @@ use common\models\education\EducationCat;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\history\StudyplanHistory;
+use common\models\studygroups\SubjectSectStudyplan;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use yii\helpers\ArrayHelper;
 use Yii;
+use yii\helpers\Json;
 
 /**
  * DefaultController implements the CRUD actions for common\models\studyplan\Studyplan model.
@@ -121,10 +123,6 @@ class DefaultController extends MainController
                         foreach ($modelsDependence as $modelDependence) {
                             $modelDependence->studyplan_id = $model->id;
                             if (!($flag = $modelDependence->save(false))) {
-                                $transaction->rollBack();
-                                break;
-                            }
-                            if (!$modelDependence->setAtributesSubjectSect()) {
                                 $transaction->rollBack();
                                 break;
                             }

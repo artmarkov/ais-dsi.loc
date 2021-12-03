@@ -39,7 +39,6 @@ use yii\helpers\ArrayHelper;
  * @property EducationProgramm $studyplan
  * @property SubjectCategory $subjectCat
  * @property SubjectType $subjectType
- * @property SubjectVid $subjectVid
  * @property Subject $subject
  */
 class StudyplanSubject extends \artsoft\db\ActiveRecord
@@ -254,34 +253,16 @@ SQL;
         $this->cost_year_summ = $modelSubTime->cost_year_summ;
         $this->year_time_consult = $modelSubTime->year_time_consult;
     }
-
-    /**
-     * добавляем инд. занятие для ученика как группу с одним учеником
      * т.о. достигается независимость дисциплины от плана
      *
      * @return bool
      */
     public function setAtributesSubjectSect()
-    {
-        if ($this->isIndividual()) {
-            $model = new SubjectSect();
-            $model->plan_year = $this->getCourse();
-            $model->union_id = null;
             $model->course = $this->getPlanYear();
             $model->subject_cat_id = $this->subject_cat_id;
             $model->subject_id = $this->subject_id;
             $model->subject_type_id = $this->subject_type_id;
             $model->subject_vid_id = $this->subject_vid_id;
-            if ($flag = $model->save(false)) {
-                $model_2 = new SubjectSectStudyplan();
-                $model_2->subject_sect_id = $model->id;
-                $model_2->studyplan_list = (string)$this->id;
-                if ($flag && $model_2->save(false)) {
-                    return true;
-                }
             }
             return false;
-        }
-        return true;
-    }
 }
