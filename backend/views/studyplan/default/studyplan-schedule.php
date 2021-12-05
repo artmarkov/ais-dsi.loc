@@ -3,9 +3,18 @@
 use artsoft\helpers\RefBook;
 use kartik\editable\Editable;
 use yii\helpers\Url;
+use yii\web\JsExpression;
+use common\widgets\weeklyscheduler\WeeklyScheduler;
 
 /* @var $readonly */
 /* @var $modelsSubject */
+
+$JSInit = <<<EOF
+    function(e,f) {
+    console.log(e);
+    console.log(f);
+    }
+EOF;
 ?>
 <div class="panel">
     <div class="panel-heading">
@@ -24,17 +33,26 @@ use yii\helpers\Url;
                                 <table class="table table-bordered table-striped">
                                     <thead>
                                     <tr>
+                                        <th class="text-center">№</th>
                                         <th class="text-center">Дисциплина</th>
+                                        <th class="text-center">Час/нед</th>
                                         <th class="text-center">Группа</th>
-                                        <th class="text-center">Преподаватели</th>
+                                        <th class="text-center">Преподаватель(нагр)</th>
                                         <th class="text-center">Расписание занятий</th>
+                                        <th class="text-center">Аудитория</th>
                                     </tr>
                                     </thead>
                                     <tbody class="container-items">
                                     <?php foreach ($modelsSubject as $index => $modelSubject): ?>
                                         <tr class="item">
                                             <td>
+                                                <?= ++$index; ?>
+                                            </td>
+                                            <td>
                                                 <?= RefBook::find('subject_memo_2')->getValue($modelSubject->id ?? null) ?>
+                                            </td>
+                                            <td>
+                                                <?= $modelSubject->week_time; ?>
                                             </td>
                                             <td>
                                                 <?php if (!$modelSubject->isIndividual()): ?>
@@ -65,6 +83,8 @@ use yii\helpers\Url;
                                             </td>
                                             <td>
                                             </td>
+                                            <td>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                     </tbody>
@@ -73,7 +93,65 @@ use yii\helpers\Url;
                         </div>
                     </div>
                 </div>
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        График
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <?= WeeklyScheduler::widget([
+                                    'options' => ['class' => "jqs-demo mb-3"],
+                                    'mode' => 'edit',
+                                    'data' => [
+                                        [
+                                            'day' => 0,
+                                            'id' => '123456789',
+                                            'periods' => [
+                                                [
+                                                        'id' => '123456789',
+                                                    'start' => '10:00',
+                                                    'end' => '12:15',
+                                                    'title' => '1 period',
+                                                    'backgroundColor' => 'rgba(0, 0, 0, 0.7)',
+                                                    'borderColor' => '#000',
+                                                    'textColor' => '#fff'
+                                                ]
+                                            ]
+                                        ],
+                                        [
+                                            'day' => 1,
+                                            'periods' => [
+                                                [
+                                                    'start' => '12:00',
+                                                    'end' => '15:00',
+                                                    'title' => '2 period',
+                                                    'backgroundColor' => 'rgba(0, 0, 255, 0.9)',
+                                                    'borderColor' => '#000',
+                                                    'textColor' => '#fff'
+                                                ]
+                                            ]
+                                        ],
+                                    ],
+                                    'events' => [
+                                        'onInit' => new JsExpression($JSInit),
+                                        'onAddPeriod' => new JsExpression($JSInit),
+                                        'onRemovePeriod' => new JsExpression($JSInit),
+                                        'onDuplicatePeriod' => new JsExpression($JSInit),
+                                        'onClickPeriod' => new JsExpression($JSInit),
+                                    ]
+
+                                ]);
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+
+
+
