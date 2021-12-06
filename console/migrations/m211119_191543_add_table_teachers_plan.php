@@ -17,7 +17,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
             'studyplan_subject_id' => $this->integer(),
             'direction_id' => $this->integer()->notNull(),
             'teachers_id' => $this->integer()->notNull(),
-            'week_time' => $this->float(),
+            'week_time' => $this->float()->notNull(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

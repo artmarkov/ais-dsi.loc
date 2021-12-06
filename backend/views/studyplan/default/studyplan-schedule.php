@@ -60,7 +60,7 @@ EOF;
                                                         'name' => 'id_' . $modelSubject->id,
                                                         'value' => $modelSubject->getSubjectSectStudyplan()->id,
                                                         'attribute' => 'id',
-                                                        'header' => 'Группа',
+                                                        'header' => 'группу',
                                                         'displayValueConfig' => $modelSubject->getSubjectSectStudyplanAll() ?? [],
                                                         'asPopover' => true,
                                                         'format' => Editable::FORMAT_LINK,
@@ -80,6 +80,49 @@ EOF;
                                                 <?php endif; ?>
                                             </td>
                                             <td>
+                                            <?php foreach ($modelSubject->getTeachersLoads() as $item => $modelTeachersLoad): ?>
+                                            <?= Editable::widget([
+                                                'name' => 'teachers_load_' . $modelTeachersLoad->teachers_id,
+                                                'value' => $modelTeachersLoad->teachers_id,
+                                                'attribute' => 'id',
+                                                'header' => 'Нагрузку',
+                                                'displayValueConfig' => RefBook::find('teachers_fio')->getList(),
+                                                'asPopover' => true,
+                                                'format' => Editable::FORMAT_LINK,
+                                                'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                                                'data' => $modelSubject->getSubjectTeachers(),
+                                                'options' => ['class' => 'form-control'],
+                                                'formOptions' => [
+                                                    'action' => Url::toRoute([
+                                                        '/teachers/default/set-load',
+                                                        'studyplan_subject_id' => $modelSubject->id ?? null,
+                                                        'subject_sect_studyplan_id' => $modelSubject->getSubjectSectStudyplan()->id ?? null
+                                                    ]),
+                                                ],
+                                            ]);
+                                            ?>
+                                            <?php endforeach;?>
+                                            <?= Editable::widget([
+                                                'name' => 'teachers_load_0',
+                                                'value' => '',
+                                                'attribute' => 'id',
+                                                'header' => 'Нагрузку',
+                                                'displayValueConfig' => RefBook::find('teachers_fio')->getList(),
+                                                'asPopover' => true,
+                                                'format' => Editable::FORMAT_LINK,
+                                                'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                                                'data' => $modelSubject->getSubjectTeachers(),
+                                                'options' => ['class' => 'form-control'],
+                                                'formOptions' => [
+                                                    'action' => Url::toRoute([
+                                                        '/teachers/default/set-load',
+                                                        'studyplan_subject_id' =>  null,
+                                                        'subject_sect_studyplan_id' => $modelSubject->getSubjectSectStudyplan()->id ?? null
+                                                    ]),
+                                                ],
+                                            ]);
+                                            ?>
+                                            <td>
                                             </td>
                                             <td>
                                             </td>
@@ -93,60 +136,7 @@ EOF;
                         </div>
                     </div>
                 </div>
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        График
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <?= WeeklyScheduler::widget([
-                                    'options' => ['class' => "jqs-demo mb-3"],
-                                    'mode' => 'edit',
-                                    'data' => [
-                                        [
-                                            'day' => 0,
-                                            'id' => '123456789',
-                                            'periods' => [
-                                                [
-                                                        'id' => '123456789',
-                                                    'start' => '10:00',
-                                                    'end' => '12:15',
-                                                    'title' => '1 period',
-                                                    'backgroundColor' => 'rgba(0, 0, 0, 0.7)',
-                                                    'borderColor' => '#000',
-                                                    'textColor' => '#fff'
-                                                ]
-                                            ]
-                                        ],
-                                        [
-                                            'day' => 1,
-                                            'periods' => [
-                                                [
-                                                    'start' => '12:00',
-                                                    'end' => '15:00',
-                                                    'title' => '2 period',
-                                                    'backgroundColor' => 'rgba(0, 0, 255, 0.9)',
-                                                    'borderColor' => '#000',
-                                                    'textColor' => '#fff'
-                                                ]
-                                            ]
-                                        ],
-                                    ],
-                                    'events' => [
-                                        'onInit' => new JsExpression($JSInit),
-                                        'onAddPeriod' => new JsExpression($JSInit),
-                                        'onRemovePeriod' => new JsExpression($JSInit),
-                                        'onDuplicatePeriod' => new JsExpression($JSInit),
-                                        'onClickPeriod' => new JsExpression($JSInit),
-                                    ]
 
-                                ]);
-                                ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

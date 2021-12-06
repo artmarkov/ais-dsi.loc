@@ -2,12 +2,15 @@
 
 namespace common\models\studyplan;
 
+use artsoft\helpers\RefBook;
 use common\models\education\EducationProgramm;
 use common\models\studygroups\SubjectSectStudyplan;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
 use common\models\subject\SubjectVid;
+use common\models\teachers\Teachers;
+use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -198,6 +201,32 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     public function getSubjectSectStudyplan()
     {
         return SubjectSectStudyplan::find()->where(['like', 'studyplan_subject_list', $this->id])->one() ?? new SubjectSectStudyplan();
+    }
+
+    public function getTeachersLoads()
+    {
+        return $this->isIndividual() ? TeachersLoad::find()->where(['=', 'studyplan_subject_id', $this->id])
+            ->andWhere('subject_sect_studyplan_id is null')
+            ->all() :
+            TeachersLoad::find()->where(['=', 'subject_sect_studyplan_id', $this->getSubjectSectStudyplan()->id])
+                ->andWhere('studyplan_subject_id is null')
+                ->all();
+    }
+
+    /**
+     * Находим всех учителей преподающих данную дисциплину
+     * @return array
+     */
+    public function getSubjectTeachers()
+    {
+        $data = [];
+        $department_list = Subject::find()->select('department_list')->andWhere(['=', 'id', $this->subject_id])->scalar();
+        foreach (explode(',', $department_list) as $i => $department) {
+            $id = Teachers::find()->where(['or like', 'department_list', $department])->scalar();
+            $data[$id] = RefBook::find('teachers_fio')->getValue($id);
+        }
+        array_unique($data);
+        return $data;
     }
 
     /**
