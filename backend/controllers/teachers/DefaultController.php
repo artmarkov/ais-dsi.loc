@@ -4,8 +4,12 @@ namespace backend\controllers\teachers;
 
 use artsoft\models\User;
 use common\models\guidejob\Bonus;
+use common\models\studygroups\SubjectSectStudyplan;
+use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\TeachersActivity;
+use common\models\teachers\TeachersLoad;
 use common\models\user\UserCommon;
+use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
 use backend\models\Model;
 use yii\helpers\ArrayHelper;
@@ -173,81 +177,124 @@ class DefaultController extends MainController
         return $model->value_default;
     }
 
+    public function actionSetLoad()
+    {
+        $studyplan_subject_id = $_GET['studyplan_subject_id'];
+        $teachers_load_id = isset($_GET['teachers_load_id']) ? $_GET['teachers_load_id'] : 0;
+
+        if (isset($_POST['hasEditable'])) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            if (isset($_POST['teachers'][$studyplan_subject_id][$teachers_load_id])) {
+                $model = TeachersLoad::findOne($teachers_load_id);
+                if ($model) {
+                    $model->teachers_id = $_POST['teachers'][$studyplan_subject_id][$teachers_load_id];
+                } else {
+                    $model = new TeachersLoad();
+                    $model->teachers_id = $_POST['teachers'][$studyplan_subject_id][$teachers_load_id];
+                    $modelSubject = StudyplanSubject::findOne($studyplan_subject_id);
+                    if ($modelSubject->isIndividual()) {
+                        $model->studyplan_subject_id = $studyplan_subject_id;
+                        $model->subject_sect_studyplan_id = null;
+                    }
+                    else {
+                        $model->studyplan_subject_id = null;
+                        $model->subject_sect_studyplan_id = $modelSubject->getSubjectSectStudyplan()->id;
+                    }
+                        $model->week_time= 2;
+                        $model->direction_id= 1000;
+
+                }
+                $model->save(false);
+                //$model->removeStudyplanSubject($studyplan_subject_id);
+
+                // $model = SubjectSectStudyplan::findOne($_POST['id_' . $studyplan_subject_id]);
+                //$model->insertStudyplanSubject($studyplan_subject_id);
+
+                $value = $model->teachers_id;
+                return Json::encode(['output' => $value, 'message' => '']);
+            } else {
+                return Json::encode(['output' => '', 'message' => '']);
+            }
+        }
+
+        return null;
+    }
+
 
     public function actions()
     {
         $id = \Yii::$app->request->get('id');
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
-            $widgets = [
+        $widgets = [
+            [
                 [
-                    [
-                        'class' => 'col-md-3',
-                        'content' => [
-                            'common\widgets\EfficiencyUserBarWidget',
-                        ],
-                    ],
-                    [
-                        'class' => 'col-md-3',
-                        'content' => [
-                            'common\widgets\EfficiencyUserBarWidget',
-
-                        ],
-                    ],
-                    [
-                        'class' => 'col-md-3',
-                        'content' => [
-                            'common\widgets\EfficiencyUserBarWidget',
-
-                        ],
-                    ],
-                    [
-                        'class' => 'col-md-3',
-                        'content' => [
-                            'common\widgets\EfficiencyUserBarWidget',
-
-                        ],
+                    'class' => 'col-md-3',
+                    'content' => [
+                        'common\widgets\EfficiencyUserBarWidget',
                     ],
                 ],
                 [
-                    [
-                        'class' => 'col-md-4',
-                        'content' => [
-                            'common\widgets\EfficiencyUserBarWidget',
-                        ],
-                    ],
-                    [
-                        'class' => 'col-md-4',
-                        'content' => [
-                            'common\widgets\EfficiencyUserBarWidget',
+                    'class' => 'col-md-3',
+                    'content' => [
+                        'common\widgets\EfficiencyUserBarWidget',
 
-                        ],
-                    ],
-                    [
-                        'class' => 'col-md-4',
-                        'content' => [
-                            'common\widgets\EfficiencyUserBarWidget',
-
-                        ],
                     ],
                 ],
                 [
-                    [
-                        'class' => 'col-md-6',
-                        'content' => [
-                            'common\widgets\EfficiencyUserBarWidget',
-                        ],
-                    ],
+                    'class' => 'col-md-3',
+                    'content' => [
+                        'common\widgets\EfficiencyUserBarWidget',
 
-                    [
-                        'class' => 'col-md-6',
-                        'content' => [
-                            'common\widgets\EfficiencyUserBarWidget',
-
-                        ],
                     ],
                 ],
-            ];
+                [
+                    'class' => 'col-md-3',
+                    'content' => [
+                        'common\widgets\EfficiencyUserBarWidget',
+
+                    ],
+                ],
+            ],
+            [
+                [
+                    'class' => 'col-md-4',
+                    'content' => [
+                        'common\widgets\EfficiencyUserBarWidget',
+                    ],
+                ],
+                [
+                    'class' => 'col-md-4',
+                    'content' => [
+                        'common\widgets\EfficiencyUserBarWidget',
+
+                    ],
+                ],
+                [
+                    'class' => 'col-md-4',
+                    'content' => [
+                        'common\widgets\EfficiencyUserBarWidget',
+
+                    ],
+                ],
+            ],
+            [
+                [
+                    'class' => 'col-md-6',
+                    'content' => [
+                        'common\widgets\EfficiencyUserBarWidget',
+                    ],
+                ],
+
+                [
+                    'class' => 'col-md-6',
+                    'content' => [
+                        'common\widgets\EfficiencyUserBarWidget',
+
+                    ],
+                ],
+            ],
+        ];
 
         return ArrayHelper::merge(parent::actions(), [
             'monitor' => [

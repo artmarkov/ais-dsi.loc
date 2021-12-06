@@ -5,6 +5,8 @@ namespace common\models\teachers;
 use common\models\studygroups\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "teachers_load".
@@ -33,6 +35,17 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
     public static function tableName()
     {
         return 'teachers_load';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class,
+            BlameableBehavior::class,
+        ];
     }
 
     /**
@@ -68,6 +81,11 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
             'updated_by' => Yii::t('art/guide', 'Updated By'),
             'version' => Yii::t('art/guide', 'Version'),
         ];
+    }
+
+    public function optimisticLock()
+    {
+        return 'version';
     }
 
     /**

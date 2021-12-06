@@ -2,7 +2,12 @@
 
 use common\widgets\weeklyscheduler\WeeklyScheduler;
 use yii\web\JsExpression;
-
+$JSInit = <<<EOF
+    function(e,f) {
+    console.log(e);
+    console.log(f);
+    }
+EOF;
 ?>
 <div class="panel panel-info">
     <div class="panel-heading">

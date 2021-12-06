@@ -10,9 +10,11 @@ use common\widgets\weeklyscheduler\WeeklyScheduler;
 /* @var $modelsSubject */
 
 $JSInit = <<<EOF
-    function(e,f) {
-    console.log(e);
-    console.log(f);
+    function(event, val, form) {
+    console.log(event);
+    console.log(val);
+    console.log(form);
+    location.reload();
     }
 EOF;
 ?>
@@ -82,10 +84,10 @@ EOF;
                                             <td>
                                             <?php foreach ($modelSubject->getTeachersLoads() as $item => $modelTeachersLoad): ?>
                                             <?= Editable::widget([
-                                                'name' => 'teachers_load_' . $modelTeachersLoad->teachers_id,
+                                                'name' => "teachers[$modelSubject->id][$modelTeachersLoad->id]",
                                                 'value' => $modelTeachersLoad->teachers_id,
-                                                'attribute' => 'id',
-                                                'header' => 'Нагрузку',
+                                                'attribute' => 'teachers_id',
+                                                'header' => 'нагрузку',
                                                 'displayValueConfig' => RefBook::find('teachers_fio')->getList(),
                                                 'asPopover' => true,
                                                 'format' => Editable::FORMAT_LINK,
@@ -95,31 +97,52 @@ EOF;
                                                 'formOptions' => [
                                                     'action' => Url::toRoute([
                                                         '/teachers/default/set-load',
-                                                        'studyplan_subject_id' => $modelSubject->id ?? null,
-                                                        'subject_sect_studyplan_id' => $modelSubject->getSubjectSectStudyplan()->id ?? null
+                                                        'teachers_load_id' => $modelTeachersLoad->id,
+                                                        'studyplan_subject_id' => $modelSubject->id
                                                     ]),
                                                 ],
+                                                    'pluginEvents' => [
+//                                                        "editableChange"=>"function(event, val) { log('Changed Value ' + val); }",
+                                                        "editableSubmit"=> new JsExpression($JSInit),
+//                                                        "editableBeforeSubmit"=>"function(event, jqXHR) { log('Before submit triggered'); }",
+//                                                        "editableSubmit"=>"function(event, val, form, jqXHR) { log('Submitted Value ' + val); }",
+//                                                        "editableReset"=>"function(event) { log('Reset editable form'); }",
+//                                                        "editableSuccess"=>"function(event, val, form, data) { log('Successful submission of value ' + val); }",
+//                                                        "editableError"=>"function(event, val, form, data) { log('Error while submission of value ' + val); }",
+//                                                        "editableAjaxError"=>"function(event, jqXHR, status, message) { log(message); }",
+                                                    ]
                                             ]);
                                             ?>
                                             <?php endforeach;?>
                                             <?= Editable::widget([
-                                                'name' => 'teachers_load_0',
+                                                'name' => "teachers[$modelSubject->id][0]",
                                                 'value' => '',
-                                                'attribute' => 'id',
-                                                'header' => 'Нагрузку',
+                                                'attribute' => 'teachers_id',
+                                                'header' => 'нагрузку',
                                                 'displayValueConfig' => RefBook::find('teachers_fio')->getList(),
                                                 'asPopover' => true,
-                                                'format' => Editable::FORMAT_LINK,
+                                                'valueIfNull' => false,
+                                                'defaultEditableBtnIcon' => '<i class="glyphicon glyphicon-plus"></i>',
+                                                'format' => Editable::FORMAT_BUTTON,
                                                 'inputType' => Editable::INPUT_DROPDOWN_LIST,
                                                 'data' => $modelSubject->getSubjectTeachers(),
                                                 'options' => ['class' => 'form-control'],
                                                 'formOptions' => [
                                                     'action' => Url::toRoute([
                                                         '/teachers/default/set-load',
-                                                        'studyplan_subject_id' =>  null,
-                                                        'subject_sect_studyplan_id' => $modelSubject->getSubjectSectStudyplan()->id ?? null
+                                                        'studyplan_subject_id' => $modelSubject->id
                                                     ]),
                                                 ],
+                                                'pluginEvents' => [
+//                                                        "editableChange"=>"function(event, val) { log('Changed Value ' + val); }",
+                                                    "editableSubmit"=> new JsExpression($JSInit),
+//                                                        "editableBeforeSubmit"=>"function(event, jqXHR) { log('Before submit triggered'); }",
+//                                                        "editableSubmit"=>"function(event, val, form, jqXHR) { log('Submitted Value ' + val); }",
+//                                                        "editableReset"=>"function(event) { log('Reset editable form'); }",
+//                                                        "editableSuccess"=>"function(event, val, form, data) { log('Successful submission of value ' + val); }",
+//                                                        "editableError"=>"function(event, val, form, data) { log('Error while submission of value ' + val); }",
+//                                                        "editableAjaxError"=>"function(event, jqXHR, status, message) { log(message); }",
+                                                ]
                                             ]);
                                             ?>
                                             <td>

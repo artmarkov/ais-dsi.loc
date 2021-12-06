@@ -203,6 +203,10 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
         return SubjectSectStudyplan::find()->where(['like', 'studyplan_subject_list', $this->id])->one() ?? new SubjectSectStudyplan();
     }
 
+    /**
+     * @return array|TeachersLoad[]|\yii\db\ActiveRecord[]
+     * @throws \yii\db\Exception
+     */
     public function getTeachersLoads()
     {
         return $this->isIndividual() ? TeachersLoad::find()->where(['=', 'studyplan_subject_id', $this->id])
