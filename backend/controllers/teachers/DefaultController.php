@@ -190,6 +190,8 @@ class DefaultController extends MainController
 
             if (isset($_POST['TeachersLoad'])) {
                 $model->teachers_id = $_POST['TeachersLoad'][$studyplan_subject_id][$teachers_load_id]['teachers_id'];
+                $model->week_time = $_POST['TeachersLoad'][$studyplan_subject_id][$teachers_load_id]['week_time'];
+                $model->direction_id = $_POST['TeachersLoad'][$studyplan_subject_id][$teachers_load_id]['direction_id'];
                 $modelSubject = StudyplanSubject::findOne($studyplan_subject_id);
                 if ($modelSubject->isIndividual()) {
                     $model->studyplan_subject_id = $studyplan_subject_id;
@@ -198,8 +200,6 @@ class DefaultController extends MainController
                     $model->studyplan_subject_id = null;
                     $model->subject_sect_studyplan_id = $modelSubject->getSubjectSectStudyplan()->id;
                 }
-                $model->week_time = 2;
-                $model->direction_id = 1000;
 
                 $model->save(false);
                 $value = $model->teachers_id;
