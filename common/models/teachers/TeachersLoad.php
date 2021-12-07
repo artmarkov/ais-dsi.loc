@@ -2,6 +2,7 @@
 
 namespace common\models\teachers;
 
+use common\models\guidejob\Direction;
 use common\models\studygroups\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
 use Yii;
@@ -58,7 +59,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['direction_id', 'teachers_id', 'created_at', 'updated_at'], 'required'],
             [['week_time'], 'number'],
-            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuideTeachersDirection::className(), 'targetAttribute' => ['direction_id' => 'id']],
+            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::className(), 'targetAttribute' => ['direction_id' => 'id']],
             [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::className(), 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
         ];
@@ -72,7 +73,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/guide', 'ID'),
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect ID'),
-            'direction_id' => Yii::t('art/guide', 'Direction ID'),
+            'direction_id' => Yii::t('art/guide', 'Direction'),
             'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
             'week_time' => Yii::t('art/guide', 'Week Time'),
             'created_at' => Yii::t('art/guide', 'Created At'),

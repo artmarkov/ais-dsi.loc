@@ -195,11 +195,11 @@ class DefaultController extends MainController
 
         if (isset($_POST['hasEditable'])) {
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            if (isset($_POST['id_' . $studyplan_subject_id])) {
+            if (isset($_POST['sect_id'][$studyplan_subject_id])) {
                 $model = StudyplanSubject::findOne($studyplan_subject_id)->getSubjectSectStudyplan();
                 $model->removeStudyplanSubject($studyplan_subject_id);
 
-                $model = SubjectSectStudyplan::findOne($_POST['id_' . $studyplan_subject_id]);
+                $model = SubjectSectStudyplan::findOne($_POST['sect_id'][$studyplan_subject_id]);
                 $model->insertStudyplanSubject($studyplan_subject_id);
 
                 $value = $model->id;

@@ -6,6 +6,8 @@ use artsoft\models\User;
 use common\models\guidejob\Bonus;
 use common\models\studygroups\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\subject\Subject;
+use common\models\teachers\Teachers;
 use common\models\teachers\TeachersActivity;
 use common\models\teachers\TeachersLoad;
 use common\models\user\UserCommon;
@@ -181,35 +183,25 @@ class DefaultController extends MainController
     {
         $studyplan_subject_id = $_GET['studyplan_subject_id'];
         $teachers_load_id = isset($_GET['teachers_load_id']) ? $_GET['teachers_load_id'] : 0;
+        $model = $teachers_load_id != 0 ? TeachersLoad::findOne($teachers_load_id) : new TeachersLoad();
 
         if (isset($_POST['hasEditable'])) {
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            if (isset($_POST['teachers'][$studyplan_subject_id][$teachers_load_id])) {
-                $model = TeachersLoad::findOne($teachers_load_id);
-                if ($model) {
-                    $model->teachers_id = $_POST['teachers'][$studyplan_subject_id][$teachers_load_id];
+
+            if (isset($_POST['TeachersLoad'])) {
+                $model->teachers_id = $_POST['TeachersLoad'][$studyplan_subject_id][$teachers_load_id]['teachers_id'];
+                $modelSubject = StudyplanSubject::findOne($studyplan_subject_id);
+                if ($modelSubject->isIndividual()) {
+                    $model->studyplan_subject_id = $studyplan_subject_id;
+                    $model->subject_sect_studyplan_id = null;
                 } else {
-                    $model = new TeachersLoad();
-                    $model->teachers_id = $_POST['teachers'][$studyplan_subject_id][$teachers_load_id];
-                    $modelSubject = StudyplanSubject::findOne($studyplan_subject_id);
-                    if ($modelSubject->isIndividual()) {
-                        $model->studyplan_subject_id = $studyplan_subject_id;
-                        $model->subject_sect_studyplan_id = null;
-                    }
-                    else {
-                        $model->studyplan_subject_id = null;
-                        $model->subject_sect_studyplan_id = $modelSubject->getSubjectSectStudyplan()->id;
-                    }
-                        $model->week_time= 2;
-                        $model->direction_id= 1000;
-
+                    $model->studyplan_subject_id = null;
+                    $model->subject_sect_studyplan_id = $modelSubject->getSubjectSectStudyplan()->id;
                 }
+                $model->week_time = 2;
+                $model->direction_id = 1000;
+
                 $model->save(false);
-                //$model->removeStudyplanSubject($studyplan_subject_id);
-
-                // $model = SubjectSectStudyplan::findOne($_POST['id_' . $studyplan_subject_id]);
-                //$model->insertStudyplanSubject($studyplan_subject_id);
-
                 $value = $model->teachers_id;
                 return Json::encode(['output' => $value, 'message' => '']);
             } else {
@@ -220,6 +212,21 @@ class DefaultController extends MainController
         return null;
     }
 
+    public function actionTeachers()
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $cat_id = $parents[0];
+                $out = Teachers::getTeachersById($cat_id);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
 
     public function actions()
     {
@@ -309,7 +316,8 @@ class DefaultController extends MainController
      * @param $id
      * @return array
      */
-    public function getMenu($id)
+    public
+    function getMenu($id)
     {
         return [
             ['label' => 'Монитор', 'url' => ['/teachers/default/monitor', 'id' => $id]],

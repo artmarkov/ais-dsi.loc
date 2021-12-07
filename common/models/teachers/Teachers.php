@@ -206,6 +206,13 @@ class Teachers extends ActiveRecord
         return parent::beforeDelete();
     }
 
+    public static function getTeachersById($direction_id) {
+        $data = self::find()->select(['id','position_id'])
+           // ->where(['like', 'category_list', $direction_id])
+            ->asArray()->all();
+
+        return $data;
+    }
 //    public static function getTeachersList()
 //    {
 //        return \yii\helpers\ArrayHelper::map(self::find()->innerJoin('user_common', 'user_common.id = teachers.user_common_id')
