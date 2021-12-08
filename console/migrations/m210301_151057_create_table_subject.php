@@ -20,7 +20,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             'sort_order' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 
-        $this->addCommentOnTable('guide_subject_category', 'Раздел дисциплины');
+        $this->addCommentOnTable('guide_subject_category', 'Раздел учебных предметов');
         $this->db->createCommand()->resetSequence('guide_subject_category', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('guide_subject_category', ['name', 'slug', 'sort_order', 'status', 'dep_flag'], [
@@ -244,11 +244,11 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_category_name', 'guide_subject_category', 'id', 'name', 'id', 'status', null, 'Раздел дисциплины (полное)'],
+            ['subject_category_name', 'guide_subject_category', 'id', 'name', 'id', 'status', null, 'Раздел учебных предметов (полное)'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_category_name_dev', 'guide_subject_category', 'id', 'slug', 'id', 'status', null, 'Раздел дисциплины (кратко)'],
+            ['subject_category_name_dev', 'guide_subject_category', 'id', 'slug', 'id', 'status', null, 'Раздел учебных предметов (кратко)'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [

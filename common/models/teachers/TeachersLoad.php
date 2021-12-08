@@ -57,7 +57,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
         return [
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['direction_id', 'teachers_id', 'created_at', 'updated_at'], 'required'],
+            [['direction_id', 'teachers_id', 'week_time'], 'required'],
             [['week_time'], 'number'],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::className(), 'targetAttribute' => ['direction_id' => 'id']],
             [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::className(), 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
@@ -123,4 +123,5 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
     {
         return $this->hasOne(Teachers::className(), ['id' => 'teachers_id']);
     }
+
 }

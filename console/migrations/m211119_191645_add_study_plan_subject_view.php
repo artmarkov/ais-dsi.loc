@@ -58,19 +58,38 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_memo_1', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_1', 'studyplan_id', null, null, 'Дисциплина ученика с хар-ми 1-й вид'],
+            ['subject_memo_1', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_1', 'studyplan_id', null, null, 'Предмет ученика с хар-ми 1-й вид'],
         ])->execute();
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_memo_2', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_2', 'studyplan_id', null, null, 'Дисциплина ученика с хар-ми 2-й вид'],
+            ['subject_memo_2', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_2', 'studyplan_id', null, null, 'Предмет ученика с хар-ми 2-й вид'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['studyplan_subject-student', 'studyplan_subject_view', 'studyplan_subject_id', 'student_id', 'studyplan_id', null, null, 'Дисциплина плана-ученик'],
+            ['studyplan_subject-student', 'studyplan_subject_view', 'studyplan_subject_id', 'student_id', 'studyplan_id', null, null, 'Предмет плана-ученик'],
+        ])->execute();
+
+        $this->db->createCommand()->createView('teachers_load_view', '
+         SELECT teachers_load.id as id, teachers.id AS teachers_id, 
+                teachers_load.week_time as week_time,
+                CONCAT(user_common.last_name ,\' \', left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'.(\', guide_teachers_direction.slug, \') \', teachers_load.week_time) as teachers_load_display,
+                user_common.status
+        FROM teachers_load
+		INNER JOIN teachers ON teachers_load.teachers_id = teachers.id
+		INNER JOIN guide_teachers_direction ON guide_teachers_direction.id = teachers_load.direction_id
+        INNER JOIN user_common ON user_common.id = teachers.user_common_id 
+        WHERE user_common.user_category=\'teachers\'
+        ORDER BY user_common.last_name, user_common.first_name
+        ')->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['teachers_load_display', 'teachers_load_view', 'teachers_id', 'teachers_load_display', 'status', null, null, 'Нагрузка преподавателей(с ФИО и видом деятельности)'],
         ])->execute();
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_load_display-student'])->execute();
+        $this->db->createCommand()->dropView('teachers_load_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'studyplan_subject-student'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_memo_2'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_memo_1'])->execute();

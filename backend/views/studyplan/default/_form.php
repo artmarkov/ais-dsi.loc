@@ -146,18 +146,18 @@ JS
                                 <table class="table table-bordered table-striped">
                                     <thead>
                                     <tr>
-                                        <th class="text-center">Раздел дисциплины</th>
-                                        <th class="text-center">Дисциплина</th>
-                                        <th class="text-center">Тип занятий</th>
-                                        <th class="text-center">Форма занятий</th>
-                                        <th class="text-center">Часов в неделю</th>
-                                        <th class="text-center">Часов в год</th>
+                                        <th class="text-center" style="min-width: 100px">Раздел</br>учебных</br>предметов</th>
+                                        <th class="text-center" style="min-width: 150px">Предмет</th>
+                                        <th class="text-center" style="min-width: 150px">Тип</br>занятий</th>
+                                        <th class="text-center" style="min-width: 150px">Форма</br>занятий</th>
+                                        <th class="text-center">Часов</br>в неделю</th>
+                                        <th class="text-center">Часов</br>в год</th>
                                         <!--                    --><?php //if ($model->catType != 1000): ?>
                                         <th class="text-center">Стоимость часа</th>
                                         <th class="text-center">Оплата в месяц</th>
                                         <th class="text-center">Сумма в рублях за учебный год</th>
                                         <!--                    --><?php //else: ?>
-                                        <th class="text-center">Консультации - часов в год</th>
+                                        <th class="text-center">Консультации</br>часов в год</th>
                                         <!--                    --><?php //endif; ?>
                                         <th class="text-center">
                                             <?php if (!$readonly): ?>

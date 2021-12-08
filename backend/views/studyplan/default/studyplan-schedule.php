@@ -15,8 +15,8 @@ use common\models\teachers\Teachers;
 
 $JSSubmit = <<<EOF
     function(event, val, form) {
-    console.log(event);
     location.reload();
+//    console.log(event);
     }
 EOF;
 ?>
@@ -37,21 +37,16 @@ EOF;
                                 <table class="table table-bordered table-striped">
                                     <thead>
                                     <tr>
-                                        <th class="text-center">№</th>
-                                        <th class="text-center">Дисциплина</th>
+                                        <th class="text-center">Предмет</th>
                                         <th class="text-center">Час/нед</th>
                                         <th class="text-center">Группа</th>
-                                        <th class="text-center">Преподаватель(нагр)</th>
+                                        <th class="text-center">Распределение нагрузки</th>
                                         <th class="text-center">Расписание занятий</th>
-                                        <th class="text-center">Аудитория</th>
                                     </tr>
                                     </thead>
                                     <tbody class="container-items">
                                     <?php foreach ($modelsSubject as $index => $modelSubject): ?>
                                         <tr class="item">
-                                            <td>
-                                                <?= ++$index; ?>
-                                            </td>
                                             <td>
                                                 <?= RefBook::find('subject_memo_2')->getValue($modelSubject->id ?? null) ?>
                                             </td>
@@ -61,12 +56,12 @@ EOF;
                                             <td>
                                                 <?php if (!$modelSubject->isIndividual()): ?>
                                                     <?= Editable::widget([
-                                                        'name' => "sect_id[$modelSubject->id]",
+                                                        'name' => "sect_id[{$modelSubject->id}]",
                                                         'value' => $modelSubject->getSubjectSectStudyplan()->id,
-                                                        'attribute' => 'sect_id',
                                                         'header' => 'группу',
                                                         'displayValueConfig' => $modelSubject->getSubjectSectStudyplanAll() ?? [],
                                                         'asPopover' => true,
+                                                        'size' => PopoverX::SIZE_MEDIUM,
                                                         'format' => Editable::FORMAT_LINK,
                                                         'inputType' => Editable::INPUT_DROPDOWN_LIST,
                                                         'data' => $modelSubject->getSubjectSectStudyplanAll() ?? [],
@@ -88,36 +83,88 @@ EOF;
                                             </td>
                                             <td>
                                                 <?php foreach ($modelSubject->getTeachersLoads() as $item => $modelTeachersLoad): ?>
+                                                    <div>
+                                                        <?php
+                                                        $editable = Editable::begin([
+                                                            'model' => $modelTeachersLoad,
+                                                            'attribute' => "[{$modelSubject->id}][{$modelTeachersLoad->id}]teachers_id",
+                                                            'header' => 'нагрузку',
+                                                            'displayValueConfig' => RefBook::find('teachers_load_display')->getList(),
+                                                            'asPopover' => true,
+                                                            'size' => PopoverX::SIZE_MEDIUM,
+                                                            'format' => Editable::FORMAT_LINK,
+                                                            'inputType' => Editable::INPUT_DEPDROP,
+                                                            'options' => [
+                                                                'id' => $modelSubject->id . "-" . $modelTeachersLoad->id,
+                                                                'type' => DepDrop::TYPE_SELECT2,
+                                                                'options' => ['placeholder' => Yii::t('art/teachers', 'Select Teacher...')],
+                                                                'select2Options' => [
+                                                                    'pluginOptions' => [
+                                                                        'dropdownParent' => "#" . $modelSubject->id . "-" . $modelTeachersLoad->id . "-popover",
+                                                                        'allowClear' => true,
+                                                                    ]
+                                                                ],
+                                                                'data' => Teachers::getTeachersList($modelTeachersLoad->direction_id),
+                                                                'pluginOptions' => [
+                                                                    'depends' => [$modelSubject->id . "-" . $modelTeachersLoad->id . "-direction_id"],
+                                                                    'url' => Url::to(['/teachers/default/teachers'])
+                                                                ]
+                                                            ],
+                                                            'formOptions' => [
+                                                                'action' => Url::toRoute([
+                                                                    '/teachers/default/set-load',
+                                                                    'teachers_load_id' => $modelTeachersLoad->id,
+                                                                    'studyplan_subject_id' => $modelSubject->id
+                                                                ]),
+                                                            ],
+                                                            'pluginEvents' => [
+                                                                "editableSubmit" => new JsExpression($JSSubmit),
+                                                            ]
+                                                        ]);
+                                                        $form = $editable->getForm();
+                                                        $editable->beforeInput = \artsoft\helpers\Html::hiddenInput("[{$modelSubject->id}][{$modelTeachersLoad->id}]kv-editable-depdrop", '1')
+                                                            .
+                                                            $form->field($modelTeachersLoad, "[{$modelSubject->id}][{$modelTeachersLoad->id}]direction_id")
+                                                                ->dropDownList(['' => Yii::t('art/teachers', 'Select Direction...')] + \common\models\guidejob\Direction::getDirectionList(),
+                                                                    ['id' => $modelSubject->id . "-" . $modelTeachersLoad->id . "-direction_id"])->label(false) . "\n";
+
+                                                        $editable->afterInput = $form->field($modelTeachersLoad, "[{$modelSubject->id}][{$modelTeachersLoad->id}]week_time")->textInput(['placeholder' => Yii::t('art/guide', 'Enter week time...')])->label(false) . "\n";
+                                                        Editable::end();
+                                                        ?>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                                <div class="pull-right">
                                                     <?php
+                                                    $modelTeachersLoad = new \common\models\teachers\TeachersLoad();
                                                     $editable = Editable::begin([
                                                         'model' => $modelTeachersLoad,
-                                                        'attribute' => "[{$modelSubject->id}][{$modelTeachersLoad->id}]teachers_id",
+                                                        'attribute' => "[{$modelSubject->id}][0]teachers_id",
                                                         'header' => 'нагрузку',
                                                         'displayValueConfig' => RefBook::find('teachers_fio')->getList(),
                                                         'asPopover' => true,
                                                         'size' => PopoverX::SIZE_MEDIUM,
-                                                        'format' => Editable::FORMAT_LINK,
+                                                        'valueIfNull' => false,
+                                                        'defaultEditableBtnIcon' => '<i class="glyphicon glyphicon-plus"></i>',
+                                                        'format' => Editable::FORMAT_BUTTON,
                                                         'inputType' => Editable::INPUT_DEPDROP,
                                                         'options' => [
-                                                            'id' => $modelSubject->id."-".$modelTeachersLoad->id,
+                                                            'id' => $modelSubject->id,
                                                             'type' => DepDrop::TYPE_SELECT2,
-                                                            'options' => ['placeholder' => 'Select teachers...'],
+                                                            'options' => ['placeholder' => Yii::t('art/teachers', 'Select Teacher...')],
                                                             'select2Options' => [
                                                                 'pluginOptions' => [
-                                                                    'dropdownParent' => "#".$modelSubject->id."-".$modelTeachersLoad->id."-popover", // set this to "#<EDITABLE_ID>-popover" to ensure select2 renders properly within the popover
+                                                                    'dropdownParent' => "#" . $modelSubject->id . "-popover",
                                                                     'allowClear' => true,
                                                                 ]
                                                             ],
-                                                            'data' => Teachers::getTeachersList($modelTeachersLoad->direction_id),
-                                                            'pluginOptions'=>[
-                                                                'depends'=>[$modelSubject->id."-".$modelTeachersLoad->id."-direction_id"],
+                                                            'pluginOptions' => [
+                                                                'depends' => [$modelSubject->id . "-direction_id"],
                                                                 'url' => Url::to(['/teachers/default/teachers'])
                                                             ]
                                                         ],
                                                         'formOptions' => [
                                                             'action' => Url::toRoute([
                                                                 '/teachers/default/set-load',
-                                                                'teachers_load_id' => $modelTeachersLoad->id,
                                                                 'studyplan_subject_id' => $modelSubject->id
                                                             ]),
                                                         ],
@@ -126,71 +173,16 @@ EOF;
                                                         ]
                                                     ]);
                                                     $form = $editable->getForm();
-                                                    $editable->beforeInput =  \artsoft\helpers\Html::hiddenInput("[{$modelSubject->id}][{$modelTeachersLoad->id}]kv-editable-depdrop", '1')
-                                                         .
+                                                    $editable->beforeInput = \artsoft\helpers\Html::hiddenInput("[{$modelSubject->id}]kv-editable-depdrop", '1')
+                                                        .
+                                                        $form->field($modelTeachersLoad, "[{$modelSubject->id}][0]direction_id")
+                                                            ->dropDownList(['' => Yii::t('art/teachers', 'Select Direction...')] + \common\models\guidejob\Direction::getDirectionList(),
+                                                                ['id' => $modelSubject->id . "-direction_id"])->label(false) . "\n";
 
-                                                    $form->field($modelTeachersLoad, "[{$modelSubject->id}][{$modelTeachersLoad->id}]direction_id")
-                                                        ->dropDownList(['' => 'Select Direction...'] + \common\models\guidejob\Direction::getDirectionList(),
-                                                        ['id'=> $modelSubject->id."-".$modelTeachersLoad->id."-direction_id"])->label(false) . "\n";
-
-                                                    $editable->afterInput = $form->field($modelTeachersLoad, "[{$modelSubject->id}][{$modelTeachersLoad->id}]week_time")->textInput(['placeholder'=>'Enter week time...'])->label(false) . "\n";
+                                                    $editable->afterInput = $form->field($modelTeachersLoad, "[{$modelSubject->id}][0]week_time")->textInput(['placeholder' => Yii::t('art/guide', 'Enter week time...')])->label(false) . "\n";
                                                     Editable::end();
                                                     ?>
-                                                <?php endforeach; ?>
-                                                <?php
-                                                $modelTeachersLoad = new \common\models\teachers\TeachersLoad();
-                                                $editable = Editable::begin([
-                                                    'model' => $modelTeachersLoad,
-                                                    'attribute' => "[{$modelSubject->id}][0]teachers_id",
-                                                    'header' => 'нагрузку',
-                                                    'displayValueConfig' => RefBook::find('teachers_fio')->getList(),
-                                                    'asPopover' => true,
-                                                    'size' => PopoverX::SIZE_MEDIUM,
-                                                    'valueIfNull' => false,
-                                                    'defaultEditableBtnIcon' => '<i class="glyphicon glyphicon-plus"></i>',
-                                                    'format' => Editable::FORMAT_BUTTON,
-                                                    'inputType' => Editable::INPUT_DEPDROP,
-                                                    'options' => [
-                                                        'id' => $modelSubject->id,
-                                                        'type' => DepDrop::TYPE_SELECT2,
-                                                        'options' => ['placeholder' => 'Select teachers...'],
-                                                        'select2Options' => [
-                                                            'pluginOptions' => [
-                                                                'dropdownParent' => "#".$modelSubject->id."-popover", // set this to "#<EDITABLE_ID>-popover" to ensure select2 renders properly within the popover
-                                                                'allowClear' => true,
-                                                            ]
-                                                        ],
-                                                        'pluginOptions'=>[
-                                                            'depends'=>[$modelSubject->id."-direction_id"],
-                                                            'url' => Url::to(['/teachers/default/teachers'])
-                                                        ]
-                                                    ],
-                                                    'formOptions' => [
-                                                        'action' => Url::toRoute([
-                                                            '/teachers/default/set-load',
-                                                            'studyplan_subject_id' => $modelSubject->id
-                                                        ]),
-                                                    ],
-                                                    'pluginEvents' => [
-                                                        "editableSubmit" => new JsExpression($JSSubmit),
-                                                    ]
-                                                ]);
-                                                $form = $editable->getForm();
-                                                $editable->beforeInput =  \artsoft\helpers\Html::hiddenInput("[{$modelSubject->id}]kv-editable-depdrop", '1')
-                                                    .
-
-                                                    $form->field($modelTeachersLoad, "[{$modelSubject->id}][0]direction_id")
-                                                        ->dropDownList(['' => 'Select Direction...'] + \common\models\guidejob\Direction::getDirectionList(),
-                                                            ['id'=> $modelSubject->id."-direction_id"])->label(false) . "\n";
-
-                                                $editable->afterInput = $form->field($modelTeachersLoad, "[{$modelSubject->id}][0]week_time")->textInput(['placeholder'=>'Enter week time...'])->label(false) . "\n";
-                                                Editable::end();
-                                                ?>
-
-                                            <td>
-                                            </td>
-                                            <td>
-                                            </td>
+                                                </div>
                                             <td>
                                             </td>
                                         </tr>

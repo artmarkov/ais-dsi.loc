@@ -90,7 +90,7 @@ use artsoft\widgets\Nav;
                 'items' => [
                     ['label' => 'Аудитории школы', 'icon' => 'fa fa-minus', 'url' => ['/auditory/default/index']],
                     ['label' => 'Места проведения', 'icon' => 'fa fa-minus', 'url' => ['/venue/default/index']],
-                    ['label' => 'Дисциплины', 'icon' => 'fa fa-minus', 'url' => ['/subject/default/index']],
+                    ['label' => 'Учебные предметы', 'icon' => 'fa fa-minus', 'url' => ['/subject/default/index']],
                     ['label' => 'Кадровая служба', 'icon' => 'fa fa-minus', 'url' => ['/guidejob/default/index']],
                     ['label' => 'Структура организации', 'icon' => 'fa fa-minus', 'url' => ['/own/default/index']],
                     ['label' => 'Учебные справочники', 'icon' => 'fa fa-minus', 'url' => ['/guidestudy/default/index']],

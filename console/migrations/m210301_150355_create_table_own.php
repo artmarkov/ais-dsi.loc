@@ -14,14 +14,15 @@ class m210301_150355_create_table_own extends \artsoft\db\BaseMigration
             'name' => $this->string(127)->notNull(),
             'slug' => $this->string(32)->notNull(),
         ], $tableOptions);
-        $this->addCommentOnTable('guide_division','Отделения');
+        $this->addCommentOnTable('guide_division','Предметные области');
 
         $this->db->createCommand()->batchInsert('guide_division', ['id', 'name', 'slug'], [
-            [1000, 'Музыкальное отделение', 'МО'],
-            [1001, 'Художественное отделение', 'ИЗО'],
-            [1002, 'Отделение "Хореография"', 'ХО'],
+            [1000, 'Музыкальное искусство', 'Муз.Иск.'],
+            [1001, 'Изобразительное искусство', 'Изобр.Иск.'],
+            [1002, 'Хореографическое искусство', 'Хореогр.Иск.'],
+            [1003, 'Театральное искусство', 'Театр.Иск.'],
         ])->execute();
-        $this->db->createCommand()->resetSequence('guide_division', 1003)->execute();
+        $this->db->createCommand()->resetSequence('guide_division', 1004)->execute();
 
         $this->createTable('guide_department', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',

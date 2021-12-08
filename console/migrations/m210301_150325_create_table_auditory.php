@@ -16,8 +16,8 @@ class m210301_150325_create_table_auditory extends \artsoft\db\BaseMigration
         $this->db->createCommand()->resetSequence('guide_auditory_cat', 1000)->execute();
 
         $this->db->createCommand()->batchInsert('guide_auditory_cat', ['name', 'description','study_flag'], [
-            ['Аудитории и классы', '', 1],
-            ['Залы', '', 1],
+            ['Учебные аудитории', '', 1],
+            ['Концертные залы', '', 1],
             ['Кабинеты', '', 1],
             ['Служебные помещения', '', 0],
             ['Складские помещения', '', 0],
