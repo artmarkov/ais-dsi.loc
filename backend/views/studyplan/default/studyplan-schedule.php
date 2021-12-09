@@ -197,7 +197,10 @@ EOF;
 $js = <<<JS
 $('.kv-editable-remove').on('click', function (e) {
          e.preventDefault();
-        console.log('click');
+         var a = $(this).parent().find("div").val();
+         console.log(e);
+    console.log(this);
+        console.log(a);
 });
 JS;
 

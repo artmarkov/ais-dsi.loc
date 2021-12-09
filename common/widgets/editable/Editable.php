@@ -75,7 +75,7 @@ class Editable extends \kartik\editable\Editable
         $removeOpts['data'] = Html::renderTagAttributes($this->dataAttributes);
         Html::addCssClass($submitOpts, 'kv-editable-submit');
         Html::addCssClass($resetOpts, 'kv-editable-reset');
-        Html::addCssClass($removeOpts, 'custom-editable-remove');
+        Html::addCssClass($removeOpts, 'kv-editable-remove');
         $params = [
             '{reset}' => Html::button($resetLabel, $resetOpts),
             '{submit}' => Html::button($submitLabel, $submitOpts),
