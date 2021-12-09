@@ -4,7 +4,7 @@ namespace common\models\education;
 
 use artsoft\Art;
 use artsoft\behaviors\ArrayFieldBehavior;
-use common\models\studygroups\SubjectSect;
+use common\models\subjectsect\SubjectSect;
 use common\models\studyplan\Studyplan;
 use Yii;
 use yii\behaviors\BlameableBehavior;

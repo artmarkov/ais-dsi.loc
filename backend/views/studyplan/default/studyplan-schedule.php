@@ -1,7 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use kartik\editable\Editable;
+use common\widgets\editable\Editable;
 use yii\helpers\Url;
 use yii\web\JsExpression;
 use common\widgets\weeklyscheduler\WeeklyScheduler;
@@ -29,7 +29,7 @@ EOF;
             <div class="col-sm-12">
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        Нагрузка преподавателей и расписание занятий
+                        Расписание занятий
                     </div>
                     <div class="panel-body">
                         <div class="row">
@@ -40,7 +40,6 @@ EOF;
                                         <th class="text-center">Предмет</th>
                                         <th class="text-center">Час/нед</th>
                                         <th class="text-center">Группа</th>
-                                        <th class="text-center">Распределение нагрузки</th>
                                         <th class="text-center">Расписание занятий</th>
                                     </tr>
                                     </thead>
@@ -56,25 +55,25 @@ EOF;
                                             <td>
                                                 <?php if (!$modelSubject->isIndividual()): ?>
                                                     <?= Editable::widget([
+                                                        'id' => $modelSubject->id,
                                                         'name' => "sect_id[{$modelSubject->id}]",
                                                         'value' => $modelSubject->getSubjectSectStudyplan()->id,
                                                         'header' => 'группу',
                                                         'displayValueConfig' => $modelSubject->getSubjectSectStudyplanAll() ?? [],
-                                                        'asPopover' => true,
-                                                        'size' => PopoverX::SIZE_MEDIUM,
                                                         'format' => Editable::FORMAT_LINK,
                                                         'inputType' => Editable::INPUT_DROPDOWN_LIST,
                                                         'data' => $modelSubject->getSubjectSectStudyplanAll() ?? [],
                                                         'options' => ['class' => 'form-control'],
                                                         'formOptions' => [
                                                             'action' => Url::toRoute([
-                                                                '/studygroups/default/set-group',
+                                                                '/subjectsect/default/set-group',
                                                                 'studyplan_subject_id' => $modelSubject->id ?? null
                                                             ]),
                                                         ],
                                                         'pluginEvents' => [
                                                             "editableSubmit" => new JsExpression($JSSubmit),
-                                                        ]
+                                                        ],
+                                                        'dataAttributes' => ['sect_id' => $modelSubject->getSubjectSectStudyplan()->id]
                                                     ]);
                                                     ?>
                                                 <?php else: ?>
@@ -90,8 +89,6 @@ EOF;
                                                             'attribute' => "[{$modelSubject->id}][{$modelTeachersLoad->id}]teachers_id",
                                                             'header' => 'нагрузку',
                                                             'displayValueConfig' => RefBook::find('teachers_load_display')->getList(),
-                                                            'asPopover' => true,
-                                                            'size' => PopoverX::SIZE_MEDIUM,
                                                             'format' => Editable::FORMAT_LINK,
                                                             'inputType' => Editable::INPUT_DEPDROP,
                                                             'options' => [
@@ -140,15 +137,13 @@ EOF;
                                                         'model' => $modelTeachersLoad,
                                                         'attribute' => "[{$modelSubject->id}][0]teachers_id",
                                                         'header' => 'нагрузку',
-                                                        'displayValueConfig' => RefBook::find('teachers_fio')->getList(),
-                                                        'asPopover' => true,
-                                                        'size' => PopoverX::SIZE_MEDIUM,
+                                                        'displayValueConfig' => RefBook::find('teachers_load_display')->getList(),
                                                         'valueIfNull' => false,
                                                         'defaultEditableBtnIcon' => '<i class="glyphicon glyphicon-plus"></i>',
+                                                        'buttonsTemplate' => "{reset}{submit}",
                                                         'format' => Editable::FORMAT_BUTTON,
                                                         'inputType' => Editable::INPUT_DEPDROP,
                                                         'options' => [
-                                                            'id' => $modelSubject->id,
                                                             'type' => DepDrop::TYPE_SELECT2,
                                                             'options' => ['placeholder' => Yii::t('art/teachers', 'Select Teacher...')],
                                                             'select2Options' => [
@@ -157,6 +152,7 @@ EOF;
                                                                     'allowClear' => true,
                                                                 ]
                                                             ],
+                                                            'data' => Teachers::getTeachersList($modelTeachersLoad->direction_id),
                                                             'pluginOptions' => [
                                                                 'depends' => [$modelSubject->id . "-direction_id"],
                                                                 'url' => Url::to(['/teachers/default/teachers'])
@@ -170,7 +166,8 @@ EOF;
                                                         ],
                                                         'pluginEvents' => [
                                                             "editableSubmit" => new JsExpression($JSSubmit),
-                                                        ]
+                                                        ],
+
                                                     ]);
                                                     $form = $editable->getForm();
                                                     $editable->beforeInput = \artsoft\helpers\Html::hiddenInput("[{$modelSubject->id}]kv-editable-depdrop", '1')
@@ -183,8 +180,6 @@ EOF;
                                                     Editable::end();
                                                     ?>
                                                 </div>
-                                            <td>
-                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                     </tbody>
@@ -198,6 +193,15 @@ EOF;
         </div>
     </div>
 </div>
+<?php
+$js = <<<JS
+$('.kv-editable-remove').on('click', function (e) {
+         e.preventDefault();
+        console.log('click');
+});
+JS;
 
+$this->registerJs($js);
+?>
 
 

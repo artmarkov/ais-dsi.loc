@@ -4,13 +4,13 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\studygroups\SubjectSect;
+use common\models\subjectsect\SubjectSect;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use artsoft\helpers\RefBook;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\studygroups\search\SubjectSectSearch */
+/* @var $searchModel common\models\subjectsect\search\SubjectSectSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/guide', 'Subject Sects');
@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'id',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/studygroups/default',
+                                'controller' => '/subjectsect/default',
                                 'title' => function (SubjectSect $model) {
                                     return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },

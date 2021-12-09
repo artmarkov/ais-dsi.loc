@@ -2,7 +2,10 @@
 
 namespace common\models\teachers;
 
+use common\models\guidejob\Direction;
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "teachers_plan".
@@ -13,9 +16,10 @@ use Yii;
  * @property int|null $plan_year
  * @property int|null $week_num
  * @property int|null $week_day
- * @property int|null $time_in
- * @property int|null $time_out
+ * @property int|null $time_plan_in
+ * @property int|null $time_plan_out
  * @property int|null $auditory_id
+ * @property string $description
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -36,15 +40,25 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            BlameableBehavior::class,
+            TimestampBehavior::class,
+        ];
+    }
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
             [['direction_id', 'teachers_id', 'created_at', 'updated_at'], 'required'],
-            [['direction_id', 'teachers_id', 'plan_year', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
-            [['direction_id', 'teachers_id', 'plan_year', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuideTeachersDirection::className(), 'targetAttribute' => ['direction_id' => 'id']],
+            [['description'], 'string', 'max' => 512],
+            [['direction_id', 'teachers_id', 'plan_year', 'week_num', 'week_day', 'time_plan_in', 'time_plan_out', 'auditory_id'], 'integer'],
+            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::className(), 'targetAttribute' => ['direction_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
@@ -61,9 +75,10 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
             'plan_year' => Yii::t('art/guide', 'Plan Year'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
             'week_day' => Yii::t('art/guide', 'Week Day'),
-            'time_in' => Yii::t('art/guide', 'Time In'),
-            'time_out' => Yii::t('art/guide', 'Time Out'),
+            'time_plan_in' => Yii::t('art/guide', 'Time In'),
+            'time_plan_out' => Yii::t('art/guide', 'Time Out'),
             'auditory_id' => Yii::t('art/guide', 'Auditory ID'),
+            'description' => Yii::t('art', 'Description'),
             'created_at' => Yii::t('art/guide', 'Created At'),
             'created_by' => Yii::t('art/guide', 'Created By'),
             'updated_at' => Yii::t('art/guide', 'Updated At'),
@@ -72,6 +87,12 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
         ];
     }
 
+    public function optimisticLock()
+    {
+        return 'version';
+    }
+
+
     /**
      * Gets query for [[Direction]].
      *
@@ -79,7 +100,7 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
      */
     public function getDirection()
     {
-        return $this->hasOne(GuideTeachersDirection::className(), ['id' => 'direction_id']);
+        return $this->hasOne(Direction::className(), ['id' => 'direction_id']);
     }
 
     /**

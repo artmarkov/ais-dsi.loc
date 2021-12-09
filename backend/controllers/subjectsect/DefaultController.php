@@ -1,19 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Zver
- * Date: 05.10.2018
- * Time: 12:14
- */
 
-namespace backend\controllers\studygroups;
+namespace backend\controllers\subjectsect;
 
-use artsoft\models\User;
 use backend\models\Model;
-use common\models\studygroups\SubjectSectStudyplan;
-use common\models\studygroups\SubjectSect;
+use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
-use common\models\user\UserCommon;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
@@ -21,8 +12,8 @@ use yii\web\NotFoundHttpException;
 
 class DefaultController extends MainController
 {
-    public $modelClass = 'common\models\studygroups\SubjectSect';
-    public $modelSearchClass = 'common\models\studygroups\search\SubjectSectSearch';
+    public $modelClass = 'common\models\subjectsect\SubjectSect';
+    public $modelSearchClass = 'common\models\subjectsect\search\SubjectSectSearch';
 
     /**
      * @return mixed|string|\yii\web\Response

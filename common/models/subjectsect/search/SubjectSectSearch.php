@@ -1,14 +1,14 @@
 <?php
 
-namespace common\models\studygroups\search;
+namespace common\models\subjectsect\search;
 
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\studygroups\SubjectSect;
+use common\models\subjectsect\SubjectSect;
 
 /**
- * SubjectSectSearch represents the model behind the search form about `common\models\studygroups\SubjectSect`.
+ * SubjectSectSearch represents the model behind the search form about `common\models\subjectsect\SubjectSect`.
  */
 class SubjectSectSearch extends SubjectSect
 {

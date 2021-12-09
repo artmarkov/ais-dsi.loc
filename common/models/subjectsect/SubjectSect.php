@@ -1,6 +1,6 @@
 <?php
 
-namespace common\models\studygroups;
+namespace common\models\subjectsect;
 
 use common\models\activities\SubjectSectSchedule;
 use \common\models\education\EducationUnion;

@@ -7,7 +7,7 @@ use kartik\sortinput\SortableInput;
 use wbraganca\dynamicform\DynamicFormWidget;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\studygroups\SubjectSect */
+/* @var $model common\models\subjectsect\SubjectSect */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $readonly */
 /* @var $modelsDependence */
@@ -82,7 +82,7 @@ JS
                         'pluginOptions' => [
                             'depends' => ['union_id'],
                             'placeholder' => Yii::t('art', 'Select...'),
-                            'url' => \yii\helpers\Url::to(['/studygroups/default/subject-cat'])
+                            'url' => \yii\helpers\Url::to(['/subjectsect/default/subject-cat'])
                         ],
 
                     ]); ?>
@@ -96,7 +96,7 @@ JS
                         'pluginOptions' => [
                             'depends' => ['union_id', 'subject_cat_id', 'subject_vid_id'],
                             'placeholder' => Yii::t('art', 'Select...'),
-                            'url' => \yii\helpers\Url::to(['/studygroups/default/subject'])
+                            'url' => \yii\helpers\Url::to(['/subjectsect/default/subject'])
                         ]
                     ]); ?>
 

@@ -7,7 +7,7 @@ use common\models\education\EducationCat;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\history\StudyplanHistory;
-use common\models\studygroups\SubjectSectStudyplan;
+use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use yii\helpers\ArrayHelper;
@@ -173,7 +173,7 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
-        $this->view->params['breadcrumbs'][] = 'Нагрузка преподавателей и расписание занятий';
+        $this->view->params['breadcrumbs'][] = 'Расписание занятий';
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if (!isset($model)) {

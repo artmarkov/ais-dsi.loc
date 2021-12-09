@@ -1,11 +1,13 @@
 <?php
 
-namespace common\models\studygroups;
+namespace common\models\subjectsect;
 
 use common\models\guidejob\Direction;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\Teachers;
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "subject_sect_schedule".
@@ -20,6 +22,7 @@ use Yii;
  * @property int|null $time_in
  * @property int|null $time_out
  * @property int|null $auditory_id
+ * @property string $description
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -41,14 +44,25 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            BlameableBehavior::class,
+            TimestampBehavior::class,
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['direction_id', 'teachers_id', 'created_at', 'updated_at'], 'required'],
+            [['direction_id', 'teachers_id'], 'required'],
+            [['description'], 'string', 'max' => 512],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::class, 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
@@ -70,6 +84,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
             'time_in' => Yii::t('art/guide', 'Time In'),
             'time_out' => Yii::t('art/guide', 'Time Out'),
             'auditory_id' => Yii::t('art/guide', 'Auditory ID'),
+            'description' => Yii::t('art', 'Description'),
             'created_at' => Yii::t('art/guide', 'Created At'),
             'created_by' => Yii::t('art/guide', 'Created By'),
             'updated_at' => Yii::t('art/guide', 'Updated At'),

@@ -4,7 +4,7 @@ namespace backend\controllers\teachers;
 
 use artsoft\models\User;
 use common\models\guidejob\Bonus;
-use common\models\studygroups\SubjectSectStudyplan;
+use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subject\Subject;
 use common\models\teachers\Teachers;

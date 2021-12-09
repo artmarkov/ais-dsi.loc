@@ -1,6 +1,6 @@
 <?php
 
-namespace common\models\studygroups;
+namespace common\models\subjectsect;
 
 use artsoft\helpers\RefBook;
 use common\models\studyplan\StudyplanSubject;

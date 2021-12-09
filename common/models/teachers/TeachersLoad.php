@@ -3,7 +3,7 @@
 namespace common\models\teachers;
 
 use common\models\guidejob\Direction;
-use common\models\studygroups\SubjectSectStudyplan;
+use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
 use Yii;
 use yii\behaviors\BlameableBehavior;

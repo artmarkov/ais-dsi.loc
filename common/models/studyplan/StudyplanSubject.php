@@ -4,7 +4,7 @@ namespace common\models\studyplan;
 
 use artsoft\helpers\RefBook;
 use common\models\education\EducationProgramm;
-use common\models\studygroups\SubjectSectStudyplan;
+use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
