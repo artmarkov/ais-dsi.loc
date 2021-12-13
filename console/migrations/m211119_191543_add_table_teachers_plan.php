@@ -34,6 +34,23 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
         $this->addForeignKey('teachers_load_ibfk_3', 'teachers_load', 'direction_id', 'guide_teachers_direction', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('teachers_load_ibfk_4', 'teachers_load', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
 
+        $this->db->createCommand()->createView('teachers_load_view', '
+         SELECT teachers_load.id as id, teachers.id AS teachers_id, 
+                teachers_load.week_time as week_time,
+                CONCAT(user_common.last_name ,\' \', left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'.(\', guide_teachers_direction.slug, \') \', teachers_load.week_time) as teachers_load_display,
+                user_common.status
+        FROM teachers_load
+		INNER JOIN teachers ON teachers_load.teachers_id = teachers.id
+		INNER JOIN guide_teachers_direction ON guide_teachers_direction.id = teachers_load.direction_id
+        INNER JOIN user_common ON user_common.id = teachers.user_common_id 
+        WHERE user_common.user_category=\'teachers\'
+        ORDER BY user_common.last_name, user_common.first_name
+        ')->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['teachers_load_display', 'teachers_load_view', 'teachers_id', 'teachers_load_display', 'status', null, null, 'Нагрузка преподавателей(с ФИО и видом деятельности)'],
+        ])->execute();
+
         $this->createTableWithHistory('subject_sect_schedule', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'subject_sect_studyplan_id' => $this->integer(),
@@ -94,6 +111,8 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
         $this->dropForeignKey('subject_sect_schedule_ibfk_2', 'subject_sect_schedule');
         $this->dropForeignKey('subject_sect_schedule_ibfk_3', 'subject_sect_schedule');
         $this->dropForeignKey('subject_sect_schedule_ibfk_4', 'subject_sect_schedule');
+        $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_load_display'])->execute();
+        $this->db->createCommand()->dropView('teachers_load_view')->execute();
         $this->dropForeignKey('teachers_load_ibfk_1', 'teachers_load');
         $this->dropForeignKey('teachers_load_ibfk_2', 'teachers_load');
         $this->dropForeignKey('teachers_load_ibfk_3', 'teachers_load');

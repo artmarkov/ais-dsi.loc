@@ -208,19 +208,24 @@ class Teachers extends ActiveRecord
 
     public static function getTeachersById($direction_id) {
         $data = self::find()->innerJoin('user_common', 'user_common.id = teachers.user_common_id')
+            ->innerJoin('teachers_activity', 'teachers_activity.teachers_id = teachers.id')
             ->andWhere(['in', 'user_common.status', UserCommon::STATUS_ACTIVE])// заблокированных не добавляем в список
             ->andWhere(['in', 'user_common.user_category', UserCommon::USER_CATEGORY_TEACHERS])// только преподаватели
+            ->andWhere(['=', 'teachers_activity.direction_id', $direction_id])
             ->select(['teachers.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
             ->orderBy('user_common.last_name')
             ->asArray()->all();
 
         return $data;
     }
+
     public static function getTeachersList($direction_id)
     {
         return \yii\helpers\ArrayHelper::map(self::find()->innerJoin('user_common', 'user_common.id = teachers.user_common_id')
+            ->innerJoin('teachers_activity', 'teachers_activity.teachers_id = teachers.id')
             ->andWhere(['in', 'user_common.status', UserCommon::STATUS_ACTIVE])// заблокированных не добавляем в список
             ->andWhere(['in', 'user_common.user_category', UserCommon::USER_CATEGORY_TEACHERS])// только преподаватели
+            ->andWhere(['=', 'teachers_activity.direction_id', $direction_id])
             ->select(['teachers.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
             ->orderBy('user_common.last_name')
             ->asArray()->all(), 'id', 'name');

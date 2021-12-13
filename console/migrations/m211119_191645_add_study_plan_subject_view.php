@@ -55,6 +55,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             inner join subject on subject.id = studyplan_subject.subject_id
             inner join guide_subject_vid on guide_subject_vid.id = studyplan_subject.subject_vid_id
             inner join guide_subject_type on guide_subject_type.id = studyplan_subject.subject_type_id
+            order by subject.name
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
@@ -68,28 +69,29 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             ['studyplan_subject-student', 'studyplan_subject_view', 'studyplan_subject_id', 'student_id', 'studyplan_id', null, null, 'Предмет плана-ученик'],
         ])->execute();
 
-        $this->db->createCommand()->createView('teachers_load_view', '
-         SELECT teachers_load.id as id, teachers.id AS teachers_id, 
-                teachers_load.week_time as week_time,
-                CONCAT(user_common.last_name ,\' \', left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'.(\', guide_teachers_direction.slug, \') \', teachers_load.week_time) as teachers_load_display,
-                user_common.status
-        FROM teachers_load
-		INNER JOIN teachers ON teachers_load.teachers_id = teachers.id
-		INNER JOIN guide_teachers_direction ON guide_teachers_direction.id = teachers_load.direction_id
-        INNER JOIN user_common ON user_common.id = teachers.user_common_id 
-        WHERE user_common.user_category=\'teachers\'
-        ORDER BY user_common.last_name, user_common.first_name
+        $this->db->createCommand()->createView('auditory_view', '
+        SELECT auditory.id, building_id, cat_id, 
+               auditory.num, auditory.name as auditory_name, guide_auditory_cat.name as cat_name, 
+               guide_auditory_building.name as building_name, guide_auditory_building.slug as building_skug,
+               auditory.floor, auditory.area, auditory.capacity, auditory.status, guide_auditory_cat.study_flag,
+               concat(auditory.num, \' - \',auditory.name) as auditory_memo_1
+            FROM auditory
+            inner join guide_auditory_cat on guide_auditory_cat.id = auditory.cat_id
+            inner join guide_auditory_building on guide_auditory_building.id = auditory.building_id
+            where guide_auditory_cat.study_flag = 1
+	        order by building_id, auditory.sort_order
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['teachers_load_display', 'teachers_load_view', 'teachers_id', 'teachers_load_display', 'status', null, null, 'Нагрузка преподавателей(с ФИО и видом деятельности)'],
+            ['auditory_memo_1', 'auditory_view', 'id', 'auditory_memo_1', 'auditory_name', 'status', null, 'Аудитории для обучения'],
         ])->execute();
+
     }
 
     public function down()
     {
-        $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_load_display-student'])->execute();
-        $this->db->createCommand()->dropView('teachers_load_view')->execute();
+        $this->db->createCommand()->dropView('auditory_view')->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'auditory_memo_1-student'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'studyplan_subject-student'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_memo_2'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_memo_1'])->execute();

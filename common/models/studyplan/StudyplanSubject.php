@@ -4,6 +4,7 @@ namespace common\models\studyplan;
 
 use artsoft\helpers\RefBook;
 use common\models\education\EducationProgramm;
+use common\models\subjectsect\SubjectSectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
@@ -217,6 +218,19 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
                 ->all();
     }
 
+    /**
+     * @return array|SubjectSectSchedule[]|TeachersLoad[]|\yii\db\ActiveRecord[]
+     * @throws \yii\db\Exception
+     */
+    public function getSubjectSectSchedule()
+    {
+        return $this->isIndividual() ? SubjectSectSchedule::find()->where(['=', 'studyplan_subject_id', $this->id])
+            ->andWhere('subject_sect_studyplan_id is null')
+            ->all() :
+            SubjectSectSchedule::find()->where(['=', 'subject_sect_studyplan_id', $this->getSubjectSectStudyplan()->id])
+                ->andWhere('studyplan_subject_id is null')
+                ->all();
+    }
     /**
      * Находим всех учителей преподающих данную дисциплину
      * @return array

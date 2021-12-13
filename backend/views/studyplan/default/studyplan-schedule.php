@@ -7,7 +7,7 @@ use yii\web\JsExpression;
 use common\widgets\weeklyscheduler\WeeklyScheduler;
 use kartik\depdrop\DepDrop;
 use kartik\popover\PopoverX;
-use artsoft\helpers\Html;
+use yii\widgets\MaskedInput;
 use common\models\teachers\Teachers;
 
 /* @var $readonly */
@@ -37,9 +37,9 @@ EOF;
                                 <table class="table table-bordered table-striped">
                                     <thead>
                                     <tr>
-                                        <th class="text-center">Предмет</th>
-                                        <th class="text-center">Час/нед</th>
+                                        <th class="text-center">Предмет(Час/нед)</th>
                                         <th class="text-center">Группа</th>
+                                        <th class="text-center">Нагрузка</th>
                                         <th class="text-center">Расписание занятий</th>
                                     </tr>
                                     </thead>
@@ -47,10 +47,7 @@ EOF;
                                     <?php foreach ($modelsSubject as $index => $modelSubject): ?>
                                         <tr class="item">
                                             <td>
-                                                <?= RefBook::find('subject_memo_2')->getValue($modelSubject->id ?? null) ?>
-                                            </td>
-                                            <td>
-                                                <?= $modelSubject->week_time; ?>
+                                                <?= RefBook::find('subject_memo_2')->getValue($modelSubject->id ?? null) . '-' . $modelSubject->week_time; ?>
                                             </td>
                                             <td>
                                                 <?php if (!$modelSubject->isIndividual()): ?>
@@ -58,7 +55,7 @@ EOF;
                                                         'id' => $modelSubject->id,
                                                         'name' => "sect_id[{$modelSubject->id}]",
                                                         'value' => $modelSubject->getSubjectSectStudyplan()->id,
-                                                        'header' => 'группу',
+                                                        'header' => 'Изменить группу',
                                                         'displayValueConfig' => $modelSubject->getSubjectSectStudyplanAll() ?? [],
                                                         'format' => Editable::FORMAT_LINK,
                                                         'inputType' => Editable::INPUT_DROPDOWN_LIST,
@@ -87,7 +84,7 @@ EOF;
                                                         $editable = Editable::begin([
                                                             'model' => $modelTeachersLoad,
                                                             'attribute' => "[{$modelSubject->id}][{$modelTeachersLoad->id}]teachers_id",
-                                                            'header' => 'нагрузку',
+                                                            'header' => 'Изменить нагрузку',
                                                             'displayValueConfig' => RefBook::find('teachers_load_display')->getList(),
                                                             'format' => Editable::FORMAT_LINK,
                                                             'inputType' => Editable::INPUT_DEPDROP,
@@ -136,19 +133,20 @@ EOF;
                                                     $editable = Editable::begin([
                                                         'model' => $modelTeachersLoad,
                                                         'attribute' => "[{$modelSubject->id}][0]teachers_id",
-                                                        'header' => 'нагрузку',
+                                                        'header' => 'Добавить нагрузку',
                                                         'displayValueConfig' => RefBook::find('teachers_load_display')->getList(),
-                                                        'valueIfNull' => false,
-                                                        'defaultEditableBtnIcon' => '<i class="glyphicon glyphicon-plus"></i>',
+                                                        'valueIfNull' => 'новая запись',
+                                                        //'defaultEditableBtnIcon' => '<i class="glyphicon glyphicon-plus"></i>',
                                                         'buttonsTemplate' => "{reset}{submit}",
-                                                        'format' => Editable::FORMAT_BUTTON,
+                                                        'format' => Editable::FORMAT_LINK,
                                                         'inputType' => Editable::INPUT_DEPDROP,
                                                         'options' => [
+                                                            'id' => $modelSubject->id. "-teachers-load",
                                                             'type' => DepDrop::TYPE_SELECT2,
                                                             'options' => ['placeholder' => Yii::t('art/teachers', 'Select Teacher...')],
                                                             'select2Options' => [
                                                                 'pluginOptions' => [
-                                                                    'dropdownParent' => "#" . $modelSubject->id . "-popover",
+                                                                    'dropdownParent' => "#" . $modelSubject->id . "-teachers-load-popover",
                                                                     'allowClear' => true,
                                                                 ]
                                                             ],
@@ -180,6 +178,92 @@ EOF;
                                                     Editable::end();
                                                     ?>
                                                 </div>
+                                            </td>
+                                            <td>
+                                                <?php foreach ($modelSubject->getSubjectSectSchedule() as $item => $modelSectSchedule): ?>
+                                                    <div>
+                                                        <?php
+                                                        $editable = Editable::begin([
+                                                            'model' => $modelSectSchedule,
+                                                            'attribute' => "[{$modelSubject->id}][{$modelSectSchedule->id}]teachers_id",
+                                                            'header' => 'Изменить расписание',
+                                                            'displayValueConfig' => RefBook::find('teachers_load_display')->getList(),
+                                                            'format' => Editable::FORMAT_LINK,
+                                                            'inputType' => Editable::INPUT_DEPDROP,
+                                                            'options' => [
+                                                                'id' => $modelSubject->id . "-" . $modelSectSchedule->id,
+                                                                'type' => DepDrop::TYPE_SELECT2,
+                                                                'options' => ['placeholder' => Yii::t('art/teachers', 'Select Teacher...')],
+                                                                'select2Options' => [
+                                                                    'pluginOptions' => [
+                                                                        'dropdownParent' => "#" . $modelSubject->id . "-" . $modelSectSchedule->id . "-popover",
+                                                                        'allowClear' => true,
+                                                                    ]
+                                                                ],
+                                                                'data' => Teachers::getTeachersList($modelSectSchedule->direction_id),
+                                                                'pluginOptions' => [
+                                                                    'depends' => [$modelSubject->id . "-" . $modelSectSchedule->id . "-direction_id"],
+                                                                    'url' => Url::to(['/teachers/default/teachers'])
+                                                                ]
+                                                            ],
+                                                            'formOptions' => [
+                                                                'action' => Url::toRoute([
+                                                                    '/teachers/default/set-load',
+                                                                    'teachers_load_id' => $modelSectSchedule->id,
+                                                                    'studyplan_subject_id' => $modelSubject->id
+                                                                ]),
+                                                            ],
+                                                            'pluginEvents' => [
+                                                                "editableSubmit" => new JsExpression($JSSubmit),
+                                                            ]
+                                                        ]);
+                                                        $form = $editable->getForm();
+                                                        $editable->beforeInput = \artsoft\helpers\Html::hiddenInput("[{$modelSubject->id}][{$modelSectSchedule->id}]kv-editable-depdrop", '1')
+                                                            .
+                                                            $form->field($modelSectSchedule, "[{$modelSubject->id}][{$modelSectSchedule->id}]direction_id")
+                                                                ->dropDownList(['' => Yii::t('art/teachers', 'Select Direction...')] + \common\models\guidejob\Direction::getDirectionList(),
+                                                                    ['id' => $modelSubject->id . "-" . $modelSectSchedule->id . "-direction_id"])->label(false) . "\n";
+
+                                                        $editable->afterInput = $form->field($modelSectSchedule, "[{$modelSubject->id}][0]week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList())->label(false) .
+                                                            $form->field($modelSectSchedule, "[{$modelSubject->id}][{$modelSectSchedule->id}]week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week_day...')] + \artsoft\helpers\ArtHelper::getWeekdayList())->label(false) .
+                                                            $form->field($modelSectSchedule, "[{$modelSubject->id}][{$modelSectSchedule->id}]time_in")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time in...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')])->label(false) .
+                                                            $form->field($modelSectSchedule, "[{$modelSubject->id}][{$modelSectSchedule->id}]time_out")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time out...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')])->label(false) .
+                                                            $form->field($modelSectSchedule, "[{$modelSubject->id}][{$modelSectSchedule->id}]auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList())->label(false) .
+                                                            $form->field($modelSectSchedule, "[{$modelSubject->id}][{$modelSectSchedule->id}]description")->textarea(['placeholder' => Yii::t('art/guide', 'Enter description...')])->label(false) . "\n";
+                                                        Editable::end();
+                                                        ?>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                                <div class="pull-right">
+                                                    <?php
+                                                    $modelSectSchedule = new \common\models\subjectsect\SubjectSectSchedule();
+                                                    $editable = Editable::begin([
+                                                        'model' => $modelSectSchedule,
+                                                        'attribute' => "[{$modelSubject->id}][0]teachers_id",
+                                                        'header' => 'Добавить расписание',
+                                                        'displayValueConfig' => RefBook::find('teachers_load_display')->getList(),
+                                                        'valueIfNull' => 'новая запись',
+                                                        //'defaultEditableBtnIcon' => '<i class="glyphicon glyphicon-plus"></i>',
+                                                        'buttonsTemplate' => "{reset}{submit}",
+                                                        'format' => Editable::FORMAT_LINK,
+                                                        'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                                                        'data' => Teachers::getTeachersList(1000),
+                                                        'pluginEvents' => [
+                                                            "editableSubmit" => new JsExpression($JSSubmit),
+                                                        ],
+
+                                                    ]);
+                                                    $form = $editable->getForm();
+                                                    $editable->afterInput = $form->field($modelSectSchedule, "[{$modelSubject->id}][0]week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList())->label(false) .
+                                                        $form->field($modelSectSchedule, "[{$modelSubject->id}][0]week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week_day...')] + \artsoft\helpers\ArtHelper::getWeekdayList())->label(false) .
+                                                        $form->field($modelSectSchedule, "[{$modelSubject->id}][0]time_in")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time in...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')])->label(false) .
+                                                        $form->field($modelSectSchedule, "[{$modelSubject->id}][0]time_out")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time out...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')])->label(false) .
+                                                        $form->field($modelSectSchedule, "[{$modelSubject->id}][0]auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList())->label(false) .
+                                                        $form->field($modelSectSchedule, "[{$modelSubject->id}][0]description")->textarea(['placeholder' => Yii::t('art/guide', 'Enter description...')])->label(false) . "\n";
+                                                    Editable::end();
+                                                    ?>
+                                                </div>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                     </tbody>

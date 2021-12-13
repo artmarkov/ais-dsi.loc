@@ -232,4 +232,36 @@ class ArtHelper
         }
         return $course;
     }
+
+    /**
+     * @param string $vid
+     * @param int $from
+     * @param int $to
+     * @return array
+     */
+    public static function getWeekdayList($vid = 'name', $from = 1, $to = 7)
+    {
+        $weekday_list = ['понедельник','вторник','среда','четверг','пятница','суббота','воскресение'];
+        $weekday_list_short = ['пн','вт','ср','чт','пт','сб','вс'];
+        $list = [];
+        for ($i = $from; $i <= $to; $i++) {
+            $list[$i] = ($vid == 'name') ? $weekday_list[$i-1] : $weekday_list_short[$i-1];
+        }
+        return $list;
+    }
+
+    /**
+     * @param string $vid
+     * @param int $from
+     * @param int $to
+     * @return array
+     */
+    public static function getWeekList($vid = 'name', $from = 1, $to = 4)
+    {
+        $list = [];
+        for ($i = $from; $i <= $to; $i++) {
+            $list[$i] = ($vid == 'name') ? $i . '-я неделя' : $i;
+        }
+        return $list;
+    }
 }

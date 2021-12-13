@@ -20,6 +20,8 @@ class Editable extends \kartik\editable\Editable
 
     public $removeButton = ['class' => 'btn btn-sm btn-danger'];
 
+    public $preHeader = '';
+
     protected static $_icons = [
         'defaultEditableBtnIcon' => ['pencil', 'pencil-alt'],
         'defaultSubmitBtnIcon' => ['ok', 'check'],
@@ -72,7 +74,7 @@ class Editable extends \kartik\editable\Editable
         $submitOpts['type'] = 'button';
         $resetOpts['type'] = 'button';
         $removeOpts['type'] = 'button';
-        $removeOpts['data'] = Html::renderTagAttributes($this->dataAttributes);
+       // $removeOpts['data'] = Html::renderTagAttributes($this->dataAttributes);
         Html::addCssClass($submitOpts, 'kv-editable-submit');
         Html::addCssClass($resetOpts, 'kv-editable-reset');
         Html::addCssClass($removeOpts, 'kv-editable-remove');
