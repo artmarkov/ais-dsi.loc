@@ -91,7 +91,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
     public function down()
     {
         $this->db->createCommand()->dropView('auditory_view')->execute();
-        $this->db->createCommand()->delete('refbooks', ['name' => 'auditory_memo_1-student'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'auditory_memo_1'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'studyplan_subject-student'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_memo_2'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_memo_1'])->execute();

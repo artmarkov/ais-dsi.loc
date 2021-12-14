@@ -48,7 +48,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['teachers_load_display', 'teachers_load_view', 'teachers_id', 'teachers_load_display', 'status', null, null, 'Нагрузка преподавателей(с ФИО и видом деятельности)'],
+            ['teachers_load_display', 'teachers_load_view', 'id', 'teachers_load_display', 'status', null, null, 'Нагрузка преподавателей(с ФИО и видом деятельности)'],
         ])->execute();
 
         $this->createTableWithHistory('subject_sect_schedule', [

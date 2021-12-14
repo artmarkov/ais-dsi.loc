@@ -103,15 +103,6 @@ class SubjectSect extends \artsoft\db\ActiveRecord
         return 'version';
     }
 
-    /**
-     * Gets query for [[SectSchedules]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSectSchedules()
-    {
-        return $this->hasMany(SubjectSectSchedule::class, ['sect_id' => 'id']);
-    }
 
     /**
      * Gets query for [[Programm]].
@@ -140,7 +131,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      */
     public function getSubjectType()
     {
-        return $this->hasOne(GuideSubjectType::class, ['id' => 'subject_type_id']);
+        return $this->hasOne(SubjectType::class, ['id' => 'subject_type_id']);
     }
 
     /**
@@ -170,16 +161,6 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function getClassIndex()
     {
         return isset($this->union) ? $this->union->class_index : 'Класс';
-    }
-
-    /**
-     * Gets query for [[TeachersLoads]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTeachersLoads()
-    {
-        return $this->hasMany(TeachersLoad::class, ['sect_id' => 'id']);
     }
 
     /**

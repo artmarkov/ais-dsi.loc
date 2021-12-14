@@ -218,6 +218,24 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
                 ->all();
     }
 
+    public function getTeachersLoadsDisplay()
+    {
+        $data = [];
+        foreach ($this->getTeachersLoads() as $item => $modelTeachersLoad) {
+            $data[$modelTeachersLoad->id] = RefBook::find('teachers_load_display')->getValue($modelTeachersLoad->id);
+        }
+        return array_unique($data);
+    }
+
+    public function getTeachersLoadsDisplayForTeachers($modelTeachersLoad_id)
+    {
+        $data = [];
+        foreach ($this->getTeachersLoads() as $item => $modelTeachersLoad) {
+            $data[$modelTeachersLoad->teachers_id] = RefBook::find('teachers_load_display')->getValue($modelTeachersLoad->id);
+        }
+        return array_unique($data);
+    }
+
     /**
      * @return array|SubjectSectSchedule[]|TeachersLoad[]|\yii\db\ActiveRecord[]
      * @throws \yii\db\Exception
@@ -231,6 +249,7 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
                 ->andWhere('studyplan_subject_id is null')
                 ->all();
     }
+
     /**
      * Находим всех учителей преподающих данную дисциплину
      * @return array

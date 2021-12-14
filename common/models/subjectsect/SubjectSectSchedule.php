@@ -35,6 +35,8 @@ use yii\behaviors\TimestampBehavior;
  */
 class SubjectSectSchedule extends \artsoft\db\ActiveRecord
 {
+    public $teachers_load_id;
+
     /**
      * {@inheritdoc}
      */
@@ -60,13 +62,31 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
             [['direction_id', 'teachers_id'], 'required'],
+            [['time_in', 'time_out', 'teachers_load_id'], 'safe'],
             [['description'], 'string', 'max' => 512],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::class, 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
+            [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>', 'message' => ''],
+            [['auditory_id', 'time_begin'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
+            [['auditory_id'], 'checkDate', 'skipOnEmpty' => false],
         ];
+    }
+
+    public function checkDate($attribute, $params)
+    {
+        $thereIsAnOverlapping = SubjectSectSchedule::find()->where(
+            ['AND',
+                ['auditory_id' => $this->auditory_id],
+                ['<=', 'time_in', $this->time_in],
+                ['>=', 'time_out', $this->time_out]
+            ])->exists();
+
+        if ($thereIsAnOverlapping) {
+            $this->addError($attribute, 'This place and time is busy, selcet new place or change time.');
+        }
     }
 
     /**
