@@ -27,28 +27,17 @@ class ScheduleController extends MainController
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
             if (isset($_POST['SubjectSectSchedule'])) {
-                $teachers_load_id = $_POST['SubjectSectSchedule'][$studyplan_subject_id][$schedule_id]['teachers_load_id'];
-                $model_load = TeachersLoad::findOne($teachers_load_id);
-                $model->teachers_id = $model_load->teachers_id;
-                $model->direction_id = $model_load->direction_id;
-                $model->week_num = $_POST['SubjectSectSchedule'][$studyplan_subject_id][$schedule_id]['week_num'];
-                $model->week_day = $_POST['SubjectSectSchedule'][$studyplan_subject_id][$schedule_id]['week_day'];
-                $model->time_in = $_POST['SubjectSectSchedule'][$studyplan_subject_id][$schedule_id]['time_in'];
-                $model->time_out = $_POST['SubjectSectSchedule'][$studyplan_subject_id][$schedule_id]['time_out'];
-                $model->auditory_id = $_POST['SubjectSectSchedule'][$studyplan_subject_id][$schedule_id]['auditory_id'];
-                $model->description = $_POST['SubjectSectSchedule'][$studyplan_subject_id][$schedule_id]['description'];
-                $modelSubject = StudyplanSubject::findOne($studyplan_subject_id);
-                if ($modelSubject->isIndividual()) {
-                    $model->studyplan_subject_id = $studyplan_subject_id;
-                    $model->subject_sect_studyplan_id = null;
-                } else {
-                    $model->studyplan_subject_id = null;
-                    $model->subject_sect_studyplan_id = $modelSubject->getSubjectSectStudyplan()->id;
-                }
+                $postLoad = $_POST['SubjectSectSchedule'][$studyplan_subject_id][$schedule_id];
 
-                $model->save(false);
-                $value = $model->id;
-                return Json::encode(['output' => $value, 'message' => '']);
+                $model->setModelAttributes($postLoad, $studyplan_subject_id);
+                $valid = $model->validate();
+                if ($valid) {
+                    $model->save(false);
+                    $value = $model->id;
+                    return Json::encode(['output' => $value, 'message' => '']);
+                } else {
+                    return Json::encode(['output' => '', 'message' => $model->errors]);
+                }
             } else {
                 return Json::encode(['output' => '', 'message' => '']);
             }

@@ -260,7 +260,7 @@ class ArtHelper
     {
         $list = [];
         for ($i = $from; $i <= $to; $i++) {
-            $list[$i] = ($vid == 'name') ? $i . '-я неделя' : $i;
+            $list[$i] = ($vid == 'name') ? $i . '-я неделя' : $i . ' нед.';
         }
         return $list;
     }

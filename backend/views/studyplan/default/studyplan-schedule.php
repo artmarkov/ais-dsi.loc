@@ -185,8 +185,8 @@ EOF;
                                                         $editable = Editable::begin([
                                                             'model' => $modelSectSchedule,
                                                             'attribute' => "[{$modelSubject->id}][{$modelSectSchedule->id}]teachers_load_id",
+                                                            'displayValue' => $modelSectSchedule->getTeachersScheduleDisplay(),
                                                             'header' => 'Изменить расписание',
-                                                          //  'displayValueConfig' => RefBook::find('teachers_load_display')->getList(),
                                                             'format' => Editable::FORMAT_LINK,
                                                             'inputType' => Editable::INPUT_DROPDOWN_LIST,
                                                             'data' =>  $modelSubject->getTeachersLoadsDisplay(),
@@ -198,12 +198,12 @@ EOF;
                                                                 ]),
                                                             ],
                                                             'pluginEvents' => [
-                                                                "editableSubmit" => new JsExpression($JSSubmit),
+                                                               // "editableSubmit" => new JsExpression($JSSubmit),
                                                             ],
 
                                                         ]);
                                                         $form = $editable->getForm();
-                                                        $editable->afterInput = $form->field($modelSectSchedule, "[{$modelSubject->id}][0]week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList())->label(false) .
+                                                        $editable->afterInput = $form->field($modelSectSchedule, "[{$modelSubject->id}][{$modelSectSchedule->id}]week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList())->label(false) .
                                                             $form->field($modelSectSchedule, "[{$modelSubject->id}][{$modelSectSchedule->id}]week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList())->label(false) .
                                                             $form->field($modelSectSchedule, "[{$modelSubject->id}][{$modelSectSchedule->id}]time_in")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time in...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')])->label(false) .
                                                             $form->field($modelSectSchedule, "[{$modelSubject->id}][{$modelSectSchedule->id}]time_out")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time out...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')])->label(false) .
@@ -220,8 +220,8 @@ EOF;
                                                     $editable = Editable::begin([
                                                         'model' => $modelSectSchedule,
                                                         'attribute' => "[{$modelSubject->id}][0]teachers_load_id",
+                                                       // 'displayValue' => $modelSectSchedule->getTeachersScheduleDisplay(),
                                                         'header' => 'Добавить расписание',
-                                                      //  'displayValueConfig' => $modelSubject->getTeachersLoadsDisplay(),
                                                         'valueIfNull' => 'новая запись',
                                                         'buttonsTemplate' => "{reset}{submit}",
                                                         'format' => Editable::FORMAT_LINK,
@@ -234,7 +234,7 @@ EOF;
                                                             ]),
                                                         ],
                                                         'pluginEvents' => [
-                                                            "editableSubmit" => new JsExpression($JSSubmit),
+                                                            //"editableSubmit" => new JsExpression($JSSubmit),
                                                         ],
 
                                                     ]);

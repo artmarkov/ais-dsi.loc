@@ -2,9 +2,13 @@
 
 namespace common\models\subjectsect;
 
+use artsoft\behaviors\TimeFieldBehavior;
+use artsoft\helpers\ArtHelper;
+use artsoft\helpers\RefBook;
 use common\models\guidejob\Direction;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\Teachers;
+use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -53,6 +57,10 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
+            [
+                'class' => TimeFieldBehavior::class,
+                'attributes' => ['time_in', 'time_out'],
+            ]
         ];
     }
 
@@ -63,16 +71,24 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     {
         return [
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
-            [['direction_id', 'teachers_id'], 'required'],
+            [['direction_id', 'teachers_id', 'week_day', 'auditory_id', 'time_in', 'time_out'], 'required'],
             [['time_in', 'time_out', 'teachers_load_id'], 'safe'],
+            [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false],
             [['description'], 'string', 'max' => 512],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::class, 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
-            [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>', 'message' => ''],
-            [['auditory_id', 'time_begin'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
-            [['auditory_id'], 'checkDate', 'skipOnEmpty' => false],
+           // [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>=', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
+//            [['auditory_id', 'time_in'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
+            //[['auditory_id'], 'checkDate', 'skipOnEmpty' => false],
         ];
+    }
+
+    public function checkFormatTime($attribute, $params)
+    {
+        if (!preg_match('/^([01]?[0-9]|2[0-3])(:)[0-5][0-9]$/', $attribute)) {
+            $this->addError($attribute, 'Формат ввода времени не верен.');
+        }
     }
 
     public function checkDate($attribute, $params)
@@ -85,7 +101,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
             ])->exists();
 
         if ($thereIsAnOverlapping) {
-            $this->addError($attribute, 'This place and time is busy, selcet new place or change time.');
+            $this->addError($attribute, 'Накладка по времени в аудитории.');
         }
     }
 
@@ -146,5 +162,47 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     public function getTeachers()
     {
         return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getTeachersScheduleDisplay()
+    {
+        $auditory = RefBook::find('auditory_memo_1')->getValue($this->auditory_id);
+        $teachers = RefBook::find('teachers_fio')->getValue($this->teachers_id);
+        $direction = $this->direction->slug;
+        $string = $teachers . '(' . $direction . ') ->';
+        $string .= $this->week_num != 0 ? ' ' . ArtHelper::getWeekList('short')[$this->week_num] : null;
+        $string .= ' ' . ArtHelper::getWeekdayList('short')[$this->week_day] . ' ' . $this->time_in . '-' . $this->time_out . ' -> (' . $auditory . ')';
+        return $string;
+    }
+
+    /**
+     * @param $postLoad
+     * @param $studyplan_subject_id
+     * @throws \yii\db\Exception
+     */
+    public function setModelAttributes($postLoad, $studyplan_subject_id)
+    {
+        $teachers_load_id = $postLoad['teachers_load_id'];
+        $model_load = TeachersLoad::findOne($teachers_load_id);
+        $this->teachers_id = $model_load->teachers_id;
+        $this->direction_id = $model_load->direction_id;
+        $this->week_num = $postLoad['week_num'];
+        $this->week_day = $postLoad['week_day'];
+        $this->time_in = $postLoad['time_in'];
+        $this->time_out = $postLoad['time_out'];
+        $this->auditory_id = $postLoad['auditory_id'];
+        $this->description = $postLoad['description'];
+        $modelSubject = StudyplanSubject::findOne($studyplan_subject_id);
+        if ($modelSubject->isIndividual()) {
+            $this->studyplan_subject_id = $studyplan_subject_id;
+            $this->subject_sect_studyplan_id = null;
+        } else {
+            $this->studyplan_subject_id = null;
+            $this->subject_sect_studyplan_id = $modelSubject->getSubjectSectStudyplan()->id;
+        }
+        return $this;
     }
 }
