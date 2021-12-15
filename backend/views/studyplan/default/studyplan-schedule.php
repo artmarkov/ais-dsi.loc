@@ -15,10 +15,27 @@ use common\models\teachers\Teachers;
 
 $JSSubmit = <<<EOF
     function(event, val, form) {
-    location.reload();
 //    console.log(event);
+//    console.log(val);
+//    console.log(form);
+    $.pjax.reload({container: '#studyplan-grid-pjax', async: true});
     }
 EOF;
+
+$JSErr = <<<EOF
+    function(event, val, form, data) {
+   
+    console.log(event);
+    console.log(val);
+    console.log(form);
+    console.log(data);
+    }
+EOF;
+?>
+<?php
+\yii\widgets\Pjax::begin([
+    'id' => 'studyplan-grid-pjax',
+])
 ?>
 <div class="panel">
     <div class="panel-heading">
@@ -140,7 +157,7 @@ EOF;
                                                         'format' => Editable::FORMAT_LINK,
                                                         'inputType' => Editable::INPUT_DEPDROP,
                                                         'options' => [
-                                                            'id' => $modelSubject->id. "-teachers-load",
+                                                            'id' => $modelSubject->id . "-teachers-load",
                                                             'type' => DepDrop::TYPE_SELECT2,
                                                             'options' => ['placeholder' => Yii::t('art/teachers', 'Select Teacher...')],
                                                             'select2Options' => [
@@ -189,7 +206,7 @@ EOF;
                                                             'header' => 'Изменить расписание',
                                                             'format' => Editable::FORMAT_LINK,
                                                             'inputType' => Editable::INPUT_DROPDOWN_LIST,
-                                                            'data' =>  $modelSubject->getTeachersLoadsDisplay(),
+                                                            'data' => $modelSubject->getTeachersLoadsDisplay(),
                                                             'formOptions' => [
                                                                 'action' => Url::toRoute([
                                                                     '/subjectsect/schedule/set-schedule',
@@ -198,7 +215,9 @@ EOF;
                                                                 ]),
                                                             ],
                                                             'pluginEvents' => [
-                                                               // "editableSubmit" => new JsExpression($JSSubmit),
+                                                                  "editableSuccess" => new JsExpression($JSSubmit),
+                                                                "editableAjaxError" => new JsExpression($JSErr),
+
                                                             ],
 
                                                         ]);
@@ -220,13 +239,13 @@ EOF;
                                                     $editable = Editable::begin([
                                                         'model' => $modelSectSchedule,
                                                         'attribute' => "[{$modelSubject->id}][0]teachers_load_id",
-                                                       // 'displayValue' => $modelSectSchedule->getTeachersScheduleDisplay(),
+                                                        // 'displayValue' => $modelSectSchedule->getTeachersScheduleDisplay(),
                                                         'header' => 'Добавить расписание',
                                                         'valueIfNull' => 'новая запись',
                                                         'buttonsTemplate' => "{reset}{submit}",
                                                         'format' => Editable::FORMAT_LINK,
                                                         'inputType' => Editable::INPUT_DROPDOWN_LIST,
-                                                        'data' =>  $modelSubject->getTeachersLoadsDisplay(),
+                                                        'data' => $modelSubject->getTeachersLoadsDisplay(),
                                                         'formOptions' => [
                                                             'action' => Url::toRoute([
                                                                 '/subjectsect/schedule/set-schedule',
@@ -234,7 +253,7 @@ EOF;
                                                             ]),
                                                         ],
                                                         'pluginEvents' => [
-                                                            //"editableSubmit" => new JsExpression($JSSubmit),
+                                                            "editableSubmit" => new JsExpression($JSSubmit),
                                                         ],
 
                                                     ]);
@@ -262,6 +281,7 @@ EOF;
         </div>
     </div>
 </div>
+<?php \yii\widgets\Pjax::end() ?>
 <?php
 $js = <<<JS
 $('.kv-editable-remove').on('click', function (e) {

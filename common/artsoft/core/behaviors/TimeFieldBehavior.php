@@ -72,7 +72,6 @@ class TimeFieldBehavior extends Behavior
             BaseActiveRecord::EVENT_AFTER_UPDATE => 'decode',
             BaseActiveRecord::EVENT_BEFORE_UPDATE => 'encode',
             BaseActiveRecord::EVENT_BEFORE_INSERT => 'encode',
-            BaseActiveRecord::EVENT_BEFORE_VALIDATE => 'encode',
         ];
     }
 

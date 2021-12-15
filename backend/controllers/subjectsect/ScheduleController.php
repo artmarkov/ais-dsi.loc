@@ -30,13 +30,14 @@ class ScheduleController extends MainController
                 $postLoad = $_POST['SubjectSectSchedule'][$studyplan_subject_id][$schedule_id];
 
                 $model->setModelAttributes($postLoad, $studyplan_subject_id);
-                $valid = $model->validate();
-                if ($valid) {
+                //$valid = $model->validate();
+               // $valid = true;
+                if (!$model->hasErrors()) {
                     $model->save(false);
                     $value = $model->id;
-                    return Json::encode(['output' => $value, 'message' => '']);
+                    return ['output' => $value, 'message' => ''];
                 } else {
-                    return Json::encode(['output' => '', 'message' => $model->errors]);
+                    return ['output' => '', 'message' => Json::encode($model->getErrors())];
                 }
             } else {
                 return Json::encode(['output' => '', 'message' => '']);

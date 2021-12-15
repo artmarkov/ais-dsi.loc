@@ -73,7 +73,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
             [['direction_id', 'teachers_id', 'week_day', 'auditory_id', 'time_in', 'time_out'], 'required'],
             [['time_in', 'time_out', 'teachers_load_id'], 'safe'],
-            [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false],
+            [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['description'], 'string', 'max' => 512],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::class, 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
@@ -86,7 +86,8 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
 
     public function checkFormatTime($attribute, $params)
     {
-        if (!preg_match('/^([01]?[0-9]|2[0-3])(:)[0-5][0-9]$/', $attribute)) {
+        $this->addError($attribute, 'Формат ввода времени не верен.');
+        if (!preg_match('/^([01]?[0-9]|2[0-3])(:)[0-5][0-9]$/', $this->$attribute)) {
             $this->addError($attribute, 'Формат ввода времени не верен.');
         }
     }
@@ -127,6 +128,11 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
             'updated_by' => Yii::t('art/guide', 'Updated By'),
             'version' => Yii::t('art/guide', 'Version'),
         ];
+    }
+
+    public function optimisticLock()
+    {
+        return 'version';
     }
 
     /**
