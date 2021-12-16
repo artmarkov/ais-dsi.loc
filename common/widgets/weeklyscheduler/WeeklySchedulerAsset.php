@@ -10,16 +10,17 @@ use yii\web\AssetBundle;
  */
 class WeeklySchedulerAsset extends AssetBundle
 {
-    public $sourcePath = '@common/widgets/weeklyscheduler/Dynamic-Weekly-Scheduler-jQuery-Schedule/dist';
+    public $sourcePath = '@common/widgets/weeklyscheduler/';
 
     public $js = [
-        'https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
-        'jquery.schedule.js'
+        'https://code.jquery.com/ui/1.10.4/jquery-ui.min.js',
+        'schedule/dist/js/jq.schedule.min.js'
 
     ];
     public $css = [
-        '//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css',
-        'jquery.schedule.css'
+        'https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css',
+        'schedule/dist/css/style.min.css',
+        'css/custom.css'
     ];
 
     public $depends = [

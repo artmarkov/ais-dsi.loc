@@ -4,7 +4,7 @@ use artsoft\helpers\RefBook;
 use common\widgets\editable\Editable;
 use yii\helpers\Url;
 use yii\web\JsExpression;
-use common\widgets\jqueryscheduler\WeeklyScheduler;
+use common\widgets\weeklyscheduler\WeeklyScheduler;
 use kartik\depdrop\DepDrop;
 use kartik\popover\PopoverX;
 use yii\widgets\MaskedInput;
@@ -331,7 +331,7 @@ EOF;
 
     <div class="panel panel-info">
         <div class="panel-heading">
-            График
+            Расписание занятий
         </div>
         <div class="panel-body">
             <div class="row">

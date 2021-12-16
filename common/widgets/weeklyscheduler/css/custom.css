@@ -1,0 +1,17 @@
+.jq-schedule .sc_menu .sc_header .sc_time {
+    border-left: 1px solid #ddd;
+    color: #777;
+    background: #fff;
+}
+.jq-schedule .sc_menu .sc_header_cell, .jq-schedule .sc_data {
+    color: #777;
+    font-weight: normal;
+    background: #fff;
+}
+.jq-schedule .sc_data .timeline {
+    border-right: 1px solid #ddd;
+    padding: 15px;
+}
+.jq-schedule .timeline, .jq-schedule .sc_main .tb {
+    border-bottom: 1px solid #777;
+}
