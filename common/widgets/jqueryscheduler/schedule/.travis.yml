@@ -1,0 +1,27 @@
+language: node_js
+node_js:
+  - '12.13.1'
+script:
+  - echo "Running tests against $(node -v) ..."
+  - npm test
+jobs:
+  include:
+    - stage: lint
+      script:
+        - echo "lint start"
+        - npm run lint
+    - stage: npm release
+      script:
+        - echo "Deploying to npm ..."
+        - npm run build
+      before_deploy: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+      deploy:
+        provider: npm
+        edge: true
+        email: info@ateliee.com
+        access: public
+        on:
+          branch: master
+          tags: true
+        api_key: $NPM_TOKEN
+
