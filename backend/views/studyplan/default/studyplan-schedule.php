@@ -296,21 +296,60 @@ JS;
 $this->registerJs($js);
 ?>
 <?php
-$JSClick = <<<EOF
-        function(node, data) {
-        console.log(node);
-        console.log(data);
-        }
-EOF;
 $JSChange = <<<EOF
         function(node, data) {
-        console.log(node);
+         eventData = {   
+               id: data.data.schedule_id, 
+               week_day: data.timeline,
+               time_in: data.start,
+               time_out: data.end,  
+            };
         console.log(data);
+             $.ajax({
+            url: '/admin/subjectsect/schedule/change-schedule',
+            type: 'POST',
+            data: {eventData: eventData},
+            success: function (res) {
+                console.log(res);
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
         }
 EOF;
+// кликаем по событию
+$JSEventClick = <<<EOF
+    function(node, data) {
+        eventData = {   
+                studyplan_id: data.data.studyplan_id,
+                id: data.data.schedule_id,               
+            };
+    // change the border color just for fun
+   // node.addClass('sc_bar_photo');
+   // node.addStyle('red');
+        
+        console.log('кликаем по событию');
+        console.log(data);
+      $.ajax({
+            url: '/admin/subjectsect/schedule/init-schedule',
+            type: 'POST',
+            data: {eventData: eventData},
+            success: function (res) {
+//                console.log(res);
+                $('#schedule-modal .modal-body').html(res);
+                $('#schedule-modal').modal();
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
+    }
 
+EOF;
 $JSScheduleClick = <<<EOF
         function(node, time, timeline){
+                var studyplanId = '$model->id'; 
                 var start = time;
                 var end = $(this).timeSchedule('formatTime', $(this).timeSchedule('calcStringTime', time) + 2700);
                 $(this).timeSchedule('addSchedule', timeline, {
@@ -321,9 +360,33 @@ $JSScheduleClick = <<<EOF
                         class: 'sc_bar_insert'
                     }
                 });
+//                node.css({
+//          background: #ccc;
+//         
+//        });
+                var eventData = {
+                id: 0,
+                week_day: timeline,         
+                time_in: start,          
+                time_out: end,          
+                studyplan_id: studyplanId         
+            };
+               console.log('кликаем по календ');
                 console.log(node);
-                console.log(time);
-                console.log(timeline);
+                console.log(eventData);
+                $.ajax({
+            url: '/admin/subjectsect/schedule/init-schedule',
+            type: 'POST',
+            data: {eventData: eventData},
+            success: function (res) {
+//                console.log(res);
+                $('#schedule-modal .modal-body').html(res);
+                $('#schedule-modal').modal();
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
             }
         
 EOF;
@@ -337,21 +400,23 @@ EOF;
             <div class="row">
                 <div class="col-sm-12">
                     <?= WeeklyScheduler::widget([
-                        'data' => [
-                            [
-                                'week_day' => 1,
-                                'time_in' => '10:00',
-                                'time_out' => '12:13',
-                                'title' => 'Название',
-                                'data' => [
-                                    'week_num' => 1,
-                                    'class' => 'sc_bar_insert'
-                                ]
-                            ]
-                        ],
+                            'data' => $model->getStudyplanSchedule(),
+//                        'data' => [
+//                            [
+//                                'week_day' => 1,
+//                                'time_in' => '10:00',
+//                                'time_out' => '12:13',
+//                                'title' => 'Название',
+//                                'data' => [
+//                                    'schedule_id' => 10001,
+//                                    'week_num' => 1,
+//                                    'class' => 'sc_bar_insert'
+//                                ]
+//                            ]
+//                        ],
                         'events' => [
                             'onChange' => new JsExpression($JSChange),
-                            'onClick' => new JsExpression($JSClick),
+                            'onClick' => new JsExpression($JSEventClick),
                             'onScheduleClick' => new JsExpression($JSScheduleClick),
                         ]
                     ]);
@@ -368,4 +433,14 @@ $css = <<<CSS
 CSS;
 
 $this->registerCss($css);
+?>
+<?php \yii\bootstrap\Modal::begin([
+    'header' => '<h3 class="lte-hide-title page-title">' . Yii::t('art/calendar', 'Event') . '</h3>',
+    'size' => 'modal-lg',
+    'id' => 'schedule-modal',
+]);
+
+\yii\bootstrap\Modal::end(); ?>
+<?php
+//echo '<pre>' . print_r($model->getStudyplanSchedule(), true) . '</pre>';
 ?>

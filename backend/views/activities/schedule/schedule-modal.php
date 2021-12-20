@@ -53,7 +53,7 @@ use yii\widgets\Pjax;
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <?= \artsoft\helpers\ButtonHelper::modalButtons($model, 'cancel-schedule'); ?>
+                    <?= \artsoft\helpers\ButtonHelper::modalButtons('cancel-schedule'); ?>
                 </div>
             </div>
         </div>

@@ -339,4 +339,36 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $this->cost_month_total = $modelProgrammLevel->cost_month_total;
         $this->cost_year_total = $modelProgrammLevel->cost_year_total;
     }
+
+    public function getStudyplanSchedule()
+    {
+        $data = [];
+        foreach ($this->studyplanSubject as $index => $modelSubject) {
+            foreach ($modelSubject->getSubjectSectSchedule() as $item => $modelSectSchedule) {
+                $data[] = [
+                    'week_day' => $modelSectSchedule->week_day,
+                    'time_in' => $modelSectSchedule->time_in,
+                    'time_out' => $modelSectSchedule->time_out,
+                    'title' => RefBook::find('subject_memo_1')->getValue($modelSubject->id),
+                    'data' => [
+                        'studyplan_id' => $this->id,
+                        'schedule_id' => $modelSectSchedule->id,
+                        'teachers_load_id' => $modelSectSchedule->teachers_load_id,
+                        'direction_id' => $modelSectSchedule->direction_id,
+                        'teachers_id' => $modelSectSchedule->teachers_id,
+                        'description' => $modelSectSchedule->description,
+                        'week_num' => $modelSectSchedule->week_num,
+                        'auditory_id' => $modelSectSchedule->auditory_id,
+                        'style' => [
+                            'background' => '#0000ff',
+                            'color' => '#00ff00',
+                            'border' => '#ff0000',
+                        ]
+                    ]
+                ];
+
+            }
+        }
+        return $data;
+    }
 }

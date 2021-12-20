@@ -14,7 +14,7 @@ class WeeklySchedulerAsset extends AssetBundle
 
     public $js = [
         'https://code.jquery.com/ui/1.10.4/jquery-ui.min.js',
-        'schedule/dist/js/jq.schedule.min.js'
+        'schedule/dist/js/jq.schedule.js'
 
     ];
     public $css = [
