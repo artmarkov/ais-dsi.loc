@@ -20,10 +20,11 @@ use artsoft\helpers\RefBook;
     'options' => [
         'data-pjax' => true
     ],
+   //'action' => false,
     'action' => !$model->isNewRecord ? ['subjectsect/schedule/update-schedule', 'id' => $model->id, 'studyplan_id' => $studyplan_id] : ['subjectsect/schedule/create-schedule', 'studyplan_id' => $studyplan_id],
-    'enableClientValidation' => true,
+    'enableAjaxValidation' => true,
 ]);
-//echo '<pre>' . print_r($model, true) . '</pre>';$model->getTeachersLoadId()
+
 ?>
 
     <div class="row">
@@ -42,7 +43,7 @@ use artsoft\helpers\RefBook;
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <?= \artsoft\helpers\ButtonHelper::modalButtons('cancel-schedule', ['subjectsect/schedule/delete-schedule', 'id' => $model->id, 'studyplan_id' => $studyplan_id]); ?>
+                    <?= \artsoft\helpers\ButtonHelper::modalButtons('cancel-schedule', 'delete-schedule'); ?>
                 </div>
             </div>
         </div>
@@ -58,7 +59,26 @@ $('.cancel-schedule').on('click', function (e) {
          closeModal();
           $.pjax.reload({container: '#studyplan-grid-pjax', async: true});
 });
+$('.delete-schedule').on('click', function (e) {
+        // e.preventDefault();
+         var id = $model->id;
 
+    $.ajax({
+        url: '/admin/subjectsect/schedule/delete-schedule',
+        data: {id: id},
+        type: 'POST',
+        success: function (res) {
+            
+                closeModal();
+                $.pjax.reload({container: '#studyplan-grid-pjax', async: true});
+               // console.log(id);
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+    });
+        
+});
 function closeModal() {
     $('#schedule-modal').modal('hide');
 }

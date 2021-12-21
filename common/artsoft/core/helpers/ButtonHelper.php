@@ -35,11 +35,11 @@ class ButtonHelper
      * @param string $buttonClass
      * @return string
      */
-    public static function modalButtons($class = 'cancel-event', $deleteAction = null, $buttonClass = self::buttonClass)
+    public static function modalButtons($class_cancel = 'cancel-event', $class_delete = 'delete-event', $buttonClass = self::buttonClass)
     {
-        $result = self::closeButton($class, $buttonClass);
+        $result = self::closeButton($class_cancel, $buttonClass);
         $result .= self::saveButton('submitAction', 'save', 'Save', $buttonClass);
-        $result .= self::deleteButton($deleteAction, $buttonClass);
+        $result .= self::deleteButtonModal($class_delete, $buttonClass);
 
         return $result;
     }
@@ -133,6 +133,25 @@ class ButtonHelper
             $deleteAction,
             [
                 'class' => 'btn btn-danger ' . $buttonClass,
+                'data' => [
+                    'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                    'method' => 'post',
+                ],
+            ]);
+    }
+
+    /**
+     * @param null $class
+     * @param string $buttonClass
+     * @return string
+     */
+    public static function deleteButtonModal($class = null, $buttonClass = self::buttonClass)
+    {
+
+        return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i> ' . Yii::t('art', 'Delete'),
+            ['#'],
+            [
+                'class' => 'btn btn-danger ' . $buttonClass . ' ' . $class,
                 'data' => [
                     'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                     'method' => 'post',

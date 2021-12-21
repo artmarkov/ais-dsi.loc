@@ -74,21 +74,27 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
             [['direction_id', 'teachers_id', 'week_day', 'auditory_id', 'time_in', 'time_out'], 'required'],
             [['time_in', 'time_out', 'teachersLoadId'], 'safe'],
-//            [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
+            [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['description'], 'string', 'max' => 512],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::class, 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
-            // [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>=', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
+            [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
 //            [['auditory_id', 'time_in'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
-            //[['auditory_id'], 'checkDate', 'skipOnEmpty' => false],
+            [['auditory_id'], 'checkDate', 'skipOnEmpty' => false],
         ];
+    }
+
+    public function encodeTime($value)
+    {
+        $t = explode(":", $value);
+        return mktime($t[0], $t[1], 0, 1, 1, 70);
+
     }
 
     public function checkFormatTime($attribute, $params)
     {
-        $this->addError($attribute, 'Формат ввода времени не верен.');
-        if (!preg_match('/^([01]?[0-9]|2[0-3])(:)[0-5][0-9]$/', $this->$attribute)) {
+        if (!preg_match('/^([01]?[0-9]|2[0-3])(:|\.)[0-5][0-9]$/', $this->$attribute)) {
             $this->addError($attribute, 'Формат ввода времени не верен.');
         }
     }
@@ -97,12 +103,26 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     {
         $thereIsAnOverlapping = SubjectSectSchedule::find()->where(
             ['AND',
+                ['!=', 'id', $this->id],
                 ['auditory_id' => $this->auditory_id],
-                ['<=', 'time_in', $this->time_in],
-                ['>=', 'time_out', $this->time_out]
-            ])->exists();
+                ['OR',
+                    ['AND',
+                        ['<=', 'time_in', $this->encodeTime($this->time_in)],
+                        ['>=', 'time_out', $this->encodeTime($this->time_in)],
+                    ],
 
-        if ($thereIsAnOverlapping) {
+                    ['AND',
+                        ['<=', 'time_in', $this->encodeTime($this->time_out)],
+                        ['>=', 'time_out', $this->encodeTime($this->time_out)],
+                    ],
+                ],
+                ['=', 'week_day', $this->week_day]
+            ]);
+        if ($this->getAttribute($this->week_num) !== null) {
+            $thereIsAnOverlapping->andWhere(['=', 'week_num', $this->week_num]);
+        }
+
+        if ($thereIsAnOverlapping->exists() === true) {
             $this->addError($attribute, 'Накладка по времени в аудитории.');
         }
     }
@@ -206,8 +226,8 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
      */
     public function setModelAttributes($postLoad, $studyplan_subject_id)
     {
-        $teachers_load_id = $postLoad['teachers_load_id'];
-        $model_load = TeachersLoad::findOne($teachers_load_id);
+        $teachersLoadId = $postLoad['teachersLoadId'];
+        $model_load = TeachersLoad::findOne($teachersLoadId);
         $this->teachers_id = $model_load->teachers_id;
         $this->direction_id = $model_load->direction_id;
         $this->week_num = $postLoad['week_num'];
