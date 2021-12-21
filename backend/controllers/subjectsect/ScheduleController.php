@@ -2,7 +2,9 @@
 
 namespace backend\controllers\subjectsect;
 
+use artsoft\helpers\RefBook;
 use backend\models\Model;
+use common\models\studyplan\Studyplan;
 use common\models\subjectsect\SubjectSectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
@@ -56,6 +58,7 @@ class ScheduleController extends MainController
         $eventData = Yii::$app->request->post('eventData');
         $id = $eventData['id'];
         $studyplan_id = $eventData['studyplan_id'];
+        $modelStudyplan = Studyplan::findOne($studyplan_id);
 
         if ($id == 0) {
             $model = new $this->modelClass();
@@ -67,6 +70,7 @@ class ScheduleController extends MainController
         }
         return $this->renderAjax('@backend/views/studyplan/default/schedule-modal.php', [
             'model' => $model,
+            'modelStudyplan' => $modelStudyplan,
             'studyplan_id' => $studyplan_id
         ]);
 
@@ -76,9 +80,12 @@ class ScheduleController extends MainController
     {
         $studyplan_id = Yii::$app->request->get('studyplan_id');
         $model = $this->modelClass::findOne($id);
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been updated.'));
-            return $this->redirect(['studyplan/default/studyplan-schedule', 'id' => $studyplan_id]);
+
+        if ($model->load(Yii::$app->request->post()) && $model->setTeachersLoadModelCopy()) {
+            if($model->save(false)) {
+                Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been updated.'));
+                return $this->redirect(['studyplan/default/studyplan-schedule', 'id' => $studyplan_id]);
+            }
         }
     }
 
@@ -86,9 +93,11 @@ class ScheduleController extends MainController
     {
         $studyplan_id = Yii::$app->request->get('studyplan_id');
         $model = new $this->modelClass();
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
-            return $this->redirect(['studyplan/default/studyplan-schedule', 'id' => $studyplan_id]);
+        if ($model->load(Yii::$app->request->post()) && $model->setTeachersLoadModelCopy()) {
+            if($model->save(false)) {
+                Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+                return $this->redirect(['studyplan/default/studyplan-schedule', 'id' => $studyplan_id]);
+            }
         }
     }
 

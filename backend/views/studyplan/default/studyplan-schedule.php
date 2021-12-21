@@ -201,7 +201,7 @@ EOF;
                                                             <?php
                                                             $editable = Editable::begin([
                                                                 'model' => $modelSectSchedule,
-                                                                'attribute' => "[{$modelSubject->id}][{$modelSectSchedule->id}]teachers_load_id",
+                                                                'attribute' => "[{$modelSubject->id}][{$modelSectSchedule->id}]teachersLoadId",
                                                                 'displayValue' => $modelSectSchedule->getTeachersScheduleDisplay(),
                                                                 'header' => 'Изменить расписание',
                                                                 'format' => Editable::FORMAT_LINK,
@@ -238,7 +238,7 @@ EOF;
                                                         $modelSectSchedule = new \common\models\subjectsect\SubjectSectSchedule();
                                                         $editable = Editable::begin([
                                                             'model' => $modelSectSchedule,
-                                                            'attribute' => "[{$modelSubject->id}][0]teachers_load_id",
+                                                            'attribute' => "[{$modelSubject->id}][0]teachersLoadId",
                                                             // 'displayValue' => $modelSectSchedule->getTeachersScheduleDisplay(),
                                                             'header' => 'Добавить расписание',
                                                             'valueIfNull' => 'новая запись',
@@ -435,8 +435,8 @@ CSS;
 $this->registerCss($css);
 ?>
 <?php \yii\bootstrap\Modal::begin([
-    'header' => '<h3 class="lte-hide-title page-title">' . Yii::t('art/calendar', 'Event') . '</h3>',
-    'size' => 'modal-lg',
+    'header' => '<h3 class="lte-hide-title page-title">Расписание</h3>',
+    'size' => 'modal-md',
     'id' => 'schedule-modal',
 ]);
 

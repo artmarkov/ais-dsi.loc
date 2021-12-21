@@ -211,10 +211,10 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     public function getTeachersLoads()
     {
         return $this->isIndividual() ? TeachersLoad::find()->where(['=', 'studyplan_subject_id', $this->id])
-            ->andWhere('subject_sect_studyplan_id is null')
+            ->andWhere('subject_sect_studyplan_id = 0')
             ->all() :
             TeachersLoad::find()->where(['=', 'subject_sect_studyplan_id', $this->getSubjectSectStudyplan()->id])
-                ->andWhere('studyplan_subject_id is null')
+                ->andWhere('studyplan_subject_id = 0')
                 ->all();
     }
 
@@ -243,10 +243,10 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     public function getSubjectSectSchedule()
     {
         return $this->isIndividual() ? SubjectSectSchedule::find()->where(['=', 'studyplan_subject_id', $this->id])
-            ->andWhere('subject_sect_studyplan_id is null')
+            ->andWhere('subject_sect_studyplan_id = 0')
             ->all() :
             SubjectSectSchedule::find()->where(['=', 'subject_sect_studyplan_id', $this->getSubjectSectStudyplan()->id])
-                ->andWhere('studyplan_subject_id is null')
+                ->andWhere('studyplan_subject_id = 0')
                 ->all();
     }
 

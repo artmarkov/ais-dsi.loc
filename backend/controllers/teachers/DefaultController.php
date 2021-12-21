@@ -195,9 +195,9 @@ class DefaultController extends MainController
                 $modelSubject = StudyplanSubject::findOne($studyplan_subject_id);
                 if ($modelSubject->isIndividual()) {
                     $model->studyplan_subject_id = $studyplan_subject_id;
-                    $model->subject_sect_studyplan_id = null;
+                    $model->subject_sect_studyplan_id = 0;
                 } else {
-                    $model->studyplan_subject_id = null;
+                    $model->studyplan_subject_id = 0;
                     $model->subject_sect_studyplan_id = $modelSubject->getSubjectSectStudyplan()->id;
                 }
 

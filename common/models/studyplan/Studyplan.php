@@ -178,6 +178,21 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $this->hasMany(StudyplanSubject::class, ['studyplan_id' => 'id']);
     }
 
+
+    /**
+     * Список нагрузок преподавателей
+     * @return array
+     */
+    public function getStudyplanTeachersLoad()
+    {
+        $data = [];
+        foreach ($this->studyplanSubject as $index => $modelStudyplanSubject){
+            $studyplanSubjectName = RefBook::find('subject_memo_2')->getValue($modelStudyplanSubject->id);
+            $data[$studyplanSubjectName] = $modelStudyplanSubject->getTeachersLoadsDisplay();
+        }
+        return $data;
+    }
+
     /**
      * Gets query for [[Student]].
      *
@@ -353,7 +368,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
                     'data' => [
                         'studyplan_id' => $this->id,
                         'schedule_id' => $modelSectSchedule->id,
-                        'teachers_load_id' => $modelSectSchedule->teachers_load_id,
+                        'teachers_load_id' => $modelSectSchedule->teachersLoadId,
                         'direction_id' => $modelSectSchedule->direction_id,
                         'teachers_id' => $modelSectSchedule->teachers_id,
                         'description' => $modelSectSchedule->description,

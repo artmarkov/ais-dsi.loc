@@ -39,7 +39,8 @@ use yii\behaviors\TimestampBehavior;
  */
 class SubjectSectSchedule extends \artsoft\db\ActiveRecord
 {
-    public $teachers_load_id;
+
+    public $teachersLoadId;
 
     /**
      * {@inheritdoc}
@@ -72,13 +73,13 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
         return [
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
             [['direction_id', 'teachers_id', 'week_day', 'auditory_id', 'time_in', 'time_out'], 'required'],
-            [['time_in', 'time_out', 'teachers_load_id'], 'safe'],
+            [['time_in', 'time_out', 'teachersLoadId'], 'safe'],
 //            [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['description'], 'string', 'max' => 512],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::class, 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
-           // [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>=', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
+            // [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>=', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
 //            [['auditory_id', 'time_in'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
             //[['auditory_id'], 'checkDate', 'skipOnEmpty' => false],
         ];
@@ -171,6 +172,20 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Геттер $teachersLoadId
+     * @return false|int|string|null
+     */
+    public function getTeachersLoadId()
+    {
+        return TeachersLoad::find()
+            ->where(['=', 'teachers_id', $this->teachers_id])
+            ->andWhere(['=', 'direction_id', $this->direction_id])
+            ->andWhere(['=', 'studyplan_subject_id', $this->studyplan_subject_id])
+            ->andWhere(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
+            ->scalar();
+    }
+
+    /**
      * @return string
      */
     public function getTeachersScheduleDisplay()
@@ -204,11 +219,22 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
         $modelSubject = StudyplanSubject::findOne($studyplan_subject_id);
         if ($modelSubject->isIndividual()) {
             $this->studyplan_subject_id = $studyplan_subject_id;
-            $this->subject_sect_studyplan_id = null;
+            $this->subject_sect_studyplan_id = 0;
         } else {
-            $this->studyplan_subject_id = null;
+            $this->studyplan_subject_id = 0;
             $this->subject_sect_studyplan_id = $modelSubject->getSubjectSectStudyplan()->id;
         }
+        return $this;
+    }
+
+    public function setTeachersLoadModelCopy()
+    {
+        $model_load = TeachersLoad::findOne($this->teachersLoadId);
+        $this->setAttribute('teachers_id', $model_load->teachers_id);
+        $this->setAttribute('direction_id', $model_load->direction_id);
+        $this->setAttribute('subject_sect_studyplan_id', $model_load->subject_sect_studyplan_id);
+        $this->setAttribute('studyplan_subject_id', $model_load->studyplan_subject_id);
+
         return $this;
     }
 }
