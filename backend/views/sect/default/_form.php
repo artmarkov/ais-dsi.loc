@@ -82,7 +82,7 @@ JS
                         'pluginOptions' => [
                             'depends' => ['union_id'],
                             'placeholder' => Yii::t('art', 'Select...'),
-                            'url' => \yii\helpers\Url::to(['/subjectsect/default/subject-cat'])
+                            'url' => \yii\helpers\Url::to(['/sect/default/subject-cat'])
                         ],
 
                     ]); ?>
@@ -96,7 +96,7 @@ JS
                         'pluginOptions' => [
                             'depends' => ['union_id', 'subject_cat_id', 'subject_vid_id'],
                             'placeholder' => Yii::t('art', 'Select...'),
-                            'url' => \yii\helpers\Url::to(['/subjectsect/default/subject'])
+                            'url' => \yii\helpers\Url::to(['/sect/default/subject'])
                         ]
                     ]); ?>
 
@@ -140,6 +140,7 @@ JS
                 </div>
             </div>
             <?php if (!$model->isNewRecord): ?>
+                <?= $this->render('../schedule/_scheduler_form', ['model' => $model]) ?>
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Распределение по классам

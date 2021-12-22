@@ -8,8 +8,8 @@ use yii\helpers\Html;
 /* @var $readonly */
 
 $this->title = Yii::t('art', 'Update "{item}"', ['item' => $model->id]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['subjectsect/default/index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['subjectsect/default/view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
+$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['sect/default/view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="subject-sect-update">

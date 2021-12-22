@@ -67,7 +67,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Расписание консультаций', 'icon' => 'fa fa-minus', 'url' => ['/consult/default/index']],
                     ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/index']],
                     ['label' => 'Журнал успеваемости', 'icon' => 'fa fa-minus', 'url' => ['/progress/default/index']],
-                    ['label' => 'Учебные группы', 'icon' => 'fa fa-minus', 'url' => ['/subjectsect/default/index']],
+                    ['label' => 'Учебные группы', 'icon' => 'fa fa-minus', 'url' => ['/sect/default/index']],
                 ],
             ],
             [

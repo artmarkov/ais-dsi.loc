@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\controllers\subjectsect;
+namespace backend\controllers\studyplan;
 
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
@@ -70,7 +70,7 @@ class ScheduleController extends MainController
         } else {
             $model = $this->modelClass::findOne($id);
         }
-        return $this->renderAjax('@backend/views/studyplan/default/schedule-modal.php', [
+        return $this->renderAjax('@backend/views/studyplan/schedule/schedule-modal.php', [
             'model' => $model,
             'modelStudyplan' => $modelStudyplan,
             'studyplan_id' => $studyplan_id

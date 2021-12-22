@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\controllers\subjectsect;
+namespace backend\controllers\sect;
 
 use backend\models\Model;
 use common\models\subjectsect\SubjectSectStudyplan;

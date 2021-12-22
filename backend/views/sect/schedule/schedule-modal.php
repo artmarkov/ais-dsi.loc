@@ -21,7 +21,7 @@ use artsoft\helpers\RefBook;
         'data-pjax' => true
     ],
    //'action' => false,
-    'action' => !$model->isNewRecord ? ['subjectsect/schedule/update-schedule', 'id' => $model->id, 'studyplan_id' => $studyplan_id] : ['subjectsect/schedule/create-schedule', 'studyplan_id' => $studyplan_id],
+//    'action' => !$model->isNewRecord ? ['sect/schedule/update-schedule', 'id' => $model->id, 'studyplan_id' => $studyplan_id] : ['sect/schedule/create-schedule', 'studyplan_id' => $studyplan_id],
     'enableAjaxValidation' => true,
 ]);
 
@@ -31,7 +31,7 @@ use artsoft\helpers\RefBook;
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <?= $form->field($model, "teachersLoadId")->dropDownList($modelStudyplan->getStudyplanTeachersLoad(), ['options' => [$model->getTeachersLoadId() => ['Selected' => true]]]); ?>
+<!--                    --><?//= $form->field($model, "teachersLoadId")->dropDownList($modelStudyplan->getStudyplanTeachersLoad(), ['options' => [$model->getTeachersLoadId() => ['Selected' => true]]]); ?>
                     <?= $form->field($model, "week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList()) ?>
                     <?= $form->field($model, "week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList()) ?>
                     <?= $form->field($model, "time_in")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time in...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
@@ -64,7 +64,7 @@ $('.delete-schedule').on('click', function (e) {
          var id = $model->id;
 
     $.ajax({
-        url: '/admin/subjectsect/schedule/delete-schedule',
+        url: '/admin/sect/schedule/delete-schedule',
         data: {id: id},
         type: 'POST',
         success: function (res) {

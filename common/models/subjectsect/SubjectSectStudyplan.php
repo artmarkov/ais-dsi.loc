@@ -93,6 +93,10 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
         return $this->hasOne(SubjectSect::className(), ['id' => 'subject_sect_id']);
     }
 
+    public function getSubjectSectSchedule()
+    {
+        return $this->hasMany(SubjectSectSchedule::className(), ['subject_sect_studyplan_id' => 'id']);
+    }
     /**
      * @return array
      */

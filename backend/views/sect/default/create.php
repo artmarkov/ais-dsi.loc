@@ -8,7 +8,7 @@ use yii\helpers\Html;
 /* @var $readonly */
 
 $this->title = Yii::t('art', 'Create');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['subjectsect/default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

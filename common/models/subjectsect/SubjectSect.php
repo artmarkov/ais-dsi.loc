@@ -2,6 +2,7 @@
 
 namespace common\models\subjectsect;
 
+use artsoft\helpers\RefBook;
 use common\models\activities\SubjectSectSchedule;
 use \common\models\education\EducationUnion;
 use common\models\subject\Subject;
@@ -298,5 +299,37 @@ SQL;
     public static function getSubjectForUnionAndCatToId($union_id, $cat_id)
     {
         return $cat_id ? Yii::$app->db->createCommand(self::getQuery($union_id, $cat_id))->queryAll() : [];
+    }
+
+    public function getSubjectSectSchedule()
+    {
+        $data = [];
+        foreach ($this->subjectSectStudyplans as $index => $modelSubjectSectStudyplan) {
+//                echo '<pre>' . print_r($modelSubjectSectStudyplan, true) . '</pre>';
+            foreach ($modelSubjectSectStudyplan->subjectSectSchedule as $item => $modelSectSchedule) {
+                $data[] = [
+                    'week_day' => $modelSectSchedule->week_day,
+                    'time_in' => $modelSectSchedule->time_in,
+                    'time_out' => $modelSectSchedule->time_out,
+                    'title' => 'Группа ' . $modelSubjectSectStudyplan->class_name,
+                    'data' => [
+                        'schedule_id' => $modelSectSchedule->id,
+                        'teachers_load_id' => $modelSectSchedule->teachersLoadId,
+                        'direction_id' => $modelSectSchedule->direction_id,
+                        'teachers_id' => $modelSectSchedule->teachers_id,
+                        'description' => $modelSectSchedule->description,
+                        'week_num' => $modelSectSchedule->week_num,
+                        'auditory_id' => $modelSectSchedule->auditory_id,
+                        'style' => [
+                            'background' => '#0000ff',
+                            'color' => '#00ff00',
+                            'border' => '#ff0000',
+                        ]
+                    ]
+                ];
+
+            }
+        }
+        return $data;
     }
 }
