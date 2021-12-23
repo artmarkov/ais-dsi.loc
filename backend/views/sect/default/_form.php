@@ -12,6 +12,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
 /* @var $readonly */
 /* @var $modelsSubjectSectStudyplan */
 /* @var $modelsSubjectSectStudyplan[0] */
+/* @var $modelsTeachersLoad */
 /* @var $class_index */
 
 $class_index = $model->getClassIndex();
@@ -236,12 +237,12 @@ JS
                                                         <?= $this->render('_form-teachers-load', [
                                                             'form' => $form,
                                                             'index' => $index,
-                                                            'model' => $model,
                                                             'modelsTeachersLoad' => $modelsTeachersLoad[$index],
                                                             'readonly' => $readonly,
                                                         ]) ?>
                                                     </div>
                                                     <?php
+
                                                     $field = $form->field($modelSubjectSectStudyplan, "[{$index}]studyplan_subject_list");
                                                     echo $field->begin();
                                                     ?>

@@ -55,34 +55,35 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id'], 'default', 'value' => 0],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['direction_id', 'teachers_id', 'week_time'], 'required'],
             [['week_time'], 'number'],
-            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::className(), 'targetAttribute' => ['direction_id' => 'id']],
-            [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::className(), 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
-            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
+            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
+           // [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::class, 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
+            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
-    {
-        return [
-            'id' => Yii::t('art/guide', 'ID'),
-            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect ID'),
-            'direction_id' => Yii::t('art/guide', 'Direction'),
-            'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
-            'week_time' => Yii::t('art/guide', 'Week Time'),
-            'created_at' => Yii::t('art/guide', 'Created At'),
-            'created_by' => Yii::t('art/guide', 'Created By'),
-            'updated_at' => Yii::t('art/guide', 'Updated At'),
-            'updated_by' => Yii::t('art/guide', 'Updated By'),
-            'version' => Yii::t('art/guide', 'Version'),
-        ];
-    }
+//    public function attributeLabels()
+//    {
+//        return [
+//            'id' => Yii::t('art/guide', 'ID'),
+//            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Subject_Sect_Studyplan ID'),
+//            'studyplan_subject_id' => Yii::t('art/guide', 'Sect ID'),
+//            'direction_id' => Yii::t('art/guide', 'Direction'),
+//            'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
+//            'week_time' => Yii::t('art/guide', 'Week Time'),
+//            'created_at' => Yii::t('art', 'Created At'),
+//            'created_by' => Yii::t('art', 'Created'),
+//            'updated_at' => Yii::t('art', 'Updated At'),
+//            'updated_by' => Yii::t('art', 'Updated'),
+//            'version' => Yii::t('art', 'Version'),
+//        ];
+//    }
 
     public function optimisticLock()
     {
@@ -96,7 +97,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
      */
     public function getDirection()
     {
-        return $this->hasOne(GuideTeachersDirection::className(), ['id' => 'direction_id']);
+        return $this->hasOne(GuideTeachersDirection::class, ['id' => 'direction_id']);
     }
 
     /**
@@ -106,12 +107,15 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
      */
     public function getSect()
     {
-        return $this->hasOne(SubjectSectStudyplan::className(), ['id' => 'subject_sect_studyplan_id']);
+        return $this->hasOne(SubjectSectStudyplan::class, ['id' => 'subject_sect_studyplan_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getStudyplanSubject()
     {
-        return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
+        return $this->hasOne(StudyplanSubject::class, ['id' => 'studyplan_subject_id']);
     }
 
     /**
@@ -121,7 +125,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
      */
     public function getTeachers()
     {
-        return $this->hasOne(Teachers::className(), ['id' => 'teachers_id']);
+        return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
     }
 
 }

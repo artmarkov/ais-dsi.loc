@@ -2,12 +2,17 @@
 
 use yii\helpers\Html;
 use wbraganca\dynamicform\DynamicFormWidget;
+use yii\helpers\Url;
 
 /* @var $modelsTeachersLoad */
-/* @var $model */
 /* @var $index */
 /* @var $readonly */
 
+$this->registerJs(<<<JS
+function initSelect2Loading(a,b){ initS2Loading(a,b); }
+function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
+JS
+    , \yii\web\View::POS_END);
 ?>
 
 <?php DynamicFormWidget::begin([
@@ -29,7 +34,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
 <table class="table table-bordered table-striped">
     <thead>
     <tr>
-        <th class="text-center" style="min-width: 100px">Вид</br>деятельности</th>
+        <th class="text-center" style="min-width: 100px">Деятельность</th>
         <th class="text-center" style="min-width: 100px">Преподаватель</th>
         <th class="text-center">Часов</br>в неделю</th>
         <th class="text-center">
@@ -58,10 +63,9 @@ use wbraganca\dynamicform\DynamicFormWidget;
                         [
                             'model' => $modelTeachersLoad,
                             'attribute' => "[{$index}][{$indexLoad}]direction_id",
-                            'id' => 'TeachersLoad-' . $index . '-' . $indexLoad . '-direction_id',
-//                            'data' => \artsoft\helpers\RefBook::find('subject_category_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                            'data' => \common\models\guidejob\Direction::getDirectionList(),
                             'options' => [
-
+                                'id' => 'teachersLoad-' . $index . '-' . $indexLoad . '-direction_id',
                                 'disabled' => $readonly,
                                 'placeholder' => Yii::t('art', 'Select...'),
                             ],
@@ -84,16 +88,15 @@ use wbraganca\dynamicform\DynamicFormWidget;
                         [
                             'model' => $modelTeachersLoad,
                             'attribute' => "[{$index}][{$indexLoad}]teachers_id",
-                            'id' => ['TeachersLoad-' . $index . '-' . $indexLoad . '-direction_id'],
-//                            'data' => $model->getSubjectByCategory($modelTeachersLoad->subject_cat_id),
+                            'data' => \common\models\teachers\Teachers::getTeachersList($modelTeachersLoad->direction_id),
                             'options' => [
-                                'prompt' => Yii::t('art', 'Select...'),
                                 'disabled' => $readonly,
+                                'placeholder' => Yii::t('art', 'Select...'),
                             ],
                             'pluginOptions' => [
-                                'depends' => ['TeachersLoad-' . $index . '-' . $indexLoad . '-direction_id'],
+                                'depends' => ['teachersLoad-' . $index . '-' . $indexLoad . '-direction_id'],
                                 'placeholder' => Yii::t('art', 'Select...'),
-                                'url' => \yii\helpers\Url::to(['/education/default/subject', 'id' => $model->id])
+                                'url' => Url::to(['/teachers/default/teachers'])
                             ]
                         ]
                     ) ?>

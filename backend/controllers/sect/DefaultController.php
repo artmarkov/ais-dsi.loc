@@ -73,7 +73,6 @@ class DefaultController extends MainController
                                 }
                             }
                         }
-
                     }
                     if ($flag) {
                         $transaction->commit();
@@ -87,7 +86,7 @@ class DefaultController extends MainController
             }
         }
 
-        return $this->renderIsAjax('create', [
+        return $this->renderIsAjax($this->createView, [
             'model' => $model,
             'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan()] : $modelsSubjectSectStudyplan,
             'modelsTeachersLoad' => (empty($modelsTeachersLoad)) ? [[new TeachersLoad]] : $modelsTeachersLoad,
@@ -113,17 +112,17 @@ class DefaultController extends MainController
         }
 
         $modelsSubjectSectStudyplan = $model->subjectSectStudyplans;
-
         $modelsTeachersLoad = [];
-        $oldLoads = [];
+        $oldTimes = [];
 
         if (!empty($modelsSubjectSectStudyplan)) {
             foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan) {
-                $loads = $modelSubjectSectStudyplan->teachersLoad;
-                $modelsTeachersLoad[$index] = $loads;
-                $oldLoads = ArrayHelper::merge(ArrayHelper::index($loads, 'id'), $oldLoads);
+                $times = $modelSubjectSectStudyplan->teachersLoads;
+                $modelsTeachersLoad[$index] = $times;
+                $oldTimes = ArrayHelper::merge(ArrayHelper::index($times, 'id'), $oldTimes);
             }
         }
+
         if ($model->load(Yii::$app->request->post())) {
 
             // reset
@@ -137,31 +136,35 @@ class DefaultController extends MainController
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsSubjectSectStudyplan) && $valid;
 
-            // validate all models
-            $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsSubjectSectStudyplan) && $valid;
-
             $timesIDs = [];
-            if (isset($_POST['modelsTeachersLoad'][0][0])) {
-                foreach ($_POST['modelsTeachersLoad'] as $index => $times) {
+            if (isset($_POST['TeachersLoad'][0][0])) {
+                foreach ($_POST['TeachersLoad'] as $index => $times) {
                     $timesIDs = ArrayHelper::merge($timesIDs, array_filter(ArrayHelper::getColumn($times, 'id')));
                     foreach ($times as $indexTime => $time) {
-                        $data['modelsTeachersLoad'] = $time;
-                        $modelsTeachersLoad = (isset($time['id']) && isset($oldTimes[$time['id']])) ? $oldLoads[$time['id']] : new TeachersLoad;
-                        $modelsTeachersLoad->load($data);
-                        $modelsTeachersLoad[$index][$indexTime] = $modelsTeachersLoad;
-                        $valid = $modelsTeachersLoad->validate();
+                        $data['TeachersLoad'] = $time;
+                        $modelTeachersLoad = (isset($time['id']) && isset($oldTimes[$time['id']])) ? $oldTimes[$time['id']] : new TeachersLoad;
+                        $modelTeachersLoad->load($data);
+                        $modelsTeachersLoad[$index][$indexTime] = $modelTeachersLoad;
+                        $valid = $modelTeachersLoad->validate();
                     }
                 }
             }
 
-            $oldTimesIDs = ArrayHelper::getColumn($oldLoads, 'id');
+            $oldTimesIDs = ArrayHelper::getColumn($oldTimes, 'id');
             $deletedTimesIDs = array_diff($oldTimesIDs, $timesIDs);
 
             if ($valid) {
-                $transaction = \Yii::$app->db->beginTransaction();
+                $transaction = Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) {
+
+                        if (!empty($deletedTimesIDs)) {
+                            TeachersLoad::deleteAll(['id' => $deletedTimesIDs]);
+                        }
+
+                        if (!empty($deletedSubjectIDs)) {
+                            SubjectSectStudyplan::deleteAll(['id' => $deletedSubjectIDs]);
+                        }
 
                         foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan) {
 
@@ -169,25 +172,27 @@ class DefaultController extends MainController
                                 break;
                             }
                             $modelSubjectSectStudyplan->subject_sect_id = $model->id;
-
                             if (!($flag = $modelSubjectSectStudyplan->save(false))) {
                                 break;
                             }
 
+                            $modelSubjectSectStudyplan = SubjectSectStudyplan::findOne(['id' => $modelSubjectSectStudyplan->id]);
+
                             if (isset($modelsTeachersLoad[$index]) && is_array($modelsTeachersLoad[$index])) {
                                 foreach ($modelsTeachersLoad[$index] as $indexTime => $modelTeachersLoad) {
                                     $modelTeachersLoad->subject_sect_studyplan_id = $modelSubjectSectStudyplan->id;
+
                                     if (!($flag = $modelTeachersLoad->save(false))) {
                                         break;
                                     }
                                 }
                             }
                         }
-
                     }
+
                     if ($flag) {
                         $transaction->commit();
-                        $this->getSubmitAction($model);
+                        return $this->getSubmitAction($model);
                     } else {
                         $transaction->rollBack();
                     }
@@ -197,7 +202,7 @@ class DefaultController extends MainController
             }
         }
 
-        return $this->render('update', [
+        return $this->render($this->updateView, [
             'model' => $model,
             'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan] : $modelsSubjectSectStudyplan,
             'modelsTeachersLoad' => (empty($modelsTeachersLoad)) ? [[new TeachersLoad]] : $modelsTeachersLoad,

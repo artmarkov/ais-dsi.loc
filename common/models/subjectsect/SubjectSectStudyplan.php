@@ -4,6 +4,7 @@ namespace common\models\subjectsect;
 
 use artsoft\helpers\RefBook;
 use common\models\studyplan\StudyplanSubject;
+use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -56,7 +57,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
             [['class_name'], 'string', 'max' => 64],
             [['class_name'], 'trim'],
             ['class_name', 'unique', 'targetAttribute' => ['class_name', 'subject_sect_id']],
-            [['subject_sect_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSect::className(), 'targetAttribute' => ['subject_sect_id' => 'id']],
+            [['subject_sect_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSect::class, 'targetAttribute' => ['subject_sect_id' => 'id']],
         ];
     }
 
@@ -90,12 +91,23 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
      */
     public function getSubjectSect()
     {
-        return $this->hasOne(SubjectSect::className(), ['id' => 'subject_sect_id']);
+        return $this->hasOne(SubjectSect::class, ['id' => 'subject_sect_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeachersLoads()
+    {
+        return $this->hasMany(TeachersLoad::class, ['subject_sect_studyplan_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getSubjectSectSchedule()
     {
-        return $this->hasMany(SubjectSectSchedule::className(), ['subject_sect_studyplan_id' => 'id']);
+        return $this->hasMany(SubjectSectSchedule::class, ['subject_sect_studyplan_id' => 'id']);
     }
     /**
      * @return array
