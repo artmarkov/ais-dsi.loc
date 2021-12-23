@@ -98,28 +98,29 @@ $JSScheduleClick = <<<EOF
         
 EOF;
 ?>
-<div class="subject-sect-schedule">
-    <div class="panel panel-info">
-        <div class="panel-heading">
-            Расписание занятий
-        </div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-sm-12">
-                    <?= WeeklyScheduler::widget([
-                        'data' => $model->getSubjectSectSchedule(),
-                        'events' => [
-                                    'onChange' => new JsExpression($JSChange),
-                                    'onClick' => new JsExpression($JSEventClick),
-                                    'onScheduleClick' => new JsExpression($JSScheduleClick),
-                        ]
-                    ]);
-                    ?>
+    <div class="subject-sect-schedule">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                Расписание занятий
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= WeeklyScheduler::widget([
+                            'readonly' => $readonly,
+                            'data' => $model->getSubjectSectSchedule(),
+                            'events' => [
+                                'onChange' => new JsExpression($JSChange),
+                                'onClick' => new JsExpression($JSEventClick),
+                                'onScheduleClick' => new JsExpression($JSScheduleClick),
+                            ]
+                        ]);
+                        ?>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 <?php \yii\bootstrap\Modal::begin([
     'header' => '<h3 class="lte-hide-title page-title">Расписание</h3>',

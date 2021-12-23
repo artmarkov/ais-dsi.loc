@@ -77,7 +77,7 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax('create', [
             'model' => $model,
-            'modelsDependence' => [new StudyplanSubject],
+            'modelsStudyplanSubject' => [new StudyplanSubject],
             'readonly' => false
         ]);
     }
@@ -100,18 +100,18 @@ class DefaultController extends MainController
             throw new NotFoundHttpException("The StudyplanSubject was not found.");
         }
 
-        $modelsDependence = $model->studyplanSubject;
+        $modelsStudyplanSubject = $model->studyplanSubject;
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $oldIDs = ArrayHelper::map($modelsDependence, 'id', 'id');
-            $modelsDependence = Model::createMultiple(StudyplanSubject::class, $modelsDependence);
-            Model::loadMultiple($modelsDependence, Yii::$app->request->post());
-            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsDependence, 'id', 'id')));
+            $oldIDs = ArrayHelper::map($modelsStudyplanSubject, 'id', 'id');
+            $modelsStudyplanSubject = Model::createMultiple(StudyplanSubject::class, $modelsStudyplanSubject);
+            Model::loadMultiple($modelsStudyplanSubject, Yii::$app->request->post());
+            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsStudyplanSubject, 'id', 'id')));
 
             // validate all models
             $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsDependence) && $valid;
+            $valid = Model::validateMultiple($modelsStudyplanSubject) && $valid;
 
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
@@ -120,9 +120,9 @@ class DefaultController extends MainController
                         if (!empty($deletedIDs)) {
                             StudyplanSubject::deleteAll(['id' => $deletedIDs]);
                         }
-                        foreach ($modelsDependence as $modelDependence) {
-                            $modelDependence->studyplan_id = $model->id;
-                            if (!($flag = $modelDependence->save(false))) {
+                        foreach ($modelsStudyplanSubject as $modelStudyplanSubject) {
+                            $modelStudyplanSubject->studyplan_id = $model->id;
+                            if (!($flag = $modelStudyplanSubject->save(false))) {
                                 $transaction->rollBack();
                                 break;
                             }
@@ -148,7 +148,7 @@ class DefaultController extends MainController
         }
         return $this->render('update', [
             'model' => $model,
-            'modelsDependence' => (empty($modelsDependence)) ? [new StudyplanSubject] : $modelsDependence,
+            'modelsStudyplanSubject' => (empty($modelsStudyplanSubject)) ? [new StudyplanSubject] : $modelsStudyplanSubject,
             'readonly' => $readonly
         ]);
     }

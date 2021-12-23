@@ -4,7 +4,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\subjectsect\SubjectSect */
-/* @var $modelsDependence common\models\students\StudentDependence */
+/* @var $modelsSubjectSectStudyplan common\models\students\StudentDependence */
 /* @var $readonly */
 
 $this->title = Yii::t('art', 'Update "{item}"', ['item' => $model->id]);
@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = 'Update';
 <div class="subject-sect-update">
     <?= $this->render('_form', [
         'model' => $model,
-        'modelsDependence' => $modelsDependence,
+        'modelsSubjectSectStudyplan' => $modelsSubjectSectStudyplan,
         'readonly' => $readonly
     ]) ?>
 </div>

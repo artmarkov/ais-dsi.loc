@@ -14,7 +14,7 @@ use yii\widgets\MaskedInput;
 /* @var $model common\models\studyplan\Studyplan */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $readonly */
-/* @var $modelsDependence */
+/* @var $modelsStudyplanSubject */
 
 $this->registerJs(<<<JS
 function initSelect2Loading(a,b){ initS2Loading(a,b); }
@@ -129,7 +129,7 @@ JS
                                     'min' => 1, // 0 or 1 (default 1)
                                     'insertButton' => '.add-item', // css class
                                     'deleteButton' => '.remove-item', // css class
-                                    'model' => $modelsDependence[0],
+                                    'model' => $modelsStudyplanSubject[0],
                                     'formId' => 'studyplan-form',
                                     'formFields' => [
                                         'subject_cat_id',
@@ -168,23 +168,23 @@ JS
                                     </tr>
                                     </thead>
                                     <tbody class="container-items">
-                                    <?php foreach ($modelsDependence as $index => $modelDependence): ?>
+                                    <?php foreach ($modelsStudyplanSubject as $index => $modelStudyplanSubject): ?>
                                         <tr class="item">
                                             <?php
                                             // necessary for update action.
-                                            if (!$modelDependence->isNewRecord) {
-                                                echo Html::activeHiddenInput($modelDependence, "[{$index}]id");
+                                            if (!$modelStudyplanSubject->isNewRecord) {
+                                                echo Html::activeHiddenInput($modelStudyplanSubject, "[{$index}]id");
                                             }
                                             ?>
                                             <td>
                                                 <?php
-                                                $field = $form->field($modelDependence, "[{$index}]subject_cat_id");
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]subject_cat_id");
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
                                                     <?= \kartik\select2\Select2::widget(
                                                         [
-                                                            'model' => $modelDependence,
+                                                            'model' => $modelStudyplanSubject,
                                                             'attribute' => "[{$index}]subject_cat_id",
                                                             'data' => \artsoft\helpers\RefBook::find('subject_category_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
                                                             'options' => [
@@ -204,15 +204,15 @@ JS
                                             </td>
                                             <td>
                                                 <?php
-                                                $field = $form->field($modelDependence, "[{$index}]subject_id");
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]subject_id");
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
                                                     <?= \kartik\depdrop\DepDrop::widget(
                                                         [
-                                                            'model' => $modelDependence,
+                                                            'model' => $modelStudyplanSubject,
                                                             'attribute' => "[{$index}]subject_id",
-                                                            'data' => $model->getSubjectByCategory($modelDependence->subject_cat_id),
+                                                            'data' => $model->getSubjectByCategory($modelStudyplanSubject->subject_cat_id),
                                                             'options' => [
                                                                 'prompt' => Yii::t('art', 'Select...'),
                                                                 'disabled' => $readonly,
@@ -230,13 +230,13 @@ JS
                                             </td>
                                             <td>
                                                 <?php
-                                                $field = $form->field($modelDependence, "[{$index}]subject_type_id");
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]subject_type_id");
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
                                                     <?= \kartik\select2\Select2::widget(
                                                         [
-                                                            'model' => $modelDependence,
+                                                            'model' => $modelStudyplanSubject,
                                                             'attribute' => "[{$index}]subject_type_id",
                                                             'data' => \common\models\education\EducationSpeciality::getTypeList($model->speciality_id),
                                                             'options' => [
@@ -255,13 +255,13 @@ JS
                                             </td>
                                             <td>
                                                 <?php
-                                                $field = $form->field($modelDependence, "[{$index}]subject_vid_id");
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]subject_vid_id");
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
                                                     <?= \kartik\select2\Select2::widget(
                                                         [
-                                                            'model' => $modelDependence,
+                                                            'model' => $modelStudyplanSubject,
                                                             'attribute' => "[{$index}]subject_vid_id",
                                                             'data' => \artsoft\helpers\RefBook::find('subject_vid_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
                                                             'options' => [
@@ -280,66 +280,66 @@ JS
                                             </td>
                                             <td>
                                                 <?php
-                                                $field = $form->field($modelDependence, "[{$index}]week_time");
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]week_time");
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
-                                                    <?= \yii\helpers\Html::activeTextInput($modelDependence, "[{$index}]week_time", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                                                    <?= \yii\helpers\Html::activeTextInput($modelStudyplanSubject, "[{$index}]week_time", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                                                     <p class="help-block help-block-error"></p>
                                                 </div>
                                                 <?= $field->end(); ?>
                                             </td>
                                             <td>
                                                 <?php
-                                                $field = $form->field($modelDependence, "[{$index}]year_time");
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]year_time");
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
-                                                    <?= \yii\helpers\Html::activeTextInput($modelDependence, "[{$index}]year_time", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                                                    <?= \yii\helpers\Html::activeTextInput($modelStudyplanSubject, "[{$index}]year_time", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                                                     <p class="help-block help-block-error"></p>
                                                 </div>
                                                 <?= $field->end(); ?>
                                             </td>
                                             <td>
                                                 <?php
-                                                $field = $form->field($modelDependence, "[{$index}]cost_hour");
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]cost_hour");
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
-                                                    <?= \yii\helpers\Html::activeTextInput($modelDependence, "[{$index}]cost_hour", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                                                    <?= \yii\helpers\Html::activeTextInput($modelStudyplanSubject, "[{$index}]cost_hour", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                                                     <p class="help-block help-block-error"></p>
                                                 </div>
                                                 <?= $field->end(); ?>
                                             </td>
                                             <td>
                                                 <?php
-                                                $field = $form->field($modelDependence, "[{$index}]cost_month_summ");
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]cost_month_summ");
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
-                                                    <?= \yii\helpers\Html::activeTextInput($modelDependence, "[{$index}]cost_month_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                                                    <?= \yii\helpers\Html::activeTextInput($modelStudyplanSubject, "[{$index}]cost_month_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                                                     <p class="help-block help-block-error"></p>
                                                 </div>
                                                 <?= $field->end(); ?>
                                             </td>
                                             <td>
                                                 <?php
-                                                $field = $form->field($modelDependence, "[{$index}]cost_year_summ");
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]cost_year_summ");
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
-                                                    <?= \yii\helpers\Html::activeTextInput($modelDependence, "[{$index}]cost_year_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                                                    <?= \yii\helpers\Html::activeTextInput($modelStudyplanSubject, "[{$index}]cost_year_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                                                     <p class="help-block help-block-error"></p>
                                                 </div>
                                                 <?= $field->end(); ?>
                                             </td>
                                             <td>
                                                 <?php
-                                                $field = $form->field($modelDependence, "[{$index}]year_time_consult");
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]year_time_consult");
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
-                                                    <?= \yii\helpers\Html::activeTextInput($modelDependence, "[{$index}]year_time_consult", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                                                    <?= \yii\helpers\Html::activeTextInput($modelStudyplanSubject, "[{$index}]year_time_consult", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                                                     <p class="help-block help-block-error"></p>
                                                 </div>
                                                 <?= $field->end(); ?>

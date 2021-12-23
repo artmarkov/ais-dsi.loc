@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use wbraganca\dynamicform\DynamicFormWidget;
 
-/* @var $modelsTime */
+/* @var $modelsEducationProgrammLevelSubject */
 /* @var $model */
 /* @var $index */
 /* @var $readonly */
@@ -18,7 +18,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
     'min' => 1,
     'insertButton' => '.add-time',
     'deleteButton' => '.remove-time',
-    'model' => $modelsTime[0],
+    'model' => $modelsEducationProgrammLevelSubject[0],
     'formId' => 'education-programm-form',
     'formFields' => [
         'subject_cat_id',
@@ -55,23 +55,23 @@ use wbraganca\dynamicform\DynamicFormWidget;
     </tr>
     </thead>
     <tbody class="container-time">
-    <?php foreach ($modelsTime as $indexTime => $modelTime): ?>
+    <?php foreach ($modelsEducationProgrammLevelSubject as $indexTime => $modelEducationProgrammLevelSubject): ?>
         <tr class="room-item">
             <?php
             // necessary for update action.
-            if (!$modelTime->isNewRecord) {
-                echo Html::activeHiddenInput($modelTime, "[{$index}][{$indexTime}]id");
+            if (!$modelEducationProgrammLevelSubject->isNewRecord) {
+                echo Html::activeHiddenInput($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]id");
             }
             ?>
             <td>
                 <?php
-                $field = $form->field($modelTime, "[{$index}][{$indexTime}]subject_cat_id");
+                $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]subject_cat_id");
                 echo $field->begin();
                 ?>
                 <div class="col-sm-12">
                     <?= \kartik\select2\Select2::widget(
                         [
-                            'model' => $modelTime,
+                            'model' => $modelEducationProgrammLevelSubject,
                             'attribute' => "[{$index}][{$indexTime}]subject_cat_id",
                             'id' => 'educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_cat_id',
                             'data' => \artsoft\helpers\RefBook::find('subject_category_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
@@ -91,16 +91,16 @@ use wbraganca\dynamicform\DynamicFormWidget;
             </td>
             <td>
                 <?php
-                $field = $form->field($modelTime, "[{$index}][{$indexTime}]subject_id");
+                $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]subject_id");
                 echo $field->begin();
                 ?>
                 <div class="col-sm-12">
                     <?= \kartik\depdrop\DepDrop::widget(
                         [
-                            'model' => $modelTime,
+                            'model' => $modelEducationProgrammLevelSubject,
                             'attribute' => "[{$index}][{$indexTime}]subject_id",
                             'id' => ['educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_id'],
-                            'data' => $model->getSubjectByCategory($modelTime->subject_cat_id),
+                            'data' => $model->getSubjectByCategory($modelEducationProgrammLevelSubject->subject_cat_id),
                             'options' => [
                                 'prompt' => Yii::t('art', 'Select...'),
                                 'disabled' => $readonly,
@@ -118,13 +118,13 @@ use wbraganca\dynamicform\DynamicFormWidget;
             </td>
             <td>
                 <?php
-                $field = $form->field($modelTime, "[{$index}][{$indexTime}]subject_vid_id");
+                $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]subject_vid_id");
                 echo $field->begin();
                 ?>
                 <div class="col-sm-12">
                     <?= \kartik\select2\Select2::widget(
                         [
-                            'model' => $modelTime,
+                            'model' => $modelEducationProgrammLevelSubject,
                             'attribute' => "[{$index}][{$indexTime}]subject_vid_id",
                             'data' => \artsoft\helpers\RefBook::find('subject_vid_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
                             'options' => [
@@ -144,22 +144,22 @@ use wbraganca\dynamicform\DynamicFormWidget;
 
             <td>
                 <?php
-                $field = $form->field($modelTime, "[{$index}][{$indexTime}]week_time");
+                $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]week_time");
                 echo $field->begin();
                 ?>
                 <div class="col-sm-12">
-                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]week_time", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                    <?= Html::activeTextInput($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]week_time", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                     <p class="help-block help-block-error"></p>
                 </div>
                 <?= $field->end(); ?>
             </td>
             <td>
                 <?php
-                $field = $form->field($modelTime, "[{$index}][{$indexTime}]year_time");
+                $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]year_time");
                 echo $field->begin();
                 ?>
                 <div class="col-sm-12">
-                    <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]year_time", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                    <?= Html::activeTextInput($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]year_time", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                     <p class="help-block help-block-error"></p>
                 </div>
                 <?= $field->end(); ?>
@@ -167,33 +167,33 @@ use wbraganca\dynamicform\DynamicFormWidget;
             <?php if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
                 <td>
                     <?php
-                    $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_hour");
+                    $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]cost_hour");
                     echo $field->begin();
                     ?>
                     <div class="col-sm-12">
-                        <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_hour", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                        <?= Html::activeTextInput($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]cost_hour", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                         <p class="help-block help-block-error"></p>
                     </div>
                     <?= $field->end(); ?>
                 </td>
                 <td>
                     <?php
-                    $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_month_summ");
+                    $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]cost_month_summ");
                     echo $field->begin();
                     ?>
                     <div class="col-sm-12">
-                        <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_month_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                        <?= Html::activeTextInput($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]cost_month_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                         <p class="help-block help-block-error"></p>
                     </div>
                     <?= $field->end(); ?>
                 </td>
                 <td>
                     <?php
-                    $field = $form->field($modelTime, "[{$index}][{$indexTime}]cost_year_summ");
+                    $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]cost_year_summ");
                     echo $field->begin();
                     ?>
                     <div class="col-sm-12">
-                        <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]cost_year_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                        <?= Html::activeTextInput($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]cost_year_summ", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                         <p class="help-block help-block-error"></p>
                     </div>
                     <?= $field->end(); ?>
@@ -201,11 +201,11 @@ use wbraganca\dynamicform\DynamicFormWidget;
             <?php else: ?>
                 <td>
                     <?php
-                    $field = $form->field($modelTime, "[{$index}][{$indexTime}]year_time_consult");
+                    $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]year_time_consult");
                     echo $field->begin();
                     ?>
                     <div class="col-sm-12">
-                        <?= Html::activeTextInput($modelTime, "[{$index}][{$indexTime}]year_time_consult", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                        <?= Html::activeTextInput($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]year_time_consult", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                         <p class="help-block help-block-error"></p>
                     </div>
                     <?= $field->end(); ?>

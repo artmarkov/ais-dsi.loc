@@ -10,8 +10,8 @@ use wbraganca\dynamicform\DynamicFormWidget;
 /* @var $model common\models\subjectsect\SubjectSect */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $readonly */
-/* @var $modelsDependence */
-/* @var $modelsDependence [0] */
+/* @var $modelsSubjectSectStudyplan */
+/* @var $modelsSubjectSectStudyplan[0] */
 /* @var $class_index */
 
 $class_index = $model->getClassIndex();
@@ -19,13 +19,13 @@ $class_index = $model->getClassIndex();
 $js = '
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("Группа ' . $class_index . ': " + (index + 1))
+        jQuery(this).html("' . $class_index . ': " + (index + 1))
     });
 });
 
 jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("Группа ' . $class_index . ': " + (index + 1))
+        jQuery(this).html("' . $class_index . ': " + (index + 1))
     });
 });
 ';
@@ -100,43 +100,6 @@ JS
                         ]
                     ]); ?>
 
-                    <?= $form->field($model, 'subject_vid_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => RefBook::find('subject_vid_name')->getList(),
-                        'options' => [
-                            'disabled' => $readonly,
-                            'placeholder' => Yii::t('art', 'Select...'),
-                        ],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-
-                    ]); ?>
-
-                    <?= $form->field($model, 'subject_type_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \common\models\subject\SubjectType::getTypeList(),
-                        'options' => [
-                            'disabled' => $readonly,
-                            'placeholder' => Yii::t('art/guide', 'Select Subject Type...'),
-                            'multiple' => false,
-                        ],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ])->label(Yii::t('art/guide', 'Subject Type'));
-                    ?>
-                    <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
-                        'data' => \artsoft\helpers\ArtHelper::getCourseList(),
-                        'options' => [
-                            'disabled' => $readonly,
-                            'placeholder' => Yii::t('art/guide', 'Select Course...'),
-                            'multiple' => false,
-                        ],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ])->label(Yii::t('art/guide', 'Course'));
-                    ?>
-
                     <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                         [
                             'disabled' => $model->plan_year ? true : $readonly,
@@ -144,12 +107,57 @@ JS
                             ]
                         ]);
                     ?>
+                    
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-heading">
+                    Дополнительные параметры фильтрации
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <?= $form->field($model, 'subject_vid_id')->widget(\kartik\select2\Select2::class, [
+                            'data' => RefBook::find('subject_vid_name')->getList(),
+                            'options' => [
+                                'disabled' => $readonly,
+                                'placeholder' => Yii::t('art', 'Select...'),
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
 
+                        ]); ?>
 
+                        <?= $form->field($model, 'subject_type_id')->widget(\kartik\select2\Select2::class, [
+                            'data' => \common\models\subject\SubjectType::getTypeList(),
+                            'options' => [
+                                'disabled' => $readonly,
+                                'placeholder' => Yii::t('art', 'Select...'),
+                                'multiple' => false,
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ])->label(Yii::t('art/guide', 'Subject Type'));
+                        ?>
+                        <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
+                            'data' => \artsoft\helpers\ArtHelper::getCourseList(),
+                            'options' => [
+                                'disabled' => $readonly,
+                                'placeholder' => Yii::t('art', 'Select...'),
+                                'multiple' => false,
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ])->label(Yii::t('art/guide', 'Course'));
+                        ?>
+
+                    </div>
                 </div>
             </div>
             <?php if (!$model->isNewRecord): ?>
-                <?= $this->render('../schedule/_scheduler_form', ['model' => $model]) ?>
+            <?= $this->render('../schedule/_scheduler_form', ['model' => $model, 'readonly' => $readonly]) ?>
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Распределение по классам
@@ -188,7 +196,7 @@ JS
                                 'min' => 1, // 0 or 1 (default 1)
                                 'insertButton' => '.add-item', // css class
                                 'deleteButton' => '.remove-item', // css class
-                                'model' => $modelsDependence[0],
+                                'model' => $modelsSubjectSectStudyplan[0],
                                 'formId' => 'subject-sect-form',
                                 'formFields' => [
                                     'studyplan_subject_list',
@@ -200,10 +208,10 @@ JS
                                 </div>
                                 <div class="panel-body">
                                     <div class="container-items"><!-- widgetBody -->
-                                        <?php foreach ($modelsDependence as $index => $modelDependence): ?>
+                                        <?php foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan): ?>
                                             <div class="item panel panel-default"><!-- widgetItem -->
                                                 <div class="panel-heading">
-                                                    <span class="panel-title-activities">Группа <?= $class_index ?>: <?= ($index + 1) ?></span>
+                                                    <span class="panel-title-activities"><?= $class_index ?>: <?= ($index + 1) ?></span>
                                                     <?php if (!$readonly): ?>
                                                         <div class="pull-right">
                                                             <button type="button"
@@ -217,21 +225,21 @@ JS
                                                 <div class="panel-body">
                                                     <?php
                                                     // necessary for update action.
-                                                    if (!$modelDependence->isNewRecord) {
-                                                        echo Html::activeHiddenInput($modelDependence, "[{$index}]id");
+                                                    if (!$modelSubjectSectStudyplan->isNewRecord) {
+                                                        echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]id");
                                                     }
                                                     ?>
                                                     <div class="col-sm-12">
-                                                        <?= $form->field($modelDependence, "[{$index}]class_name")->textInput(['maxlength' => true]) ?>
+                                                        <?= $form->field($modelSubjectSectStudyplan, "[{$index}]class_name")->textInput(['maxlength' => true]) ?>
                                                     </div>
 
                                                     <?php
-                                                    $field = $form->field($modelDependence, "[{$index}]studyplan_subject_list");
+                                                    $field = $form->field($modelSubjectSectStudyplan, "[{$index}]studyplan_subject_list");
                                                     echo $field->begin();
                                                     ?>
                                                     <div class="col-sm-12">
                                                         <?= SortableInput::widget([
-                                                            'model' => $modelDependence,
+                                                            'model' => $modelSubjectSectStudyplan,
                                                             'attribute' => "[{$index}]studyplan_subject_list",
                                                             'hideInput' => true,
                                                             'sortableOptions' => [
@@ -241,7 +249,7 @@ JS
                                                             ],
                                                             'options' => ['class' => 'form-control', 'readonly' => true],
                                                             'delimiter' => ',',
-                                                            'items' => $modelDependence->getStudyplan($readonly),
+                                                            'items' => $modelSubjectSectStudyplan->getStudyplan($readonly),
                                                         ]); ?>
                                                         <p class="help-block help-block-error"></p>
                                                     </div>
@@ -255,7 +263,8 @@ JS
                                 <?php if (!$readonly): ?>
                                     <div class="panel-footer">
                                         <div class="form-group btn-group">
-                                            <button type="button" class="add-item btn btn-success btn-sm pull-right">
+                                            <button type="button"
+                                                    class="add-item btn btn-success btn-sm pull-right">
                                                 <i class="glyphicon glyphicon-plus"></i> Добавить
                                             </button>
                                         </div>

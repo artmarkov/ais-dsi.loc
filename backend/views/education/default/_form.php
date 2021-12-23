@@ -12,8 +12,8 @@ use artsoft\helpers\Html;
 /* @var $model common\models\education\EducationProgramm */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $readonly */
-/* @var $modelsSubject */
-/* @var $modelsTime */
+/* @var $modelsEducationProgrammLevel */
+/* @var $modelsEducationProgrammLevelSubject */
 
 $this->registerJs(<<<JS
 function initSelect2Loading(a,b){ initS2Loading(a,b); }
@@ -102,7 +102,7 @@ $this->registerJs($js);
                     'min' => 1, // 0 or 1 (default 1)
                     'insertButton' => '.add-item', // css class
                     'deleteButton' => '.remove-item', // css class
-                    'model' => $modelsSubject[0],
+                    'model' => $modelsEducationProgrammLevel[0],
                     'formId' => 'education-programm-form',
                     'formFields' => [
                         'level_id',
@@ -116,7 +116,7 @@ $this->registerJs($js);
                     </div>
                     <div class="panel-body">
                         <div class="container-items"><!-- widgetBody -->
-                            <?php foreach ($modelsSubject as $index => $modelSubject): ?>
+                            <?php foreach ($modelsEducationProgrammLevel as $index => $modelEducationProgrammLevel): ?>
                                 <div class="item panel panel-info"><!-- widgetItem -->
                                     <div class="panel-heading">
                                         <span class="panel-title-activities">Этап: <?= ($index + 1) ?></span>
@@ -132,12 +132,12 @@ $this->registerJs($js);
                                     <div class="panel-body">
                                         <?php
                                         // necessary for update action.
-                                        if (!$modelSubject->isNewRecord) {
-                                            echo Html::activeHiddenInput($modelSubject, "[{$index}]id");
+                                        if (!$modelEducationProgrammLevel->isNewRecord) {
+                                            echo Html::activeHiddenInput($modelEducationProgrammLevel, "[{$index}]id");
                                         }
                                         ?>
                                         <?php if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
-                                            <?= $form->field($modelSubject, "[{$index}]level_id")->widget(\kartik\select2\Select2::class, [
+                                            <?= $form->field($modelEducationProgrammLevel, "[{$index}]level_id")->widget(\kartik\select2\Select2::class, [
                                                 'data' => RefBook::find('education_level')->getList(),
                                                 'options' => [
                                                     'disabled' => $readonly,
@@ -150,7 +150,7 @@ $this->registerJs($js);
                                             ]);
                                             ?>
                                         <?php endif; ?>
-                                        <?= $form->field($modelSubject, "[{$index}]course")->widget(\kartik\select2\Select2::class, [
+                                        <?= $form->field($modelEducationProgrammLevel, "[{$index}]course")->widget(\kartik\select2\Select2::class, [
                                             'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                                             'options' => [
                                                 'disabled' => $readonly,
@@ -167,18 +167,18 @@ $this->registerJs($js);
                                                 'form' => $form,
                                                 'index' => $index,
                                                 'model' => $model,
-                                                'modelsTime' => $modelsTime[$index],
+                                                'modelsEducationProgrammLevelSubject' => $modelsEducationProgrammLevelSubject[$index],
                                                 'readonly' => $readonly,
                                             ]) ?>
                                         </div>
                                         <div class="col-sm-12">
-                                            <?= $form->field($modelSubject, "[{$index}]year_time_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
+                                            <?= $form->field($modelEducationProgrammLevel, "[{$index}]year_time_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
 
                                             <?php if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
-                                                <?= $form->field($modelSubject, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
-                                                <?= $form->field($modelSubject, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
+                                                <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
+                                                <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
                                             <?php else: ?>
-                                                <?= $form->field($modelSubject, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false])->label('Сумма в рублях за учебный год из средств бюджета') ?>
+                                                <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false])->label('Сумма в рублях за учебный год из средств бюджета') ?>
                                             <?php endif; ?>
                                         </div>
                                     </div>

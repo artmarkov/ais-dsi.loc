@@ -13,13 +13,13 @@ use yii\web\JsExpression;
  */
 class WeeklyScheduler extends Widget
 {
-
+    public $readonly = false;
     public $options = [];
     public $clientOptions = [];
     public $data = [];
     public $startTime = '07:00';
     public $endTime = '21:00';
-    public $widthTime = 60 * 10;
+    public $widthTime = 60 * 15;
     public $timeLineY = 50;
     public $verticalScrollbar = 20;
     public $timeLineBorder = 1;
@@ -51,6 +51,11 @@ class WeeklyScheduler extends Widget
 
         if (!isset($this->options['id'])) {
             $this->options['id'] = $this->getId();
+        }
+        if ($this->readonly === true) {
+            $this->draggable = false;
+            $this->resizable = false;
+            $this->events = [];
         }
         $this->getData();
     }

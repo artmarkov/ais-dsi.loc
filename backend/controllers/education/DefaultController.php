@@ -24,26 +24,26 @@ class DefaultController extends MainController
 
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
-        $modelsSubject = [new EducationProgrammLevel];
-        $modelsTime = [[new EducationProgrammLevelSubject]];
+        $modelsEducationProgrammLevel = [new EducationProgrammLevel];
+        $modelsEducationProgrammLevelSubject = [[new EducationProgrammLevelSubject]];
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $modelsSubject = Model::createMultiple(EducationProgrammLevel::class);
-            Model::loadMultiple($modelsSubject, Yii::$app->request->post());
+            $modelsEducationProgrammLevel = Model::createMultiple(EducationProgrammLevel::class);
+            Model::loadMultiple($modelsEducationProgrammLevel, Yii::$app->request->post());
 
             // validate person and houses models
             $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsSubject) && $valid;
+            $valid = Model::validateMultiple($modelsEducationProgrammLevel) && $valid;
 
             if (isset($_POST['EducationProgrammLevelSubject'][0][0])) {
                 foreach ($_POST['EducationProgrammLevelSubject'] as $index => $times) {
                     foreach ($times as $indexTime => $time) {
                         $data['EducationProgrammLevelSubject'] = $time;
-                        $modelTime = new EducationProgrammLevelSubject;
-                        $modelTime->load($data);
-                        $modelsTime[$index][$indexTime] = $modelTime;
-                        $valid = $modelTime->validate();
+                        $modelEducationProgrammLevelSubject = new EducationProgrammLevelSubject;
+                        $modelEducationProgrammLevelSubject->load($data);
+                        $modelsEducationProgrammLevelSubject[$index][$indexTime] = $modelEducationProgrammLevelSubject;
+                        $valid = $modelEducationProgrammLevelSubject->validate();
                     }
                 }
             }
@@ -51,21 +51,21 @@ class DefaultController extends MainController
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) {
-                        foreach ($modelsSubject as $index => $modelSubject) {
+                        foreach ($modelsEducationProgrammLevel as $index => $modelEducationProgrammLevel) {
 
                             if ($flag === false) {
                                 break;
                             }
-                            $modelSubject->programm_id = $model->id;
+                            $modelEducationProgrammLevel->programm_id = $model->id;
 
-                            if (!($flag = $modelSubject->save(false))) {
+                            if (!($flag = $modelEducationProgrammLevel->save(false))) {
                                 break;
                             }
 
-                            if (isset($modelsTime[$index]) && is_array($modelsTime[$index])) {
-                                foreach ($modelsTime[$index] as $indexTime => $modelTime) {
-                                    $modelTime->programm_subject_id = $modelSubject->id;
-                                    if (!($flag = $modelTime->save(false))) {
+                            if (isset($modelsEducationProgrammLevelSubject[$index]) && is_array($modelsEducationProgrammLevelSubject[$index])) {
+                                foreach ($modelsEducationProgrammLevelSubject[$index] as $indexTime => $modelEducationProgrammLevelSubject) {
+                                    $modelEducationProgrammLevelSubject->programm_subject_id = $modelEducationProgrammLevel->id;
+                                    if (!($flag = $modelEducationProgrammLevelSubject->save(false))) {
                                         break;
                                     }
                                 }
@@ -87,8 +87,8 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax($this->createView, [
                 'model' => $model,
-                'modelsSubject' => (empty($modelsSubject)) ? [new EducationProgrammLevel] : $modelsSubject,
-                'modelsTime' => (empty($modelsTime)) ? [[new EducationProgrammLevelSubject]] : $modelsTime,
+                'modelsEducationProgrammLevel' => (empty($modelsEducationProgrammLevel)) ? [new EducationProgrammLevel] : $modelsEducationProgrammLevel,
+                'modelsEducationProgrammLevelSubject' => (empty($modelsEducationProgrammLevelSubject)) ? [[new EducationProgrammLevelSubject]] : $modelsEducationProgrammLevelSubject,
                 'readonly' => false
             ]
         );
@@ -104,14 +104,14 @@ class DefaultController extends MainController
             throw new NotFoundHttpException("The EducationProgramm was not found.");
         }
 
-        $modelsSubject = $model->programmLevel;
-        $modelsTime = [];
+        $modelsEducationProgrammLevel = $model->programmLevel;
+        $modelsEducationProgrammLevelSubject = [];
         $oldTimes = [];
 
-        if (!empty($modelsSubject)) {
-            foreach ($modelsSubject as $index => $modelSubject) {
-                $times = $modelSubject->educationProgrammLevelSubject;
-                $modelsTime[$index] = $times;
+        if (!empty($modelsEducationProgrammLevel)) {
+            foreach ($modelsEducationProgrammLevel as $index => $modelEducationProgrammLevel) {
+                $times = $modelEducationProgrammLevel->educationProgrammLevelSubject;
+                $modelsEducationProgrammLevelSubject[$index] = $times;
                 $oldTimes = ArrayHelper::merge(ArrayHelper::index($times, 'id'), $oldTimes);
             }
         }
@@ -119,15 +119,15 @@ class DefaultController extends MainController
         if ($model->load(Yii::$app->request->post())) {
 
             // reset
-            $modelsTime = [];
+            $modelsEducationProgrammLevelSubject = [];
 
-            $oldSubjectIDs = ArrayHelper::map($modelsSubject, 'id', 'id');
-            $modelsSubject = Model::createMultiple(EducationProgrammLevel::class, $modelsSubject);
-            Model::loadMultiple($modelsSubject, Yii::$app->request->post());
-            $deletedSubjectIDs = array_diff($oldSubjectIDs, array_filter(ArrayHelper::map($modelsSubject, 'id', 'id')));
+            $oldSubjectIDs = ArrayHelper::map($modelsEducationProgrammLevel, 'id', 'id');
+            $modelsEducationProgrammLevel = Model::createMultiple(EducationProgrammLevel::class, $modelsEducationProgrammLevel);
+            Model::loadMultiple($modelsEducationProgrammLevel, Yii::$app->request->post());
+            $deletedSubjectIDs = array_diff($oldSubjectIDs, array_filter(ArrayHelper::map($modelsEducationProgrammLevel, 'id', 'id')));
 
             $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsSubject) && $valid;
+            $valid = Model::validateMultiple($modelsEducationProgrammLevel) && $valid;
 
             $timesIDs = [];
             if (isset($_POST['EducationProgrammLevelSubject'][0][0])) {
@@ -135,10 +135,10 @@ class DefaultController extends MainController
                     $timesIDs = ArrayHelper::merge($timesIDs, array_filter(ArrayHelper::getColumn($times, 'id')));
                     foreach ($times as $indexTime => $time) {
                         $data['EducationProgrammLevelSubject'] = $time;
-                        $modelTime = (isset($time['id']) && isset($oldTimes[$time['id']])) ? $oldTimes[$time['id']] : new EducationProgrammLevelSubject;
-                        $modelTime->load($data);
-                        $modelsTime[$index][$indexTime] = $modelTime;
-                        $valid = $modelTime->validate();
+                        $modelEducationProgrammLevelSubject = (isset($time['id']) && isset($oldTimes[$time['id']])) ? $oldTimes[$time['id']] : new EducationProgrammLevelSubject;
+                        $modelEducationProgrammLevelSubject->load($data);
+                        $modelsEducationProgrammLevelSubject[$index][$indexTime] = $modelEducationProgrammLevelSubject;
+                        $valid = $modelEducationProgrammLevelSubject->validate();
                     }
                 }
             }
@@ -159,23 +159,23 @@ class DefaultController extends MainController
                             EducationProgrammLevel::deleteAll(['id' => $deletedSubjectIDs]);
                         }
 
-                        foreach ($modelsSubject as $index => $modelSubject) {
+                        foreach ($modelsEducationProgrammLevel as $index => $modelEducationProgrammLevel) {
 
                             if ($flag === false) {
                                 break;
                             }
-                            $modelSubject->programm_id = $model->id;
-                            if (!($flag = $modelSubject->save(false))) {
+                            $modelEducationProgrammLevel->programm_id = $model->id;
+                            if (!($flag = $modelEducationProgrammLevel->save(false))) {
                                 break;
                             }
 
-                            $modelSubject = EducationProgrammLevel::findOne(['id' => $modelSubject->id]);
+                            $modelEducationProgrammLevel = EducationProgrammLevel::findOne(['id' => $modelEducationProgrammLevel->id]);
 
-                            if (isset($modelsTime[$index]) && is_array($modelsTime[$index])) {
-                                foreach ($modelsTime[$index] as $indexTime => $modelTime) {
-                                    $modelTime->programm_level_id = $modelSubject->id;
+                            if (isset($modelsEducationProgrammLevelSubject[$index]) && is_array($modelsEducationProgrammLevelSubject[$index])) {
+                                foreach ($modelsEducationProgrammLevelSubject[$index] as $indexTime => $modelEducationProgrammLevelSubject) {
+                                    $modelEducationProgrammLevelSubject->programm_level_id = $modelEducationProgrammLevel->id;
 
-                                    if (!($flag = $modelTime->save(false))) {
+                                    if (!($flag = $modelEducationProgrammLevelSubject->save(false))) {
                                         break;
                                     }
                                 }
@@ -197,8 +197,8 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax($this->updateView, [
             'model' => $model,
-            'modelsSubject' => (empty($modelsSubject)) ? [new EducationProgrammLevel] : $modelsSubject,
-            'modelsTime' => (empty($modelsTime)) ? [[new EducationProgrammLevelSubject]] : $modelsTime,
+            'modelsEducationProgrammLevel' => (empty($modelsEducationProgrammLevel)) ? [new EducationProgrammLevel] : $modelsEducationProgrammLevel,
+            'modelsEducationProgrammLevelSubject' => (empty($modelsEducationProgrammLevelSubject)) ? [[new EducationProgrammLevelSubject]] : $modelsEducationProgrammLevelSubject,
             'readonly' => $readonly
         ]);
     }

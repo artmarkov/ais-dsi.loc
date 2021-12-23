@@ -5,14 +5,14 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model common\models\studyplan\Studyplan */
 /* @var $readonly */
-/* @var $modelsDependence */
+/* @var $modelsStudyplanSubject */
 
 ?>
 
 <div class="studyplan-create">
     <?= $this->render('_form', [
         'model' => $model,
-        'modelsDependence' => $modelsDependence,
+        'modelsStudyplanSubject' => $modelsStudyplanSubject,
         'readonly' => $readonly
     ]) ?>
 </div>

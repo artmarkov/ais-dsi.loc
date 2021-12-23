@@ -24,24 +24,24 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = new $this->modelClass;
-        $modelsDependence = [new SubjectSectStudyplan()];
+        $modelsSubjectSectStudyplan = [new SubjectSectStudyplan()];
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $modelsDependence = Model::createMultiple(SubjectSectStudyplan::class);
-            Model::loadMultiple($modelsDependence, Yii::$app->request->post());
+            $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class);
+            Model::loadMultiple($modelsSubjectSectStudyplan, Yii::$app->request->post());
 
             // validate all models
             $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsDependence) && $valid;
+            $valid = Model::validateMultiple($modelsSubjectSectStudyplan) && $valid;
             //$valid = true;
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) {
-                        foreach ($modelsDependence as $modelDependence) {
-                            $modelDependence->subject_sect_id = $model->id;
-                            if (!($flag = $modelDependence->save(false))) {
+                        foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
+                            $modelSubjectSectStudyplan->subject_sect_id = $model->id;
+                            if (!($flag = $modelSubjectSectStudyplan->save(false))) {
                                 $transaction->rollBack();
                                 break;
                             }
@@ -59,7 +59,7 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax('create', [
             'model' => $model,
-            'modelsDependence' => (empty($modelsDependence)) ? [new SubjectSectStudyplan()] : $modelsDependence,
+            'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan()] : $modelsSubjectSectStudyplan,
             'readonly' => false
         ]);
     }
@@ -81,17 +81,17 @@ class DefaultController extends MainController
             throw new NotFoundHttpException("The user was not found.");
         }
 
-        $modelsDependence = $model->subjectSectStudyplans;
+        $modelsSubjectSectStudyplan = $model->subjectSectStudyplans;
         if ($model->load(Yii::$app->request->post())) {
 
-            $oldIDs = ArrayHelper::map($modelsDependence, 'id', 'id');
-            $modelsDependence = Model::createMultiple(SubjectSectStudyplan::class, $modelsDependence);
-            Model::loadMultiple($modelsDependence, Yii::$app->request->post());
-            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsDependence, 'id', 'id')));
+            $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
+            $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
+            Model::loadMultiple($modelsSubjectSectStudyplan, Yii::$app->request->post());
+            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
 
             // validate all models
             $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsDependence) && $valid;
+            $valid = Model::validateMultiple($modelsSubjectSectStudyplan) && $valid;
 
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
@@ -100,9 +100,9 @@ class DefaultController extends MainController
                         if (!empty($deletedIDs)) {
                             SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
                         }
-                        foreach ($modelsDependence as $modelDependence) {
-                            $modelDependence->subject_sect_id = $model->id;
-                            if (!($flag = $modelDependence->save(false))) {
+                        foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
+                            $modelSubjectSectStudyplan->subject_sect_id = $model->id;
+                            if (!($flag = $modelSubjectSectStudyplan->save(false))) {
                                 $transaction->rollBack();
                                 break;
                             }
@@ -120,7 +120,7 @@ class DefaultController extends MainController
 
         return $this->render('update', [
             'model' => $model,
-            'modelsDependence' => (empty($modelsDependence)) ? [new SubjectSectStudyplan] : $modelsDependence,
+            'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan] : $modelsSubjectSectStudyplan,
             'readonly' => $readonly
         ]);
     }
