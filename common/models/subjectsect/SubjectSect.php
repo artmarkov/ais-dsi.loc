@@ -67,8 +67,8 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id'], 'required'],
-            [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['plan_year', 'union_id', 'subject_cat_id', 'subject_id'], 'required'],
+            [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id'], 'integer'],
             [['union_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationUnion::class, 'targetAttribute' => ['union_id' => 'id']],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
@@ -83,7 +83,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('art/guide', 'ID'),
+            'id' => Yii::t('art', 'ID'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'union_id' => Yii::t('art/guide', 'Education Union'),
             'course' => Yii::t('art/studyplan', 'Course'),
@@ -91,11 +91,11 @@ class SubjectSect extends \artsoft\db\ActiveRecord
             'subject_id' => Yii::t('art/guide', 'Subject Name'),
             'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
             'subject_vid_id' => Yii::t('art/guide', 'Subject Vid'),
-            'created_at' => Yii::t('art/guide', 'Created'),
-            'created_by' => Yii::t('art/guide', 'Created By'),
-            'updated_at' => Yii::t('art/guide', 'Updated'),
-            'updated_by' => Yii::t('art/guide', 'Updated By'),
-            'version' => Yii::t('art/guide', 'Version'),
+            'created_at' => Yii::t('art', 'Created'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'updated_by' => Yii::t('art', 'Updated By'),
+            'version' => Yii::t('art', 'Version'),
         ];
     }
 

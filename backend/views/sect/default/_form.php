@@ -94,7 +94,7 @@ JS
                             'disabled' => $readonly,
                         ],
                         'pluginOptions' => [
-                            'depends' => ['union_id', 'subject_cat_id', 'subject_vid_id'],
+                            'depends' => ['union_id', 'subject_cat_id'],
                             'placeholder' => Yii::t('art', 'Select...'),
                             'url' => \yii\helpers\Url::to(['/sect/default/subject'])
                         ]
@@ -103,7 +103,6 @@ JS
                     <?= $form->field($model, 'subject_vid_id')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('subject_vid_name')->getList(),
                         'options' => [
-                            'id' => 'subject_vid_id',
                             'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
@@ -113,12 +112,22 @@ JS
 
                     ]); ?>
 
-                    <?= $form->field($model, 'subject_type_id')->dropDownList(\common\models\subject\SubjectType::getTypeList()) ?>
-
+                    <?= $form->field($model, 'subject_type_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => \common\models\subject\SubjectType::getTypeList(),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/guide', 'Select Subject Type...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Subject Type'));
+                    ?>
                     <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
                         'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                         'options' => [
-                            'disabled' => $model->course ? true : $readonly,
+                            'disabled' => $readonly,
                             'placeholder' => Yii::t('art/guide', 'Select Course...'),
                             'multiple' => false,
                         ],

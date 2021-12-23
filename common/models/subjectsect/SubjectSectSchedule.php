@@ -133,21 +133,21 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('art/guide', 'ID'),
-            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect ID'),
-            'direction_id' => Yii::t('art/guide', 'Direction ID'),
-            'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
+            'id' => Yii::t('art', 'ID'),
+            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect'),
+            'direction_id' => Yii::t('art/guide', 'Direction'),
+            'teachers_id' => Yii::t('art/guide', 'Teachers'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
             'week_day' => Yii::t('art/guide', 'Week Day'),
             'time_in' => Yii::t('art/guide', 'Time In'),
             'time_out' => Yii::t('art/guide', 'Time Out'),
-            'auditory_id' => Yii::t('art/guide', 'Auditory ID'),
+            'auditory_id' => Yii::t('art/guide', 'Auditory'),
             'description' => Yii::t('art', 'Description'),
-            'created_at' => Yii::t('art/guide', 'Created At'),
-            'created_by' => Yii::t('art/guide', 'Created By'),
-            'updated_at' => Yii::t('art/guide', 'Updated At'),
-            'updated_by' => Yii::t('art/guide', 'Updated By'),
-            'version' => Yii::t('art/guide', 'Version'),
+            'created_at' => Yii::t('art', 'Created At'),
+            'created_by' => Yii::t('art', 'Created'),
+            'updated_at' => Yii::t('art', 'Updated At'),
+            'updated_by' => Yii::t('art', 'Updated'),
+            'version' => Yii::t('art', 'Version'),
         ];
     }
 

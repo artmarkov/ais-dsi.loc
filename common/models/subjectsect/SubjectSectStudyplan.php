@@ -66,15 +66,15 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('art/guide', 'ID'),
-            'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
+            'id' => Yii::t('art', 'ID'),
+            'subject_sect_id' => Yii::t('art/guide', 'Subject Sect'),
             'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
             'class_name' => Yii::t('art/guide', 'Class Name'),
-            'created_at' => Yii::t('art/guide', 'Created'),
-            'created_by' => Yii::t('art/guide', 'Created By'),
-            'updated_at' => Yii::t('art/guide', 'Updated'),
-            'updated_by' => Yii::t('art/guide', 'Updated By'),
-            'version' => Yii::t('art/guide', 'Version'),
+            'created_at' => Yii::t('art', 'Created'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'updated_by' => Yii::t('art', 'Updated By'),
+            'version' => Yii::t('art', 'Version'),
         ];
     }
 
