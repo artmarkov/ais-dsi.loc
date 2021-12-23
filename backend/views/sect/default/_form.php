@@ -232,7 +232,15 @@ JS
                                                     <div class="col-sm-12">
                                                         <?= $form->field($modelSubjectSectStudyplan, "[{$index}]class_name")->textInput(['maxlength' => true]) ?>
                                                     </div>
-
+                                                    <div class="col-sm-12">
+                                                        <?= $this->render('_form-teachers-load', [
+                                                            'form' => $form,
+                                                            'index' => $index,
+                                                            'model' => $model,
+                                                            'modelsTeachersLoad' => $modelsTeachersLoad[$index],
+                                                            'readonly' => $readonly,
+                                                        ]) ?>
+                                                    </div>
                                                     <?php
                                                     $field = $form->field($modelSubjectSectStudyplan, "[{$index}]studyplan_subject_list");
                                                     echo $field->begin();

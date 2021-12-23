@@ -5,6 +5,7 @@ namespace backend\controllers\sect;
 use backend\models\Model;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
@@ -25,6 +26,7 @@ class DefaultController extends MainController
 
         $model = new $this->modelClass;
         $modelsSubjectSectStudyplan = [new SubjectSectStudyplan()];
+        $modelsTeachersLoad = [[new TeachersLoad()]];
 
         if ($model->load(Yii::$app->request->post())) {
 
@@ -35,21 +37,49 @@ class DefaultController extends MainController
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsSubjectSectStudyplan) && $valid;
             //$valid = true;
+            if (isset($_POST['TeachersLoad'][0][0])) {
+                foreach ($_POST['TeachersLoad'] as $index => $times) {
+                    foreach ($times as $indexTime => $time) {
+                        $data['TeachersLoad'] = $time;
+                        $modelTeachersLoad = new TeachersLoad;
+                        $modelTeachersLoad->load($data);
+                        $modelsTeachersLoad[$index][$indexTime] = $modelTeachersLoad;
+                        $valid = $modelTeachersLoad->validate();
+                    }
+                }
+            }
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) {
-                        foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
-                            $modelSubjectSectStudyplan->subject_sect_id = $model->id;
-                            if (!($flag = $modelSubjectSectStudyplan->save(false))) {
-                                $transaction->rollBack();
+
+                        foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan) {
+
+                            if ($flag === false) {
                                 break;
                             }
+                            $modelSubjectSectStudyplan->subject_sect_id = $model->id;
+
+                            if (!($flag = $modelSubjectSectStudyplan->save(false))) {
+                                break;
+                            }
+
+                            if (isset($modelsTeachersLoad[$index]) && is_array($modelsTeachersLoad[$index])) {
+                                foreach ($modelsTeachersLoad[$index] as $indexTime => $modelTeachersLoad) {
+                                    $modelTeachersLoad->subject_sect_studyplan_id = $modelSubjectSectStudyplan->id;
+                                    if (!($flag = $modelTeachersLoad->save(false))) {
+                                        break;
+                                    }
+                                }
+                            }
                         }
+
                     }
                     if ($flag) {
                         $transaction->commit();
                         $this->getSubmitAction($model);
+                    } else {
+                        $transaction->rollBack();
                     }
                 } catch (Exception $e) {
                     $transaction->rollBack();
@@ -60,6 +90,7 @@ class DefaultController extends MainController
         return $this->renderIsAjax('create', [
             'model' => $model,
             'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan()] : $modelsSubjectSectStudyplan,
+            'modelsTeachersLoad' => (empty($modelsTeachersLoad)) ? [[new TeachersLoad]] : $modelsTeachersLoad,
             'readonly' => false
         ]);
     }
@@ -78,39 +109,87 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
 
         if (!isset($model)) {
-            throw new NotFoundHttpException("The user was not found.");
+            throw new NotFoundHttpException("The SubjectSect was not found.");
         }
 
         $modelsSubjectSectStudyplan = $model->subjectSectStudyplans;
+
+        $modelsTeachersLoad = [];
+        $oldLoads = [];
+
+        if (!empty($modelsSubjectSectStudyplan)) {
+            foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan) {
+                $loads = $modelSubjectSectStudyplan->teachersLoad;
+                $modelsTeachersLoad[$index] = $loads;
+                $oldLoads = ArrayHelper::merge(ArrayHelper::index($loads, 'id'), $oldLoads);
+            }
+        }
         if ($model->load(Yii::$app->request->post())) {
 
-            $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
+            // reset
+            $modelsTeachersLoad = [];
+
+            $oldSubjectIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
             $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
             Model::loadMultiple($modelsSubjectSectStudyplan, Yii::$app->request->post());
-            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
+            $deletedSubjectIDs = array_diff($oldSubjectIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
+
+            $valid = $model->validate();
+            $valid = Model::validateMultiple($modelsSubjectSectStudyplan) && $valid;
 
             // validate all models
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsSubjectSectStudyplan) && $valid;
 
+            $timesIDs = [];
+            if (isset($_POST['modelsTeachersLoad'][0][0])) {
+                foreach ($_POST['modelsTeachersLoad'] as $index => $times) {
+                    $timesIDs = ArrayHelper::merge($timesIDs, array_filter(ArrayHelper::getColumn($times, 'id')));
+                    foreach ($times as $indexTime => $time) {
+                        $data['modelsTeachersLoad'] = $time;
+                        $modelsTeachersLoad = (isset($time['id']) && isset($oldTimes[$time['id']])) ? $oldLoads[$time['id']] : new TeachersLoad;
+                        $modelsTeachersLoad->load($data);
+                        $modelsTeachersLoad[$index][$indexTime] = $modelsTeachersLoad;
+                        $valid = $modelsTeachersLoad->validate();
+                    }
+                }
+            }
+
+            $oldTimesIDs = ArrayHelper::getColumn($oldLoads, 'id');
+            $deletedTimesIDs = array_diff($oldTimesIDs, $timesIDs);
+
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) {
-                        if (!empty($deletedIDs)) {
-                            SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
-                        }
-                        foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
-                            $modelSubjectSectStudyplan->subject_sect_id = $model->id;
-                            if (!($flag = $modelSubjectSectStudyplan->save(false))) {
-                                $transaction->rollBack();
+
+                        foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan) {
+
+                            if ($flag === false) {
                                 break;
                             }
+                            $modelSubjectSectStudyplan->subject_sect_id = $model->id;
+
+                            if (!($flag = $modelSubjectSectStudyplan->save(false))) {
+                                break;
+                            }
+
+                            if (isset($modelsTeachersLoad[$index]) && is_array($modelsTeachersLoad[$index])) {
+                                foreach ($modelsTeachersLoad[$index] as $indexTime => $modelTeachersLoad) {
+                                    $modelTeachersLoad->subject_sect_studyplan_id = $modelSubjectSectStudyplan->id;
+                                    if (!($flag = $modelTeachersLoad->save(false))) {
+                                        break;
+                                    }
+                                }
+                            }
                         }
+
                     }
                     if ($flag) {
                         $transaction->commit();
                         $this->getSubmitAction($model);
+                    } else {
+                        $transaction->rollBack();
                     }
                 } catch (Exception $e) {
                     $transaction->rollBack();
@@ -121,6 +200,7 @@ class DefaultController extends MainController
         return $this->render('update', [
             'model' => $model,
             'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan] : $modelsSubjectSectStudyplan,
+            'modelsTeachersLoad' => (empty($modelsTeachersLoad)) ? [[new TeachersLoad]] : $modelsTeachersLoad,
             'readonly' => $readonly
         ]);
     }

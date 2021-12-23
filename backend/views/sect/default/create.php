@@ -4,7 +4,8 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\subjectsect\SubjectSect */
-/* @var $modelsSubjectSectStudyplan common\models\students\StudentDependence */
+/* @var $modelsSubjectSectStudyplan */
+/* @var $modelsTeachersLoad */
 /* @var $readonly */
 
 $this->title = Yii::t('art', 'Create');
@@ -16,6 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_form', [
         'model' => $model,
         'modelsSubjectSectStudyplan' => $modelsSubjectSectStudyplan,
+        'modelsTeachersLoad' => $modelsTeachersLoad,
         'readonly' => $readonly
     ]) ?>
 </div>
