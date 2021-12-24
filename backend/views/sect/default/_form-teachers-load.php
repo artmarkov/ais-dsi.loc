@@ -31,12 +31,12 @@ JS
         'week_time'
     ],
 ]); ?>
-<table class="table table-bordered table-striped">
+<table class="table table-responsive">
     <thead>
     <tr>
         <th class="text-center" style="min-width: 100px">Деятельность</th>
-        <th class="text-center" style="min-width: 100px">Преподаватель</th>
-        <th class="text-center">Часов</br>в неделю</th>
+        <th class="text-center" style="min-width: 300px">Преподаватель</th>
+        <th class="text-center">Нагрузка</th>
         <th class="text-center">
             <?php if (!$readonly): ?>
                 <button type="button" class="add-time btn btn-success btn-xs"><span class="fa fa-plus"></span></button>

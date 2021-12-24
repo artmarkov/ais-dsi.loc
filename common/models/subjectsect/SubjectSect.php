@@ -5,6 +5,7 @@ namespace common\models\subjectsect;
 use artsoft\helpers\RefBook;
 use common\models\activities\SubjectSectSchedule;
 use \common\models\education\EducationUnion;
+use common\models\studyplan\Studyplan;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
@@ -194,22 +195,38 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      */
     public function getStudyplanForUnion($readonly)
     {
+//        $subQuery = EducationUnion::find()
+//            ->select('programm_list')
+//            ->where(['=', 'id', $this->union_id])
+//            ->scalar();
+//      $query =  Studyplan::find()
+//            ->innerJoin('studyplan_subject', 'studyplan.id = studyplan_subject.studyplan_id')
+//            ->select('studyplan_subject.id')
+//            ->where(new \yii\db\Expression( "studyplan.programm_id = any (string_to_array(($subQuery), ',')::int[])"))
+//            ->all();
+
+        $this->subject_type_id = $this->subject_type_id ?? 0;
+        $this->subject_vid_id = $this->subject_vid_id ?? 0;
+        $this->course = $this->course ?? 0;
+
         $funcSql = <<< SQL
     select studyplan_subject.id as id
 	from studyplan
 	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
 	where studyplan.programm_id = any (string_to_array((
         select programm_list from education_union where id = {$this->union_id}), ',')::int[])
-        and subject_id = {$this->subject_id}
-		and subject_type_id = {$this->subject_type_id}
-		and subject_vid_id = {$this->subject_vid_id}
-		and subject_cat_id = {$this->subject_cat_id}
-		and course = {$this->course}
-		and plan_year = {$this->plan_year}
 		and studyplan_subject.id != all(string_to_array('{$this->getStudyplanList()}', ',')::int[])
+		and plan_year = {$this->plan_year}
+        and subject_cat_id = {$this->subject_cat_id}
+        and subject_id = {$this->subject_id}
+        and case when {$this->subject_type_id} != 0 then subject_type_id = {$this->subject_type_id} else subject_type_id is not null end
+        and case when {$this->subject_vid_id} != 0 then subject_vid_id = {$this->subject_vid_id} else subject_vid_id is not null end
+        and case when {$this->course} != 0 then course = {$this->course} else course is not null end
+		
 SQL;
         $data = [];
-        foreach (Yii::$app->db->createCommand($funcSql)->queryAll() as $item => $value) {
+        $query = Yii::$app->db->createCommand($funcSql)->queryAll();
+        foreach ($query as $item => $value) {
             $data[$value['id']] = [
                 'content' => SubjectSectStudyplan::getSubjectContent($value['id']),
                 'disabled'=> $readonly
@@ -306,20 +323,20 @@ SQL;
         $data = [];
         foreach ($this->subjectSectStudyplans as $index => $modelSubjectSectStudyplan) {
 //                echo '<pre>' . print_r($modelSubjectSectStudyplan, true) . '</pre>';
-            foreach ($modelSubjectSectStudyplan->subjectSectSchedule as $item => $modelSectSchedule) {
+            foreach ($modelSubjectSectStudyplan->subjectSectSchedule as $item => $modelsectSchedule) {
                 $data[] = [
-                    'week_day' => $modelSectSchedule->week_day,
-                    'time_in' => $modelSectSchedule->time_in,
-                    'time_out' => $modelSectSchedule->time_out,
+                    'week_day' => $modelsectSchedule->week_day,
+                    'time_in' => $modelsectSchedule->time_in,
+                    'time_out' => $modelsectSchedule->time_out,
                     'title' => 'Группа ' . $modelSubjectSectStudyplan->class_name,
                     'data' => [
-                        'schedule_id' => $modelSectSchedule->id,
-                        'teachers_load_id' => $modelSectSchedule->teachersLoadId,
-                        'direction_id' => $modelSectSchedule->direction_id,
-                        'teachers_id' => $modelSectSchedule->teachers_id,
-                        'description' => $modelSectSchedule->description,
-                        'week_num' => $modelSectSchedule->week_num,
-                        'auditory_id' => $modelSectSchedule->auditory_id,
+                        'schedule_id' => $modelsectSchedule->id,
+                        'teachers_load_id' => $modelsectSchedule->teachersLoadId,
+                        'direction_id' => $modelsectSchedule->direction_id,
+                        'teachers_id' => $modelsectSchedule->teachers_id,
+                        'description' => $modelsectSchedule->description,
+                        'week_num' => $modelsectSchedule->week_num,
+                        'auditory_id' => $modelsectSchedule->auditory_id,
                         'style' => [
                             'background' => '#0000ff',
                             'color' => '#00ff00',
