@@ -92,11 +92,11 @@ class Teachers extends ActiveRecord
         ];
     }
 
-     /**
+    /**
      * Сравнение общего стажа со стажем по специальности
      * @return  mixed
      */
-     public function compareSpec()
+    public function compareSpec()
     {
         if (!$this->hasErrors()) {
 
@@ -180,10 +180,12 @@ class Teachers extends ActiveRecord
     {
         return $this->hasOne(UserCommon::class, ['id' => 'user_common_id']);
     }
+
     public function getUserStatus()
     {
         return $this->user ? $this->user->status : null;
     }
+
     /**
      * Геттер полного имени юзера
      */
@@ -200,14 +202,23 @@ class Teachers extends ActiveRecord
     public function beforeDelete()
     {
         $model = UserCommon::findOne($this->user_common_id);
-        if(!$model->delete()){
+        if (!$model->delete()) {
             return false;
         }
         return parent::beforeDelete();
     }
 
-    public static function getTeachersById($direction_id) {
-        $data = self::find()->innerJoin('user_common', 'user_common.id = teachers.user_common_id')
+    /**
+     * @param $direction_id
+     * @return array|Teachers[]|\yii\db\ActiveRecord[]
+     */
+    public static function getTeachersById($direction_id)
+    {
+        if (!$direction_id) {
+            return [];
+        }
+
+        return self::find()->innerJoin('user_common', 'user_common.id = teachers.user_common_id')
             ->innerJoin('teachers_activity', 'teachers_activity.teachers_id = teachers.id')
             ->andWhere(['in', 'user_common.status', UserCommon::STATUS_ACTIVE])// заблокированных не добавляем в список
             ->andWhere(['in', 'user_common.user_category', UserCommon::USER_CATEGORY_TEACHERS])// только преподаватели
@@ -215,19 +226,16 @@ class Teachers extends ActiveRecord
             ->select(['teachers.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
             ->orderBy('user_common.last_name')
             ->asArray()->all();
-
-        return $data;
     }
 
+    /**
+     * Список преподавателей/концертмейстеров
+     *
+     * @param $direction_id - деятельность (преподавательская/концертмейстерская)
+     * @return array
+     */
     public static function getTeachersList($direction_id)
     {
-        return \yii\helpers\ArrayHelper::map(self::find()->innerJoin('user_common', 'user_common.id = teachers.user_common_id')
-            ->innerJoin('teachers_activity', 'teachers_activity.teachers_id = teachers.id')
-            ->andWhere(['in', 'user_common.status', UserCommon::STATUS_ACTIVE])// заблокированных не добавляем в список
-            ->andWhere(['in', 'user_common.user_category', UserCommon::USER_CATEGORY_TEACHERS])// только преподаватели
-            ->andWhere(['=', 'teachers_activity.direction_id', $direction_id])
-            ->select(['teachers.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
-            ->orderBy('user_common.last_name')
-            ->asArray()->all(), 'id', 'name');
+        return \yii\helpers\ArrayHelper::map(self::getTeachersById($direction_id), 'id', 'name');
     }
 }

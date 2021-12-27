@@ -12,45 +12,43 @@ use artsoft\helpers\RefBook;
 /* @var $studyplan_id */
 
 ?>
+    <div class="sect-schedule-form">
 
-    <div class="schedule-form">
-<?php Pjax::begin(); ?>
-<?php $form = ActiveForm::begin([
-    'id' => 'schedule-form',
-    'options' => [
-        'data-pjax' => true
-    ],
-   //'action' => false,
-//    'action' => !$model->isNewRecord ? ['sect/schedule/update-schedule', 'id' => $model->id, 'studyplan_id' => $studyplan_id] : ['sect/schedule/create-schedule', 'studyplan_id' => $studyplan_id],
-    'enableAjaxValidation' => true,
-]);
+        <?php $form = ActiveForm::begin([
+            'id' => 'sect-schedule-form',
+            'enableAjaxValidation' => true,
+//            'validateOnChange' => true,
+//            'validateOnSubmit' => true,
+            'action' =>  ['sect/schedule/update-schedule', 'id' => $model->id, 'subject_sect_id' => $subject_sect_id],
 
-?>
+        ]);
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-body">
-<!--                    --><?//= $form->field($model, "teachersLoadId")->dropDownList($modelStudyplan->getStudyplanTeachersLoad(), ['options' => [$model->getTeachersLoadId() => ['Selected' => true]]]); ?>
-                    <?= $form->field($model, "week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList()) ?>
-                    <?= $form->field($model, "week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList()) ?>
-                    <?= $form->field($model, "time_in")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time in...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
-                    <?= $form->field($model, "time_out")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time out...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
-                    <?= $form->field($model, "auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList()) ?>
-                    <?= $form->field($model, "description")->textarea(['placeholder' => Yii::t('art/guide', 'Enter description...')]) ?>
+        ?>
 
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <?= $form->field($model, "teachersLoadId")->dropDownList($modelSubjectSect->getSubjectSectTeachersLoad(), ['options' => [$model->getTeachersLoadId() => ['Selected' => true]]]); ?>
+                        <?= $form->field($model, "week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList()) ?>
+                        <?= $form->field($model, "week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList()) ?>
+                        <?= $form->field($model, "time_in")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time in...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
+                        <?= $form->field($model, "time_out")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time out...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
+                        <?= $form->field($model, "auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList()) ?>
+                        <?= $form->field($model, "description")->textarea(['placeholder' => Yii::t('art/guide', 'Enter description...')]) ?>
+
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="form-group btn-group">
+                        <?= \artsoft\helpers\ButtonHelper::modalButtons('cancel-schedule', 'delete-schedule'); ?>
+                    </div>
                 </div>
             </div>
-            <div class="panel-footer">
-                <div class="form-group btn-group">
-                    <?= \artsoft\helpers\ButtonHelper::modalButtons('cancel-schedule', 'delete-schedule'); ?>
-                </div>
-            </div>
+
+            <?php ActiveForm::end(); ?>
+
         </div>
-
-        <?php ActiveForm::end(); ?>
-        <?php Pjax::end(); ?>
-
     </div>
 <?php
 $js = <<<JS

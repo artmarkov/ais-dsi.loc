@@ -61,6 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'id',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/sect/default',
+                                'options' => ['style' => 'width:350px'],
                                 'title' => function (SubjectSect $model) {
                                     return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
@@ -95,7 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'subject_vid_id',
-                                'filter' => RefBook::find('subject_vid_name')->getList(),
+                                'filter' => \common\models\subject\SubjectVid::getVidListGroup(),
                                 'value' => function (SubjectSect $model) {
                                     return RefBook::find('subject_vid_name')->getValue($model->subject_vid_id);
                                 },
@@ -106,7 +107,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'course',
                                 'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
                                 'value' => function (SubjectSect $model) {
-                                    return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
+                                    return $model->course ? \artsoft\helpers\ArtHelper::getCourseList()[$model->course] : null;
                                 },
                                 'options' => ['style' => 'width:100px'],
                                 'format' => 'raw',

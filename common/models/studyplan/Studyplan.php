@@ -265,6 +265,8 @@ class Studyplan extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * формирование документов: Согласие на обработку пд и Договор об оказании услуг
+     *
      * @param $template
      * @throws \yii\base\InvalidConfigException
      */
@@ -355,6 +357,11 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $this->cost_year_total = $modelProgrammLevel->cost_year_total;
     }
 
+    /**
+     * Расписание занятий индивидуального плана ученика
+     *
+     * @return array
+     */
     public function getStudyplanSchedule()
     {
         $data = [];

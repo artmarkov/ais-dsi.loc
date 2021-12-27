@@ -104,12 +104,20 @@ class ScheduleController extends MainController
         $studyplan_id = Yii::$app->request->get('studyplan_id');
         $model = new $this->modelClass();
         if ($model->load(Yii::$app->request->post()) && $model->setTeachersLoadModelCopy()) {
-            if($model->save(false)) {
+            if($model->save()) {
                 Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
                 return $this->redirect(['studyplan/default/studyplan-schedule', 'id' => $studyplan_id]);
+            }else {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return ActiveForm::validate($model);
             }
 
         }
+        return $this->renderAjax('@backend/views/studyplan/default/schedule-modal.php', [
+            'model' => $model,
+            'modelStudyplan' => Studyplan::findOne($studyplan_id),
+            'studyplan_id' => $studyplan_id
+        ]);
     }
 
     public function actionChangeSchedule()

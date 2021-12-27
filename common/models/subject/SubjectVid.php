@@ -62,8 +62,23 @@ class SubjectVid extends \artsoft\db\ActiveRecord
     public static function getVidList()
     {
         return ArrayHelper::map(self::find()
-            ->andWhere(['status' => self::STATUS_ACTIVE])
             ->select('id, name')
+            ->andWhere(['status' => self::STATUS_ACTIVE])
+            ->orderBy('id')
+            ->asArray()->all(), 'id', 'name');
+    }
+
+    /**
+     * только групповые
+     * @return array
+     */
+    public static function getVidListGroup()
+    {
+        return ArrayHelper::map(self::find()
+            ->select('id, name')
+            ->andWhere(['status' => self::STATUS_ACTIVE])
+            ->andWhere(['>','qty_min', '1'])
+            ->andWhere(['>','qty_max', '1'])
             ->orderBy('id')
             ->asArray()->all(), 'id', 'name');
     }

@@ -56,7 +56,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
             [['studyplan_subject_list'], 'string'],
             [['class_name'], 'string', 'max' => 64],
             [['class_name'], 'trim'],
-            ['class_name', 'unique', 'targetAttribute' => ['class_name', 'subject_sect_id']],
+            ['class_name', 'unique', 'targetAttribute' => ['class_name', 'subject_sect_id'], 'message' => 'Назавание группы не должно повторяться.'],
             [['subject_sect_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSect::class, 'targetAttribute' => ['subject_sect_id' => 'id']],
         ];
     }
@@ -103,6 +103,17 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @return array
+     */
+    public function getSubjectSectTeachersLoads()
+    {
+        $data = [];
+        foreach ($this->teachersLoads as $item => $modelTeachersLoad) {
+            $data[$modelTeachersLoad->id] = RefBook::find('teachers_load_display')->getValue($modelTeachersLoad->id);
+        }
+        return $data;
+    }
+    /**
      * @return \yii\db\ActiveQuery
      */
     public function getSubjectSectSchedule()
@@ -112,14 +123,13 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     /**
      * @return array
      */
-    public function getStudyplan($readonly)
+    public function getSubjectSectStudyplans($readonly)
     {
         $data = [];
         if (!empty($this->studyplan_subject_list)) {
             foreach (explode(',', $this->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                $model = StudyplanSubject::findOne(['id' => $studyplan_subject_id]);
                 $data[$studyplan_subject_id] = [
-                    'content' => $this->getSubjectContent($studyplan_subject_id),
+                    'content' => $this->getSubjectSectStudyplanContent($studyplan_subject_id),
                     'disabled' => $readonly
                 ];
             }
@@ -131,11 +141,12 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
      * @param $studyplan_subject_id
      * @return string
      */
-    public static function getSubjectContent($studyplan_subject_id)
+    public static function getSubjectSectStudyplanContent($studyplan_subject_id)
     {
         $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-        return '<div class=""><div class="">' . RefBook::find('students_fio')->getValue($student_id) . '</div>'
-            . '<div class="">' . RefBook::find('subject_memo_1')->getValue($studyplan_subject_id) . '</div></div>';
+        return '<div style="overflow: hidden;">
+                <div class="pull-left">' . RefBook::find('students_fio')->getValue($student_id) . '</div>' .
+               '<div class="fa-pull-right">' . RefBook::find('subject_memo_1')->getValue($studyplan_subject_id) . '</div></div>';
     }
 
     /**

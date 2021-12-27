@@ -68,7 +68,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['plan_year', 'union_id', 'subject_cat_id', 'subject_id'], 'required'],
+            [['plan_year', 'union_id', 'subject_cat_id', 'subject_id', 'subject_vid_id'], 'required'],
             [['plan_year', 'union_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id'], 'integer'],
             [['union_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationUnion::class, 'targetAttribute' => ['union_id' => 'id']],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
@@ -176,6 +176,20 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Список нагрузок преподавателей
+     * @return array
+     */
+    public function getSubjectSectTeachersLoad()
+    {
+        $data = [];
+        foreach ($this->subjectSectStudyplans as $index => $modelSubjectSectStudyplan){
+            $sectClassName = $modelSubjectSectStudyplan->class_name;
+            $data[$sectClassName] = $modelSubjectSectStudyplan->getSubjectSectTeachersLoads();
+
+        }
+        return $data;
+    }
+    /**
      * Полный список учеников подгрупп данной группы
      * @return string
      */
@@ -205,9 +219,8 @@ class SubjectSect extends \artsoft\db\ActiveRecord
 //            ->where(new \yii\db\Expression( "studyplan.programm_id = any (string_to_array(($subQuery), ',')::int[])"))
 //            ->all();
 
-        $this->subject_type_id = $this->subject_type_id ?? 0;
-        $this->subject_vid_id = $this->subject_vid_id ?? 0;
-        $this->course = $this->course ?? 0;
+        $this->subject_type_id = $this->subject_type_id == null ? 0 : $this->subject_type_id;
+        $this->course = $this->course == null ? 0 : $this->course;
 
         $funcSql = <<< SQL
     select studyplan_subject.id as id
@@ -219,8 +232,8 @@ class SubjectSect extends \artsoft\db\ActiveRecord
 		and plan_year = {$this->plan_year}
         and subject_cat_id = {$this->subject_cat_id}
         and subject_id = {$this->subject_id}
+        and subject_vid_id = {$this->subject_vid_id}
         and case when {$this->subject_type_id} != 0 then subject_type_id = {$this->subject_type_id} else subject_type_id is not null end
-        and case when {$this->subject_vid_id} != 0 then subject_vid_id = {$this->subject_vid_id} else subject_vid_id is not null end
         and case when {$this->course} != 0 then course = {$this->course} else course is not null end
 		
 SQL;
@@ -228,7 +241,7 @@ SQL;
         $query = Yii::$app->db->createCommand($funcSql)->queryAll();
         foreach ($query as $item => $value) {
             $data[$value['id']] = [
-                'content' => SubjectSectStudyplan::getSubjectContent($value['id']),
+                'content' => SubjectSectStudyplan::getSubjectSectStudyplanContent($value['id']),
                 'disabled'=> $readonly
             ];
         }
@@ -330,6 +343,7 @@ SQL;
                     'time_out' => $modelsectSchedule->time_out,
                     'title' => 'Группа ' . $modelSubjectSectStudyplan->class_name,
                     'data' => [
+                        'subject_sect_id' => $this->id,
                         'schedule_id' => $modelsectSchedule->id,
                         'teachers_load_id' => $modelsectSchedule->teachersLoadId,
                         'direction_id' => $modelsectSchedule->direction_id,

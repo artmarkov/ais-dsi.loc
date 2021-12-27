@@ -275,16 +275,16 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     {
         $funcSql = <<< SQL
     select subject_sect_studyplan.id as id,
-           CONCAT(course, '/' ,education_union.class_index, '_',subject_sect_studyplan.class_name) as name
+           CONCAT(education_union.class_index, '_',subject_sect_studyplan.class_name) as name
 	from subject_sect_studyplan
 	inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
 	inner join education_union on education_union.id = subject_sect.union_id
 	where subject_id = {$this->subject_id}
-		and subject_type_id = {$this->subject_type_id}
-		and subject_vid_id = {$this->subject_vid_id}
 		and subject_cat_id = {$this->subject_cat_id}
-		and course = {$this->getCourse()}
 		and plan_year = {$this->getPlanYear()}
+		and subject_vid_id = {$this->subject_vid_id}
+		and (subject_type_id = {$this->subject_type_id} or subject_type_id is NULL)
+		and (course = {$this->getCourse()} or course is NULL)
 		order by name
 SQL;
         return ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'id', 'name');

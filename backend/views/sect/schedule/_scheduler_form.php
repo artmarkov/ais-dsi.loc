@@ -29,17 +29,14 @@ EOF;
 $JSEventClick = <<<EOF
     function(node, data) {
         eventData = {   
-                studyplan_id: data.data.studyplan_id,
-                id: data.data.schedule_id,               
+                id: data.data.schedule_id, 
+                subject_sect_id: data.data.subject_sect_id                 
             };
-    // change the border color just for fun
-   // node.addClass('sc_bar_photo');
-   // node.addStyle('red');
         
         console.log('кликаем по событию');
-        console.log(data);
+//        console.log(data);
       $.ajax({
-            url: '/admin/sect/schedule/init-schedule',
+            url: '/admin/sect/schedule/update-schedule',
             type: 'POST',
             data: {eventData: eventData},
             success: function (res) {
@@ -56,33 +53,26 @@ $JSEventClick = <<<EOF
 EOF;
 $JSScheduleClick = <<<EOF
         function(node, time, timeline){
-                var studyplanId = ''; 
+                var subjectSectId = '$model->id'; 
                 var start = time;
                 var end = $(this).timeSchedule('formatTime', $(this).timeSchedule('calcStringTime', time) + 2700);
                 $(this).timeSchedule('addSchedule', timeline, {
                     start: start,
                     end: end,
-                    text:'Новая запись',
-                    data:{
-                        class: 'sc_bar_insert'
-                    }
+                    text:'Новая запись'
                 });
-//                node.css({
-//          background: #ccc;
-//         
-//        });
                 var eventData = {
                 id: 0,
                 week_day: timeline,         
                 time_in: start,          
                 time_out: end,          
-                studyplan_id: studyplanId         
+                subject_sect_id: subjectSectId         
             };
                console.log('кликаем по календ');
-                console.log(node);
-                console.log(eventData);
+//                console.log(node);
+//                console.log(eventData);
                 $.ajax({
-            url: '/admin/sect/schedule/init-schedule',
+            url: '/admin/sect/schedule/update-schedule',
             type: 'POST',
             data: {eventData: eventData},
             success: function (res) {

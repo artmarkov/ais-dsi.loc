@@ -34,8 +34,8 @@ JS
 <table class="table table-responsive">
     <thead>
     <tr>
-        <th class="text-center" style="min-width: 100px">Деятельность</th>
-        <th class="text-center" style="min-width: 300px">Преподаватель</th>
+        <th class="text-center">Деятельность</th>
+        <th class="text-center">Преподаватель</th>
         <th class="text-center">Нагрузка</th>
         <th class="text-center">
             <?php if (!$readonly): ?>
@@ -117,8 +117,7 @@ JS
             </td>
             <td class="vcenter">
                 <?php if (!$readonly): ?>
-                    <button type="button" class="remove-time btn btn-danger btn-xs"><span
-                                class="fa fa-minus"></span></button>
+                    <button type="button" class="remove-time btn btn-danger btn-xs"><span class="fa fa-minus"></span></button>
                 <?php endif; ?>
             </td>
         </tr>

@@ -101,6 +101,18 @@ JS
                         ]
                     ]); ?>
 
+                    <?= $form->field($model, 'subject_vid_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => \common\models\subject\SubjectVid::getVidListGroup(),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+
+                    ]); ?>
+
                     <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                         [
                             'disabled' => $model->plan_year ? true : $readonly,
@@ -108,7 +120,7 @@ JS
                             ]
                         ]);
                     ?>
-                    
+
                 </div>
             </div>
             <div class="panel">
@@ -117,19 +129,7 @@ JS
                 </div>
                 <div class="panel-body">
                     <div class="row">
-                        <?= $form->field($model, 'subject_vid_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => RefBook::find('subject_vid_name')->getList(),
-                            'options' => [
-                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art', 'Select...'),
-                            ],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-
-                        ]); ?>
-
-                        <?= $form->field($model, 'subject_type_id')->widget(\kartik\select2\Select2::class, [
+                       <?= $form->field($model, 'subject_type_id')->widget(\kartik\select2\Select2::class, [
                             'data' => \common\models\subject\SubjectType::getTypeList(),
                             'options' => [
                                 'disabled' => $readonly,
@@ -258,7 +258,7 @@ JS
                                                             ],
                                                             'options' => ['class' => 'form-control', 'readonly' => true],
                                                             'delimiter' => ',',
-                                                            'items' => $modelSubjectSectStudyplan->getStudyplan($readonly),
+                                                            'items' => $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly),
                                                         ]); ?>
                                                         <p class="help-block help-block-error"></p>
                                                     </div>

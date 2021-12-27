@@ -14,13 +14,8 @@ use artsoft\helpers\RefBook;
 ?>
 
     <div class="schedule-form">
-<?php Pjax::begin(); ?>
 <?php $form = ActiveForm::begin([
     'id' => 'schedule-form',
-    'options' => [
-        'data-pjax' => true
-    ],
-   //'action' => false,
     'action' => !$model->isNewRecord ? ['sect/schedule/update-schedule', 'id' => $model->id, 'studyplan_id' => $studyplan_id] : ['sect/schedule/create-schedule', 'studyplan_id' => $studyplan_id],
     'enableAjaxValidation' => true,
 ]);
@@ -48,7 +43,6 @@ use artsoft\helpers\RefBook;
         </div>
 
         <?php ActiveForm::end(); ?>
-        <?php Pjax::end(); ?>
 
     </div>
 <?php
