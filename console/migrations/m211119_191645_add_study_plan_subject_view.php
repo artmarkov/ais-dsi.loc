@@ -86,12 +86,28 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             ['auditory_memo_1', 'auditory_view', 'id', 'auditory_memo_1', 'auditory_name', 'status', null, 'Аудитории для обучения'],
         ])->execute();
 
+     $this->db->createCommand()->createView('subject_sect_view', '
+         select subject_sect_studyplan.id as id, 
+		       concat(education_union.class_index, \' \', subject_sect_studyplan.class_name, \' (\',subject.name, \'-\',guide_subject_category.slug, \') \') as sect_name_1
+         from subject_sect_studyplan
+         inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
+         inner join guide_subject_category on guide_subject_category.id = subject_sect.subject_cat_id
+         inner join subject on subject.id = subject_sect.subject_id
+         inner join education_union on education_union.id = subject_sect.union_id
+        ')->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['sect_name_1', 'subject_sect_view', 'id', 'sect_name_1', 'sect_name_1', null, null, 'Название группы'],
+        ])->execute();
+
     }
 
     public function down()
     {
-        $this->db->createCommand()->dropView('auditory_view')->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'sect_name_1'])->execute();
+        $this->db->createCommand()->dropView('subject_sect_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'auditory_memo_1'])->execute();
+        $this->db->createCommand()->dropView('auditory_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'studyplan_subject-student'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_memo_2'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_memo_1'])->execute();

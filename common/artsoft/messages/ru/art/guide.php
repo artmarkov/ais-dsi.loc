@@ -28,7 +28,8 @@ return [
     'Latitude' => 'Широта',
     'Longitude' => 'Долгота',
     'Description Venue' => 'Описание места проведения',
-    'Auditory' => 'Помещения',
+    'Auditoryes' => 'Помещения',
+    'Auditory' => 'Помещение',
     'Auditory Cat' => 'Категория',
     'Building' => 'Здание',
     'Country' => 'Страна',
@@ -101,7 +102,7 @@ return [
     'Week Time' => 'Часов в неделю',
     'Enter week time...' => 'Введите часы в неделю...',
     'Select week num...' => 'Выберите номер недели...',
-    'Select week day...' => 'Выьерите день недели...',
+    'Select week day...' => 'Выберите день недели...',
     'Enter time in...' => 'Введите время начала...',
     'Enter time out...' => 'Введите время окончания...',
     'Select auditory...' => 'Выберите аудиторию...',
@@ -129,6 +130,10 @@ return [
     'Rules Read' => 'Роли для просмотра',
     'Rules Edit' => 'Роли для записи',
     'Select Rules...' => 'Выберите роли...',
+    'Week Num' => 'Номер недели',
+    'Week Day' => 'День недели',
+    'Time In' => 'Время начала',
+    'Time Out' => 'Время окончания',
 
 ];
 ?>
