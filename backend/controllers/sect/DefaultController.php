@@ -103,7 +103,7 @@ class DefaultController extends MainController
      */
     public function actionUpdate($id, $readonly = false)
     {
-        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['tabMenu'] = $this->getMenu($id);
 
         $model = $this->findModel($id);
 
@@ -221,6 +221,16 @@ class DefaultController extends MainController
         return $this->actionUpdate($id, true);
     }
 
+    public function actionSchedule($id)
+    {
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        $model = $this->modelClass::findOne($id);
+        $readonly = false;
+        return $this->render('schedule', ['model' => $model,
+            'readonly' => $readonly,
+            ]);
+    }
     /**
      * @return false|string
      */
@@ -287,4 +297,5 @@ class DefaultController extends MainController
 
         return null;
     }
+
 }

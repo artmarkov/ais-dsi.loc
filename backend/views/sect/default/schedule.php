@@ -2,6 +2,12 @@
 
 use yii\web\JsExpression;
 use common\widgets\weeklyscheduler\WeeklyScheduler;
+use yii\widgets\Pjax;
+
+$this->title = Yii::t('art/guide', 'Subject Sect Schedule');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
+$this->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = $this->title;
 
 $JSChange = <<<EOF
         function(node, data) {
@@ -11,6 +17,7 @@ $JSChange = <<<EOF
                time_in: data.start,
                time_out: data.end,  
             };
+            console.log('измен. событию');
         console.log(data);
              $.ajax({
             url: '/admin/sect/schedule/change-schedule',
@@ -43,6 +50,7 @@ $JSEventClick = <<<EOF
 //                console.log(res);
                 $('#schedule-modal .modal-body').html(res);
                 $('#schedule-modal').modal();
+                
             },
             error: function () {
                 alert('Error!!!');
@@ -88,34 +96,45 @@ $JSScheduleClick = <<<EOF
         
 EOF;
 ?>
+<?php
+Pjax::begin([
+    'id' => 'subject-sect-schedule-pjax',
+])
+?>
     <div class="subject-sect-schedule">
-        <div class="panel panel-info">
+        <div class="panel">
             <div class="panel-heading">
-                Расписание занятий
+                <?= $this->title; ?>
             </div>
             <div class="panel-body">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <?= WeeklyScheduler::widget([
-                            'readonly' => $readonly,
-                            'data' => $model->getSubjectSectSchedule(),
-                            'events' => [
-                                'onChange' => new JsExpression($JSChange),
-                                'onClick' => new JsExpression($JSEventClick),
-                                'onScheduleClick' => new JsExpression($JSScheduleClick),
-                            ]
-                        ]);
-                        ?>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="row">
+
+                            <div class="col-sm-12">
+                                <?= WeeklyScheduler::widget([
+                                    'readonly' => $readonly,
+                                    'data' => $model->getSubjectSectSchedule(),
+                                    'events' => [
+                                        'onChange' => new JsExpression($JSChange),
+                                        'onClick' => new JsExpression($JSEventClick),
+                                        'onScheduleClick' => new JsExpression($JSScheduleClick),
+                                    ]
+                                ]);
+                                ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+<?php Pjax::end() ?>
 
 <?php \yii\bootstrap\Modal::begin([
     'header' => '<h3 class="lte-hide-title page-title">Расписание</h3>',
     'size' => 'modal-md',
     'id' => 'schedule-modal',
-]);
+]);?>
+<?php \yii\bootstrap\Modal::end(); ?>
 
-\yii\bootstrap\Modal::end(); ?>

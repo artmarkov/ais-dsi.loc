@@ -12,19 +12,20 @@ use artsoft\helpers\RefBook;
 /* @var $studyplan_id */
 
 ?>
-    <div class="sect-schedule-form">
-
-        <?php $form = ActiveForm::begin([
-            'id' => 'sect-schedule-form',
-            'enableAjaxValidation' => true,
+<?php $form = ActiveForm::begin([
+    'id' => 'sect-schedule-form',
+//    'options' => [
+//        'data-pjax' => true
+//    ],
+    'enableAjaxValidation' => true,
 //            'validateOnChange' => true,
 //            'validateOnSubmit' => true,
-            'action' =>  ['sect/schedule/update-schedule', 'id' => $model->id, 'subject_sect_id' => $subject_sect_id],
+    'action' => ['sect/schedule/update-schedule', 'id' => $model->id, 'subject_sect_id' => $subject_sect_id],
 
-        ]);
+]);
 
-        ?>
-
+?>
+    <div class="sect-schedule-form">
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
@@ -45,17 +46,16 @@ use artsoft\helpers\RefBook;
                     </div>
                 </div>
             </div>
-
-            <?php ActiveForm::end(); ?>
-
         </div>
     </div>
+<?php ActiveForm::end(); ?>
+
 <?php
 $js = <<<JS
 $('.cancel-schedule').on('click', function (e) {
          e.preventDefault();
          closeModal();
-          $.pjax.reload({container: '#studyplan-grid-pjax', async: true});
+          $.pjax.reload({container: '#subject-sect-schedule-pjax', async: true});
 });
 $('.delete-schedule').on('click', function (e) {
         // e.preventDefault();
@@ -68,7 +68,7 @@ $('.delete-schedule').on('click', function (e) {
         success: function (res) {
             
                 closeModal();
-                $.pjax.reload({container: '#studyplan-grid-pjax', async: true});
+                $.pjax.reload({container: '#subject-sect-schedule-pjax', async: true});
                // console.log(id);
             },
             error: function () {

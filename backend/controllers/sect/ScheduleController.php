@@ -36,13 +36,13 @@ class ScheduleController extends MainController
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post()) && $model->setTeachersLoadModelCopy()) {
             if ($model->save()) {
                 Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been updated.'));
-                return $this->redirect(['sect/default/update', 'id' => $subject_sect_id]);
+                return $this->redirect(['sect/default/schedule', 'id' => $subject_sect_id]);
             } else {
                 Yii::$app->response->format = Response::FORMAT_JSON;
                 return ActiveForm::validate($model);
             }
         }
-        return $this->renderAjax('@backend/views/sect/schedule/schedule-modal.php', [
+        return $this->renderAjax('schedule-modal', [
             'model' => $model,
             'modelSubjectSect' => SubjectSect::findOne($subject_sect_id),
             'subject_sect_id' => $subject_sect_id,

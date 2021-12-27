@@ -1,6 +1,5 @@
 <?php
 
-use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
 use kartik\sortinput\SortableInput;
@@ -158,7 +157,6 @@ JS
                 </div>
             </div>
             <?php if (!$model->isNewRecord): ?>
-            <?= $this->render('../schedule/_scheduler_form', ['model' => $model, 'readonly' => $readonly]) ?>
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Распределение по классам
