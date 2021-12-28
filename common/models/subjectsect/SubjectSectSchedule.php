@@ -5,6 +5,7 @@ namespace common\models\subjectsect;
 use artsoft\behaviors\TimeFieldBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
+use common\models\auditory\Auditory;
 use common\models\guidejob\Direction;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\Teachers;
@@ -134,7 +135,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art', 'ID'),
-            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect'),
+            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
             'studyplan_subject_id' => Yii::t('art/guide', 'Studyplan Subject'),
             'direction_id' => Yii::t('art/teachers', 'Direction'),
             'teachers_id' => Yii::t('art/teachers', 'Teacher'),
@@ -190,6 +191,14 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     public function getTeachers()
     {
         return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAuditory()
+    {
+        return $this->hasOne(Auditory::class, ['id' => 'teachers_id']);
     }
 
     /**

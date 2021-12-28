@@ -2,13 +2,20 @@
 
 namespace backend\controllers\sect;
 
+use artsoft\helpers\ArtHelper;
+use artsoft\models\OwnerAccess;
+use artsoft\models\User;
 use backend\models\Model;
+use common\models\studyplan\search\StudyplanSearch;
+use common\models\subjectsect\search\SubjectSectScheduleSearch;
+use common\models\subjectsect\SubjectSectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
+use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
 
 class DefaultController extends MainController
@@ -230,6 +237,78 @@ class DefaultController extends MainController
         return $this->render('schedule', ['model' => $model,
             'readonly' => $readonly,
             ]);
+    }
+
+    /**
+     * @param $id
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
+     */
+    public function actionScheduleItems($id, $objectId = null, $mode = null)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/update', 'id' => $model->id]];
+
+        if ('create' == $mode) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/schedule-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление расписания';
+            $model = new SubjectSectSchedule();
+            $model->subject_sect_studyplan_id = Yii::$app->request->get('id') ?: null;
+
+            if ($model->load(Yii::$app->request->post())) {
+
+            }
+
+            return $this->renderIsAjax('@backend/views/schedule/default/_form.php', [
+                'model' => $model,
+            ]);
+
+
+        } elseif ('history' == $mode && $objectId) {
+            $model = SubjectSectSchedule::findOne($objectId);
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/schedule-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/update', 'id' => $model->id]];
+            $data = new SubjectSectScheduleHistory($objectId);
+            return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $model = SubjectSectSchedule::findOne($objectId);
+            $model->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+
+        } elseif ($objectId) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/schedule-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $model = SubjectSectSchedule::findOne($objectId);
+
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The StudyplanSubject was not found.");
+            }
+
+            if ($model->load(Yii::$app->request->post())) {
+
+            }
+
+            return $this->renderIsAjax('@backend/views/schedule/default/_form.php', [
+                'model' => $model,
+            ]);
+
+        } else {
+            // $modelClass = 'common\models\subjectsect\SubjectSectSchedule';
+            $searchModel = new SubjectSectScheduleSearch();
+
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['subject_sect_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel'));
+        }
     }
     /**
      * @return false|string

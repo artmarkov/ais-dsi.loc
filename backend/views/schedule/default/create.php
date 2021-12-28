@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model common\models\subjectsect\SubjectSectSchedule */
 
 $this->title = Yii::t('art', 'Create');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sect Schedules'), 'url' => ['schedule/default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sect'), 'url' => ['schedule/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

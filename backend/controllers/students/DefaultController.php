@@ -255,7 +255,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('/studyplan/default/_form', [
                 'model' => $model,
-                'modelsDependence' => [new StudyplanSubject],
+                'modelsStudyplanSubject' => [new StudyplanSubject],
                 'readonly' => $readonly
             ]);
 
@@ -335,7 +335,7 @@ class DefaultController extends MainController
             }
             return $this->render('/studyplan/default/_form', [
                 'model' => $model,
-                'modelsDependence' => (empty($modelsDependence)) ? [new StudyplanSubject] : $modelsDependence,
+                'modelsStudyplanSubject' => (empty($modelsDependence)) ? [new StudyplanSubject] : $modelsDependence,
                 'readonly' => $readonly
             ]);
 

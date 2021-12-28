@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /* @var $model common\models\subjectsect\SubjectSectSchedule */
 
 $this->title = Yii::t('art', 'Update "{item}"', ['item' => $model->id]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sect Schedules'), 'url' => ['schedule/default/index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['default/view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' =>  Yii::t('art/guide', 'Subject Sects'), 'url' => ['schedule/default/index']];
+$this->params['breadcrumbs'][] = ['label' =>sprintf('#%06d', $model->id), 'url' => ['default/view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="subject-sect-schedule-update">

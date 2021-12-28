@@ -9,17 +9,19 @@ use common\models\subjectsect\SubjectSectSchedule;
 
 /**
  * SubjectSectScheduleSearch represents the model behind the search form about `common\models\subjectsect\SubjectSectSchedule`.
+ * @property int $subject_sect_id
  */
 class SubjectSectScheduleSearch extends SubjectSectSchedule
 {
+    public $subject_sect_id;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['description'], 'safe'],
+            [['id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
+            [['description', 'subject_sect_id'], 'safe'],
         ];
     }
 
@@ -42,6 +44,7 @@ class SubjectSectScheduleSearch extends SubjectSectSchedule
     public function search($params)
     {
         $query = SubjectSectSchedule::find();
+        $query->joinWith(['subjectSectStudyplan']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -74,11 +77,7 @@ class SubjectSectScheduleSearch extends SubjectSectSchedule
             'time_in' => $this->time_in,
             'time_out' => $this->time_out,
             'auditory_id' => $this->auditory_id,
-            'created_at' => $this->created_at,
-            'created_by' => $this->created_by,
-            'updated_at' => $this->updated_at,
-            'updated_by' => $this->updated_by,
-            'version' => $this->version,
+            'subject_sect_studyplan.subject_sect_id' => $this->subject_sect_id,
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);
