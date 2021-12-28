@@ -55,26 +55,21 @@ $this->params['breadcrumbs'][] = $this->title;
                             'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
                         ],
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
-                            [
-                                'attribute' => 'id',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/schedule/default',
-                                'title' => function (SubjectSectSchedule $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
-                                },
-                                'buttonsTemplate' => '{update} {view} {delete}',
-                            ],
 
                             'subject_sect_studyplan_id',
-                            'studyplan_subject_id',
                             'direction_id',
                             'teachers_id',
+                            'week_time',
+                            'subject_sect_id',
+                            'studyplan_subject_list',
+                            'plan_year',
+                            'subject_sect_schedule_id',
                             'week_num',
                             'week_day',
                             'time_in:time',
                             'time_out:time',
                             'auditory_id',
+                            'description',
                         ],
                     ]);
                     ?>

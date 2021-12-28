@@ -100,10 +100,36 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             ['sect_name_1', 'subject_sect_view', 'id', 'sect_name_1', 'sect_name_1', null, null, 'Название группы'],
         ])->execute();
 
+        $this->db->createCommand()->createView('subject_sect_schedule_view', '
+         select teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
+                teachers_load.direction_id as direction_id,
+                teachers_load.teachers_id as teachers_id,
+                teachers_load.week_time as week_time,		
+                subject_sect_studyplan.subject_sect_id as subject_sect_id,
+                subject_sect_studyplan.studyplan_subject_list as studyplan_subject_list,
+                subject_sect.plan_year as plan_year,		
+                subject_sect_schedule.id as subject_sect_schedule_id,
+                subject_sect_schedule.week_num as week_num,
+                subject_sect_schedule.week_day as week_day,
+                subject_sect_schedule.time_in as time_in,
+                subject_sect_schedule.time_out as time_out,
+                subject_sect_schedule.auditory_id as auditory_id,
+                subject_sect_schedule.description as description
+         from subject_sect_schedule
+         right join teachers_load on (teachers_load.subject_sect_studyplan_id = subject_sect_schedule.subject_sect_studyplan_id
+                                    and teachers_load.studyplan_subject_id = subject_sect_schedule.studyplan_subject_id
+                                    and teachers_load.direction_id = subject_sect_schedule.direction_id 
+                                    and teachers_load.teachers_id = subject_sect_schedule.teachers_id								
+                                    )
+         inner join subject_sect_studyplan on subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id
+         inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
+        ')->execute();
+
     }
 
     public function down()
     {
+        $this->db->createCommand()->dropView('subject_sect_schedule_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'sect_name_1'])->execute();
         $this->db->createCommand()->dropView('subject_sect_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'auditory_memo_1'])->execute();
