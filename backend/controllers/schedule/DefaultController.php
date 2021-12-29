@@ -8,12 +8,12 @@ use artsoft\helpers\ArtHelper;
 use artsoft\models\OwnerAccess;
 use yii\data\ActiveDataProvider;
 use yii\helpers\StringHelper;
+use Yii;
 
 class DefaultController extends MainController
 {
     public $modelClass = 'common\models\views\SubjectSectScheduleView';
-    public $modelSearchClass = '';
-
+    public $modelSearchClass = 'common\models\views\search\SubjectSectScheduleViewSearch';
     public function actionIndex()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;

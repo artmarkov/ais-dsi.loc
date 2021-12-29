@@ -2,6 +2,11 @@
 
 namespace common\models\views;
 
+use common\models\auditory\Auditory;
+use common\models\guidejob\Direction;
+use common\models\studyplan\StudyplanSubject;
+use common\models\subjectsect\SubjectSectStudyplan;
+use common\models\teachers\Teachers;
 use Yii;
 
 /**
@@ -67,5 +72,41 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
             'auditory_id' => Yii::t('art/guide', 'Auditory ID'),
             'description' => Yii::t('art/guide', 'Description'),
         ];
+    }
+    public function getDirection()
+    {
+        return $this->hasOne(Direction::class, ['id' => 'direction_id']);
+    }
+    /**
+     * Gets query for [[SubjectSectStudyplan]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubjectSectStudyplan()
+    {
+        return $this->hasOne(SubjectSectStudyplan::class, ['id' => 'subject_sect_studyplan_id']);
+    }
+
+    public function getStudyplanSubject()
+    {
+        return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
+    }
+
+    /**
+     * Gets query for [[Teachers]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeachers()
+    {
+        return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAuditory()
+    {
+        return $this->hasOne(Auditory::class, ['id' => 'teachers_id']);
     }
 }
