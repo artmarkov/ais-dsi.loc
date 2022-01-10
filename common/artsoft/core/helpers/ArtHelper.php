@@ -241,13 +241,27 @@ class ArtHelper
      */
     public static function getWeekdayList($vid = 'name', $from = 1, $to = 7)
     {
-        $weekday_list = ['понедельник','вторник','среда','четверг','пятница','суббота','воскресение'];
-        $weekday_list_short = ['пн','вт','ср','чт','пт','сб','вс'];
+        $weekday_list = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресение'];
+        $weekday_list_short = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
         $list = [];
         for ($i = $from; $i <= $to; $i++) {
-            $list[$i] = ($vid == 'name') ? $weekday_list[$i-1] : $weekday_list_short[$i-1];
+            $list[$i] = ($vid == 'name') ? $weekday_list[$i - 1] : $weekday_list_short[$i - 1];
         }
         return $list;
+    }
+
+    /**
+     * @param string $vid
+     * @param $val
+     * @param int $from
+     * @param int $to
+     * @return mixed|null
+     */
+    public static function getWeekdayValue($vid = 'name', $val, $from = 1, $to = 7)
+    {
+        $weekday_list = self::getWeekdayList($vid, $from, $to);
+
+        return isset($weekday_list[$val]) ? $weekday_list[$val] : null;
     }
 
     /**
@@ -263,5 +277,19 @@ class ArtHelper
             $list[$i] = ($vid == 'name') ? $i . '-я неделя' : $i . ' нед.';
         }
         return $list;
+    }
+
+    /**
+     * @param string $vid
+     * @param $val
+     * @param int $from
+     * @param int $to
+     * @return mixed|null
+     */
+    public static function getWeekValue($vid = 'name', $val, $from = 1, $to = 4)
+    {
+        $week_list = self::getWeekList($vid, $from, $to);
+
+        return isset($week_list[$val]) ? $week_list[$val] : null;
     }
 }

@@ -18,7 +18,7 @@ class SubjectCategorySearch extends SubjectCategory
     public function rules()
     {
         return [
-            [['id', 'sort_order'], 'integer'],
+            [['id', 'sort_order', 'frequency', 'dep_flag'], 'integer'],
             [['name', 'slug', 'status'], 'safe'],
         ];
     }
@@ -66,6 +66,8 @@ class SubjectCategorySearch extends SubjectCategory
 
         $query->andFilterWhere([
             'id' => $this->id,
+            'dep_flag' => $this->dep_flag,
+            'frequency' => $this->frequency,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])

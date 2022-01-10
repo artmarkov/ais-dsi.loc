@@ -56,7 +56,7 @@ class SubjectType extends ActiveRecord
     }
 
     /**
-     * getStatusList
+     * getBasisList
      * @return array
      */
     public static function getBasisList()

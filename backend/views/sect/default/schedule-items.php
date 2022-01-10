@@ -16,27 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="subject-sect-schedule-index">
     <div class="panel">
-        <div class="panel-heading">
-            <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
-        </div>
         <div class="panel-body">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <?php
-                            /* Uncomment this to activate GridQuickLinks */
-                            /* echo GridQuickLinks::widget([
-                                'model' => SubjectSectSchedule::className(),
-                                'searchModel' => $searchModel,
-                            ])*/
-                            ?>
-                        </div>
-
-                        <div class="col-sm-6 text-right">
-                            <?= GridPageSize::widget(['pjaxId' => 'subject-sect-schedule-grid-pjax']) ?>
-                        </div>
-                    </div>
 
                     <?php
                     Pjax::begin([
@@ -125,37 +107,49 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'group' => true,  // enable grouping
                                 'subGroupOf' => 2
                             ],
-                            'week_time',
-
+                            [
+                                'attribute' => 'week_time',
+                                'value' => function ($model) {
+                                    return $model->week_time;
+                                },
+                                'group' => true,  // enable grouping
+                                'subGroupOf' => 4
+                            ],
+                            [
+                                'attribute' => 'scheduleDisplay',
+                                'value' => function ($model) {
+                                    return $model->getScheduleDisplay();
+                                },
+                            ],
 //                            'plan_year',
 //                            'subject_sect_schedule_id',
-                            [
-                                'attribute' => 'week_num',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => \artsoft\helpers\ArtHelper::getWeekList(),
-                                'value' => function ($model) {
-                                    return $model->week_num != 0 ? \artsoft\helpers\ArtHelper::getWeekList()[$model->week_num] : null;
-                                },
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                            ],
-                            [
-                                'attribute' => 'week_day',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => \artsoft\helpers\ArtHelper::getWeekdayList(),
-                                'value' => function ($model) {
-                                    return isset($model->week_day) ? \artsoft\helpers\ArtHelper::getWeekdayList()[$model->week_day] : null;
-                                },
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                            ],
-
-                            'time_in:time',
-                            'time_out:time',
+//                            [
+//                                'attribute' => 'week_num',
+//                                'filterType' => GridView::FILTER_SELECT2,
+//                                'filter' => \artsoft\helpers\ArtHelper::getWeekList(),
+//                                'value' => function ($model) {
+//                                    return $model->week_num != 0 ? \artsoft\helpers\ArtHelper::getWeekList()[$model->week_num] : null;
+//                                },
+//                                'filterWidgetOptions' => [
+//                                    'pluginOptions' => ['allowClear' => true],
+//                                ],
+//                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//                            ],
+//                            [
+//                                'attribute' => 'week_day',
+//                                'filterType' => GridView::FILTER_SELECT2,
+//                                'filter' => \artsoft\helpers\ArtHelper::getWeekdayList(),
+//                                'value' => function ($model) {
+//                                    return isset($model->week_day) ? \artsoft\helpers\ArtHelper::getWeekdayList()[$model->week_day] : null;
+//                                },
+//                                'filterWidgetOptions' => [
+//                                    'pluginOptions' => ['allowClear' => true],
+//                                ],
+//                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//                            ],
+//
+//                            'time_in:time',
+//                            'time_out:time',
                             [
                                 'attribute' => 'auditory_id',
                                 'filterType' => GridView::FILTER_SELECT2,
@@ -189,11 +183,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'template' => '{create} {update} {delete}',
                                 'buttons' => [
                                     'create' => function ($key, $model) {
-                                        return Html::a('<i class="fa fa-plus" aria-hidden="true"></i>',
+                                        return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
                                             Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']), [
                                                 'title' => Yii::t('art', 'Create'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
+                                                'disabled' => true
                                             ]
                                         );
                                     },
@@ -218,6 +213,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                         );
                                     },
                                 ],
+                                'visibleButtons' => [
+                                    'create' => function ($model) {
+                                        return $model->subject_sect_schedule_id === null;
+                                    },
+                                    'delete' => function ($model) {
+                                        return $model->subject_sect_schedule_id !== null;
+                                    },
+                                    'update' => function ($model) {
+                                        return $model->subject_sect_schedule_id !== null;
+                                    }
+                                ]
                             ],
                         ],
                         'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false
@@ -231,23 +237,31 @@ $this->params['breadcrumbs'][] = $this->title;
 //            'options'=>['class'=>'skip-export'] // remove this row from export
 //        ]
 //    ],
+                        'export' => [
+                            'fontAwesome' => true
+                        ],
+                        'exportConfig' => [
+                            'html' => [],
+                            'csv' => [],
+                            'txt' => [],
+                            'xls' => [],
+                        ],
                         'toolbar' => [
-                            ['content' =>
-                            // Html::button('&lt;i class="glyphicon glyphicon-plus">&lt;/i>', ['type'=>'button', 'title'=>Yii::t('art', 'Add Book'), 'class'=>'btn btn-success', 'onclick'=>'alert("This will launch the book creation form.\n\nDisabled for this demo!");']) . ' '.
-                                Html::a('Reset', ['/schedule'], ['data-pjax' => 0, 'class' => 'btn btn-default', 'title' => Yii::t('art', 'Reset Grid')])
+                            ['content' => Html::a('Сбросить', ['/schedule'], ['data-pjax' => 0, 'class' => 'btn btn-default', 'title' => Yii::t('art', 'Reset')])
                             ],
                             '{export}',
-                            '{toggleData}'
+                           // '{toggleData}'
                         ],
                         'pjax' => true,
                         'bordered' => true,
                         'striped' => true,
                         'condensed' => true,
-                        'responsive' => true,
+                        'responsive' => false,
                         'hover' => false,
                         'floatHeader' => false,
 //    'floatHeaderOptions' => ['top' => $scrollingTop],
                         'showPageSummary' => false,
+                        //'layout' => '{items}',
                         'panel' => [
                             'type' => GridView::TYPE_DEFAULT
                         ],

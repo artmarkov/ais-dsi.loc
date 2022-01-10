@@ -41,6 +41,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property EducationProgramm $studyplan
  * @property SubjectCategory $subjectCat
+ * @property SubjectVid $subjectVid
  * @property SubjectType $subjectType
  * @property Subject $subject
  */

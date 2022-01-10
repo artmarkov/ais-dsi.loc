@@ -16,6 +16,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             'name' => $this->string(127),
             'slug' => $this->string(64)->notNull(),
             'dep_flag' => $this->tinyInteger(2)->unsigned(),
+            'frequency' => $this->tinyInteger(2)->unsigned(),
             'status' => $this->tinyInteger(2)->unsigned()->notNull(),
             'sort_order' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
@@ -23,14 +24,14 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
         $this->addCommentOnTable('guide_subject_category', 'Раздел учебных предметов');
         $this->db->createCommand()->resetSequence('guide_subject_category', 1000)->execute();
 
-        $this->db->createCommand()->batchInsert('guide_subject_category', ['name', 'slug', 'sort_order', 'status', 'dep_flag'], [
-            ['Специальность', 'Спец.', 1000, 1, 1],
-            ['Музыкальный инструмент', 'Инстр', 1001, 1, 0],
-            ['Дисциплины отдела', 'Дис.отд.', 1002, 1, 1],
-            ['Общие дисциплины', 'Общ.', 1003, 1, 0],
-            ['Предмет по выбору', 'П/в.', 1004, 1, 0],
-            ['Коллективное музицирование', 'Кол.муз.', 1005, 1, 0],
-            ['Сводные репетиции', 'Св.реп', 1006, 1, 0],
+        $this->db->createCommand()->batchInsert('guide_subject_category', ['name', 'slug', 'sort_order', 'status', 'dep_flag', 'frequency'], [
+            ['Специальность', 'Спец.', 1000, 1, 1, 0],
+            ['Музыкальный инструмент', 'Инстр', 1001, 1, 0, 0],
+            ['Дисциплины отдела', 'Дис.отд.', 1002, 1, 1, 0],
+            ['Общие дисциплины', 'Общ.', 1003, 1, 0, 0],
+            ['Предмет по выбору', 'П/в.', 1004, 1, 0, 0],
+            ['Коллективное музицирование', 'Кол.муз.', 1005, 1, 0, 0],
+            ['Сводные репетиции', 'Св.реп', 1006, 1, 0, 1],
         ])->execute();
 
         $this->createTable('guide_subject_vid', [

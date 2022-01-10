@@ -46,9 +46,7 @@ class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => [
-                'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
-            ],
+            'pagination' => false,
             'sort' => [
                 'defaultOrder' => [
                     'subject_sect_studyplan_id' => SORT_DESC,

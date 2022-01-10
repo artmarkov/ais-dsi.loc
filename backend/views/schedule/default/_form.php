@@ -24,13 +24,13 @@ use common\models\guidejob\Direction;
 
     <div class="panel">
         <div class="panel-heading">
-            Элемент расписания занятий
+            Элемент расписания занятий:
+            <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
+            <?php echo RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id); ?>
         </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                    <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id);?>
-                    <?php echo RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id);?>
 
                     <?= Html::activeHiddenInput($model, 'subject_sect_studyplan_id') ?>
                     <?= Html::activeHiddenInput($model, 'studyplan_subject_id') ?>
@@ -39,7 +39,7 @@ use common\models\guidejob\Direction;
                         'data' => Direction::getDirectionList(),
                         'options' => [
                             'id' => 'direction_id',
-                            // 'disabled' => $readonly,
+                            'disabled' => true,
                             'placeholder' => Yii::t('art/teachers', 'Select Direction...'),
                             'multiple' => false,
                         ],
@@ -52,7 +52,7 @@ use common\models\guidejob\Direction;
                     <?= $form->field($model, "teachers_id")->widget(DepDrop::class, [
                         'data' => \common\models\teachers\Teachers::getTeachersList($model->direction_id),
                         'options' => ['prompt' => Yii::t('art/teachers', 'Select Teacher...'),
-                            //     'disabled' => $readonly,
+                            'disabled' => true,
                         ],
                         'pluginOptions' => [
                             'depends' => ['direction_id'],
@@ -62,7 +62,9 @@ use common\models\guidejob\Direction;
                     ])->label(Yii::t('art/teachers', 'Teacher'));
                     ?>
 
-                    <?= $form->field($model, "week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList()) ?>
+                    <?php if ($model->subjectSectStudyplan->subjectSect->subjectCat->isMonthly()): ?>
+                        <?= $form->field($model, "week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList()) ?>
+                    <?php endif; ?>
                     <?= $form->field($model, "week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList()) ?>
                     <?= $form->field($model, "time_in")->textInput()->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
                     <?= $form->field($model, "time_out")->textInput()->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>

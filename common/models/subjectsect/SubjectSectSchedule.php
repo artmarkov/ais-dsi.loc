@@ -137,7 +137,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art', 'ID'),
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
             'studyplan_subject_id' => Yii::t('art/guide', 'Studyplan Subject'),
-            'direction_id' => Yii::t('art/teachers', 'Direction'),
+            'direction_id' => Yii::t('art/teachers', 'Name Direction'),
             'teachers_id' => Yii::t('art/teachers', 'Teacher'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
             'week_day' => Yii::t('art/guide', 'Week Day'),
@@ -178,10 +178,6 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
         return $this->hasOne(SubjectSectStudyplan::class, ['id' => 'subject_sect_studyplan_id']);
     }
 
-    public function getStudyplanSubject()
-    {
-        return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
-    }
 
     /**
      * Gets query for [[Teachers]].

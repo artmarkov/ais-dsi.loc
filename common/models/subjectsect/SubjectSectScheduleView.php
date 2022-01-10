@@ -2,10 +2,12 @@
 
 namespace common\models\subjectsect;
 
+use artsoft\behaviors\TimeFieldBehavior;
 use common\models\auditory\Auditory;
 use common\models\guidejob\Direction;
 use common\models\studyplan\StudyplanSubject;
-use common\models\subjectsect\SubjectSectStudyplan;
+use artsoft\helpers\RefBook;
+use artsoft\helpers\ArtHelper;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersLoad;
 use Yii;
@@ -31,6 +33,8 @@ use Yii;
  */
 class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
 {
+    public $scheduleDisplay;
+
     /**
      * {@inheritdoc}
      */
@@ -40,6 +44,18 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimeFieldBehavior::class,
+                'attributes' => ['time_in', 'time_out'],
+            ]
+        ];
+    }
+    /**
      * {@inheritdoc}
      */
     public function rules()
@@ -47,6 +63,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
         return [
             [['teachers_load_id','subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'subject_sect_id', 'plan_year', 'subject_sect_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
             [['week_time'], 'number'],
+            [['scheduleDisplay'], 'safe'],
             [['studyplan_subject_list'], 'string'],
             [['description'], 'string', 'max' => 512],
         ];
@@ -58,20 +75,21 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'teachers_load_id' => Yii::t('art/guide', 'Teachers Load ID'),
-            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Subject Sect Studyplan ID'),
-            'direction_id' => Yii::t('art/guide', 'Direction ID'),
-            'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
+            'teachers_load_id' => Yii::t('art/guide', 'Teachers Load'),
+            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
+            'direction_id' => Yii::t('art/teachers', 'Name Direction'),
+            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
             'week_time' => Yii::t('art/guide', 'Week Time'),
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
-            'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan Subject List'),
+            'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
             'plan_year' => Yii::t('art/guide', 'Plan Year'),
-            'subject_sect_schedule_id' => Yii::t('art/guide', 'Subject Sect Schedule ID'),
+            'subject_sect_schedule_id' => Yii::t('art/guide', 'Subject Sect Schedule'),
+            'scheduleDisplay' => Yii::t('art/guide', 'Subject Sect Schedule'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
             'week_day' => Yii::t('art/guide', 'Week Day'),
             'time_in' => Yii::t('art/guide', 'Time In'),
             'time_out' => Yii::t('art/guide', 'Time Out'),
-            'auditory_id' => Yii::t('art/guide', 'Auditory ID'),
+            'auditory_id' => Yii::t('art/guide', 'Auditory'),
             'description' => Yii::t('art/guide', 'Description'),
         ];
     }
@@ -116,5 +134,15 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     public function getAuditory()
     {
         return $this->hasOne(Auditory::class, ['id' => 'teachers_id']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getScheduleDisplay()
+    {
+        $string = ' ' . ArtHelper::getWeekValue('short', $this->week_num);
+        $string .= ' ' . ArtHelper::getWeekdayValue('short', $this->week_day) . ' ' . $this->time_in . '-' . $this->time_out;
+        return $this->time_in ? $string : null;
     }
 }

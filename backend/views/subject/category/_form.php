@@ -29,6 +29,8 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'dep_flag')->checkbox() ?>
 
+                    <?= $form->field($model, 'frequency')->radioList($model->getFraquencyList()) ?>
+
                     <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(SubjectCategory::getStatusList()) ?>
 
                 </div>

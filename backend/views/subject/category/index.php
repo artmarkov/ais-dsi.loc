@@ -69,7 +69,24 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
                             'slug',
-                            'dep_flag',
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'dep_flag',
+                                'optionsArray' => [
+                                    [1, Yii::t('art', 'Yes'), 'success'],
+                                    [0, Yii::t('art', 'No'), 'danger'],
+                                ],
+                                'options' => ['style' => 'width:150px']
+                            ],
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'frequency',
+                                'optionsArray' => [
+                                    [SubjectCategory::WEEKLY, Yii::t('art/guide', 'Weekly'), 'primary'],
+                                    [SubjectCategory::MONTHLY, Yii::t('art/guide', 'Monthly'), 'info'],
+                                ],
+                                'options' => ['style' => 'width:150px']
+                            ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'status',

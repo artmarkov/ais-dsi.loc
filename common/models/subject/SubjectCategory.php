@@ -14,11 +14,15 @@ use yii\helpers\ArrayHelper;
  * @property string $slug
  * @property int $sort_order
  * @property int $dep_flag
+ * @property int $frequency
  *
  * @property SubjectCategory[] $subjectCategories
  */
 class SubjectCategory extends \artsoft\db\ActiveRecord
 {
+
+    const WEEKLY  = 0;
+    const MONTHLY = 1;
 
     /**
      * {@inheritdoc}
@@ -47,9 +51,9 @@ class SubjectCategory extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['slug', 'name', 'status'], 'required'],
+            [['slug', 'name', 'status', 'frequency'], 'required'],
             [['slug', 'name'], 'unique'],
-            [['sort_order', 'status', 'dep_flag'], 'integer'],
+            [['sort_order', 'status', 'dep_flag', 'frequency'], 'integer'],
             [['name'], 'string', 'max' => 127],
             [['slug'], 'string', 'max' => 64],
             
@@ -67,6 +71,7 @@ class SubjectCategory extends \artsoft\db\ActiveRecord
             'slug' => Yii::t('art/guide', 'Slug'),
             'dep_flag' => Yii::t('art/guide', 'Department Dependence'),
             'sort_order' => Yii::t('art/guide', 'Order'),
+            'frequency' => Yii::t('art/guide', 'Frequency'),
             'status' => Yii::t('art/guide', 'Status'),
         ];
     }
@@ -77,6 +82,38 @@ class SubjectCategory extends \artsoft\db\ActiveRecord
     public function getSubjectCategories()
     {
         return $this->hasMany(SubjectCategory::class, ['category_id' => 'id']);
+    }
+
+    /**
+     * getFraquencyList
+     * @return array
+     */
+    public static function getFraquencyList()
+    {
+        return array(
+            self::WEEKLY  => Yii::t('art/guide', 'Weekly'),
+            self::MONTHLY => Yii::t('art/guide', 'Monthly'),
+        );
+    }
+
+    /**
+     * проверка на периодичность занятия (ежемесячно)
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function isMonthly()
+    {
+        return $this->frequency === self::MONTHLY ? true : false;
+    }
+
+    /**
+     * проверка на периодичность занятия (еженедельно)
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function isWeekly()
+    {
+        return $this->frequency === self::WEEKLY ? true : false;
     }
 
     /**
