@@ -101,7 +101,8 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ])->execute();
 
         $this->db->createCommand()->createView('subject_sect_schedule_view', '
-         select teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
+         select teachers_load.id as teachers_load_id,
+                teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
                 teachers_load.week_time as week_time,		

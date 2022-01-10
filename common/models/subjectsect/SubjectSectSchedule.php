@@ -257,9 +257,9 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
         return $this;
     }
 
-    public function setTeachersLoadModelCopy()
+    public function setTeachersLoadModelCopy($id = null)
     {
-        $model_load = TeachersLoad::findOne($this->teachersLoadId);
+        $model_load = TeachersLoad::findOne($id ?? $this->teachersLoadId);
         $this->setAttribute('teachers_id', $model_load->teachers_id);
         $this->setAttribute('direction_id', $model_load->direction_id);
         $this->setAttribute('subject_sect_studyplan_id', $model_load->subject_sect_studyplan_id);

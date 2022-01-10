@@ -1,17 +1,19 @@
 <?php
 
-namespace common\models\views;
+namespace common\models\subjectsect;
 
 use common\models\auditory\Auditory;
 use common\models\guidejob\Direction;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\teachers\Teachers;
+use common\models\teachers\TeachersLoad;
 use Yii;
 
 /**
  * This is the model class for table "subject_sect_schedule_view".
  *
+ * @property int|null $teachers_load_id
  * @property int|null $subject_sect_studyplan_id
  * @property int|null $direction_id
  * @property int|null $teachers_id
@@ -43,8 +45,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'subject_sect_id', 'plan_year', 'subject_sect_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'default', 'value' => null],
-            [['subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'subject_sect_id', 'plan_year', 'subject_sect_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
+            [['teachers_load_id','subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'subject_sect_id', 'plan_year', 'subject_sect_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
             [['week_time'], 'number'],
             [['studyplan_subject_list'], 'string'],
             [['description'], 'string', 'max' => 512],
@@ -57,6 +58,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
+            'teachers_load_id' => Yii::t('art/guide', 'Teachers Load ID'),
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Subject Sect Studyplan ID'),
             'direction_id' => Yii::t('art/guide', 'Direction ID'),
             'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
@@ -73,9 +75,15 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
             'description' => Yii::t('art/guide', 'Description'),
         ];
     }
+
     public function getDirection()
     {
         return $this->hasOne(Direction::class, ['id' => 'direction_id']);
+    }
+
+    public function getTeachersLoad()
+    {
+        return $this->hasOne(TeachersLoad::class, ['id' => 'teachers_load_id']);
     }
     /**
      * Gets query for [[SubjectSectStudyplan]].

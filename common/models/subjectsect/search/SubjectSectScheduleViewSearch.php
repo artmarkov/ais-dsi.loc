@@ -1,18 +1,17 @@
 <?php
 
-namespace common\models\views\search;
+namespace common\models\subjectsect\search;
 
-use common\models\views\SubjectSectScheduleView;
+use common\models\subjectsect\SubjectSectScheduleView;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\subjectsect\SubjectSectSchedule;
 
 /**
  * SubjectSectScheduleSearch represents the model behind the search form about `common\models\subjectsect\SubjectSectSchedule`.
  * @property int $subject_sect_id
  */
-class SubjectSectScheduleViewSearch extends SubjectSectSchedule
+class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
 {
     /**
      * @inheritdoc
@@ -20,8 +19,8 @@ class SubjectSectScheduleViewSearch extends SubjectSectSchedule
     public function rules()
     {
         return [
-            [[ 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
-            [['description'], 'safe'],
+            [[ 'subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
+            [['description', 'studyplan_subject_list'], 'safe'],
         ];
     }
 
@@ -67,17 +66,17 @@ class SubjectSectScheduleViewSearch extends SubjectSectSchedule
 
         $query->andFilterWhere([
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
-            'studyplan_subject_id' => $this->studyplan_subject_id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
             'week_num' => $this->week_num,
             'week_day' => $this->week_day,
-            'time_in' => $this->time_in,
-            'time_out' => $this->time_out,
+//            'time_in' => $this->time_in,
+//            'time_out' => $this->time_out,
             'auditory_id' => $this->auditory_id,
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);
+        $query->andFilterWhere(['like', 'studyplan_subject_list', $this->studyplan_subject_list]);
 
         return $dataProvider;
     }

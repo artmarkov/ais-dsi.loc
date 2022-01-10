@@ -1,14 +1,17 @@
 <?php
 
-use artsoft\grid\GridPageSize;
-use artsoft\grid\GridView;
-use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
-use common\models\subjectsect\SubjectSectSchedule;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
+use artsoft\helpers\Html;
+use artsoft\grid\GridPageSize;
+use kartik\grid\GridView;
 
-$this->title = Yii::t('art/guide', 'Schedule Items');
+/* @var $this yii\web\View */
+/* @var $searchModel common\models\subjectsect\search\SubjectSectScheduleSearch */
+/* @var $dataProvider yii\data\ActiveDataProvider */
+
+$this->title = Yii::t('art/guide', 'Subject Sect Schedules');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="subject-sect-schedule-index">
@@ -43,44 +46,169 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <?=
                     GridView::widget([
-                        'id' => 'subject-sect-schedule-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-//                        'bulkActionOptions' => [
-//                            'gridId' => 'subject-sect-schedule-grid',
-//                            'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
-//                        ],
                         'columns' => [
-//                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
-                            [
-                                'attribute' => 'id',
-                                'value' => function (SubjectSectSchedule $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['update', 'id' => $model->id], ['data-pjax' => 0]);
-                                },
-                                'format' => 'raw'
-                            ],
+                            ['class' => 'kartik\grid\SerialColumn'],
+//                            [
+//                                'attribute' => 'subject_sect_id',
+//                                'width' => '310px',
+//                                'value' => function ($model, $key, $index, $widget) {
+//                                    return $model->subject_sect_id;
+//                                },
+//
+//                                'group' => true,  // enable grouping
+//                            ],
+
                             [
                                 'attribute' => 'subject_sect_studyplan_id',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => 'sect/default/schedule-items',
-                                'title' => function (SubjectSectSchedule $model) {
+                                'width' => '310px',
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filter' => RefBook::find('sect_name_1')->getList(),
+                                'value' => function ($model, $key, $index, $widget) {
                                     return RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id);
                                 },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                                'group' => true,  // enable grouping
+                            ],
+                            [
+                                'attribute' => 'studyplan_subject_list',
+                                'width' => '310px',
+                                'filter' => RefBook::find('students_fio')->getList(),
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'value' => function ($model, $key, $index, $widget) {
+                                    $data = [];
+                                    if (!empty($model->studyplan_subject_list)) {
+                                        foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
+                                            $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
+                                            $data[] = RefBook::find('students_fio')->getValue($student_id);
+                                        }
+                                    }
+                                    return implode(',', $data);
+                                },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                                'group' => true,  // enable grouping
+                                'subGroupOf' => 1
+                            ],
+                            [
+                                'attribute' => 'direction_id',
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filter' => \common\models\guidejob\Direction::getDirectionList(),
+                                'value' => function ($model, $key, $index, $widget) {
+                                    return $model->direction->name;
+                                },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+
+                                'group' => true,  // enable grouping
+                                'subGroupOf' => 1
+                            ],
+                            [
+                                'attribute' => 'teachers_id',
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filter' => RefBook::find('teachers_fio')->getList(),
+                                'value' => function ($model) {
+                                    return RefBook::find('teachers_fio')->getValue($model->teachers_id);
+                                },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                                'group' => true,  // enable grouping
+                                'subGroupOf' => 2
+                            ],
+                            'week_time',
+
+//                            'plan_year',
+//                            'subject_sect_schedule_id',
+                            [
+                                'attribute' => 'week_num',
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filter' => \artsoft\helpers\ArtHelper::getWeekList(),
+                                'value' => function ($model) {
+                                    return $model->week_num != 0 ? \artsoft\helpers\ArtHelper::getWeekList()[$model->week_num] : null;
+                                },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                            ],
+                            [
+                                'attribute' => 'week_day',
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filter' => \artsoft\helpers\ArtHelper::getWeekdayList(),
+                                'value' => function ($model) {
+                                    return isset($model->week_day) ? \artsoft\helpers\ArtHelper::getWeekdayList()[$model->week_day] : null;
+                                },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                            ],
+
+                            'time_in:time',
+                            'time_out:time',
+                            [
+                                'attribute' => 'auditory_id',
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filter' => RefBook::find('auditory_memo_1')->getList(),
                                 'options' => ['style' => 'width:300px'],
-                                'buttonsTemplate' => '{update} {delete}',
+                                'value' => function ($model) {
+                                    return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
+                                },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                            ],
+//                            'description',
+//                            [
+//                                'class' => 'kartik\grid\ActionColumn',
+////                                'dropdown' => $this->dropdown,
+////                                'dropdownOptions' => ['class' => 'float-right'],
+//                                'urlCreator' => function ($action, $model, $key, $index) {
+//                                    return '#';
+//                                },
+////                                'viewOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
+////                                'updateOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
+////                                'deleteOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
+////                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+//                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+                                'width' => '90px',
+                                'template' => '{create} {update} {delete}',
                                 'buttons' => [
-                                    'update' => function ($url, SubjectSectSchedule $model, $key) {
-                                        return Html::a(Yii::t('art', 'Edit'),
-                                            Url::to(['/sect/default/schedule-items', 'id' => $model->subjectSectStudyplan->subject_sect_id, 'objectId' => $model->id, 'mode' => 'update']), [
+                                    'create' => function ($key, $model) {
+                                        return Html::a('<i class="fa fa-plus" aria-hidden="true"></i>',
+                                            Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']), [
+                                                'title' => Yii::t('art', 'Create'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                    'update' => function ($key, $model) {
+                                        return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
+                                            Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id, 'objectId' => $model->subject_sect_schedule_id, 'mode' => 'update']), [
                                                 'title' => Yii::t('art', 'Edit'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
                                             ]
                                         );
                                     },
-                                    'delete' => function ($url, SubjectSectSchedule $model, $key) {
-                                        return Html::a(Yii::t('art', 'Delete'),
-                                            Url::to(['/sect/default/schedule-items', 'id' => $model->subjectSectStudyplan->subject_sect_id, 'objectId' => $model->id, 'mode' => 'delete']), [
+                                    'delete' => function ($key, $model) {
+                                        return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
+                                            Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id, 'objectId' => $model->subject_sect_schedule_id, 'mode' => 'delete']), [
                                                 'title' => Yii::t('art', 'Delete'),
                                                 'aria-label' => Yii::t('art', 'Delete'),
                                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -91,46 +219,40 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                 ],
                             ],
-                            [
-                                'attribute' => 'direction_id',
-                                'filter' => \common\models\guidejob\Direction::getDirectionList(),
-                                'value' => function (SubjectSectSchedule $model) {
-                                    return $model->direction->name;
-                                },
+                        ],
+                        'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false
+//    'beforeHeader'=>[
+//        [
+//            'columns'=>[
+//                ['content'=>'Header Before 1', 'options'=>['colspan'=>4, 'class'=>'text-center warning']],
+//                ['content'=>'Header Before 2', 'options'=>['colspan'=>4, 'class'=>'text-center warning']],
+//                ['content'=>'Header Before 3', 'options'=>['colspan'=>3, 'class'=>'text-center warning']],
+//            ],
+//            'options'=>['class'=>'skip-export'] // remove this row from export
+//        ]
+//    ],
+                        'toolbar' => [
+                            ['content' =>
+                            // Html::button('&lt;i class="glyphicon glyphicon-plus">&lt;/i>', ['type'=>'button', 'title'=>Yii::t('art', 'Add Book'), 'class'=>'btn btn-success', 'onclick'=>'alert("This will launch the book creation form.\n\nDisabled for this demo!");']) . ' '.
+                                Html::a('Reset', ['/schedule'], ['data-pjax' => 0, 'class' => 'btn btn-default', 'title' => Yii::t('art', 'Reset Grid')])
                             ],
-                            [
-                                'attribute' => 'teachers_id',
-                                'filter' => RefBook::find('teachers_fio')->getList(),
-                                'value' => function (SubjectSectSchedule $model) {
-                                    return RefBook::find('teachers_fio')->getValue($model->teachers_id);
-                                },
-                            ],
-                            [
-                                'attribute' => 'week_num',
-                                'filter' => \artsoft\helpers\ArtHelper::getWeekList(),
-                                'value' => function (SubjectSectSchedule $model) {
-                                    return $model->week_num != 0 ? \artsoft\helpers\ArtHelper::getWeekList()[$model->week_num] : null;
-                                },
-                            ],
-                            [
-                                'attribute' => 'week_day',
-                                'filter' => \artsoft\helpers\ArtHelper::getWeekdayList(),
-                                'value' => function (SubjectSectSchedule $model) {
-                                    return \artsoft\helpers\ArtHelper::getWeekdayList()[$model->week_day];
-                                },
-                            ],
-                            'time_in:time',
-                            'time_out:time',
-                            [
-                                'attribute' => 'auditory_id',
-                                'filter' => RefBook::find('auditory_memo_1')->getList(),
-                                'options' => ['style' => 'width:300px'],
-                                'value' => function (SubjectSectSchedule $model) {
-                                    return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
-                                },
-                            ],
+                            '{export}',
+                            '{toggleData}'
+                        ],
+                        'pjax' => true,
+                        'bordered' => true,
+                        'striped' => true,
+                        'condensed' => true,
+                        'responsive' => true,
+                        'hover' => false,
+                        'floatHeader' => false,
+//    'floatHeaderOptions' => ['top' => $scrollingTop],
+                        'showPageSummary' => false,
+                        'panel' => [
+                            'type' => GridView::TYPE_DEFAULT
                         ],
                     ]);
+
                     ?>
 
                     <?php Pjax::end() ?>
@@ -139,3 +261,5 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+
+

@@ -3,9 +3,6 @@
 use artsoft\helpers\RefBook;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
-//use artsoft\grid\GridView;
-use artsoft\grid\GridQuickLinks;
-use common\models\subjectsect\SubjectSectSchedule;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use kartik\grid\GridView;
@@ -53,32 +50,51 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filterModel' => $searchModel,
                         'columns' => [
                             ['class' => 'kartik\grid\SerialColumn'],
-                            [
-                                'attribute' => 'subject_sect_id',
-                                'width' => '310px',
-                                'value' => function ($model, $key, $index, $widget) {
-                                    return $model->subject_sect_id;
-                                },
+//                            [
+//                                'attribute' => 'subject_sect_id',
+//                                'width' => '310px',
+//                                'value' => function ($model, $key, $index, $widget) {
+//                                    return $model->subject_sect_id;
+//                                },
+//
+//                                'group' => true,  // enable grouping
+//                            ],
 
+                            [
+                                'attribute' => 'subject_sect_studyplan_id',
+                                'width' => '310px',
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filter' => RefBook::find('sect_name_1')->getList(),
+                                'value' => function ($model, $key, $index, $widget) {
+                                    return RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id);
+                                },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'group' => true,  // enable grouping
                             ],
                             [
                                 'attribute' => 'studyplan_subject_list',
                                 'width' => '310px',
+                                'filter' => RefBook::find('students_fio')->getList(),
+                                'filterType' => GridView::FILTER_SELECT2,
                                 'value' => function ($model, $key, $index, $widget) {
-                                    return $model->studyplan_subject_list;
+                                    $data = [];
+                                    if (!empty($model->studyplan_subject_list)) {
+                                        foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
+                                            $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
+                                            $data[] = RefBook::find('students_fio')->getValue($student_id);
+                                        }
+                                    }
+                                    return implode(',', $data);
                                 },
-
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'group' => true,  // enable grouping
-                            ],
-                            [
-                                'attribute' => 'subject_sect_studyplan_id',
-                                'width' => '310px',
-                                'value' => function ($model, $key, $index, $widget) {
-                                    return $model->subject_sect_studyplan_id;
-                                },
-
-                                'group' => true,  // enable grouping
+                                'subGroupOf' => 1
                             ],
                             [
                                 'attribute' => 'direction_id',
@@ -91,7 +107,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                     'pluginOptions' => ['allowClear' => true],
                                 ],
                                 'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+
                                 'group' => true,  // enable grouping
+                                'subGroupOf' => 1
                             ],
                             [
                                 'attribute' => 'teachers_id',
@@ -100,8 +118,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function ($model) {
                                     return RefBook::find('teachers_fio')->getValue($model->teachers_id);
                                 },
-
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'group' => true,  // enable grouping
+                                'subGroupOf' => 2
                             ],
                             'week_time',
 
@@ -114,6 +136,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function ($model) {
                                     return $model->week_num != 0 ? \artsoft\helpers\ArtHelper::getWeekList()[$model->week_num] : null;
                                 },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                             ],
                             [
                                 'attribute' => 'week_day',
@@ -122,6 +148,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function ($model) {
                                     return isset($model->week_day) ? \artsoft\helpers\ArtHelper::getWeekdayList()[$model->week_day] : null;
                                 },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                             ],
 
                             'time_in:time',
@@ -134,8 +164,52 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function ($model) {
                                     return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
                                 },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                             ],
 //                            'description',
+//                            [
+//                                'class' => 'kartik\grid\ActionColumn',
+////                                'dropdown' => $this->dropdown,
+////                                'dropdownOptions' => ['class' => 'float-right'],
+//                                'urlCreator' => function ($action, $model, $key, $index) {
+//                                    return '#';
+//                                },
+////                                'viewOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
+////                                'updateOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
+////                                'deleteOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
+////                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+//                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+                                'width' => '90px',
+                                'template' => '{update} {delete}',
+                                'buttons' => [
+                                    'update' => function ($key, $model) {
+                                        return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
+                                            Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_schedule_id, 'objectId' => null, 'mode' => 'update']), [
+                                                'title' => Yii::t('art', 'Edit'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                    'delete' => function ($key, $model) {
+                                        return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
+                                            Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_schedule_id, 'objectId' => null, 'mode' => 'delete']), [
+                                                'title' => Yii::t('art', 'Delete'),
+                                                'aria-label' => Yii::t('art', 'Delete'),
+                                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
+                            ],
                         ],
                         'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false
 //    'beforeHeader'=>[

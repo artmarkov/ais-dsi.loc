@@ -12,6 +12,8 @@ use common\models\subjectsect\SubjectSectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\TeachersLoad;
+use common\models\subjectsect\search\SubjectSectScheduleViewSearch;
+use common\models\subjectsect\SubjectSectScheduleView;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
@@ -252,13 +254,16 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/update', 'id' => $model->id]];
 
         if ('create' == $mode) {
+            if (!Yii::$app->request->get('load_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET load_id.");
+            }
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/schedule-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление расписания';
             $model = new SubjectSectSchedule();
-            $model->subject_sect_studyplan_id = Yii::$app->request->get('id') ?: null;
-
-            if ($model->load(Yii::$app->request->post())) {
-
+            $model->setTeachersLoadModelCopy(Yii::$app->request->get('load_id'));  // из нагрузки преподавателя
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($model);
             }
 
             return $this->renderIsAjax('@backend/views/schedule/default/_form.php', [
@@ -290,8 +295,9 @@ class DefaultController extends MainController
                 throw new NotFoundHttpException("The StudyplanSubject was not found.");
             }
 
-            if ($model->load(Yii::$app->request->post())) {
-
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($model);
             }
 
             return $this->renderIsAjax('@backend/views/schedule/default/_form.php', [
@@ -300,7 +306,7 @@ class DefaultController extends MainController
 
         } else {
             // $modelClass = 'common\models\subjectsect\SubjectSectSchedule';
-            $searchModel = new SubjectSectScheduleSearch();
+            $searchModel = new SubjectSectScheduleViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();
