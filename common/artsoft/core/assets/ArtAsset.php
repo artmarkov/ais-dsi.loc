@@ -42,14 +42,14 @@ class ArtAsset extends AssetBundle
      * @param \yii\web\View $view the view to be registered with
      * @return static the registered asset bundle instance
      */
-//    public static function register($view)
-//    {
-//        $js = <<<JS
-//            $('[data-toggle="tooltip"]').tooltip()
-//JS;
-//
-//        $view->registerJs($js, View::POS_READY);
-//
-//        return parent::register($view);
-//    }
+    public static function register($view)
+    {
+        $js = <<<JS
+            $('[data-toggle="tooltip"]').tooltip()
+JS;
+
+        $view->registerJs($js, View::POS_READY);
+
+        return parent::register($view);
+    }
 }

@@ -55,13 +55,14 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
             ]
         ];
     }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['teachers_load_id','subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'subject_sect_id', 'plan_year', 'subject_sect_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
+            [['teachers_load_id', 'subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'subject_sect_id', 'plan_year', 'subject_sect_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
             [['week_time'], 'number'],
             [['scheduleDisplay'], 'safe'],
             [['studyplan_subject_list'], 'string'],
@@ -103,6 +104,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     {
         return $this->hasOne(TeachersLoad::class, ['id' => 'teachers_load_id']);
     }
+
     /**
      * Gets query for [[SubjectSectStudyplan]].
      *
@@ -144,5 +146,31 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
         $string = ' ' . ArtHelper::getWeekValue('short', $this->week_num);
         $string .= ' ' . ArtHelper::getWeekdayValue('short', $this->week_day) . ' ' . $this->time_in . '-' . $this->time_out;
         return $this->time_in ? $string : null;
+    }
+
+    /**
+     * Преподаватель(концертмейстер) не может работать в одно и тоже время в разных аудиториях!
+     * @param $model
+     * @return \yii\db\ActiveQuery
+     */
+    public static function getScheduleOverLapping($model)
+    {
+        $thereIsAnOverlapping = self::find()->where(
+            ['AND',
+                ['!=', 'subject_sect_schedule_id', $model->id],
+                ['auditory_id' => $model->auditory_id],
+              //  ['direction_id' => $model->direction_id],
+                ['plan_year' => RefBook::find('subject_sect_schedule_plan_year')->getValue($model->id)],
+                ['OR',
+                    ['<=', 'time_in', $model->encodeTime($model->time_out)],
+                    ['>=', 'time_out', $model->encodeTime($model->time_in)],
+                ],
+                ['=', 'week_day', $model->week_day]
+            ]);
+        if ($model->getAttribute($model->week_num) !== null) {
+            $thereIsAnOverlapping->andWhere(['=', 'week_num', $model->week_num]);
+        }
+
+        return $thereIsAnOverlapping;
     }
 }

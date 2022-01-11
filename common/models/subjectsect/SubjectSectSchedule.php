@@ -82,7 +82,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
             [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
 //            [['auditory_id', 'time_in'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
-            [['auditory_id'], 'checkDate', 'skipOnEmpty' => false],
+            [['auditory_id'], 'checkScheduleOverLapping', 'skipOnEmpty' => false],
         ];
     }
 
@@ -100,31 +100,10 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
         }
     }
 
-    public function checkDate($attribute, $params)
+    public function checkScheduleOverLapping($attribute, $params)
     {
-        $thereIsAnOverlapping = SubjectSectSchedule::find()->where(
-            ['AND',
-                ['!=', 'id', $this->id],
-                ['auditory_id' => $this->auditory_id],
-                ['OR',
-                    ['AND',
-                        ['<=', 'time_in', $this->encodeTime($this->time_in)],
-                        ['>=', 'time_out', $this->encodeTime($this->time_in)],
-                    ],
-
-                    ['AND',
-                        ['<=', 'time_in', $this->encodeTime($this->time_out)],
-                        ['>=', 'time_out', $this->encodeTime($this->time_out)],
-                    ],
-                ],
-                ['=', 'week_day', $this->week_day]
-            ]);
-        if ($this->getAttribute($this->week_num) !== null) {
-            $thereIsAnOverlapping->andWhere(['=', 'week_num', $this->week_num]);
-        }
-
-        if ($thereIsAnOverlapping->exists() === true) {
-            $this->addError($attribute, 'Накладка по времени в аудитории.');
+        if (SubjectSectScheduleView::getScheduleOverLapping($this)->exists() === true) {
+            $this->addError($attribute, 'В одной аудитории накладка по времени!');
         }
     }
 

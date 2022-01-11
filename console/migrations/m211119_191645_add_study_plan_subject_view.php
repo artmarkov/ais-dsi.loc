@@ -126,10 +126,14 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
          inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
         ')->execute();
 
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['subject_sect_schedule_plan_year', 'subject_sect_schedule_view', 'subject_sect_schedule_id', 'plan_year', 'plan_year', null, null, 'Получение года обучения по ИД расписания группы'],
+        ])->execute();
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'subject_sect_schedule_plan_year'])->execute();
         $this->db->createCommand()->dropView('subject_sect_schedule_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'sect_name_1'])->execute();
         $this->db->createCommand()->dropView('subject_sect_view')->execute();

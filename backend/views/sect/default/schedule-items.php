@@ -1,11 +1,13 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use common\models\subjectsect\SubjectSectScheduleView;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use kartik\grid\GridView;
+use common\models\subjectsect\SubjectSectSchedule;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\subjectsect\search\SubjectSectScheduleSearch */
@@ -116,6 +118,26 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'subGroupOf' => 4
                             ],
                             [
+                                'value' => function ($model) {
+
+                                    /* В одной аудитории накладка по времени!
+                                     Одновременное посещение разных дисциплин недопустимо!
+                                     Накладка по времени занятий концертмейстера!
+                                     Заданное расписание не соответствует планированию индивидуальных занятий!
+                                     Преподаватель не может работать в одно и тоже время в разных аудиториях!
+                                     Концертмейстер не может работать в одно и тоже время в разных аудиториях! */
+
+                                    $model_dep = SubjectSectSchedule::findOne($model->subject_sect_schedule_id);
+                                    if (SubjectSectScheduleView::getScheduleOverLapping($model_dep)->exists() === true) {
+                                        return '<span  data-toggle="tooltip" data-placement="bottom" title="" data-original-title="В одной аудитории накладка по времени!">
+                                                <i class="fa fa-exclamation-triangle" style="color: red; aria-hidden="true"></i>
+                                            </span>';
+                                    }
+                                    return '';
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
                                 'attribute' => 'scheduleDisplay',
                                 'value' => function ($model) {
                                     return $model->getScheduleDisplay();
@@ -163,19 +185,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                             ],
-//                            'description',
-//                            [
-//                                'class' => 'kartik\grid\ActionColumn',
-////                                'dropdown' => $this->dropdown,
-////                                'dropdownOptions' => ['class' => 'float-right'],
-//                                'urlCreator' => function ($action, $model, $key, $index) {
-//                                    return '#';
-//                                },
-////                                'viewOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
-////                                'updateOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
-////                                'deleteOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
-////                                'headerOptions' => ['class' => 'kartik-sheet-style'],
-//                            ],
                             [
                                 'class' => 'kartik\grid\ActionColumn',
                                 'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
@@ -250,7 +259,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ['content' => Html::a('Сбросить', ['/schedule'], ['data-pjax' => 0, 'class' => 'btn btn-default', 'title' => Yii::t('art', 'Reset')])
                             ],
                             '{export}',
-                           // '{toggleData}'
+                            // '{toggleData}'
                         ],
                         'pjax' => true,
                         'bordered' => true,
