@@ -127,11 +127,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                      Преподаватель не может работать в одно и тоже время в разных аудиториях!
                                      Концертмейстер не может работать в одно и тоже время в разных аудиториях! */
 
-                                    $model_dep = SubjectSectSchedule::findOne($model->subject_sect_schedule_id);
-                                    if (SubjectSectScheduleView::getScheduleOverLapping($model_dep)->exists() === true) {
-                                        return '<span  data-toggle="tooltip" data-placement="bottom" title="" data-original-title="В одной аудитории накладка по времени!">
-                                                <i class="fa fa-exclamation-triangle" style="color: red; aria-hidden="true"></i>
-                                            </span>';
+                                    if ($model->subject_sect_schedule_id) {
+                                        $model_dep = SubjectSectSchedule::findOne($model->subject_sect_schedule_id);
+                                        if (SubjectSectScheduleView::getScheduleOverLapping($model_dep)->exists() === true) {
+                                           // echo '<pre>' . print_r(SubjectSectScheduleView::getScheduleOverLapping($model_dep)->all(), true) . '</pre>';
+                                        \artsoft\widgets\Notice::registerWarning('В одной аудитории накладка по времени!');
+                                        return \artsoft\widgets\Tooltip::widget(['type' => 'danger', 'message' => 'В одной аудитории накладка по времени!']);
+
+                                        }
                                     }
                                     return '';
                                 },

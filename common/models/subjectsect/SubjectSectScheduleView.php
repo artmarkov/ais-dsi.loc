@@ -149,7 +149,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * Преподаватель(концертмейстер) не может работать в одно и тоже время в разных аудиториях!
+     * В одной аудитории накладка по времени!
      * @param $model
      * @return \yii\db\ActiveQuery
      */
@@ -159,7 +159,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
             ['AND',
                 ['!=', 'subject_sect_schedule_id', $model->id],
                 ['auditory_id' => $model->auditory_id],
-              //  ['direction_id' => $model->direction_id],
+                ['direction_id' => $model->direction_id],
                 ['plan_year' => RefBook::find('subject_sect_schedule_plan_year')->getValue($model->id)],
                 ['OR',
                     ['<=', 'time_in', $model->encodeTime($model->time_out)],

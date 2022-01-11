@@ -101,7 +101,11 @@ MetisMenuAsset::register($this);
                         ]
                     ]);
                     ?>
+
+                    <?php $noticeContent = \artsoft\widgets\Notice::widget() ?>
+
                     <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]) ?>
+
                     <?php if (isset($this->params['tabMenu']) && $this->params['tabMenu']): ?>
                         <div class="nav-tabs-custom">
                             <?= \artsoft\widgets\Nav::widget([
@@ -115,10 +119,12 @@ MetisMenuAsset::register($this);
                             ]) ?>
 
                             <div class="tab-content">
+                                <?= $noticeContent; ?>
                                 <?= $content ?>
                             </div>
                         </div>
                     <?php else: ?>
+                        <?= $noticeContent; ?>
                         <?= $content ?>
                     <?php endif; ?>
                 </div>
