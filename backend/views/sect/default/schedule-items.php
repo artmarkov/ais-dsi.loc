@@ -118,33 +118,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'subGroupOf' => 4
                             ],
                             [
-                                'value' => function ($model) {
-
-                                    /* В одной аудитории накладка по времени!
-                                     Одновременное посещение разных дисциплин недопустимо!
-                                     Накладка по времени занятий концертмейстера!
-                                     Заданное расписание не соответствует планированию индивидуальных занятий!
-                                     Преподаватель не может работать в одно и тоже время в разных аудиториях!
-                                     Концертмейстер не может работать в одно и тоже время в разных аудиториях! */
-
-                                    if ($model->subject_sect_schedule_id) {
-                                        $model_dep = SubjectSectSchedule::findOne($model->subject_sect_schedule_id);
-                                        if (SubjectSectScheduleView::getScheduleOverLapping($model_dep)->exists() === true) {
-                                           // echo '<pre>' . print_r(SubjectSectScheduleView::getScheduleOverLapping($model_dep)->all(), true) . '</pre>';
-                                        \artsoft\widgets\Notice::registerWarning('В одной аудитории накладка по времени!');
-                                        return \artsoft\widgets\Tooltip::widget(['type' => 'danger', 'message' => 'В одной аудитории накладка по времени!']);
-
-                                        }
-                                    }
-                                    return '';
-                                },
-                                'format' => 'raw',
-                            ],
-                            [
                                 'attribute' => 'scheduleDisplay',
                                 'value' => function ($model) {
                                     return $model->getScheduleDisplay();
                                 },
+                                'format' => 'raw',
                             ],
 //                            'plan_year',
 //                            'subject_sect_schedule_id',

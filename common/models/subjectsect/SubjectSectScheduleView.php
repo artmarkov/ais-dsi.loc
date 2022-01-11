@@ -145,6 +145,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     {
         $string = ' ' . ArtHelper::getWeekValue('short', $this->week_num);
         $string .= ' ' . ArtHelper::getWeekdayValue('short', $this->week_day) . ' ' . $this->time_in . '-' . $this->time_out;
+        $string .= ' ' . $this->getItemScheduleNotice();
         return $this->time_in ? $string : null;
     }
 
@@ -172,5 +173,31 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
         }
 
         return $thereIsAnOverlapping;
+    }
+
+    /**
+     * В одной аудитории накладка по времени!
+     * Одновременное посещение разных дисциплин недопустимо!
+     * Накладка по времени занятий концертмейстера!
+     * Заданное расписание не соответствует планированию индивидуальных занятий!
+     * Преподаватель не может работать в одно и тоже время в разных аудиториях!
+     * Концертмейстер не может работать в одно и тоже время в разных аудиториях!
+     *
+     * @return null|string
+     * @throws \Exception
+     */
+    public function getItemScheduleNotice()
+    {
+
+        if ($this->subject_sect_schedule_id) {
+            $model = SubjectSectSchedule::findOne($this->subject_sect_schedule_id);
+            if (self::getScheduleOverLapping($model)->exists() === true) {
+                // echo '<pre>' . print_r(SubjectSectScheduleView::getScheduleOverLapping($model_dep)->all(), true) . '</pre>';
+                \artsoft\widgets\Notice::registerWarning('В одной аудитории накладка по времени!');
+                return \artsoft\widgets\Tooltip::widget(['type' => 'danger', 'message' => 'В одной аудитории накладка по времени!']);
+
+            }
+        }
+        return null;
     }
 }
