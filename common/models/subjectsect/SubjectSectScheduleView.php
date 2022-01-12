@@ -3,6 +3,7 @@
 namespace common\models\subjectsect;
 
 use artsoft\behaviors\TimeFieldBehavior;
+use artsoft\helpers\Schedule;
 use common\models\auditory\Auditory;
 use common\models\guidejob\Direction;
 use common\models\studyplan\StudyplanSubject;
@@ -163,8 +164,49 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
                 ['direction_id' => $model->direction_id],
                 ['plan_year' => RefBook::find('subject_sect_schedule_plan_year')->getValue($model->id)],
                 ['OR',
-                    ['<=', 'time_in', $model->encodeTime($model->time_out)],
-                    ['>=', 'time_out', $model->encodeTime($model->time_in)],
+                    ['AND',
+                        ['<=', 'time_in', $model->encodeTime($model->time_out)],
+                        ['>=', 'time_in', $model->encodeTime($model->time_in)],
+                    ],
+
+                    ['AND',
+                        ['<=', 'time_out', $model->encodeTime($model->time_out)],
+                        ['>=', 'time_out', $model->encodeTime($model->time_in)],
+                    ],
+                ],
+                ['=', 'week_day', $model->week_day]
+            ]);
+        if ($model->getAttribute($model->week_num) !== null) {
+            $thereIsAnOverlapping->andWhere(['=', 'week_num', $model->week_num]);
+        }
+
+        return $thereIsAnOverlapping;
+    }
+
+    /**
+     * Преподаватель не может работать в одно и тоже время в разных аудиториях!
+     * Концертмейстер не может работать в одно и тоже время в разных аудиториях!
+     * @param $model
+     * @return \yii\db\ActiveQuery
+     */
+    public static function getTeachersOverLapping($model)
+    {
+        $thereIsAnOverlapping = self::find()->where(
+            ['AND',
+                ['!=', 'subject_sect_schedule_id', $model->id],
+                ['direction_id' => $model->direction_id],
+                ['teachers_id' => $model->teachers_id],
+                ['plan_year' => RefBook::find('subject_sect_schedule_plan_year')->getValue($model->id)],
+                ['OR',
+                    ['AND',
+                        ['<=', 'time_in', $model->encodeTime($model->time_out)],
+                        ['>=', 'time_in', $model->encodeTime($model->time_in)],
+                    ],
+
+                    ['AND',
+                        ['<=', 'time_out', $model->encodeTime($model->time_out)],
+                        ['>=', 'time_out', $model->encodeTime($model->time_in)],
+                    ],
                 ],
                 ['=', 'week_day', $model->week_day]
             ]);
@@ -188,15 +230,22 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
      */
     public function getItemScheduleNotice()
     {
-
+        $tooltip = [];
         if ($this->subject_sect_schedule_id) {
             $model = SubjectSectSchedule::findOne($this->subject_sect_schedule_id);
             if (self::getScheduleOverLapping($model)->exists() === true) {
                 // echo '<pre>' . print_r(SubjectSectScheduleView::getScheduleOverLapping($model_dep)->all(), true) . '</pre>';
-                \artsoft\widgets\Notice::registerWarning('В одной аудитории накладка по времени!');
-                return \artsoft\widgets\Tooltip::widget(['type' => 'danger', 'message' => 'В одной аудитории накладка по времени!']);
+                \artsoft\widgets\Notice::registerDanger('В одной аудитории накладка по времени!');
+                $tooltip[] = \artsoft\widgets\Tooltip::widget(['type' => 'danger', 'message' => 'В одной аудитории накладка по времени!']);
 
             }
+            if (self::getTeachersOverLapping($model)->exists() === true) {
+                // echo '<pre>' . print_r(SubjectSectScheduleView::getScheduleOverLapping($model_dep)->all(), true) . '</pre>';
+                \artsoft\widgets\Notice::registerWarning('Преподаватель не может работать в одно и тоже время в разных аудиториях!');
+                $tooltip[] = \artsoft\widgets\Tooltip::widget(['type' => 'warning', 'message' => 'Преподаватель не может работать в одно и тоже время в разных аудиториях!']);
+
+            }
+            return implode('', $tooltip);
         }
         return null;
     }
