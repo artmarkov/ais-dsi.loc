@@ -12,6 +12,8 @@ use artsoft\helpers\ArtHelper;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersLoad;
 use Yii;
+use artsoft\widgets\Notice;
+use artsoft\widgets\Tooltip;
 
 /**
  * This is the model class for table "subject_sect_schedule_view".
@@ -118,7 +120,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
 
     public function getStudyplanSubject()
     {
-        return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
+        return $this->hasOne(StudyplanSubject::class, ['id' => 'studyplan_subject_id']);
     }
 
     /**
@@ -136,7 +138,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
      */
     public function getAuditory()
     {
-        return $this->hasOne(Auditory::class, ['id' => 'teachers_id']);
+        return $this->hasOne(Auditory::class, ['id' => 'auditory_id']);
     }
 
     /**
@@ -218,6 +220,28 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Проверка на суммарное время расписания = времени нагрузки
+     * $delta_time - погрешность, в зависимости от кол-ва занятий
+     * @return string|null
+     * @throws \Exception
+     */
+    public function getTeachersOverLoadNotice()
+    {
+        $message = null;
+        $delta_time = 300;
+        $thereIsAnOverload = self::find()
+            ->select(new \yii\db\Expression('(SUM(time_out) - SUM(time_in)) as full_time, COUNT(teachers_load_id) as qty'))
+            ->where(['=', 'teachers_load_id', $this->teachers_load_id])
+            ->asArray()
+            ->one();
+
+        if ($this->week_time != 0 and abs((\artsoft\helpers\Schedule::academ2astr($this->week_time) - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
+            $message = 'Суммарное время в расписании занятий не соответствует нагрузке!';
+        }
+        return $message ? Tooltip::widget(['type' => 'warning', 'message' => $message]) : null;
+    }
+
+    /**
      * В одной аудитории накладка по времени!
      * Одновременное посещение разных дисциплин недопустимо!
      * Накладка по времени занятий концертмейстера!
@@ -234,16 +258,23 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
         if ($this->subject_sect_schedule_id) {
             $model = SubjectSectSchedule::findOne($this->subject_sect_schedule_id);
             if (self::getScheduleOverLapping($model)->exists() === true) {
-                // echo '<pre>' . print_r(SubjectSectScheduleView::getScheduleOverLapping($model_dep)->all(), true) . '</pre>';
-                \artsoft\widgets\Notice::registerDanger('В одной аудитории накладка по времени!');
-                $tooltip[] = \artsoft\widgets\Tooltip::widget(['type' => 'danger', 'message' => 'В одной аудитории накладка по времени!']);
-
+                $info = [];
+                foreach (self::getScheduleOverLapping($model)->all() as $itemModel) {
+                    $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
+                }
+                $message = 'В одной аудитории накладка по времени! ' . implode(', ', $info);
+                Notice::registerDanger($message);
+                $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
             }
-            if (self::getTeachersOverLapping($model)->exists() === true) {
-                // echo '<pre>' . print_r(SubjectSectScheduleView::getScheduleOverLapping($model_dep)->all(), true) . '</pre>';
-                \artsoft\widgets\Notice::registerWarning('Преподаватель не может работать в одно и тоже время в разных аудиториях!');
-                $tooltip[] = \artsoft\widgets\Tooltip::widget(['type' => 'warning', 'message' => 'Преподаватель не может работать в одно и тоже время в разных аудиториях!']);
 
+            if (self::getTeachersOverLapping($model)->exists() === true) {
+                $info = [];
+                foreach (self::getScheduleOverLapping($model)->all() as $itemModel) {
+                    $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
+                }
+                $message = 'Преподаватель не может работать в одно и тоже время в разных аудиториях! ' . implode(', ', $info);
+                Notice::registerDanger($message);
+                $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
             }
             return implode('', $tooltip);
         }

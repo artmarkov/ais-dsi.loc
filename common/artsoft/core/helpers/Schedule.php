@@ -4,7 +4,7 @@ namespace artsoft\helpers;
 class Schedule
 {
 // определение в секундах значения академического времени
-public static function academ_astr_hour($academ_hour)
+public static function academ2astr($academ_hour)
 {
     switch ($academ_hour) {
         case '0':
@@ -45,7 +45,7 @@ public static function academ_astr_hour($academ_hour)
 }
 
 // определение в секундах значения академического времени
-public static function astr_academ_hour($astr_hour)
+public static function astr2academ($astr_hour)
 {
     switch ($astr_hour) {
         case '0':

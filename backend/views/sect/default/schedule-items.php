@@ -112,8 +112,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'week_time',
                                 'value' => function ($model) {
-                                    return $model->week_time;
+                                    return $model->week_time . ' ' . $model->getTeachersOverLoadNotice();
                                 },
+                                'format' => 'raw',
                                 'group' => true,  // enable grouping
                                 'subGroupOf' => 4
                             ],
@@ -237,7 +238,18 @@ $this->params['breadcrumbs'][] = $this->title;
                             'xls' => [],
                         ],
                         'toolbar' => [
-                            ['content' => Html::a('Сбросить', ['/schedule'], ['data-pjax' => 0, 'class' => 'btn btn-default', 'title' => Yii::t('art', 'Reset')])
+
+                            [
+//                                'content' => function ($model) {
+//                                    return Html::a('Сбросить',
+//                                        Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id]), [
+//                                            'title' => Yii::t('art', 'Reset'),
+//                                            'data-pjax' => '0',
+//                                            'class' => 'btn btn-default'
+//                                        ]
+//                                    );
+//                                },
+                                    'content' => Html::a('Сбросить', ['/sect/default/schedule-items'], ['data-pjax' => 0, 'class' => 'btn btn-default', 'title' => Yii::t('art', 'Reset')])
                             ],
                             '{export}',
                             // '{toggleData}'
