@@ -220,6 +220,19 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Запрос на полное время занятий расписания преподавателя данной нагрузки
+     * @return array|SubjectSectScheduleView|null|\yii\db\ActiveRecord
+     */
+    public function getTeachersOverLoad()
+    {
+        return self::find()
+            ->select(new \yii\db\Expression('(SUM(time_out) - SUM(time_in)) as full_time, COUNT(teachers_load_id) as qty'))
+            ->where(['=', 'teachers_load_id', $this->teachers_load_id])
+            ->asArray()
+            ->one();
+    }
+    
+    /**
      * Проверка на суммарное время расписания = времени нагрузки
      * $delta_time - погрешность, в зависимости от кол-ва занятий
      * @return string|null
@@ -229,11 +242,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     {
         $message = null;
         $delta_time = 300;
-        $thereIsAnOverload = self::find()
-            ->select(new \yii\db\Expression('(SUM(time_out) - SUM(time_in)) as full_time, COUNT(teachers_load_id) as qty'))
-            ->where(['=', 'teachers_load_id', $this->teachers_load_id])
-            ->asArray()
-            ->one();
+        $thereIsAnOverload = $this->getTeachersOverLoad();
 
         if ($this->week_time != 0 and abs((\artsoft\helpers\Schedule::academ2astr($this->week_time) - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
             $message = 'Суммарное время в расписании занятий не соответствует нагрузке!';
