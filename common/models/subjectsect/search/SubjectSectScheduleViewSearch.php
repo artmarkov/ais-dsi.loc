@@ -49,7 +49,10 @@ class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
             'pagination' => false,
             'sort' => [
                 'defaultOrder' => [
-                    'subject_sect_studyplan_id' => SORT_DESC,
+                    'subject_sect_studyplan_id' => SORT_ASC,
+                    'direction_id' => SORT_ASC,
+                    'week_day' => SORT_ASC,
+                    'time_in' => SORT_ASC,
                 ],
             ],
         ]);

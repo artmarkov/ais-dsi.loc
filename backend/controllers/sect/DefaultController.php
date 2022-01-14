@@ -305,7 +305,6 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            // $modelClass = 'common\models\subjectsect\SubjectSectSchedule';
             $searchModel = new SubjectSectScheduleViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());

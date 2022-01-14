@@ -46,5 +46,6 @@ return [
     'Select Level...' => 'Выберите уровень образования...',
     'Experience in the specialty can not be more than t...' => 'Стаж работы по специальности не может быть больше ...',
     'The primary activity cannot but coincide with the secondary one' => 'Основная деятельность не может совпадать с дополнительной',
+    'Parent Вependencies' => 'Зависимость расписания',
 
 ];

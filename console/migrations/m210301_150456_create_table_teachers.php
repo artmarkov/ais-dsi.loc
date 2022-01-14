@@ -13,16 +13,19 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
 
         $this->createTable('guide_teachers_direction', [
             'id' =>  $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'parent' =>  $this->integer(),
             'name' => $this->string(128),
             'slug' => $this->string(32),
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_teachers_direction' ,'Направление деятельности');
 
-        $this->db->createCommand()->batchInsert('guide_teachers_direction', ['id', 'name', 'slug'], [
-            [1000, 'Педагогическая', 'Пед-я'],
-            [1001, 'Концертмейстерская', 'Конц-я'],
+        $this->db->createCommand()->batchInsert('guide_teachers_direction', ['id', 'parent', 'name', 'slug'], [
+            [1000, null,'Педагогическая', 'Пед-я'],
+            [1001, 1000, 'Концертмейстерская', 'Конц-я'],
         ])->execute();
+        $this->addForeignKey('guide_teachers_direction_ibfk_1', 'guide_teachers_direction', 'parent', 'guide_teachers_direction', 'id', 'NO ACTION', 'NO ACTION');
+
         $this->db->createCommand()->resetSequence('guide_teachers_direction', 1002)->execute();
 
         $this->createTable('guide_teachers_direction_vid', [

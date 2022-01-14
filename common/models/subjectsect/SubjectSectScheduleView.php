@@ -167,13 +167,13 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
                 ['plan_year' => RefBook::find('subject_sect_schedule_plan_year')->getValue($model->id)],
                 ['OR',
                     ['AND',
-                        ['<=', 'time_in', $model->encodeTime($model->time_out)],
+                        ['<', 'time_in', $model->encodeTime($model->time_out)],
                         ['>=', 'time_in', $model->encodeTime($model->time_in)],
                     ],
 
                     ['AND',
                         ['<=', 'time_out', $model->encodeTime($model->time_out)],
-                        ['>=', 'time_out', $model->encodeTime($model->time_in)],
+                        ['>', 'time_out', $model->encodeTime($model->time_in)],
                     ],
                 ],
                 ['=', 'week_day', $model->week_day]
@@ -198,16 +198,17 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
                 ['!=', 'subject_sect_schedule_id', $model->id],
                 ['direction_id' => $model->direction_id],
                 ['teachers_id' => $model->teachers_id],
+                ['!=', 'auditory_id', $model->auditory_id],
                 ['plan_year' => RefBook::find('subject_sect_schedule_plan_year')->getValue($model->id)],
                 ['OR',
                     ['AND',
-                        ['<=', 'time_in', $model->encodeTime($model->time_out)],
+                        ['<', 'time_in', $model->encodeTime($model->time_out)],
                         ['>=', 'time_in', $model->encodeTime($model->time_in)],
                     ],
 
                     ['AND',
                         ['<=', 'time_out', $model->encodeTime($model->time_out)],
-                        ['>=', 'time_out', $model->encodeTime($model->time_in)],
+                        ['>', 'time_out', $model->encodeTime($model->time_in)],
                     ],
                 ],
                 ['=', 'week_day', $model->week_day]
@@ -231,7 +232,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
             ->asArray()
             ->one();
     }
-    
+
     /**
      * Проверка на суммарное время расписания = времени нагрузки
      * $delta_time - погрешность, в зависимости от кол-ва занятий
@@ -241,13 +242,28 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     public function getTeachersOverLoadNotice()
     {
         $message = null;
-        $delta_time = 300;
+        $delta_time = Yii::$app->settings->get('module.student_delta_time');
         $thereIsAnOverload = $this->getTeachersOverLoad();
-
-        if ($this->week_time != 0 and abs((\artsoft\helpers\Schedule::academ2astr($this->week_time) - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
+        $weekTime = \artsoft\helpers\Schedule::academ2astr($this->week_time);
+        if ($this->week_time != 0 && $thereIsAnOverload['full_time'] != null && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
             $message = 'Суммарное время в расписании занятий не соответствует нагрузке!';
         }
         return $message ? Tooltip::widget(['type' => 'warning', 'message' => $message]) : null;
+    }
+
+    /**
+     * Проверка на необходимость добавления расписания
+     * @return bool
+     */
+    public function getTeachersScheduleNeed()
+    {
+        $delta_time = Yii::$app->settings->get('module.student_delta_time');
+        $thereIsAnOverload = $this->getTeachersOverLoad();
+        $weekTime = \artsoft\helpers\Schedule::academ2astr($this->week_time);
+        if ($this->week_time != 0 && $weekTime > $thereIsAnOverload['full_time'] && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -281,7 +297,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
                 foreach (self::getScheduleOverLapping($model)->all() as $itemModel) {
                     $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
                 }
-                $message = 'Преподаватель не может работать в одно и тоже время в разных аудиториях! ' . implode(', ', $info);
+                $message = 'Преподаватель(концертмейстер) не может работать в одно и тоже время в разных аудиториях! ' . implode(', ', $info);
                 Notice::registerDanger($message);
                 $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
             }

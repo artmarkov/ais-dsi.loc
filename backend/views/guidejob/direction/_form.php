@@ -29,6 +29,8 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
+                    <?= $form->field($model, 'parent')->dropDownList(['' => Yii::t('art', 'Select...')] + $model->getDirectionList()) ?>
+
                 </div>
             </div>
         </div>

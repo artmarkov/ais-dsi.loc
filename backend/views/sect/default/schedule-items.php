@@ -206,7 +206,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'visibleButtons' => [
                                     'create' => function ($model) {
-                                        return $model->subject_sect_schedule_id === null;
+                                        return $model->getTeachersScheduleNeed();
                                     },
                                     'delete' => function ($model) {
                                         return $model->subject_sect_schedule_id !== null;

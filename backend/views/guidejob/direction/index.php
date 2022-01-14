@@ -64,11 +64,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
-//
-//            'id',
-//            'name',
                             'slug',
-
+                            [
+                                'attribute' => 'parent',
+                                'value' => function (Direction $model) {
+                                    return $model->getParentName($model->parent);
+                                },
+                            ],
                         ],
                     ]);
                     ?>

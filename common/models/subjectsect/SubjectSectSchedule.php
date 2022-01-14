@@ -83,6 +83,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
             [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
 //            [['auditory_id', 'time_in'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
           //  [['auditory_id'], 'checkScheduleOverLapping', 'skipOnEmpty' => false],
+            [['auditory_id'], 'checkScheduleAccompLimit', 'skipOnEmpty' => false],
         ];
     }
 
@@ -104,6 +105,27 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     {
         if (SubjectSectScheduleView::getScheduleOverLapping($this)->exists() === true) {
             $this->addError($attribute, 'В одной аудитории накладка по времени!');
+        }
+    }
+
+    public function checkScheduleAccompLimit($attribute, $params)
+    {
+        if( $this->direction_id == 1001) {
+            $thereIsAnAccompLimit = self::find()->where(
+                ['AND',
+                    ['subject_sect_studyplan_id' => $this->subject_sect_studyplan_id],
+                    ['auditory_id' => $this->auditory_id],
+                    ['direction_id' => 1000],
+                    ['<=', 'time_in', $this->encodeTime($this->time_in)],
+                    ['>=', 'time_out', $this->encodeTime($this->time_out)],
+                    ['=', 'week_day', $this->week_day]
+                ]);
+            if ($this->getAttribute($this->week_num) !== null) {
+                $thereIsAnAccompLimit->andWhere(['=', 'week_num', $this->week_num]);
+            }
+            if ($thereIsAnAccompLimit->exists() === false) {
+                $this->addError($attribute, 'Концертмейстер может работать только в рамках расписания преподавателя!');
+            }
         }
     }
 

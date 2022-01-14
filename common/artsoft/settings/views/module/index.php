@@ -28,7 +28,7 @@ SettingsAsset::register($this);
             <?= Html::encode($this->title) ?>
         </div>
         <div class="panel-body">
-            <div class="panel panel-primary">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     Модуль: Показатели эффективности
                 </div>
@@ -36,8 +36,22 @@ SettingsAsset::register($this);
                     <div class="row">
                         <div class="col-md-12">
 
-                            <?= $form->field($model, 'day_in')->textInput(['maxlength' => true])->hint($model->getDescription('date_in')) ?>
-                            <?= $form->field($model, 'day_out')->textInput(['maxlength' => true])->hint($model->getDescription('date_out')) ?>
+                            <?= $form->field($model, 'day_in')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'day_out')->textInput(['maxlength' => true]) ?>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Модуль: Расписание занятий
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <?= $form->field($model, 'student_delta_time')->textInput(['maxlength' => true])->hint('Введите параметр в секундах') ?>
 
                         </div>
                     </div>
