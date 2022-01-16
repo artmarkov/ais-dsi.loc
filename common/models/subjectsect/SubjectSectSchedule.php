@@ -5,6 +5,7 @@ namespace common\models\subjectsect;
 use artsoft\behaviors\TimeFieldBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
+use artsoft\widgets\Notice;
 use common\models\auditory\Auditory;
 use common\models\guidejob\Direction;
 use common\models\studyplan\StudyplanSubject;
@@ -82,8 +83,8 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
             [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
 //            [['auditory_id', 'time_in'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
-          //  [['auditory_id'], 'checkScheduleOverLapping', 'skipOnEmpty' => false],
-            [['auditory_id'], 'checkScheduleAccompLimit', 'skipOnEmpty' => false],
+            //  [['auditory_id'], 'checkScheduleOverLapping', 'skipOnEmpty' => false],
+            [['direction_id'], 'checkScheduleAccompLimit', 'skipOnEmpty' => false],
         ];
     }
 
@@ -110,12 +111,12 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
 
     public function checkScheduleAccompLimit($attribute, $params)
     {
-        if( $this->direction_id == 1001) {
+        if ($this->direction->parent != null) {
             $thereIsAnAccompLimit = self::find()->where(
                 ['AND',
                     ['subject_sect_studyplan_id' => $this->subject_sect_studyplan_id],
+                    ['direction_id' => $this->direction->parent],
                     ['auditory_id' => $this->auditory_id],
-                    ['direction_id' => 1000],
                     ['<=', 'time_in', $this->encodeTime($this->time_in)],
                     ['>=', 'time_out', $this->encodeTime($this->time_out)],
                     ['=', 'week_day', $this->week_day]
@@ -124,7 +125,21 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
                 $thereIsAnAccompLimit->andWhere(['=', 'week_num', $this->week_num]);
             }
             if ($thereIsAnAccompLimit->exists() === false) {
-                $this->addError($attribute, 'Концертмейстер может работать только в рамках расписания преподавателя!');
+                $info = [];
+                $message = 'Концертмейстер может работать только в рамках расписания преподавателя';
+                $teachersSchedule = self::find()->where(
+                    ['AND',
+                        ['subject_sect_studyplan_id' => $this->subject_sect_studyplan_id],
+                        ['direction_id' => $this->direction->parent]
+                    ]);
+                foreach ($teachersSchedule->all() as $itemModel) {
+                    $string  = ' ' . ArtHelper::getWeekValue('short', $itemModel->week_num);
+                    $string .= ' ' . ArtHelper::getWeekdayValue('short', $itemModel->week_day) . ' ' . $itemModel->time_in . '-' . $itemModel->time_out;
+                    $string .= ' ' . RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
+                    $info[] = $string;
+                }
+                $this->addError($attribute, $message);
+                Notice::registerWarning($message . ': ' . implode(', ', $info));
             }
         }
     }

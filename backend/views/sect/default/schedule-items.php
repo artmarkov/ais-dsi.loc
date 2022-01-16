@@ -110,9 +110,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'subGroupOf' => 2
                             ],
                             [
-                                'attribute' => 'week_time',
+                                'attribute' => 'teachers_load_week_time',
                                 'value' => function ($model) {
-                                    return $model->week_time . ' ' . $model->getTeachersOverLoadNotice();
+                                    return $model->teachers_load_week_time . ' ' . $model->getTeachersOverLoadNotice();
                                 },
                                 'format' => 'raw',
                                 'group' => true,  // enable grouping
@@ -238,18 +238,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             'xls' => [],
                         ],
                         'toolbar' => [
-
                             [
-//                                'content' => function ($model) {
-//                                    return Html::a('Сбросить',
-//                                        Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id]), [
-//                                            'title' => Yii::t('art', 'Reset'),
-//                                            'data-pjax' => '0',
-//                                            'class' => 'btn btn-default'
-//                                        ]
-//                                    );
-//                                },
-                                    'content' => Html::a('Сбросить', ['/sect/default/schedule-items'], ['data-pjax' => 0, 'class' => 'btn btn-default', 'title' => Yii::t('art', 'Reset')])
+                                'content' => Html::a('Очистить',
+                                    Url::to(['/sect/default/schedule-items', 'id' => $id]), [
+                                        'title' => 'Очистить',
+                                        'data-pjax' => '0',
+                                        'class' => 'btn btn-default'
+                                    ]
+                                ),
                             ],
                             '{export}',
                             // '{toggleData}'

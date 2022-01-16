@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'parent',
                                 'value' => function (Direction $model) {
-                                    return $model->getParentName($model->parent);
+                                    return $model->getParentName();
                                 },
                             ],
                         ],

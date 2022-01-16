@@ -312,7 +312,7 @@ class DefaultController extends MainController
             $params[$searchName]['subject_sect_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'id'));
         }
     }
     /**

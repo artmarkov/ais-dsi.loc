@@ -22,7 +22,7 @@ use artsoft\widgets\Tooltip;
  * @property int|null $subject_sect_studyplan_id
  * @property int|null $direction_id
  * @property int|null $teachers_id
- * @property float|null $week_time
+ * @property float|null $teachers_load_week_time
  * @property int|null $subject_sect_id
  * @property string|null $studyplan_subject_list
  * @property int|null $plan_year
@@ -66,7 +66,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     {
         return [
             [['teachers_load_id', 'subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'subject_sect_id', 'plan_year', 'subject_sect_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
-            [['week_time'], 'number'],
+            [['teachers_load_week_time'], 'number'],
             [['scheduleDisplay'], 'safe'],
             [['studyplan_subject_list'], 'string'],
             [['description'], 'string', 'max' => 512],
@@ -83,7 +83,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
-            'week_time' => Yii::t('art/guide', 'Week Time'),
+            'teachers_load_week_time' => Yii::t('art/guide', 'Week Time'),
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
             'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
             'plan_year' => Yii::t('art/guide', 'Plan Year'),
@@ -146,7 +146,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
      */
     public function getScheduleDisplay()
     {
-        $string = ' ' . ArtHelper::getWeekValue('short', $this->week_num);
+        $string  = ' ' . ArtHelper::getWeekValue('short', $this->week_num);
         $string .= ' ' . ArtHelper::getWeekdayValue('short', $this->week_day) . ' ' . $this->time_in . '-' . $this->time_out;
         $string .= ' ' . $this->getItemScheduleNotice();
         return $this->time_in ? $string : null;
@@ -244,8 +244,8 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
         $message = null;
         $delta_time = Yii::$app->settings->get('module.student_delta_time');
         $thereIsAnOverload = $this->getTeachersOverLoad();
-        $weekTime = \artsoft\helpers\Schedule::academ2astr($this->week_time);
-        if ($this->week_time != 0 && $thereIsAnOverload['full_time'] != null && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
+        $weekTime = Schedule::academ2astr($this->teachers_load_week_time);
+        if ($this->teachers_load_week_time != 0 && $thereIsAnOverload['full_time'] != null && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
             $message = 'Суммарное время в расписании занятий не соответствует нагрузке!';
         }
         return $message ? Tooltip::widget(['type' => 'warning', 'message' => $message]) : null;
@@ -259,8 +259,8 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     {
         $delta_time = Yii::$app->settings->get('module.student_delta_time');
         $thereIsAnOverload = $this->getTeachersOverLoad();
-        $weekTime = \artsoft\helpers\Schedule::academ2astr($this->week_time);
-        if ($this->week_time != 0 && $weekTime > $thereIsAnOverload['full_time'] && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
+        $weekTime = Schedule::academ2astr($this->teachers_load_week_time);
+        if ($this->teachers_load_week_time != 0 && $weekTime > $thereIsAnOverload['full_time'] && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
             return true;
         }
         return false;

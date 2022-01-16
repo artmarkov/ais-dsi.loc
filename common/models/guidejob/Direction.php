@@ -83,8 +83,11 @@ class Direction extends ActiveRecord
 
     }
 
-    public static function getParentName($id)
+    /**
+     * @return false|int|null|string
+     */
+    public function getParentName()
     {
-        return $id ? self::find($id)->select('name')->scalar() : null;
+        return $this->parent ? self::find($this->parent)->select('name')->scalar() : null;
     }
 }
