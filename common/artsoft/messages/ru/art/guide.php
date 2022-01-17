@@ -92,7 +92,7 @@ return [
     'Education Union' => 'Группа планов',
     'Programm List' => 'Список программ',
     'Subject Sects' => 'Учебные группы',
-    'Subject Sect Schedule' => 'Расписание группы',
+    'Subject Sect Schedule' => 'Расписание занятий',
     'Sect Name' => 'Название группы',
     'Studyplan List' => 'Список учеников',
     'Union Name' => 'Название группы планов',

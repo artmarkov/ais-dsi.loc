@@ -135,6 +135,9 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
            (select studyplan.id as studyplan_id,
                          studyplan.student_id as student_id,
                          studyplan.plan_year as plan_year,
+                         studyplan.programm_id as programm_id,
+                         studyplan.speciality_id as speciality_id,
+                         studyplan.course as course,
                          studyplan.status as status,
                          studyplan_subject.subject_cat_id as subject_cat_id,
                          studyplan_subject.subject_id as subject_id,
@@ -168,6 +171,9 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
            (select studyplan.id as studyplan_id,
                          studyplan.student_id as student_id,
                          studyplan.plan_year as plan_year,
+                         studyplan.programm_id as programm_id,
+                         studyplan.speciality_id as speciality_id,
+                         studyplan.course as course,
                          studyplan.status as status,
                          studyplan_subject.subject_cat_id as subject_cat_id,
                          studyplan_subject.subject_id as subject_id,
@@ -200,7 +206,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
                                             and subject_sect_schedule.direction_id = teachers_load.direction_id 
                                             and subject_sect_schedule.teachers_id = teachers_load.teachers_id)								
            )
-           ORDER BY studyplan_id, direction_id, week_day, time_in
+           ORDER BY studyplan_id, subject_cat_id, direction_id, week_day, time_in
   		   
         ')->execute();
     }

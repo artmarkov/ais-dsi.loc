@@ -207,11 +207,15 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['education_programm_name', 'education_programm', 'id', 'name', 'id', 'status', null, 'Образовательные программы.'],
         ])->execute();
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['education_programm_short_name', 'education_programm', 'id', 'short_name', 'id', 'status', null, 'Образовательные программы сокр.'],
+        ])->execute();
 
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'education_programm_short_name'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_programm_name'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_level_short'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_level'])->execute();

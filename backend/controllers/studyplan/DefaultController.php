@@ -7,12 +7,18 @@ use common\models\education\EducationCat;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\history\StudyplanHistory;
+use common\models\subjectsect\search\SubjectScheduleViewSearch;
+use common\models\subjectsect\search\SubjectSectScheduleViewSearch;
+use common\models\subjectsect\SubjectScheduleView;
+use common\models\subjectsect\SubjectSectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use yii\helpers\ArrayHelper;
 use Yii;
 use yii\helpers\Json;
+use yii\helpers\StringHelper;
+use yii\web\NotFoundHttpException;
 
 /**
  * DefaultController implements the CRUD actions for common\models\studyplan\Studyplan model.
@@ -189,6 +195,76 @@ class DefaultController extends MainController
         ]);
     }
 
+    public function actionScheduleItems($id, $objectId = null, $mode = null)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+            if (!Yii::$app->request->get('load_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET load_id.");
+            }
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['studyplan/default/schedule-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление расписания';
+            $model = new SubjectSectSchedule();
+            $model->setTeachersLoadModelCopy(Yii::$app->request->get('load_id'));  // из нагрузки преподавателя
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/schedule/default/_form.php', [
+                'model' => $model,
+            ]);
+
+
+        } elseif ('history' == $mode && $objectId) {
+            $model = SubjectSectSchedule::findOne($objectId);
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['studyplan/default/schedule-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/update', 'id' => $model->id]];
+            $data = new SubjectSectScheduleHistory($objectId);
+            return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $model = SubjectSectSchedule::findOne($objectId);
+            $model->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+
+        } elseif ($objectId) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['studyplan/default/schedule-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $model = SubjectSectSchedule::findOne($objectId);
+
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The StudyplanSubject was not found.");
+            }
+
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/schedule/default/_form.php', [
+                'model' => $model,
+            ]);
+
+        } else {
+            $searchModel = new SubjectScheduleViewSearch();
+
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['studyplan_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'id'));
+        }
+    }
+
     /**
      *  формируем список дисциплин для widget DepDrop::classname()
      * @return false|string
@@ -241,6 +317,7 @@ class DefaultController extends MainController
         return [
             ['label' => 'Карточка индивидуального плана', 'url' => ['/studyplan/default/update', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/studyplan/default/studyplan-schedule', 'id' => $id]],
+            ['label' => 'Расписание занятий', 'url' => ['/studyplan/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/studyplan/default/studyplan-consult', 'id' => $id]],
             ['label' => 'Характеристики по предметам', 'url' => ['/studyplan/default/studyplan-characteristic', 'id' => $id]],
             ['label' => 'Дневник успеваемости', 'url' => ['/studyplan/default/studyplan-progress', 'id' => $id]],

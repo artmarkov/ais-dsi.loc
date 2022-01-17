@@ -37,6 +37,7 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property Direction $direction
  * @property SubjectSectStudyplan $subjectSectStudyplan
+ * @property StudyplanSubject $studyplanSubject
  * @property Teachers $teachers
  */
 class SubjectSectSchedule extends \artsoft\db\ActiveRecord
@@ -133,7 +134,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
                         ['direction_id' => $this->direction->parent]
                     ]);
                 foreach ($teachersSchedule->all() as $itemModel) {
-                    $string  = ' ' . ArtHelper::getWeekValue('short', $itemModel->week_num);
+                    $string = ' ' . ArtHelper::getWeekValue('short', $itemModel->week_num);
                     $string .= ' ' . ArtHelper::getWeekdayValue('short', $itemModel->week_day) . ' ' . $itemModel->time_in . '-' . $itemModel->time_out;
                     $string .= ' ' . RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
                     $info[] = $string;
@@ -191,9 +192,29 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
      */
     public function getSubjectSectStudyplan()
     {
-        return $this->hasOne(SubjectSectStudyplan::class, ['id' => 'subject_sect_studyplan_id']);
+        return $this->subject_sect_studyplan_id != 0 ? $this->hasOne(SubjectSectStudyplan::class, ['id' => 'subject_sect_studyplan_id']) : null;
     }
 
+    /**
+     * @return \yii\db\ActiveQuery|null
+     */
+    public function getStudyplanSubject()
+    {
+        return $this->studyplan_subject_id != 0 ? $this->hasOne(StudyplanSubject::class, ['id' => 'studyplan_subject_id']) : null;
+    }
+
+    /**
+     * @return bool|\yii\db\ActiveQuery
+     */
+    public function isSubjectMontly()
+    {
+        if ($this->subject_sect_studyplan_id != 0) {
+            return $this->subjectSectStudyplan->subjectSect->subjectCat->isMonthly();
+        } elseif ($this->studyplan_subject_id != 0) {
+            return $this->studyplanSubject->subjectCat->isMonthly();
+        }
+        return false;
+    }
 
     /**
      * Gets query for [[Teachers]].

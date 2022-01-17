@@ -62,7 +62,7 @@ use common\models\guidejob\Direction;
                     ])->label(Yii::t('art/teachers', 'Teacher'));
                     ?>
 
-                    <?php if ($model->subjectSectStudyplan->subjectSect->subjectCat->isMonthly()): ?>
+                    <?php if ($model->isSubjectMontly()): ?>
                         <?= $form->field($model, "week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList()) ?>
                     <?php endif; ?>
                     <?= $form->field($model, "week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList()) ?>

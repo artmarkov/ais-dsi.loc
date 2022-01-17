@@ -1,19 +1,16 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use common\models\subjectsect\SubjectSectScheduleView;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
-use artsoft\grid\GridPageSize;
 use kartik\grid\GridView;
-use common\models\subjectsect\SubjectSectSchedule;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\subjectsect\search\SubjectSectScheduleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/guide', 'Subject Sect Schedules');
+$this->title = Yii::t('art/guide', 'Subject Sect Schedule');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="subject-sect-schedule-index">
@@ -125,35 +122,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'format' => 'raw',
                             ],
-//                            'plan_year',
-//                            'subject_sect_schedule_id',
-//                            [
-//                                'attribute' => 'week_num',
-//                                'filterType' => GridView::FILTER_SELECT2,
-//                                'filter' => \artsoft\helpers\ArtHelper::getWeekList(),
-//                                'value' => function ($model) {
-//                                    return $model->week_num != 0 ? \artsoft\helpers\ArtHelper::getWeekList()[$model->week_num] : null;
-//                                },
-//                                'filterWidgetOptions' => [
-//                                    'pluginOptions' => ['allowClear' => true],
-//                                ],
-//                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-//                            ],
-//                            [
-//                                'attribute' => 'week_day',
-//                                'filterType' => GridView::FILTER_SELECT2,
-//                                'filter' => \artsoft\helpers\ArtHelper::getWeekdayList(),
-//                                'value' => function ($model) {
-//                                    return isset($model->week_day) ? \artsoft\helpers\ArtHelper::getWeekdayList()[$model->week_day] : null;
-//                                },
-//                                'filterWidgetOptions' => [
-//                                    'pluginOptions' => ['allowClear' => true],
-//                                ],
-//                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-//                            ],
-//
-//                            'time_in:time',
-//                            'time_out:time',
                             [
                                 'attribute' => 'auditory_id',
                                 'filterType' => GridView::FILTER_SELECT2,

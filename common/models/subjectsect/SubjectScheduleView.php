@@ -31,7 +31,7 @@ use Yii;
  * @property string|null $description
  * @property int|null $status
  */
-class SubjectScheduleView extends \artsoft\db\ActiveRecord
+class SubjectScheduleView extends SubjectSectScheduleView
 {
     /**
      * {@inheritdoc}
@@ -44,45 +44,39 @@ class SubjectScheduleView extends \artsoft\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
-        return [
-            [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'studyplan_id', 'student_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year', 'subject_sect_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'status'], 'default', 'value' => null],
-            [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'studyplan_id', 'student_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year', 'subject_sect_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'status'], 'integer'],
-            [['teachers_load_week_time', 'week_time', 'year_time'], 'number'],
-            [['description'], 'string', 'max' => 512],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
-            'teachers_load_id' => Yii::t('app/guide', 'Teachers Load ID'),
-            'subject_sect_studyplan_id' => Yii::t('app/guide', 'Subject Sect Studyplan ID'),
-            'studyplan_subject_id' => Yii::t('app/guide', 'Studyplan Subject ID'),
-            'direction_id' => Yii::t('app/guide', 'Direction ID'),
-            'teachers_id' => Yii::t('app/guide', 'Teachers ID'),
-            'teachers_load_week_time' => Yii::t('app/guide', 'Teachers Load Week Time'),
-            'studyplan_id' => Yii::t('app/guide', 'Studyplan ID'),
-            'student_id' => Yii::t('app/guide', 'Student ID'),
-            'subject_cat_id' => Yii::t('app/guide', 'Subject Cat ID'),
-            'subject_id' => Yii::t('app/guide', 'Subject ID'),
-            'subject_type_id' => Yii::t('app/guide', 'Subject Type ID'),
-            'subject_vid_id' => Yii::t('app/guide', 'Subject Vid ID'),
-            'week_time' => Yii::t('app/guide', 'Week Time'),
-            'year_time' => Yii::t('app/guide', 'Year Time'),
-            'plan_year' => Yii::t('app/guide', 'Plan Year'),
-            'subject_sect_schedule_id' => Yii::t('app/guide', 'Subject Sect Schedule ID'),
-            'week_num' => Yii::t('app/guide', 'Week Num'),
-            'week_day' => Yii::t('app/guide', 'Week Day'),
-            'time_in' => Yii::t('app/guide', 'Time In'),
-            'time_out' => Yii::t('app/guide', 'Time Out'),
-            'auditory_id' => Yii::t('app/guide', 'Auditory ID'),
-            'description' => Yii::t('app/guide', 'Description'),
-            'status' => Yii::t('app/guide', 'Status'),
+            'teachers_load_id' => Yii::t('art/guide', 'Teachers Load'),
+            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
+            'direction_id' => Yii::t('art/teachers', 'Name Direction'),
+            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
+            'teachers_load_week_time' => Yii::t('art/guide', 'Week Time'),
+            'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
+            'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
+            'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
+            'subject_sect_schedule_id' => Yii::t('art/guide', 'Subject Sect Schedule'),
+            'scheduleDisplay' => Yii::t('art/guide', 'Subject Sect Schedule'),
+            'week_num' => Yii::t('art/guide', 'Week Num'),
+            'week_day' => Yii::t('art/guide', 'Week Day'),
+            'time_in' => Yii::t('art/guide', 'Time In'),
+            'time_out' => Yii::t('art/guide', 'Time Out'),
+            'auditory_id' => Yii::t('art/guide', 'Auditory'),
+            'description' => Yii::t('art/guide', 'Description'),
+
+            'studyplan_subject_id' => Yii::t('art/guide', 'Subject Name'),
+            'studyplan_id' => Yii::t('art/guide', 'Studyplan'),
+            'student_id' => Yii::t('art/student', 'Student'),
+            'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
+            'subject_id' => Yii::t('art/guide', 'Subject Name'),
+            'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
+            'subject_vid_id' => Yii::t('art/guide', 'Subject Vid'),
+            'week_time' => Yii::t('art/guide', 'Week Time'),
+            'year_time' => Yii::t('art/guide', 'Year Time'),
+            'status' => Yii::t('art/guide', 'Status'),
+            'programm_id' => Yii::t('art/studyplan', 'Education Programm'),
+            'speciality_id' => Yii::t('art/studyplan', 'Speciality Name'),
+            'course' => Yii::t('art/studyplan', 'Course'),
         ];
     }
 }

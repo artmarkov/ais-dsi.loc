@@ -62,20 +62,6 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
-        return [
-            [['teachers_load_id', 'subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'subject_sect_id', 'plan_year', 'subject_sect_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
-            [['teachers_load_week_time'], 'number'],
-            [['scheduleDisplay'], 'safe'],
-            [['studyplan_subject_list'], 'string'],
-            [['description'], 'string', 'max' => 512],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -288,7 +274,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
                     $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
                 }
                 $message = 'В одной аудитории накладка по времени! ' . implode(', ', $info);
-                Notice::registerDanger($message);
+              //  Notice::registerDanger($message);
                 $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
             }
 
@@ -298,7 +284,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
                     $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
                 }
                 $message = 'Преподаватель(концертмейстер) не может работать в одно и тоже время в разных аудиториях! ' . implode(', ', $info);
-                Notice::registerDanger($message);
+             //   Notice::registerDanger($message);
                 $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
             }
             return implode('', $tooltip);

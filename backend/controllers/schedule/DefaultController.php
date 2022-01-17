@@ -2,40 +2,28 @@
 
 namespace backend\controllers\schedule;
 
-
-
-use artsoft\helpers\ArtHelper;
-use artsoft\models\OwnerAccess;
-use yii\data\ActiveDataProvider;
-use yii\helpers\StringHelper;
 use Yii;
+use yii\web\NotFoundHttpException;
 
 class DefaultController extends MainController
 {
-    public $modelClass = 'common\models\views\SubjectSectScheduleView';
-    public $modelSearchClass = 'common\models\views\search\SubjectSectScheduleViewSearch';
-    public function actionIndex()
+    public $modelClass = 'common\models\subjectsect\SubjectSectSchedule';
+    public $modelSearchClass = 'common\models\subjectsect\search\SubjectScheduleViewSearch';
+
+    public function actionCreate()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
-        $modelClass = $this->modelClass;
-        $searchModel = $this->modelSearchClass ? new $this->modelSearchClass : null;
-        $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
-            && !User::hasPermission($modelClass::getFullAccessPermission()));
-
-        if ($searchModel) {
-            $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
-
-            if ($restrictAccess) {
-                $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
-            }
-
-            $dataProvider = $searchModel->search($params);
-        } else {
-            $restrictParams = ($restrictAccess) ? [$modelClass::getOwnerField() => Yii::$app->user->identity->id] : [];
-            $dataProvider = new ActiveDataProvider(['query' => $modelClass::find()->where($restrictParams)]);
+        if (!Yii::$app->request->get('load_id')) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр GET load_id.");
+        }
+        /* @var $model \artsoft\db\ActiveRecord */
+        $model = new $this->modelClass;
+        $model->setTeachersLoadModelCopy(Yii::$app->request->get('load_id'));  // из нагрузки преподавателя
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+            $this->getSubmitAction($model);
         }
 
-        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel'));
+        return $this->renderIsAjax($this->createView, compact('model'));
     }
 }
