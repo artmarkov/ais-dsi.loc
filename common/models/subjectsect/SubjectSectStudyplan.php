@@ -113,13 +113,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
         }
         return $data;
     }
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSubjectSectSchedule()
-    {
-        return $this->hasMany(SubjectSectSchedule::class, ['subject_sect_studyplan_id' => 'id']);
-    }
+
     /**
      * @return array
      */

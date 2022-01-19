@@ -9,7 +9,7 @@ use yii\web\Response;
 
 class ScheduleController extends MainController
 {
-    public $modelClass = 'common\models\subjectsect\SubjectSectSchedule';
+    public $modelClass = 'common\models\subjectsect\SubjectSchedule';
     public $modelSearchClass = null;
 
     public function actionUpdateSchedule($id = null)

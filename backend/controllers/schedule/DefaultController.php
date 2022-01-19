@@ -8,7 +8,7 @@ use yii\web\NotFoundHttpException;
 
 class DefaultController extends MainController
 {
-    public $modelClass = 'common\models\subjectsect\SubjectSectSchedule';
+    public $modelClass = 'common\models\subjectsect\SubjectSchedule';
     public $modelSearchClass = 'common\models\subjectsect\search\SubjectScheduleViewSearch';
 
     public function actionCreate()

@@ -18,7 +18,7 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
     public function rules()
     {
         return [
-            [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'studyplan_id', 'student_id', 'programm_id','speciality_id','course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year', 'subject_sect_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'status'], 'integer'],
+            [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'studyplan_id', 'student_id', 'programm_id','speciality_id','course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year', 'subject_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'status'], 'integer'],
             [['teachers_load_week_time', 'week_time', 'year_time'], 'number'],
             [['description'], 'safe'],
         ];
@@ -83,7 +83,7 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
             'week_time' => $this->week_time,
             'year_time' => $this->year_time,
             'plan_year' => $this->plan_year,
-            'subject_sect_schedule_id' => $this->subject_sect_schedule_id,
+            'subject_schedule_id' => $this->subject_schedule_id,
             'week_num' => $this->week_num,
             'week_day' => $this->week_day,
             'time_in' => $this->time_in,

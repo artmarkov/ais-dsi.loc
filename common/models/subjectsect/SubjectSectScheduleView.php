@@ -26,7 +26,7 @@ use artsoft\widgets\Tooltip;
  * @property int|null $subject_sect_id
  * @property string|null $studyplan_subject_list
  * @property int|null $plan_year
- * @property int|null $subject_sect_schedule_id
+ * @property int|null $subject_schedule_id
  * @property int|null $week_num
  * @property int|null $week_day
  * @property int|null $time_in
@@ -73,7 +73,7 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
             'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
             'plan_year' => Yii::t('art/guide', 'Plan Year'),
-            'subject_sect_schedule_id' => Yii::t('art/guide', 'Subject Sect Schedule'),
+            'subject_schedule_id' => Yii::t('art/guide', 'Subject Sect Schedule'),
             'scheduleDisplay' => Yii::t('art/guide', 'Subject Sect Schedule'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
             'week_day' => Yii::t('art/guide', 'Week Day'),
@@ -147,10 +147,10 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     {
         $thereIsAnOverlapping = self::find()->where(
             ['AND',
-                ['!=', 'subject_sect_schedule_id', $model->id],
+                ['!=', 'subject_schedule_id', $model->id],
                 ['auditory_id' => $model->auditory_id],
                 ['direction_id' => $model->directionId],
-                ['plan_year' => RefBook::find('subject_sect_schedule_plan_year')->getValue($model->id)],
+                ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->id)],
                 ['OR',
                     ['AND',
                         ['<', 'time_in', $model->encodeTime($model->time_out)],
@@ -181,11 +181,11 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     {
         $thereIsAnOverlapping = self::find()->where(
             ['AND',
-                ['!=', 'subject_sect_schedule_id', $model->id],
+                ['!=', 'subject_schedule_id', $model->id],
                 ['direction_id' => $model->directionId],
                 ['teachers_id' => $model->teachersId],
                 ['!=', 'auditory_id', $model->auditory_id],
-                ['plan_year' => RefBook::find('subject_sect_schedule_plan_year')->getValue($model->id)],
+                ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->id)],
                 ['OR',
                     ['AND',
                         ['<', 'time_in', $model->encodeTime($model->time_out)],
@@ -266,8 +266,8 @@ class SubjectSectScheduleView extends \artsoft\db\ActiveRecord
     public function getItemScheduleNotice()
     {
         $tooltip = [];
-        if ($this->subject_sect_schedule_id) {
-            $model = SubjectSectSchedule::findOne($this->subject_sect_schedule_id);
+        if ($this->subject_schedule_id) {
+            $model = SubjectSchedule::findOne($this->subject_schedule_id);
             if (self::getScheduleOverLapping($model)->exists() === true) {
                 $info = [];
                 foreach (self::getScheduleOverLapping($model)->all() as $itemModel) {

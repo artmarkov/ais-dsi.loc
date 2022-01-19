@@ -8,7 +8,6 @@ $this->title = Yii::t('art/guide', 'Subject Sect Schedule');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
 $this->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = $this->title;
-
 $JSChange = <<<EOF
         function(node, data) {
          eventData = {   
@@ -114,7 +113,7 @@ Pjax::begin([
                             <div class="col-sm-12">
                                 <?= WeeklyScheduler::widget([
                                     'readonly' => $readonly,
-                                    'data' => $model->getSubjectSectSchedule(),
+                                    'data' => $model->getSubjectSchedule(),
                                     'events' => [
                                         'onChange' => new JsExpression($JSChange),
                                         'onClick' => new JsExpression($JSEventClick),

@@ -4,7 +4,7 @@ namespace common\models\studyplan;
 
 use artsoft\helpers\RefBook;
 use common\models\education\EducationProgramm;
-use common\models\subjectsect\SubjectSectSchedule;
+use common\models\subjectsect\SubjectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
@@ -241,12 +241,12 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
      * @return array|SubjectSectSchedule[]|TeachersLoad[]|\yii\db\ActiveRecord[]
      * @throws \yii\db\Exception
      */
-    public function getSubjectSectSchedule()
+    public function getSubjectSchedule()
     {
-        return $this->isIndividual() ? SubjectSectSchedule::find()->where(['=', 'studyplan_subject_id', $this->id])
+        return $this->isIndividual() ? SubjectSchedule::find()->where(['=', 'studyplan_subject_id', $this->id])
             ->andWhere('subject_sect_studyplan_id = 0')
             ->all() :
-            SubjectSectSchedule::find()->where(['=', 'subject_sect_studyplan_id', $this->getSubjectSectStudyplan()->id])
+            SubjectSchedule::find()->where(['=', 'subject_sect_studyplan_id', $this->getSubjectSectStudyplan()->id])
                 ->andWhere('studyplan_subject_id = 0')
                 ->all();
     }

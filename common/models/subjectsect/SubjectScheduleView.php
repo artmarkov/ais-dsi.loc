@@ -22,7 +22,7 @@ use Yii;
  * @property float|null $week_time
  * @property float|null $year_time
  * @property int|null $plan_year
- * @property int|null $subject_sect_schedule_id
+ * @property int|null $subject_schedule_id
  * @property int|null $week_num
  * @property int|null $week_day
  * @property int|null $time_in
@@ -55,8 +55,8 @@ class SubjectScheduleView extends SubjectSectScheduleView
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
             'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
-            'subject_sect_schedule_id' => Yii::t('art/guide', 'Subject Sect Schedule'),
-            'scheduleDisplay' => Yii::t('art/guide', 'Subject Sect Schedule'),
+            'subject_schedule_id' => Yii::t('art/guide', 'Subject Schedule'),
+            'scheduleDisplay' => Yii::t('art/guide', 'Subject Schedule'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
             'week_day' => Yii::t('art/guide', 'Week Day'),
             'time_in' => Yii::t('art/guide', 'Time In'),

@@ -10,13 +10,13 @@ use kartik\grid\GridView;
 use common\models\subjectsect\SubjectScheduleView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\subjectsect\search\SubjectSectScheduleSearch */
+/* @var $searchModel common\models\subjectsect\search\SubjectScheduleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/guide', 'Subject Sect Schedule');
+$this->title = Yii::t('art/guide', 'Subject Schedule');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="subject-sect-schedule-index">
+<div class="subject-schedule-index">
     <div class="panel">
         <div class="panel-body">
             <div class="panel panel-default">
@@ -33,12 +33,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?= GridPageSize::widget(['pjaxId' => 'subject-sect-schedule-grid-pjax']) ?>
+                            <?= GridPageSize::widget(['pjaxId' => 'subject-schedule-grid-pjax']) ?>
                         </div>
                     </div>
                     <?php
                     Pjax::begin([
-                        'id' => 'subject-sect-schedule-grid-pjax',
+                        'id' => 'subject-schedule-grid-pjax',
                     ])
                     ?>
 
@@ -170,7 +170,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'update' => function ($key, $model) {
                                         return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
-                                            Url::to(['/teachers/default/schedule-items', 'id' => $model->teachers_id, 'objectId' => $model->subject_sect_schedule_id, 'mode' => 'update']), [
+                                            Url::to(['/teachers/default/schedule-items', 'id' => $model->teachers_id, 'objectId' => $model->subject_schedule_id, 'mode' => 'update']), [
                                                 'title' => Yii::t('art', 'Edit'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
@@ -179,7 +179,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'delete' => function ($key, $model) {
                                         return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                                            Url::to(['/teachers/default/schedule-items', 'id' => $model->teachers_id, 'objectId' => $model->subject_sect_schedule_id, 'mode' => 'delete']), [
+                                            Url::to(['/teachers/default/schedule-items', 'id' => $model->teachers_id, 'objectId' => $model->subject_schedule_id, 'mode' => 'delete']), [
                                                 'title' => Yii::t('art', 'Delete'),
                                                 'aria-label' => Yii::t('art', 'Delete'),
                                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -194,10 +194,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                         return $model->getTeachersScheduleNeed();
                                     },
                                     'delete' => function ($model) {
-                                        return $model->subject_sect_schedule_id !== null;
+                                        return $model->subject_schedule_id !== null;
                                     },
                                     'update' => function ($model) {
-                                        return $model->subject_sect_schedule_id !== null;
+                                        return $model->subject_schedule_id !== null;
                                     }
                                 ]
                             ],

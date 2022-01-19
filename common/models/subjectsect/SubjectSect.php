@@ -3,7 +3,7 @@
 namespace common\models\subjectsect;
 
 use artsoft\helpers\RefBook;
-use common\models\activities\SubjectSectSchedule;
+use common\models\activities\SubjectSchedule;
 use \common\models\education\EducationUnion;
 use common\models\studyplan\Studyplan;
 use common\models\subject\Subject;
@@ -33,7 +33,7 @@ use yii\helpers\ArrayHelper;
  * @property int|null $updated_by
  * @property int $version
  *
- * @property SubjectSectSchedule[] $sectSchedules
+ * @property SubjectSchedule[] $sectSchedules
  * @property EducationUnion $educationUnion
  * @property GuideSubjectCategory $subjectCat
  * @property GuideSubjectType $subjectType
@@ -172,7 +172,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      */
     public function getSubjectSectStudyplans()
     {
-        return $this->hasMany(SubjectSectStudyplan::className(), ['subject_sect_id' => 'id']);
+        return $this->hasMany(SubjectSectStudyplan::class, ['subject_sect_id' => 'id']);
     }
 
     /**
@@ -182,13 +182,14 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function getSubjectSectTeachersLoad()
     {
         $data = [];
-        foreach ($this->subjectSectStudyplans as $index => $modelSubjectSectStudyplan){
+        foreach ($this->subjectSectStudyplans as $index => $modelSubjectSectStudyplan) {
             $sectClassName = $modelSubjectSectStudyplan->class_name;
             $data[$sectClassName] = $modelSubjectSectStudyplan->getSubjectSectTeachersLoads();
 
         }
         return $data;
     }
+
     /**
      * Полный список учеников подгрупп данной группы
      * @return string
@@ -242,7 +243,7 @@ SQL;
         foreach ($query as $item => $value) {
             $data[$value['id']] = [
                 'content' => SubjectSectStudyplan::getSubjectSectStudyplanContent($value['id']),
-                'disabled'=> $readonly
+                'disabled' => $readonly
             ];
         }
         return $data;
@@ -331,26 +332,29 @@ SQL;
         return $cat_id ? Yii::$app->db->createCommand(self::getQuery($union_id, $cat_id))->queryAll() : [];
     }
 
-    public function getSubjectSectSchedule()
+    public function getSubjectSchedule()
     {
+        $models = SubjectSectScheduleView::find()->where(['subject_sect_id' => $this->id])->all();
+
         $data = [];
-        foreach ($this->subjectSectStudyplans as $index => $modelSubjectSectStudyplan) {
-//                echo '<pre>' . print_r($modelSubjectSectStudyplan, true) . '</pre>';
-            foreach ($modelSubjectSectStudyplan->subjectSectSchedule as $item => $modelsectSchedule) {
+
+        foreach ($models as $item => $modelSchedule) {
+            if ($modelSchedule->subject_schedule_id) {
                 $data[] = [
-                    'week_day' => $modelsectSchedule->week_day,
-                    'time_in' => $modelsectSchedule->time_in,
-                    'time_out' => $modelsectSchedule->time_out,
-                    'title' => 'Группа ' . $modelSubjectSectStudyplan->class_name,
+                    'week_day' => $modelSchedule->week_day,
+                    'time_in' => $modelSchedule->time_in,
+                    'time_out' => $modelSchedule->time_out,
+                    'title' => RefBook::find('sect_name_1')->getValue($modelSchedule->subject_sect_studyplan_id),
                     'data' => [
                         'subject_sect_id' => $this->id,
-                        'schedule_id' => $modelsectSchedule->id,
-                        'teachers_load_id' => $modelsectSchedule->teachersLoadId,
-                        'direction_id' => $modelsectSchedule->direction_id,
-                        'teachers_id' => $modelsectSchedule->teachers_id,
-                        'description' => $modelsectSchedule->description,
-                        'week_num' => $modelsectSchedule->week_num,
-                        'auditory_id' => $modelsectSchedule->auditory_id,
+                        'schedule_id' => $modelSchedule->subject_schedule_id,
+                        'teachers_load_id' => $modelSchedule->teachers_load_id,
+                        'direction_id' => $modelSchedule->direction_id,
+                        'teachers_id' => $modelSchedule->teachers_id,
+                        'description' => $modelSchedule->description,
+                        'week_num' => $modelSchedule->week_num,
+                        'week_day' => $modelSchedule->week_day,
+                        'auditory_id' => $modelSchedule->auditory_id,
                         'style' => [
                             'background' => '#0000ff',
                             'color' => '#00ff00',
@@ -358,9 +362,9 @@ SQL;
                         ]
                     ]
                 ];
-
             }
         }
+//        print_r($data);
         return $data;
     }
 }

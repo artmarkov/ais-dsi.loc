@@ -9,15 +9,15 @@ use yii\widgets\MaskedInput;
 use common\models\guidejob\Direction;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\subjectsect\SubjectSectSchedule */
+/* @var $model common\models\subjectsect\SubjectSchedule */
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 
-<div class="subject-sect-schedule-form">
+<div class="subject-schedule-form">
 
     <?php
     $form = ActiveForm::begin([
-        'id' => 'subject-sect-schedule-form',
+        'id' => 'subject-schedule-form',
         'validateOnBlur' => false,
     ])
     ?>

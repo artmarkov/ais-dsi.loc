@@ -5,13 +5,13 @@ namespace common\models\subjectsect\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\subjectsect\SubjectSectSchedule;
+use common\models\subjectsect\SubjectSchedule;
 
 /**
- * SubjectSectScheduleSearch represents the model behind the search form about `common\models\subjectsect\SubjectSectSchedule`.
+ * SubjectScheduleSearch represents the model behind the search form about `common\models\subjectsect\SubjectSchedule`.
  * @property int $subject_sect_id
  */
-class SubjectSectScheduleSearch extends SubjectSectSchedule
+class SubjectScheduleSearch extends SubjectSchedule
 {
     public $subject_sect_id;
     /**
@@ -43,7 +43,7 @@ class SubjectSectScheduleSearch extends SubjectSectSchedule
      */
     public function search($params)
     {
-        $query = SubjectSectSchedule::find();
+        $query = SubjectSchedule::find();
         $query->joinWith(['subjectSectStudyplan']);
 
         $dataProvider = new ActiveDataProvider([

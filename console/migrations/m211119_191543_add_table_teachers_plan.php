@@ -49,7 +49,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
             ['teachers_load_display', 'teachers_load_view', 'id', 'teachers_load_display', 'status', null, null, 'Нагрузка преподавателей(с ФИО и видом деятельности)'],
         ])->execute();
 
-        $this->createTableWithHistory('subject_sect_schedule', [
+        $this->createTableWithHistory('subject_schedule', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'teachers_load_id' => $this->integer(),
             'week_num' => $this->integer(),
@@ -65,9 +65,9 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable('subject_sect_schedule', 'Расписание занятий');
-        $this->db->createCommand()->resetSequence('subject_sect_schedule', 10000)->execute();
-        $this->addForeignKey('subject_sect_schedule_ibfk_1', 'subject_sect_schedule', 'teachers_load_id', 'teachers_load', 'id', 'CASCADE', 'CASCADE');
+        $this->addCommentOnTable('subject_schedule', 'Расписание занятий');
+        $this->db->createCommand()->resetSequence('subject_schedule', 10000)->execute();
+        $this->addForeignKey('subject_schedule_ibfk_1', 'subject_schedule', 'teachers_load_id', 'teachers_load', 'id', 'CASCADE', 'CASCADE');
 
         $this->createTableWithHistory('teachers_plan', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
@@ -99,14 +99,14 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
 
         $this->dropForeignKey('teachers_plan_ibfk_1', 'teachers_plan');
         $this->dropForeignKey('teachers_plan_ibfk_2', 'teachers_plan');
-        $this->dropForeignKey('subject_sect_schedule_ibfk_1', 'subject_sect_schedule');
+        $this->dropForeignKey('subject_schedule_ibfk_1', 'subject_schedule');
         $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_load_display'])->execute();
         $this->db->createCommand()->dropView('teachers_load_view')->execute();
         $this->dropForeignKey('teachers_load_ibfk_1', 'teachers_load');
         $this->dropForeignKey('teachers_load_ibfk_2', 'teachers_load');
 
         $this->dropTableWithHistory('teachers_plan');
-        $this->dropTableWithHistory('subject_sect_schedule');
+        $this->dropTableWithHistory('subject_schedule');
         $this->dropTableWithHistory('teachers_load');
 
     }

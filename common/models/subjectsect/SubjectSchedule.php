@@ -34,7 +34,7 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property TeachersKoad $teachersLoad
  */
-class SubjectSectSchedule extends \artsoft\db\ActiveRecord
+class SubjectSchedule extends \artsoft\db\ActiveRecord
 {
 
     public $teachersLoadId;
@@ -44,7 +44,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'subject_sect_schedule';
+        return 'subject_schedule';
     }
 
     /**
