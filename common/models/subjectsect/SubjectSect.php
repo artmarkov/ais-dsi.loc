@@ -334,35 +334,36 @@ SQL;
 
     public function getSubjectSchedule()
     {
-        $models = SubjectSectScheduleView::find()->where(['subject_sect_id' => $this->id])->all();
+        $models = SubjectSectScheduleView::find()
+            ->where(['subject_sect_id' => $this->id])
+            ->andWhere(['not', ['subject_schedule_id' => null]])
+            ->all();
 
         $data = [];
 
         foreach ($models as $item => $modelSchedule) {
-            if ($modelSchedule->subject_schedule_id) {
-                $data[] = [
+            $data[] = [
+                'week_day' => $modelSchedule->week_day,
+                'time_in' => $modelSchedule->time_in,
+                'time_out' => $modelSchedule->time_out,
+                'title' => RefBook::find('sect_name_1')->getValue($modelSchedule->subject_sect_studyplan_id),
+                'data' => [
+                    'subject_sect_id' => $this->id,
+                    'schedule_id' => $modelSchedule->subject_schedule_id,
+                    'teachers_load_id' => $modelSchedule->teachers_load_id,
+                    'direction_id' => $modelSchedule->direction_id,
+                    'teachers_id' => $modelSchedule->teachers_id,
+                    'description' => $modelSchedule->description,
+                    'week_num' => $modelSchedule->week_num,
                     'week_day' => $modelSchedule->week_day,
-                    'time_in' => $modelSchedule->time_in,
-                    'time_out' => $modelSchedule->time_out,
-                    'title' => RefBook::find('sect_name_1')->getValue($modelSchedule->subject_sect_studyplan_id),
-                    'data' => [
-                        'subject_sect_id' => $this->id,
-                        'schedule_id' => $modelSchedule->subject_schedule_id,
-                        'teachers_load_id' => $modelSchedule->teachers_load_id,
-                        'direction_id' => $modelSchedule->direction_id,
-                        'teachers_id' => $modelSchedule->teachers_id,
-                        'description' => $modelSchedule->description,
-                        'week_num' => $modelSchedule->week_num,
-                        'week_day' => $modelSchedule->week_day,
-                        'auditory_id' => $modelSchedule->auditory_id,
-                        'style' => [
-                            'background' => '#0000ff',
-                            'color' => '#00ff00',
-                            'border' => '#ff0000',
-                        ]
+                    'auditory_id' => $modelSchedule->auditory_id,
+                    'style' => [
+                        'background' => '#0000ff',
+                        'color' => '#00ff00',
+                        'border' => '#ff0000',
                     ]
-                ];
-            }
+                ]
+            ];
         }
 //        print_r($data);
         return $data;
