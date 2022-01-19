@@ -87,7 +87,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'filterType' => GridView::FILTER_SELECT2,
                                 'filter' => \common\models\guidejob\Direction::getDirectionList(),
                                 'value' => function ($model, $key, $index, $widget) {
-                                    return $model->direction->name;
+                                    return $model->direction ? $model->direction->name : null;
                                 },
                                 'filterWidgetOptions' => [
                                     'pluginOptions' => ['allowClear' => true],
@@ -225,7 +225,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'toolbar' => [
                             [
                                 'content' => Html::a('Очистить',
-                                    Url::to(['/schedule']), [
+                                    Url::to(['/studyplan/default/schedule-items', 'id' => $id]), [
                                         'title' => 'Очистить',
                                         'data-pjax' => '0',
                                         'class' => 'btn btn-default'

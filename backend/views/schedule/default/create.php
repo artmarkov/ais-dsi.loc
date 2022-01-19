@@ -11,5 +11,8 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="subject-sect-schedule-create">    
-    <?=  $this->render('_form', compact('model')) ?>
+    <?=  $this->render('_form', [
+        'model' => $model,
+        'teachersLoadModel' => $teachersLoadModel,
+    ]); ?>
 </div>

@@ -11,5 +11,8 @@ $this->params['breadcrumbs'][] = ['label' =>sprintf('#%06d', $model->id)];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="subject-sect-schedule-update">
-    <?= $this->render('_form', compact('model')) ?>
+    <?= $this->render('_form', [
+        'model' => $model,
+        'teachersLoadModel' => $teachersLoadModel,
+    ]); ?>
 </div>

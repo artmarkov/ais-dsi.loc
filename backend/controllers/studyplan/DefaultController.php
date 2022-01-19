@@ -14,6 +14,7 @@ use common\models\subjectsect\SubjectSectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\teachers\TeachersLoad;
 use yii\helpers\ArrayHelper;
 use Yii;
 use yii\helpers\Json;
@@ -206,9 +207,11 @@ class DefaultController extends MainController
             if (!Yii::$app->request->get('load_id')) {
                 throw new NotFoundHttpException("Отсутствует обязательный параметр GET load_id.");
             }
+            $teachersLoadModel = TeachersLoad::findOne(Yii::$app->request->get('load_id'));
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['studyplan/default/schedule-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление расписания';
             $model = new SubjectSectSchedule();
+            $model->teachers_load_id = Yii::$app->request->get('load_id');
             $model->setTeachersLoadModelCopy(Yii::$app->request->get('load_id'));  // из нагрузки преподавателя
             if ($model->load(Yii::$app->request->post()) AND $model->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
@@ -217,6 +220,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/schedule/default/_form.php', [
                 'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
             ]);
 
 
@@ -239,7 +243,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['studyplan/default/schedule-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $model = SubjectSectSchedule::findOne($objectId);
-
+            $teachersLoadModel = TeachersLoad::findOne($objectId);
             if (!isset($model)) {
                 throw new NotFoundHttpException("The StudyplanSubject was not found.");
             }
@@ -251,6 +255,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/schedule/default/_form.php', [
                 'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
             ]);
 
         } else {
@@ -317,7 +322,7 @@ class DefaultController extends MainController
         return [
             ['label' => 'Карточка индивидуального плана', 'url' => ['/studyplan/default/update', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/studyplan/default/studyplan-schedule', 'id' => $id]],
-            ['label' => 'Расписание занятий', 'url' => ['/studyplan/default/schedule-items', 'id' => $id]],
+            ['label' => 'Элементы расписания', 'url' => ['/studyplan/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/studyplan/default/studyplan-consult', 'id' => $id]],
             ['label' => 'Характеристики по предметам', 'url' => ['/studyplan/default/studyplan-characteristic', 'id' => $id]],
             ['label' => 'Дневник успеваемости', 'url' => ['/studyplan/default/studyplan-progress', 'id' => $id]],

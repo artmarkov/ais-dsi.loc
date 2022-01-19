@@ -82,7 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'filterType' => GridView::FILTER_SELECT2,
                                 'filter' => \common\models\guidejob\Direction::getDirectionList(),
                                 'value' => function ($model, $key, $index, $widget) {
-                                    return $model->direction->name;
+                                    return $model->direction ? $model->direction->name : null;
                                 },
                                 'filterWidgetOptions' => [
                                     'pluginOptions' => ['allowClear' => true],

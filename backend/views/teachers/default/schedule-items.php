@@ -48,138 +48,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filterModel' => $searchModel,
                         'columns' => [
                             ['class' => 'kartik\grid\SerialColumn'],
-
-//                            [
-//                                'attribute' => 'studyplan_subject_id',
-//                                'value' => function ($model, $key, $index, $widget) {
-//                                    return RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id ?? null) . '-' . $model->week_time;
-//                                },
-//                            ],
                             [
-                                'attribute' => 'student_id',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => RefBook::find('students_fullname')->getList(),
+                                'attribute' => 'studyplan_subject_id',
                                 'value' => function ($model) {
-                                    return RefBook::find('students_fullname')->getValue($model->student_id);
+                                    return RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id ?? null) . '-' . $model->week_time;
                                 },
                                 'format' => 'raw',
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'group' => true,  // enable grouping
-                            ],
-                            [
-                                'attribute' => 'programm_id',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => RefBook::find('education_programm_short_name')->getList(),
-                                'value' => function ($model, $key, $index, $widget) {
-                                    return RefBook::find('education_programm_short_name')->getValue($model->programm_id ?? null);
-                                },
-                                'format' => 'raw',
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'group' => true,  // enable grouping
-                                'subGroupOf' => 1
-                            ],
-                            [
-                                'attribute' => 'speciality_id',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => RefBook::find('education_speciality')->getList(),
-                                'value' => function ($model, $key, $index, $widget) {
-                                    return RefBook::find('education_speciality_short')->getValue($model->speciality_id ?? null);
-                                },
-                                'format' => 'raw',
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'group' => true,  // enable grouping
-                                'subGroupOf' => 1
-                            ],
-                            [
-                                'attribute' => 'plan_year',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => \artsoft\helpers\ArtHelper::getStudyYearsList(),
-                                'value' => function ($model) {
-                                    return \artsoft\helpers\ArtHelper::getStudyYearsList()[$model->plan_year];
-                                },
-                                'format' => 'raw',
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'group' => true,  // enable grouping
-                                'subGroupOf' => 1
-                            ],
-                            [
-                                'attribute' => 'status',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => SubjectScheduleView::getStatusList(),
-                                'value' => function ($model) {
-                                    return SubjectScheduleView::getStatusValue($model->status);
-                                },
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'group' => true,  // enable grouping
-                                'subGroupOf' => 1
-                            ],
-                            [
-                                'attribute' => 'course',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
-                                'value' => function ($model) {
-                                    return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
-                                },
-                                'format' => 'raw',
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'group' => true,  // enable grouping
-                                'subGroupOf' => 1
-                            ],
-
-                            [
-                                'attribute' => 'subject_cat_id',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => RefBook::find('subject_category_name')->getList(),
-                                'value' => function ($model) {
-                                    return RefBook::find('subject_category_name')->getValue($model->subject_cat_id);
-                                },
-                                'format' => 'raw',
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'group' => true,  // enable grouping
-                                'subGroupOf' => 1
-                            ],
-                            [
-                                'attribute' => 'subject_id',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => RefBook::find('subject_name')->getList(),
-                                'value' => function ($model) {
-                                    return RefBook::find('subject_name')->getValue($model->subject_id);
-                                },
-                                'format' => 'raw',
-                                'group' => true,  // enable grouping
-                                'subGroupOf' => 7
-                            ],
-                            [
-                                'attribute' => 'subject_type_id',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => RefBook::find('subject_type_name')->getList(),
-                                'value' => function ($model) {
-                                    return RefBook::find('subject_type_name_dev')->getValue($model->subject_type_id);
-                                },
-                                'format' => 'raw',
-                                'group' => true,  // enable grouping
-                                'subGroupOf' => 7
+                                'group' => true,
                             ],
                             [
                                 'attribute' => 'subject_vid_id',
@@ -189,8 +64,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return RefBook::find('subject_vid_name_dev')->getValue($model->subject_vid_id);
                                 },
                                 'format' => 'raw',
-                                'group' => true,  // enable grouping
-                                'subGroupOf' => 7
+                                'group' => true,
+                                'subGroupOf' => 1
                             ],
                             [
                                 'attribute' => 'subject_sect_studyplan_id',
@@ -205,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'group' => true,  // enable grouping
-                                'subGroupOf' => 7
+                                'subGroupOf' => 1
                             ],
                             [
                                 'attribute' => 'direction_id',
@@ -220,22 +95,22 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
 
                                 'group' => true,  // enable grouping
-                                'subGroupOf' => 7
+                                'subGroupOf' => 1
                             ],
-                            [
-                                'attribute' => 'teachers_id',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => RefBook::find('teachers_fio')->getList(),
-                                'value' => function ($model) {
-                                    return RefBook::find('teachers_fio')->getValue($model->teachers_id);
-                                },
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'group' => true,  // enable grouping
-                                'subGroupOf' => 7
-                            ],
+//                            [
+//                                'attribute' => 'teachers_id',
+//                                'filterType' => GridView::FILTER_SELECT2,
+//                                'filter' => RefBook::find('teachers_fio')->getList(),
+//                                'value' => function ($model) {
+//                                    return RefBook::find('teachers_fio')->getValue($model->teachers_id);
+//                                },
+//                                'filterWidgetOptions' => [
+//                                    'pluginOptions' => ['allowClear' => true],
+//                                ],
+//                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//                                'group' => true,  // enable grouping
+//                                'subGroupOf' => 1
+//                            ],
                             [
                                 'attribute' => 'teachers_load_week_time',
                                 'value' => function ($model) {
@@ -243,7 +118,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'format' => 'raw',
                                 'group' => true,  // enable grouping
-                                'subGroupOf' => 13
+                                'subGroupOf' => 4
                             ],
                             [
                                 'attribute' => 'scheduleDisplay',
@@ -285,7 +160,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttons' => [
                                     'create' => function ($key, $model) {
                                         return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                                            Url::to(['/schedule/default/create', 'id' => $model->subject_sect_schedule_id, 'load_id' => $model->teachers_load_id,]), [
+                                            Url::to(['/teachers/default/schedule-items', 'id' => $model->teachers_id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']), [
                                                 'title' => Yii::t('art', 'Create'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
@@ -295,7 +170,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'update' => function ($key, $model) {
                                         return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
-                                            Url::to(['/schedule/default/update', 'id' => $model->subject_sect_schedule_id]), [
+                                            Url::to(['/teachers/default/schedule-items', 'id' => $model->teachers_id, 'objectId' => $model->subject_sect_schedule_id, 'mode' => 'update']), [
                                                 'title' => Yii::t('art', 'Edit'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
@@ -304,7 +179,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'delete' => function ($key, $model) {
                                         return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                                            Url::to(['/schedule/default/delete', 'id' => $model->subject_sect_schedule_id]), [
+                                            Url::to(['/teachers/default/schedule-items', 'id' => $model->teachers_id, 'objectId' => $model->subject_sect_schedule_id, 'mode' => 'delete']), [
                                                 'title' => Yii::t('art', 'Delete'),
                                                 'aria-label' => Yii::t('art', 'Delete'),
                                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -331,9 +206,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'beforeHeader' => [
                             [
                                 'columns' => [
-                                    ['content' => 'Индивидуальный план', 'options' => ['colspan' => 7, 'class' => 'text-center success']],
                                     ['content' => 'Дисциплина', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
-                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
+                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 2, 'class' => 'text-center info']],
                                     ['content' => 'Расписание занятий', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
                                 ],
                                 'options' => ['class' => 'skip-export'] // remove this row from export
@@ -351,7 +225,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'toolbar' => [
                             [
                                 'content' => Html::a('Очистить',
-                                    Url::to(['/schedule']), [
+                                    Url::to(['/teachers/default/schedule-items', 'id' => $id]), [
                                         'title' => 'Очистить',
                                         'data-pjax' => '0',
                                         'class' => 'btn btn-default'
@@ -359,7 +233,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ),
                             ],
                             '{export}',
-                             '{toggleData}'
+                            '{toggleData}'
                         ],
                         'pjax' => true,
                         'bordered' => true,
@@ -369,7 +243,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'hover' => false,
                         'floatHeader' => false,
 //    'floatHeaderOptions' => ['top' => $scrollingTop],
-                        'showPageSummary' => false,
+                        'showPageSummary' => true,
                         //'layout' => '{items}',
                         'panel' => [
                             'type' => GridView::TYPE_DEFAULT

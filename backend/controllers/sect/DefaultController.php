@@ -257,10 +257,11 @@ class DefaultController extends MainController
             if (!Yii::$app->request->get('load_id')) {
                 throw new NotFoundHttpException("Отсутствует обязательный параметр GET load_id.");
             }
+            $teachersLoadModel = TeachersLoad::findOne(Yii::$app->request->get('load_id'));
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/schedule-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление расписания';
             $model = new SubjectSectSchedule();
-            $model->setTeachersLoadModelCopy(Yii::$app->request->get('load_id'));  // из нагрузки преподавателя
+            $model->teachers_load_id = Yii::$app->request->get('load_id');
             if ($model->load(Yii::$app->request->post()) AND $model->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
                 $this->getSubmitAction($model);
@@ -268,6 +269,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/schedule/default/_form.php', [
                 'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
             ]);
 
 
@@ -290,7 +292,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/schedule-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $model = SubjectSectSchedule::findOne($objectId);
-
+            $teachersLoadModel = TeachersLoad::findOne($objectId);
             if (!isset($model)) {
                 throw new NotFoundHttpException("The StudyplanSubject was not found.");
             }
@@ -302,6 +304,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/schedule/default/_form.php', [
                 'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
             ]);
 
         } else {

@@ -19,10 +19,7 @@ use yii\behaviors\TimestampBehavior;
  * This is the model class for table "subject_sect_schedule".
  *
  * @property int $id
- * @property int|null $subject_sect_studyplan_id
- * @property int|null $studyplan_subject_id
- * @property int $direction_id
- * @property int $teachers_id
+ * @property int $teachers_load_id
  * @property int|null $week_num
  * @property int|null $week_day
  * @property int|null $time_in
@@ -35,10 +32,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $updated_by
  * @property int $version
  *
- * @property Direction $direction
- * @property SubjectSectStudyplan $subjectSectStudyplan
- * @property StudyplanSubject $studyplanSubject
- * @property Teachers $teachers
+ * @property TeachersKoad $teachersLoad
  */
 class SubjectSectSchedule extends \artsoft\db\ActiveRecord
 {
@@ -74,18 +68,16 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
-            [['direction_id', 'teachers_id', 'week_day', 'auditory_id', 'time_in', 'time_out'], 'required'],
-            [['subject_sect_studyplan_id', 'studyplan_subject_id'], 'default', 'value' => 0],
+            [['teachers_load_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
+            [['teachers_load_id', 'week_day', 'auditory_id', 'time_in', 'time_out'], 'required'],
             [['time_in', 'time_out', 'teachersLoadId'], 'safe'],
             [['description'], 'string', 'max' => 512],
-            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
-            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
+            [['teachers_load_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeachersLoad::class, 'targetAttribute' => ['teachers_load_id' => 'id']],
             [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
 //            [['auditory_id', 'time_in'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
             //  [['auditory_id'], 'checkScheduleOverLapping', 'skipOnEmpty' => false],
-            [['direction_id'], 'checkScheduleAccompLimit', 'skipOnEmpty' => false],
+            [['auditory_id'], 'checkScheduleAccompLimit', 'skipOnEmpty' => false],
         ];
     }
 
@@ -152,10 +144,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art', 'ID'),
-            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
-            'studyplan_subject_id' => Yii::t('art/guide', 'Studyplan Subject'),
-            'direction_id' => Yii::t('art/teachers', 'Name Direction'),
-            'teachers_id' => Yii::t('art/teachers', 'Teacher'),
+            'teachers_load_id' => Yii::t('art/teachers', 'Teachers Load'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
             'week_day' => Yii::t('art/guide', 'Week Day'),
             'time_in' => Yii::t('art/guide', 'Time In'),
@@ -180,11 +169,25 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getDirection()
+    public function getTeachersLoad()
     {
-        return $this->hasOne(Direction::class, ['id' => 'direction_id']);
+        return $this->hasOne(TeachersLoad::class, ['id' => 'teachers_load_id']);
     }
 
+    public function getDirectionId()
+    {
+        return $this->teachersLoad->direction_id;
+    }
+
+    public function getTeachersId()
+    {
+        return $this->teachersLoad->teachers_id;
+    }
+
+    public function getDirection()
+    {
+        return Direction::findOne($this->getDirectionId());
+    }
     /**
      * Gets query for [[SubjectSectStudyplan]].
      *
@@ -192,7 +195,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
      */
     public function getSubjectSectStudyplan()
     {
-        return $this->subject_sect_studyplan_id != 0 ? $this->hasOne(SubjectSectStudyplan::class, ['id' => 'subject_sect_studyplan_id']) : null;
+        return $this->teachersLoad->subject_sect_studyplan_id != 0 ? SubjectSectStudyplan::findOne($this->teachersLoad->subject_sect_studyplan_id) : null;
     }
 
     /**
@@ -200,7 +203,7 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
      */
     public function getStudyplanSubject()
     {
-        return $this->studyplan_subject_id != 0 ? $this->hasOne(StudyplanSubject::class, ['id' => 'studyplan_subject_id']) : null;
+        return $this->teachersLoad->studyplan_subject_id != 0 ? StudyplanSubject::findOne($this->teachersLoad->studyplan_subject_id) : null;
     }
 
     /**
@@ -208,22 +211,12 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
      */
     public function isSubjectMontly()
     {
-        if ($this->subject_sect_studyplan_id != 0) {
+        if ($this->teachersLoad->subject_sect_studyplan_id != 0) {
             return $this->subjectSectStudyplan->subjectSect->subjectCat->isMonthly();
-        } elseif ($this->studyplan_subject_id != 0) {
+        } elseif ($this->teachersLoad->studyplan_subject_id != 0) {
             return $this->studyplanSubject->subjectCat->isMonthly();
         }
         return false;
-    }
-
-    /**
-     * Gets query for [[Teachers]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTeachers()
-    {
-        return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
     }
 
     /**
@@ -234,19 +227,6 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
         return $this->hasOne(Auditory::class, ['id' => 'teachers_id']);
     }
 
-    /**
-     * Геттер $teachersLoadId
-     * @return false|int|string|null
-     */
-    public function getTeachersLoadId()
-    {
-        return TeachersLoad::find()
-            ->where(['=', 'teachers_id', $this->teachers_id])
-            ->andWhere(['=', 'direction_id', $this->direction_id])
-            ->andWhere(['=', 'studyplan_subject_id', $this->studyplan_subject_id])
-            ->andWhere(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
-            ->scalar();
-    }
 
     /**
      * @return string
@@ -287,17 +267,6 @@ class SubjectSectSchedule extends \artsoft\db\ActiveRecord
             $this->studyplan_subject_id = 0;
             $this->subject_sect_studyplan_id = $modelSubject->getSubjectSectStudyplan()->id;
         }
-        return $this;
-    }
-
-    public function setTeachersLoadModelCopy($id = null)
-    {
-        $model_load = TeachersLoad::findOne($id ?? $this->teachersLoadId);
-        $this->setAttribute('teachers_id', $model_load->teachers_id);
-        $this->setAttribute('direction_id', $model_load->direction_id);
-        $this->setAttribute('subject_sect_studyplan_id', $model_load->subject_sect_studyplan_id);
-        $this->setAttribute('studyplan_subject_id', $model_load->studyplan_subject_id);
-
         return $this;
     }
 }

@@ -102,10 +102,10 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
 
         $this->db->createCommand()->createView('subject_sect_schedule_view', '
          select subject_sect.id as subject_sect_id,
+				subject_sect.plan_year as plan_year,	
                 subject_sect_studyplan.studyplan_subject_list as studyplan_subject_list,
-                subject_sect.plan_year as plan_year,	
+                subject_sect_studyplan.id as subject_sect_studyplan_id,	
                 teachers_load.id as teachers_load_id,
-                teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
                 teachers_load.week_time as teachers_load_week_time,			
@@ -116,14 +116,11 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
                 subject_sect_schedule.time_out as time_out,
                 subject_sect_schedule.auditory_id as auditory_id,
                 subject_sect_schedule.description as description
-         from subject_sect_schedule
-         right join teachers_load on (teachers_load.subject_sect_studyplan_id = subject_sect_schedule.subject_sect_studyplan_id
-                                    and teachers_load.studyplan_subject_id = subject_sect_schedule.studyplan_subject_id
-                                    and teachers_load.direction_id = subject_sect_schedule.direction_id 
-                                    and teachers_load.teachers_id = subject_sect_schedule.teachers_id								
-                                    )
-         inner join subject_sect_studyplan on subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id
-         inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
+         from subject_sect_studyplan
+		 inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
+		 left join teachers_load  on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id
+		                            and teachers_load.studyplan_subject_id = 0)
+         left join subject_sect_schedule  on (subject_sect_schedule.teachers_load_id = teachers_load.id)
          order by subject_sect_id, subject_sect_studyplan_id, direction_id, week_day, time_in
         ')->execute();
 
@@ -161,11 +158,9 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
                  from studyplan
                  inner join studyplan_subject on (studyplan.id = studyplan_subject.studyplan_id)
                  inner join guide_subject_vid on (guide_subject_vid.id = studyplan_subject.subject_vid_id and guide_subject_vid.qty_min = 1 and guide_subject_vid.qty_max = 1)
-                 left join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id )
-                 left join subject_sect_schedule  on (subject_sect_schedule.subject_sect_studyplan_id = teachers_load.subject_sect_studyplan_id
-                                            and subject_sect_schedule.studyplan_subject_id = teachers_load.studyplan_subject_id
-                                            and subject_sect_schedule.direction_id = teachers_load.direction_id 
-                                            and subject_sect_schedule.teachers_id = teachers_load.teachers_id)
+                 left join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id 
+											and teachers_load.subject_sect_studyplan_id = 0)
+                 left join subject_sect_schedule  on (subject_sect_schedule.teachers_load_id = teachers_load.id)
            )
            UNION
            (select studyplan.id as studyplan_id,
@@ -200,11 +195,9 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
                                            and subject_sect.subject_id = studyplan_subject.subject_id
                                            and subject_sect.subject_vid_id = studyplan_subject.subject_vid_id)
                  inner join subject_sect_studyplan on (subject_sect_studyplan.subject_sect_id = subject_sect.id and studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 				   
-                 left join teachers_load on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id )
-                 left join subject_sect_schedule on (subject_sect_schedule.subject_sect_studyplan_id = teachers_load.subject_sect_studyplan_id
-                                            and subject_sect_schedule.studyplan_subject_id = teachers_load.studyplan_subject_id
-                                            and subject_sect_schedule.direction_id = teachers_load.direction_id 
-                                            and subject_sect_schedule.teachers_id = teachers_load.teachers_id)								
+                 left join teachers_load  on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id
+		                            and teachers_load.studyplan_subject_id = 0)
+                 left join subject_sect_schedule  on (subject_sect_schedule.teachers_load_id = teachers_load.id)							
            )
            ORDER BY studyplan_id, subject_cat_id, direction_id, week_day, time_in
   		   
