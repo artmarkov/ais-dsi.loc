@@ -24,7 +24,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $updated_by
  * @property int $version
  *
- * @property GuideTeachersDirection $direction
+ * @property Direction $direction
  * @property SubjectSect $sect
  * @property Teachers $teachers
  */
@@ -60,7 +60,6 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
             [['direction_id', 'teachers_id', 'week_time'], 'required'],
             [['week_time'], 'number'],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
-           // [['subject_sect_studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSectStudyplan::class, 'targetAttribute' => ['subject_sect_studyplan_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
@@ -68,22 +67,23 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-//    public function attributeLabels()
-//    {
-//        return [
-//            'id' => Yii::t('art/guide', 'ID'),
-//            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Subject_Sect_Studyplan ID'),
-//            'studyplan_subject_id' => Yii::t('art/guide', 'Sect ID'),
-//            'direction_id' => Yii::t('art/guide', 'Direction'),
-//            'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
-//            'week_time' => Yii::t('art/guide', 'Week Time'),
-//            'created_at' => Yii::t('art', 'Created At'),
-//            'created_by' => Yii::t('art', 'Created'),
-//            'updated_at' => Yii::t('art', 'Updated At'),
-//            'updated_by' => Yii::t('art', 'Updated'),
-//            'version' => Yii::t('art', 'Version'),
-//        ];
-//    }
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('art/guide', 'ID'),
+            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Subject_Sect_Studyplan ID'),
+            'studyplan_subject_id' => Yii::t('art/guide', 'Sect ID'),
+            'direction_id' => Yii::t('art/teachers', 'Name Direction'),
+            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
+            'week_time' => Yii::t('art/guide', 'Week Time'),
+            'created_at' => Yii::t('art', 'Created'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_by' => Yii::t('art', 'Updated By'),
+            'version' => Yii::t('art', 'Version'),
+            'userStatus' => Yii::t('art', 'Status'),
+        ];
+    }
 
     public function optimisticLock()
     {
@@ -97,7 +97,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
      */
     public function getDirection()
     {
-        return $this->hasOne(GuideTeachersDirection::class, ['id' => 'direction_id']);
+        return $this->hasOne(Direction::class, ['id' => 'direction_id']);
     }
 
     /**

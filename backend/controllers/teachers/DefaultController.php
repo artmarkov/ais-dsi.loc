@@ -362,7 +362,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['teachers/default/schedule-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $model = SubjectSchedule::findOne($objectId);
-            $teachersLoadModel = TeachersLoad::findOne($objectId);
+            $teachersLoadModel = TeachersLoad::findOne($model->teachers_load_id);
             if (!isset($model)) {
                 throw new NotFoundHttpException("The StudyplanSubject was not found.");
             }
