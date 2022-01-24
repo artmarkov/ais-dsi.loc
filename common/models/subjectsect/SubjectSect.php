@@ -175,20 +175,20 @@ class SubjectSect extends \artsoft\db\ActiveRecord
         return $this->hasMany(SubjectSectStudyplan::class, ['subject_sect_id' => 'id']);
     }
 
-    /**
-     * Список нагрузок преподавателей
-     * @return array
-     */
-    public function getSubjectSectTeachersLoad()
-    {
-        $data = [];
-        foreach ($this->subjectSectStudyplans as $index => $modelSubjectSectStudyplan) {
-            $sectClassName = $modelSubjectSectStudyplan->class_name;
-            $data[$sectClassName] = $modelSubjectSectStudyplan->getSubjectSectTeachersLoads();
-
-        }
-        return $data;
-    }
+//    /**
+//     * Список нагрузок преподавателей
+//     * @return array
+//     */
+//    public function getSubjectSectTeachersLoad()
+//    {
+//        $data = [];
+//        foreach ($this->subjectSectStudyplans as $index => $modelSubjectSectStudyplan) {
+//            $sectClassName = $modelSubjectSectStudyplan->class_name;
+//            $data[$sectClassName] = $modelSubjectSectStudyplan->getSubjectSectTeachersLoads();
+//
+//        }
+//        return $data;
+//    }
 
     /**
      * Полный список учеников подгрупп данной группы

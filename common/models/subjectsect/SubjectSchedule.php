@@ -37,7 +37,7 @@ use yii\behaviors\TimestampBehavior;
 class SubjectSchedule extends \artsoft\db\ActiveRecord
 {
 
-    public $teachersLoadId;
+   // public $teachersLoadId;
 
     /**
      * {@inheritdoc}
@@ -242,31 +242,31 @@ class SubjectSchedule extends \artsoft\db\ActiveRecord
         return $string;
     }
 
-    /**
-     * @param $postLoad
-     * @param $studyplan_subject_id
-     * @throws \yii\db\Exception
-     */
-    public function setModelAttributes($postLoad, $studyplan_subject_id)
-    {
-        $teachersLoadId = $postLoad['teachersLoadId'];
-        $model_load = TeachersLoad::findOne($teachersLoadId);
-        $this->teachers_id = $model_load->teachers_id;
-        $this->direction_id = $model_load->direction_id;
-        $this->week_num = $postLoad['week_num'];
-        $this->week_day = $postLoad['week_day'];
-        $this->time_in = $postLoad['time_in'];
-        $this->time_out = $postLoad['time_out'];
-        $this->auditory_id = $postLoad['auditory_id'];
-        $this->description = $postLoad['description'];
-        $modelSubject = StudyplanSubject::findOne($studyplan_subject_id);
-        if ($modelSubject->isIndividual()) {
-            $this->studyplan_subject_id = $studyplan_subject_id;
-            $this->subject_sect_studyplan_id = 0;
-        } else {
-            $this->studyplan_subject_id = 0;
-            $this->subject_sect_studyplan_id = $modelSubject->getSubjectSectStudyplan()->id;
-        }
-        return $this;
-    }
+//    /**
+//     * @param $postLoad
+//     * @param $studyplan_subject_id
+//     * @throws \yii\db\Exception
+//     */
+//    public function setModelAttributes($postLoad, $studyplan_subject_id)
+//    {
+//        $teachersLoadId = $postLoad['teachersLoadId'];
+//        $model_load = TeachersLoad::findOne($teachersLoadId);
+//        $this->teachers_id = $model_load->teachers_id;
+//        $this->direction_id = $model_load->direction_id;
+//        $this->week_num = $postLoad['week_num'];
+//        $this->week_day = $postLoad['week_day'];
+//        $this->time_in = $postLoad['time_in'];
+//        $this->time_out = $postLoad['time_out'];
+//        $this->auditory_id = $postLoad['auditory_id'];
+//        $this->description = $postLoad['description'];
+//        $modelSubject = StudyplanSubject::findOne($studyplan_subject_id);
+//        if ($modelSubject->isIndividual()) {
+//            $this->studyplan_subject_id = $studyplan_subject_id;
+//            $this->subject_sect_studyplan_id = 0;
+//        } else {
+//            $this->studyplan_subject_id = 0;
+//            $this->subject_sect_studyplan_id = $modelSubject->getSubjectSectStudyplan()->id;
+//        }
+//        return $this;
+//    }
 }

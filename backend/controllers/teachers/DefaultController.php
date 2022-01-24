@@ -388,6 +388,79 @@ class DefaultController extends MainController
             return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'id'));
         }
     }
+
+    public function actionLoadItems($id, $objectId = null, $mode = null)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+            if (!Yii::$app->request->get('studyplan_subject_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id.");
+            }
+            $teachersLoadModel = StudyplanSubject::findOne(Yii::$app->request->get('studyplan_subject_id'));
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['studyplan/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
+            $model = new TeachersLoad();
+            $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id');
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
+                'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
+            ]);
+
+
+        } elseif ('history' == $mode && $objectId) {
+            $model = SubjectSchedule::findOne($objectId);
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['studyplan/default/schedule-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/update', 'id' => $model->id]];
+            $data = new SubjectSectScheduleHistory($objectId);
+            return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $model = SubjectSchedule::findOne($objectId);
+            $model->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+
+        } elseif ($objectId) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['studyplan/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $model = TeachersLoad::findOne($objectId);
+            $teachersLoadModel = StudyplanSubject::findOne($model->studyplan_subject_id);
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The StudyplanSubject was not found.");
+            }
+
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
+                'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
+            ]);
+
+        } else {
+            $searchModel = new SubjectScheduleViewSearch();
+
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['teachers_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'id'));
+        }
+    }
     /**
      * @param $id
      * @return array
@@ -398,7 +471,8 @@ class DefaultController extends MainController
             ['label' => 'Монитор', 'url' => ['/teachers/default/monitor', 'id' => $id]],
             ['label' => 'Карточка', 'url' => ['/teachers/default/update', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/teachers/default/schedule', 'id' => $id]],
-            ['label' => 'Элементы расписания', 'url' => ['/teachers/default/schedule-items', 'id' => $id]],
+            ['label' => 'Нагрузка', 'url' => ['/teachers/default/load-items', 'id' => $id]],
+            ['label' => 'Расписание', 'url' => ['/teachers/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/teachers/default/consult', 'id' => $id]],
             ['label' => 'Табель учета', 'url' => ['/teachers/default/timesheet', 'id' => $id]],
             ['label' => 'Журнал успеваемости', 'url' => ['/teachers/default/progress', 'id' => $id]],

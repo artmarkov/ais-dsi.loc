@@ -43,6 +43,9 @@ use artsoft\widgets\Tooltip;
  * @property int|null $auditory_id
  * @property string|null $description
  * @property int|null $status
+ * @property int|null $programm_id
+ * @property int|null $speciality_id
+ * @property int|null $course
  */
 class SubjectScheduleView extends \artsoft\db\ActiveRecord
 {

@@ -40,7 +40,7 @@ $JSEventClick = <<<EOF
             };
         
         console.log('кликаем по событию');
-//        console.log(data);
+        console.log(eventData);
       $.ajax({
             url: '/admin/sect/schedule/update-schedule',
             type: 'POST',
@@ -117,7 +117,7 @@ Pjax::begin([
                                     'events' => [
                                         'onChange' => new JsExpression($JSChange),
                                         'onClick' => new JsExpression($JSEventClick),
-                                        'onScheduleClick' => new JsExpression($JSScheduleClick),
+                                       // 'onScheduleClick' => new JsExpression($JSScheduleClick),
                                     ]
                                 ]);
                                 ?>
@@ -131,8 +131,8 @@ Pjax::begin([
 <?php Pjax::end() ?>
 
 <?php \yii\bootstrap\Modal::begin([
-    'header' => '<h3 class="lte-hide-title page-title">Расписание</h3>',
-    'size' => 'modal-md',
+   // 'header' => '<h3 class="lte-hide-title page-title">Расписание</h3>',
+    'size' => 'modal-lg',
     'id' => 'schedule-modal',
 ]);?>
 <?php \yii\bootstrap\Modal::end(); ?>

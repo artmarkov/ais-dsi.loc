@@ -141,6 +141,7 @@ return [
     'Time Out' => 'Время окончания',
     'Schedule Items' => 'Элементы расписания',
     'Sect Name' => 'Учебная группа',
+    'Teachers Load' => 'Нагрузка',
 
 ];
 ?>

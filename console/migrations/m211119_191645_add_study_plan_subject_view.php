@@ -199,7 +199,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
 		                            and teachers_load.studyplan_subject_id = 0)
                  left join subject_schedule  on (subject_schedule.teachers_load_id = teachers_load.id)							
            )
-           ORDER BY studyplan_id, subject_cat_id, direction_id, week_day, time_in
+           ORDER BY studyplan_id, subject_cat_id, subject_sect_studyplan_id, direction_id, week_day, time_in
   		   
         ')->execute();
     }

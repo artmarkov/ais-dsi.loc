@@ -63,6 +63,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function ($model) {
                                     return RefBook::find('subject_vid_name_dev')->getValue($model->subject_vid_id);
                                 },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'format' => 'raw',
                                 'group' => true,
                                 'subGroupOf' => 1

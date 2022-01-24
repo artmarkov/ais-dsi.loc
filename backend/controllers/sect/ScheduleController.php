@@ -18,22 +18,13 @@ class ScheduleController extends MainController
             $eventData = Yii::$app->request->post('eventData');
             $id = $eventData['id'];
             $subject_sect_id = $eventData['subject_sect_id'];
-
-            if ($id == 0) {
-                $model = new $this->modelClass();
-                $model->week_day = $eventData['week_day'] + 1;
-                $model->time_in = $eventData['time_in'];
-                $model->time_out = $eventData['time_out'];
-                $model->save(false);
-            } else {
-                $model = $this->modelClass::findOne($id);
-            }
+            $model = $this->modelClass::findOne($id);
         } else {
             $subject_sect_id = Yii::$app->request->get('subject_sect_id');
             $model = $this->modelClass::findOne($id);
         }
 
-        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post()) && $model->setTeachersLoadModelCopy()) {
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             if ($model->save()) {
                 Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been updated.'));
                 return $this->redirect(['sect/default/schedule', 'id' => $subject_sect_id]);
@@ -44,7 +35,6 @@ class ScheduleController extends MainController
         }
         return $this->renderAjax('schedule-modal', [
             'model' => $model,
-            'modelSubjectSect' => SubjectSect::findOne($subject_sect_id),
             'subject_sect_id' => $subject_sect_id,
         ]);
     }

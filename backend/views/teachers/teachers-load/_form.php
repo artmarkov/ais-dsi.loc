@@ -72,7 +72,7 @@ use artsoft\helpers\RefBook;
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?= \artsoft\helpers\ButtonHelper::submitButtons($model, '/admin/schedule') ?>
+                <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

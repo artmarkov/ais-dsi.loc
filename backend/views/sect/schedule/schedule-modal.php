@@ -28,10 +28,16 @@ use artsoft\helpers\RefBook;
     <div class="sect-schedule-form">
         <div class="row">
             <div class="col-md-12">
-                <div class="panel panel-default">
+                <div class="panel">
+                    <div class="panel-heading">
+                        Элемент расписания занятий:
+                        <?php echo RefBook::find('sect_name_1')->getValue($model->subjectSectStudyplan->id); ?>
+                    </div>
                     <div class="panel-body">
-                        <?= $form->field($model, "teachersLoadId")->dropDownList($modelSubjectSect->getSubjectSectTeachersLoad(), ['options' => [$model->getTeachersLoadId() => ['Selected' => true]]]); ?>
-                        <?= $form->field($model, "week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList()) ?>
+                        <?php if ($model->isSubjectMontly()): ?>
+                            <?= $form->field($model, "week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList()) ?>
+                        <?php endif; ?>
+
                         <?= $form->field($model, "week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList()) ?>
                         <?= $form->field($model, "time_in")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time in...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
                         <?= $form->field($model, "time_out")->textInput(['placeholder' => Yii::t('art/guide', 'Enter time out...')])->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>

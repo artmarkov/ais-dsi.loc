@@ -16,7 +16,7 @@ use common\models\subjectsect\SubjectScheduleView;
 $this->title = Yii::t('art/guide', 'Subject Schedule');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="subject-schedule-index">
+<div class="subject-load-index">
     <div class="panel">
         <div class="panel-body">
             <div class="panel panel-default">
@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                     <?php
                     Pjax::begin([
-                        'id' => 'subject-sect-schedule-grid-pjax',
+                        'id' => 'subject-schedule-grid-pjax',
                     ])
                     ?>
 
@@ -51,19 +51,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'studyplan_subject_id',
                                 'value' => function ($model) {
-                                    return RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id ?? null);
+                                    return RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id ?? null) . '-' . $model->week_time;
                                 },
                                 'format' => 'raw',
                                 'group' => true,
-                            ],
-                            [
-                                'attribute' => 'week_time',
-                                'value' => function ($model) {
-                                    return $model->week_time;
-                                },
-                                'format' => 'raw',
-                                'group' => true,
-                                'subGroupOf' => 1
                             ],
                             [
                                 'attribute' => 'subject_vid_id',
@@ -76,7 +67,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                     'pluginOptions' => ['allowClear' => true],
                                 ],
                                 'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'group' => true,  // enable grouping
+                                'format' => 'raw',
+                                'group' => true,
                                 'subGroupOf' => 1
                             ],
                             [
@@ -109,20 +101,20 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'group' => true,  // enable grouping
                                 'subGroupOf' => 1
                             ],
-                            [
-                                'attribute' => 'teachers_id',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => RefBook::find('teachers_fio')->getList(),
-                                'value' => function ($model) {
-                                    return RefBook::find('teachers_fio')->getValue($model->teachers_id);
-                                },
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'group' => true,  // enable grouping
-                                'subGroupOf' => 1
-                            ],
+//                            [
+//                                'attribute' => 'teachers_id',
+//                                'filterType' => GridView::FILTER_SELECT2,
+//                                'filter' => RefBook::find('teachers_fio')->getList(),
+//                                'value' => function ($model) {
+//                                    return RefBook::find('teachers_fio')->getValue($model->teachers_id);
+//                                },
+//                                'filterWidgetOptions' => [
+//                                    'pluginOptions' => ['allowClear' => true],
+//                                ],
+//                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//                                'group' => true,  // enable grouping
+//                                'subGroupOf' => 1
+//                            ],
                             [
                                 'attribute' => 'teachers_load_week_time',
                                 'value' => function ($model) {
@@ -130,40 +122,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'format' => 'raw',
                                 'group' => true,  // enable grouping
-                                'subGroupOf' => 5
+                                'subGroupOf' => 4
                             ],
-                            [
-                                'attribute' => 'scheduleDisplay',
-                                'value' => function ($model) {
-                                    return $model->getScheduleDisplay();
-                                },
-                                'format' => 'raw',
-                            ],
-                            [
-                                'attribute' => 'auditory_id',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => RefBook::find('auditory_memo_1')->getList(),
-                                'value' => function ($model) {
-                                    return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
-                                },
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                            ],
-//                            'description',
-//                            [
-//                                'class' => 'kartik\grid\ActionColumn',
-////                                'dropdown' => $this->dropdown,
-////                                'dropdownOptions' => ['class' => 'float-right'],
-//                                'urlCreator' => function ($action, $model, $key, $index) {
-//                                    return '#';
-//                                },
-////                                'viewOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
-////                                'updateOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
-////                                'deleteOptions' => ['title' => '', 'data-toggle' => 'tooltip'],
-////                                'headerOptions' => ['class' => 'kartik-sheet-style'],
-//                            ],
                             [
                                 'class' => 'kartik\grid\ActionColumn',
                                 'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
@@ -172,7 +132,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttons' => [
                                     'create' => function ($key, $model) {
                                         return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                                            Url::to(['/studyplan/default/schedule-items', 'id' => $model->studyplan_id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']), [
+                                            Url::to(['/teachers/default/load-items', 'id' => $model->teachers_id, 'studyplan_subject_id' => $model->studyplan_subject_id, 'mode' => 'create']), [
                                                 'title' => Yii::t('art', 'Create'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
@@ -182,7 +142,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'update' => function ($key, $model) {
                                         return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
-                                            Url::to(['/studyplan/default/schedule-items', 'id' => $model->studyplan_id, 'objectId' => $model->subject_schedule_id, 'mode' => 'update']), [
+                                            Url::to(['/teachers/default/load-items', 'id' => $model->teachers_id, 'objectId' => $model->teachers_load_id, 'mode' => 'update']), [
                                                 'title' => Yii::t('art', 'Edit'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
@@ -191,7 +151,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'delete' => function ($key, $model) {
                                         return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                                            Url::to(['/studyplan/default/schedule-items', 'id' => $model->studyplan_id, 'objectId' => $model->subject_schedule_id, 'mode' => 'delete']), [
+                                            Url::to(['/teachers/default/load-items', 'id' => $model->teachers_id, 'objectId' => $model->teachers_load_id, 'mode' => 'delete']), [
                                                 'title' => Yii::t('art', 'Delete'),
                                                 'aria-label' => Yii::t('art', 'Delete'),
                                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -203,24 +163,23 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'visibleButtons' => [
                                     'create' => function ($model) {
-                                        return $model->getTeachersScheduleNeed();
+                                        return $model->getTeachersLoadsNeed();
                                     },
                                     'delete' => function ($model) {
-                                        return $model->subject_schedule_id !== null;
+                                        return $model->teachers_load_id !== null;
                                     },
                                     'update' => function ($model) {
-                                        return $model->subject_schedule_id !== null;
+                                        return $model->teachers_load_id !== null;
                                     }
-                                ]
+                                ],
                             ],
                         ],
                         'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false
                         'beforeHeader' => [
                             [
                                 'columns' => [
-                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
                                     ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
-                                    ['content' => 'Расписание занятий', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
                                 ],
                                 'options' => ['class' => 'skip-export'] // remove this row from export
                             ]
@@ -237,7 +196,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'toolbar' => [
                             [
                                 'content' => Html::a('Очистить',
-                                    Url::to(['/studyplan/default/schedule-items', 'id' => $id]), [
+                                    Url::to(['/teachers/default/load-items', 'id' => $id]), [
                                         'title' => 'Очистить',
                                         'data-pjax' => '0',
                                         'class' => 'btn btn-default'
@@ -255,7 +214,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'hover' => false,
                         'floatHeader' => false,
 //    'floatHeaderOptions' => ['top' => $scrollingTop],
-                        'showPageSummary' => false,
+                        'showPageSummary' => true,
                         //'layout' => '{items}',
                         'panel' => [
                             'type' => GridView::TYPE_DEFAULT
