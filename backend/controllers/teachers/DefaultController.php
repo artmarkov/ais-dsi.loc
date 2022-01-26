@@ -6,9 +6,8 @@ use artsoft\models\User;
 use common\models\guidejob\Bonus;
 use common\models\subjectsect\search\SubjectScheduleViewSearch;
 use common\models\subjectsect\SubjectSchedule;
-use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
-use common\models\subject\Subject;
+use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersActivity;
 use common\models\teachers\TeachersLoad;
@@ -451,7 +450,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $searchModel = new SubjectScheduleViewSearch();
+            $searchModel = new TeachersLoadViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();

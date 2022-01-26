@@ -128,4 +128,13 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
         return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
     }
 
+    /**
+     * Проверка на необходимость добавления нагрузки
+     * @return bool
+     */
+    public function getTeachersLoadsNeed()
+    {
+
+        return true;
+    }
 }

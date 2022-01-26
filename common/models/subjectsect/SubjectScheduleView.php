@@ -320,13 +320,4 @@ class SubjectScheduleView extends \artsoft\db\ActiveRecord
         return false;
     }
 
-    /**
-     * Проверка на необходимость добавления нагрузки
-     * @return bool
-     */
-    public function getTeachersLoadsNeed()
-    {
-
-        return true;
-    }
 }

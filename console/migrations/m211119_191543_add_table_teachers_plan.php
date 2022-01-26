@@ -32,22 +32,110 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
         $this->addForeignKey('teachers_load_ibfk_1', 'teachers_load', 'direction_id', 'guide_teachers_direction', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('teachers_load_ibfk_2', 'teachers_load', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
 
-        $this->db->createCommand()->createView('teachers_load_view', '
-         SELECT teachers_load.id as id, teachers.id AS teachers_id, 
-                teachers_load.week_time as week_time,
-                CONCAT(user_common.last_name ,\' \', left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'.(\', guide_teachers_direction.slug, \') \', teachers_load.week_time) as teachers_load_display,
-                user_common.status
-        FROM teachers_load
-		INNER JOIN teachers ON teachers_load.teachers_id = teachers.id
-		INNER JOIN guide_teachers_direction ON guide_teachers_direction.id = teachers_load.direction_id
-        INNER JOIN user_common ON user_common.id = teachers.user_common_id 
-        WHERE user_common.user_category=\'teachers\'
-        ORDER BY user_common.last_name, user_common.first_name
+
+        $this->db->createCommand()->createView('teachers_load_sect_view', '
+         select subject_sect.id as subject_sect_id,
+				subject_sect.plan_year as plan_year,	
+                subject_sect_studyplan.studyplan_subject_list as studyplan_subject_list,
+                subject_sect_studyplan.id as subject_sect_studyplan_id,	
+                teachers_load.id as teachers_load_id,
+                teachers_load.direction_id as direction_id,
+                teachers_load.teachers_id as teachers_id,
+                teachers_load.week_time as teachers_load_week_time
+         from subject_sect_studyplan
+		 inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
+		 left join teachers_load  on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id
+		                            and teachers_load.studyplan_subject_id = 0)
+         order by subject_sect_id, subject_sect_studyplan_id, direction_id
         ')->execute();
 
-        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['teachers_load_display', 'teachers_load_view', 'id', 'teachers_load_display', 'status', null, null, 'Нагрузка преподавателей(с ФИО и видом деятельности)'],
-        ])->execute();
+ $this->db->createCommand()->createView('teachers_load_indiv_view', '
+         select studyplan.id as studyplan_id,
+                         studyplan.student_id as student_id,
+                         studyplan.plan_year as plan_year,
+                         studyplan.programm_id as programm_id,
+                         studyplan.speciality_id as speciality_id,
+                         studyplan.course as course,
+                         studyplan.status as status,
+                         studyplan_subject.id as studyplan_subject_id,
+                         studyplan_subject.subject_cat_id as subject_cat_id,
+                         studyplan_subject.subject_id as subject_id,
+                         studyplan_subject.subject_type_id as subject_type_id,
+                         studyplan_subject.subject_vid_id as subject_vid_id,
+                         studyplan_subject.week_time as week_time,
+                         studyplan_subject.year_time as year_time,
+                         teachers_load.id as teachers_load_id,
+                         teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
+                         teachers_load.direction_id as direction_id,
+                         teachers_load.teachers_id as teachers_id,
+                         teachers_load.week_time as teachers_load_week_time
+                 from studyplan
+                 inner join studyplan_subject on (studyplan.id = studyplan_subject.studyplan_id)
+                 inner join guide_subject_vid on (guide_subject_vid.id = studyplan_subject.subject_vid_id and guide_subject_vid.qty_min = 1 and guide_subject_vid.qty_max = 1)
+                 left join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id 
+											and teachers_load.subject_sect_studyplan_id = 0)
+				 order by studyplan_id, subject_cat_id, subject_sect_studyplan_id, direction_id
+        ')->execute();
+
+        $this->db->createCommand()->createView('teachers_load_view', '
+           (select studyplan.id as studyplan_id,
+                         studyplan.student_id as student_id,
+                         studyplan.plan_year as plan_year,
+                         studyplan.programm_id as programm_id,
+                         studyplan.speciality_id as speciality_id,
+                         studyplan.course as course,
+                         studyplan.status as status,
+                         studyplan_subject.id as studyplan_subject_id,
+                         studyplan_subject.subject_cat_id as subject_cat_id,
+                         studyplan_subject.subject_id as subject_id,
+                         studyplan_subject.subject_type_id as subject_type_id,
+                         studyplan_subject.subject_vid_id as subject_vid_id,
+                         studyplan_subject.week_time as week_time,
+                         studyplan_subject.year_time as year_time,
+                         teachers_load.id as teachers_load_id,
+                         teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
+                         teachers_load.direction_id as direction_id,
+                         teachers_load.teachers_id as teachers_id,
+                         teachers_load.week_time as teachers_load_week_time
+                 from studyplan
+                 inner join studyplan_subject on (studyplan.id = studyplan_subject.studyplan_id)
+                 inner join guide_subject_vid on (guide_subject_vid.id = studyplan_subject.subject_vid_id and guide_subject_vid.qty_min = 1 and guide_subject_vid.qty_max = 1)
+                 left join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id 
+											and teachers_load.subject_sect_studyplan_id = 0)
+                 
+           )
+           UNION
+           (select studyplan.id as studyplan_id,
+                         studyplan.student_id as student_id,
+                         studyplan.plan_year as plan_year,
+                         studyplan.programm_id as programm_id,
+                         studyplan.speciality_id as speciality_id,
+                         studyplan.course as course,
+                         studyplan.status as status,
+                         studyplan_subject.id as studyplan_subject_id,
+                         studyplan_subject.subject_cat_id as subject_cat_id,
+                         studyplan_subject.subject_id as subject_id,
+                         studyplan_subject.subject_type_id as subject_type_id,
+                         studyplan_subject.subject_vid_id as subject_vid_id,
+                         studyplan_subject.week_time as week_time,
+                         studyplan_subject.year_time as year_time,
+                         teachers_load.id as teachers_load_id,
+                         teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
+                         teachers_load.direction_id as direction_id,
+                         teachers_load.teachers_id as teachers_id,
+                         teachers_load.week_time as teachers_load_week_time
+                 from studyplan
+                 inner join studyplan_subject on (studyplan_subject.studyplan_id = studyplan.id)
+                 left join subject_sect on (subject_sect.subject_cat_id = studyplan_subject.subject_cat_id
+                                           and subject_sect.subject_id = studyplan_subject.subject_id
+                                           and subject_sect.subject_vid_id = studyplan_subject.subject_vid_id)
+                 inner join subject_sect_studyplan on (subject_sect_studyplan.subject_sect_id = subject_sect.id and studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 				   
+                 left join teachers_load  on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id
+		                            and teachers_load.studyplan_subject_id = 0)
+           )
+           ORDER BY studyplan_id, subject_cat_id, subject_sect_studyplan_id, direction_id
+  		   
+        ')->execute();
 
         $this->createTableWithHistory('subject_schedule', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
@@ -100,7 +188,8 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
         $this->dropForeignKey('teachers_plan_ibfk_1', 'teachers_plan');
         $this->dropForeignKey('teachers_plan_ibfk_2', 'teachers_plan');
         $this->dropForeignKey('subject_schedule_ibfk_1', 'subject_schedule');
-        $this->db->createCommand()->delete('refbooks', ['name' => 'teachers_load_display'])->execute();
+        $this->db->createCommand()->dropView('teachers_load_indiv_view')->execute();
+        $this->db->createCommand()->dropView('teachers_load_sect_view')->execute();
         $this->db->createCommand()->dropView('teachers_load_view')->execute();
         $this->dropForeignKey('teachers_load_ibfk_1', 'teachers_load');
         $this->dropForeignKey('teachers_load_ibfk_2', 'teachers_load');
