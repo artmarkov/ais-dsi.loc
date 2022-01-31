@@ -15,7 +15,7 @@ $JSChange = <<<EOF
             console.log('измен. событию');
         console.log(data);
              $.ajax({
-            url: '/admin/sect/schedule/change-schedule',
+            url: '/admin/studyplan/schedule/change-schedule',
             type: 'POST',
             data: {eventData: eventData},
             success: function (res) {
@@ -32,13 +32,13 @@ $JSEventClick = <<<EOF
     function(node, data) {
         eventData = {   
                 id: data.data.schedule_id, 
-                subject_sect_id: data.data.subject_sect_id                 
+                studyplan_id: data.data.studyplan_id                 
             };
         
         console.log('кликаем по событию');
         console.log(eventData);
       $.ajax({
-            url: '/admin/sect/schedule/update-schedule',
+            url: '/admin/studyplan/schedule/update-schedule',
             type: 'POST',
             data: {eventData: eventData},
             success: function (res) {
@@ -54,46 +54,11 @@ $JSEventClick = <<<EOF
     }
 
 EOF;
-$JSScheduleClick = <<<EOF
-        function(node, time, timeline){
-                var subjectSectId = '$model->id'; 
-                var start = time;
-                var end = $(this).timeSchedule('formatTime', $(this).timeSchedule('calcStringTime', time) + 2700);
-                $(this).timeSchedule('addSchedule', timeline, {
-                    start: start,
-                    end: end,
-                    text:'Новая запись'
-                });
-                var eventData = {
-                id: 0,
-                week_day: timeline,         
-                time_in: start,          
-                time_out: end,          
-                subject_sect_id: subjectSectId         
-            };
-               console.log('кликаем по календ');
-//                console.log(node);
-//                console.log(eventData);
-                $.ajax({
-            url: '/admin/sect/schedule/update-schedule',
-            type: 'POST',
-            data: {eventData: eventData},
-            success: function (res) {
-//                console.log(res);
-                $('#schedule-modal .modal-body').html(res);
-                $('#schedule-modal').modal();
-            },
-            error: function () {
-                alert('Error!!!');
-            }
-        });
-            }
-        
-EOF;
+
 ?>
 <?php
 Pjax::begin([
-    'id' => 'subject-sect-schedule-pjax',
+    'id' => 'subject-schedule-pjax',
 ])
 ?>
     <div class="subject-sect-schedule">
@@ -109,7 +74,7 @@ Pjax::begin([
                             <div class="col-sm-12">
                                 <?= WeeklyScheduler::widget([
                                     'readonly' => $readonly,
-                                    'data' => $model->getSubjectSchedule(),
+                                    'data' => $model->getStudyplanSchedule(),
                                     'events' => [
                                         'onChange' => new JsExpression($JSChange),
                                         'onClick' => new JsExpression($JSEventClick),

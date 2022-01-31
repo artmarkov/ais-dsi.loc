@@ -39,7 +39,7 @@ use artsoft\helpers\RefBook;
                                 'data' => \common\models\guidejob\Direction::getDirectionList(),
                                 'options' => [
                                     'id' => 'direction_id',
-                                   // 'disabled' => $readonly,
+                                    'disabled' => !$model->isNewRecord,
                                     'placeholder' => Yii::t('art', 'Select...'),
                                 ],
                                 'pluginOptions' => [

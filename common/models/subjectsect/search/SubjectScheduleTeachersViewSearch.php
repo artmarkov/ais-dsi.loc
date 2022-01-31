@@ -2,16 +2,15 @@
 
 namespace common\models\subjectsect\search;
 
-use common\models\subjectsect\SubjectSectScheduleView;
+use common\models\subjectsect\SubjectScheduleTeachersView;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * SubjectSectScheduleSearch represents the model behind the search form about `common\models\subjectsect\SubjectSectSchedule`.
- * @property int $subject_sect_id
+ * SubjectScheduleTeachersViewSearch represents the model behind the search form about `common\models\subjectsect\SubjectScheduleTeachersView`.
  */
-class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
+class SubjectScheduleTeachersViewSearch extends SubjectScheduleTeachersView
 {
     /**
      * @inheritdoc
@@ -19,8 +18,9 @@ class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
     public function rules()
     {
         return [
-            [[ 'subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
-            [['description', 'studyplan_subject_list'], 'safe'],
+            [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year', 'subject_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
+            [['teachers_load_week_time'], 'number'],
+            [['studyplan_subject_list', 'description'], 'string'],
         ];
     }
 
@@ -42,13 +42,18 @@ class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
      */
     public function search($params)
     {
-        $query = SubjectSectScheduleView::find();
+        $query = SubjectScheduleTeachersView::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => false,
             'sort' => [
-                'defaultOrder' => false,
+                'defaultOrder' => [
+                    'subject_sect_studyplan_id' => SORT_ASC,
+                    'direction_id' => SORT_ASC,
+                    'week_day' => SORT_ASC,
+                    'time_in' => SORT_ASC,
+                ],
             ],
         ]);
 

@@ -49,10 +49,44 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'kartik\grid\SerialColumn'],
                             [
-                                'attribute' => 'studyplan_subject_id',
+                                'attribute' => 'subject_cat_id',
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filter' => RefBook::find('subject_category_name')->getList(),
                                 'value' => function ($model) {
-                                    return RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id ?? null) . '-' . $model->week_time;
+                                    return RefBook::find('subject_category_name')->getValue($model->subject_cat_id ?? null);
                                 },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                                'format' => 'raw',
+                                'group' => true,
+                            ],
+                            [
+                                'attribute' => 'subject_id',
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filter' => RefBook::find('subject_name')->getList(),
+                                'value' => function ($model) {
+                                    return RefBook::find('subject_name')->getValue($model->subject_id ?? null);
+                                },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                                'format' => 'raw',
+                                'group' => true,
+                            ],
+                            [
+                                'attribute' => 'subject_type_id',
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filter' => RefBook::find('subject_type_name')->getList(),
+                                'value' => function ($model) {
+                                    return RefBook::find('subject_type_name')->getValue($model->subject_type_id ?? null);
+                                },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'format' => 'raw',
                                 'group' => true,
                             ],
@@ -178,7 +212,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'beforeHeader' => [
                             [
                                 'columns' => [
-                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
+                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
                                     ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
                                 ],
                                 'options' => ['class' => 'skip-export'] // remove this row from export

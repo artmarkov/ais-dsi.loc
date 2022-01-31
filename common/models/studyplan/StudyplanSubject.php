@@ -196,60 +196,70 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * Находим группу дисциплины ученика
-     * @return int
-     * @throws \yii\db\Exception
+     * Gets query for [[Subject]].
+     *
+     * @return \yii\db\ActiveQuery
      */
-    public function getSubjectSectStudyplan()
+    public function getSubject()
     {
-        return SubjectSectStudyplan::find()->where(['like', 'studyplan_subject_list', $this->id])->one() ?? new SubjectSectStudyplan();
+        return $this->hasOne(Subject::class, ['id' => 'subject_id']);
     }
 
-    /**
-     * @return array|TeachersLoad[]|\yii\db\ActiveRecord[]
-     * @throws \yii\db\Exception
-     */
-    public function getTeachersLoads()
-    {
-        return $this->isIndividual() ? TeachersLoad::find()->where(['=', 'studyplan_subject_id', $this->id])
-            ->andWhere('subject_sect_studyplan_id = 0')
-            ->all() :
-            TeachersLoad::find()->where(['=', 'subject_sect_studyplan_id', $this->getSubjectSectStudyplan()->id])
-                ->andWhere('studyplan_subject_id = 0')
-                ->all();
-    }
+//    /**
+//     * Находим группу дисциплины ученика
+//     * @return int
+//     * @throws \yii\db\Exception
+//     */
+//    public function getSubjectSectStudyplan()
+//    {
+//        return SubjectSectStudyplan::find()->where(['like', 'studyplan_subject_list', $this->id])->one() ?? new SubjectSectStudyplan();
+//    }
 
-    public function getTeachersLoadsDisplay()
-    {
-        $data = [];
-        foreach ($this->getTeachersLoads() as $item => $modelTeachersLoad) {
-            $data[$modelTeachersLoad->id] = RefBook::find('teachers_load_display')->getValue($modelTeachersLoad->id);
-        }
-        return array_unique($data);
-    }
+//    /**
+//     * @return array|TeachersLoad[]|\yii\db\ActiveRecord[]
+//     * @throws \yii\db\Exception
+//     */
+//    public function getTeachersLoads()
+//    {
+//        return $this->isIndividual() ? TeachersLoad::find()->where(['=', 'studyplan_subject_id', $this->id])
+//            ->andWhere('subject_sect_studyplan_id = 0')
+//            ->all() :
+//            TeachersLoad::find()->where(['=', 'subject_sect_studyplan_id', $this->getSubjectSectStudyplan()->id])
+//                ->andWhere('studyplan_subject_id = 0')
+//                ->all();
+//    }
+//
+//    public function getTeachersLoadsDisplay()
+//    {
+//        $data = [];
+//        foreach ($this->getTeachersLoads() as $item => $modelTeachersLoad) {
+//            $data[$modelTeachersLoad->id] = RefBook::find('teachers_load_display')->getValue($modelTeachersLoad->id);
+//        }
+//        return array_unique($data);
+//    }
+//
+//    public function getTeachersLoadsDisplayForTeachers($modelTeachersLoad_id)
+//    {
+//        $data = [];
+//        foreach ($this->getTeachersLoads() as $item => $modelTeachersLoad) {
+//            $data[$modelTeachersLoad->teachers_id] = RefBook::find('teachers_load_display')->getValue($modelTeachersLoad->id);
+//        }
+//        return array_unique($data);
+//    }
 
-    public function getTeachersLoadsDisplayForTeachers($modelTeachersLoad_id)
-    {
-        $data = [];
-        foreach ($this->getTeachersLoads() as $item => $modelTeachersLoad) {
-            $data[$modelTeachersLoad->teachers_id] = RefBook::find('teachers_load_display')->getValue($modelTeachersLoad->id);
-        }
-        return array_unique($data);
-    }
-
-    /**
-     * @return array|SubjectSectSchedule[]|TeachersLoad[]|\yii\db\ActiveRecord[]
-     * @throws \yii\db\Exception
-     */
-    public function getSubjectSchedule()
-    {
-        return $this->isIndividual() ? SubjectSchedule::find()->where(['=', 'studyplan_subject_id', $this->id])
-            ->andWhere('subject_sect_studyplan_id = 0')
-            ->all() :
-            SubjectSchedule::find()->where(['=', 'subject_sect_studyplan_id', $this->getSubjectSectStudyplan()->id])
-                ->andWhere('studyplan_subject_id = 0')
-                ->all();
-    }
+//    /**
+//     * @return array|SubjectSectSchedule[]|TeachersLoad[]|\yii\db\ActiveRecord[]
+//     * @throws \yii\db\Exception
+//     */
+//    public function getSubjectSchedule()
+//    {
+//        return $this->isIndividual() ? SubjectSchedule::find()->where(['=', 'studyplan_subject_id', $this->id])
+//            ->andWhere('subject_sect_studyplan_id = 0')
+//            ->all() :
+//            SubjectSchedule::find()->where(['=', 'subject_sect_studyplan_id', $this->getSubjectSectStudyplan()->id])
+//                ->andWhere('studyplan_subject_id = 0')
+//                ->all();
+//    }
 
     /**
      * Находим всех учителей преподающих данную дисциплину
@@ -289,16 +299,6 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
 		order by name
 SQL;
         return ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'id', 'name');
-    }
-
-    /**
-     * Gets query for [[Subject]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSubject()
-    {
-        return $this->hasOne(Subject::class, ['id' => 'subject_id']);
     }
 
     /**

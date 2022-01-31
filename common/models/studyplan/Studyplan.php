@@ -13,6 +13,8 @@ use common\models\education\EducationSpeciality;
 use common\models\parents\Parents;
 use common\models\students\Student;
 use common\models\subject\Subject;
+use common\models\subjectsect\SubjectScheduleView;
+use common\models\subjectsect\SubjectSectScheduleView;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
@@ -179,19 +181,19 @@ class Studyplan extends \artsoft\db\ActiveRecord
     }
 
 
-    /**
-     * Список нагрузок преподавателей
-     * @return array
-     */
-    public function getStudyplanTeachersLoad()
-    {
-        $data = [];
-        foreach ($this->studyplanSubject as $index => $modelStudyplanSubject){
-            $studyplanSubjectName = RefBook::find('subject_memo_2')->getValue($modelStudyplanSubject->id);
-            $data[$studyplanSubjectName] = $modelStudyplanSubject->getTeachersLoadsDisplay();
-        }
-        return $data;
-    }
+//    /**
+//     * Список нагрузок преподавателей
+//     * @return array
+//     */
+//    public function getStudyplanTeachersLoad()
+//    {
+//        $data = [];
+//        foreach ($this->studyplanSubject as $index => $modelStudyplanSubject){
+//            $studyplanSubjectName = RefBook::find('subject_memo_2')->getValue($modelStudyplanSubject->id);
+//            $data[$studyplanSubjectName] = $modelStudyplanSubject->getTeachersLoadsDisplay();
+//        }
+//        return $data;
+//    }
 
     /**
      * Gets query for [[Student]].
@@ -364,23 +366,28 @@ class Studyplan extends \artsoft\db\ActiveRecord
      */
     public function getStudyplanSchedule()
     {
+        $models = SubjectScheduleView::find()
+            ->where(['studyplan_id' => $this->id])
+            ->andWhere(['not', ['subject_schedule_id' => null]])
+            ->all();
+
         $data = [];
-        foreach ($this->studyplanSubject as $index => $modelSubject) {
-            foreach ($modelSubject->getSubjectSectSchedule() as $item => $modelSectSchedule) {
+
+        foreach ($models as $item => $modelSchedule) {
                 $data[] = [
-                    'week_day' => $modelSectSchedule->week_day,
-                    'time_in' => $modelSectSchedule->time_in,
-                    'time_out' => $modelSectSchedule->time_out,
-                    'title' => RefBook::find('subject_memo_1')->getValue($modelSubject->id),
+                    'week_day' => $modelSchedule->week_day,
+                    'time_in' => $modelSchedule->time_in,
+                    'time_out' => $modelSchedule->time_out,
+                    'title' => RefBook::find('subject_memo_1')->getValue($modelSchedule->studyplan_subject_id),
                     'data' => [
                         'studyplan_id' => $this->id,
-                        'schedule_id' => $modelSectSchedule->id,
-                        'teachers_load_id' => $modelSectSchedule->teachersLoadId,
-                        'direction_id' => $modelSectSchedule->direction_id,
-                        'teachers_id' => $modelSectSchedule->teachers_id,
-                        'description' => $modelSectSchedule->description,
-                        'week_num' => $modelSectSchedule->week_num,
-                        'auditory_id' => $modelSectSchedule->auditory_id,
+                        'schedule_id' => $modelSchedule->subject_schedule_id,
+                        'teachers_load_id' => $modelSchedule->teachers_load_id,
+                        'direction_id' => $modelSchedule->direction_id,
+                        'teachers_id' => $modelSchedule->teachers_id,
+                        'description' => $modelSchedule->description,
+                        'week_num' => $modelSchedule->week_num,
+                        'auditory_id' => $modelSchedule->auditory_id,
                         'style' => [
                             'background' => '#0000ff',
                             'color' => '#00ff00',
@@ -389,7 +396,6 @@ class Studyplan extends \artsoft\db\ActiveRecord
                     ]
                 ];
 
-            }
         }
         return $data;
     }

@@ -1,17 +1,16 @@
 <?php
 
-namespace common\models\subjectsect\search;
+namespace common\models\teachers\search;
 
-use common\models\subjectsect\SubjectSectScheduleView;
+use common\models\teachers\TeachersLoadSectView;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * SubjectSectScheduleSearch represents the model behind the search form about `common\models\subjectsect\SubjectSectSchedule`.
- * @property int $subject_sect_id
+ * TeachersLoadSectViewSearch represents the model behind the search form about `common\models\teachers\TeachersLoadSectView`.
  */
-class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
+class TeachersLoadSectViewSearch extends TeachersLoadSectView
 {
     /**
      * @inheritdoc
@@ -19,8 +18,9 @@ class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
     public function rules()
     {
         return [
-            [[ 'subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
-            [['description', 'studyplan_subject_list'], 'safe'],
+            [['subject_sect_id', 'plan_year', 'subject_sect_studyplan_id', 'teachers_load_id', 'direction_id', 'teachers_id'], 'integer'],
+            [['studyplan_subject_list'], 'string'],
+            [['teachers_load_week_time'], 'number'],
         ];
     }
 
@@ -42,13 +42,13 @@ class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
      */
     public function search($params)
     {
-        $query = SubjectSectScheduleView::find();
+        $query = TeachersLoadSectView::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => false,
             'sort' => [
-                'defaultOrder' => false,
+                'defaultOrder' => false
             ],
         ]);
 
@@ -61,19 +61,15 @@ class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
         }
 
         $query->andFilterWhere([
+            'subject_sect_id' => $this->subject_sect_id,
+            'plan_year' => $this->plan_year,
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
+            'teachers_load_id' => $this->teachers_load_id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
-            'week_num' => $this->week_num,
-            'week_day' => $this->week_day,
-//            'time_in' => $this->time_in,
-//            'time_out' => $this->time_out,
-            'auditory_id' => $this->auditory_id,
+            'teachers_load_week_time' => $this->teachers_load_week_time,
         ]);
-
-        $query->andFilterWhere(['like', 'description', $this->description]);
         $query->andFilterWhere(['like', 'studyplan_subject_list', $this->studyplan_subject_list]);
-
         return $dataProvider;
     }
 }

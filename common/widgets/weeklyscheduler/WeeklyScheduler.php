@@ -17,15 +17,15 @@ class WeeklyScheduler extends Widget
     public $options = [];
     public $clientOptions = [];
     public $data = [];
-    public $startTime = '07:00';
+    public $startTime = '08:00';
     public $endTime = '21:00';
-    public $widthTime = 60 * 15;
+    public $widthTime = 60 * 10;
     public $timeLineY = 50;
     public $verticalScrollbar = 20;
     public $timeLineBorder = 1;
     public $bundleMoveWidth = 6;
     public $draggable = 'isDraggable';
-    public $resizable = 'isResizable';
+    public $resizable = false; //'isResizable'
     public $resizableLeft = false;
     public $rows = [
         0 => ['title' => 'Понедельник'],

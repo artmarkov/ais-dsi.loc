@@ -14,7 +14,7 @@ use kartik\grid\GridView;
 $this->title = Yii::t('art/guide', 'Teachers Load');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="subject-load-index">
+<div class="teachers-load-index">
     <div class="panel">
         <div class="panel-body">
             <div class="panel panel-default">

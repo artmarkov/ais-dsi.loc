@@ -3,7 +3,6 @@
 /* @var $this yii\web\View */
 /* @var $model common\models\subjectsect\SubjectSect */
 /* @var $modelsSubjectSectStudyplan */
-/* @var $modelsTeachersLoad */
 /* @var $readonly */
 
 $this->title = Yii::t('art', 'Update');
@@ -15,7 +14,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_form', [
         'model' => $model,
         'modelsSubjectSectStudyplan' => $modelsSubjectSectStudyplan,
-        'modelsTeachersLoad' => $modelsTeachersLoad,
         'readonly' => $readonly
     ]) ?>
 </div>

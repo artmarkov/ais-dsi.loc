@@ -176,7 +176,7 @@ class DefaultController extends MainController
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
 
-    public function actionStudyplanSchedule($id, $readonly = false)
+    public function actionSchedule($id, $readonly = false)
     {
         $model = $this->findModel($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
@@ -188,11 +188,11 @@ class DefaultController extends MainController
             throw new NotFoundHttpException("The StudyplanSubject was not found.");
         }
 
-        $modelsSubject = $model->studyplanSubject;
+       // $modelsSubject = $model->studyplanSubject;
 
-        return $this->render('studyplan-schedule', [
+        return $this->render('schedule', [
             'model' => $model,
-            'modelsSubject' => (empty($modelsSubject)) ? [new StudyplanSubject()] : $modelsSubject,
+           // 'modelsSubject' => (empty($modelsSubject)) ? [new StudyplanSubject()] : $modelsSubject,
             'readonly' => $readonly
         ]);
     }
@@ -393,9 +393,9 @@ class DefaultController extends MainController
     {
         return [
             ['label' => 'Карточка индивидуального плана', 'url' => ['/studyplan/default/update', 'id' => $id]],
-            ['label' => 'Расписание занятий', 'url' => ['/studyplan/default/studyplan-schedule', 'id' => $id]],
             ['label' => 'Нагрузка', 'url' => ['/studyplan/default/load-items', 'id' => $id]],
-            ['label' => 'Расписание', 'url' => ['/studyplan/default/schedule-items', 'id' => $id]],
+            ['label' => 'Элементы расписания', 'url' => ['/studyplan/default/schedule-items', 'id' => $id]],
+            ['label' => 'Расписание занятий', 'url' => ['/studyplan/default/schedule', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/studyplan/default/studyplan-consult', 'id' => $id]],
             ['label' => 'Характеристики по предметам', 'url' => ['/studyplan/default/studyplan-characteristic', 'id' => $id]],
             ['label' => 'Дневник успеваемости', 'url' => ['/studyplan/default/studyplan-progress', 'id' => $id]],

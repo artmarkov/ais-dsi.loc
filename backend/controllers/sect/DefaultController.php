@@ -2,18 +2,14 @@
 
 namespace backend\controllers\sect;
 
-use artsoft\helpers\ArtHelper;
-use artsoft\models\OwnerAccess;
-use artsoft\models\User;
 use backend\models\Model;
-use common\models\studyplan\search\StudyplanSearch;
 use common\models\subjectsect\search\SubjectSectScheduleSearch;
 use common\models\subjectsect\SubjectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\teachers\search\TeachersLoadSectViewSearch;
 use common\models\teachers\TeachersLoad;
 use common\models\subjectsect\search\SubjectSectScheduleViewSearch;
-use common\models\subjectsect\SubjectSectScheduleView;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
@@ -35,7 +31,6 @@ class DefaultController extends MainController
 
         $model = new $this->modelClass;
         $modelsSubjectSectStudyplan = [new SubjectSectStudyplan()];
-        $modelsTeachersLoad = [[new TeachersLoad()]];
 
         if ($model->load(Yii::$app->request->post())) {
 
@@ -46,17 +41,7 @@ class DefaultController extends MainController
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsSubjectSectStudyplan) && $valid;
             //$valid = true;
-            if (isset($_POST['TeachersLoad'][0][0])) {
-                foreach ($_POST['TeachersLoad'] as $index => $times) {
-                    foreach ($times as $indexTime => $time) {
-                        $data['TeachersLoad'] = $time;
-                        $modelTeachersLoad = new TeachersLoad;
-                        $modelTeachersLoad->load($data);
-                        $modelsTeachersLoad[$index][$indexTime] = $modelTeachersLoad;
-                        $valid = $modelTeachersLoad->validate();
-                    }
-                }
-            }
+
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
@@ -68,18 +53,8 @@ class DefaultController extends MainController
                                 break;
                             }
                             $modelSubjectSectStudyplan->subject_sect_id = $model->id;
-
                             if (!($flag = $modelSubjectSectStudyplan->save(false))) {
                                 break;
-                            }
-
-                            if (isset($modelsTeachersLoad[$index]) && is_array($modelsTeachersLoad[$index])) {
-                                foreach ($modelsTeachersLoad[$index] as $indexTime => $modelTeachersLoad) {
-                                    $modelTeachersLoad->subject_sect_studyplan_id = $modelSubjectSectStudyplan->id;
-                                    if (!($flag = $modelTeachersLoad->save(false))) {
-                                        break;
-                                    }
-                                }
                             }
                         }
                     }
@@ -98,7 +73,6 @@ class DefaultController extends MainController
         return $this->renderIsAjax($this->createView, [
             'model' => $model,
             'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan()] : $modelsSubjectSectStudyplan,
-            'modelsTeachersLoad' => (empty($modelsTeachersLoad)) ? [[new TeachersLoad]] : $modelsTeachersLoad,
             'readonly' => false
         ]);
     }
@@ -113,7 +87,6 @@ class DefaultController extends MainController
     public function actionUpdate($id, $readonly = false)
     {
         $this->view->params['tabMenu'] = $this->getMenu($id);
-
         $model = $this->findModel($id);
 
         if (!isset($model)) {
@@ -121,21 +94,8 @@ class DefaultController extends MainController
         }
 
         $modelsSubjectSectStudyplan = $model->subjectSectStudyplans;
-        $modelsTeachersLoad = [];
-        $oldTimes = [];
-
-        if (!empty($modelsSubjectSectStudyplan)) {
-            foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan) {
-                $times = $modelSubjectSectStudyplan->teachersLoads;
-                $modelsTeachersLoad[$index] = $times;
-                $oldTimes = ArrayHelper::merge(ArrayHelper::index($times, 'id'), $oldTimes);
-            }
-        }
 
         if ($model->load(Yii::$app->request->post())) {
-
-            // reset
-            $modelsTeachersLoad = [];
 
             $oldSubjectIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
             $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
@@ -145,56 +105,17 @@ class DefaultController extends MainController
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsSubjectSectStudyplan) && $valid;
 
-            $timesIDs = [];
-            if (isset($_POST['TeachersLoad'][0][0])) {
-                foreach ($_POST['TeachersLoad'] as $index => $times) {
-                    $timesIDs = ArrayHelper::merge($timesIDs, array_filter(ArrayHelper::getColumn($times, 'id')));
-                    foreach ($times as $indexTime => $time) {
-                        $data['TeachersLoad'] = $time;
-                        $modelTeachersLoad = (isset($time['id']) && isset($oldTimes[$time['id']])) ? $oldTimes[$time['id']] : new TeachersLoad;
-                        $modelTeachersLoad->load($data);
-                        $modelsTeachersLoad[$index][$indexTime] = $modelTeachersLoad;
-                        $valid = $modelTeachersLoad->validate();
-                    }
-                }
-            }
-
-            $oldTimesIDs = ArrayHelper::getColumn($oldTimes, 'id');
-            $deletedTimesIDs = array_diff($oldTimesIDs, $timesIDs);
-
             if ($valid) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) {
-
-                        if (!empty($deletedTimesIDs)) {
-                            TeachersLoad::deleteAll(['id' => $deletedTimesIDs]);
-                        }
-
                         if (!empty($deletedSubjectIDs)) {
                             SubjectSectStudyplan::deleteAll(['id' => $deletedSubjectIDs]);
                         }
-
                         foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan) {
-
-                            if ($flag === false) {
-                                break;
-                            }
                             $modelSubjectSectStudyplan->subject_sect_id = $model->id;
                             if (!($flag = $modelSubjectSectStudyplan->save(false))) {
                                 break;
-                            }
-
-                            $modelSubjectSectStudyplan = SubjectSectStudyplan::findOne(['id' => $modelSubjectSectStudyplan->id]);
-
-                            if (isset($modelsTeachersLoad[$index]) && is_array($modelsTeachersLoad[$index])) {
-                                foreach ($modelsTeachersLoad[$index] as $indexTime => $modelTeachersLoad) {
-                                    $modelTeachersLoad->subject_sect_studyplan_id = $modelSubjectSectStudyplan->id;
-
-                                    if (!($flag = $modelTeachersLoad->save(false))) {
-                                        break;
-                                    }
-                                }
                             }
                         }
                     }
@@ -214,7 +135,6 @@ class DefaultController extends MainController
         return $this->render($this->updateView, [
             'model' => $model,
             'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan] : $modelsSubjectSectStudyplan,
-            'modelsTeachersLoad' => (empty($modelsTeachersLoad)) ? [[new TeachersLoad]] : $modelsTeachersLoad,
             'readonly' => $readonly
         ]);
     }
@@ -232,13 +152,17 @@ class DefaultController extends MainController
 
     public function actionSchedule($id)
     {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/update', 'id' => $model->id]];
+        $this->view->params['breadcrumbs'][] = 'Расписание занятий';
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         $model = $this->modelClass::findOne($id);
         $readonly = false;
         return $this->render('schedule', ['model' => $model,
             'readonly' => $readonly,
-            ]);
+        ]);
     }
 
     /**
@@ -318,71 +242,145 @@ class DefaultController extends MainController
             return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'id'));
         }
     }
-    /**
-     * @return false|string
-     */
-    public function actionSubject()
+
+    public function actionLoadItems($id, $objectId = null, $mode = null)
     {
-        $out = [];
-        if (isset($_POST['depdrop_parents'])) {
-            $parents = $_POST['depdrop_parents'];
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/update', 'id' => $model->id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
 
-            if (!empty($parents)) {
-                $union_id = $parents[0];
-                $cat_id = $parents[1];
-                $out = $this->modelClass::getSubjectForUnionAndCatToId($union_id, $cat_id);
-
-                return json_encode(['output' => $out, 'selected' => '']);
+        if ('create' == $mode) {
+            if (!Yii::$app->request->get('subject_sect_studyplan_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_sect_studyplan_id.");
             }
+            $teachersLoadModel = StudyplanSubject::findOne(Yii::$app->request->get('subject_sect_studyplan_id'));
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
+            $model = new TeachersLoad();
+            $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id');
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
+                'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
+            ]);
+
+
+        } elseif ('history' == $mode && $objectId) {
+            $model = SubjectSchedule::findOne($objectId);
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/update', 'id' => $model->id]];
+            $data = new SubjectSectScheduleHistory($objectId);
+            return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $model = SubjectSchedule::findOne($objectId);
+            $model->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+
+        } elseif ($objectId) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $model = TeachersLoad::findOne($objectId);
+            $teachersLoadModel = StudyplanSubject::findOne($model->studyplan_subject_id);
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The StudyplanSubject was not found.");
+            }
+
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
+                'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
+            ]);
+
+        } else {
+            $searchModel = new TeachersLoadSectViewSearch();
+
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['subject_sect_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'id'));
         }
-        return json_encode(['output' => '', 'selected' => '']);
     }
 
-    /**
-     * @return false|string
-     */
-    public function actionSubjectCat()
-    {
-        $out = [];
-        if (isset($_POST['depdrop_parents'])) {
-            $parents = $_POST['depdrop_parents'];
-
-            if (!empty($parents)) {
-                $union_id = $parents[0];
-                $out = $this->modelClass::getSubjectCategoryForUnionToId($union_id);
-
-                return json_encode(['output' => $out, 'selected' => '']);
-            }
-        }
-        return json_encode(['output' => '', 'selected' => '']);
-    }
-
-    /**
-     * Установка группы в инд планах
-     * @return string|null
-     * @throws \yii\db\Exception
-     */
-    public function actionSetGroup()
-    {
-        $studyplan_subject_id = $_GET['studyplan_subject_id'];
-
-        if (isset($_POST['hasEditable'])) {
-            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            if (isset($_POST['sect_id'][$studyplan_subject_id])) {
-                $model = StudyplanSubject::findOne($studyplan_subject_id)->getSubjectSectStudyplan();
-                $model->removeStudyplanSubject($studyplan_subject_id);
-
-                $model = SubjectSectStudyplan::findOne($_POST['sect_id'][$studyplan_subject_id]);
-                $model->insertStudyplanSubject($studyplan_subject_id);
-
-                $value = $model->id;
-                return Json::encode(['output' => $value, 'message' => '']);
-            } else {
-                return Json::encode(['output' => '', 'message' => '']);
-            }
-        }
-
-        return null;
-    }
+//    /**
+//     * @return false|string
+//     */
+//    public function actionSubject()
+//    {
+//        $out = [];
+//        if (isset($_POST['depdrop_parents'])) {
+//            $parents = $_POST['depdrop_parents'];
+//
+//            if (!empty($parents)) {
+//                $union_id = $parents[0];
+//                $cat_id = $parents[1];
+//                $out = $this->modelClass::getSubjectForUnionAndCatToId($union_id, $cat_id);
+//
+//                return json_encode(['output' => $out, 'selected' => '']);
+//            }
+//        }
+//        return json_encode(['output' => '', 'selected' => '']);
+//    }
+//
+//    /**
+//     * @return false|string
+//     */
+//    public function actionSubjectCat()
+//    {
+//        $out = [];
+//        if (isset($_POST['depdrop_parents'])) {
+//            $parents = $_POST['depdrop_parents'];
+//
+//            if (!empty($parents)) {
+//                $union_id = $parents[0];
+//                $out = $this->modelClass::getSubjectCategoryForUnionToId($union_id);
+//
+//                return json_encode(['output' => $out, 'selected' => '']);
+//            }
+//        }
+//        return json_encode(['output' => '', 'selected' => '']);
+//    }
+//
+//    /**
+//     * Установка группы в инд планах
+//     * @return string|null
+//     * @throws \yii\db\Exception
+//     */
+//    public function actionSetGroup()
+//    {
+//        $studyplan_subject_id = $_GET['studyplan_subject_id'];
+//
+//        if (isset($_POST['hasEditable'])) {
+//            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+//            if (isset($_POST['sect_id'][$studyplan_subject_id])) {
+//                $model = StudyplanSubject::findOne($studyplan_subject_id)->getSubjectSectStudyplan();
+//                $model->removeStudyplanSubject($studyplan_subject_id);
+//
+//                $model = SubjectSectStudyplan::findOne($_POST['sect_id'][$studyplan_subject_id]);
+//                $model->insertStudyplanSubject($studyplan_subject_id);
+//
+//                $value = $model->id;
+//                return Json::encode(['output' => $value, 'message' => '']);
+//            } else {
+//                return Json::encode(['output' => '', 'message' => '']);
+//            }
+//        }
+//
+//        return null;
+//    }
 
 }

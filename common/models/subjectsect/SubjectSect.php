@@ -172,7 +172,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      */
     public function getSubjectSectStudyplans()
     {
-        return $this->hasMany(SubjectSectStudyplan::class, ['subject_sect_id' => 'id']);
+        return $this->hasMany(SubjectSectStudyplan::class, ['subject_sect_id' => 'id'])->orderBy('class_name');
     }
 
 //    /**

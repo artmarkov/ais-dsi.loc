@@ -4,9 +4,11 @@ namespace backend\controllers\teachers;
 
 use artsoft\models\User;
 use common\models\guidejob\Bonus;
+use common\models\subjectsect\search\SubjectScheduleTeachersViewSearch;
 use common\models\subjectsect\search\SubjectScheduleViewSearch;
 use common\models\subjectsect\SubjectSchedule;
 use common\models\studyplan\StudyplanSubject;
+use common\models\teachers\search\TeachersLoadTeachersViewSearch;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersActivity;
@@ -330,7 +332,6 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = 'Добавление расписания';
             $model = new SubjectSchedule();
             $model->teachers_load_id = Yii::$app->request->get('load_id');
-            $model->setTeachersLoadModelCopy(Yii::$app->request->get('load_id'));  // из нагрузки преподавателя
             if ($model->load(Yii::$app->request->post()) AND $model->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
                 $this->getSubmitAction($model);
@@ -377,7 +378,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $searchModel = new SubjectScheduleViewSearch();
+            $searchModel = new SubjectScheduleTeachersViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();
@@ -450,7 +451,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $searchModel = new TeachersLoadViewSearch();
+            $searchModel = new TeachersLoadTeachersViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();

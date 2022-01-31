@@ -10,6 +10,7 @@ use common\models\guidejob\Direction;
 use common\models\studyplan\StudyplanSubject;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\ArtHelper;
+use common\models\subject\SubjectCategory;
 use common\models\subjectsect\search\SubjectSectScheduleViewSearch;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersLoad;
@@ -47,7 +48,7 @@ use artsoft\widgets\Tooltip;
  * @property int|null $speciality_id
  * @property int|null $course
  */
-class SubjectScheduleView extends \artsoft\db\ActiveRecord
+class SubjectScheduleView extends SubjectSchedule
 {
     public $scheduleDisplay;
 
@@ -59,19 +60,6 @@ class SubjectScheduleView extends \artsoft\db\ActiveRecord
         return 'subject_schedule_view';
     }
 
-
-    /**
-     * @return array
-     */
-    public function behaviors()
-    {
-        return [
-            [
-                'class' => TimeFieldBehavior::class,
-                'attributes' => ['time_in', 'time_out'],
-            ]
-        ];
-    }
     /**
      * {@inheritdoc}
      */
@@ -136,6 +124,10 @@ class SubjectScheduleView extends \artsoft\db\ActiveRecord
         return $this->hasOne(StudyplanSubject::class, ['id' => 'studyplan_subject_id']);
     }
 
+    public function getSubjectCategory()
+    {
+        return $this->hasOne(SubjectCategory::class, ['id' => 'subject_cat_id']);
+    }
     /**
      * Gets query for [[Teachers]].
      *

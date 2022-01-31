@@ -10,10 +10,10 @@ use kartik\grid\GridView;
 /* @var $searchModel common\models\subjectsect\search\SubjectSectScheduleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/guide', 'Subject Sect Schedule');
+$this->title = Yii::t('art/guide', 'Teachers Load');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="subject-schedule-index">
+<div class="teachers-load-index">
     <div class="panel">
         <div class="panel-body">
             <div class="panel panel-default">
@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <?php
                     Pjax::begin([
-                        'id' => 'subject-schedule-grid-pjax',
+                        'id' => 'teachers-load-grid-pjax',
                     ])
                     ?>
 
@@ -99,31 +99,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'teachers_load_week_time',
                                 'value' => function ($model) {
-                                    return $model->teachers_load_week_time . ' ' . $model->getTeachersOverLoadNotice();
+                                    return $model->teachers_load_week_time;
                                 },
                                 'format' => 'raw',
                                 'group' => true,  // enable grouping
                                 'subGroupOf' => 4
-                            ],
-                            [
-                                'attribute' => 'scheduleDisplay',
-                                'value' => function ($model) {
-                                    return $model->getScheduleDisplay();
-                                },
-                                'format' => 'raw',
-                            ],
-                            [
-                                'attribute' => 'auditory_id',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => RefBook::find('auditory_memo_1')->getList(),
-                                'options' => ['style' => 'width:300px'],
-                                'value' => function ($model) {
-                                    return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
-                                },
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => ['allowClear' => true],
-                                ],
-                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                             ],
                             [
                                 'class' => 'kartik\grid\ActionColumn',
@@ -133,7 +113,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttons' => [
                                     'create' => function ($key, $model) {
                                         return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                                            Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']), [
+                                            Url::to(['/sect/default/load-items', 'id' => $model->subject_sect_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id, 'mode' => 'create']), [
                                                 'title' => Yii::t('art', 'Create'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
@@ -143,7 +123,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'update' => function ($key, $model) {
                                         return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
-                                            Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id, 'objectId' => $model->subject_schedule_id, 'mode' => 'update']), [
+                                            Url::to(['/sect/default/load-items', 'id' => $model->subject_sect_id, 'objectId' => $model->teachers_load_id, 'mode' => 'update']), [
                                                 'title' => Yii::t('art', 'Edit'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
@@ -152,7 +132,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'delete' => function ($key, $model) {
                                         return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                                            Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id, 'objectId' => $model->subject_schedule_id, 'mode' => 'delete']), [
+                                            Url::to(['/sect/default/load-items', 'id' => $model->subject_sect_id, 'objectId' => $model->teachers_load_id, 'mode' => 'delete']), [
                                                 'title' => Yii::t('art', 'Delete'),
                                                 'aria-label' => Yii::t('art', 'Delete'),
                                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -164,13 +144,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'visibleButtons' => [
                                     'create' => function ($model) {
-                                        return $model->getTeachersScheduleNeed();
+                                        return $model->getTeachersLoadsNeed();
                                     },
                                     'delete' => function ($model) {
-                                        return $model->subject_schedule_id !== null;
+                                        return $model->teachers_load_id !== null;
                                     },
                                     'update' => function ($model) {
-                                        return $model->subject_schedule_id !== null;
+                                        return $model->teachers_load_id !== null;
                                     }
                                 ]
                             ],
@@ -180,13 +160,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'columns' => [
                                     ['content' => 'Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
-                                    ['content' => 'Расписание занятий', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
+                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
                                 ],
                                 'options' => ['class' => 'skip-export'] // remove this row from export
                             ]
-                        ],
-                        'export' => [
+                        ],                        'export' => [
                             'fontAwesome' => true
                         ],
                         'exportConfig' => [
@@ -198,7 +176,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'toolbar' => [
                             [
                                 'content' => Html::a('Очистить',
-                                    Url::to(['/sect/default/schedule-items', 'id' => $id]), [
+                                    Url::to(['/sect/default/load-items', 'id' => $id]), [
                                         'title' => 'Очистить',
                                         'data-pjax' => '0',
                                         'class' => 'btn btn-default'
