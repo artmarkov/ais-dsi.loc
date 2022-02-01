@@ -78,6 +78,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'subject_sect_id' => $this->integer(),
             'studyplan_subject_list' => $this->text(),
             'class_name' => $this->string(64),
+            'subject_type_id' => $this->integer()->notNull(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -90,6 +91,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
 
         $this->createIndex('subject_sect_id', 'subject_sect_studyplan', 'subject_sect_id');
         $this->addForeignKey('subject_sect_studyplan_ibfk_1', 'subject_sect_studyplan', 'subject_sect_id', 'subject_sect', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('subject_sect_studyplan_ibfk_2', 'subject_sect_studyplan', 'subject_type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('studyplan_subject', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
@@ -132,6 +134,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->dropForeignKey('studyplan_subject_ibfk_3', 'studyplan_subject');
         $this->dropForeignKey('studyplan_subject_ibfk_4', 'studyplan_subject');
         $this->dropForeignKey('studyplan_subject_ibfk_5', 'studyplan_subject');
+        $this->dropForeignKey('subject_sect_studyplan_ibfk_2', 'subject_sect_studyplan');
         $this->dropForeignKey('subject_sect_studyplan_ibfk_1', 'subject_sect_studyplan');
         $this->dropForeignKey('subject_sect_ibfk_1', 'subject_sect');
         $this->dropForeignKey('subject_sect_ibfk_2', 'subject_sect');

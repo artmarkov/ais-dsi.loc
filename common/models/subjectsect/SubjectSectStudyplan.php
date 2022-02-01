@@ -3,7 +3,7 @@
 namespace common\models\subjectsect;
 
 use artsoft\helpers\RefBook;
-use common\models\studyplan\StudyplanSubject;
+use common\models\subject\SubjectType;
 use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -16,6 +16,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $subject_sect_id
  * @property string|null $studyplan_subject_list
  * @property string $class_name
+ * @property int $subject_type_id
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -51,13 +52,15 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['class_name'], 'required'],
+            [['subject_sect_id', 'subject_type_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['class_name', 'subject_type_id'], 'required'],
             [['studyplan_subject_list'], 'string'],
             [['class_name'], 'string', 'max' => 64],
             [['class_name'], 'trim'],
             ['class_name', 'unique', 'targetAttribute' => ['class_name', 'subject_sect_id'], 'message' => 'Назавание группы не должно повторяться.'],
             [['subject_sect_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSect::class, 'targetAttribute' => ['subject_sect_id' => 'id']],
+            [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
+
         ];
     }
 
@@ -71,6 +74,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect'),
             'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
             'class_name' => Yii::t('art/guide', 'Class Name'),
+            'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -102,6 +106,10 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
         return $this->hasMany(TeachersLoad::class, ['subject_sect_studyplan_id' => 'id']);
     }
 
+    public function getSubjectType()
+    {
+        return $this->hasOne(SubjectType::class, ['id' => 'subject_type_id']);
+    }
     /**
      * @return array
      */

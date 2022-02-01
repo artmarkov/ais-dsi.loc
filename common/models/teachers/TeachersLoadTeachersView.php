@@ -11,5 +11,4 @@ class TeachersLoadTeachersView extends TeachersLoadView
     {
         return 'teachers_load_teachers_view';
     }
-
 }

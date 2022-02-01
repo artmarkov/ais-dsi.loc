@@ -124,9 +124,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'subGroupOf' => 1
                             ],
                             [
-                                'attribute' => 'teachers_load_week_time',
+                                'attribute' => 'load_time',
                                 'value' => function ($model) {
-                                    return $model->teachers_load_week_time . ' ' . $model->getTeachersOverLoadNotice();
+                                    return $model->load_time . ' ' . $model->getTeachersOverLoadNotice();
                                 },
                                 'format' => 'raw',
                                 'group' => true,  // enable grouping

@@ -104,7 +104,7 @@ return [
     'Select Education Specializations...' => 'Выберите специализации...',
     'Cource' => 'Класс',
     'Class Name' => 'Название группы',
-    'Week Time' => 'Часов в неделю',
+    'Week Time' => 'План ак.ч',
     'Enter week time...' => 'Введите часы в неделю...',
     'Select week num...' => 'Выберите номер недели...',
     'Select week day...' => 'Выберите день недели...',
@@ -113,7 +113,7 @@ return [
     'Select auditory...' => 'Выберите аудиторию...',
     'Enter description...' => 'Введите описание...',
     'Cost Week Hour' => 'Стоимость часа',
-    'Year Time' => 'Часов в год',
+    'Year Time' => 'План ак.ч/год',
     'Month Summ' => 'Оплата в месяц',
     'Year Summ' => 'Сумма в рублях за учебный год',
     'Year Time Consult' => 'Консультации - часов в год',
@@ -142,6 +142,7 @@ return [
     'Schedule Items' => 'Элементы расписания',
     'Sect Name' => 'Учебная группа',
     'Teachers Load' => 'Нагрузка',
+    'Load Time' => 'Время ак.ч',
 
 ];
 ?>

@@ -1,16 +1,16 @@
 <?php
 
-namespace common\models\subjectsect\search;
+namespace common\models\teachers\search;
 
-use common\models\subjectsect\SubjectScheduleTeachersView;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use common\models\teachers\TeachersPlan;
 
 /**
- * SubjectScheduleTeachersViewSearch represents the model behind the search form about `common\models\subjectsect\SubjectScheduleTeachersView`.
+ * TeachersPlanSearch represents the model behind the search form about `common\models\teachers\TeachersPlan`.
  */
-class SubjectScheduleTeachersViewSearch extends SubjectScheduleTeachersView
+class TeachersPlanSearch extends TeachersPlan
 {
     /**
      * @inheritdoc
@@ -18,9 +18,8 @@ class SubjectScheduleTeachersViewSearch extends SubjectScheduleTeachersView
     public function rules()
     {
         return [
-            [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year', 'subject_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
-//            [['load_time'], 'number'],
-            [['studyplan_subject_list', 'description'], 'string'],
+            [['id', 'direction_id', 'teachers_id', 'plan_year', 'week_num', 'week_day', 'time_plan_in', 'time_plan_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['description'], 'safe'],
         ];
     }
 
@@ -42,13 +41,17 @@ class SubjectScheduleTeachersViewSearch extends SubjectScheduleTeachersView
      */
     public function search($params)
     {
-        $query = SubjectScheduleTeachersView::find();
+        $query = TeachersPlan::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => false,
+            'pagination' => [
+                'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
+            ],
             'sort' => [
-                'defaultOrder' => false,
+                'defaultOrder' => [
+                    'id' => SORT_DESC,
+                ],
             ],
         ]);
 
@@ -61,18 +64,23 @@ class SubjectScheduleTeachersViewSearch extends SubjectScheduleTeachersView
         }
 
         $query->andFilterWhere([
-            'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
+            'id' => $this->id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
+            'plan_year' => $this->plan_year,
             'week_num' => $this->week_num,
             'week_day' => $this->week_day,
-//            'time_in' => $this->time_in,
-//            'time_out' => $this->time_out,
+            'time_plan_in' => $this->time_plan_in,
+            'time_plan_out' => $this->time_plan_out,
             'auditory_id' => $this->auditory_id,
+            'created_at' => $this->created_at,
+            'created_by' => $this->created_by,
+            'updated_at' => $this->updated_at,
+            'updated_by' => $this->updated_by,
+            'version' => $this->version,
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);
-        $query->andFilterWhere(['like', 'studyplan_subject_list', $this->studyplan_subject_list]);
 
         return $dataProvider;
     }

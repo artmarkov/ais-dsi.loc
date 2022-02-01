@@ -35,9 +35,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'subject_sect_studyplan_id',
                                 'width' => '310px',
                                 'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => RefBook::find('sect_name_1')->getList(),
+                                'filter' => RefBook::find('sect_name_2')->getList(),
                                 'value' => function ($model, $key, $index, $widget) {
-                                    return RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id);
+                                    return RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id);
                                 },
                                 'filterWidgetOptions' => [
                                     'pluginOptions' => ['allowClear' => true],
@@ -97,9 +97,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'subGroupOf' => 2
                             ],
                             [
-                                'attribute' => 'teachers_load_week_time',
+                                'attribute' => 'load_time',
                                 'value' => function ($model) {
-                                    return $model->teachers_load_week_time;
+                                    return $model->load_time . $model->getItemLoadNotice();
                                 },
                                 'format' => 'raw',
                                 'group' => true,  // enable grouping

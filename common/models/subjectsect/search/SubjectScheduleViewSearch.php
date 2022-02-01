@@ -19,7 +19,7 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
     {
         return [
             [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'studyplan_id', 'student_id', 'programm_id','speciality_id','course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year', 'subject_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'status', 'programm_id', 'speciality_id', 'course'], 'integer'],
-            [['teachers_load_week_time', 'week_time', 'year_time'], 'number'],
+//            [['teachers_load_week_time', 'week_time', 'year_time'], 'number'],
             [['description'], 'safe'],
         ];
     }
@@ -46,13 +46,9 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => [
-                'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
-            ],
+            'pagination' => false,
             'sort' => [
-                'defaultOrder' => [
-                    'studyplan_id' => SORT_DESC,
-                ],
+                'defaultOrder' => false,
             ],
         ]);
 
@@ -70,7 +66,7 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
             'studyplan_subject_id' => $this->studyplan_subject_id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
-            'teachers_load_week_time' => $this->teachers_load_week_time,
+//            'teachers_load_week_time' => $this->teachers_load_week_time,
             'studyplan_id' => $this->studyplan_id,
             'student_id' => $this->student_id,
             'programm_id' => $this->programm_id,
@@ -80,8 +76,8 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
             'subject_id' => $this->subject_id,
             'subject_type_id' => $this->subject_type_id,
             'subject_vid_id' => $this->subject_vid_id,
-            'week_time' => $this->week_time,
-            'year_time' => $this->year_time,
+//            'week_time' => $this->week_time,
+//            'year_time' => $this->year_time,
             'plan_year' => $this->plan_year,
             'subject_schedule_id' => $this->subject_schedule_id,
             'week_num' => $this->week_num,

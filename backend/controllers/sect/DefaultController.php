@@ -271,14 +271,14 @@ class DefaultController extends MainController
 
 
         } elseif ('history' == $mode && $objectId) {
-            $model = SubjectSchedule::findOne($objectId);
+            $model = TeachersLoad::findOne($objectId);
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/update', 'id' => $model->id]];
             $data = new SubjectSectScheduleHistory($objectId);
             return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
-            $model = SubjectSchedule::findOne($objectId);
+            $model = TeachersLoad::findOne($objectId);
             $model->delete();
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));

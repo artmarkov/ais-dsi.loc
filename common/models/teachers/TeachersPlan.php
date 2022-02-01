@@ -58,8 +58,8 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
             [['direction_id', 'teachers_id', 'created_at', 'updated_at'], 'required'],
             [['description'], 'string', 'max' => 512],
             [['direction_id', 'teachers_id', 'plan_year', 'week_num', 'week_day', 'time_plan_in', 'time_plan_out', 'auditory_id'], 'integer'],
-            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::className(), 'targetAttribute' => ['direction_id' => 'id']],
-            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
+            [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
+            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
 
@@ -75,15 +75,15 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
             'plan_year' => Yii::t('art/guide', 'Plan Year'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
             'week_day' => Yii::t('art/guide', 'Week Day'),
-            'time_plan_in' => Yii::t('art/guide', 'Time In'),
-            'time_plan_out' => Yii::t('art/guide', 'Time Out'),
-            'auditory_id' => Yii::t('art/guide', 'Auditory ID'),
+            'time_plan_in' => Yii::t('art/guide', 'Time Plan In'),
+            'time_plan_out' => Yii::t('art/guide', 'Time Plan Out'),
+            'auditory_id' => Yii::t('art/guide', 'Auditory'),
             'description' => Yii::t('art', 'Description'),
-            'created_at' => Yii::t('art/guide', 'Created At'),
-            'created_by' => Yii::t('art/guide', 'Created By'),
-            'updated_at' => Yii::t('art/guide', 'Updated At'),
-            'updated_by' => Yii::t('art/guide', 'Updated By'),
-            'version' => Yii::t('art/guide', 'Version'),
+            'created_at' => Yii::t('art', 'Created'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'updated_by' => Yii::t('art', 'Updated By'),
+            'version' => Yii::t('art', 'Version'),
         ];
     }
 
@@ -100,7 +100,7 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
      */
     public function getDirection()
     {
-        return $this->hasOne(Direction::className(), ['id' => 'direction_id']);
+        return $this->hasOne(Direction::class, ['id' => 'direction_id']);
     }
 
     /**
@@ -110,6 +110,6 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
      */
     public function getTeachers()
     {
-        return $this->hasOne(Teachers::className(), ['id' => 'teachers_id']);
+        return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
     }
 }

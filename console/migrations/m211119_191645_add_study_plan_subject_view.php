@@ -88,16 +88,22 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
 
         $this->db->createCommand()->createView('subject_sect_view', '
          select subject_sect_studyplan.id as id, 
-		       concat(education_union.class_index, \' \', subject_sect_studyplan.class_name, \' (\',subject.name, \'-\',guide_subject_category.slug, \') \') as sect_name_1
+		       concat(education_union.class_index, \' \', subject_sect_studyplan.class_name, \' (\',subject.name, \'-\',guide_subject_category.slug, \') \') as sect_name_1,
+		       concat(education_union.class_index, \' \', subject_sect_studyplan.class_name, \' (\',subject.name, \'-\',guide_subject_category.slug, \') \', \' \', guide_subject_type.slug) as sect_name_2
          from subject_sect_studyplan
          inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
          inner join guide_subject_category on guide_subject_category.id = subject_sect.subject_cat_id
          inner join subject on subject.id = subject_sect.subject_id
+		 inner join guide_subject_type on guide_subject_type.id = subject_sect_studyplan.subject_type_id
          inner join education_union on education_union.id = subject_sect.union_id
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['sect_name_1', 'subject_sect_view', 'id', 'sect_name_1', 'sect_name_1', null, null, 'Название группы'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['sect_name_2', 'subject_sect_view', 'id', 'sect_name_2', 'sect_name_2', null, null, 'Название группы с типом занятий'],
         ])->execute();
 
         $this->db->createCommand()->createView('subject_sect_schedule_view', '
@@ -108,7 +114,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
                 teachers_load.id as teachers_load_id,
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
-                teachers_load.week_time as teachers_load_week_time,			
+                teachers_load.load_time as load_time,			
                 subject_schedule.id as subject_schedule_id,
                 subject_schedule.week_num as week_num,
                 subject_schedule.week_day as week_day,
@@ -134,7 +140,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
 				teachers_load.studyplan_subject_id as studyplan_subject_id,
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
-                teachers_load.week_time as teachers_load_week_time,
+                teachers_load.load_time as load_time,
 				studyplan.id::text as studyplan_subject_list,
 				studyplan.course as course,
 			    studyplan_subject.subject_cat_id as subject_cat_id,
@@ -160,7 +166,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
   				teachers_load.studyplan_subject_id as studyplan_subject_id,
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
-                teachers_load.week_time as teachers_load_week_time,
+                teachers_load.load_time as load_time,
 				subject_sect_studyplan.studyplan_subject_list as studyplan_subject_list,
 				subject_sect.course as course,
 			    subject_sect.subject_cat_id as subject_cat_id,
@@ -203,7 +209,7 @@ ORDER BY direction_id, teachers_id, week_day, time_in
                          teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
                          teachers_load.direction_id as direction_id,
                          teachers_load.teachers_id as teachers_id,
-                         teachers_load.week_time as teachers_load_week_time,
+                         teachers_load.load_time as load_time,
                          subject_schedule.id as subject_schedule_id,
                          subject_schedule.week_num as week_num,
                          subject_schedule.week_day as week_day,
@@ -237,7 +243,7 @@ ORDER BY direction_id, teachers_id, week_day, time_in
                          teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
                          teachers_load.direction_id as direction_id,
                          teachers_load.teachers_id as teachers_id,
-                         teachers_load.week_time as teachers_load_week_time,
+                         teachers_load.load_time as load_time,
                          subject_schedule.id as subject_schedule_id,
                          subject_schedule.week_num as week_num,
                          subject_schedule.week_day as week_day,
@@ -267,6 +273,7 @@ ORDER BY direction_id, teachers_id, week_day, time_in
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_schedule_plan_year'])->execute();
         $this->db->createCommand()->dropView('subject_schedule_teachers_view')->execute();
         $this->db->createCommand()->dropView('subject_sect_schedule_view')->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'sect_name_2'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'sect_name_1'])->execute();
         $this->db->createCommand()->dropView('subject_sect_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'auditory_memo_1'])->execute();

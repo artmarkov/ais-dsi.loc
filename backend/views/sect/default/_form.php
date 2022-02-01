@@ -230,10 +230,22 @@ JS
                                                     ?>
                                                     <div class="col-sm-12">
                                                         <?= $form->field($modelSubjectSectStudyplan, "[{$index}]class_name")->textInput(['maxlength' => true]) ?>
+
+                                                        <?= $form->field($modelSubjectSectStudyplan, "[{$index}]subject_type_id")->widget(\kartik\select2\Select2::class, [
+                                                            'data' => \common\models\subject\SubjectType::getTypeList(),
+                                                            'options' => [
+                                                                'disabled' => $readonly,
+                                                                'placeholder' => Yii::t('art', 'Select...'),
+                                                                'multiple' => false,
+                                                            ],
+                                                            'pluginOptions' => [
+                                                                'allowClear' => true
+                                                            ],
+                                                        ])->label(Yii::t('art/guide', 'Subject Type'));
+                                                        ?>
                                                     </div>
 
                                                     <?php
-
                                                     $field = $form->field($modelSubjectSectStudyplan, "[{$index}]studyplan_subject_list");
                                                     echo $field->begin();
                                                     ?>

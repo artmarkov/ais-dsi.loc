@@ -18,9 +18,9 @@ class TeachersLoadSectViewSearch extends TeachersLoadSectView
     public function rules()
     {
         return [
-            [['subject_sect_id', 'plan_year', 'subject_sect_studyplan_id', 'teachers_load_id', 'direction_id', 'teachers_id'], 'integer'],
-            [['studyplan_subject_list'], 'string'],
-            [['teachers_load_week_time'], 'number'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_list', 'subject_type_id', 'subject_sect_id', 'plan_year','subject_cat_id','subject_id','subject_vid_id','teachers_load_id','direction_id','teachers_id'], 'integer'],
+            [['studyplan_subject_list', 'class_name'], 'string'],
+//            [['load_time'], 'number'],
         ];
     }
 
@@ -61,13 +61,18 @@ class TeachersLoadSectViewSearch extends TeachersLoadSectView
         }
 
         $query->andFilterWhere([
+            'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
+            'subject_type_id' => $this->subject_type_id,
+            'class_name' => $this->class_name,
             'subject_sect_id' => $this->subject_sect_id,
             'plan_year' => $this->plan_year,
-            'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
+            'subject_cat_id' => $this->subject_cat_id,
+            'subject_id' => $this->subject_id,
+            'subject_vid_id' => $this->subject_vid_id,
             'teachers_load_id' => $this->teachers_load_id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
-            'teachers_load_week_time' => $this->teachers_load_week_time,
+//            'load_time' => $this->load_time,
         ]);
         $query->andFilterWhere(['like', 'studyplan_subject_list', $this->studyplan_subject_list]);
         return $dataProvider;

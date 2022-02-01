@@ -17,7 +17,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
             'studyplan_subject_id' => $this->integer()->defaultValue(0),
             'direction_id' => $this->integer()->notNull(),
             'teachers_id' => $this->integer()->notNull(),
-            'week_time' => $this->float()->notNull(),
+            'load_time' => $this->float()->notNull(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -34,14 +34,20 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
 
 
         $this->db->createCommand()->createView('teachers_load_sect_view', '
-         select subject_sect.id as subject_sect_id,
-				subject_sect.plan_year as plan_year,	
+         select subject_sect_studyplan.id as subject_sect_studyplan_id,	
                 subject_sect_studyplan.studyplan_subject_list as studyplan_subject_list,
-                subject_sect_studyplan.id as subject_sect_studyplan_id,	
+                subject_sect_studyplan.subject_type_id as subject_type_id,	
+                subject_sect_studyplan.class_name as class_name,	
+                subject_sect.id as subject_sect_id,
+				subject_sect.plan_year as plan_year,	
+                subject_sect.subject_cat_id as subject_cat_id,
+			    subject_sect.subject_id as subject_id,
+			    subject_sect.subject_vid_id as subject_vid_id,
                 teachers_load.id as teachers_load_id,
+				teachers_load.studyplan_subject_id as studyplan_subject_id,
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
-                teachers_load.week_time as teachers_load_week_time
+                teachers_load.load_time as load_time
          from subject_sect_studyplan
 		 inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
 		 left join teachers_load  on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id
@@ -55,7 +61,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
 				teachers_load.studyplan_subject_id as studyplan_subject_id,
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
-                teachers_load.week_time as teachers_load_week_time,
+                teachers_load.load_time as load_time,
 				studyplan.id::text as studyplan_subject_list,
 				studyplan.course as course,
 			    studyplan_subject.subject_cat_id as subject_cat_id,
@@ -73,7 +79,7 @@ UNION ALL
   				teachers_load.studyplan_subject_id as studyplan_subject_id,
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
-                teachers_load.week_time as teachers_load_week_time,
+                teachers_load.load_time as load_time,
 				subject_sect_studyplan.studyplan_subject_list as studyplan_subject_list,
 				subject_sect.course as course,
 			    subject_sect.subject_cat_id as subject_cat_id,
@@ -107,7 +113,7 @@ ORDER BY direction_id, teachers_id
                          teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
                          teachers_load.direction_id as direction_id,
                          teachers_load.teachers_id as teachers_id,
-                         teachers_load.week_time as teachers_load_week_time
+                         teachers_load.load_time as load_time
                  from studyplan
                  inner join studyplan_subject on (studyplan.id = studyplan_subject.studyplan_id)
                  inner join guide_subject_vid on (guide_subject_vid.id = studyplan_subject.subject_vid_id and guide_subject_vid.qty_min = 1 and guide_subject_vid.qty_max = 1)
@@ -134,7 +140,7 @@ ORDER BY direction_id, teachers_id
                          teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
                          teachers_load.direction_id as direction_id,
                          teachers_load.teachers_id as teachers_id,
-                         teachers_load.week_time as teachers_load_week_time
+                         teachers_load.load_time as load_time
                  from studyplan
                  inner join studyplan_subject on (studyplan_subject.studyplan_id = studyplan.id)
                  left join subject_sect on (subject_sect.subject_cat_id = studyplan_subject.subject_cat_id

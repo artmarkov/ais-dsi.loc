@@ -19,7 +19,7 @@ class TeachersLoadViewSearch extends TeachersLoadView
     {
         return [
             [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'studyplan_id', 'programm_id','speciality_id','course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year', 'status'], 'integer'],
-            [['teachers_load_week_time', 'week_time', 'year_time'], 'number'],
+//            [['week_time', 'year_time'], 'number'],
         ];
     }
 
@@ -45,13 +45,9 @@ class TeachersLoadViewSearch extends TeachersLoadView
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => [
-                'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
-            ],
+            'pagination' => false,
             'sort' => [
-                'defaultOrder' => [
-                    'teachers_id' => SORT_DESC,
-                ],
+                'defaultOrder' => false,
             ],
         ]);
 
@@ -69,7 +65,7 @@ class TeachersLoadViewSearch extends TeachersLoadView
             'studyplan_subject_id' => $this->studyplan_subject_id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
-            'teachers_load_week_time' => $this->teachers_load_week_time,
+//            'load_time' => $this->load_time,
             'studyplan_id' => $this->studyplan_id,
             'programm_id' => $this->programm_id,
             'speciality_id' => $this->speciality_id,
@@ -78,8 +74,8 @@ class TeachersLoadViewSearch extends TeachersLoadView
             'subject_id' => $this->subject_id,
             'subject_type_id' => $this->subject_type_id,
             'subject_vid_id' => $this->subject_vid_id,
-            'week_time' => $this->week_time,
-            'year_time' => $this->year_time,
+//            'week_time' => $this->week_time,
+//            'year_time' => $this->year_time,
             'plan_year' => $this->plan_year,
             'status' => $this->status,
         ]);

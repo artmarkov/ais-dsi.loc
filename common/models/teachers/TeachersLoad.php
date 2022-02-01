@@ -17,7 +17,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $studyplan_subject_id
  * @property int $direction_id
  * @property int $teachers_id
- * @property float|null $week_time
+ * @property float|null $load_time
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -57,8 +57,8 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
         return [
             [['subject_sect_studyplan_id', 'studyplan_subject_id'], 'default', 'value' => 0],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['direction_id', 'teachers_id', 'week_time'], 'required'],
-            [['week_time'], 'number'],
+            [['direction_id', 'teachers_id', 'load_time'], 'required'],
+            [['load_time'], 'number'],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
         ];
@@ -75,7 +75,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
             'studyplan_subject_id' => Yii::t('art/guide', 'Sect ID'),
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
-            'week_time' => Yii::t('art/guide', 'Week Time'),
+            'load_time' => Yii::t('art/guide', 'Load Time'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -127,6 +127,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
     {
         return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
     }
+
 
     /**
      * Проверка на необходимость добавления нагрузки

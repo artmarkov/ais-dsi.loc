@@ -26,7 +26,7 @@ use artsoft\widgets\Tooltip;
  * @property int|null $studyplan_subject_id
  * @property int|null $direction_id
  * @property int|null $teachers_id
- * @property float|null $teachers_load_week_time
+ * @property float|null $load_time
  * @property int|null $studyplan_id
  * @property int|null $student_id
  * @property int|null $subject_cat_id
@@ -70,7 +70,7 @@ class SubjectScheduleView extends SubjectSchedule
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
-            'teachers_load_week_time' => Yii::t('art/guide', 'Week Time'),
+            'load_time' => Yii::t('art/guide', 'Load Time'),
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
             'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
@@ -249,8 +249,8 @@ class SubjectScheduleView extends SubjectSchedule
         $message = null;
         $delta_time = Yii::$app->settings->get('module.student_delta_time');
         $thereIsAnOverload = $this->getTeachersOverLoad();
-        $weekTime = Schedule::academ2astr($this->teachers_load_week_time);
-        if ($this->teachers_load_week_time != 0 && $thereIsAnOverload['full_time'] != null && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
+        $weekTime = Schedule::academ2astr($this->load_time);
+        if ($this->load_time != 0 && $thereIsAnOverload['full_time'] != null && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
             $message = 'Суммарное время в расписании занятий не соответствует нагрузке!';
         }
         return $message ? Tooltip::widget(['type' => 'warning', 'message' => $message]) : null;
@@ -305,8 +305,8 @@ class SubjectScheduleView extends SubjectSchedule
     {
         $delta_time = Yii::$app->settings->get('module.student_delta_time');
         $thereIsAnOverload = $this->getTeachersOverLoad();
-        $weekTime = Schedule::academ2astr($this->teachers_load_week_time);
-        if ($this->teachers_load_week_time != 0 && $weekTime > $thereIsAnOverload['full_time'] && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
+        $weekTime = Schedule::academ2astr($this->load_time);
+        if ($this->load_time != 0 && $weekTime > $thereIsAnOverload['full_time'] && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
             return true;
         }
         return false;

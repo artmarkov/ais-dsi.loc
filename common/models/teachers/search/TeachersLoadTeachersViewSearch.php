@@ -19,7 +19,7 @@ class TeachersLoadTeachersViewSearch extends TeachersLoadTeachersView
     {
         return [
             [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year'], 'integer'],
-            [['teachers_load_week_time'], 'number'],
+//            [['load_time'], 'number'],
             [['studyplan_subject_list'], 'string'],
         ];
     }
@@ -76,7 +76,7 @@ class TeachersLoadTeachersViewSearch extends TeachersLoadTeachersView
             'subject_type_id' => $this->subject_type_id,
             'subject_vid_id' => $this->subject_vid_id,
             'plan_year' => $this->plan_year,
-            'teachers_load_week_time' => $this->teachers_load_week_time,
+          //  'load_time' => $this->load_time,
         ]);
         $query->andFilterWhere(['like', 'studyplan_subject_list', $this->studyplan_subject_list]);
         return $dataProvider;

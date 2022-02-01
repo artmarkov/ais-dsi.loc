@@ -26,7 +26,7 @@ use artsoft\helpers\RefBook;
                 <div class="panel-heading">
                     Элемент нагрузки преподавателя:
                     <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
-                    <?php echo RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id); ?>
+                    <?php echo RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id); ?>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -62,7 +62,7 @@ use artsoft\helpers\RefBook;
                             ]);
                             ?>
 
-                            <?= $form->field($model, 'week_time')->textInput() ?>
+                            <?= $form->field($model, 'load_time')->textInput() ?>
 
 
                         </div>

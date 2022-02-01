@@ -2,7 +2,9 @@
 
 namespace common\models\teachers;
 
-use Yii;
+use artsoft\helpers\RefBook;
+use artsoft\widgets\Notice;
+use artsoft\widgets\Tooltip;
 
 class TeachersLoadSectView extends TeachersLoadView
 {
@@ -13,27 +15,51 @@ class TeachersLoadSectView extends TeachersLoadView
     {
         return 'teachers_load_sect_view';
     }
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
+
+    public function getTeachersFullLoad()
     {
-        return [
-            'teachers_load_id' => Yii::t('art/guide', 'Teachers Load'),
-            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
-            'direction_id' => Yii::t('art/teachers', 'Name Direction'),
-            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
-            'teachers_load_week_time' => Yii::t('art/guide', 'Week Time'),
-            'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
-            'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
-            'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
-            'subject_schedule_id' => Yii::t('art/guide', 'Subject Schedule'),
-            'studyplan_subject_id' => Yii::t('art/guide', 'Subject Name'),
-            'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
-            'subject_id' => Yii::t('art/guide', 'Subject Name'),
-            'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
-            'subject_vid_id' => Yii::t('art/guide', 'Subject Vid'),
-            'course' => Yii::t('art/studyplan', 'Course'),
-        ];
+        return self::find()
+            ->select(new \yii\db\Expression('SUM(load_time)'))
+            ->where(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
+            ->andWhere(['=', 'studyplan_subject_id', $this->studyplan_subject_id])
+            ->andWhere(['=', 'direction_id', $this->direction_id])
+            ->scalar();
+    }
+
+    public function getStudyplanWeekTime()
+    {
+        $funcSql = <<< SQL
+    select MAX(week_time)
+	from studyplan_subject 
+	where id = any(string_to_array('{$this->studyplan_subject_list}', ',')::int[])
+SQL;
+
+        return $this->studyplan_subject_list ? \Yii::$app->db->createCommand($funcSql)->queryScalar() : 0;
+    }
+
+    /**
+     * Проверка на необходимость добавления нагрузки
+     * @return bool
+     */
+    public function getTeachersLoadsNeed()
+    {
+        return $this->getTeachersFullLoad() < $this->getStudyplanWeekTime();
+    }
+
+    public function getItemLoadNotice()
+    {
+        $tooltip = [];
+        if ($this->studyplan_subject_list == '') {
+            $message = 'В группе ' . RefBook::find('sect_name_2')->getValue($this->subject_sect_studyplan_id) . ' не обнаружено ни одного учащегося!';
+            Notice::registerWarning($message);
+        }
+        if ($this->teachers_load_id) {
+            if ($this->getTeachersLoadsNeed()) {
+                $message = 'Суммарное время нагрузки не соответствует планированию - ' . $this->getStudyplanWeekTime() . ' ак.ч';
+                $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
+            }
+            return implode('', $tooltip);
+        }
+        return null;
     }
 }
