@@ -47,83 +47,35 @@ public static function academ2astr($academ_hour)
 // определение в секундах значения академического времени
 public static function astr2academ($astr_hour)
 {
-    switch ($astr_hour) {
-        case '0':
+    switch (true) {
+        case ($astr_hour == 0):
             $academ_hour = 0;
             break;
-        case '750':
+        case in_array($astr_hour, range(750, 750)):
             $academ_hour = 0.25;
             break;
-        case '1500':
+        case in_array($astr_hour, range(1200, 1500)):
             $academ_hour = 0.5;
             break;
-        case '2100':
+        case in_array($astr_hour, range(2100, 2400)):
             $academ_hour = 0.75;
             break;
-        case '2700':
+        case in_array($astr_hour, range(2700, 2700)):
             $academ_hour = 1;
             break;
-        case '3300':
+        case in_array($astr_hour, range(3300, 3420)):
             $academ_hour = 1.25;
             break;
-        case '4200':
+        case in_array($astr_hour, range(4020, 4500)):
             $academ_hour = 1.5;
             break;
-        case '5400':
+        case in_array($astr_hour, range(5400, 5400)):
             $academ_hour = 2;
             break;
-        case '6900':
+        case in_array($astr_hour, range(6900, 6900)):
             $academ_hour = 2.5;
             break;
-        case '8100':
-            $academ_hour = 3;
-            break;
-        case '1380':
-            $academ_hour = 0.5;
-            break;
-        case '1320':
-            $academ_hour = 0.5;
-            break;
-        case '1260':
-            $academ_hour = 0.5;
-            break;
-        case '1200':
-            $academ_hour = 0.5;
-            break;
-        case '2400':
-            $academ_hour = 0.75;
-            break;
-        case '3360':
-            $academ_hour = 1.25;
-            break;
-        case '3420':
-            $academ_hour = 1.25;
-            break;
-        case '4140':
-            $academ_hour = 1.5;
-            break;
-        case '4080':
-            $academ_hour = 1.5;
-            break;
-        case '4020':
-            $academ_hour = 1.5;
-            break;
-        case '4260':
-            $academ_hour = 1.5;
-            break;
-        case '4320':
-            $academ_hour = 1.5;
-            break;
-        case '4380':
-            $academ_hour = 1.5;
-            break;
-        case '4440':
-            $academ_hour = 1.5;
-            break;
-        case '4500':
-            $academ_hour = 1.5;
-            break;
-        case '8400':
+        case in_array($astr_hour, range(8100, 8400)):
             $academ_hour = 3;
             break;
         default:
@@ -132,4 +84,10 @@ public static function astr2academ($astr_hour)
 
     return $academ_hour;
 }
+    public static function encodeTime($value)
+    {
+        $t = explode(":", $value);
+        return mktime($t[0], $t[1], 0, 1, 1, 70);
+
+    }
 }

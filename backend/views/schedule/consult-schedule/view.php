@@ -4,13 +4,13 @@ use yii\widgets\DetailView;
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\teachers\TeachersPlan */
+/* @var $model common\models\schedule\ConsultSchedule */
 
 $this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedules'), 'url' => ['default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="teachers-plan-view">
+<div class="consult-schedule-view">
 
 <div class="panel">
     <div class="panel-heading">
@@ -29,13 +29,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'model' => $model,
                 'attributes' => [
                     'id',
-'direction_id',
-'teachers_id',
-'plan_year',
-'week_num',
-'week_day',
-'time_plan_in:datetime',
-'time_plan_out:datetime',
+'teachers_load_id',
+'datetime_in:datetime',
+'datetime_out:datetime',
 'auditory_id',
 'description',
 'created_at',

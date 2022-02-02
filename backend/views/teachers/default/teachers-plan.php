@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\helpers\RefBook;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -12,7 +13,7 @@ use artsoft\grid\GridPageSize;
 /* @var $searchModel common\models\teachers\search\TeachersPlanSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/guide', 'Teachers Plans');
+$this->title = Yii::t('art/guide', 'Teachers Plan');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="teachers-plan-index">
@@ -25,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-6">
-                            <?php 
+                            <?php
                             /* Uncomment this to activate GridQuickLinks */
                             /* echo GridQuickLinks::widget([
                                 'model' => TeachersPlan::className(),
@@ -35,56 +36,85 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?=  GridPageSize::widget(['pjaxId' => 'teachers-plan-grid-pjax']) ?>
+                            <?= GridPageSize::widget(['pjaxId' => 'teachers-plan-grid-pjax']) ?>
                         </div>
                     </div>
 
-                    <?php 
+                    <?php
                     Pjax::begin([
                         'id' => 'teachers-plan-grid-pjax',
                     ])
                     ?>
 
-                    <?= 
+                    <?=
                     GridView::widget([
                         'id' => 'teachers-plan-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'teachers-plan-grid',
-                            'actions' => [ Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
+                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/teachers-plan/default',
-                                'title' => function(TeachersPlan $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'controller' => '/teachers/teachers-plan',
+                                'title' => function (TeachersPlan $model) {
+                                    return Html::a(sprintf('#%06d', $model->id), ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
-                                'buttonsTemplate' => '{update} {view} {delete}',
+                                'buttonsTemplate' => '{update} {delete}',
+                                'buttons' => [
+                                    'update' => function ($key, $model) {
+                                        return Html::a(Yii::t('art', 'Update'),
+                                            Url::to(['/teachers/default/teachers-plan', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update']), [
+                                                'title' => Yii::t('art', 'Edit'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                    'delete' => function ($key, $model) {
+                                        return Html::a(Yii::t('art', 'Delete'),
+                                            Url::to(['/teachers/default/teachers-plan', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'delete']), [
+                                                'title' => Yii::t('art', 'Delete'),
+                                                'aria-label' => Yii::t('art', 'Delete'),
+                                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
                             ],
 
-            'id',
-            'direction_id',
-            'teachers_id',
-            'plan_year',
-            'week_num',
-            // 'week_day',
-            // 'time_plan_in:datetime',
-            // 'time_plan_out:datetime',
-            // 'auditory_id',
-            // 'description',
-            // 'created_at',
-            // 'created_by',
-            // 'updated_at',
-            // 'updated_by',
-            // 'version',
+                            [
+                                'attribute' => 'direction_id',
+                                'filter' => \common\models\guidejob\Direction::getDirectionList(),
+                                'value' => function ($model, $key, $index, $widget) {
+                                    return $model->direction ? $model->direction->name : null;
+                                },
 
-                ],
-            ]);
-            ?>
+                            ],
+                          //  'teachers_id',
+                            [
+                                'attribute' => 'planDisplay',
+                                'value' => function ($model) {
+                                    return $model->getPlanDisplay();
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'auditory_id',
+                                'filter' => RefBook::find('auditory_memo_1')->getList(),
+                                'value' => function ($model) {
+                                    return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
+                                },
+                            ],
+                        ],
+                    ]);
+                    ?>
 
                     <?php Pjax::end() ?>
                 </div>

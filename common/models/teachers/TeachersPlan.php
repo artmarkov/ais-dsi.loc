@@ -2,7 +2,13 @@
 
 namespace common\models\teachers;
 
+use artsoft\behaviors\TimeFieldBehavior;
+use artsoft\helpers\ArtHelper;
+use artsoft\helpers\RefBook;
+use artsoft\helpers\Schedule;
+use artsoft\widgets\Tooltip;
 use common\models\guidejob\Direction;
+use common\models\subjectsect\SubjectSchedule;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -31,6 +37,8 @@ use yii\behaviors\TimestampBehavior;
  */
 class TeachersPlan extends \artsoft\db\ActiveRecord
 {
+    public $planDisplay;
+
     /**
      * {@inheritdoc}
      */
@@ -47,20 +55,36 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
+            [
+                'class' => TimeFieldBehavior::class,
+                'attributes' => ['time_plan_in', 'time_plan_out'],
+            ]
         ];
     }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['direction_id', 'teachers_id', 'created_at', 'updated_at'], 'required'],
+            [['direction_id', 'teachers_id', 'time_plan_in', 'time_plan_out', 'plan_year', 'week_day', 'auditory_id'], 'required'],
             [['description'], 'string', 'max' => 512],
-            [['direction_id', 'teachers_id', 'plan_year', 'week_num', 'week_day', 'time_plan_in', 'time_plan_out', 'auditory_id'], 'integer'],
+            [['time_plan_in', 'time_plan_out'], 'safe'],
+            [['direction_id', 'teachers_id', 'plan_year', 'week_num', 'week_day', 'auditory_id'], 'integer'],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
+            [['time_plan_in', 'time_plan_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
+            [['time_plan_out'], 'compare', 'compareAttribute' => 'time_plan_in', 'operator' => '>', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
+
         ];
+    }
+
+    public function checkFormatTime($attribute, $params)
+    {
+        if (!preg_match('/^([01]?[0-9]|2[0-3])(:|\.)[0-5][0-9]$/', $this->$attribute)) {
+            $this->addError($attribute, 'Формат ввода времени не верен.');
+        }
     }
 
     /**
@@ -70,15 +94,16 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art/guide', 'ID'),
-            'direction_id' => Yii::t('art/guide', 'Direction ID'),
-            'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
-            'plan_year' => Yii::t('art/guide', 'Plan Year'),
+            'direction_id' => Yii::t('art/teachers', 'Name Direction'),
+            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
+            'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
             'week_day' => Yii::t('art/guide', 'Week Day'),
-            'time_plan_in' => Yii::t('art/guide', 'Time Plan In'),
-            'time_plan_out' => Yii::t('art/guide', 'Time Plan Out'),
+            'time_plan_in' => Yii::t('art/guide', 'Time In'),
+            'time_plan_out' => Yii::t('art/guide', 'Time Out'),
             'auditory_id' => Yii::t('art/guide', 'Auditory'),
             'description' => Yii::t('art', 'Description'),
+            'planDisplay' => Yii::t('art/guide', 'Plan Schedule'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -91,7 +116,6 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
     {
         return 'version';
     }
-
 
     /**
      * Gets query for [[Direction]].
@@ -111,5 +135,109 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
     public function getTeachers()
     {
         return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getPlanDisplay()
+    {
+        $string = ' ' . ArtHelper::getWeekValue('short', $this->week_num);
+        $string .= ' ' . ArtHelper::getWeekdayValue('short', $this->week_day) . ' ' . $this->time_plan_in . '-' . $this->time_plan_out;
+         $string .= ' ' . $this->getTeachersPlanNotice();
+        return $this->time_plan_in ? $string : null;
+    }
+
+    /**
+     * В одной аудитории накладка по времени!
+     * @param $model
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeachersPlanOverLapping()
+    {
+        $thereIsAnOverlapping = self::find()->where(
+            ['AND',
+                ['!=', 'id', $this->id],
+                ['auditory_id' => $this->auditory_id],
+                ['direction_id' => $this->direction_id],
+                ['plan_year' => $this->plan_year],
+                ['OR',
+                    ['AND',
+                        ['<', 'time_plan_in', Schedule::encodeTime($this->time_plan_out)],
+                        ['>=', 'time_plan_in', Schedule::encodeTime($this->time_plan_in)],
+                    ],
+
+                    ['AND',
+                        ['<=', 'time_plan_out', Schedule::encodeTime($this->time_plan_out)],
+                        ['>', 'time_plan_out', Schedule::encodeTime($this->time_plan_in)],
+                    ],
+                ],
+                ['=', 'week_day', $this->week_day]
+            ]);
+        if ($this->getAttribute($this->week_num) !== null) {
+            $thereIsAnOverlapping->andWhere(['=', 'week_num', $this->week_num]);
+        }
+
+        return $thereIsAnOverlapping;
+    }
+
+    /**
+     * Преподаватель не может работать в одно и тоже время в разных аудиториях!
+     * Концертмейстер не может работать в одно и тоже время в разных аудиториях!
+     * @param $this
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeachersOverLapping()
+    {
+        $thereIsAnOverlapping = self::find()->where(
+            ['AND',
+                ['!=', 'id', $this->id],
+                ['direction_id' => $this->direction_id],
+                ['teachers_id' => $this->teachers_id],
+                ['!=', 'auditory_id', $this->auditory_id],
+                ['plan_year' => $this->plan_year],
+                ['OR',
+                    ['AND',
+                        ['<', 'time_plan_in', Schedule::encodeTime($this->time_plan_out)],
+                        ['>=', 'time_plan_in', Schedule::encodeTime($this->time_plan_in)],
+                    ],
+
+                    ['AND',
+                        ['<=', 'time_plan_out', Schedule::encodeTime($this->time_plan_out)],
+                        ['>', 'time_plan_out', Schedule::encodeTime($this->time_plan_in)],
+                    ],
+                ],
+                ['=', 'week_day', $this->week_day]
+            ]);
+        if ($this->getAttribute($this->week_num) !== null) {
+            $thereIsAnOverlapping->andWhere(['=', 'week_num', $this->week_num]);
+        }
+
+        return $thereIsAnOverlapping;
+    }
+
+    public function getTeachersPlanNotice()
+    {
+        $tooltip = [];
+            if ($this->getTeachersPlanOverLapping()->exists() === true) {
+                $info = [];
+                foreach (self::getTeachersPlanOverLapping()->all() as $itemModel) {
+                    $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
+                }
+                $message = 'В одной аудитории при планировании накладка по времени! ' . implode(', ', $info);
+                //  Notice::registerDanger($message);
+                $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
+            }
+
+            if ($this->getTeachersOverLapping()->exists() === true) {
+                $info = [];
+                foreach ($this->getTeachersPlanOverLapping()->all() as $itemModel) {
+                    $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
+                }
+                $message = 'Преподаватель(концертмейстер) не может работать в одно и тоже время в разных аудиториях! ' . implode(', ', $info);
+                //   Notice::registerDanger($message);
+                $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
+            }
+            return !empty($tooltip) ? implode('', $tooltip) : null;
     }
 }

@@ -143,6 +143,8 @@ return [
     'Sect Name' => 'Учебная группа',
     'Teachers Load' => 'Нагрузка',
     'Load Time' => 'Время ак.ч',
+    'Plan Schedule' => 'Время планирования',
+    'Teachers Plan' => 'Планирование инд.занятий',
 
 ];
 ?>

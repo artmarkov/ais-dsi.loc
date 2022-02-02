@@ -5,6 +5,7 @@ namespace common\models\subjectsect;
 use artsoft\behaviors\TimeFieldBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
+use artsoft\helpers\Schedule;
 use artsoft\widgets\Notice;
 use common\models\auditory\Auditory;
 use common\models\guidejob\Direction;
@@ -81,12 +82,6 @@ class SubjectSchedule extends \artsoft\db\ActiveRecord
         ];
     }
 
-    public function encodeTime($value)
-    {
-        $t = explode(":", $value);
-        return mktime($t[0], $t[1], 0, 1, 1, 70);
-
-    }
 
     public function checkFormatTime($attribute, $params)
     {
@@ -110,8 +105,8 @@ class SubjectSchedule extends \artsoft\db\ActiveRecord
                     ['subject_sect_studyplan_id' => $this->subject_sect_studyplan_id],
                     ['direction_id' => $this->direction->parent],
                     ['auditory_id' => $this->auditory_id],
-                    ['<=', 'time_in', $this->encodeTime($this->time_in)],
-                    ['>=', 'time_out', $this->encodeTime($this->time_out)],
+                    ['<=', 'time_in', Schedule::encodeTime($this->time_in)],
+                    ['>=', 'time_out', Schedule::encodeTime($this->time_out)],
                     ['=', 'week_day', $this->week_day]
                 ]);
             if ($this->getAttribute($this->week_num) !== null) {

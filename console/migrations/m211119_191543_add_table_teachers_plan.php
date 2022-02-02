@@ -197,11 +197,30 @@ ORDER BY direction_id, teachers_id
         $this->addForeignKey('teachers_plan_ibfk_1', 'teachers_plan', 'direction_id', 'guide_teachers_direction', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('teachers_plan_ibfk_2', 'teachers_plan', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
 
+        $this->createTableWithHistory('consult_schedule', [
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'teachers_load_id' => $this->integer(),
+            'datetime_in' => $this->integer(),
+            'datetime_out' => $this->integer(),
+            'auditory_id' => $this->integer(),
+            'description' => $this->string(512),
+            'created_at' => $this->integer()->notNull(),
+            'created_by' => $this->integer(),
+            'updated_at' => $this->integer()->notNull(),
+            'updated_by' => $this->integer(),
+            'version' => $this->bigInteger()->notNull()->defaultValue(0),
+        ], $tableOptions);
+
+        $this->addCommentOnTable('consult_schedule', 'Расписание консультаций');
+        $this->db->createCommand()->resetSequence('consult_schedule', 10000)->execute();
+        $this->addForeignKey('consult_schedule_ibfk_1', 'consult_schedule', 'teachers_load_id', 'teachers_load', 'id', 'CASCADE', 'CASCADE');
+
     }
 
     public function down()
     {
 
+        $this->dropForeignKey('consult_schedule_ibfk_1', 'consult_schedule');
         $this->dropForeignKey('teachers_plan_ibfk_1', 'teachers_plan');
         $this->dropForeignKey('teachers_plan_ibfk_2', 'teachers_plan');
         $this->dropForeignKey('subject_schedule_ibfk_1', 'subject_schedule');
@@ -211,6 +230,7 @@ ORDER BY direction_id, teachers_id
         $this->dropForeignKey('teachers_load_ibfk_1', 'teachers_load');
         $this->dropForeignKey('teachers_load_ibfk_2', 'teachers_load');
 
+        $this->dropTableWithHistory('consult_schedule');
         $this->dropTableWithHistory('teachers_plan');
         $this->dropTableWithHistory('subject_schedule');
         $this->dropTableWithHistory('teachers_load');

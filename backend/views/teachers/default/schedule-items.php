@@ -33,7 +33,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?= GridPageSize::widget(['pjaxId' => 'subject-schedule-grid-pjax']) ?>
                         </div>
                     </div>
                     <?php
@@ -281,7 +280,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'hover' => false,
                         'floatHeader' => false,
 //    'floatHeaderOptions' => ['top' => $scrollingTop],
-                        'showPageSummary' => true,
+//                        'showPageSummary' => true,
                         //'layout' => '{items}',
                         'panel' => [
                             'type' => GridView::TYPE_DEFAULT

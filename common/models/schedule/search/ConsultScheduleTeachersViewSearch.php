@@ -1,16 +1,16 @@
 <?php
 
-namespace common\models\teachers\search;
+namespace common\models\schedule\search;
 
-use common\models\teachers\TeachersLoadTeachersView;
+use common\models\schedule\ConsultScheduleTeachersView;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * TeachersLoadTeachersViewSearch represents the model behind the search form about `common\models\teachers\TeachersLoadTeachersView`.
+ * ConsultScheduleTeachersView represents the model behind the search form about `common\models\schedule\ConsultScheduleTeachersView`.
  */
-class TeachersLoadTeachersViewSearch extends TeachersLoadTeachersView
+class ConsultScheduleTeachersViewSearch extends ConsultScheduleTeachersView
 {
     /**
      * @inheritdoc
@@ -18,9 +18,10 @@ class TeachersLoadTeachersViewSearch extends TeachersLoadTeachersView
     public function rules()
     {
         return [
-            [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year'], 'integer'],
-//            [['load_time'], 'number'],
+            [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year', 'consult_schedule_id', 'auditory_id'], 'integer'],
             [['studyplan_subject_list'], 'string'],
+            [['description', 'datetime_in', 'datetime_out'], 'safe'],
+            [['year_time_consult'], 'number'],
         ];
     }
 
@@ -42,7 +43,7 @@ class TeachersLoadTeachersViewSearch extends TeachersLoadTeachersView
      */
     public function search($params)
     {
-        $query = TeachersLoadTeachersView::find();
+        $query = ConsultScheduleTeachersView::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -74,9 +75,14 @@ class TeachersLoadTeachersViewSearch extends TeachersLoadTeachersView
             'subject_type_id' => $this->subject_type_id,
             'subject_vid_id' => $this->subject_vid_id,
             'plan_year' => $this->plan_year,
-          //  'load_time' => $this->load_time,
+            'consult_schedule_id' => $this->consult_schedule_id,
+            'datetime_in' => $this->datetime_in,
+            'datetime_out' => $this->datetime_out,
+            'auditory_id' => $this->auditory_id,
         ]);
-        $query->andFilterWhere(['like', 'studyplan_subject_list', $this->studyplan_subject_list]);
+
+        $query->andFilterWhere(['like', 'description', $this->description]);
+
         return $dataProvider;
     }
 }
