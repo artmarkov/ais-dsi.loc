@@ -120,6 +120,28 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'subGroupOf' => 1
                             ],
                             [
+                                'attribute' => 'studyplan_subject_list',
+                                'width' => '310px',
+                                'filter' => RefBook::find('students_fio')->getList(),
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'value' => function ($model, $key, $index, $widget) {
+                                    $data = [];
+                                    if (!empty($model->studyplan_subject_list)) {
+                                        foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
+                                            $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
+                                            $data[] = RefBook::find('students_fio')->getValue($student_id);
+                                        }
+                                    }
+                                    return implode(',', $data);
+                                },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                                'group' => true,  // enable grouping
+                                'subGroupOf' => 1
+                            ],
+                            [
                                 'attribute' => 'direction_id',
                                 'filterType' => GridView::FILTER_SELECT2,
                                 'filter' => \common\models\guidejob\Direction::getDirectionList(),
@@ -226,7 +248,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'beforeHeader' => [
                             [
                                 'columns' => [
-                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
+                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                                    ['content' => 'Ученики', 'options' => ['colspan' => 2, 'class' => 'text-center success']],
                                     ['content' => 'Нагрузка', 'options' => ['colspan' => 2, 'class' => 'text-center info']],
                                     ['content' => 'Расписание консультаций', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
                                 ],

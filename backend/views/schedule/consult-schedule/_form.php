@@ -1,52 +1,47 @@
 <?php
 
+use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
-use common\models\schedule\ConsultSchedule;
+use common\models\guidejob\Direction;
+use common\models\teachers\TeachersPlan;
 use artsoft\helpers\Html;
+use common\models\user\UserCommon;
+use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\schedule\ConsultSchedule */
+/* @var $teachersLoadModel common\models\teachers\TeachersLoad */
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 
-<div class="consult-schedule-form">
+<div class="teachers-plan-form">
 
-    <?php 
+    <?php
     $form = ActiveForm::begin([
-            'id' => 'consult-schedule-form',
-            'validateOnBlur' => false,
-        ])
+        'id' => 'teachers-plan-form',
+        'validateOnBlur' => false,
+    ])
     ?>
 
     <div class="panel">
         <div class="panel-body">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <?=  Html::encode($this->title) ?>
+                    Элемент расписания консультаций:
+                    <?php echo RefBook::find('subject_memo_2')->getValue($teachersLoadModel->studyplan_subject_id); ?>
+                    <?php echo RefBook::find('sect_name_1')->getValue($teachersLoadModel->subject_sect_studyplan_id); ?>
                 </div>
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                    
-                    <?= $form->field($model, 'teachers_load_id')->textInput() ?>
 
-                    <?= $form->field($model, 'datetime_in')->textInput() ?>
+                            <?= $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(); ?>
 
-                    <?= $form->field($model, 'datetime_out')->textInput() ?>
+                            <?= $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput() ?>
 
-                    <?= $form->field($model, 'auditory_id')->textInput() ?>
+                            <?= $form->field($model, "auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList()) ?>
 
-                    <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
-
-                    <?= $form->field($model, 'created_at')->textInput() ?>
-
-                    <?= $form->field($model, 'created_by')->textInput() ?>
-
-                    <?= $form->field($model, 'updated_at')->textInput() ?>
-
-                    <?= $form->field($model, 'updated_by')->textInput() ?>
-
-                    <?= $form->field($model, 'version')->textInput() ?>
+                            <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
                         </div>
                     </div>
@@ -55,12 +50,12 @@ use artsoft\helpers\Html;
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?=  \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
             </div>
-            <?=  \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
+            <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>
 
-    <?php  ActiveForm::end(); ?>
+    <?php ActiveForm::end(); ?>
 
 </div>

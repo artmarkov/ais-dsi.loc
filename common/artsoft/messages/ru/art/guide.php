@@ -145,6 +145,8 @@ return [
     'Load Time' => 'Время ак.ч',
     'Plan Schedule' => 'Время планирования',
     'Teachers Plan' => 'Планирование инд.занятий',
+    'Consult Schedule' => 'Расписание консультаций',
+    'Subject Characteristic' => 'Характеристики по предметам',
 
 ];
 ?>

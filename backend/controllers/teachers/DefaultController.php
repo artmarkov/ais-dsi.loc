@@ -405,7 +405,7 @@ class DefaultController extends MainController
                 throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id.");
             }
             $teachersLoadModel = StudyplanSubject::findOne(Yii::$app->request->get('studyplan_subject_id'));
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['studyplan/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['teachers/default/load-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
             $model = new TeachersLoad();
             $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id');
@@ -422,10 +422,10 @@ class DefaultController extends MainController
 
         } elseif ('history' == $mode && $objectId) {
             $model = TeachersLoad::findOne($objectId);
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['studyplan/default/schedule-items', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/update', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['teachers/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['teachers/default/update', 'id' => $model->id]];
             $data = new TeachersLoadHistory($objectId);
-            return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
+            return $this->renderIsAjax('/teachers/default/history', compact(['model', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
             $model = TeachersLoad::findOne($objectId);
@@ -436,7 +436,7 @@ class DefaultController extends MainController
 
         } elseif ($objectId) {
 
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['studyplan/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['teachers/default/load-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $model = TeachersLoad::findOne($objectId);
             $teachersLoadModel = StudyplanSubject::findOne($model->studyplan_subject_id);
@@ -476,7 +476,7 @@ class DefaultController extends MainController
         if ('create' == $mode) {
 
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['teachers/default/teachers-plan', 'id' => $modelTeachers->id]];
-            $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
+            $this->view->params['breadcrumbs'][] = 'Добавление записи';
             $model = new TeachersPlan();
             $model->teachers_id = $modelTeachers->id;
             if ($model->load(Yii::$app->request->post()) AND $model->save()) {
@@ -540,7 +540,7 @@ class DefaultController extends MainController
 
         if ('create' == $mode) {
 
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['teachers/default/consult-items', 'id' => $modelTeachers->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['teachers/default/consult-items', 'id' => $modelTeachers->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
             if (!Yii::$app->request->get('load_id')) {
                 throw new NotFoundHttpException("Отсутствует обязательный параметр GET load_id.");
@@ -553,7 +553,7 @@ class DefaultController extends MainController
                 $this->getSubmitAction($model);
             }
 
-            return $this->renderIsAjax('@backend/views/teachers/consult-items/_form.php', [
+            return $this->renderIsAjax('@backend/views/schedule/consult-schedule/_form.php', [
                 'model' => $model,
                 'teachersLoadModel' => $teachersLoadModel,
             ]);
@@ -561,7 +561,7 @@ class DefaultController extends MainController
 
         } elseif ('history' == $mode && $objectId) {
             $model = ConsultSchedule::findOne($objectId);
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['teachers/default/consult-items', 'id' => $modelTeachers->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['teachers/default/consult-items', 'id' => $modelTeachers->id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['teachers/default/update', 'id' => $modelTeachers->id]];
             $data = new ConsultScheduleHistory($objectId);
             return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
@@ -575,7 +575,7 @@ class DefaultController extends MainController
 
         } elseif ($objectId) {
 
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['teachers/default/consult-items', 'id' => $modelTeachers->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['teachers/default/consult-items', 'id' => $modelTeachers->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $model = ConsultSchedule::findOne($objectId);
             $teachersLoadModel = TeachersLoad::findOne($model->teachers_load_id);
@@ -588,7 +588,7 @@ class DefaultController extends MainController
                 $this->getSubmitAction($model);
             }
 
-            return $this->renderIsAjax('@backend/views/teachers/consult-items/_form.php', [
+            return $this->renderIsAjax('@backend/views/schedule/consult-schedule/_form.php', [
                 'model' => $model,
                 'teachersLoadModel' => $teachersLoadModel,
             ]);
@@ -617,7 +617,7 @@ class DefaultController extends MainController
             //  ['label' => 'Расписание занятий', 'url' => ['/teachers/default/schedule', 'id' => $id]],
             ['label' => 'Нагрузка', 'url' => ['/teachers/default/load-items', 'id' => $id]],
             ['label' => 'Планирование инд. занятий', 'url' => ['/teachers/default/teachers-plan', 'id' => $id]],
-            ['label' => 'Расписание', 'url' => ['/teachers/default/schedule-items', 'id' => $id]],
+            ['label' => 'Злементы расписания', 'url' => ['/teachers/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/teachers/default/consult-items', 'id' => $id]],
             ['label' => 'Табель учета', 'url' => ['/teachers/default/timesheet', 'id' => $id]],
             ['label' => 'Журнал успеваемости', 'url' => ['/teachers/default/progress', 'id' => $id]],

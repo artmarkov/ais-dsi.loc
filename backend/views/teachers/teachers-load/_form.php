@@ -64,7 +64,6 @@ use artsoft\helpers\RefBook;
 
                             <?= $form->field($model, 'load_time')->textInput() ?>
 
-
                         </div>
                     </div>
                 </div>
