@@ -51,6 +51,7 @@ class SubjectCharacteristicView extends SubjectCharacteristic
             'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
             'subject_vid_id' => Yii::t('art/guide', 'Subject Vid'),
             'subject_characteristic_id' => Yii::t('art/guide', 'Subject Characteristic'),
+            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
             'description' => Yii::t('art', 'Description'),
         ];
     }

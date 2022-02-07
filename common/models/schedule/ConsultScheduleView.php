@@ -2,6 +2,7 @@
 
 namespace common\models\schedule;
 
+use common\models\guidejob\Direction;
 use Yii;
 
 /**
@@ -31,7 +32,7 @@ use Yii;
  * @property int|null $auditory_id
  * @property string|null $description
  */
-class ConsultScheduleView extends \yii\db\ActiveRecord
+class ConsultScheduleView extends ConsultSchedule
 {
     /**
      * {@inheritdoc}
@@ -44,46 +45,45 @@ class ConsultScheduleView extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
-        return [
-            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'speciality_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'teachers_load_id', 'subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'consult_schedule_id', 'datetime_in', 'datetime_out', 'auditory_id'], 'default', 'value' => null],
-            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'speciality_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'teachers_load_id', 'subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'consult_schedule_id', 'datetime_in', 'datetime_out', 'auditory_id'], 'integer'],
-            [['studyplan_subject_list'], 'string'],
-            [['year_time_consult'], 'number'],
-            [['description'], 'string', 'max' => 512],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
-            'studyplan_id' => Yii::t('art/guide', 'Studyplan ID'),
+            'studyplan_id' => Yii::t('art/guide', 'Studyplan'),
             'student_id' => Yii::t('art/guide', 'Student ID'),
             'plan_year' => Yii::t('art/guide', 'Plan Year'),
-            'programm_id' => Yii::t('art/guide', 'Programm ID'),
-            'speciality_id' => Yii::t('art/guide', 'Speciality ID'),
-            'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan Subject List'),
-            'course' => Yii::t('art/guide', 'Course'),
+            'programm_id' => Yii::t('art/studyplan', 'Education Programm'),
+            'speciality_id' => Yii::t('art/studyplan', 'Speciality Name'),
+            'course' => Yii::t('art/studyplan', 'Course'),
+            'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
             'status' => Yii::t('art/guide', 'Status'),
-            'studyplan_subject_id' => Yii::t('art/guide', 'Studyplan Subject ID'),
-            'subject_cat_id' => Yii::t('art/guide', 'Subject Cat ID'),
-            'subject_id' => Yii::t('art/guide', 'Subject ID'),
-            'subject_type_id' => Yii::t('art/guide', 'Subject Type ID'),
-            'subject_vid_id' => Yii::t('art/guide', 'Subject Vid ID'),
+            'studyplan_subject_id' => Yii::t('art/guide', 'Subject Name'),
+            'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
+            'subject_id' => Yii::t('art/guide', 'Subject Name'),
+            'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
+            'subject_vid_id' => Yii::t('art/guide', 'Subject Vid'),
             'year_time_consult' => Yii::t('art/guide', 'Year Time Consult'),
-            'teachers_load_id' => Yii::t('art/guide', 'Teachers Load ID'),
-            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Subject Sect Studyplan ID'),
-            'direction_id' => Yii::t('art/guide', 'Direction ID'),
-            'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
+            'teachers_load_id' => Yii::t('art/guide', 'Teachers Load'),
+            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
+            'direction_id' => Yii::t('art/teachers', 'Name Direction'),
+            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
             'consult_schedule_id' => Yii::t('art/guide', 'Consult Schedule ID'),
             'datetime_in' => Yii::t('art/guide', 'Datetime In'),
             'datetime_out' => Yii::t('art/guide', 'Datetime Out'),
             'auditory_id' => Yii::t('art/guide', 'Auditory ID'),
             'description' => Yii::t('art/guide', 'Description'),
         ];
+    }
+    /**
+     * Gets query for [[Direction]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDirection()
+    {
+        return $this->hasOne(Direction::class, ['id' => 'direction_id']);
+    }
+
+    public function getTeachersConsultNeed() {
+        return true;
     }
 }

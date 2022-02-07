@@ -13,6 +13,7 @@ class m220203_134045_add_table_subject_characteristic extends \artsoft\db\BaseMi
         $this->createTableWithHistory('subject_characteristic', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'studyplan_subject_id' => $this->integer(),
+            'teachers_id' => $this->integer()->notNull(),
             'description' => $this->string(512),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
@@ -24,6 +25,7 @@ class m220203_134045_add_table_subject_characteristic extends \artsoft\db\BaseMi
         $this->addCommentOnTable('subject_characteristic', 'Характеристика по предметам');
         $this->db->createCommand()->resetSequence('subject_characteristic', 10000)->execute();
         $this->addForeignKey('subject_characteristic_ibfk_1', 'subject_characteristic', 'studyplan_subject_id', 'studyplan_subject', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('subject_characteristic_ibfk_2', 'subject_characteristic', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('subject_characteristic_view', '
         (select studyplan.id as studyplan_id,
@@ -39,6 +41,7 @@ class m220203_134045_add_table_subject_characteristic extends \artsoft\db\BaseMi
                          studyplan_subject.subject_type_id as subject_type_id,
                          studyplan_subject.subject_vid_id as subject_vid_id,
                          subject_characteristic.id as subject_characteristic_id,
+                         subject_characteristic.teachers_id as teachers_id,
                          subject_characteristic.description as description
                  from studyplan
                  inner join studyplan_subject on (studyplan.id = studyplan_subject.studyplan_id)
@@ -59,6 +62,7 @@ class m220203_134045_add_table_subject_characteristic extends \artsoft\db\BaseMi
                          studyplan_subject.subject_type_id as subject_type_id,
                          studyplan_subject.subject_vid_id as subject_vid_id,
                          subject_characteristic.id as subject_characteristic_id,
+                         subject_characteristic.teachers_id as teachers_id,
                          subject_characteristic.description as description
                  from studyplan
                  inner join studyplan_subject on (studyplan_subject.studyplan_id = studyplan.id)

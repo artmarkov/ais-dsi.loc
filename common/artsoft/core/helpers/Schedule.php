@@ -90,4 +90,20 @@ public static function astr2academ($astr_hour)
         return mktime($t[0], $t[1], 0, 1, 1, 70);
 
     }
+
+    public static function getWeekDay($day, $mon, $year)
+    {
+        $week_day = date("w", mktime(0, 0, 0, $mon, $day, $year));
+        return $week_day != 0 ? $week_day : 7;
+    }
+
+    public static function getWeekNum($day, $mon, $year)
+    {
+        return ((int)(($day + date("w", mktime(0, 0, 0, $mon, 1, $year)) - 2) / 7)) + 1;
+    }
+
+    public static function getPlanYear($mon, $year)
+    {
+        return $mon < 8 ?  $year-1 : $year;
+    }
 }

@@ -84,7 +84,7 @@ UNION ALL
 				subject_sect.course as course,
 			    subject_sect.subject_cat_id as subject_cat_id,
 			    subject_sect.subject_id as subject_id,
-			    subject_sect.subject_type_id as subject_type_id,
+			    subject_sect_studyplan.subject_type_id as subject_type_id,
 			    subject_sect.subject_vid_id as subject_vid_id,
 				subject_sect.plan_year as plan_year	
                  from teachers_load

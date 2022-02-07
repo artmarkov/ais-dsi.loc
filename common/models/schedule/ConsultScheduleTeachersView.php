@@ -11,6 +11,4 @@ class ConsultScheduleTeachersView extends ConsultScheduleView
     {
         return 'consult_schedule_teachers_view';
     }
-
-
 }

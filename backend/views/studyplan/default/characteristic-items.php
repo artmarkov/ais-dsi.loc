@@ -102,6 +102,18 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'group' => true,
                                 'subGroupOf' => 1
                             ],
+                            [
+                                'attribute' => 'teachers_id',
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filter' => RefBook::find('teachers_fio')->getList(),
+                                'value' => function ($model) {
+                                    return RefBook::find('teachers_fio')->getValue($model->teachers_id);
+                                },
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                            ],
                             'description:text',
                             [
                                 'class' => 'kartik\grid\ActionColumn',
@@ -158,7 +170,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'columns' => [
                                     ['content' => 'Дисциплина', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
-                                    ['content' => 'Характеристика', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
+                                    ['content' => 'Характеристика', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
                                 ],
                                 'options' => ['class' => 'skip-export'] // remove this row from export
                             ]

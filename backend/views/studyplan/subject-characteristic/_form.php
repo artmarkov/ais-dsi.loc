@@ -34,6 +34,10 @@ use artsoft\widgets\ActiveForm;
                             echo Html::activeHiddenInput($model, 'studyplan_subject_id');
                             ?>
 
+                            <?= $form->field($model, 'teachers_id')->dropDownList(RefBook::find('teachers_fio')->getList(), [
+                                'disabled' => false,
+                            ]);
+                            ?>
                             <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
                         </div>

@@ -3,6 +3,7 @@
 namespace common\models\studyplan;
 
 use artsoft\db\ActiveRecord;
+use common\models\teachers\Teachers;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -12,6 +13,7 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property int $id
  * @property int|null $studyplan_subject_id
+ * @property int|null $teachers_id
  * @property string|null $description
  * @property int $created_at
  * @property int|null $created_by
@@ -45,10 +47,11 @@ class SubjectCharacteristic extends ActiveRecord
     public function rules()
     {
         return [
-            [['studyplan_subject_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['description'], 'required'],
+            [['studyplan_subject_id', 'teachers_id'], 'integer'],
+            [['description', 'teachers_id'], 'required'],
             [['description'], 'string', 'max' => 512],
             [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::className(), 'targetAttribute' => ['studyplan_subject_id' => 'id']],
+            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
 
@@ -60,6 +63,7 @@ class SubjectCharacteristic extends ActiveRecord
         return [
             'id' => Yii::t('art/guide', 'ID'),
             'studyplan_subject_id' => Yii::t('art/guide', 'Studyplan Subject ID'),
+            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
             'description' => Yii::t('art', 'Description'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -83,5 +87,13 @@ class SubjectCharacteristic extends ActiveRecord
     public function getStudyplanSubject()
     {
         return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeachers()
+    {
+        return $this->hasOne(Teachers::className(), ['id' => 'teachers_id']);
     }
 }
