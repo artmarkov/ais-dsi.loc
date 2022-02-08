@@ -4,22 +4,20 @@ namespace common\models\teachers;
 
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
-use artsoft\helpers\PriceHelper;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
-use common\models\education\EducationProgrammLevel;
-use common\models\parents\Parents;
-use common\models\students\Student;
-use common\models\subjectsect\SubjectScheduleTeachersView;
+use common\models\own\Department;
 use Yii;
-use function morphos\Russian\inflectName;
 
 class TeachersTimesheet
 {
     const template_timesheet = 'document/tabel_teachers.xlsx';
 
+    const workday = 'Ф';
+
     protected $date_in;
     protected $date_out;
+    protected $activity_list;
     protected $mon;
     protected $year;
     protected $plan_year;
@@ -28,15 +26,27 @@ class TeachersTimesheet
     {
         $this->date_in = $model_date->date_in;
         $this->date_out = $model_date->date_out;
+        $this->activity_list = implode(',', $model_date->activity_list);
         $this->mon = date('n', strtotime($this->date_in));
         $this->year = date('Y', strtotime($this->date_in));
         $this->plan_year = Schedule::getPlanYear($this->mon, $this->year);
     }
 
+    protected function getTeachersActivities()
+    {
+        $funcSql = <<< SQL
+             select *
+             from teachers_activity_view
+                where teachers_activity_id = any (string_to_array('{$this->activity_list}', ',')::int[])
+            SQL;
+
+        return Yii::$app->db->createCommand($funcSql)->queryAll();
+    }
+
     protected function getTeachersDayFullTime($day, $direction_id, $teachers_id)
     {
-        $week_day = Schedule::getWeekDay($day,  $this->mon, $this->year); // номер дня недели
-        $week_num = Schedule::getWeekNum($day,  $this->mon, $this->year);  // номер недели в месяце
+        $week_day = Schedule::getWeekDay($day, $this->mon, $this->year); // номер дня недели
+        $week_num = Schedule::getWeekNum($day, $this->mon, $this->year);  // номер недели в месяце
 
         $funcSql = <<< SQL
              select (SUM(time_out) - SUM(time_in)) as full_time from subject_schedule_teachers_view
@@ -51,6 +61,42 @@ class TeachersTimesheet
         return $full_time > 0 ? Schedule::astr2academ($full_time) : null;
     }
 
+    protected function getTeachersDays($direction_id, $teachers_id)
+    {
+        for ($day = 1; $day <= 31; $day++) {
+            $data['time'][$day] = '';
+            $data['status'][$day] = '';
+        }
+        $data['qty_15'] = $data['qty_31'] = $data['time_total'] = 0;
+        $day_in = date('j', strtotime($this->date_in));
+        $day_out = date('j', strtotime($this->date_out));
+
+        for ($day = $day_in; $day <= $day_out; $day++) {
+            $data['time'][$day] = $this->getTeachersDayFullTime($day, $direction_id, $teachers_id);
+            if ($data['time'][$day] > 0) {
+                $data['status'][$day] = self::workday;
+                $data['time_total'] += $data['time'][$day];
+                $data['qty_31']++;
+                if ($day <= 15) {
+                    $data['qty_15']++;
+                }
+            }
+        }
+        return $data;
+    }
+
+    protected function getDepartmentsString($departmentsIds)
+    {
+        $v = [];
+        foreach ($departmentsIds as $id) {
+            if (!$id) {
+                continue;
+            }
+            $v[] = Department::findOne($id)->name;
+        }
+        return implode(', ', $v);
+    }
+
     /**
      * формирование документов: Табель учета пед часов
      *
@@ -59,92 +105,53 @@ class TeachersTimesheet
      */
     public function makeXlsx()
     {
+        $data = [];
+        $items = [];
+        $department_list = [];
 
-        $direction_id = 1000;
-        $teachers_id = 1000;
-        $modelsDependence = ['1' => 1];
-        $day_in = date('d', strtotime($this->date_in));
-        $day_out = date('d', strtotime($this->date_out));
+        $userId = Yii::$app->user->identity->getId();
+        $teachersId = RefBook::find('users_teachers')->getValue($userId);
+        $teachersModel = Teachers::findOne(['id' => $teachersId]);
 
-        for ($day = $day_in; $day >= $day_out; $day++) {
-
-            $full_time = $this->getTeachersDayFullTime($day, $direction_id, $teachers_id);
+        foreach ($this->getTeachersActivities() as $item => $d) {
+            $department_list[] = $d['department_list'];
+            $items[] = [
+                'rank' => 'a',
+                'item' => $item + 1,
+                'last_name' => $d['last_name'],
+                'first_name' => $d['first_name'],
+                'middle_name' => $d['middle_name'],
+                'stake_slug' => $d['stake_slug'],
+                'tab_num' => $d['tab_num'],
+                'direction_slug' => $d['direction_slug'],
+                'days' => $this->getTeachersDays($d['direction_id'], $d['teachers_id']),
+            ];
         }
+        $departmentsIds = array_unique(explode(',', implode(',', $department_list)));
 
-        $save_as = str_replace(' ', '_', '1');
         $data[] = [
             'rank' => 'doc',
+            'tabel_num' => $this->mon,
             'period_in' => date('j', strtotime($this->date_in)),
             'period_out' => date('j', strtotime($this->date_out)),
             'period_month' => ArtHelper::getMonthsList()[$this->mon],
             'period_year' => date('Y', strtotime($this->date_in)),
             'org_briefname' => Yii::$app->settings->get('own.shortname'),
-            'departments' => '',
+            'departments' => $this->getDepartmentsString($departmentsIds),
             'leader_iof' => Yii::$app->settings->get('own.head'),
-            'employee_post' => '',
-            'employee_iof' => '',
+            'employee_post' => isset($teachersModel->position) ? $teachersModel->position->name : '',
+            'employee_iof' => RefBook::find('teachers_fio')->getValue($teachersId),
             'doc_data_mark' => Yii::$app->formatter->asDate(time(), 'php:d.m.Y'),
             'data_doc' => Yii::$app->formatter->asDate(time(), 'php:d.m.Y'),
-            'tabel_num' => '',
-//            'doc_date' => date('j', strtotime($model->doc_date)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_date))] . ' ' . date('Y', strtotime($model->doc_date)), // дата договора
-//            'doc_signer' => $model->parent->fullName, // Полное имя подписанта-родителя
-//            'doc_signer_iof' => RefBook::find('parents_iof')->getValue($model->parent->id),
-//            'doc_signer_gen' => inflectName($model->parent->fullName, 'родительный'), // Полное имя подписанта-родителя родительный
-//            'doc_signer_dat' => inflectName($model->parent->fullName, 'дательный'), // Полное имя подписанта-родителя дательный
-//            'doc_student' => $model->student->fullName, // Полное имя ученика
-//            'doc_student_gen' => inflectName($model->student->fullName, 'родительный'), // Полное имя ученика родительный
-//            'doc_student_acc' => inflectName($model->student->fullName, 'винительный'), // Полное имя ученика винительный
-//            'student_birth_date' => $model->student->userBirthDate, // День рождения ученика
-//            'student_relation' => mb_strtolower(RefBook::find('parents_dependence_relation_name', $model->student_id)->getValue($model->parent->id), 'UTF-8'),
-//            'doc_contract_start' => date('j', strtotime($model->doc_contract_start)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_start))] . ' ' . date('Y', strtotime($model->doc_contract_start)), // дата начала договора
-//            'doc_contract_end' => date('j', strtotime($model->doc_contract_end)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_end))] . ' ' . date('Y', strtotime($model->doc_contract_end)), $model->doc_contract_end, // Дата окончания договора
-//            'programm_name' => $model->programm->name, // название программы
-//            'programm_level' => isset($modelProgrammLevel->level) ? $modelProgrammLevel->level->name : null, // уровень программы
-//            'term_mastering' => 'Срок обучения:' . $model->programm->term_mastering, // Срок освоения образовательной программы
-//            'course' => $model->course . ' класс',
-//            'year_time_total' => $model->year_time_total,
-//            'cost_month_total' => $model->cost_month_total,
-//            'cost_year_total' => $model->cost_year_total, // Полная стоимость обучения
-//            'cost_year_total_str' => PriceHelper::num2str($model->cost_year_total), // Полная стоимость обучения прописью
-//            'student_address' => $model->student->userAddress,
-//            'student_phone' => $model->student->userPhone,
-//            'student_sert_name' => Student::getDocumentValue($model->student->sert_name),
-//            'student_sert_series' => $model->student->sert_series,
-//            'student_sert_num' => $model->student->sert_num,
-//            'student_sert_organ' => $model->student->sert_organ,
-//            'student_sert_date' => $model->student->sert_date,
-//            'parent_address' => $model->parent->userAddress,
-//            'parent_phone' => $model->parent->userPhone,
-//            'parent_sert_name' => Parents::getDocumentValue($model->parent->sert_name),
-//            'parent_sert_series' => $model->parent->sert_series,
-//            'parent_sert_num' => $model->parent->sert_num,
-//            'parent_sert_organ' => $model->parent->sert_organ,
-//            'parent_sert_date' => $model->parent->sert_date,
-
         ];
-        $items = [];
-        foreach ($modelsDependence as $item => $modelDep) {
-            $items[] = [
-                'rank' => 'dep',
-                'item' => $item + 1,
-//                'subject_cat_name' => $modelDep->subjectCat->name,
-//                'subject_name' => '(' . $modelDep->subject->name . ')',
-//                'subject_type_name' => $modelDep->subjectType->name,
-//                'subject_vid_name' => $modelDep->subjectVid->name,
-//                'week_time' => $modelDep->week_time,
-//                'year_time' => $modelDep->year_time,
-//                'cost_hour' => $modelDep->cost_hour,
-//                'cost_month_summ' => $modelDep->cost_month_summ,
-//                'cost_year_summ' => $modelDep->cost_year_summ,
-//                'year_time_consult' => $modelDep->year_time_consult,
-            ];
-        }
-        $output_file_name = str_replace('.', '_' . $save_as . '_' . '.', basename(self::template_timesheet));
+//        print_r($items); die();
+
+        $output_file_name = str_replace('.', '_' . Yii::$app->formatter->asDate(time(), 'php:Y_m_d') . '_' . '.', basename(self::template_timesheet));
 
         $tbs = DocTemplate::get(self::template_timesheet)->setHandler(function ($tbs) use ($data, $items) {
             /* @var $tbs clsTinyButStrong */
             $tbs->MergeBlock('doc', $data);
-            $tbs->MergeBlock('dep', $items);
+            $tbs->MergeBlock('a', $items);
 
         })->prepare();
         $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);
