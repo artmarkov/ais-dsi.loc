@@ -551,6 +551,7 @@ class DefaultController extends MainController
             ['label' => 'Расписание занятий', 'url' => ['/studyplan/default/schedule', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/studyplan/default/consult-items', 'id' => $id]],
             ['label' => 'Характеристики по предметам', 'url' => ['/studyplan/default/characteristic-items', 'id' => $id]],
+            ['label' => 'Тематические планы', 'url' => ['/studyplan/default/thematic-items', 'id' => $id]],
             ['label' => 'Дневник успеваемости', 'url' => ['/studyplan/default/studyplan-progress', 'id' => $id]],
             ['label' => 'Оплата за обучение', 'url' => ['/studyplan/default/studyplan-invoices', 'id' => $id]],
         ];

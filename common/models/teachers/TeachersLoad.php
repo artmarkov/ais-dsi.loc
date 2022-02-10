@@ -72,7 +72,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/guide', 'ID'),
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Subject_Sect_Studyplan ID'),
-            'studyplan_subject_id' => Yii::t('art/guide', 'Sect ID'),
+            'studyplan_subject_id' => Yii::t('art/guide', 'Subject Name'),
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
             'load_time' => Yii::t('art/guide', 'Load Time'),

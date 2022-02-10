@@ -619,7 +619,6 @@ class DefaultController extends MainController
             ['label' => 'Планирование инд. занятий', 'url' => ['/teachers/default/teachers-plan', 'id' => $id]],
             ['label' => 'Злементы расписания', 'url' => ['/teachers/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/teachers/default/consult-items', 'id' => $id]],
-            ['label' => 'Табель учета', 'url' => ['/teachers/default/timesheet', 'id' => $id]],
             ['label' => 'Журнал успеваемости', 'url' => ['/teachers/default/progress', 'id' => $id]],
             ['label' => 'Показатели эффективности', 'url' => ['/teachers/default/efficiency', 'id' => $id]],
             ['label' => 'Портфолио', 'url' => ['/teachers/default/portfolio', 'id' => $id]],
