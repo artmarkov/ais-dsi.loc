@@ -3,6 +3,7 @@
 namespace common\models\routine;
 
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\Schedule;
 use Yii;
 use common\widgets\yearcalendar\data\DataItem;
 use common\widgets\yearcalendar\data\JsExpressionHelper;
@@ -33,10 +34,12 @@ class Routine extends ActiveRecord implements DataItem
     {
         return 'routine';
     }
+
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             [
                 'class' => DateFieldBehavior::class,
@@ -44,6 +47,7 @@ class Routine extends ActiveRecord implements DataItem
             ]
         ];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -59,6 +63,7 @@ class Routine extends ActiveRecord implements DataItem
             [['cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => RoutineCat::class, 'targetAttribute' => ['cat_id' => 'id']],
         ];
     }
+
     /**
      * сравнение даты начала и окончания/ дата окончания должна быть меньше даты начала
      */
@@ -71,6 +76,7 @@ class Routine extends ActiveRecord implements DataItem
             }
         }
     }
+
     /**
      * {@inheritdoc}
      */
@@ -97,11 +103,12 @@ class Routine extends ActiveRecord implements DataItem
 
     public function getName()
     {
-      return  $this->cat->name;
+        return $this->cat->name;
     }
+
     public function getColor()
     {
-      return  $this->cat->color;
+        return $this->cat->color;
     }
 
     public function getStartDate()
@@ -112,5 +119,25 @@ class Routine extends ActiveRecord implements DataItem
     public function getEndDate()
     {
         return JsExpressionHelper::parse($this->end_date);
+    }
+
+    public static function isDayOff($timestamp)
+    {
+        return self::find()->joinWith('cat')
+            ->where(['AND',
+                ['<=', 'start_date', $timestamp],
+                ['>=', 'end_date', $timestamp - 86399],
+            ])->andWhere(['guide_routine_cat.dayoff_flag' => 1])
+            ->exists();
+    }
+
+    public static function isVocation($timestamp)
+    {
+        return self::find()->joinWith('cat')
+            ->where(['AND',
+                ['<=', 'start_date', $timestamp],
+                ['>=', 'end_date', $timestamp - 86399],
+            ])->andWhere(['guide_routine_cat.vacation_flag' => 1])
+            ->exists();
     }
 }

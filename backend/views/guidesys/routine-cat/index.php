@@ -76,10 +76,19 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
-                                'attribute' => 'plan_flag',
+                                'attribute' => 'vacation_flag',
                                 'optionsArray' => [
-                                    [RoutineCat::FLAG_ACTIVE, Yii::t('art', 'Yes'), 'primary'],
-                                    [RoutineCat::FLAG_INACTIVE, Yii::t('art', 'No'), 'info'],
+                                    [1, Yii::t('art', 'Yes'), 'primary'],
+                                    [0, Yii::t('art', 'No'), 'info'],
+                                ],
+                                'options' => ['style' => 'width:150px']
+                            ],
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'dayoff_flag',
+                                'optionsArray' => [
+                                    [1, Yii::t('art', 'Yes'), 'primary'],
+                                    [0, Yii::t('art', 'No'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:150px']
                             ],

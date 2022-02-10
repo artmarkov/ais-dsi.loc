@@ -7,6 +7,9 @@ use artsoft\helpers\DocTemplate;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use common\models\own\Department;
+use common\models\routine\Routine;
+use common\models\schedule\ConsultScheduleTeachersView;
+use common\models\subjectsect\SubjectScheduleTeachersView;
 use Yii;
 
 class TeachersTimesheet
@@ -14,6 +17,8 @@ class TeachersTimesheet
     const template_timesheet = 'document/tabel_teachers.xlsx';
 
     const workday = 'Ф';
+    const vocation = 'О';
+    const dayoff = 'В';
 
     protected $date_in;
     protected $date_out;
@@ -34,31 +39,49 @@ class TeachersTimesheet
 
     protected function getTeachersActivities()
     {
-        $funcSql = <<< SQL
-             select *
-             from teachers_activity_view
-                where teachers_activity_id = any (string_to_array('{$this->activity_list}', ',')::int[])
-            SQL;
-
-        return Yii::$app->db->createCommand($funcSql)->queryAll();
+        return TeachersActivityView::find()
+            ->where(new \yii\db\Expression("teachers_activity_id = any(string_to_array('{$this->activity_list}', ',')::int[])"))
+            ->all();
     }
 
     protected function getTeachersDayFullTime($day, $direction_id, $teachers_id)
     {
+        $full_time = $this->getTeachersDaySchedule($day, $direction_id, $teachers_id);
+        $full_time += $this->getTeachersDayConsult($day, $direction_id, $teachers_id);
+
+        return $full_time > 0 ? $full_time : null;
+    }
+
+    protected function getTeachersDaySchedule($day, $direction_id, $teachers_id)
+    {
         $week_day = Schedule::getWeekDay($day, $this->mon, $this->year); // номер дня недели
         $week_num = Schedule::getWeekNum($day, $this->mon, $this->year);  // номер недели в месяце
 
-        $funcSql = <<< SQL
-             select (SUM(time_out) - SUM(time_in)) as full_time from subject_schedule_teachers_view
-                where direction_id = {$direction_id} 
-                and teachers_id = {$teachers_id} 
-                and week_day = {$week_day}
-                and plan_year = {$this->plan_year}
-                and case when week_num is not null then week_num = {$week_num} else week_num is null end
-            SQL;
+        $full_time = SubjectScheduleTeachersView::find()
+            ->select(new \yii\db\Expression("(SUM(time_out) - SUM(time_in)) as full_time"))
+            ->where(['direction_id' => $direction_id])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->andWhere(['week_day' => $week_day])
+            ->andWhere(['plan_year' => $this->plan_year])
+            ->andWhere(new \yii\db\Expression("case when week_num is not null then week_num = {$week_num} else week_num is null end"))
+            ->scalar();
 
-        $full_time = Yii::$app->db->createCommand($funcSql)->queryScalar();
-        return $full_time > 0 ? Schedule::astr2academ($full_time) : null;
+        return Schedule::astr2academ($full_time);
+    }
+
+    protected function getTeachersDayConsult($day, $direction_id, $teachers_id)
+    {
+        $timestamp_up = mktime(0, 0, 0, $this->mon, $day, $this->year); // начало суток
+        $timestamp_end = mktime(23, 59, 59, $this->mon, $day, $this->year); // конец суток
+
+        $full_time = ConsultScheduleTeachersView::find()
+            ->select(new \yii\db\Expression("(SUM(datetime_out) - SUM(datetime_in)) as full_time"))
+            ->where(['direction_id' => $direction_id])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->andWhere(['and', ['>=', 'datetime_in', $timestamp_up], ['<=', 'datetime_in', $timestamp_end]])
+            ->scalar();
+
+        return Schedule::astr2academ($full_time);
     }
 
     protected function getTeachersDays($direction_id, $teachers_id)
@@ -72,8 +95,20 @@ class TeachersTimesheet
         $day_out = date('j', strtotime($this->date_out));
 
         for ($day = $day_in; $day <= $day_out; $day++) {
+            $week_day = Schedule::getWeekDay($day, $this->mon, $this->year); // номер дня недели
+            $timestamp = mktime(12, 0, 0, $this->mon, $day, $this->year); // середина суток
             $data['time'][$day] = $this->getTeachersDayFullTime($day, $direction_id, $teachers_id);
-            if ($data['time'][$day] > 0) {
+            $isVocation = Routine::isVocation($timestamp) ? true : false;
+            $isDayOff = Routine::isDayOff($timestamp) || $week_day == 7 ? true : false;
+
+            if ($isVocation) {
+                $data['time'][$day] = null;
+                $data['status'][$day] = self::vocation;
+            } elseif ($isDayOff) {
+                $data['status'][$day] = self::dayoff;
+                $data['time'][$day] = null;
+            }
+            if ($data['time'][$day] > 0 && !$isVocation && !$isDayOff) {
                 $data['status'][$day] = self::workday;
                 $data['time_total'] += $data['time'][$day];
                 $data['qty_31']++;
@@ -114,17 +149,17 @@ class TeachersTimesheet
         $teachersModel = Teachers::findOne(['id' => $teachersId]);
 
         foreach ($this->getTeachersActivities() as $item => $d) {
-            $department_list[] = $d['department_list'];
+            $department_list[] = $d->department_list;
             $items[] = [
                 'rank' => 'a',
                 'item' => $item + 1,
-                'last_name' => $d['last_name'],
-                'first_name' => $d['first_name'],
-                'middle_name' => $d['middle_name'],
-                'stake_slug' => $d['stake_slug'],
-                'tab_num' => $d['tab_num'],
-                'direction_slug' => $d['direction_slug'],
-                'days' => $this->getTeachersDays($d['direction_id'], $d['teachers_id']),
+                'last_name' => $d->last_name,
+                'first_name' => $d->first_name,
+                'middle_name' => $d->middle_name,
+                'stake_slug' => $d->stake_slug,
+                'tab_num' => $d->tab_num,
+                'direction_slug' => $d->direction_slug,
+                'days' => $this->getTeachersDays($d->direction_id, $d->teachers_id),
             ];
         }
         $departmentsIds = array_unique(explode(',', implode(',', $department_list)));

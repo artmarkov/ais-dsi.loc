@@ -4,6 +4,7 @@ namespace artsoft\components;
 
 use artsoft\helpers\AuthHelper;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * Class User
@@ -84,48 +85,104 @@ class User extends \yii\web\User
         throw new ForbiddenHttpException(Yii::t('yii', 'Login Required'));
     }
 
-    /**
-     * Returns the settings identity object associated with the currently logged-in user.
-     */
-    public function getSettings($autoRenew = true)
+//    /**
+//     * Returns the settings identity object associated with the currently logged-in user.
+//     */
+//    public function getSettings($autoRenew = true)
+//    {
+//        if ($this->_settings === false) {
+//            if ($autoRenew) {
+//                $this->_settings = null;
+//                $this->renewSettings();
+//            } else {
+//                return null;
+//            }
+//        }
+//
+//        return $this->_settings;
+//    }
+//
+//    /**
+//     * Sets the user's settings identity object.
+//     */
+//    public function setSettings($identity)
+//    {
+//        if ($identity instanceof $this->settingsClass) {
+//            $this->_settings = $identity;
+//        } elseif ($identity === null) {
+//            $this->_settings = null;
+//        } else {
+//            throw new InvalidValueException("The identity object must implement {$this->settingsClass}.");
+//        }
+//    }
+//
+//    protected function renewSettings()
+//    {
+//        $userId = Yii::$app->user->id;
+//        if ($userId === null) {
+//            $settings = null;
+//        } else {
+//            $class = $this->settingsClass;
+//            $settings = new $class;
+//        }
+//
+//        $this->setSettings($settings);
+//
+//    }
+
+    public function getSetting($key, $default = NULL)
     {
-        if ($this->_settings === false) {
-            if ($autoRenew) {
-                $this->_settings = null;
-                $this->renewSettings();
+        if ($setting = $this->settingsClass::findOne(['user_id' => Yii::$app->user->id, 'key' => $key])) {
+            return json_decode($setting->value);
+        }
+
+        return $default;
+    }
+
+    public function setSetting($key, $value)
+    {
+        try {
+            $setting = $this->settingsClass::findOne(['user_id' => Yii::$app->user->id, 'key' => $key]);
+            if ($setting) {
+                $setting->value = json_encode($value);
             } else {
-                return null;
+                $setting = new $this->settingsClass;
+                $setting->user_id = Yii::$app->user->id;
+                $setting->key = $key;
+                $setting->value = json_encode($value);
             }
+            return ($setting->save()) ? TRUE : FALSE;
+
+        } catch (Exception $ex) {
+            print_r($ex);
+            die;
         }
 
-        return $this->_settings;
+        return FALSE;
     }
 
     /**
-     * Sets the user's settings identity object.
+     * Удаление атрибута
+     * @param string|array $keys список названий настроек
      */
-    public function setSettings($identity)
+    public function delSetting($keys)
     {
-        if ($identity instanceof $this->settingsClass) {
-            $this->_settings = $identity;
-        } elseif ($identity === null) {
-            $this->_settings = null;
-        } else {
-            throw new InvalidValueException("The identity object must implement {$this->settingsClass}.");
-        }
+        $this->settingsClass::deleteAll(['user_id' => Yii::$app->user->id, 'key' => $keys]);
     }
 
-    protected function renewSettings()
+    /**
+     * Возвращает массив значений атрибутов
+     * @param array $keys список запрашиваемых атрибутов
+     * @param array $defaults массив со значениями по умолчанию
+     * @return array
+     */
+    public function getSettingList($keys, $defaults = [])
     {
-        $userId = Yii::$app->user->id;
-        if ($userId === null) {
-            $settings = null;
-        } else {
-            $class = $this->settingsClass;
-            $settings = new $class;
+        $result = [];
+        $list = $this->settingsClass::find()->where(['user_id' => Yii::$app->user->id, 'key' => $keys])->all();
+        foreach ($list as $m) {
+            $result[$m->key] = json_decode($m->value);
         }
-
-        $this->setSettings($settings);
-
+        return ArrayHelper::merge($defaults, $result);
     }
 }

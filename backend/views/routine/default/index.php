@@ -92,6 +92,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                                 'options' => ['style' => 'width:150px'],
                             ],
+                            [
+                                     'attribute' => 'start_date',
+                                    'value' => function (Routine $model) {
+                                        return $model->start_date;
+                                    },
+                            ],
                         ],
                     ]);
                     ?>

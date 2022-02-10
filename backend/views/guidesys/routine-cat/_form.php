@@ -10,6 +10,12 @@ use kartik\color\ColorInput;
 ?>
 
 <div class="routine-cat-form">
+    <?php
+    $form = ActiveForm::begin([
+        'id' => 'routine-cat-form',
+        'validateOnBlur' => false,
+    ])
+    ?>
     <div class="panel">
         <div class="panel-heading">
             <?= Html::encode($this->title) ?>
@@ -17,7 +23,6 @@ use kartik\color\ColorInput;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                    <?php $form = ActiveForm::begin(); ?>
 
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
@@ -26,7 +31,8 @@ use kartik\color\ColorInput;
                         'options' => ['placeholder' => 'Select color ...'],
                     ]);
                     ?>
-                    <?= $form->field($model->loadDefaultValues(), 'plan_flag')->dropDownList(\common\models\routine\RoutineCat::getPlanFlagList()) ?>
+                    <?= $form->field($model, 'vacation_flag')->checkbox(['disabled' => false]) ?>
+                    <?= $form->field($model, 'dayoff_flag')->checkbox(['disabled' => false]) ?>
                 </div>
             </div>
         </div>

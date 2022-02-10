@@ -34,7 +34,9 @@ class UserSetting extends \artsoft\db\ActiveRecord
             [['user_id', 'key', 'value'], 'required'],
             [['user_id'], 'integer'],
             [['value'], 'string'],
-            [['key'], 'string', 'max' => 64]
+            [['key'], 'string', 'max' => 64],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+
         ];
     }
 
@@ -50,29 +52,4 @@ class UserSetting extends \artsoft\db\ActiveRecord
             'value' => 'Value',
         ];
     }
-
-    public function get($key, $default = NULL)
-    {
-        if ($setting = self::findOne(['user_id' => Yii::$app->user->id, 'key' => $key])) {
-            return $setting->value;
-        }
-
-        return $default;
-    }
-
-    public function set($key, $value)
-    {
-        try {
-            if ($setting = self::findOne(['user_id' => Yii::$app->user->id, 'key' => $key])) {
-                $setting->value = $value;
-                return ($setting->save()) ? TRUE : FALSE;
-            }
-        } catch (Exception $ex) {
-            print_r($ex);
-            die;
-        }
-
-        return FALSE;
-    }
-
 }

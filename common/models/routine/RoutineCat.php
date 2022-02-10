@@ -11,14 +11,13 @@ use Yii;
  * @property int $id
  * @property string $name
  * @property string $color
- * @property int $plan_flag Учитывать при планировании
+ * @property int $vacation_flag
+ * @property int $dayoff_flag
  *
  * @property Routine[] $routines
  */
 class RoutineCat extends ActiveRecord
 {
-    const FLAG_ACTIVE = 1;
-    const FLAG_INACTIVE = 0;
 
     /**
      * {@inheritdoc}
@@ -35,7 +34,7 @@ class RoutineCat extends ActiveRecord
     {
         return [
             [['name', 'color'], 'required'],
-            [['plan_flag'], 'integer'],
+            [['vacation_flag', 'dayoff_flag'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['color'], 'string', 'max' => 127],
         ];
@@ -50,7 +49,8 @@ class RoutineCat extends ActiveRecord
             'id' => Yii::t('art', 'ID'),
             'name' => Yii::t('art', 'Name'),
             'color' => Yii::t('art/routine', 'Color'),
-            'plan_flag' => Yii::t('art/routine', 'Plan Flag'),
+            'vacation_flag' => Yii::t('art/routine', 'Vacation'),
+            'dayoff_flag' => Yii::t('art/routine', 'Day off'),
         ];
     }
 
@@ -62,19 +62,6 @@ class RoutineCat extends ActiveRecord
     public function getRoutines()
     {
         return $this->hasMany(Routine::className(), ['cat_id' => 'id']);
-    }
-
-    public static function getPlanFlagList() {
-        return array(
-            self::FLAG_ACTIVE => Yii::t('art', 'Yes'),
-            self::FLAG_INACTIVE => Yii::t('art', 'No'),
-        );
-    }
-
-    public static function getPlanFlagValue($val) {
-        $ar = self::getPlanFlagList();
-
-        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     public static function getCatList()

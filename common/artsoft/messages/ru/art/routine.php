@@ -5,7 +5,8 @@ return [
     'End Date' => 'Дата окончания',
     'The event start date must be less than the end date.' => 'Дата начала события должна быть меньше даты окончания.',
     'Color' => 'Цвет события',
-    'Plan Flag' => 'Учесть при планировании',
+    'Vacation' => 'Отпуск (учесть в табеле)',
+    'Day off' => 'Выходной (учесть в табеле)',
     'Routine Cats' => 'Категории',
     'Routines' => 'События',
 ];
