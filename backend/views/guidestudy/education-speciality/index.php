@@ -28,10 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-6">
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
-                            /* echo GridQuickLinks::widget([
+                             echo GridQuickLinks::widget([
                                 'model' => EducationSpeciality::className(),
                                 'searchModel' => $searchModel,
-                            ])*/
+                            ])
                             ?>
                         </div>
 
@@ -53,7 +53,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'education-speciality-grid',
-                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],

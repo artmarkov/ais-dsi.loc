@@ -60,7 +60,7 @@ class Auditory extends ActiveRecord
     {
         return [
             [['name', 'num', 'building_id'], 'required'],
-            [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sort_order', 'version'], 'integer'],
+            [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sort_order', 'version', 'status'], 'integer'],
             [['area'], 'number'],
             [['name'], 'string', 'max' => 128],
             [['floor'], 'string', 'max' => 32],
@@ -90,6 +90,7 @@ class Auditory extends ActiveRecord
             'capacity' => Yii::t('art/guide', 'Capacity Auditory'),
             'description' => Yii::t('art/guide', 'Description Auditory'),
             'sort_order' => Yii::t('art/guide', 'Order'),
+            'status' => Yii::t('art', 'Status'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),

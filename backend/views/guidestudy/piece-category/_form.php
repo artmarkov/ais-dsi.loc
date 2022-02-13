@@ -32,7 +32,6 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(PieceCategory::getStatusList()) ?>
 
-
                 </div>
             </div>
         </div>

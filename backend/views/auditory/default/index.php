@@ -55,7 +55,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'sortableAction' => ['grid-sort'],
                         'bulkActionOptions' => [
                             'gridId' => 'auditory-grid',
-                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
@@ -86,12 +85,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label' => Yii::t('art/guide', 'Name Building'),
                                 'filter' => AuditoryBuilding::getAuditoryBuildingList(),
                             ],
-                            // 'name',
-                            // 'floor',
-                            // 'area',
-                            // 'capacity',
-                            // 'description',
-                            // 'sort_order',
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'status',
+                                'optionsArray' => [
+                                    [Auditory::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
+                                    [Auditory::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                ],
+                                'options' => ['style' => 'width:60px']
+                            ],
 
                         ],
                     ]);

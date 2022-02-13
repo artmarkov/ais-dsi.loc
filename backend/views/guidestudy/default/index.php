@@ -50,7 +50,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'dataProvider' => $dataProvider,
                         'bulkActionOptions' => [
                             'gridId' => 'student-position-grid',
-//                    'actions' => [ Url::to(['bulk-delete']) => Yii::t('art','Delete')] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
