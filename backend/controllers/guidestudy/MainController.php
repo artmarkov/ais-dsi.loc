@@ -10,5 +10,6 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Специализации',  'url' => ['/guidestudy/education-speciality/index']],
         ['label' => 'Образовательный уровень',  'url' => ['/guidestudy/education-level/index']],
         ['label' => 'Группа планов',  'url' => ['/guidestudy/education-union/index']],
+        ['label' => 'Категории произведений',  'url' => ['/guidestudy/piece-category/index']],
     ];
 }

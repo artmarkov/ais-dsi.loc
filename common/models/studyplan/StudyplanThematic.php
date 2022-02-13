@@ -2,6 +2,7 @@
 
 namespace common\models\studyplan;
 
+use artsoft\behaviors\DateFieldBehavior;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -24,8 +25,11 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property StudyplanThematicItems[] $studyplanThematicItems
  */
-class StudyplanThematic extends \yii\db\ActiveRecord
+class StudyplanThematic extends \artsoft\db\ActiveRecord
 {
+    const THEMATIC_PLAN = 1;
+    const REPERTORY_PLAN = 2;
+
     /**
      * {@inheritdoc}
      */
@@ -42,6 +46,10 @@ class StudyplanThematic extends \yii\db\ActiveRecord
         return [
             TimestampBehavior::class,
             BlameableBehavior::class,
+            [
+                'class' => DateFieldBehavior::class,
+                'attributes' => ['period_in', 'period_out'],
+            ]
         ];
     }
     /**
@@ -50,10 +58,18 @@ class StudyplanThematic extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'period_in', 'period_out', 'template_flag'], 'default', 'value' => null],
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'period_in', 'period_out', 'template_flag', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'template_flag'], 'default', 'value' => null],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'template_flag', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['thematic_category', 'period_in', 'period_out'], 'required'],
+            [['period_in', 'period_out'], 'safe'],
             [['template_name'], 'string', 'max' => 256],
+            [['template_name'], 'unique'],
+            [['template_name'], 'required', 'when' => function ($model) {
+                return $model->template_flag == '1';
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[id=\"studyplanthematic-template_flag\"]').prop('checked');
+                            }"],
         ];
     }
 
@@ -85,6 +101,32 @@ class StudyplanThematic extends \yii\db\ActiveRecord
      */
     public function getStudyplanThematicItems()
     {
-        return $this->hasMany(StudyplanThematicItems::className(), ['studyplan_thematic_id' => 'id']);
+        return $this->hasMany(StudyplanThematicItems::className(), ['studyplan_thematic_id' => 'id'])->orderBy('id');
+    }
+
+    public static function getCategoryList()
+    {
+        return array(
+            self::THEMATIC_PLAN => Yii::t('art/studyplan', 'Thematic Plan'),
+            self::REPERTORY_PLAN => Yii::t('art/studyplan', 'Repertory Plan'),
+        );
+    }
+
+    public static function getCategoryValue($val)
+    {
+        $ar = self::getCategoryList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if($this->template_flag == 0) {
+            $this->template_name = null;
+        }
+        return parent::beforeSave($insert);
     }
 }

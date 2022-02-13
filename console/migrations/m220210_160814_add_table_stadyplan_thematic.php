@@ -11,6 +11,39 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
 
+        $this->createTable('guide_piece_category', [
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'name' => $this->string(128)->notNull(),
+            'description' => $this->string(256)->notNull(),
+            'status' => $this->integer()->notNull()->defaultValue(1),
+            'sort_order' => $this->integer()->notNull(),
+            'created_at' => $this->integer()->notNull(),
+            'created_by' => $this->integer(),
+            'updated_at' => $this->integer()->notNull(),
+            'updated_by' => $this->integer(),
+        ], $tableOptions);
+
+        $this->addCommentOnTable('guide_piece_category', 'Категории музыкальных произведений');
+        $this->db->createCommand()->resetSequence('guide_piece_category', 1000)->execute();
+
+        $this->db->createCommand()->batchInsert('guide_piece_category', ['name', 'description', 'sort_order', 'created_at', 'created_by', 'updated_at', 'updated_by'], [
+            ['Крупная форма', '', 4, time(), 1000, time(), 1000],
+            ['Полифония', '', 3, time(), 1000, time(), 1000],
+            ['Этюд', '', 2, time(), 1000, time(), 1000],
+            ['Пьеса', '', 5, time(), 1000, time(), 1000],
+            ['Ансамбль', '', 6, time(), 1000, time(), 1000],
+            ['Гаммы и упражнения', '', 1, time(), 1000, time(), 1000],
+            ['Песня', '', 5, time(), 1000, time(), 1000],
+            ['Вокальный дуэт', '', 6, time(), 1000, time(), 1000],
+            ['Аккомпанемент', '', 7, time(), 1000, time(), 1000],
+            ['Обработка народной мелодии', '', 8, time(), 1000, time(), 1000],
+        ])->execute();
+
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['piece_category', 'guide_piece_category', 'id', 'name', 'sort_order', 'status', null, 'Список категорий муз. произведений'],
+        ])->execute();
+
         $this->createTable('studyplan_thematic', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'subject_sect_studyplan_id' => $this->integer()->defaultValue(0),
@@ -32,16 +65,16 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
         $this->createTable('studyplan_thematic_items', [
             'id' => $this->primaryKey(),
             'studyplan_thematic_id' => $this->integer(),
-            'name' => $this->string(256)->notNull(),
-            'author' => $this->string(256)->notNull(),
-            'piece_name' => $this->string(256)->notNull(),
-            'piece_category' => $this->integer()->notNull(),
-            'task' => $this->string(1024),
+            'piece_category_id' => $this->integer(),
+            'author' => $this->string(256),
+            'piece_name' => $this->string(256),
+            'task' => $this->string(1024)->notNull(),
         ], $tableOptions);
 
         $this->addCommentOnTable('studyplan_thematic_items', 'Тематические планы инд. плана ученика(содержание)');
         $this->createIndex('studyplan_thematic_id', 'studyplan_thematic_items', 'studyplan_thematic_id');
         $this->addForeignKey('studyplan_thematic_items_ibfk_1', 'studyplan_thematic_items', 'studyplan_thematic_id', 'studyplan_thematic', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('studyplan_thematic_items_ibfk_2', 'studyplan_thematic_items', 'piece_category_id', 'guide_piece_category', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('studyplan_thematic_view', '
            (select studyplan.id as studyplan_id,
@@ -105,5 +138,8 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
         $this->db->createCommand()->dropView('studyplan_thematic_view')->execute();
         $this->dropTable('studyplan_thematic_items');
         $this->dropTable('studyplan_thematic');
+        $this->dropTable('guide_piece_category');
+        $this->db->createCommand()->delete('refbooks', ['name' => 'piece_category'])->execute();
+
     }
 }

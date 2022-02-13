@@ -147,6 +147,7 @@ return [
     'Teachers Plan' => 'Планирование инд.занятий',
     'Consult Schedule' => 'Расписание консультаций',
     'Subject Characteristic' => 'Характеристики по предметам',
+    'Piece Categories' => 'Категории произведений',
 
 ];
 ?>

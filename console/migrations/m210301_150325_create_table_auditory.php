@@ -52,7 +52,7 @@ class m210301_150325_create_table_auditory extends \artsoft\db\BaseMigration
             'area' => $this->float()->notNull(),
             'capacity' => $this->integer(3)->notNull(),
             'description' => $this->string(),
-            'status' => $this->integer()->notNull()->defaultValue('10'),
+            'status' => $this->integer()->notNull()->defaultValue(1),
             'sort_order' => $this->integer()->notNull(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),

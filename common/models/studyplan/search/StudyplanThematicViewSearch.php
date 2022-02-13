@@ -2,15 +2,15 @@
 
 namespace common\models\studyplan\search;
 
-use common\models\studyplan\SubjectCharacteristicView;
+use common\models\studyplan\StudyplanThematicView;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * SubjectCharacteristicViewSearch represents the model behind the search form about `common\models\studyplan\SubjectCharacteristicView`.
+ * StudyplanThematicViewSearch represents the model behind the search form about `common\models\studyplan\StudyplanThematicView`.
  */
-class SubjectCharacteristicViewSearch extends SubjectCharacteristicView
+class StudyplanThematicViewSearch extends StudyplanThematicView
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class SubjectCharacteristicViewSearch extends SubjectCharacteristicView
     public function rules()
     {
         return [
-            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'speciality_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'subject_characteristic_id', 'teachers_id'], 'integer'],
-            [['description'], 'safe'],
+            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'speciality_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'studyplan_thematic_id', 'subject_sect_studyplan_id', 'thematic_category'], 'integer'],
+
         ];
     }
 
@@ -41,7 +41,7 @@ class SubjectCharacteristicViewSearch extends SubjectCharacteristicView
      */
     public function search($params)
     {
-        $query = SubjectCharacteristicView::find();
+        $query = StudyplanThematicView::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -74,11 +74,11 @@ class SubjectCharacteristicViewSearch extends SubjectCharacteristicView
             'subject_id' => $this->subject_id,
             'subject_type_id' => $this->subject_type_id,
             'subject_vid_id' => $this->subject_vid_id,
-            'teachers_id' => $this->teachers_id,
-            'subject_characteristic_id' => $this->subject_characteristic_id
+            'studyplan_thematic_id' => $this->studyplan_thematic_id,
+            'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
+            'thematic_category' => $this->thematic_category,
         ]);
 
-        $query->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;
     }

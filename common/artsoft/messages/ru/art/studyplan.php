@@ -18,5 +18,8 @@ return [
     'Piece Author' => 'Автор произведения',
     'Piece Category' => 'Категория произведения',
     'Task' => 'Задание',
+    'Thematic plans' => 'Тематические планы',
+    'Thematic Plan' => 'Тематический план',
+    'Repertory Plan' => 'Репертуарный план',
 
 ];
