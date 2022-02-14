@@ -114,7 +114,7 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
                          studyplan_subject.subject_type_id as subject_type_id,
                          studyplan_subject.subject_vid_id as subject_vid_id,
                          studyplan_thematic.id as studyplan_thematic_id,
-                         studyplan_thematic.subject_sect_studyplan_id as subject_sect_studyplan_id,
+                         subject_sect_studyplan.id as subject_sect_studyplan_id,
                          studyplan_thematic.thematic_category as thematic_category,
                          studyplan_thematic.period_in as period_in,
                          studyplan_thematic.period_out as period_out
