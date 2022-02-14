@@ -3,18 +3,18 @@
 use yii\widgets\Pjax;
 use artsoft\grid\SortableGridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\education\PieceCategory;
+use common\models\education\LessonMark;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\education\search\PieceCategorySearch */
+/* @var $searchModel common\models\education\search\LessonMarkSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/guide', 'Piece Categories');
+$this->title = Yii::t('art/guide', 'Lesson Marks');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="piece-category-index">
+<div class="lesson-mark-index">
     <div class="panel">
         <div class="panel-heading">
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
@@ -27,20 +27,20 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
                             echo GridQuickLinks::widget([
-                                'model' => PieceCategory::className(),
+                                'model' => LessonMark::className(),
                                 'searchModel' => $searchModel,
                             ])
                             ?>
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?= GridPageSize::widget(['pjaxId' => 'piece-category-grid-pjax']) ?>
+                            <?= GridPageSize::widget(['pjaxId' => 'lesson-mark-grid-pjax']) ?>
                         </div>
                     </div>
 
                     <?php
                     Pjax::begin([
-                        'id' => 'piece-category-grid-pjax',
+                        'id' => 'lesson-mark-grid-pjax',
                     ])
                     ?>
 
@@ -51,27 +51,29 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filterModel' => $searchModel,
                         'sortableAction' => ['grid-sort'],
                         'bulkActionOptions' => [
-                            'gridId' => 'piece-category-grid',
+                            'gridId' => 'lesson-mark-grid',
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/guidestudy/piece-category',
-                                'title' => function (PieceCategory $model) {
+                                'controller' => '/guidestudy/lesson-mark',
+                                'title' => function (LessonMark $model) {
                                     return Html::a(sprintf('#%06d', $model->id), ['update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
 
-                            'name',
+                            'mark_label',
+                            'mark_hint',
+                            'mark_value',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'status',
                                 'optionsArray' => [
-                                    [PieceCategory::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
-                                    [PieceCategory::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                    [LessonMark::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
+                                    [LessonMark::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:60px']
                             ],

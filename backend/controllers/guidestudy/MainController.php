@@ -11,5 +11,6 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Образовательный уровень',  'url' => ['/guidestudy/education-level/index']],
         ['label' => 'Группа планов',  'url' => ['/guidestudy/education-union/index']],
         ['label' => 'Категории произведений',  'url' => ['/guidestudy/piece-category/index']],
+        ['label' => 'Оценки уроков',  'url' => ['/guidestudy/lesson-mark/index']],
     ];
 }

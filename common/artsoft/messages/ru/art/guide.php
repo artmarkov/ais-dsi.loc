@@ -148,6 +148,10 @@ return [
     'Consult Schedule' => 'Расписание консультаций',
     'Subject Characteristic' => 'Характеристики по предметам',
     'Piece Categories' => 'Категории произведений',
+    'Lesson Marks' => 'Оценки уроков',
+    'Mark Label' => 'Оценка',
+    'Mark Hint' => 'Пояснение к оценке',
+    'Mark Value' => 'Вес оценки',
 
 ];
 ?>

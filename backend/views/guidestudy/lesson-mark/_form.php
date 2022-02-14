@@ -1,19 +1,19 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\education\PieceCategory;
+use common\models\education\LessonMark;
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\education\PieceCategory */
+/* @var $model common\models\education\LessonMark */
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 
-<div class="piece-category-form">
+<div class="lesson-mark-form">
 
     <?php
     $form = ActiveForm::begin([
-        'id' => 'piece-category-form',
+        'id' => 'lesson-mark-form',
         'validateOnBlur' => false,
     ])
     ?>
@@ -26,11 +26,14 @@ use artsoft\helpers\Html;
             <div class="row">
                 <div class="col-sm-12">
 
-                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'mark_label')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'mark_hint')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(PieceCategory::getStatusList()) ?>
+                    <?= $form->field($model, 'mark_value')->textInput() ?>
+
+                    <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(LessonMark::getStatusList()) ?>
+
 
                 </div>
             </div>
