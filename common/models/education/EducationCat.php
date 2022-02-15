@@ -60,7 +60,7 @@ class EducationCat extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * getStatusList
+     * getBasisList
      * @return array
      */
     public static function getBasisList()

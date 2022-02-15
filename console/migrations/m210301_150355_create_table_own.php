@@ -24,6 +24,14 @@ class m210301_150355_create_table_own extends \artsoft\db\BaseMigration
         ])->execute();
         $this->db->createCommand()->resetSequence('guide_division', 1004)->execute();
 
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['division_name', 'guide_division', 'id', 'name', 'name', null, null, 'Список отделений'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['division_name_dev', 'guide_division', 'id', 'slug', 'slug', null, null, 'Список отделений кор.'],
+        ])->execute();
+
         $this->createTable('guide_department', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'division_id' => $this->integer()->unsigned()->notNull(),
@@ -59,6 +67,14 @@ class m210301_150355_create_table_own extends \artsoft\db\BaseMigration
         $this->db->createCommand()->resetSequence('guide_department', 1019)->execute();
         $this->createIndex('division_id', 'guide_department', 'division_id');
         $this->addForeignKey('department_ibfk_1', 'guide_department', 'division_id', 'guide_division', 'id', 'NO ACTION', 'NO ACTION');
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['department_name', 'guide_department', 'id', 'name', 'name', 'status', null, 'Список отделов'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['department_name_dev', 'guide_department', 'id', 'slug', 'slug', 'status', null, 'Список отделов кор.'],
+        ])->execute();
 
         $this->createTableWithHistory('invoices', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
@@ -102,7 +118,11 @@ class m210301_150355_create_table_own extends \artsoft\db\BaseMigration
     {
         $this->dropForeignKey('department_ibfk_1', 'guide_department');
         $this->dropTableWithHistory('invoices');
+        $this->db->createCommand()->delete('refbooks', ['name' => 'department_name_dev'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'department_name'])->execute();
         $this->dropTable('guide_department');
+        $this->db->createCommand()->delete('refbooks', ['name' => 'division_name_dev'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'division_name'])->execute();
         $this->dropTable('guide_division');
     }
 }

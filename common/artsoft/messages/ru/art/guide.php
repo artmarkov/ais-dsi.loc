@@ -152,6 +152,15 @@ return [
     'Mark Label' => 'Оценка',
     'Mark Hint' => 'Пояснение к оценке',
     'Mark Value' => 'Вес оценки',
+    'Lesson Tests' => 'Виды испытаний',
+    'Test Category' => 'Категория',
+    'Test Name' => 'Название теста',
+    'Plan Flag' => 'План подключен',
+    'Current Work' => 'Текущая работа',
+    'Middle Attestation' => 'Промежуточная аттестация',
+    'Finish Attestation' => 'Итоговая аттестация',
+    'Division List' => 'Отделения',
+    'Test Name Short' => 'Название теста кор.',
 
 ];
 ?>

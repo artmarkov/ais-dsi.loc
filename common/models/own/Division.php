@@ -53,4 +53,14 @@ class Division extends \artsoft\db\ActiveRecord
         return \yii\helpers\ArrayHelper::map(Division::find()->all(), 'id', 'name');
 
     }
+
+    /**
+     * @param $val
+     * @return mixed
+     */
+    public static function getDivisionValue($val)
+    {
+        $ar = self::getDivisionList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
 }

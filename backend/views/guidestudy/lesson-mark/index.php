@@ -64,7 +64,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
-
                             'mark_label',
                             'mark_hint',
                             'mark_value',
@@ -77,7 +76,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'options' => ['style' => 'width:60px']
                             ],
-
                         ],
                     ]);
                     ?>
