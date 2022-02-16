@@ -150,7 +150,7 @@ return [
     'Piece Categories' => 'Категории произведений',
     'Lesson Marks' => 'Оценки уроков',
     'Mark Label' => 'Оценка',
-    'Mark Hint' => 'Пояснение к оценке',
+    'Mark Category' => 'Категория оценки',
     'Mark Value' => 'Вес оценки',
     'Lesson Tests' => 'Виды испытаний',
     'Test Category' => 'Категория',

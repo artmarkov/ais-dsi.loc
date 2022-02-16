@@ -18,8 +18,8 @@ class LessonMarkSearch extends LessonMark
     public function rules()
     {
         return [
-            [['id', 'status', 'sort_order', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
-            [['mark_label', 'mark_hint'], 'safe'],
+            [['id', 'status', 'sort_order', 'mark_category', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['mark_label'], 'safe'],
             [['mark_value'], 'number'],
         ];
     }
@@ -69,11 +69,11 @@ class LessonMarkSearch extends LessonMark
             'mark_value' => $this->mark_value,
             'status' => $this->status,
             'sort_order' => $this->sort_order,
+            'mark_category' => $this->mark_category,
 
         ]);
 
-        $query->andFilterWhere(['like', 'mark_label', $this->mark_label])
-            ->andFilterWhere(['like', 'mark_hint', $this->mark_hint]);
+        $query->andFilterWhere(['like', 'mark_label', $this->mark_label]);
 
         return $dataProvider;
     }

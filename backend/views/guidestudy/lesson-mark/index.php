@@ -64,8 +64,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
                             ],
+                            [
+                                'attribute' => 'mark_category',
+                                'filter' => LessonMark::getMarkCatogoryList(),
+                                'value' => function (LessonMark $model) {
+                                    return LessonMark::getMarkCatogoryValue($model->mark_category);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
                             'mark_label',
-                            'mark_hint',
                             'mark_value',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',

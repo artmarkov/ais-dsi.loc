@@ -12,8 +12,8 @@ use yii\behaviors\TimestampBehavior;
  * This is the model class for table "guide_lesson_mark".
  *
  * @property int $id
+ * @property int $mark_category
  * @property string $mark_label
- * @property string|null $mark_hint
  * @property float|null $mark_value
  * @property int $status
  * @property int $sort_order
@@ -25,6 +25,16 @@ use yii\behaviors\TimestampBehavior;
  */
 class LessonMark extends \artsoft\db\ActiveRecord
 {
+    const MARK = 1;
+    const PASS = 2;
+    const FAILED = 3;
+    const NOT_SERTIFIED = 4;
+    const ABSENCE_DISRES = 5;
+    const ABSENCE_GOOD = 6;
+    const ABSENCE_ILLNESS = 7;
+    const LATE = 8;
+    const ATTEND = 9;
+
     /**
      * {@inheritdoc}
      */
@@ -47,17 +57,23 @@ class LessonMark extends \artsoft\db\ActiveRecord
             ],
         ];
     }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['mark_label'], 'required'],
+            [['mark_label', 'mark_category'], 'required'],
+            [['mark_category'], 'unique', 'when' => function ($model) {
+                return $model->mark_category != self::MARK;
+            }, 'enableClientValidation' => false],
             [['mark_value'], 'number'],
-            [['status', 'sort_order'], 'integer'],
+            [['mark_value'], 'required', 'when' => function ($model) {
+                return $model->mark_category == self::MARK;
+            }, 'enableClientValidation' => false],
+            [['mark_category', 'status', 'sort_order'], 'integer'],
             [['mark_label'], 'string', 'max' => 8],
-            [['mark_hint'], 'string', 'max' => 64],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
         ];
@@ -71,7 +87,7 @@ class LessonMark extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art', 'ID'),
             'mark_label' => Yii::t('art/guide', 'Mark Label'),
-            'mark_hint' => Yii::t('art/guide', 'Mark Hint'),
+            'mark_category' => Yii::t('art/guide', 'Mark Category'),
             'mark_value' => Yii::t('art/guide', 'Mark Value'),
             'status' => Yii::t('art', 'Status'),
             'sort_order' => Yii::t('art/guide', 'Order'),
@@ -82,4 +98,28 @@ class LessonMark extends \artsoft\db\ActiveRecord
         ];
     }
 
+    /**
+     * getTestCatogoryList
+     * @return array
+     */
+    public static function getMarkCatogoryList()
+    {
+        return array(
+            self::MARK => 'Оценка',
+            self::PASS => 'Зачет',
+            self::FAILED => 'Незачет',
+            self::NOT_SERTIFIED => 'Не аттестован',
+            self::ABSENCE_DISRES => 'Отсутствие по неуважительной причине',
+            self::ABSENCE_GOOD => 'Отсутствие по уважительной причине',
+            self::ABSENCE_ILLNESS => 'Отсутствие по причине болезни',
+            self::LATE => 'Опоздание на урок',
+            self::ATTEND => 'Присутствие на занятии',
+        );
+    }
+
+    public static function getMarkCatogoryValue($val)
+    {
+        $ar = self::getMarkCatogoryList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
 }

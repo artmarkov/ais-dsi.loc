@@ -26,14 +26,13 @@ use artsoft\helpers\Html;
             <div class="row">
                 <div class="col-sm-12">
 
-                    <?= $form->field($model, 'mark_label')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'mark_category')->dropDownList(LessonMark::getMarkCatogoryList()) ?>
 
-                    <?= $form->field($model, 'mark_hint')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'mark_label')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'mark_value')->textInput() ?>
 
                     <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(LessonMark::getStatusList()) ?>
-
 
                 </div>
             </div>
