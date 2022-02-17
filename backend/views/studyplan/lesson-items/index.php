@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-6">
-                            <?php 
+                            <?php
                             /* Uncomment this to activate GridQuickLinks */
                             /* echo GridQuickLinks::widget([
                                 'model' => LessonItems::className(),
@@ -35,24 +35,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?=  GridPageSize::widget(['pjaxId' => 'lesson-items-grid-pjax']) ?>
+                            <?= GridPageSize::widget(['pjaxId' => 'lesson-items-grid-pjax']) ?>
                         </div>
                     </div>
 
-                    <?php 
+                    <?php
                     Pjax::begin([
                         'id' => 'lesson-items-grid-pjax',
                     ])
                     ?>
 
-                    <?= 
+                    <?=
                     GridView::widget([
                         'id' => 'lesson-items-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'lesson-items-grid',
-                            'actions' => [ Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
+                            'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
@@ -60,28 +60,20 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'id',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/lesson-items/default',
-                                'title' => function(LessonItems $model) {
+                                'title' => function (LessonItems $model) {
                                     return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                             ],
 
-            'id',
-            'subject_sect_studyplan_id',
-            'studyplan_subject_id',
-            'lesson_test_id',
-            'lesson_date',
-            // 'lesson_topic',
-            // 'lesson_rem',
-            // 'created_at',
-            // 'created_by',
-            // 'updated_at',
-            // 'updated_by',
-            // 'version',
+                            'lesson_test_id',
+                            'lesson_date',
+                            'lesson_topic',
+                            'lesson_rem',
 
-                ],
-            ]);
-            ?>
+                        ],
+                    ]);
+                    ?>
 
                     <?php Pjax::end() ?>
                 </div>

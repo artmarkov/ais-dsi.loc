@@ -6,6 +6,10 @@ use backend\models\Model;
 use common\models\education\EducationCat;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
+use common\models\education\LessonItems;
+use common\models\education\LessonProgressView;
+use common\models\education\search\LessonItemsSearch;
+use common\models\education\search\LessonProgressViewSearch;
 use common\models\history\StudyplanHistory;
 use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleTeachersViewSearch;
@@ -514,7 +518,6 @@ class DefaultController extends MainController
             if (!Yii::$app->request->get('studyplan_subject_id') && !Yii::$app->request->get('subject_sect_studyplan_id')) {
                 throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
             }
-            $studyplanSubjectModel = StudyplanSubject::findOne(Yii::$app->request->get('studyplan_subject_id'));
 
             $model = new StudyplanThematic();
             $modelsItems = [new StudyplanThematicItems()];
@@ -557,7 +560,6 @@ class DefaultController extends MainController
             return $this->renderIsAjax('@backend/views/studyplan/studyplan-thematic/_form.php', [
                 'model' => $model,
                 'modelsItems' => (empty($modelsItems)) ? [new StudyplanThematicItems] : $modelsItems,
-                'studyplanSubjectModel' => $studyplanSubjectModel,
             ]);
 
         } elseif ('history' == $mode && $objectId) {
@@ -583,8 +585,6 @@ class DefaultController extends MainController
                 throw new NotFoundHttpException("The StudyplanThematic was not found.");
             }
             $modelsItems = $model->studyplanThematicItems;
-            $studyplanSubjectModel = StudyplanSubject::findOne($model->studyplan_subject_id);
-
 
             if ($model->load(Yii::$app->request->post())) {
 
@@ -626,7 +626,6 @@ class DefaultController extends MainController
             return $this->renderIsAjax('@backend/views/studyplan/studyplan-thematic/_form.php', [
                 'model' => $model,
                 'modelsItems' => (empty($modelsItems)) ? [new StudyplanThematicItems] : $modelsItems,
-                'studyplanSubjectModel' => $studyplanSubjectModel,
             ]);
 
         } else {
@@ -641,6 +640,75 @@ class DefaultController extends MainController
         }
     }
 
+    public function actionStudyplanProgress($id, $objectId = null, $mode = null)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+
+
+        } elseif ('history' == $mode && $objectId) {
+
+        } elseif ('delete' == $mode && $objectId) {
+
+        } elseif ('update' == $mode) {
+
+            if (!Yii::$app->request->get('studyplan_subject_id') && !Yii::$app->request->get('subject_sect_studyplan_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
+            }
+
+            $studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
+            $subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
+            $modelsItems = LessonItems::findAll(['studyplan_subject_id' => $studyplan_subject_id, 'subject_sect_studyplan_id' => $subject_sect_studyplan_id]);
+
+//            if ($model->load(Yii::$app->request->post())) {
+//                $modelsItems = Model::createMultiple(StudyplanThematicItems::class);
+//                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+//
+//                // validate all models
+//                $valid = $model->validate();
+//                $valid = Model::validateMultiple($modelsItems) && $valid;
+//                //$valid = true;
+//                if ($valid) {
+//                    $transaction = \Yii::$app->db->beginTransaction();
+//                    try {
+//
+//                        if ($flag = $model->save(false)) {
+//                            foreach ($modelsItems as $modelItems) {
+//                                $modelItems->studyplan_thematic_id = $model->id;
+//                                if (!($flag = $modelItems->save(false))) {
+//                                    $transaction->rollBack();
+//                                    break;
+//                                }
+//                            }
+//                        }
+//
+//                        if ($flag) {
+//                            $transaction->commit();
+//                            $this->getSubmitAction($model);
+//                        }
+//                    } catch (Exception $e) {
+//                        $transaction->rollBack();
+//                    }
+//                }
+//            }
+
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', compact('modelsItems'));
+
+        } else {
+            $searchModel = new LessonProgressViewSearch();
+
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['studyplan_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('studyplan-progress', compact('dataProvider', 'searchModel', 'id'));
+        }
+    }
     /**
      *  формируем список дисциплин для widget DepDrop::classname()
      * @return false|string

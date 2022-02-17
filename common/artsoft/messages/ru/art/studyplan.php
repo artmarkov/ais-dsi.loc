@@ -21,5 +21,11 @@ return [
     'Thematic plans' => 'Тематические планы',
     'Thematic Plan' => 'Тематический план',
     'Repertory Plan' => 'Репертуарный план',
+    'Lesson Qty' => 'Число уроков',
+    'Current Qty' => 'Число посещений',
+    'Absence Qty' => 'Число неявок',
+    'Current Avg Mark' => 'Средняя оценка текущая',
+    'Middle Avg Mark' => 'Средняя оценка ПА',
+    'Finish Avg Mark' => 'Средняя оценка ИА',
 
 ];

@@ -55,6 +55,7 @@ class LessonProgress extends \artsoft\db\ActiveRecord
         return [
             [['lesson_items_id', 'studyplan_subject_id', 'lesson_test_id', 'version'], 'integer'],
             [['lesson_test_id'], 'required'],
+            [['lesson_items_id', 'studyplan_subject_id'], 'unique', 'targetAttribute' => ['lesson_items_id', 'studyplan_subject_id']],
             [['mark'], 'string', 'max' => 8],
             [['mark_rem'], 'string', 'max' => 127],
             [['lesson_items_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonItems::className(), 'targetAttribute' => ['lesson_items_id' => 'id']],

@@ -74,6 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                             ],
                             'mark_label',
+                            'mark_hint',
                             'mark_value',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',

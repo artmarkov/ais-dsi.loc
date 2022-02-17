@@ -150,6 +150,7 @@ return [
     'Piece Categories' => 'Категории произведений',
     'Lesson Marks' => 'Оценки уроков',
     'Mark Label' => 'Оценка',
+    'Mark Hint' => 'Описание оценки',
     'Mark Category' => 'Категория оценки',
     'Mark Value' => 'Вес оценки',
     'Lesson Tests' => 'Виды испытаний',
@@ -161,6 +162,10 @@ return [
     'Finish Attestation' => 'Итоговая аттестация',
     'Division List' => 'Отделения',
     'Test Name Short' => 'Название теста кор.',
+    'Lesson Test' => 'Вид занятия',
+    'Lesson Date' => 'Дата занятия',
+    'Lesson Topic' => 'Тема занятия',
+    'Lesson Rem' => 'Задание',
 
 ];
 ?>

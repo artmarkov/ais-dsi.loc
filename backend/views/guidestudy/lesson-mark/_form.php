@@ -30,6 +30,8 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'mark_label')->textInput(['maxlength' => true]) ?>
 
+                    <?= $form->field($model, 'mark_hint')->textInput(['maxlength' => true]) ?>
+
                     <?= $form->field($model, 'mark_value')->textInput() ?>
 
                     <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(LessonMark::getStatusList()) ?>
