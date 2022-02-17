@@ -64,11 +64,10 @@ $this->registerJs($js);
                         'model' => $modelsItems[0],
                         'formId' => 'lesson-items-form',
                         'formFields' => [
-                            'name',
-                            'author',
-                            'piece_name',
-                            'piece_category',
-                            'task',
+                            'lesson_test_id',
+                            'lesson_date',
+                            'lesson_topic',
+                            'lesson_rem',
                         ],
                     ]); ?>
 
