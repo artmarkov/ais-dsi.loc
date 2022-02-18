@@ -664,39 +664,45 @@ class DefaultController extends MainController
             $subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
             $modelsItems = LessonItems::findAll(['studyplan_subject_id' => $studyplan_subject_id, 'subject_sect_studyplan_id' => $subject_sect_studyplan_id]);
 
-//            if ($model->load(Yii::$app->request->post())) {
-//                $modelsItems = Model::createMultiple(StudyplanThematicItems::class);
-//                Model::loadMultiple($modelsItems, Yii::$app->request->post());
-//
-//                // validate all models
-//                $valid = $model->validate();
-//                $valid = Model::validateMultiple($modelsItems) && $valid;
-//                //$valid = true;
-//                if ($valid) {
-//                    $transaction = \Yii::$app->db->beginTransaction();
-//                    try {
-//
-//                        if ($flag = $model->save(false)) {
-//                            foreach ($modelsItems as $modelItems) {
-//                                $modelItems->studyplan_thematic_id = $model->id;
-//                                if (!($flag = $modelItems->save(false))) {
-//                                    $transaction->rollBack();
-//                                    break;
-//                                }
-//                            }
-//                        }
-//
-//                        if ($flag) {
-//                            $transaction->commit();
-//                            $this->getSubmitAction($model);
-//                        }
-//                    } catch (Exception $e) {
-//                        $transaction->rollBack();
-//                    }
-//                }
-//            }
+            if (Yii::$app->request->post('submitAction')) {
 
-            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', compact('modelsItems'));
+                $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
+                $modelsItems = Model::createMultiple(LessonItems::class, $modelsItems);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
+
+                // validate all models
+                $valid = Model::validateMultiple($modelsItems);
+
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        $flag = true;
+                            if (!empty($deletedIDs)) {
+                                LessonItems::deleteAll(['id' => $deletedIDs]);
+                            }
+                            foreach ($modelsItems as $modelItems) {
+                                $modelItems->subject_sect_studyplan_id = $subject_sect_studyplan_id;
+                                $modelItems->studyplan_subject_id = $studyplan_subject_id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        if ($flag) {
+                            $transaction->commit();
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+            }
+
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
+                'modelsItems' =>  (empty($modelsItems)) ? [new LessonItems] : $modelsItems,
+                'subject_sect_studyplan_id' => $subject_sect_studyplan_id,
+                'studyplan_subject_id' => $studyplan_subject_id,
+            ]);
 
         } else {
             $searchModel = new LessonProgressViewSearch();

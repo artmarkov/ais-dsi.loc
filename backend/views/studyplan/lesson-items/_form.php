@@ -4,12 +4,24 @@ use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 use common\models\education\LessonItems;
 use artsoft\helpers\Html;
+use kartik\date\DatePicker;
 use wbraganca\dynamicform\DynamicFormWidget;
+use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\education\LessonItems */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $modelsItems artsoft\widgets\$modelsItems */
+/* @var $studyplan_subject_id */
+/* @var $subject_sect_studyplan_id */
+
+//$this->registerJs(<<<JS
+//$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
+//	    $( "#lesson-items-form" ).submit(); // вызываем событие submit на элементе <form>
+//	  });
+//JS
+//    , \yii\web\View::POS_END);
+
 $this->registerJs(<<<JS
 function initSelect2Loading(a,b){ initS2Loading(a,b); }
 function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
@@ -47,8 +59,8 @@ $this->registerJs($js);
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Посещаемость и успеваемость:
-                    <?php echo RefBook::find('subject_memo_2')->getValue($modelsItems[0]->studyplan_subject_id); ?>
-                    <?php echo RefBook::find('sect_name_2')->getValue($modelsItems[0]->subject_sect_studyplan_id); ?>
+                    <?php echo RefBook::find('subject_memo_2')->getValue($studyplan_subject_id); ?>
+                    <?php echo RefBook::find('sect_name_2')->getValue($subject_sect_studyplan_id); ?>
                 </div>
                 <div class="panel-body">
 
@@ -119,7 +131,7 @@ $this->registerJs($js);
                                         </td>
                                         <td>
                                             <?php
-                                            $field = $form->field($modelItems, "[{$index}]lesson_date");
+                                            $field = $form->field($modelItems, "[{$index}]lesson_date")->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class);
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
@@ -170,9 +182,9 @@ $this->registerJs($js);
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <!--                    --><? //= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                    <?= \artsoft\helpers\ButtonHelper::exitButton() ?>
+                    <?= \artsoft\helpers\ButtonHelper::saveButton() ?>
                 </div>
-                <!--                --><? //= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>
         </div>
 

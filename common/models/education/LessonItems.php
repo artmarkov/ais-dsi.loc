@@ -2,6 +2,7 @@
 
 namespace common\models\education;
 
+use artsoft\behaviors\DateFieldBehavior;
 use Yii;
 use artsoft\models\User;
 use yii\behaviors\BlameableBehavior;
@@ -43,6 +44,10 @@ class LessonItems extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
+            [
+                'class' => DateFieldBehavior::class,
+                'attributes' => ['lesson_date'],
+            ],
         ];
     }
     /**
@@ -51,8 +56,9 @@ class LessonItems extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'lesson_date', 'version'], 'integer'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'version'], 'integer'],
             [['lesson_test_id', 'lesson_date'], 'required'],
+            [['lesson_date'], 'safe'],
             [['lesson_topic'], 'string', 'max' => 512],
             [['lesson_rem'], 'string', 'max' => 1024],
             [['lesson_test_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonTest::className(), 'targetAttribute' => ['lesson_test_id' => 'id']],
