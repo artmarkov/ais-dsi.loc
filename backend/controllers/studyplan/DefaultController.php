@@ -2,11 +2,13 @@
 
 namespace backend\controllers\studyplan;
 
+use artsoft\helpers\Schedule;
 use backend\models\Model;
 use common\models\education\EducationCat;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\LessonItems;
+use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
 use common\models\education\search\LessonItemsSearch;
 use common\models\education\search\LessonProgressViewSearch;
@@ -29,6 +31,7 @@ use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\TeachersLoad;
+use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
 use Yii;
 use yii\helpers\Json;
@@ -705,14 +708,36 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $searchModel = new LessonProgressViewSearch();
+            $session = Yii::$app->session;
 
-            $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['studyplan_id'] = $id;
-            $dataProvider = $searchModel->search($params);
+            $day_in = 1;
+            $day_out = date("t");
 
-            return $this->renderIsAjax('studyplan-progress', compact('dataProvider', 'searchModel', 'id'));
+            $model_date = new DynamicModel(['date_in', 'date_out', 'hidden_flag']);
+            $model_date->addRule(['date_in', 'date_out'], 'required')
+                ->addRule(['date_in', 'date_out'], 'date')
+                ->addRule('hidden_flag', 'integer');
+
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $mon = date('m');
+                $year = date('Y');
+
+                $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:d.m.Y');
+                $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
+                $model_date->hidden_flag = $session->get('_progress_hidden_flag') ?? 0;
+            }
+            $session->set('_progress_date_in', $model_date->date_in);
+            $session->set('_progress_date_out', $model_date->date_out);
+            $session->set('_progress_hidden_flag', $model_date->hidden_flag);
+
+            $data = LessonItems::getData($model_date, $id);
+            //$data = ['data' => []];
+
+            if (Yii::$app->request->post('submitAction') == 'excel') {
+               // TeachersEfficiency::sendXlsx($data);
+            }
+
+            return $this->renderIsAjax('studyplan-progress', compact(['data', 'model_date']));
         }
     }
     /**

@@ -3,6 +3,7 @@
 namespace common\models\education;
 
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\RefBook;
 use Yii;
 use artsoft\models\User;
 use yii\behaviors\BlameableBehavior;
@@ -111,4 +112,68 @@ class LessonItems extends \artsoft\db\ActiveRecord
     {
         return $this->hasMany(LessonProgress::className(), ['lesson_items_id' => 'id']);
     }
+    /**
+     * @param $model_date
+     * @return array
+     */
+    public static function getData($model_date, $studyplan_id)
+    {
+        $timestamp_in = Yii::$app->formatter->asTimestamp($model_date->date_in);
+        $timestamp_out = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86399;
+
+        $lessonDates = LessonItemsView::find()->select('lesson_date')->distinct()
+            ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
+            ->andWhere(['=', 'studyplan_id', $studyplan_id])
+            ->orderBy('lesson_date')
+            ->asArray()->all();
+
+        $modelsProgress = LessonProgressView::find(['studyplan_id' => $studyplan_id])->all();
+
+        $attributes = ['studyplan_subject_id' => Yii::t('art/guide', 'Subject Name')];
+        $attributes += ['subject_vid_id' => Yii::t('art/guide', 'Subject Vid')];
+        $attributes += ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
+        $attributes += ['lesson_qty' => Yii::t('art/studyplan', 'Lesson Qty')];
+        $attributes += ['current_qty' => Yii::t('art/studyplan', 'Current Qty')];
+        $attributes += ['absence_qty' => Yii::t('art/studyplan', 'Absence Qty')];
+        $attributes += ['current_avg_mark' => Yii::t('art/studyplan', 'Current Avg Mark')];
+        $attributes += ['middle_avg_mark' => Yii::t('art/studyplan', 'Middle Avg Mark')];
+        $attributes += ['finish_avg_mark' => Yii::t('art/studyplan', 'Finish Avg Mark')];
+
+        $dates = [];
+        foreach ($lessonDates as $id => $lessonDate) {
+            $date_label =  Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
+            $attributes += [$date_label => $date_label];
+            $dates[] = $date_label;
+        }
+
+        $data = [];
+        foreach ($modelsProgress as $item => $modelProgress) {
+            $data[$item]['studyplan_subject_id'] = $modelProgress->studyplan_subject_id;
+            $data[$item]['subject_vid_id'] = $modelProgress->subject_vid_id;
+            $data[$item]['subject_sect_studyplan_id'] = $modelProgress->subject_sect_studyplan_id;
+            $data[$item]['lesson_qty'] = $modelProgress->lesson_qty;
+            $data[$item]['current_qty'] = $modelProgress->current_qty;
+            $data[$item]['absence_qty'] = $modelProgress->absence_qty;
+            $data[$item]['current_avg_mark'] = $modelProgress->current_avg_mark;
+            $data[$item]['middle_avg_mark'] = $modelProgress->middle_avg_mark;
+            $data[$item]['finish_avg_mark'] = $modelProgress->finish_avg_mark;
+
+            $marks = LessonItemsView::find()
+                ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
+                ->andWhere(['=','studyplan_subject_id', $modelProgress->studyplan_subject_id])
+                ->asArray()->all();
+//
+            foreach ($marks as $id => $mark) {
+                $date_label =  Yii::$app->formatter->asDate($mark['lesson_date'], 'php:d.m.Y');
+                    $data[$item][$date_label] = $mark['mark_label'];
+
+            }
+        }
+//        usort($data, function ($a, $b) {
+//            return $b['total'] <=> $a['total'];
+//        });
+        //echo '<pre>' . print_r($data, true) . '</pre>'; die();
+         return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes, 'studyplan_id' => $studyplan_id ];
+    }
+
 }

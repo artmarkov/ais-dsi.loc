@@ -14,8 +14,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $id
  * @property int|null $lesson_items_id
  * @property int|null $studyplan_subject_id
- * @property int $lesson_test_id
- * @property string|null $mark
+ * @property int $lesson_mark_id
  * @property string|null $mark_rem
  * @property int $created_at
  * @property int|null $created_by
@@ -53,12 +52,12 @@ class LessonProgress extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['lesson_items_id', 'studyplan_subject_id', 'lesson_test_id', 'version'], 'integer'],
-            [['lesson_test_id'], 'required'],
+            [['lesson_items_id', 'studyplan_subject_id', 'lesson_mark_id', 'version'], 'integer'],
+            [['lesson_mark_id'], 'required'],
             [['lesson_items_id', 'studyplan_subject_id'], 'unique', 'targetAttribute' => ['lesson_items_id', 'studyplan_subject_id']],
-            [['mark'], 'string', 'max' => 8],
             [['mark_rem'], 'string', 'max' => 127],
             [['lesson_items_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonItems::className(), 'targetAttribute' => ['lesson_items_id' => 'id']],
+            [['lesson_mark_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonMark::className(), 'targetAttribute' => ['lesson_mark_id' => 'id']],
             [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::className(), 'targetAttribute' => ['studyplan_subject_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
@@ -74,8 +73,7 @@ class LessonProgress extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art/guide', 'ID'),
             'lesson_items_id' => Yii::t('art/guide', 'Lesson Items'),
             'studyplan_subject_id' => Yii::t('art/guide', 'Studyplan Subject'),
-            'lesson_test_id' => Yii::t('art/guide', 'Lesson Test'),
-            'mark' => Yii::t('art/guide', 'Mark'),
+            'lesson_mark_id' => Yii::t('art/guide', 'Mark'),
             'mark_rem' => Yii::t('art/guide', 'Mark Rem'),
             'created_at' => Yii::t('art/guide', 'Created'),
             'created_by' => Yii::t('art/guide', 'Created By'),
@@ -98,6 +96,14 @@ class LessonProgress extends \artsoft\db\ActiveRecord
     public function getLessonItems()
     {
         return $this->hasOne(LessonItems::className(), ['id' => 'lesson_items_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLessonMark()
+    {
+        return $this->hasOne(LessonMark::className(), ['id' => 'lesson_mark_id']);
     }
 
     /**

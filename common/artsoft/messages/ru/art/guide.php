@@ -166,6 +166,7 @@ return [
     'Lesson Date' => 'Дата занятия',
     'Lesson Topic' => 'Тема занятия',
     'Lesson Rem' => 'Задание',
+    'Studyplan Progress' => 'Дневник успеваемости',
 
 ];
 ?>
