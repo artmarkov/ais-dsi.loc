@@ -656,44 +656,47 @@ class DefaultController extends MainController
         } elseif ('history' == $mode && $objectId) {
 
         } elseif ('delete' == $mode && $objectId) {
+            $model = LessonItems::findOne($objectId);
+            $model->delete();
 
-        } elseif ('update' == $mode) {
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+        } elseif ($objectId) {
 
-            if (!Yii::$app->request->get('studyplan_subject_id') && !Yii::$app->request->get('subject_sect_studyplan_id')) {
-                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
+            $model = LessonItems::findOne($objectId);
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The LessonItems was not found.");
             }
+            $modelsItems = $model->lessonProgresses;
 
-            $studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
-            $subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
-            $modelsItems = LessonItems::findAll(['studyplan_subject_id' => $studyplan_subject_id, 'subject_sect_studyplan_id' => $subject_sect_studyplan_id]);
-
-            if (Yii::$app->request->post('submitAction')) {
+            if ($model->load(Yii::$app->request->post())) {
 
                 $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
-                $modelsItems = Model::createMultiple(LessonItems::class, $modelsItems);
+                $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
                 $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
 
                 // validate all models
-                $valid = Model::validateMultiple($modelsItems);
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
 
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
-                        $flag = true;
+                        if ($flag = $model->save(false)) {
                             if (!empty($deletedIDs)) {
-                                LessonItems::deleteAll(['id' => $deletedIDs]);
+                                LessonProgress::deleteAll(['id' => $deletedIDs]);
                             }
                             foreach ($modelsItems as $modelItems) {
-                                $modelItems->subject_sect_studyplan_id = $subject_sect_studyplan_id;
-                                $modelItems->studyplan_subject_id = $studyplan_subject_id;
+                                $modelItems->lesson_items_id = $model->id;
                                 if (!($flag = $modelItems->save(false))) {
                                     $transaction->rollBack();
                                     break;
                                 }
                             }
-                        if ($flag) {
-                            $transaction->commit();
+                            if ($flag) {
+                                $transaction->commit();
+                            }
                         }
                     } catch (Exception $e) {
                         $transaction->rollBack();
@@ -702,9 +705,10 @@ class DefaultController extends MainController
             }
 
             return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
-                'modelsItems' =>  (empty($modelsItems)) ? [new LessonItems] : $modelsItems,
-                'subject_sect_studyplan_id' => $subject_sect_studyplan_id,
-                'studyplan_subject_id' => $studyplan_subject_id,
+                'model' => $model,
+                'modelsItems' =>  (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+//                'subject_sect_studyplan_id' => $subject_sect_studyplan_id,
+//                'studyplan_subject_id' => $studyplan_subject_id,
             ]);
 
         } else {
@@ -731,7 +735,6 @@ class DefaultController extends MainController
             $session->set('_progress_hidden_flag', $model_date->hidden_flag);
 
             $data = LessonItems::getData($model_date, $id);
-            //$data = ['data' => []];
 
             if (Yii::$app->request->post('submitAction') == 'excel') {
                // TeachersEfficiency::sendXlsx($data);

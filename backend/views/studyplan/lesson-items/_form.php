@@ -59,12 +59,31 @@ $this->registerJs($js);
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Посещаемость и успеваемость:
-                    <?php echo RefBook::find('subject_memo_2')->getValue($studyplan_subject_id); ?>
-                    <?php echo RefBook::find('sect_name_2')->getValue($subject_sect_studyplan_id); ?>
+                                        <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
+                                        <?php echo RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id); ?>
+                    <?php
+                    if($model->subject_sect_studyplan_id != 0) {
+                        $m = \common\models\subjectsect\SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id);
+                        $studyplan_list = explode(',', $m->studyplan_subject_list);
+                    }
+                    else{
+                        $studyplan_list = [$model->studyplan_subject_id];
+                    }
+                    $data = [];
+                    foreach ($studyplan_list as $item => $studyplan_subject_id) {
+                        $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
+                        $data[$studyplan_subject_id] = RefBook::find('students_fio')->getValue($student_id);
+                    }
+                    ?>
                 </div>
                 <div class="panel-body">
+                    <div class="row">
+                        <?= $form->field($model, 'lesson_test_id')->dropDownList(RefBook::find('lesson_test')->getList()) ?>
+                        <?= $form->field($model, 'lesson_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, [/*'disabled' => $readonly*/]); ?>
+                        <?= $form->field($model, 'lesson_topic')->textInput() ?>
+                        <?= $form->field($model, 'lesson_rem')->textInput() ?>
 
-
+                    </div>
                     <?php DynamicFormWidget::begin([
                         'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                         'widgetBody' => '.container-items', // required: css class selector
@@ -76,10 +95,9 @@ $this->registerJs($js);
                         'model' => $modelsItems[0],
                         'formId' => 'lesson-items-form',
                         'formFields' => [
-                            'lesson_test_id',
-                            'lesson_date',
-                            'lesson_topic',
-                            'lesson_rem',
+                            'studyplan_subject_id',
+                            'lesson_mark_id',
+                            'mark_rem',
                         ],
                     ]); ?>
 
@@ -93,10 +111,9 @@ $this->registerJs($js);
                                 <thead>
                                 <tr>
                                     <th class="text-center">№</th>
-                                    <th class="text-center">Вид занятия</th>
-                                    <th class="text-center">Дата занятия</th>
-                                    <th class="text-center">Тема занятия</th>
-                                    <th class="text-center">Задание</th>
+                                    <th class="text-center">Ученик</th>
+                                    <th class="text-center">Оценка</th>
+                                    <th class="text-center">Примечание</th>
                                     <th class="text-center">
                                         <!--                                                --><?php //if (!$readonly): ?>
                                         <button type="button" class="add-item btn btn-success btn-xs"><span
@@ -120,44 +137,33 @@ $this->registerJs($js);
 
                                         <td>
                                             <?php
-                                            $field = $form->field($modelItems, "[{$index}]lesson_test_id");
+                                            $field = $form->field($modelItems, "[{$index}]studyplan_subject_id");
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]lesson_test_id", ['class' => 'form-control']); ?>
+                                                <?= \yii\helpers\Html::activeDropDownList($modelItems, "[{$index}]studyplan_subject_id", $data, ['class' => 'form-control']); ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>
                                         </td>
                                         <td>
                                             <?php
-                                            $field = $form->field($modelItems, "[{$index}]lesson_date")->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class);
+                                            $field = $form->field($modelItems, "[{$index}]lesson_mark_id");
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]lesson_date", ['class' => 'form-control']); ?>
+                                                <?= \yii\helpers\Html::activeDropDownList($modelItems, "[{$index}]lesson_mark_id", RefBook::find('lesson_mark')->getList(),['class' => 'form-control']); ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>
                                         </td>
                                         <td>
                                             <?php
-                                            $field = $form->field($modelItems, "[{$index}]lesson_topic");
+                                            $field = $form->field($modelItems, "[{$index}]mark_rem");
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]lesson_topic", ['class' => 'form-control']); ?>
-                                                <p class="help-block help-block-error"></p>
-                                            </div>
-                                            <?= $field->end(); ?>
-                                        </td>
-                                        <td>
-                                            <?php
-                                            $field = $form->field($modelItems, "[{$index}]lesson_rem");
-                                            echo $field->begin();
-                                            ?>
-                                            <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]lesson_rem", ['class' => 'form-control']); ?>
+                                                <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]mark_rem", ['class' => 'form-control']); ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>
@@ -182,9 +188,9 @@ $this->registerJs($js);
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <?= \artsoft\helpers\ButtonHelper::exitButton() ?>
-                    <?= \artsoft\helpers\ButtonHelper::saveButton() ?>
+                    <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
                 </div>
+                <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>
         </div>
 

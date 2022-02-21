@@ -73,31 +73,48 @@ $columns = [
         'attribute' => 'finish_avg_mark',
         'label' => $data['attributes']['finish_avg_mark'],
     ],
-//    'buttonsTemplate' => '{details} {bar}',
-//    'buttons' => [
-//        'details' => function ($url, $data, $key) {
-//            return Html::a('Показатели',
-//                Url::to(['efficiency/default/details', 'id' => $data['id'], 'timestamp_in' => $data['date_in'], 'timestamp_out' => $data['date_out']]), [
-//                    'data-method' => 'post',
-//                    'data-pjax' => '0',
-//                ]);
-//        },
-//        'bar' => function ($url, $data, $key) {
-//            return Html::a('График',
-//                Url::to(['efficiency/default/user-bar', 'id' => $data['id'], 'timestamp_in' => $data['date_in'], 'timestamp_out' => $data['date_out']]), [
-//                    'data-method' => 'post',
-//                    'data-pjax' => '0',
-//                ]);
-//        }
+//    [
+//        'class' => 'kartik\grid\ActionColumn',
+//        'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+//        'width' => '90px',
+//        'template' => '{update}',
+//        'buttons' => [
+//            'update' => function ($key, $data) {
+//    //print_r($data); die();
+//                if($data['subject_sect_studyplan_id'] == null) {
+//                    return Html::a('<i class="fa fa-eye" aria-hidden="true"></i>',
+//                        Url::to(['/studyplan/default/studyplan-progress', 'id' => $data['studyplan_id'], 'studyplan_subject_id' => $data['studyplan_subject_id'], 'mode' => 'update']), [
+//                            'title' => Yii::t('art', 'View'),
+//                            'data-method' => 'post',
+//                            'data-pjax' => '0',
+//                            'disabled' => true
+//                        ]
+//                    );
+//                }
+//                else {
+//                    return Html::a('<i class="fa fa-eye" aria-hidden="true"></i>',
+//                        Url::to(['/studyplan/default/studyplan-progress', 'id' => $data['studyplan_id'], 'subject_sect_studyplan_id' => $data['subject_sect_studyplan_id'], 'mode' => 'update']), [
+//                            'title' => Yii::t('art', 'View'),
+//                            'data-method' => 'post',
+//                            'data-pjax' => '0',
+//                            'disabled' => true
+//                        ]
+//                    );
+//                }
+//            },
+//        ],
+//        'visibleButtons' => [
+//            'view' => function () {
+//                return true;
+//            }
+//        ]
 //    ],
-//    'format' => 'raw',
-//    'options' => ['style' => 'width:250px'],
-//    'headerOptions' => ['class' => "grid"],
 ];
 foreach ($data['lessonDates'] as $id => $name) {
     $columns[] = [
         'attribute' => $name,
         'label' => $data['attributes'][$name],
+        'format' => 'raw',
     ];
 }
 //echo '<pre>' . print_r($data['data'], true) . '</pre>'; die();

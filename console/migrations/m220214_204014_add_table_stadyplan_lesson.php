@@ -200,7 +200,7 @@ UNION ALL
                          studyplan_subject.subject_type_id as subject_type_id,
                          studyplan_subject.subject_vid_id as subject_vid_id,
 						 subject_sect_studyplan.id as subject_sect_studyplan_id,
-						 (select count(*) from lesson_items where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_items.studyplan_subject_id = 0) as lesson_qty,
+						 (select count(*) from lesson_items where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_items.studyplan_subject_id = studyplan_subject.id) as lesson_qty,
 						 (select count(*) from lesson_progress 
 						  		inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id) 
 						  		inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2)) 
