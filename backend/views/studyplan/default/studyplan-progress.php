@@ -49,30 +49,30 @@ $columns = [
         'group' => true,
         'subGroupOf' => 1
     ],
-    [
-        'attribute' => 'lesson_qty',
-        'label' => $data['attributes']['lesson_qty'],
-    ],
-    [
-        'attribute' => 'current_qty',
-        'label' => $data['attributes']['current_qty'],
-    ],
-    [
-        'attribute' => 'absence_qty',
-        'label' => $data['attributes']['absence_qty'],
-    ],
-    [
-        'attribute' => 'current_avg_mark',
-        'label' => $data['attributes']['current_avg_mark'],
-    ],
-    [
-        'attribute' => 'middle_avg_mark',
-        'label' => $data['attributes']['middle_avg_mark'],
-    ],
-    [
-        'attribute' => 'finish_avg_mark',
-        'label' => $data['attributes']['finish_avg_mark'],
-    ],
+//    [
+//        'attribute' => 'lesson_qty',
+//        'label' => $data['attributes']['lesson_qty'],
+//    ],
+//    [
+//        'attribute' => 'current_qty',
+//        'label' => $data['attributes']['current_qty'],
+//    ],
+//    [
+//        'attribute' => 'absence_qty',
+//        'label' => $data['attributes']['absence_qty'],
+//    ],
+//    [
+//        'attribute' => 'current_avg_mark',
+//        'label' => $data['attributes']['current_avg_mark'],
+//    ],
+//    [
+//        'attribute' => 'middle_avg_mark',
+//        'label' => $data['attributes']['middle_avg_mark'],
+//    ],
+//    [
+//        'attribute' => 'finish_avg_mark',
+//        'label' => $data['attributes']['finish_avg_mark'],
+//    ],
 //    [
 //        'class' => 'kartik\grid\ActionColumn',
 //        'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
@@ -147,7 +147,7 @@ foreach ($data['lessonDates'] as $id => $name) {
                                     [
                                         'columns' => [
                                             ['content' => 'Дисциплина', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
-                                            ['content' => 'Статистика обучения', 'options' => ['colspan' => 6, 'class' => 'text-center info']],
+                                          //  ['content' => 'Статистика обучения', 'options' => ['colspan' => 6, 'class' => 'text-center info']],
                                             ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($data['lessonDates']), 'class' => 'text-center danger']],
                                         ],
                                         'options' => ['class' => 'skip-export'] // remove this row from export
