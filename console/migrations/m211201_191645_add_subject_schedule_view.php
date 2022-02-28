@@ -42,7 +42,7 @@ class m211201_191645_add_subject_schedule_view extends \artsoft\db\BaseMigration
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
                 teachers_load.load_time as load_time,
-				studyplan.id::text as studyplan_subject_list,
+				studyplan_subject.id::text as studyplan_subject_list,
 				studyplan.course as course,
 			    studyplan_subject.subject_cat_id as subject_cat_id,
 			    studyplan_subject.subject_id as subject_id,
