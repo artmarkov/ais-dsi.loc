@@ -9,24 +9,16 @@ use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
-use common\models\education\LessonProgressView;
-use common\models\education\search\LessonItemsSearch;
-use common\models\education\search\LessonProgressViewSearch;
 use common\models\history\StudyplanHistory;
 use common\models\schedule\ConsultSchedule;
-use common\models\schedule\search\ConsultScheduleTeachersViewSearch;
 use common\models\schedule\search\ConsultScheduleViewSearch;
-use common\models\studyplan\search\StudyplanThematicSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
 use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
 use common\models\studyplan\SubjectCharacteristic;
 use common\models\subjectsect\search\SubjectScheduleViewSearch;
-use common\models\subjectsect\search\SubjectSectScheduleViewSearch;
-use common\models\subjectsect\SubjectScheduleView;
 use common\models\subjectsect\SubjectSchedule;
-use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\search\TeachersLoadViewSearch;
@@ -34,8 +26,8 @@ use common\models\teachers\TeachersLoad;
 use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
 use Yii;
-use yii\helpers\Json;
 use yii\helpers\StringHelper;
+use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -652,6 +644,55 @@ class DefaultController extends MainController
 
         if ('create' == $mode) {
 
+            if (!Yii::$app->request->get('studyplan_subject_id') && !Yii::$app->request->get('subject_sect_studyplan_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
+            }
+
+            $model = new LessonItems();
+            $modelsItems = [new LessonProgress()];
+
+            $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
+            $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
+
+            if ($model->load(Yii::$app->request->post())) {
+//                if($model->checkLesson()){
+//                    $this->redirect(Url::to(['/studyplan/default/studyplan-progress', 'id' => $id, 'objectId' => $model->checkLesson(), 'mode' => 'update']));
+//
+//                }
+                $modelsItems = Model::createMultiple(LessonProgress::class);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
+                //$valid = true;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+
+                        if ($flag = $model->save(false)) {
+                            foreach ($modelsItems as $modelItems) {
+                                $modelItems->lesson_items_id = $model->id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction($model);
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+            }
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
+                'model' => $model,
+                'modelsItems' =>  (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+            ]);
 
         } elseif ('history' == $mode && $objectId) {
 

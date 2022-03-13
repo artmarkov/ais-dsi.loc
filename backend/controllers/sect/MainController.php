@@ -19,6 +19,7 @@ class MainController extends \backend\controllers\DefaultController
             ['label' => 'Нагрузка', 'url' => ['/sect/default/load-items', 'id' => $id]],
             ['label' => 'Элементы расписания', 'url' => ['/sect/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание группы', 'url' => ['/sect/default/schedule', 'id' => $id]],
+            ['label' => 'Журнал успеваемости группы', 'url' => ['/sect/default/studyplan-progress', 'id' => $id]],
         ];
     }
 }

@@ -1,6 +1,9 @@
 <?php
 
 namespace artsoft\helpers;
+
+use yii\helpers\ArrayHelper;
+
 /**
  * Class RefBook
  * @package artsoft\helpers
@@ -28,29 +31,33 @@ class RefBook
 {
     protected $name;
     protected $refId;
+    protected $grouping;
     protected $list;
 
     /**
      * Возвращает экземпляр справочника
      * @param string $name имя справочника
      * @param string $refId опциональное значение для зависимого справочника
+     * @param bool $grouping атрибут группировки
      * @return RefBook
      * @throws RuntimeException
      */
-    public static function find($name, $refId = null)
+    public static function find($name, $refId = null, $grouping = false)
     {
-        return new self($name, $refId);
+        return new self($name, $refId, $grouping);
     }
 
     /**
      * @param $name
      * @param null $refId
+     * @param bool $grouping
      * @throws RuntimeException
      */
-    public function __construct($name, $refId = null)
+    public function __construct($name, $refId = null, $grouping = false)
     {
         $this->name = $name;
         $this->refId = $refId;
+        $this->grouping = $grouping;
         $this->load();
     }
 
@@ -82,28 +89,15 @@ class RefBook
      */
     protected function load()
     {
-        static $DATA = [];
-        if (!array_key_exists($this->name . $this->refId, $DATA)) {
-            $r = (new \yii\db\Query)->from('refbooks')->where(['name' => $this->name])->one();
-            if (false === $r) {
-                throw new \RuntimeException('refbook "' . $this->name . '" was not found');
-            }
-            $query = (new \yii\db\Query)->from($r['table_name'])->select($r['key_field'] . ',' . $r['value_field'])->orderBy($r['sort_field']);
-            if ($r['ref_field'] && $this->refId) {
-                $query->where([$r['ref_field'] => $this->refId]);
-            }
-            $rows = $query->all();
-            $DATA[$this->name . $this->refId] = [];
-            foreach ($rows as $v) {
-                $DATA[$this->name . $this->refId][$v[$r['key_field']]] = $v[$r['value_field']];
-            }
+        $r = (new \yii\db\Query)->from('refbooks')->where(['name' => $this->name])->one();
+        if (false === $r) {
+            throw new \RuntimeException('refbook "' . $this->name . '" was not found');
         }
-        $this->list = $DATA[$this->name . $this->refId];
-    }
-
-    public function getGroups()
-    {
-        return [];
+        $query = (new \yii\db\Query)->from($r['table_name'])->orderBy($r['sort_field']);
+        if ($r['ref_field'] && $this->refId) {
+            $query->where([$r['ref_field'] => $this->refId]);
+        }
+        $this->list = ArrayHelper::map($query->all(), $r['key_field'], $r['value_field'], $this->grouping ? $r['group_field'] : null);
     }
 
     /**

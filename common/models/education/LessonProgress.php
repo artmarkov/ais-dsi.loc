@@ -3,7 +3,6 @@
 namespace common\models\education;
 
 use common\models\studyplan\StudyplanSubject;
-use artsoft\models\User;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -53,14 +52,14 @@ class LessonProgress extends \artsoft\db\ActiveRecord
     {
         return [
             [['lesson_items_id', 'studyplan_subject_id', 'lesson_mark_id', 'version'], 'integer'],
-            [['lesson_mark_id'], 'required'],
-           // [['studyplan_subject_id'], 'unique', 'targetAttribute' => ['lesson_items_id', 'studyplan_subject_id'], 'message' => 'Ученик уже добавлен'],
+            [['studyplan_subject_id', 'lesson_mark_id'], 'required'],
+           // не работает при новой записи
+           // [['studyplan_subject_id'], 'unique', 'targetAttribute' => ['lesson_items_id', 'studyplan_subject_id'], 'message' => 'Ученику можно ставить только одну оценку за урок'],
+           // [['studyplan_subject_id', 'lesson_mark_id'], 'unique', 'targetAttribute' => ['studyplan_subject_id', 'lesson_mark_id', 'lesson_items_id'], 'message' => 'Нельзя поставить одинаковую оценку ученику за урок'],
             [['mark_rem'], 'string', 'max' => 127],
             [['lesson_items_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonItems::className(), 'targetAttribute' => ['lesson_items_id' => 'id']],
             [['lesson_mark_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonMark::className(), 'targetAttribute' => ['lesson_mark_id' => 'id']],
             [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::className(), 'targetAttribute' => ['studyplan_subject_id' => 'id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
         ];
     }
 
@@ -72,13 +71,13 @@ class LessonProgress extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/guide', 'ID'),
             'lesson_items_id' => Yii::t('art/guide', 'Lesson Items'),
-            'studyplan_subject_id' => Yii::t('art/guide', 'Studyplan Subject'),
+            'studyplan_subject_id' => Yii::t('art/student', 'Student'),
             'lesson_mark_id' => Yii::t('art/guide', 'Mark'),
             'mark_rem' => Yii::t('art/guide', 'Mark Rem'),
-            'created_at' => Yii::t('art/guide', 'Created'),
-            'created_by' => Yii::t('art/guide', 'Created By'),
-            'updated_at' => Yii::t('art/guide', 'Updated'),
-            'updated_by' => Yii::t('art/guide', 'Updated By'),
+            'created_at' => Yii::t('art', 'Created'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
         ];
     }

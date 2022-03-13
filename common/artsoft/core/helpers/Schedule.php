@@ -97,6 +97,12 @@ public static function astr2academ($astr_hour)
         return $week_day != 0 ? $week_day : 7;
     }
 
+    public static function timestamp2WeekDay($timestamp)
+    {
+        $week_day = date("w", $timestamp);
+        return $week_day != 0 ? $week_day : 7;
+    }
+
     public static function getWeekNum($day, $mon, $year)
     {
         return ((int)(($day + date("w", mktime(0, 0, 0, $mon, 1, $year)) - 2) / 7)) + 1;

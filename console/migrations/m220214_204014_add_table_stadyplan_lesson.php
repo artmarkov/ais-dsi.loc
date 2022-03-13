@@ -95,11 +95,11 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
         $this->db->createCommand()->resetSequence('guide_lesson_test', 1012)->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['lesson_test', 'guide_lesson_test', 'id', 'test_name', 'sort_order', 'status', 'test_category', 'Список испытаний'],
+            ['lesson_test', 'guide_lesson_test', 'id', 'test_name', 'sort_order', 'status', null, 'Список испытаний'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['lesson_test_short', 'guide_lesson_test', 'id', 'test_name_short', 'sort_order', 'status', 'test_category', 'Список испытаний кор.'],
+            ['lesson_test_short', 'guide_lesson_test', 'id', 'test_name_short', 'sort_order', 'status', null, 'Список испытаний кор.'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
@@ -157,32 +157,8 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
                          studyplan_subject.subject_id as subject_id,
                          studyplan_subject.subject_type_id as subject_type_id,
                          studyplan_subject.subject_vid_id as subject_vid_id,
- 						 0 as subject_sect_studyplan_id,
-						 (select count(*) from lesson_items where lesson_items.subject_sect_studyplan_id = 0 and lesson_items.studyplan_subject_id = studyplan_subject.id) as lesson_qty,
-						 (select count(*) from lesson_progress 
-						  		inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id) 
-						  		inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2)) 
-						  where lesson_items.subject_sect_studyplan_id = 0 and lesson_progress.studyplan_subject_id = studyplan_subject.id) as current_qty,
-						 (select count(*) from lesson_progress 
-						  		inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id) 
-						  		inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and guide_lesson_mark.mark_category = 3) 
-						  where lesson_items.subject_sect_studyplan_id = 0 and lesson_progress.studyplan_subject_id = studyplan_subject.id) as absence_qty,
-						 (select avg(mark_value) from lesson_progress 
-						  		inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id) 
-						        inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 1)
-						  		inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null) 
-						  where lesson_items.subject_sect_studyplan_id = 0 and lesson_progress.studyplan_subject_id = studyplan_subject.id) as current_avg_mark,
-						  (select avg(mark_value) from lesson_progress 
-						  		inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id) 
-						        inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 2)
-						  		inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null) 
-						  where lesson_items.subject_sect_studyplan_id = 0 and lesson_progress.studyplan_subject_id = studyplan_subject.id) as middle_avg_mark,
-						  (select avg(mark_value) from lesson_progress 
-						  		inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id) 
-						        inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 3)
-						  		inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null) 
-						  where lesson_items.subject_sect_studyplan_id = 0 and lesson_progress.studyplan_subject_id = studyplan_subject.id) as finish_avg_mark
-                 from studyplan
+ 						 0 as subject_sect_studyplan_id
+						 from studyplan
                  inner join studyplan_subject on (studyplan.id = studyplan_subject.studyplan_id)
                  inner join guide_subject_vid on (guide_subject_vid.id = studyplan_subject.subject_vid_id and guide_subject_vid.qty_min = 1 and guide_subject_vid.qty_max = 1)
                  )
@@ -199,32 +175,8 @@ UNION ALL
                          studyplan_subject.subject_id as subject_id,
                          studyplan_subject.subject_type_id as subject_type_id,
                          studyplan_subject.subject_vid_id as subject_vid_id,
-						 subject_sect_studyplan.id as subject_sect_studyplan_id,
-						 (select count(*) from lesson_items where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_items.studyplan_subject_id = studyplan_subject.id) as lesson_qty,
-						 (select count(*) from lesson_progress 
-						  		inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id) 
-						  		inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2)) 
-						  where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_progress.studyplan_subject_id = studyplan_subject.id) as current_qty,
-						 (select count(*) from lesson_progress 
-						  		inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id) 
-						  		inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and guide_lesson_mark.mark_category = 3) 
-						  where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_progress.studyplan_subject_id = studyplan_subject.id) as absence_qty,
-						 (select avg(mark_value) from lesson_progress 
-						  		inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id) 
-						        inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 1)
-						  		inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null) 
-						  where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_progress.studyplan_subject_id = studyplan_subject.id) as current_avg_mark,
-						  (select avg(mark_value) from lesson_progress 
-						  		inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id) 
-						        inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 2)
-						  		inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null) 
-						  where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_progress.studyplan_subject_id = studyplan_subject.id) as middle_avg_mark,
-						  (select avg(mark_value) from lesson_progress 
-						  		inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id) 
-						        inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 3)
-						  		inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null) 
-						  where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_progress.studyplan_subject_id = studyplan_subject.id) as finish_avg_mark
-                 from studyplan
+						 subject_sect_studyplan.id as subject_sect_studyplan_id
+						 from studyplan
                  inner join studyplan_subject on (studyplan_subject.studyplan_id = studyplan.id)
                  left join subject_sect on (subject_sect.subject_cat_id = studyplan_subject.subject_cat_id
                                            and subject_sect.subject_id = studyplan_subject.subject_id
@@ -259,10 +211,51 @@ from lesson_items
 order by studyplan_subject_id, lesson_date
         ')->execute();
 
+        $this->db->createCommand()->createView('lesson_progress_sect_view', '
+select subject_sect.id as subject_sect_id,
+       subject_sect.plan_year as plan_year,	
+       subject_sect_studyplan.id as subject_sect_studyplan_id,
+       studyplan_subject.id as studyplan_subject_id,
+       studyplan.id as studyplan_id,
+       studyplan.student_id as student_id
+    from subject_sect_studyplan
+    inner join subject_sect on (subject_sect.id = subject_sect_studyplan.subject_sect_id)
+    inner join studyplan_subject on (studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 				   
+    inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id) 
+order by subject_sect_id, subject_sect_studyplan_id
+        ')->execute();
+
+        $this->db->createCommand()->createView('lesson_items_progress_sect_view', '
+select lesson_items.id,
+       lesson_items.subject_sect_studyplan_id,
+	   lesson_items.lesson_date,
+	   lesson_items.lesson_topic,
+	   lesson_items.lesson_rem,
+	   subject_sect_studyplan.subject_sect_id,
+	   lesson_progress.studyplan_subject_id,
+	   studyplan_subject.studyplan_id,
+	   guide_lesson_test.test_category,
+	   guide_lesson_test.test_name,
+	   guide_lesson_test.test_name_short,
+	   guide_lesson_test.plan_flag,
+	   guide_lesson_mark.mark_category,
+	   guide_lesson_mark.mark_label,
+	   guide_lesson_mark.mark_hint,
+	   guide_lesson_mark.mark_value,
+	   lesson_progress.mark_rem
+from lesson_items
+    inner join subject_sect_studyplan  on (subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id)
+    left join lesson_progress  on (lesson_progress.lesson_items_id = lesson_items.id) 
+    left join studyplan_subject on (studyplan_subject.id = lesson_progress.studyplan_subject_id)
+    left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
+    left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 
+order by studyplan_subject_id, lesson_date
+        ')->execute();
     }
 
     public function down()
     {
+        $this->db->createCommand()->dropView('lesson_progress_sect_view')->execute();
         $this->db->createCommand()->dropView('lesson_items_view')->execute();
         $this->db->createCommand()->dropView('lesson_progress_view')->execute();
         $this->dropTableWithHistory('lesson_progress');

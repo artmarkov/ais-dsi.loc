@@ -3,6 +3,9 @@
 namespace backend\controllers\sect;
 
 use backend\models\Model;
+use common\models\education\LessonItems;
+use common\models\education\LessonProgress;
+use common\models\education\LessonProgressSectView;
 use common\models\subjectsect\search\SubjectSectScheduleSearch;
 use common\models\subjectsect\SubjectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
@@ -11,6 +14,7 @@ use common\models\teachers\search\TeachersLoadSectViewSearch;
 use common\models\teachers\TeachersLoad;
 use common\models\subjectsect\search\SubjectSectScheduleViewSearch;
 use Yii;
+use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\helpers\StringHelper;
@@ -316,6 +320,152 @@ class DefaultController extends MainController
         }
     }
 
+    public function actionStudyplanProgress($id, $objectId = null, $mode = null)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/update', 'id' => $model->id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+
+            if (!Yii::$app->request->get('subject_sect_studyplan_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_sect_studyplan_id.");
+            }
+
+            $model = new LessonItems();
+            $modelsItems = [new LessonProgress()];
+
+            $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id');
+
+            if ($model->load(Yii::$app->request->post())) {
+//                if($model->checkLesson()){
+//                    $this->redirect(Url::to(['/studyplan/default/studyplan-progress', 'id' => $id, 'objectId' => $model->checkLesson(), 'mode' => 'update']));
+//
+//                }
+                $modelsItems = Model::createMultiple(LessonProgress::class);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
+                //$valid = true;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+
+                        if ($flag = $model->save(false)) {
+                            foreach ($modelsItems as $modelItems) {
+                                $modelItems->lesson_items_id = $model->id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction($model);
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+            }
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
+                'model' => $model,
+                'modelsItems' =>  (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+            ]);
+
+        } elseif ('history' == $mode && $objectId) {
+
+        } elseif ('delete' == $mode && $objectId) {
+            $model = LessonItems::findOne($objectId);
+            $model->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+        } elseif ($objectId) {
+
+            $model = LessonItems::findOne($objectId);
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The LessonItems was not found.");
+            }
+            $modelsItems = $model->lessonProgresses;
+
+            if ($model->load(Yii::$app->request->post())) {
+
+                $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
+                $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
+
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
+
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        if ($flag = $model->save(false)) {
+                            if (!empty($deletedIDs)) {
+                                LessonProgress::deleteAll(['id' => $deletedIDs]);
+                            }
+                            foreach ($modelsItems as $modelItems) {
+                                $modelItems->lesson_items_id = $model->id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                            if ($flag) {
+                                $transaction->commit();
+                            }
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+            }
+
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
+                'model' => $model,
+                'modelsItems' =>  (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+            ]);
+
+        } else {
+            $session = Yii::$app->session;
+
+            $day_in = 1;
+            $day_out = date("t");
+
+            $model_date = new DynamicModel(['date_in', 'date_out', 'hidden_flag']);
+            $model_date->addRule(['date_in', 'date_out'], 'required')
+                ->addRule(['date_in', 'date_out'], 'date')
+                ->addRule('hidden_flag', 'integer');
+
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $mon = date('m');
+                $year = date('Y');
+
+                $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:d.m.Y');
+                $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
+                $model_date->hidden_flag = $session->get('_progress_hidden_flag') ?? 0;
+            }
+            $session->set('_progress_date_in', $model_date->date_in);
+            $session->set('_progress_date_out', $model_date->date_out);
+            $session->set('_progress_hidden_flag', $model_date->hidden_flag);
+
+            $data = LessonProgressSectView::getData($model_date, $id);
+
+            if (Yii::$app->request->post('submitAction') == 'excel') {
+                // TeachersEfficiency::sendXlsx($data);
+            }
+
+            return $this->renderIsAjax('studyplan-progress', compact(['data', 'model_date']));
+        }
+    }
     /**
      * @return false|string
      */

@@ -20,12 +20,6 @@ use Yii;
  * @property int|null $subject_type_id
  * @property int|null $subject_vid_id
  * @property int|null $subject_sect_studyplan_id
- * @property int|null $lesson_qty
- * @property int|null $current_qty
- * @property int|null $absence_qty
- * @property float|null $current_avg_mark
- * @property float|null $middle_avg_mark
- * @property float|null $finish_avg_mark
  */
 class LessonProgressView extends \artsoft\db\ActiveRecord
 {
@@ -56,12 +50,64 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
             'subject_vid_id' => Yii::t('art/guide', 'Subject Vid'),
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
-            'lesson_qty' => Yii::t('art/studyplan', 'Lesson Qty'),
-            'current_qty' => Yii::t('art/studyplan', 'Current Qty'),
-            'absence_qty' => Yii::t('art/studyplan', 'Absence Qty'),
-            'current_avg_mark' => Yii::t('art/studyplan', 'Current Avg Mark'),
-            'middle_avg_mark' => Yii::t('art/studyplan', 'Middle Avg Mark'),
-            'finish_avg_mark' => Yii::t('art/studyplan', 'Finish Avg Mark'),
+//            'lesson_qty' => Yii::t('art/studyplan', 'Lesson Qty'),
+//            'current_qty' => Yii::t('art/studyplan', 'Current Qty'),
+//            'absence_qty' => Yii::t('art/studyplan', 'Absence Qty'),
+//            'current_avg_mark' => Yii::t('art/studyplan', 'Current Avg Mark'),
+//            'middle_avg_mark' => Yii::t('art/studyplan', 'Middle Avg Mark'),
+//            'finish_avg_mark' => Yii::t('art/studyplan', 'Finish Avg Mark'),
         ];
     }
+//
+//(select count(*) from lesson_items where lesson_items.subject_sect_studyplan_id = 0 and lesson_items.studyplan_subject_id = studyplan_subject.id) as lesson_qty,
+//(select count(*) from lesson_progress
+//inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id)
+//inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2))
+//where lesson_items.subject_sect_studyplan_id = 0 and lesson_progress.studyplan_subject_id = studyplan_subject.id) as current_qty,
+//(select count(*) from lesson_progress
+//inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id)
+//inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and guide_lesson_mark.mark_category = 3)
+//where lesson_items.subject_sect_studyplan_id = 0 and lesson_progress.studyplan_subject_id = studyplan_subject.id) as absence_qty,
+//(select avg(mark_value) from lesson_progress
+//inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id)
+//inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 1)
+//inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null)
+//where lesson_items.subject_sect_studyplan_id = 0 and lesson_progress.studyplan_subject_id = studyplan_subject.id) as current_avg_mark,
+//(select avg(mark_value) from lesson_progress
+//inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id)
+//inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 2)
+//inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null)
+//where lesson_items.subject_sect_studyplan_id = 0 and lesson_progress.studyplan_subject_id = studyplan_subject.id) as middle_avg_mark,
+//(select avg(mark_value) from lesson_progress
+//inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id)
+//inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 3)
+//inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null)
+//where lesson_items.subject_sect_studyplan_id = 0 and lesson_progress.studyplan_subject_id = studyplan_subject.id) as finish_avg_mark
+//
+//
+//(select count(*) from lesson_items where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_items.studyplan_subject_id = studyplan_subject.id) as lesson_qty,
+//(select count(*) from lesson_progress
+//inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id)
+//inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2))
+//where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_progress.studyplan_subject_id = studyplan_subject.id) as current_qty,
+//(select count(*) from lesson_progress
+//inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id)
+//inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and guide_lesson_mark.mark_category = 3)
+//where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_progress.studyplan_subject_id = studyplan_subject.id) as absence_qty,
+//(select avg(mark_value) from lesson_progress
+//inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id)
+//inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 1)
+//inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null)
+//where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_progress.studyplan_subject_id = studyplan_subject.id) as current_avg_mark,
+//(select avg(mark_value) from lesson_progress
+//inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id)
+//inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 2)
+//inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null)
+//where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_progress.studyplan_subject_id = studyplan_subject.id) as middle_avg_mark,
+//(select avg(mark_value) from lesson_progress
+//inner join lesson_items on (lesson_progress.lesson_items_id = lesson_items.id)
+//inner join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id and guide_lesson_test.test_category = 3)
+//inner join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id and (guide_lesson_mark.mark_category = 1 or guide_lesson_mark.mark_category = 2) and guide_lesson_mark.mark_value is not null)
+//where lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id and lesson_progress.studyplan_subject_id = studyplan_subject.id) as finish_avg_mark
+//
 }

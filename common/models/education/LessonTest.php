@@ -119,4 +119,25 @@ class LessonTest extends \artsoft\db\ActiveRecord
         $ar = self::getTestCatogoryList();
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
+
+    /**
+     * @param $model
+     * @return array
+     */
+    public static function getLessonTestList($model)
+    {
+        $query = self::find()->select(new \yii\db\Expression('
+        id, test_name, test_category,
+            CASE
+                WHEN test_category = ' . self::CURRENT_WORK . ' THEN \'' . Yii::t('art/guide', 'Current Work') . '\'
+                WHEN test_category = ' . self::MIDDLE_ATTESTATION . ' THEN \'' . Yii::t('art/guide', 'Middle Attestation') . '\'
+                WHEN test_category = ' . self::FINISH_ATTESTATION . ' THEN \'' . Yii::t('art/guide', 'Finish Attestation') . '\'
+            END test_category_name
+            '));
+
+        if ($model->isNewRecord) {
+            $query = $query->where(['=', 'status', self::STATUS_ACTIVE]);
+        }
+        return \yii\helpers\ArrayHelper::map($query->orderBy('test_category')->asArray()->all(), 'id', 'test_name', 'test_category_name');
+    }
 }

@@ -78,7 +78,18 @@ $this->registerJs($js);
                 </div>
                 <div class="panel-body">
                     <div class="row">
-                        <?= $form->field($model, 'lesson_test_id')->dropDownList(RefBook::find('lesson_test')->getList()) ?>
+                        <?= $form->field($model, "lesson_test_id")->widget(\kartik\select2\Select2::class, [
+                            'data' => \common\models\education\LessonTest::getLessonTestList($model),
+                            'options' => [
+//                                'disabled' => $readonly,
+                                'placeholder' => Yii::t('art', 'Select...'),
+                                'multiple' => false,
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ]
+                        ]);
+                        ?>
                         <?= $form->field($model, 'lesson_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, [/*'disabled' => $readonly*/]); ?>
                         <?= $form->field($model, 'lesson_topic')->textInput() ?>
                         <?= $form->field($model, 'lesson_rem')->textInput() ?>
@@ -103,7 +114,7 @@ $this->registerJs($js);
 
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            Список занятий
+                            Список оценок
                         </div>
                         <div class="panel-body">
 
@@ -141,22 +152,52 @@ $this->registerJs($js);
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeDropDownList($modelItems, "[{$index}]studyplan_subject_id", $data, ['class' => 'form-control']); ?>
+                                                <?= \kartik\select2\Select2::widget(
+                                                    [
+                                                        'model' => $modelItems,
+                                                        'attribute' => "[{$index}]studyplan_subject_id",
+                                                        'data' => $data,
+                                                        'options' => [
+
+//                                                                'disabled' => $readonly,
+                                                            'placeholder' => Yii::t('art', 'Select...'),
+                                                        ],
+                                                        'pluginOptions' => [
+                                                            'allowClear' => true
+                                                        ],
+                                                    ]
+                                                ) ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>
                                         </td>
+
                                         <td>
                                             <?php
                                             $field = $form->field($modelItems, "[{$index}]lesson_mark_id");
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeDropDownList($modelItems, "[{$index}]lesson_mark_id", RefBook::find('lesson_mark')->getList(),['class' => 'form-control']); ?>
+                                                <?= \kartik\select2\Select2::widget(
+                                                    [
+                                                        'model' => $modelItems,
+                                                        'attribute' => "[{$index}]lesson_mark_id",
+                                                        'data' => RefBook::find('lesson_mark')->getList(),
+                                                        'options' => [
+
+//                                                                'disabled' => $readonly,
+                                                            'placeholder' => Yii::t('art', 'Select...'),
+                                                        ],
+                                                        'pluginOptions' => [
+                                                            'allowClear' => true
+                                                        ],
+                                                    ]
+                                                ) ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>
                                         </td>
+
                                         <td>
                                             <?php
                                             $field = $form->field($modelItems, "[{$index}]mark_rem");

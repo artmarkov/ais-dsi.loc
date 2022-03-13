@@ -149,6 +149,7 @@ return [
     'Subject Characteristic' => 'Характеристики по предметам',
     'Piece Categories' => 'Категории произведений',
     'Lesson Marks' => 'Оценки уроков',
+    'Mark' => 'Оценка',
     'Mark Label' => 'Оценка',
     'Mark Hint' => 'Описание оценки',
     'Mark Category' => 'Категория оценки',
@@ -167,6 +168,7 @@ return [
     'Lesson Topic' => 'Тема занятия',
     'Lesson Rem' => 'Задание',
     'Studyplan Progress' => 'Дневник успеваемости',
+    'Group Progress' => 'Журнал успеваемости группы',
 
 ];
 ?>
