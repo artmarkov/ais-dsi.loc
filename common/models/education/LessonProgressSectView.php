@@ -66,6 +66,7 @@ class LessonProgressSectView extends \artsoft\db\ActiveRecord
         }
         $data = [];
         foreach ($modelsProgress as $item => $modelProgress) {
+            $data[$item]['dates'] = $lessonDates;
             $data[$item]['id'] = $item+1;
             $data[$item]['subject_sect_id'] = $modelProgress->subject_sect_id;
             $data[$item]['subject_sect_studyplan_id'] = $modelProgress->subject_sect_studyplan_id;
@@ -96,6 +97,7 @@ class LessonProgressSectView extends \artsoft\db\ActiveRecord
 
             }
         }
+
 //        usort($data, function ($a, $b) {
 //            return $b['total'] <=> $a['total'];
 //        });
