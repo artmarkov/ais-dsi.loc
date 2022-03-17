@@ -2,7 +2,7 @@
 
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
-use common\models\education\LessonItems;
+use common\models\subjectsect\SubjectSectStudyplan;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 use wbraganca\dynamicform\DynamicFormWidget;
@@ -59,14 +59,13 @@ $this->registerJs($js);
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Посещаемость и успеваемость:
-                                        <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
-                                        <?php echo RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id); ?>
+                    <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
+                    <?php echo RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id); ?>
                     <?php
-                    if($model->subject_sect_studyplan_id != 0) {
-                        $m = \common\models\subjectsect\SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id);
+                    if ($model->subject_sect_studyplan_id != 0) {
+                        $m = SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id);
                         $studyplan_list = explode(',', $m->studyplan_subject_list);
-                    }
-                    else{
+                    } else {
                         $studyplan_list = [$model->studyplan_subject_id];
                     }
                     $data = [];
@@ -99,7 +98,7 @@ $this->registerJs($js);
                         'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                         'widgetBody' => '.container-items', // required: css class selector
                         'widgetItem' => '.item', // required: css class
-                        'limit' => 999, // the maximum times, an element can be added (default 999)
+                        'limit' => count($data), // the maximum times, an element can be added (default 999)
                         'min' => 1, // 0 or 1 (default 1)
                         'insertButton' => '.add-item', // css class
                         'deleteButton' => '.remove-item', // css class
@@ -125,12 +124,12 @@ $this->registerJs($js);
                                     <th class="text-center">Ученик</th>
                                     <th class="text-center">Оценка</th>
                                     <th class="text-center">Примечание</th>
-                                    <th class="text-center">
-                                        <!--                                                --><?php //if (!$readonly): ?>
-                                        <button type="button" class="add-item btn btn-success btn-xs"><span
-                                                    class="fa fa-plus"></span></button>
-                                        <!--                                                --><?php //endif; ?>
-                                    </th>
+                                    <!--                                    <th class="text-center">-->
+                                    <!--                                                --><?php //if (!$readonly): ?>
+                                    <!--                                        <button type="button" class="add-item btn btn-success btn-xs"><span-->
+                                    <!--                                                    class="fa fa-plus"></span></button>-->
+                                    <!--                                                --><?php //endif; ?>
+                                    <!--                                    </th>-->
                                 </tr>
                                 </thead>
                                 <tbody class="container-items">
@@ -145,33 +144,10 @@ $this->registerJs($js);
                                         <td>
                                             <span class="panel-title-activities"><?= ($index + 1) ?></span>
                                         </td>
-
                                         <td>
-                                            <?php
-                                            $field = $form->field($modelItems, "[{$index}]studyplan_subject_id");
-                                            echo $field->begin();
-                                            ?>
-                                            <div class="col-sm-12">
-                                                <?= \kartik\select2\Select2::widget(
-                                                    [
-                                                        'model' => $modelItems,
-                                                        'attribute' => "[{$index}]studyplan_subject_id",
-                                                        'data' => $data,
-                                                        'options' => [
-
-//                                                                'disabled' => $readonly,
-                                                            'placeholder' => Yii::t('art', 'Select...'),
-                                                        ],
-                                                        'pluginOptions' => [
-                                                            'allowClear' => true
-                                                        ],
-                                                    ]
-                                                ) ?>
-                                                <p class="help-block help-block-error"></p>
-                                            </div>
-                                            <?= $field->end(); ?>
+                                            <?= Html::activeHiddenInput($modelItems, "[{$index}]studyplan_subject_id"); ?>
+                                            <?= $data[$modelItems->studyplan_subject_id] ?? ''; ?>
                                         </td>
-
                                         <td>
                                             <?php
                                             $field = $form->field($modelItems, "[{$index}]lesson_mark_id");
@@ -210,13 +186,13 @@ $this->registerJs($js);
                                             <?= $field->end(); ?>
                                         </td>
 
-                                        <td class="vcenter text-center">
-                                            <!--                                                --><?php //if (!$readonly): ?>
-                                            <button type="button"
-                                                    class="remove-item btn btn-danger btn-xs"><span
-                                                        class="fa fa-minus"></span></button>
-                                            <!--                                                --><?php //endif; ?>
-                                        </td>
+                                        <!--                                        <td class="vcenter text-center">-->
+                                        <!--                                                --><?php //if (!$readonly): ?>
+                                        <!--                                            <button type="button"-->
+                                        <!--                                                    class="remove-item btn btn-danger btn-xs"><span-->
+                                        <!--                                                        class="fa fa-minus"></span></button>-->
+                                        <!--                                                --><?php //endif; ?>
+                                        <!--                                        </td>-->
                                     </tr>
                                 <?php endforeach; ?>
                                 </tbody>

@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "lesson_items_progress_sect_view".
  *
- * @property int|null $id
+ * @property int|null $lesson_items_id
  * @property int|null $subject_sect_studyplan_id
  * @property int|null $lesson_date
  * @property string|null $lesson_topic
@@ -41,7 +41,7 @@ class LessonItemsProgressSectView extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('art', 'ID'),
+            'lesson_items_id' => Yii::t('art', 'Lesson Items ID'),
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
             'lesson_date' => Yii::t('art/guide', 'Lesson Date'),
             'lesson_topic' => Yii::t('art/guide', 'Lesson Topic'),

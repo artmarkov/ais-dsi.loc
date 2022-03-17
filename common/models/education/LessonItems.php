@@ -62,6 +62,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
     {
         return [
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'version'], 'integer'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id'], 'default', 'value'=> 0],
             [['lesson_test_id', 'lesson_date'], 'required'],
             [['lesson_date'], 'safe'],
             [['lesson_date'], 'checkLessonExist', 'skipOnEmpty' => false],
@@ -88,6 +89,22 @@ class LessonItems extends \artsoft\db\ActiveRecord
         }
     }
 
+    /**
+     * Проверка на существование занятия
+     * @param $subject_sect_studyplan_id
+     * @param $studyplan_subject_id
+     * @param $lesson_timestamp
+     * @return bool
+     */
+    public static function isLessonExist($subject_sect_studyplan_id, $studyplan_subject_id, $lesson_timestamp)
+    {
+        return self::find()->where(
+            ['AND',
+                ['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id],
+                ['=', 'studyplan_subject_id', $studyplan_subject_id],
+                ['=', 'lesson_date', $lesson_timestamp],
+            ])->exists();
+    }
 //    public function checkLesson()
 //    {
 //            $checkLesson = self::find()->where(
@@ -102,16 +119,16 @@ class LessonItems extends \artsoft\db\ActiveRecord
 
     public function checkLessonDate($attribute, $params)
     {
-            $checkLesson = SubjectScheduleTeachersView::find()->where(
-                ['AND',
-                    ['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id],
-                    ['=', 'studyplan_subject_id', $this->studyplan_subject_id],
-                    ['=', 'week_day', Schedule::timestamp2WeekDay(strtotime($this->lesson_date))],
+        $checkLesson = SubjectScheduleTeachersView::find()->where(
+            ['AND',
+                ['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id],
+                ['=', 'studyplan_subject_id', $this->studyplan_subject_id],
+                ['=', 'week_day', Schedule::timestamp2WeekDay(strtotime($this->lesson_date))],
 
-                ]);
-            if ($checkLesson->exists() !== true) {
-                $this->addError($attribute, 'Дата занятия не соответствует расписанию!');
-            }
+            ]);
+        if ($checkLesson->exists() !== true) {
+            $this->addError($attribute, 'Дата занятия не соответствует расписанию!');
+        }
     }
 
     /**
@@ -157,7 +174,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
      */
     public function getLessonProgresses()
     {
-        return $this->hasMany(LessonProgress::className(), ['lesson_items_id' => 'id']);
+        return $this->hasMany(LessonProgress::className(), ['lesson_items_id' => 'id'])->innerJoin('subject_sect_studyplan', 'subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id');
     }
 
     /**

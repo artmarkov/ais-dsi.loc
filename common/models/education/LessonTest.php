@@ -138,6 +138,6 @@ class LessonTest extends \artsoft\db\ActiveRecord
         if ($model->isNewRecord) {
             $query = $query->where(['=', 'status', self::STATUS_ACTIVE]);
         }
-        return \yii\helpers\ArrayHelper::map($query->orderBy('test_category')->asArray()->all(), 'id', 'test_name', 'test_category_name');
+        return \yii\helpers\ArrayHelper::map($query->orderBy('test_category, sort_order')->asArray()->all(), 'id', 'test_name', 'test_category_name');
     }
 }

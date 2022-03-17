@@ -56,7 +56,7 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['lesson_mark_hint', 'guide_lesson_mark', 'mark_label', 'mark_hint', 'sort_order', 'mark_hint', 'mark_category', 'Список описаний оценок'],
+            ['lesson_mark_hint', 'guide_lesson_mark', 'mark_label', 'mark_hint', 'sort_order', null, null, 'Список описаний оценок'],
         ])->execute();
 
         $this->createTable('guide_lesson_test', [
@@ -226,13 +226,15 @@ order by subject_sect_id, subject_sect_studyplan_id
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_sect_view', '
-select lesson_items.id,
+select lesson_items.id as lesson_items_id,
        lesson_items.subject_sect_studyplan_id,
 	   lesson_items.lesson_date,
 	   lesson_items.lesson_topic,
 	   lesson_items.lesson_rem,
 	   subject_sect_studyplan.subject_sect_id,
+	   lesson_progress.id as lesson_progress_id,
 	   lesson_progress.studyplan_subject_id,
+	   lesson_progress.lesson_mark_id,
 	   studyplan_subject.studyplan_id,
 	   guide_lesson_test.test_category,
 	   guide_lesson_test.test_name,
@@ -255,6 +257,7 @@ order by studyplan_subject_id, lesson_date
 
     public function down()
     {
+        $this->db->createCommand()->dropView('lesson_items_progress_sect_view')->execute();
         $this->db->createCommand()->dropView('lesson_progress_sect_view')->execute();
         $this->db->createCommand()->dropView('lesson_items_view')->execute();
         $this->db->createCommand()->dropView('lesson_progress_view')->execute();

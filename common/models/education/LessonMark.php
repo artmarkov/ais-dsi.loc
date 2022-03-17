@@ -7,6 +7,7 @@ use himiklab\sortablegrid\SortableGridBehavior;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "guide_lesson_mark".
@@ -112,5 +113,13 @@ class LessonMark extends \artsoft\db\ActiveRecord
     {
         $ar = self::getMarkCatogoryList();
         return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    public static function getMarkHints()
+    {
+        return ArrayHelper::map(self::find()
+            ->select('mark_label, mark_hint')
+            ->where(['is not', 'mark_hint', null])
+            ->asArray()->all(), 'mark_label', 'mark_hint');
     }
 }
