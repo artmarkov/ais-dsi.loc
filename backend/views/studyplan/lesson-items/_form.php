@@ -15,45 +15,14 @@ use yii\widgets\MaskedInput;
 /* @var $studyplan_subject_id */
 /* @var $subject_sect_studyplan_id */
 
-//$this->registerJs(<<<JS
-//$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
-//	    $( "#lesson-items-form" ).submit(); // вызываем событие submit на элементе <form>
-//	  });
-//JS
-//    , \yii\web\View::POS_END);
-
-$this->registerJs(<<<JS
-function initSelect2Loading(a,b){ initS2Loading(a,b); }
-function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
-JS
-    , \yii\web\View::POS_END);
-
-$js = '
-jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
-    jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html((index + 1))
-    });
-});
-
-jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
-    jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html((index + 1))
-    });
-});
-';
-
-$this->registerJs($js);
 ?>
-
 <div class="lesson-items-form">
-
     <?php
     $form = ActiveForm::begin([
         'id' => 'lesson-items-form',
         'validateOnBlur' => false,
     ])
     ?>
-
     <div class="panel">
         <div class="panel-body">
             <div class="panel panel-default">
@@ -61,6 +30,7 @@ $this->registerJs($js);
                     Посещаемость и успеваемость:
                     <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
                     <?php echo RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id); ?>
+
                     <?php
                     if ($model->subject_sect_studyplan_id != 0) {
                         $m = SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id);
@@ -94,29 +64,12 @@ $this->registerJs($js);
                         <?= $form->field($model, 'lesson_rem')->textInput() ?>
 
                     </div>
-                    <?php DynamicFormWidget::begin([
-                        'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-                        'widgetBody' => '.container-items', // required: css class selector
-                        'widgetItem' => '.item', // required: css class
-                        'limit' => count($data), // the maximum times, an element can be added (default 999)
-                        'min' => 1, // 0 or 1 (default 1)
-                        'insertButton' => '.add-item', // css class
-                        'deleteButton' => '.remove-item', // css class
-                        'model' => $modelsItems[0],
-                        'formId' => 'lesson-items-form',
-                        'formFields' => [
-                            'studyplan_subject_id',
-                            'lesson_mark_id',
-                            'mark_rem',
-                        ],
-                    ]); ?>
 
                     <div class="panel panel-info">
                         <div class="panel-heading">
                             Список оценок
                         </div>
                         <div class="panel-body">
-
                             <table class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
@@ -124,12 +77,6 @@ $this->registerJs($js);
                                     <th class="text-center">Ученик</th>
                                     <th class="text-center">Оценка</th>
                                     <th class="text-center">Примечание</th>
-                                    <!--                                    <th class="text-center">-->
-                                    <!--                                                --><?php //if (!$readonly): ?>
-                                    <!--                                        <button type="button" class="add-item btn btn-success btn-xs"><span-->
-                                    <!--                                                    class="fa fa-plus"></span></button>-->
-                                    <!--                                                --><?php //endif; ?>
-                                    <!--                                    </th>-->
                                 </tr>
                                 </thead>
                                 <tbody class="container-items">
@@ -185,20 +132,10 @@ $this->registerJs($js);
                                             </div>
                                             <?= $field->end(); ?>
                                         </td>
-
-                                        <!--                                        <td class="vcenter text-center">-->
-                                        <!--                                                --><?php //if (!$readonly): ?>
-                                        <!--                                            <button type="button"-->
-                                        <!--                                                    class="remove-item btn btn-danger btn-xs"><span-->
-                                        <!--                                                        class="fa fa-minus"></span></button>-->
-                                        <!--                                                --><?php //endif; ?>
-                                        <!--                                        </td>-->
                                     </tr>
                                 <?php endforeach; ?>
                                 </tbody>
                             </table>
-                            <?php DynamicFormWidget::end(); ?>
-
                         </div>
                     </div>
                 </div>
@@ -210,9 +147,8 @@ $this->registerJs($js);
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>
         </div>
-
         <?php ActiveForm::end(); ?>
-
     </div>
+</div>
 
 

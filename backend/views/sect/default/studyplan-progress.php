@@ -14,11 +14,13 @@ $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
     if (SubjectScheduleTeachersView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
         $content += [2 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-            Url::to(['/sect/default/studyplan-progress', 'id' => $model['subject_sect_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']), [
+            Url::to(['/sect/default/studyplan-progress', 'id' => $model['subject_sect_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']),
+            [
                 'title' => 'Добавить занятие',
                 'data-method' => 'post',
                 'data-pjax' => '0',
-                // 'disabled' => true
+                'class' => 'btn btn-xs btn-link'
+
             ]
         )];
     }
@@ -29,11 +31,12 @@ $editMarks = function ($model, $key, $index, $widget) {
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
-                        // 'disabled' => true
-                    ]) . ' '
+                        'class' => 'btn btn-xs btn-link',
+                    ])
                 . Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
                     Url::to(['/sect/default/studyplan-progress', 'id' => $model['subject_sect_id'], 'objectId' => $item['lesson_items_id'], 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
+                        'class' => 'btn btn-xs btn-link',
                         'data' => [
                             'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                             'pjax' => '0',

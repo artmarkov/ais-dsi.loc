@@ -381,7 +381,7 @@ class DefaultController extends MainController
             }
             return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
                 'model' => $model,
-                'modelsItems' =>  (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+                'modelsItems' => (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
             ]);
 
         } elseif ('history' == $mode && $objectId) {
@@ -399,12 +399,22 @@ class DefaultController extends MainController
                 throw new NotFoundHttpException("The LessonItems was not found.");
             }
             // находим только оценки тех учеников, которые числяться в данной группе(переведенные игнорируются)
-            $modelsItems = LessonProgress::find()->innerJoin('lesson_items', 'lesson_items.id = lesson_progress.lesson_items_id and lesson_items.studyplan_subject_id = 0')
-                                ->innerJoin('subject_sect_studyplan', 'subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id')
-                                ->where(['=', 'lesson_items.id', $objectId])
-                                ->andWhere(new \yii\db\Expression( "lesson_progress.studyplan_subject_id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, ',')::int[])"))
-                                ->all();
-
+            $modelsItems = LessonProgress::find()
+                ->innerJoin('lesson_items', 'lesson_items.id = lesson_progress.lesson_items_id and lesson_items.studyplan_subject_id = 0')
+                ->innerJoin('subject_sect_studyplan', 'subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id')
+                ->where(['=', 'lesson_items.id', $objectId])
+                ->andWhere(new \yii\db\Expression("lesson_progress.studyplan_subject_id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, ',')::int[])"))
+                ->all();
+            // список учеников с оценками
+            $list = LessonProgress::find()->select('studyplan_subject_id')->where(['=', 'lesson_items_id', $objectId])->column();
+            // список всех учеников группы
+            $studyplanSubjectList = SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id)->studyplan_subject_list;
+            // добавляем новые модели вновь принятых учеников
+            foreach (array_diff(explode(',', $studyplanSubjectList), $list) as $item => $studyplan_subject_id) {
+                $m = new LessonProgress();
+                $m->studyplan_subject_id = $studyplan_subject_id;
+                $modelsItems[] = $m;
+            }
             if ($model->load(Yii::$app->request->post())) {
 
                 $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
@@ -432,6 +442,7 @@ class DefaultController extends MainController
                             }
                             if ($flag) {
                                 $transaction->commit();
+                                $this->getSubmitAction($model);
                             }
                         }
                     } catch (Exception $e) {
@@ -442,7 +453,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
                 'model' => $model,
-                'modelsItems' =>  (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+                'modelsItems' => (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
             ]);
 
         } else {
@@ -477,6 +488,7 @@ class DefaultController extends MainController
             return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date']));
         }
     }
+
     /**
      * @return false|string
      */
@@ -531,8 +543,7 @@ class DefaultController extends MainController
                 $model = LessonProgress::findOne($lesson_progress_id);
                 $model->lesson_mark_id = $_POST['lesson_mark_id'];
                 $model->save(false);
-                $value = $model->lesson_mark_id;
-                return Json::encode(['output' => $value, 'message' => '']);
+                return Json::encode(['output' => $model->lesson_mark_id, 'message' => '']);
             } else {
                 return Json::encode(['output' => '', 'message' => '']);
             }
