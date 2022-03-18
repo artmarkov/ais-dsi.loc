@@ -95,7 +95,7 @@ class LessonProgressSectView extends \artsoft\db\ActiveRecord
                     'size' => 'md',
                     'options' => ['class' => 'form-control', 'placeholder' => Yii::t('art', 'Select...')],
                     'formOptions' => [
-                        'action' => Url::toRoute(['/sect/default/set-mark', 'lesson_progress_id' => $mark->lesson_progress_id]),
+                        'action' => Url::toRoute(['/studyplan/lesson-progress/set-mark', 'lesson_progress_id' => $mark->lesson_progress_id]),
                     ],
                 ]);
             }

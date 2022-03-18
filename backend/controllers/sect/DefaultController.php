@@ -528,28 +528,4 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
-    /**
-     * Установка оценки
-     * @return string|null
-     * @throws \yii\db\Exception
-     */
-    public function actionSetMark()
-    {
-        $lesson_progress_id = $_GET['lesson_progress_id'];
-
-        if (isset($_POST['hasEditable'])) {
-            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            if (isset($_POST['lesson_mark_id'])) {
-                $model = LessonProgress::findOne($lesson_progress_id);
-                $model->lesson_mark_id = $_POST['lesson_mark_id'];
-                $model->save(false);
-                return Json::encode(['output' => $model->lesson_mark_id, 'message' => '']);
-            } else {
-                return Json::encode(['output' => '', 'message' => '']);
-            }
-        }
-
-        return null;
-    }
-
 }
