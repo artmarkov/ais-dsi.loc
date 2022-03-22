@@ -84,6 +84,7 @@ class LessonProgressTeachersView extends \artsoft\db\ActiveRecord
                 ->andWhere(['=', 'studyplan_subject_id', $modelProgress->studyplan_subject_id])
                 ->all();
 
+           // echo '<pre>' . print_r($marks, true) . '</pre>';
             foreach ($marks as $id => $mark) {
                 $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
                 $data[$item]['lesson_items_id'] = $mark->lesson_items_id;

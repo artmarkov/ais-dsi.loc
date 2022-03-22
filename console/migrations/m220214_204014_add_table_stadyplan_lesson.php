@@ -285,7 +285,7 @@ UNION ALL
 ORDER BY direction_id, teachers_id
         ')->execute();
 
-     $this->db->createCommand()->createView('lesson_items_progress_teachers_view', '
+        $this->db->createCommand()->createView('lesson_items_progress_teachers_view', '
 (select teachers_load.id as teachers_load_id,
                 teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
                 studyplan_subject.id as studyplan_subject_id,
@@ -347,7 +347,7 @@ UNION ALL
              inner join studyplan_subject on (studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 				   
              inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
 			 left join lesson_items on (lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id)
-			 left join lesson_progress on (lesson_progress.lesson_items_id = lesson_items.id)
+			 left join lesson_progress on (lesson_progress.lesson_items_id = lesson_items.id and lesson_progress.studyplan_subject_id = studyplan_subject.id)
 			 left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
              left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 
 				 )

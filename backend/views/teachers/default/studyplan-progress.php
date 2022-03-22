@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
     if (SubjectScheduleTeachersView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
-        $content += [2 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+        $content += [3 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
             Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']),
             [
                 'title' => 'Добавить занятие',
@@ -26,7 +26,7 @@ $editMarks = function ($model, $key, $index, $widget) {
     }
     foreach ($model['lesson_timestamp'] as $id => $item) {
         if (LessonItems::isLessonExist($model['subject_sect_studyplan_id'], 0, $item['lesson_date'])) {
-            $content += [$id + 3 => Html::a('<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
+            $content += [$id + 4 => Html::a('<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
                     Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $item['lesson_items_id'], 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
@@ -61,9 +61,10 @@ $columns = [
         'attribute' => 'studyplan_subject_id',
         'label' => $model['attributes']['studyplan_subject_id'],
         'value' => function ($model) {
-            return RefBook::find('memo_1')->getValue($model['studyplan_subject_id'] ?? null);
+            return RefBook::find('subject_memo_1')->getValue($model['studyplan_subject_id'] ?? null);
         },
         'format' => 'raw',
+        'group' => true,
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',
@@ -73,6 +74,7 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,
+        'subGroupOf' => 1,
         'groupFooter' => $editMarks
     ],
     [
@@ -127,7 +129,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                         'beforeHeader' => [
                             [
                                 'columns' => [
-                                    ['content' => 'Группа/Ученик', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                                    ['content' => 'Дисциплина/Группа/Ученик', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
                                     ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
                                 ],
                                 'options' => ['class' => 'skip-export'] // remove this row from export
