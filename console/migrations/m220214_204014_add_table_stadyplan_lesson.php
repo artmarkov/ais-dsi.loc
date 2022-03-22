@@ -309,13 +309,15 @@ ORDER BY direction_id, teachers_id
                 guide_lesson_mark.mark_hint,
                 guide_lesson_mark.mark_value,
                 lesson_progress.mark_rem
-             from teachers_load
-             inner join studyplan_subject on (studyplan_subject.id = teachers_load.studyplan_subject_id and teachers_load.subject_sect_studyplan_id = 0) 				   
-             inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
-			 left join lesson_items on (lesson_items.subject_sect_studyplan_id = teachers_load.subject_sect_studyplan_id and teachers_load.studyplan_subject_id = 0)
-   		     left join lesson_progress on (lesson_progress.lesson_items_id = lesson_items.id)
-			 left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
-             left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 
+            from lesson_items            
+            left join lesson_progress  on (lesson_progress.lesson_items_id = lesson_items.id) 
+            left join studyplan_subject on (studyplan_subject.id = lesson_progress.studyplan_subject_id)
+            inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
+            left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
+            left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 
+            left join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id  and teachers_load.subject_sect_studyplan_id = 0) 			
+				
+		
 				 )
 UNION ALL 
 (select teachers_load.id as teachers_load_id,
@@ -341,15 +343,15 @@ UNION ALL
                 guide_lesson_mark.mark_hint,
                 guide_lesson_mark.mark_value,
                 lesson_progress.mark_rem
-             from teachers_load
-             inner join subject_sect_studyplan on (subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id and teachers_load.studyplan_subject_id = 0)
+             from lesson_items
+             inner join subject_sect_studyplan  on (subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id)
              inner join subject_sect on (subject_sect.id = subject_sect_studyplan.subject_sect_id)
-             inner join studyplan_subject on (studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 				   
+             left join lesson_progress  on (lesson_progress.lesson_items_id = lesson_items.id) 
+             left join studyplan_subject on (studyplan_subject.id = lesson_progress.studyplan_subject_id)
              inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
-			 left join lesson_items on (lesson_items.subject_sect_studyplan_id = subject_sect_studyplan.id)
-			 left join lesson_progress on (lesson_progress.lesson_items_id = lesson_items.id and lesson_progress.studyplan_subject_id = studyplan_subject.id)
-			 left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
+             left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
              left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 
+             left join teachers_load on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id  and teachers_load.studyplan_subject_id = 0) 			
 				 )
 ORDER BY direction_id, teachers_id, studyplan_subject_id, lesson_date
         ')->execute();
