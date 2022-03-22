@@ -100,7 +100,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
 }
 
 ?>
-<div class="studyplan-progress-index">
+<div class="teachers-progress-index">
     <div class="panel">
         <div class="panel-body">
             <div class="panel panel-default">

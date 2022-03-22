@@ -9,6 +9,7 @@ use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
+use common\models\education\LessonProgressView;
 use common\models\history\StudyplanHistory;
 use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleViewSearch;
@@ -21,6 +22,7 @@ use common\models\subjectsect\search\SubjectScheduleViewSearch;
 use common\models\subjectsect\SubjectSchedule;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\TeachersLoad;
 use yii\base\DynamicModel;
@@ -648,11 +650,26 @@ class DefaultController extends MainController
                 throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
             }
 
-            $model = new LessonItems();
-            $modelsItems = [new LessonProgress()];
+            $subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
+            $studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
 
-            $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
-            $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
+            $model = new LessonItems();
+            // предустановка учеников
+            if($subject_sect_studyplan_id != 0) {
+                $studyplanSubjectList = SubjectSectStudyplan::findOne($subject_sect_studyplan_id)->studyplan_subject_list;
+                foreach (explode(',', $studyplanSubjectList) as $item => $studyplan_subject_id) {
+                    $m = new LessonProgress();
+                    $m->studyplan_subject_id = $studyplan_subject_id;
+                    $modelsItems[] = $m;
+                }
+            } else {
+                $m = new LessonProgress();
+                $m->studyplan_subject_id = $studyplan_subject_id;
+                $modelsItems[] = $m;
+            }
+
+            $model->studyplan_subject_id = $studyplan_subject_id;
+            $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
 
             if ($model->load(Yii::$app->request->post())) {
 //                if($model->checkLesson()){
@@ -775,13 +792,13 @@ class DefaultController extends MainController
             $session->set('_progress_date_out', $model_date->date_out);
             $session->set('_progress_hidden_flag', $model_date->hidden_flag);
 
-            $data = LessonItems::getData($model_date, $id);
+            $model = LessonProgressView::getData($model_date, $id);
 
             if (Yii::$app->request->post('submitAction') == 'excel') {
                // TeachersEfficiency::sendXlsx($data);
             }
 
-            return $this->renderIsAjax('studyplan-progress', compact(['data', 'model_date']));
+            return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date']));
         }
     }
     /**

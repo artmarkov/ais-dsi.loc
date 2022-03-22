@@ -192,7 +192,9 @@ select lesson_items.id,
 	   lesson_items.lesson_date,
 	   lesson_items.lesson_topic,
 	   lesson_items.lesson_rem,
+	   lesson_progress.id as lesson_progress_id,
 	   lesson_progress.studyplan_subject_id,
+	   lesson_progress.lesson_mark_id,
 	   studyplan_subject.studyplan_id,
 	   guide_lesson_test.test_category,
 	   guide_lesson_test.test_name,
@@ -261,6 +263,7 @@ order by studyplan_subject_id, lesson_date
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
 				studyplan.plan_year as plan_year,
+				0 as subject_sect_id,
        			studyplan.id as studyplan_id,
        			studyplan.student_id as student_id
              from teachers_load
@@ -274,6 +277,7 @@ UNION ALL
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
 				subject_sect.plan_year as plan_year,
+				subject_sect.id as subject_sect_id,
 			    studyplan.id as studyplan_id,
 			    studyplan.student_id as student_id
              from teachers_load
@@ -292,6 +296,7 @@ ORDER BY direction_id, teachers_id
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
                 studyplan.plan_year as plan_year,
+                0 as subject_sect_id,
                 studyplan.id as studyplan_id,
                 studyplan.student_id as student_id,
                 lesson_items.id as lesson_items_id,
@@ -326,6 +331,7 @@ UNION ALL
                 teachers_load.direction_id as direction_id,
                 teachers_load.teachers_id as teachers_id,
                 subject_sect.plan_year as plan_year,
+                subject_sect.id as subject_sect_id,
                 studyplan.id as studyplan_id,
                 studyplan.student_id as student_id,
                 lesson_items.id as lesson_items_id,

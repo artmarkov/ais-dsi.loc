@@ -620,19 +620,29 @@ class DefaultController extends MainController
 
         if ('create' == $mode) {
 
-            if (!Yii::$app->request->get('subject_sect_studyplan_id')) {
-                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_sect_studyplan_id.");
+            if (!Yii::$app->request->get('studyplan_subject_id') && !Yii::$app->request->get('subject_sect_studyplan_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
             }
-            $subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id');
+
+            $subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
+            $studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
+
             $model = new LessonItems();
             // предустановка учеников
-            $studyplanSubjectList = SubjectSectStudyplan::findOne($subject_sect_studyplan_id)->studyplan_subject_list;
-            foreach (explode(',', $studyplanSubjectList) as $item => $studyplan_subject_id) {
+            if($subject_sect_studyplan_id != 0) {
+                $studyplanSubjectList = SubjectSectStudyplan::findOne($subject_sect_studyplan_id)->studyplan_subject_list;
+                foreach (explode(',', $studyplanSubjectList) as $item => $studyplan_subject_id) {
+                    $m = new LessonProgress();
+                    $m->studyplan_subject_id = $studyplan_subject_id;
+                    $modelsItems[] = $m;
+                }
+            } else {
                 $m = new LessonProgress();
                 $m->studyplan_subject_id = $studyplan_subject_id;
                 $modelsItems[] = $m;
             }
 
+            $model->studyplan_subject_id = $studyplan_subject_id;
             $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
 
             if ($model->load(Yii::$app->request->post())) {

@@ -6,20 +6,20 @@ use artsoft\helpers\Html;
 use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $data */
+/* @var $model */
 /* @var $model_date */
 
 $this->title = Yii::t('art/guide', 'Studyplan Progress');
 $this->params['breadcrumbs'][] = $this->title;
-//echo '<pre>' . print_r($data['data'], true) . '</pre>'; die();
+//echo '<pre>' . print_r($model['data'], true) . '</pre>'; die();
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'studyplan_subject_id',
-        'label' => $data['attributes']['studyplan_subject_id'],
-        'value' => function ($data) {
-            return RefBook::find('subject_memo_2')->getValue($data['studyplan_subject_id'] ?? null);
+        'label' => $model['attributes']['studyplan_subject_id'],
+        'value' => function ($model) {
+            return RefBook::find('subject_memo_1')->getValue($model['studyplan_subject_id'] ?? null);
         },
         'format' => 'raw',
         'group' => true,
@@ -27,30 +27,30 @@ $columns = [
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',
-        'label' => $data['attributes']['subject_sect_studyplan_id'],
-        'value' => function ($data) {
-            return RefBook::find('sect_name_1')->getValue($data['subject_sect_studyplan_id'] ?? null);
+        'label' => $model['attributes']['subject_sect_studyplan_id'],
+        'value' => function ($model) {
+            return RefBook::find('sect_name_1')->getValue($model['subject_sect_studyplan_id'] ?? null);
         },
         'format' => 'raw',
         'group' => true,
         'subGroupOf' => 1
     ],
-    [
-        'attribute' => 'subject_vid_id',
-        'label' => $data['attributes']['subject_vid_id'],
-        'value' => function ($data) {
-            return RefBook::find('subject_vid_name_dev')->getValue($data['subject_vid_id'] ?? null);
-        },
-        'format' => 'raw',
-        'group' => true,
-        'subGroupOf' => 1
-    ],
+//    [
+//        'attribute' => 'subject_vid_id',
+//        'label' => $model['attributes']['subject_vid_id'],
+//        'value' => function ($model) {
+//            return RefBook::find('subject_vid_name_dev')->getValue($model['subject_vid_id'] ?? null);
+//        },
+//        'format' => 'raw',
+//        'group' => true,
+//        'subGroupOf' => 1
+//    ],
 
 ];
-foreach ($data['lessonDates'] as $id => $name) {
+foreach ($model['lessonDates'] as $id => $name) {
     $columns[] = [
         'attribute' => $name,
-        'label' => $data['attributes'][$name],
+        'label' => $model['attributes'][$name],
         'format' => 'raw',
     ];
 }
@@ -59,13 +59,13 @@ $columns[] = [
     'class' => 'kartik\grid\ActionColumn',
     'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
     'width' => '90px',
-    'header' => 'Добавить урок',
+    'header' => '',
     'template' => '{create}',
     'buttons' => [
-        'create' => function ($key, $data) {
-            if ($data['subject_sect_studyplan_id'] == null) {
+        'create' => function ($key, $model) {
+            if ($model['subject_sect_studyplan_id'] == null) {
                 return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                    Url::to(['/studyplan/default/studyplan-progress', 'id' => $data['studyplan_id'], 'studyplan_subject_id' => $data['studyplan_subject_id'], 'mode' => 'create']), [
+                    Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'studyplan_subject_id' => $model['studyplan_subject_id'], 'mode' => 'create']), [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -74,7 +74,7 @@ $columns[] = [
                 );
             } else {
                 return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                    Url::to(['/studyplan/default/studyplan-progress', 'id' => $data['studyplan_id'], 'subject_sect_studyplan_id' => $data['subject_sect_studyplan_id'], 'mode' => 'create']), [
+                    Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']), [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -87,12 +87,16 @@ $columns[] = [
 
     ],
     'visibleButtons' => [
-        'create' => function ($data) {
-            return \common\models\subjectsect\SubjectScheduleTeachersView::getScheduleIsExist($data['subject_sect_studyplan_id'], $data['studyplan_subject_id']);
+        'create' => function ($model) {
+            return \common\models\subjectsect\SubjectScheduleTeachersView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id']);
         }
     ]
 ];
-//echo '<pre>' . print_r($data['data'], true) . '</pre>'; die();
+
+$hints = '<h3 class="panel-title">Сокращения:</h3><br/>';
+foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) {
+    $hints .= $item . ' - ' . $hint . '; ';
+}
 ?>
 
     <div class="studyplan-progress-index">
@@ -101,81 +105,56 @@ $columns[] = [
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <?= $this->render('_progress_search', compact('model_date')) ?>
-
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                Результаты запроса
-                            </div>
-                            <div class="panel-body">
-                                <?= GridView::widget([
-                                    'id' => 'studyplan-progress',
-                                    'dataProvider' => new \yii\data\ArrayDataProvider([
-                                        'allModels' => $data['data'],
-                                        'sort' => [
-                                            'attributes' => array_keys($data['attributes'])
-                                        ],
-                                        'pagination' => false,
-                                    ]),
-                                    'columns' => $columns,
-                                    'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false
-                                    'beforeHeader' => [
-                                        [
-                                            'columns' => [
-                                                ['content' => 'Дисциплина', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
-                                                //  ['content' => 'Статистика обучения', 'options' => ['colspan' => 6, 'class' => 'text-center info']],
-                                                ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($data['lessonDates']) + 1, 'class' => 'text-center danger']],
-                                            ],
-                                            'options' => ['class' => 'skip-export'] // remove this row from export
+                        <?php
+                        echo GridView::widget([
+                            'dataProvider' => new \yii\data\ArrayDataProvider([
+                                'allModels' => $model['data'],
+                                'sort' => false,
+                                'pagination' => false,
+                            ]),
+                            'tableOptions' => ['class' => 'table-condensed'],
+                            'filterModel' => null,
+//                        'showPageSummary' => true,
+                            'pjax' => true,
+                            'hover' => true,
+                            'panel' => [
+                                'heading' => 'Результаты запроса',
+                                'type' => 'default',
+                                'after' => '',
+                                'footer' => $hints,
+                            ],
+                            'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
+                            'columns' => $columns,
+                            'beforeHeader' => [
+                                [
+                                    'columns' => [
+                                        ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                                        ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']) + 1, 'class' => 'text-center danger']],
+                                    ],
+                                    'options' => ['class' => 'skip-export'] // remove this row from export
+                                ]
+                            ],
+                            'exportConfig' => [
+                                'html' => [],
+                                'csv' => [],
+                                'txt' => [],
+                                'xls' => [],
+                            ],
+                            'toolbar' => [
+                                [
+                                    'content' => Html::a('Очистить',
+                                        Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id']]), [
+                                            'title' => 'Очистить',
+                                            'data-pjax' => '0',
+                                            'class' => 'btn btn-default'
                                         ]
-                                    ],
-                                    'export' => [
-                                        'fontAwesome' => true
-                                    ],
-                                    'exportConfig' => [
-                                        'html' => [],
-                                        'csv' => [],
-                                        'txt' => [],
-                                        'xls' => [],
-                                    ],
-                                    'toolbar' => [
-                                        [
-                                            'content' => Html::a('Очистить',
-                                                Url::to(['/studyplan/default/studyplan-progress', 'id' => $data['studyplan_id']]), [
-                                                    'title' => 'Очистить',
-                                                    'data-pjax' => '0',
-                                                    'class' => 'btn btn-default'
-                                                ]
-                                            ),
-                                        ],
-//                                        '{export}',
-                                        '{toggleData}'
-                                    ],
-                                    'pjax' => true,
-                                    'bordered' => true,
-                                    'striped' => true,
-                                    'condensed' => true,
-                                    'responsive' => false,
-                                    'hover' => false,
-                                    'floatHeader' => false,
-//    'floatHeaderOptions' => ['top' => $scrollingTop],
-                                    'showPageSummary' => false,
-                                    //'layout' => '{items}',
-                                    'panel' => [
-                                        'type' => GridView::TYPE_DEFAULT
-                                    ],
-                                ]);
-                                ?>
-                            </div>
-                            <div class="panel-footer">
-                                <?php
-                                echo 'Сокращения:<br/>';
-                                foreach (RefBook::find('lesson_test_hint')->getList() as $item => $hint) {
-                                    echo $item . ' - ' . $hint . '<br/>';
-                                }
-
-                                ?>
-                            </div>
-                        </div>
+                                    ),
+                                ],
+                                '{export}',
+                                '{toggleData}'
+                            ],
+                        ]);
+                        ?>
                     </div>
                 </div>
             </div>

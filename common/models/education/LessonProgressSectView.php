@@ -53,12 +53,12 @@ class LessonProgressSectView extends \artsoft\db\ActiveRecord
         $attributes = ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
         $attributes += ['student_id' => Yii::t('art/student', 'Student')];
 
-        $lessonDates = LessonItemsProgressSectView::find()->select('lesson_date, lesson_items_id')->distinct()
+        $lessonDates = LessonItemsProgressTeachersView::find()->select('lesson_date, lesson_items_id')->distinct()
             ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
             ->andWhere(['=', 'subject_sect_id', $subject_sect_id])
             ->orderBy('lesson_date')
             ->asArray()->all();
-        $modelsProgress = LessonProgressSectView::findAll(['subject_sect_id' => $subject_sect_id]);
+        $modelsProgress = LessonProgressTeachersView::findAll(['subject_sect_id' => $subject_sect_id]);
 
         foreach ($lessonDates as $id => $lessonDate) {
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
@@ -74,7 +74,7 @@ class LessonProgressSectView extends \artsoft\db\ActiveRecord
             $data[$item]['studyplan_id'] = $modelProgress->studyplan_id;
             $data[$item]['student_id'] = $modelProgress->student_id;
 
-            $marks = LessonItemsProgressSectView::find()
+            $marks = LessonItemsProgressTeachersView::find()
                 ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
                 ->andWhere(['=', 'studyplan_subject_id', $modelProgress->studyplan_subject_id])
                 ->all();
