@@ -35,8 +35,9 @@ class LessonItemsProgressHistory extends BaseHistory
     {
         switch ($name) {
             case 'lesson_mark_id':
-                return isset($model->lesson_mark_id) ? $model->lessonMark->mark_label : $value;
+                return isset($model->lesson_mark_id) ? $model->lessonMark->mark_label . ' [' . LessonProgress::getStudentName($model->studyplan_subject_id) . ']'  : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }
+
 }

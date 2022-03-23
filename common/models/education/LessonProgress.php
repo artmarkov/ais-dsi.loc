@@ -2,6 +2,7 @@
 
 namespace common\models\education;
 
+use artsoft\helpers\RefBook;
 use common\models\studyplan\StudyplanSubject;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -53,9 +54,9 @@ class LessonProgress extends \artsoft\db\ActiveRecord
         return [
             [['lesson_items_id', 'studyplan_subject_id', 'lesson_mark_id', 'version'], 'integer'],
             [['studyplan_subject_id', 'lesson_mark_id'], 'required'],
-           // не работает при новой записи
-           // [['studyplan_subject_id'], 'unique', 'targetAttribute' => ['lesson_items_id', 'studyplan_subject_id'], 'message' => 'Ученику можно ставить только одну оценку за урок'],
-           // [['studyplan_subject_id', 'lesson_mark_id'], 'unique', 'targetAttribute' => ['studyplan_subject_id', 'lesson_mark_id', 'lesson_items_id'], 'message' => 'Нельзя поставить одинаковую оценку ученику за урок'],
+            // не работает при новой записи
+            // [['studyplan_subject_id'], 'unique', 'targetAttribute' => ['lesson_items_id', 'studyplan_subject_id'], 'message' => 'Ученику можно ставить только одну оценку за урок'],
+            // [['studyplan_subject_id', 'lesson_mark_id'], 'unique', 'targetAttribute' => ['studyplan_subject_id', 'lesson_mark_id', 'lesson_items_id'], 'message' => 'Нельзя поставить одинаковую оценку ученику за урок'],
             [['mark_rem'], 'string', 'max' => 127],
             [['lesson_items_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonItems::className(), 'targetAttribute' => ['lesson_items_id' => 'id']],
             [['lesson_mark_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonMark::className(), 'targetAttribute' => ['lesson_mark_id' => 'id']],
@@ -115,4 +116,9 @@ class LessonProgress extends \artsoft\db\ActiveRecord
         return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
     }
 
+    public static function getStudentName($studyplan_subject_id)
+    {
+            $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
+            return RefBook::find('students_fio')->getValue($student_id);
+    }
 }

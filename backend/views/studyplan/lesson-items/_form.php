@@ -43,8 +43,7 @@ use yii\widgets\MaskedInput;
                     }
                     $data = [];
                     foreach ($studyplan_list as $item => $studyplan_subject_id) {
-                        $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-                        $data[$studyplan_subject_id] = RefBook::find('students_fio')->getValue($student_id);
+                        $data[$studyplan_subject_id] = \common\models\education\LessonProgress::getStudentName($studyplan_subject_id);
                     }
                     ?>
                 </div>
