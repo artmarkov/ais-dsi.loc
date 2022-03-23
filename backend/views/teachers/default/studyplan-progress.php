@@ -7,7 +7,7 @@ use yii\helpers\Url;
 use common\models\subjectsect\SubjectScheduleTeachersView;
 use common\models\education\LessonItems;
 
-$this->title = 'Журнал успеваемости';
+$this->title = $this->title = Yii::t('art/guide', 'Journal Progress');
 $this->params['breadcrumbs'][] = $this->title;
 //echo '<pre>' . print_r($model, true) . '</pre>'; die();
 $editMarks = function ($model, $key, $index, $widget) {
@@ -155,15 +155,6 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                             'xls' => [],
                         ],
                         'toolbar' => [
-                            [
-                                'content' => Html::a('Очистить',
-                                    Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id']]), [
-                                        'title' => 'Очистить',
-                                        'data-pjax' => '0',
-                                        'class' => 'btn btn-default'
-                                    ]
-                                ),
-                            ],
                             '{export}',
                             '{toggleData}'
                         ],

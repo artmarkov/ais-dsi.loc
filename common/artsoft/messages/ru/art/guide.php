@@ -169,6 +169,7 @@ return [
     'Lesson Rem' => 'Задание',
     'Studyplan Progress' => 'Дневник успеваемости',
     'Group Progress' => 'Журнал успеваемости группы',
+    'Journal Progress' => 'Журнал успеваемости',
 
 ];
 ?>

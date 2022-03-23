@@ -94,7 +94,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             }
         }
 
-        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes, 'subject_sect_id' => $subject_sect_id];
+        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
     }
 
     public static function getDataStudyplan($model_date, $studyplan_id)
@@ -140,7 +140,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             }
         }
 
-        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes, 'studyplan_id' => $studyplan_id];
+        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
     }
 
     public static function getDataTeachers($model_date, $teachers_id)
@@ -187,7 +187,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             }
         }
 
-        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes, 'teachers_id' => $teachers_id];
+        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
     }
 
     /**

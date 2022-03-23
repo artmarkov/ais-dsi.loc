@@ -132,15 +132,6 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                             'xls' => [],
                         ],
                         'toolbar' => [
-                            [
-                                'content' => Html::a('Очистить',
-                                    Url::to(['/sect/default/studyplan-progress', 'id' => $model['subject_sect_id']]), [
-                                        'title' => 'Очистить',
-                                        'data-pjax' => '0',
-                                        'class' => 'btn btn-default'
-                                    ]
-                                ),
-                            ],
                             '{export}',
                             '{toggleData}'
                         ],

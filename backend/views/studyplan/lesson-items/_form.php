@@ -5,7 +5,6 @@ use artsoft\widgets\ActiveForm;
 use common\models\subjectsect\SubjectSectStudyplan;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
-use wbraganca\dynamicform\DynamicFormWidget;
 use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
@@ -30,6 +29,10 @@ use yii\widgets\MaskedInput;
                     Посещаемость и успеваемость:
                     <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
                     <?php echo RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id); ?>
+
+                    <?php if (!$model->isNewRecord): ?>
+                        <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
+                    <?php endif; ?>
 
                     <?php
                     if ($model->subject_sect_studyplan_id != 0) {

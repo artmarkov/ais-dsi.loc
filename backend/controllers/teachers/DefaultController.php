@@ -5,16 +5,14 @@ namespace backend\controllers\teachers;
 use artsoft\models\User;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
-use common\models\education\LessonProgressSectView;
-use common\models\education\LessonProgressTeachersView;
 use common\models\education\LessonProgressView;
 use common\models\guidejob\Bonus;
+use common\models\history\LessonItemsHistory;
 use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleTeachersViewSearch;
 use common\models\subjectsect\search\SubjectScheduleTeachersViewSearch;
 use common\models\subjectsect\SubjectSchedule;
 use common\models\studyplan\StudyplanSubject;
-use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\teachers\search\TeachersLoadTeachersViewSearch;
 use common\models\teachers\search\TeachersPlanSearch;
 use common\models\teachers\Teachers;
@@ -618,6 +616,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if ('create' == $mode) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Journal Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $model->id]];
 
             if (!Yii::$app->request->get('studyplan_subject_id') && !Yii::$app->request->get('subject_sect_studyplan_id')) {
                 throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
@@ -669,7 +668,13 @@ class DefaultController extends MainController
             ]);
 
         } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Journal Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['teachers/default/studyplan-progress', 'id' => $model->id, 'objectId' => $objectId, 'mode' => 'update']];
+            $this->view->params['tabMenu'] = $this->getMenu($id);
 
+            $model = LessonItems::findOne($objectId);
+            $data = new LessonItemsHistory($objectId);
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
         } elseif ('delete' == $mode && $objectId) {
             $model = LessonItems::findOne($objectId);
             $model->delete();
@@ -677,6 +682,8 @@ class DefaultController extends MainController
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
             return $this->redirect($this->getRedirectPage('delete', $model));
         } elseif ($objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Journal Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
 
             $model = LessonItems::findOne($objectId);
             if (!isset($model)) {
