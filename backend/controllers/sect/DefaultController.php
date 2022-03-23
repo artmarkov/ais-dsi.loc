@@ -335,15 +335,9 @@ class DefaultController extends MainController
             }
             $subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id');
             $model = new LessonItems();
-            // предустановка учеников
-            $studyplanSubjectList = SubjectSectStudyplan::findOne($subject_sect_studyplan_id)->studyplan_subject_list;
-            foreach (explode(',', $studyplanSubjectList) as $item => $studyplan_subject_id) {
-                $m = new LessonProgress();
-                $m->studyplan_subject_id = $studyplan_subject_id;
-                $modelsItems[] = $m;
-            }
-
             $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
+            // предустановка учеников
+            $modelsItems = $model->getLessonProgressNew();
 
             if ($model->load(Yii::$app->request->post())) {
 //                if($model->checkLesson()){
@@ -399,23 +393,7 @@ class DefaultController extends MainController
             if (!isset($model)) {
                 throw new NotFoundHttpException("The LessonItems was not found.");
             }
-            // находим только оценки тех учеников, которые числяться в данной группе(переведенные игнорируются)
-            $modelsItems = LessonProgress::find()
-                ->innerJoin('lesson_items', 'lesson_items.id = lesson_progress.lesson_items_id and lesson_items.studyplan_subject_id = 0')
-                ->innerJoin('subject_sect_studyplan', 'subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id')
-                ->where(['=', 'lesson_items.id', $objectId])
-                ->andWhere(new \yii\db\Expression("lesson_progress.studyplan_subject_id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, ',')::int[])"))
-                ->all();
-            // список учеников с оценками
-            $list = LessonProgress::find()->select('studyplan_subject_id')->where(['=', 'lesson_items_id', $objectId])->column();
-            // список всех учеников группы
-            $studyplanSubjectList = SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id)->studyplan_subject_list;
-            // добавляем новые модели вновь принятых учеников
-            foreach (array_diff(explode(',', $studyplanSubjectList), $list) as $item => $studyplan_subject_id) {
-                $m = new LessonProgress();
-                $m->studyplan_subject_id = $studyplan_subject_id;
-                $modelsItems[] = $m;
-            }
+            $modelsItems = $model->getLessonProgress();
             if ($model->load(Yii::$app->request->post())) {
 
                 $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');

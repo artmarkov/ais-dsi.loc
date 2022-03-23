@@ -146,36 +146,37 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
 
 
         $this->db->createCommand()->createView('lesson_progress_view', '
-(select teachers_load.id as teachers_load_id,
-				teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
+(select teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
+ 				0 as subject_sect_id,
+ 				studyplan.plan_year as plan_year,
 				studyplan_subject.id as studyplan_subject_id,
-                teachers_load.direction_id as direction_id,
-                teachers_load.teachers_id as teachers_id,
-				studyplan.plan_year as plan_year,
-				0 as subject_sect_id,
        			studyplan.id as studyplan_id,
-       			studyplan.student_id as student_id
-             from teachers_load
-             inner join studyplan_subject on (studyplan_subject.id = teachers_load.studyplan_subject_id and teachers_load.subject_sect_studyplan_id = 0)
+       			studyplan.student_id as student_id,
+ 				teachers_load.id as teachers_load_id,
+ 				teachers_load.direction_id as direction_id,
+                teachers_load.teachers_id as teachers_id
+             from studyplan_subject 
              inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
+			 inner join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id and teachers_load.subject_sect_studyplan_id = 0) 
 				 )
 UNION ALL 
-(select teachers_load.id as teachers_load_id,
-  				teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
+(select subject_sect_studyplan.id as subject_sect_studyplan_id,
+ 				subject_sect.id as subject_sect_id,
+ 				subject_sect.plan_year as plan_year,
   				studyplan_subject.id as studyplan_subject_id,
-                teachers_load.direction_id as direction_id,
-                teachers_load.teachers_id as teachers_id,
-				subject_sect.plan_year as plan_year,
-				subject_sect.id as subject_sect_id,
 			    studyplan.id as studyplan_id,
-			    studyplan.student_id as student_id
-             from teachers_load
-             inner join subject_sect_studyplan on (subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id and teachers_load.studyplan_subject_id = 0)
+			    studyplan.student_id as student_id,
+                teachers_load.id as teachers_load_id,
+ 				teachers_load.direction_id as direction_id,
+                teachers_load.teachers_id as teachers_id
+             from subject_sect_studyplan 
              inner join subject_sect on (subject_sect.id = subject_sect_studyplan.subject_sect_id)
              inner join studyplan_subject on (studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 				   
              inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
+			 inner join teachers_load on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id  and teachers_load.studyplan_subject_id = 0) 			
+				
 				 )
-ORDER BY direction_id, teachers_id
+ORDER BY subject_sect_studyplan_id, direction_id, teachers_id, studyplan_subject_id
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_view', '
@@ -209,7 +210,7 @@ ORDER BY direction_id, teachers_id
             inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
             left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
             left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 
-            left join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id  and teachers_load.subject_sect_studyplan_id = 0) 			
+            inner join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id  and teachers_load.subject_sect_studyplan_id = 0) 			
 				
 		
 				 )
@@ -246,7 +247,7 @@ UNION ALL
              inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
              left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
              left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 
-             left join teachers_load on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id  and teachers_load.studyplan_subject_id = 0) 			
+             inner join teachers_load on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id  and teachers_load.studyplan_subject_id = 0) 			
 				 )
 ORDER BY direction_id, teachers_id, studyplan_subject_id, lesson_date
         ')->execute();
@@ -256,12 +257,6 @@ ORDER BY direction_id, teachers_id, studyplan_subject_id, lesson_date
     {
         $this->db->createCommand()->dropView('lesson_items_progress_view')->execute();
         $this->db->createCommand()->dropView('lesson_progress_view')->execute();
-//        $this->db->createCommand()->dropView('lesson_items_progress_teachers_view')->execute();
-//        $this->db->createCommand()->dropView('lesson_progress_teachers_view')->execute();
-//        $this->db->createCommand()->dropView('lesson_items_progress_sect_view')->execute();
-//        $this->db->createCommand()->dropView('lesson_progress_sect_view')->execute();
-//        $this->db->createCommand()->dropView('lesson_items_view')->execute();
-//        $this->db->createCommand()->dropView('lesson_progress_view')->execute();
         $this->dropTableWithHistory('lesson_progress');
         $this->dropTableWithHistory('lesson_items');
         $this->db->createCommand()->delete('refbooks', ['name' => 'lesson_test_hint'])->execute();

@@ -1,6 +1,8 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use common\models\education\LessonItems;
+use common\models\subjectsect\SubjectScheduleTeachersView;
 use yii\helpers\Url;
 use artsoft\helpers\Html;
 use kartik\grid\GridView;
@@ -12,7 +14,64 @@ use kartik\grid\GridView;
 $this->title = Yii::t('art/guide', 'Studyplan Progress');
 $this->params['breadcrumbs'][] = $this->title;
 //echo '<pre>' . print_r($model['data'], true) . '</pre>'; die();
+$editMarks = function ($model, $key, $index, $widget) {
+    $content = [];
+    if (SubjectScheduleTeachersView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
+        if ($model['subject_sect_studyplan_id'] != 0) {
+            $content += [2 => \yii\helpers\Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']),
+                [
+                    'title' => 'Добавить занятие',
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                    'class' => 'btn btn-xs btn-link'
 
+                ]
+            )];
+        } else {
+            $content += [2 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'studyplan_subject_id' => $model['studyplan_subject_id'], 'mode' => 'create']),
+                [
+                    'title' => 'Добавить занятие',
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                    'class' => 'btn btn-xs btn-link'
+
+                ]
+            )];
+        }
+    }
+    foreach ($model['lesson_timestamp'] as $id => $item) {
+        if (LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
+            $content += [$id + 3 => Html::a('<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
+                    Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'objectId' => $model['lesson_items_id'], 'mode' => 'update']), [
+                        'title' => Yii::t('art', 'Update'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                        'class' => 'btn btn-xs btn-link',
+                    ])
+                . Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
+                    Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'objectId' => $model['lesson_items_id'], 'mode' => 'delete']), [
+                        'title' => Yii::t('art', 'Delete'),
+                        'class' => 'btn btn-xs btn-link',
+                        'data' => [
+                            'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                            'pjax' => '0',
+                            'method' => 'post',
+                        ],
+                    ]
+                ),
+            ];
+        }
+    }
+    return [
+        'content' => $content,
+        'contentOptions' => [      // content html attributes for each summary cell
+            2 => ['class' => 'text-right text-end'],
+        ],
+        'options' => ['class' => 'info h-25 text-center']
+    ];
+};
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
@@ -23,7 +82,6 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,
-//        'contentOptions' => ['class'=>'block pin'],
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',
@@ -33,19 +91,9 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,
-        'subGroupOf' => 1
+        'subGroupOf' => 1,
+        'groupFooter' => $editMarks
     ],
-//    [
-//        'attribute' => 'subject_vid_id',
-//        'label' => $model['attributes']['subject_vid_id'],
-//        'value' => function ($model) {
-//            return RefBook::find('subject_vid_name_dev')->getValue($model['subject_vid_id'] ?? null);
-//        },
-//        'format' => 'raw',
-//        'group' => true,
-//        'subGroupOf' => 1
-//    ],
-
 ];
 foreach ($model['lessonDates'] as $id => $name) {
     $columns[] = [
@@ -54,44 +102,6 @@ foreach ($model['lessonDates'] as $id => $name) {
         'format' => 'raw',
     ];
 }
-$columns[] = [
-
-    'class' => 'kartik\grid\ActionColumn',
-    'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
-    'width' => '90px',
-    'header' => '',
-    'template' => '{create}',
-    'buttons' => [
-        'create' => function ($key, $model) {
-            if ($model['subject_sect_studyplan_id'] == null) {
-                return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                    Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'studyplan_subject_id' => $model['studyplan_subject_id'], 'mode' => 'create']), [
-                        'title' => Yii::t('art', 'Create'),
-                        'data-method' => 'post',
-                        'data-pjax' => '0',
-                        'disabled' => true
-                    ]
-                );
-            } else {
-                return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                    Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']), [
-                        'title' => Yii::t('art', 'Create'),
-                        'data-method' => 'post',
-                        'data-pjax' => '0',
-                        'disabled' => true
-                    ]
-                );
-            }
-
-        },
-
-    ],
-    'visibleButtons' => [
-        'create' => function ($model) {
-            return \common\models\subjectsect\SubjectScheduleTeachersView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id']);
-        }
-    ]
-];
 
 $hints = '<h3 class="panel-title">Сокращения:</h3><br/>';
 foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) {
@@ -129,7 +139,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                                 [
                                     'columns' => [
                                         ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-                                        ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']) + 1, 'class' => 'text-center danger']],
+                                        ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
                                     ],
                                     'options' => ['class' => 'skip-export'] // remove this row from export
                                 ]

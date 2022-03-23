@@ -27,14 +27,14 @@ $editMarks = function ($model, $key, $index, $widget) {
     foreach ($model['lesson_timestamp'] as $id => $item) {
         if (LessonItems::isLessonExist($model['subject_sect_studyplan_id'], 0, $item['lesson_date'])) {
             $content += [$id + 3 => Html::a('<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
-                    Url::to(['/sect/default/studyplan-progress', 'id' => $model['subject_sect_id'], 'objectId' => $item['lesson_items_id'], 'mode' => 'update']), [
+                    Url::to(['/sect/default/studyplan-progress', 'id' => $model['subject_sect_id'], 'objectId' => $model['lesson_items_id'], 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
                         'class' => 'btn btn-xs btn-link',
                     ])
                 . Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                    Url::to(['/sect/default/studyplan-progress', 'id' => $model['subject_sect_id'], 'objectId' => $item['lesson_items_id'], 'mode' => 'delete']), [
+                    Url::to(['/sect/default/studyplan-progress', 'id' => $model['subject_sect_id'], 'objectId' => $model['lesson_items_id'], 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xs btn-link',
                         'data' => [

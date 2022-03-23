@@ -7,34 +7,47 @@ use yii\helpers\Url;
 use common\models\subjectsect\SubjectScheduleTeachersView;
 use common\models\education\LessonItems;
 
-$this->title = Yii::t('art/guide', 'Group Progress');
+$this->title = 'Журнал успеваемости';
 $this->params['breadcrumbs'][] = $this->title;
 //echo '<pre>' . print_r($model, true) . '</pre>'; die();
 $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
     if (SubjectScheduleTeachersView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
-        $content += [3 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-            Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']),
-            [
-                'title' => 'Добавить занятие',
-                'data-method' => 'post',
-                'data-pjax' => '0',
-                'class' => 'btn btn-xs btn-link'
+        if ($model['subject_sect_studyplan_id'] != 0) {
+            $content += [3 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']),
+                [
+                    'title' => 'Добавить занятие',
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                    'class' => 'btn btn-xs btn-link'
 
-            ]
-        )];
+                ]
+            )];
+        } else {
+            $content += [3 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'studyplan_subject_id' => $model['studyplan_subject_id'], 'mode' => 'create']),
+                [
+                    'title' => 'Добавить занятие',
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                    'class' => 'btn btn-xs btn-link'
+
+                ]
+            )];
+        }
     }
     foreach ($model['lesson_timestamp'] as $id => $item) {
-        if (LessonItems::isLessonExist($model['subject_sect_studyplan_id'], 0, $item['lesson_date'])) {
+        if (LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
             $content += [$id + 4 => Html::a('<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
-                    Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $item['lesson_items_id'], 'mode' => 'update']), [
+                    Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $model['lesson_items_id'], 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
                         'class' => 'btn btn-xs btn-link',
                     ])
                 . Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                    Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $item['lesson_items_id'], 'mode' => 'delete']), [
+                    Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $model['lesson_items_id'], 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xs btn-link',
                         'data' => [

@@ -613,8 +613,8 @@ class DefaultController extends MainController
     public function actionStudyplanProgress($id, $objectId = null, $mode = null)
     {
         $model = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
-        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/update', 'id' => $model->id]];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['teachers/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if ('create' == $mode) {
@@ -627,22 +627,10 @@ class DefaultController extends MainController
             $studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
 
             $model = new LessonItems();
-            // предустановка учеников
-            if($subject_sect_studyplan_id != 0) {
-                $studyplanSubjectList = SubjectSectStudyplan::findOne($subject_sect_studyplan_id)->studyplan_subject_list;
-                foreach (explode(',', $studyplanSubjectList) as $item => $studyplan_subject_id) {
-                    $m = new LessonProgress();
-                    $m->studyplan_subject_id = $studyplan_subject_id;
-                    $modelsItems[] = $m;
-                }
-            } else {
-                $m = new LessonProgress();
-                $m->studyplan_subject_id = $studyplan_subject_id;
-                $modelsItems[] = $m;
-            }
-
             $model->studyplan_subject_id = $studyplan_subject_id;
             $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
+            // предустановка учеников
+            $modelsItems = $model->getLessonProgressNew();
 
             if ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class);
@@ -694,23 +682,7 @@ class DefaultController extends MainController
             if (!isset($model)) {
                 throw new NotFoundHttpException("The LessonItems was not found.");
             }
-            // находим только оценки тех учеников, которые числяться в данной группе(переведенные игнорируются)
-            $modelsItems = LessonProgress::find()
-                ->innerJoin('lesson_items', 'lesson_items.id = lesson_progress.lesson_items_id and lesson_items.studyplan_subject_id = 0')
-                ->innerJoin('subject_sect_studyplan', 'subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id')
-                ->where(['=', 'lesson_items.id', $objectId])
-                ->andWhere(new \yii\db\Expression("lesson_progress.studyplan_subject_id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, ',')::int[])"))
-                ->all();
-            // список учеников с оценками
-            $list = LessonProgress::find()->select('studyplan_subject_id')->where(['=', 'lesson_items_id', $objectId])->column();
-            // список всех учеников группы
-            $studyplanSubjectList = SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id)->studyplan_subject_list;
-            // добавляем новые модели вновь принятых учеников
-            foreach (array_diff(explode(',', $studyplanSubjectList), $list) as $item => $studyplan_subject_id) {
-                $m = new LessonProgress();
-                $m->studyplan_subject_id = $studyplan_subject_id;
-                $modelsItems[] = $m;
-            }
+                $modelsItems = $model->getLessonProgress();
             if ($model->load(Yii::$app->request->post())) {
 
                 $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
