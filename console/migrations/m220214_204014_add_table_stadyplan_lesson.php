@@ -144,119 +144,8 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
         $this->addForeignKey('lesson_progress_ibfk_4', 'lesson_progress', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('lesson_progress_ibfk_5', 'lesson_progress', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
+
         $this->db->createCommand()->createView('lesson_progress_view', '
-                 (select studyplan.id as studyplan_id,
-                         studyplan.student_id as student_id,
-                         studyplan.plan_year as plan_year,
-                         studyplan.programm_id as programm_id,
-                         studyplan.speciality_id as speciality_id,
-                         studyplan.course as course,
-                         studyplan.status as status,
-                         studyplan_subject.id as studyplan_subject_id,
-                         studyplan_subject.subject_cat_id as subject_cat_id,
-                         studyplan_subject.subject_id as subject_id,
-                         studyplan_subject.subject_type_id as subject_type_id,
-                         studyplan_subject.subject_vid_id as subject_vid_id,
- 						 0 as subject_sect_studyplan_id
-						 from studyplan
-                 inner join studyplan_subject on (studyplan.id = studyplan_subject.studyplan_id)
-                 inner join guide_subject_vid on (guide_subject_vid.id = studyplan_subject.subject_vid_id and guide_subject_vid.qty_min = 1 and guide_subject_vid.qty_max = 1)
-                 )
-UNION ALL
-		(select studyplan.id as studyplan_id,
-                         studyplan.student_id as student_id,
-                         studyplan.plan_year as plan_year,
-                         studyplan.programm_id as programm_id,
-                         studyplan.speciality_id as speciality_id,
-                         studyplan.course as course,
-                         studyplan.status as status,
-                         studyplan_subject.id as studyplan_subject_id,
-                         studyplan_subject.subject_cat_id as subject_cat_id,
-                         studyplan_subject.subject_id as subject_id,
-                         studyplan_subject.subject_type_id as subject_type_id,
-                         studyplan_subject.subject_vid_id as subject_vid_id,
-						 subject_sect_studyplan.id as subject_sect_studyplan_id
-						 from studyplan
-                 inner join studyplan_subject on (studyplan_subject.studyplan_id = studyplan.id)
-                 left join subject_sect on (subject_sect.subject_cat_id = studyplan_subject.subject_cat_id
-                                           and subject_sect.subject_id = studyplan_subject.subject_id
-                                           and subject_sect.subject_vid_id = studyplan_subject.subject_vid_id)
-                 inner join subject_sect_studyplan on (subject_sect_studyplan.subject_sect_id = subject_sect.id and studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 				   
-                 )
-ORDER BY studyplan_id, subject_cat_id, subject_sect_studyplan_id
-        ')->execute();
-
-        $this->db->createCommand()->createView('lesson_items_view', '
-select lesson_items.id,
-       lesson_items.subject_sect_studyplan_id,
-	   lesson_items.lesson_date,
-	   lesson_items.lesson_topic,
-	   lesson_items.lesson_rem,
-	   lesson_progress.id as lesson_progress_id,
-	   lesson_progress.studyplan_subject_id,
-	   lesson_progress.lesson_mark_id,
-	   studyplan_subject.studyplan_id,
-	   guide_lesson_test.test_category,
-	   guide_lesson_test.test_name,
-	   guide_lesson_test.test_name_short,
-	   guide_lesson_test.plan_flag,
-	   guide_lesson_mark.mark_category,
-	   guide_lesson_mark.mark_label,
-	   guide_lesson_mark.mark_hint,
-	   guide_lesson_mark.mark_value,
-	   lesson_progress.mark_rem
-from lesson_items
-    left join lesson_progress  on (lesson_progress.lesson_items_id = lesson_items.id) 
-    left join studyplan_subject on (studyplan_subject.id = lesson_progress.studyplan_subject_id)
-    left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
-    left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 
-order by studyplan_subject_id, lesson_date
-        ')->execute();
-
-        $this->db->createCommand()->createView('lesson_progress_sect_view', '
-select subject_sect.id as subject_sect_id,
-       subject_sect.plan_year as plan_year,	
-       subject_sect_studyplan.id as subject_sect_studyplan_id,
-       studyplan_subject.id as studyplan_subject_id,
-       studyplan.id as studyplan_id,
-       studyplan.student_id as student_id
-    from subject_sect_studyplan
-    inner join subject_sect on (subject_sect.id = subject_sect_studyplan.subject_sect_id)
-    inner join studyplan_subject on (studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 				   
-    inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id) 
-order by subject_sect_id, subject_sect_studyplan_id
-        ')->execute();
-
-        $this->db->createCommand()->createView('lesson_items_progress_sect_view', '
-select lesson_items.id as lesson_items_id,
-       lesson_items.subject_sect_studyplan_id,
-	   lesson_items.lesson_date,
-	   lesson_items.lesson_topic,
-	   lesson_items.lesson_rem,
-	   subject_sect_studyplan.subject_sect_id,
-	   lesson_progress.id as lesson_progress_id,
-	   lesson_progress.studyplan_subject_id,
-	   lesson_progress.lesson_mark_id,
-	   studyplan_subject.studyplan_id,
-	   guide_lesson_test.test_category,
-	   guide_lesson_test.test_name,
-	   guide_lesson_test.test_name_short,
-	   guide_lesson_test.plan_flag,
-	   guide_lesson_mark.mark_category,
-	   guide_lesson_mark.mark_label,
-	   guide_lesson_mark.mark_hint,
-	   guide_lesson_mark.mark_value,
-	   lesson_progress.mark_rem
-from lesson_items
-    inner join subject_sect_studyplan  on (subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id)
-    left join lesson_progress  on (lesson_progress.lesson_items_id = lesson_items.id) 
-    left join studyplan_subject on (studyplan_subject.id = lesson_progress.studyplan_subject_id)
-    left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
-    left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 
-order by studyplan_subject_id, lesson_date
-        ')->execute();
-
-        $this->db->createCommand()->createView('lesson_progress_teachers_view', '
 (select teachers_load.id as teachers_load_id,
 				teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
 				studyplan_subject.id as studyplan_subject_id,
@@ -289,7 +178,7 @@ UNION ALL
 ORDER BY direction_id, teachers_id
         ')->execute();
 
-        $this->db->createCommand()->createView('lesson_items_progress_teachers_view', '
+        $this->db->createCommand()->createView('lesson_items_progress_view', '
 (select teachers_load.id as teachers_load_id,
                 teachers_load.subject_sect_studyplan_id as subject_sect_studyplan_id,
                 studyplan_subject.id as studyplan_subject_id,
@@ -365,12 +254,14 @@ ORDER BY direction_id, teachers_id, studyplan_subject_id, lesson_date
 
     public function down()
     {
-        $this->db->createCommand()->dropView('lesson_items_progress_teachers_view')->execute();
-        $this->db->createCommand()->dropView('lesson_progress_teachers_view')->execute();
-        $this->db->createCommand()->dropView('lesson_items_progress_sect_view')->execute();
-        $this->db->createCommand()->dropView('lesson_progress_sect_view')->execute();
-        $this->db->createCommand()->dropView('lesson_items_view')->execute();
+        $this->db->createCommand()->dropView('lesson_items_progress_view')->execute();
         $this->db->createCommand()->dropView('lesson_progress_view')->execute();
+//        $this->db->createCommand()->dropView('lesson_items_progress_teachers_view')->execute();
+//        $this->db->createCommand()->dropView('lesson_progress_teachers_view')->execute();
+//        $this->db->createCommand()->dropView('lesson_items_progress_sect_view')->execute();
+//        $this->db->createCommand()->dropView('lesson_progress_sect_view')->execute();
+//        $this->db->createCommand()->dropView('lesson_items_view')->execute();
+//        $this->db->createCommand()->dropView('lesson_progress_view')->execute();
         $this->dropTableWithHistory('lesson_progress');
         $this->dropTableWithHistory('lesson_items');
         $this->db->createCommand()->delete('refbooks', ['name' => 'lesson_test_hint'])->execute();

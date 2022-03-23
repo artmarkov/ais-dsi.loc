@@ -6,6 +6,8 @@ use backend\models\Model;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressSectView;
+use common\models\education\LessonProgressTeachersView;
+use common\models\education\LessonProgressView;
 use common\models\subjectsect\search\SubjectSectScheduleSearch;
 use common\models\subjectsect\SubjectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
@@ -16,7 +18,6 @@ use common\models\subjectsect\search\SubjectSectScheduleViewSearch;
 use Yii;
 use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Json;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
 
@@ -479,7 +480,7 @@ class DefaultController extends MainController
             $session->set('_progress_date_out', $model_date->date_out);
             $session->set('_progress_hidden_flag', $model_date->hidden_flag);
 
-            $model = LessonProgressSectView::getData($model_date, $id);
+            $model = LessonProgressView::getDataSect($model_date, $id);
 
             if (Yii::$app->request->post('submitAction') == 'excel') {
                 // TeachersEfficiency::sendXlsx($data);

@@ -5,7 +5,7 @@ namespace common\models\education;
 use Yii;
 
 /**
- * This is the model class for table "lesson_items_progress_teachers_view".
+ * This is the model class for table "lesson_items_progress_view".
  *
  * @property int|null $teachers_load_id
  * @property int|null $subject_sect_studyplan_id
@@ -13,6 +13,7 @@ use Yii;
  * @property int|null $direction_id
  * @property int|null $teachers_id
  * @property int|null $plan_year
+ * @property int|null $subject_sect_id
  * @property int|null $studyplan_id
  * @property int|null $student_id
  * @property int|null $lesson_items_id
@@ -30,15 +31,16 @@ use Yii;
  * @property string|null $mark_hint
  * @property float|null $mark_value
  * @property string|null $mark_rem
+ *
  */
-class LessonItemsProgressTeachersView extends \artsoft\db\ActiveRecord
+class LessonItemsProgressView extends \artsoft\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'lesson_items_progress_teachers_view';
+        return 'lesson_items_progress_view';
     }
 
     /**
@@ -53,6 +55,7 @@ class LessonItemsProgressTeachersView extends \artsoft\db\ActiveRecord
             'direction_id' => Yii::t('art/guide', 'Direction ID'),
             'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
             'plan_year' => Yii::t('art/guide', 'Plan Year'),
+            'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
             'studyplan_id' => Yii::t('art/guide', 'Studyplan ID'),
             'student_id' => Yii::t('art/guide', 'Student ID'),
             'lesson_items_id' => Yii::t('art/guide', 'Lesson Items ID'),

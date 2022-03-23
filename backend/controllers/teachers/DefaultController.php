@@ -7,16 +7,15 @@ use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressSectView;
 use common\models\education\LessonProgressTeachersView;
+use common\models\education\LessonProgressView;
 use common\models\guidejob\Bonus;
 use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleTeachersViewSearch;
 use common\models\subjectsect\search\SubjectScheduleTeachersViewSearch;
-use common\models\subjectsect\search\SubjectScheduleViewSearch;
 use common\models\subjectsect\SubjectSchedule;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\teachers\search\TeachersLoadTeachersViewSearch;
-use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\search\TeachersPlanSearch;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersActivity;
@@ -776,7 +775,7 @@ class DefaultController extends MainController
             $session->set('_progress_date_out', $model_date->date_out);
             $session->set('_progress_hidden_flag', $model_date->hidden_flag);
 
-            $model = LessonProgressTeachersView::getData($model_date, $id);
+            $model = LessonProgressView::getDataTeachers($model_date, $id);
 
             if (Yii::$app->request->post('submitAction') == 'excel') {
                 // TeachersEfficiency::sendXlsx($data);

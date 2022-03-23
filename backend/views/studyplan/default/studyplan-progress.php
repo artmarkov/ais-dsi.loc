@@ -104,7 +104,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             <div class="panel-body">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <?= $this->render('_progress_search', compact('model_date')) ?>
+                        <?= $this->render('@app/views/studyplan/lesson-items/_search', compact('model_date')) ?>
                         <?php
                         echo GridView::widget([
                             'dataProvider' => new \yii\data\ArrayDataProvider([

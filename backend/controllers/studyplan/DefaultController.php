@@ -2,13 +2,13 @@
 
 namespace backend\controllers\studyplan;
 
-use artsoft\helpers\Schedule;
 use backend\models\Model;
 use common\models\education\EducationCat;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
+use common\models\education\LessonProgressTeachersView;
 use common\models\education\LessonProgressView;
 use common\models\history\StudyplanHistory;
 use common\models\schedule\ConsultSchedule;
@@ -29,7 +29,6 @@ use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
 use Yii;
 use yii\helpers\StringHelper;
-use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -792,7 +791,7 @@ class DefaultController extends MainController
             $session->set('_progress_date_out', $model_date->date_out);
             $session->set('_progress_hidden_flag', $model_date->hidden_flag);
 
-            $model = LessonProgressView::getData($model_date, $id);
+            $model = LessonProgressView::getDataStudyplan($model_date, $id);
 
             if (Yii::$app->request->post('submitAction') == 'excel') {
                // TeachersEfficiency::sendXlsx($data);
