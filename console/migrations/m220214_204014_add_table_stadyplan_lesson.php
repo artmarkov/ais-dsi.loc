@@ -211,8 +211,6 @@ ORDER BY subject_sect_studyplan_id, direction_id, teachers_id, studyplan_subject
             left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
             left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 
             inner join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id  and teachers_load.subject_sect_studyplan_id = 0) 			
-				
-		
 				 )
 UNION ALL 
 (select teachers_load.id as teachers_load_id,

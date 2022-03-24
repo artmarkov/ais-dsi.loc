@@ -93,7 +93,7 @@ use kartik\date\DatePicker;
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                <?= $model->isNewRecord ? \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit', 'btn-md') : \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

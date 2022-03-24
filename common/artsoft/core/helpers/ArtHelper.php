@@ -2,6 +2,8 @@
 
 namespace artsoft\helpers;
 
+use Yii;
+
 /**
  * A lot of useful and useless stuff
  *
@@ -203,7 +205,7 @@ class ArtHelper
     {
         $list = [];
         $year = self::getStudyYearDefault();
-        for ($i = ($year - $start); $i < ($year + 1); $i++) {
+        for ($i = $year; $i > ($year - $start); $i--) {
             $list[$i] = $i . '/' . ($i + 1);
         }
 
@@ -214,11 +216,21 @@ class ArtHelper
      * @param int $month_dev
      * @return false|int|string
      */
-    public static function getStudyYearDefault($month_dev = 6)
+    public static function getStudyYearDefault($month_dev = null)
     {
+        $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 6) : $month_dev;
         return date("n") < $month_dev ? date("Y") - 1 : date("Y");
     }
 
+    public static function getStudyYearParams($year = null, $month_dev = null)
+    {
+        $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 6) : $month_dev;
+        $year = $year == null ? self::getStudyYearDefault($month_dev) : $year;
+
+        $data['timestamp_in'] = mktime(0, 0, 0, $month_dev, 1, $year);
+        $data['timestamp_out'] = mktime(0, 0, 0, $month_dev, 1, $year+1);
+        return $data;
+    }
     /**
      * @param int $min
      * @param int $max

@@ -3,6 +3,7 @@
 namespace common\models\efficiency;
 
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\ArtHelper;
 use artsoft\helpers\ExcelObjectList;
 use Yii;
 use common\models\teachers\Teachers;
@@ -108,7 +109,6 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
         return $this->hasOne(EfficiencyTree::class, ['id' => 'efficiency_id']);
     }
 
-
     /* Геттер для названия категории */
     public function getEfficiencyName()
     {
@@ -155,6 +155,36 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @param $teachers_id
+     * @param $model_date
+     * @return array
+     * @throws \yii\base\InvalidConfigException
+     */
+    public static function getSummaryTeachersData($teachers_id, $model_date)
+    {
+        $year = $model_date['plan_year'];
+        $d = ArtHelper::getStudyYearParams($year);
+
+        $models = self::find()
+            ->where(['between', 'date_in', $d['timestamp_in'], $d['timestamp_out']])
+            ->andWhere(['=', 'teachers_id', $teachers_id])
+            ->asArray()->all();
+        $data = [];
+        foreach ($models as $item => $model) {
+            $m = date('m', $model['date_in']);
+            $y = date('Y', $model['date_in']);
+            $id = mktime(0, 0, 0, $m, 1, $y);
+            $data[$id]['timestamp'] = $id;
+            $data[$id]['label'] = Yii::$app->formatter->asDate($model['date_in'], 'php:M Y');
+            $data[$id]['bonus'] = isset($data[$id]['bonus']) ? $data[$id]['bonus'] + $model['bonus'] : $model['bonus'];
+        }
+        usort($data, function ($a, $b) {
+            return $a['timestamp'] <=> $b['timestamp'];
+        });
+        return $data;
+    }
+
+    /**
      * @param $model_date
      * @return array
      */
@@ -165,7 +195,6 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
 
         $root = EfficiencyTree::getEfficiencyRoots();
         $tree = EfficiencyTree::getEfficiencyLiaves();
-//        echo '<pre>' . print_r($tree, true) . '</pre>';
 
         $attributes = ['name' => 'Фамилия И.О.'];
         $attributes += $root;

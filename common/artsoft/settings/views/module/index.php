@@ -57,6 +57,20 @@ SettingsAsset::register($this);
                     </div>
                 </div>
             </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Модуль: Учебная работа
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <?= $form->field($model, 'study_plan_month_in')->textInput(['maxlength' => true])->hint('Введите месяц') ?>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="panel-footer">
             <div class="form-group">

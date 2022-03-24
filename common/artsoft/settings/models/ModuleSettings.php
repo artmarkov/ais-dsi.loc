@@ -12,6 +12,7 @@ class ModuleSettings extends BaseSettingsModel
     public $day_out;
 
     public $student_delta_time;
+    public $study_plan_month_in;
 
     /**
      * @inheritdoc
@@ -20,8 +21,8 @@ class ModuleSettings extends BaseSettingsModel
     {
         return ArrayHelper::merge(parent::rules(),
             [
-                [['day_in', 'day_out', 'student_delta_time'], 'required'],
-                [['day_in', 'day_out', 'student_delta_time'], 'string'],
+                [['day_in', 'day_out', 'student_delta_time', 'study_plan_month_in'], 'required'],
+                [['day_in', 'day_out', 'student_delta_time', 'study_plan_month_in'], 'string'],
             ]);
     }
 
@@ -31,6 +32,7 @@ class ModuleSettings extends BaseSettingsModel
             'day_in' => 'День начала периода',
             'day_out' => 'День окончания периода',
             'student_delta_time' => 'Возможный допуск на отклонение от полного времени проведения занятия',
+            'study_plan_month_in' => 'Месяц начала учебного года(расчетного периода)',
         ];
     }
 
