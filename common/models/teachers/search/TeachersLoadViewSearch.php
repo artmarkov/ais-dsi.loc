@@ -18,8 +18,8 @@ class TeachersLoadViewSearch extends TeachersLoadView
     public function rules()
     {
         return [
-            [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'studyplan_id', 'programm_id','speciality_id','course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year', 'status'], 'integer'],
-//            [['week_time', 'year_time'], 'number'],
+            [['studyplan_subject_id', 'subject_sect_studyplan_id', 'studyplan_id', 'student_id', 'plan_year', 'status','teachers_load_id','direction_id', 'teachers_id'], 'integer'],
+            [['load_time', 'week_time'], 'number'],
         ];
     }
 
@@ -60,24 +60,17 @@ class TeachersLoadViewSearch extends TeachersLoadView
         }
 
         $query->andFilterWhere([
-            'teachers_load_id' => $this->teachers_load_id,
-            'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
             'studyplan_subject_id' => $this->studyplan_subject_id,
-            'direction_id' => $this->direction_id,
-            'teachers_id' => $this->teachers_id,
-//            'load_time' => $this->load_time,
+            'week_time' => $this->week_time,
+            'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
             'studyplan_id' => $this->studyplan_id,
-            'programm_id' => $this->programm_id,
-            'speciality_id' => $this->speciality_id,
-            'course' => $this->course,
-            'subject_cat_id' => $this->subject_cat_id,
-            'subject_id' => $this->subject_id,
-            'subject_type_id' => $this->subject_type_id,
-            'subject_vid_id' => $this->subject_vid_id,
-//            'week_time' => $this->week_time,
-//            'year_time' => $this->year_time,
+            'student_id' => $this->student_id,
             'plan_year' => $this->plan_year,
             'status' => $this->status,
+            'teachers_load_id' => $this->teachers_load_id,
+            'direction_id' => $this->direction_id,
+            'teachers_id' => $this->teachers_id,
+            'load_time' => $this->load_time,
         ]);
 
         return $dataProvider;

@@ -286,14 +286,17 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if ('create' == $mode) {
-            if (!Yii::$app->request->get('studyplan_subject_id')) {
-                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id.");
+
+            if (!Yii::$app->request->get('studyplan_subject_id') && !Yii::$app->request->get('subject_sect_studyplan_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
             }
             $teachersLoadModel = StudyplanSubject::findOne(Yii::$app->request->get('studyplan_subject_id'));
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['studyplan/default/load-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
             $model = new TeachersLoad();
-            $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id');
+
+            $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
+            $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
             if ($model->load(Yii::$app->request->post()) AND $model->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
                 $this->getSubmitAction($model);
@@ -695,7 +698,7 @@ class DefaultController extends MainController
             }
             return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
                 'model' => $model,
-                'modelsItems' =>  (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+                'modelsItems' => (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
             ]);
 
         } elseif ('history' == $mode && $objectId) {
@@ -761,7 +764,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
                 'model' => $model,
-                'modelsItems' =>  (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+                'modelsItems' => (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
 //                'subject_sect_studyplan_id' => $subject_sect_studyplan_id,
 //                'studyplan_subject_id' => $studyplan_subject_id,
             ]);
@@ -792,12 +795,13 @@ class DefaultController extends MainController
             $model = LessonProgressView::getDataStudyplan($model_date, $id);
 
             if (Yii::$app->request->post('submitAction') == 'excel') {
-               // TeachersEfficiency::sendXlsx($data);
+                // TeachersEfficiency::sendXlsx($data);
             }
 
             return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date']));
         }
     }
+
     /**
      *  формируем список дисциплин для widget DepDrop::classname()
      * @return false|string
