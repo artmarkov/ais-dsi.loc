@@ -11,6 +11,8 @@ use common\models\subjectsect\SubjectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\search\TeachersLoadSectViewSearch;
+use common\models\teachers\search\TeachersLoadStudyplanViewSearch;
+use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\TeachersLoad;
 use common\models\subjectsect\search\SubjectSectScheduleViewSearch;
 use Yii;
@@ -168,10 +170,86 @@ class DefaultController extends MainController
         ]);
     }
 
+    public function actionLoadItems($id, $objectId = null, $mode = null)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/update', 'id' => $model->id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+            if (!Yii::$app->request->get('subject_sect_studyplan_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_sect_studyplan_id.");
+            }
+            $teachersLoadModel = StudyplanSubject::findOne(Yii::$app->request->get('subject_sect_studyplan_id'));
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
+            $model = new TeachersLoad();
+            $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id');
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
+                'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
+            ]);
+
+        } elseif ('history' == $mode && $objectId) {
+            $model = TeachersLoad::findOne($objectId);
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/update', 'id' => $model->id]];
+            $data = new SubjectSectScheduleHistory($objectId);
+            return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $model = TeachersLoad::findOne($objectId);
+            $model->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+
+        } elseif ($objectId) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $model = TeachersLoad::findOne($objectId);
+            $teachersLoadModel = StudyplanSubject::findOne($model->studyplan_subject_id);
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The StudyplanSubject was not found.");
+            }
+
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
+                'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
+            ]);
+
+        } else {
+            $searchModel = new TeachersLoadViewSearch();
+
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['subject_sect_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'id'));
+        }
+    }
+
     /**
      * @param $id
+     * @param null $objectId
+     * @param null $mode
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     public function actionScheduleItems($id, $objectId = null, $mode = null)
     {
@@ -243,79 +321,6 @@ class DefaultController extends MainController
             $dataProvider = $searchModel->search($params);
 
             return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'id'));
-        }
-    }
-
-    public function actionLoadItems($id, $objectId = null, $mode = null)
-    {
-        $model = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
-        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/update', 'id' => $model->id]];
-        $this->view->params['tabMenu'] = $this->getMenu($id);
-
-        if ('create' == $mode) {
-            if (!Yii::$app->request->get('subject_sect_studyplan_id')) {
-                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_sect_studyplan_id.");
-            }
-            $teachersLoadModel = StudyplanSubject::findOne(Yii::$app->request->get('subject_sect_studyplan_id'));
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
-            $model = new TeachersLoad();
-            $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id');
-            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                $this->getSubmitAction($model);
-            }
-
-            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
-                'model' => $model,
-                'teachersLoadModel' => $teachersLoadModel,
-            ]);
-
-
-        } elseif ('history' == $mode && $objectId) {
-            $model = TeachersLoad::findOne($objectId);
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/update', 'id' => $model->id]];
-            $data = new SubjectSectScheduleHistory($objectId);
-            return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
-
-        } elseif ('delete' == $mode && $objectId) {
-            $model = TeachersLoad::findOne($objectId);
-            $model->delete();
-
-            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-            return $this->redirect($this->getRedirectPage('delete', $model));
-
-        } elseif ($objectId) {
-
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $model = TeachersLoad::findOne($objectId);
-            $teachersLoadModel = StudyplanSubject::findOne($model->studyplan_subject_id);
-            if (!isset($model)) {
-                throw new NotFoundHttpException("The StudyplanSubject was not found.");
-            }
-
-            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction($model);
-            }
-
-            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
-                'model' => $model,
-                'teachersLoadModel' => $teachersLoadModel,
-            ]);
-
-        } else {
-            $searchModel = new TeachersLoadSectViewSearch();
-
-            $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['subject_sect_id'] = $id;
-            $dataProvider = $searchModel->search($params);
-
-            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'id'));
         }
     }
 

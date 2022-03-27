@@ -22,7 +22,7 @@ class m211201_191645_add_subject_schedule_view extends \artsoft\db\BaseMigration
                 subject_schedule.time_in as time_in,
                 subject_schedule.time_out as time_out,
                 subject_schedule.auditory_id as auditory_id,
-                subject_schedule.description as description
+                subject_schedule.description as description 
          from subject_sect_studyplan
 		 inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
 		 left join teachers_load  on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id

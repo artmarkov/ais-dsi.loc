@@ -2,17 +2,14 @@
 
 namespace common\models\teachers;
 
+use artsoft\helpers\RefBook;
+use artsoft\widgets\Notice;
+use artsoft\widgets\Tooltip;
 use Yii;
 
-/**
- * This is the model class for table "teachers_load_view".
- *
- */
 class TeachersLoadView extends TeachersLoad
 {
-    /**
-     * {@inheritdoc}
-     */
+
     public static function tableName()
     {
         return 'teachers_load_view';
@@ -26,7 +23,9 @@ class TeachersLoadView extends TeachersLoad
         return [
             'studyplan_subject_id' => Yii::t('art/guide', 'Subject Name'),
             'week_time' => Yii::t('art/guide', 'Week Time'),
+            'subject_sect_id' => Yii::t('art/guide', 'Sect Name'),
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
+            'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
             'studyplan_id' => Yii::t('art/guide', 'Studyplan'),
             'student_id' => Yii::t('art/student', 'Student'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
@@ -38,4 +37,42 @@ class TeachersLoadView extends TeachersLoad
         ];
     }
 
+
+
+//    public function getStudyplanWeekTime()
+//    {
+//        $funcSql = <<< SQL
+//    select MAX(week_time)
+//	from studyplan_subject
+//	where id = any(string_to_array('{$this->studyplan_subject_list}', ',')::int[])
+//SQL;
+//
+//        return $this->studyplan_subject_list ? \Yii::$app->db->createCommand($funcSql)->queryScalar() : 0;
+//    }
+
+//    /**
+//     * Проверка на необходимость добавления нагрузки
+//     * @return bool
+//     */
+//    public function getTeachersLoadsNeed()
+//    {
+//        return $this->getTeachersFullLoad() < $this->week_time;
+//    }
+
+    public function getItemLoadNotice()
+    {
+        $tooltip = [];
+        if ($this->studyplan_subject_list == '') {
+            $message = 'В группе ' . RefBook::find('sect_name_2')->getValue($this->subject_sect_studyplan_id) . ' не обнаружено ни одного учащегося!';
+            Notice::registerWarning($message);
+        }
+        if ($this->teachers_load_id) {
+            if ($this->week_time != $this->load_time) {
+                $message = 'Суммарное время нагрузки не соответствует планированию - ' . $this->load_time . ' ак.ч';
+                $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
+            }
+            return implode('', $tooltip);
+        }
+        return null;
+    }
 }

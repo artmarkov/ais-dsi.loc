@@ -88,15 +88,23 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
 
         $this->db->createCommand()->createView('subject_sect_view', '
          select subject_sect_studyplan.id as id, 
+    	       concat(subject.name, \'(\',guide_subject_vid.slug,\') \') as sect_memo_1,
+               concat(subject.name, \'(\',guide_subject_category.slug, \' \',guide_subject_vid.slug,\')\') as sect_memo_2,
 		       concat(education_union.class_index, \' \', subject_sect_studyplan.class_name, \' (\',subject.name, \'-\',guide_subject_category.slug, \') \') as sect_name_1,
-		       concat(education_union.class_index, \' \', subject_sect_studyplan.class_name, \' (\',subject.name, \'-\',guide_subject_category.slug, \') \', \' \', guide_subject_type.slug) as sect_name_2
+		       concat(education_union.class_index, \' \', subject_sect_studyplan.class_name, \' (\',subject.name, \'-\',guide_subject_category.slug, \') \',\' \',guide_subject_vid.slug,\' \', guide_subject_type.slug) as sect_name_2,
+			   concat(education_union.class_index, \' \', subject_sect_studyplan.class_name, \' (\',guide_subject_type.slug, \') \') as sect_name_3
          from subject_sect_studyplan
          inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
          inner join guide_subject_category on guide_subject_category.id = subject_sect.subject_cat_id
          inner join subject on subject.id = subject_sect.subject_id
+		 inner join guide_subject_vid on guide_subject_vid.id = subject_sect.subject_vid_id
 		 inner join guide_subject_type on guide_subject_type.id = subject_sect_studyplan.subject_type_id
          inner join education_union on education_union.id = subject_sect.union_id
         ')->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['sect_name_0', 'subject_sect_view', 'id', 'sect_name_0', 'sect_name_o', null, null, 'Название группы'],
+        ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['sect_name_1', 'subject_sect_view', 'id', 'sect_name_1', 'sect_name_1', null, null, 'Название группы'],
@@ -106,10 +114,20 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             ['sect_name_2', 'subject_sect_view', 'id', 'sect_name_2', 'sect_name_2', null, null, 'Название группы с типом занятий'],
         ])->execute();
 
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['sect_memo_1', 'subject_sect_view', 'id', 'sect_memo_1', 'sect_memo_1', null, null, 'Название группы'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['sect_memo_2', 'subject_sect_view', 'id', 'sect_memo_2', 'sect_memo_2', null, null, 'Название группы'],
+        ])->execute();
     }
 
     public function down()
     {
+        $this->db->createCommand()->delete('refbooks', ['name' => 'sect_memo_2'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'sect_memo_1'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'sect_name_3'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'sect_name_2'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'sect_name_1'])->execute();
         $this->db->createCommand()->dropView('subject_sect_view')->execute();

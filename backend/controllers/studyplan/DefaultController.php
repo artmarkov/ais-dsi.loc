@@ -22,6 +22,7 @@ use common\models\subjectsect\search\SubjectScheduleViewSearch;
 use common\models\subjectsect\SubjectSchedule;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\teachers\search\TeachersLoadStudyplanViewSearch;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\TeachersLoad;
 use yii\base\DynamicModel;
@@ -343,7 +344,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $searchModel = new TeachersLoadViewSearch();
+            $searchModel = new TeachersLoadStudyplanViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();

@@ -128,14 +128,43 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
         return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
     }
 
-
     /**
-     * Проверка на необходимость добавления нагрузки
-     * @return bool
+     * Получение всех преподавателей дисциплины по текущему
+     * @param $teachers_id
+     * @return array
      */
-    public function getTeachersLoadsNeed()
+    public static function getTeachersSubjectAll($teachers_id)
     {
+        $query1 = self::find()
+            ->select('subject_sect_studyplan_id')
+            ->distinct()
+            ->where(['studyplan_subject_id' => 0])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->column();
 
-        return true;
+        $query2 = self::find()
+            ->select('studyplan_subject_id')
+            ->distinct()
+            ->where(['subject_sect_studyplan_id' => 0])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->column();
+
+        return self::find()
+            ->select('teachers_id')
+            ->distinct()
+            ->where(['subject_sect_studyplan_id' => $query1])
+            ->orWhere(['studyplan_subject_id' => $query2])
+            ->column();
+
+    }
+
+    public function getTeachersFullLoad()
+    {
+        return self::find()
+            ->select(new \yii\db\Expression('SUM(load_time)'))
+            ->where(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
+            ->andWhere(['=', 'studyplan_subject_id', $this->studyplan_subject_id])
+            ->andWhere(['=', 'direction_id', $this->direction_id])
+            ->scalar();
     }
 }

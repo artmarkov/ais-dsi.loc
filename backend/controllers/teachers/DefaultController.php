@@ -20,10 +20,12 @@ use common\models\subjectsect\search\SubjectScheduleViewSearch;
 use common\models\subjectsect\SubjectSchedule;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\search\TeachersLoadTeachersViewSearch;
+use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\search\TeachersPlanSearch;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersActivity;
 use common\models\teachers\TeachersLoad;
+use common\models\teachers\TeachersLoadView;
 use common\models\teachers\TeachersPlan;
 use common\models\user\UserCommon;
 use yii\base\DynamicModel;
@@ -411,14 +413,17 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if ('create' == $mode) {
-            if (!Yii::$app->request->get('studyplan_subject_id')) {
-                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id.");
+            if (!Yii::$app->request->get('studyplan_subject_id') && !Yii::$app->request->get('subject_sect_studyplan_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
             }
             $teachersLoadModel = StudyplanSubject::findOne(Yii::$app->request->get('studyplan_subject_id'));
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['teachers/default/load-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
             $model = new TeachersLoad();
-            $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id');
+
+            $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
+            $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
+
             if ($model->load(Yii::$app->request->post()) AND $model->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
                 $this->getSubmitAction($model);
@@ -465,11 +470,14 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $searchModel = new TeachersLoadTeachersViewSearch();
+
+            $query = TeachersLoadView::find()->andWhere(['is not', 'teachers_id', null]);
+            $searchModel = new TeachersLoadViewSearch($query);
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['teachers_id'] = $id;
+
+            $params[$searchName]['teachers_id'] = TeachersLoad::getTeachersSubjectAll($id);
             $dataProvider = $searchModel->search($params);
 
             return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'id'));

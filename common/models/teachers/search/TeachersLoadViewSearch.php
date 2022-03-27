@@ -8,18 +8,27 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * TeachersLoadViewSearch represents the model behind the search form about `common\models\teachers\TeachersLoadView`.
+ * TeachersLoadTeachersViewSearch represents the model behind the search form about `common\models\teachers\TeachersLoadView`.
  */
 class TeachersLoadViewSearch extends TeachersLoadView
 {
+    public $query;
+
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: TeachersLoadView::find();
+        parent::__construct();
+    }
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['studyplan_subject_id', 'subject_sect_studyplan_id', 'studyplan_id', 'student_id', 'plan_year', 'status','teachers_load_id','direction_id', 'teachers_id'], 'integer'],
-            [['load_time', 'week_time'], 'number'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'subject_sect_id', 'plan_year', 'week_time', 'teachers_load_id', 'direction_id', 'teachers_id'], 'integer'],
+ //           [['load_time'], 'number'],
+            [['studyplan_subject_list'], 'string'],
         ];
     }
 
@@ -41,11 +50,13 @@ class TeachersLoadViewSearch extends TeachersLoadView
      */
     public function search($params)
     {
-        $query = TeachersLoadView::find();
+        $query = $this->query;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => false,
+            'pagination' => [
+                'pageSize' => false,
+            ],
             'sort' => [
                 'defaultOrder' => false,
             ],
@@ -60,19 +71,17 @@ class TeachersLoadViewSearch extends TeachersLoadView
         }
 
         $query->andFilterWhere([
-            'studyplan_subject_id' => $this->studyplan_subject_id,
-            'week_time' => $this->week_time,
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
-            'studyplan_id' => $this->studyplan_id,
-            'student_id' => $this->student_id,
+            'studyplan_subject_id' => $this->studyplan_subject_id,
+            'subject_sect_id' => $this->subject_sect_id,
             'plan_year' => $this->plan_year,
-            'status' => $this->status,
+            'week_time' => $this->week_time,
             'teachers_load_id' => $this->teachers_load_id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
-            'load_time' => $this->load_time,
+          //  'load_time' => $this->load_time,
         ]);
-
+        $query->andFilterWhere(['like', 'studyplan_subject_list', $this->studyplan_subject_list]);
         return $dataProvider;
     }
 }

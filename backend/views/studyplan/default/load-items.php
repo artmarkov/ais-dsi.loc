@@ -1,12 +1,8 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use common\models\education\LessonItems;
-use common\models\subjectsect\SubjectScheduleTeachersView;
 use yii\helpers\Url;
-use yii\widgets\Pjax;
 use artsoft\helpers\Html;
-use artsoft\grid\GridPageSize;
 use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -16,55 +12,22 @@ use kartik\grid\GridView;
 $this->title = Yii::t('art/guide', 'Teachers Load');
 $this->params['breadcrumbs'][] = $this->title;
 
-$addLoads = function ($model, $key, $index, $widget) {
-    $content = [];
-    if ($model->getTeachersLoadsNeed()) {
-        if ($model->subject_sect_studyplan_id == 0) {
-            $content += [4 =>  Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                Url::to(['/studyplan/default/load-items', 'id' => $model->studyplan_id, 'studyplan_subject_id' => $model->studyplan_subject_id, 'mode' => 'create']), [
-                    'title' => Yii::t('art', 'Create'),
-                    'data-method' => 'post',
-                    'data-pjax' => '0',
-                    'disabled' => true
-                ]
-            )];
-        } else {
-            $content += [4 =>  Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                Url::to(['/studyplan/default/load-items', 'id' => $model->studyplan_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id, 'mode' => 'create']), [
-                    'title' => Yii::t('art', 'Create'),
-                    'data-method' => 'post',
-                    'data-pjax' => '0',
-                    'disabled' => true
-                ]
-            )];
-        }
-    }
-    return [
-       // 'mergeColumns' => [[1, 4]],
-        'content' => $content,
-        'contentOptions' => [      // content html attributes for each summary cell
-            4 => ['class' => 'text-right text-end'],
-        ],
-        'options' => ['class' => 'info h-25 text-center']
-    ];
-};
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'studyplan_subject_id',
         'value' => function ($model) {
-            return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id ?? null);;
+            return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
         },
         'group' => true,
-        'groupFooter' => $addLoads
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',
         'width' => '310px',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('sect_name_1')->getList(),
+        'filter' => RefBook::find('sect_name_3')->getList(),
         'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id);
+            return RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id) ?? 'Индивидуально';
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],
@@ -73,14 +36,14 @@ $columns = [
         'group' => true,  // enable grouping
 
     ],
-//    [
-//        'attribute' => 'week_time',
-//        'value' => function ($model) {
-//            return $model->week_time;
-//        },
-//        'group' => true,
-//        'subGroupOf' => 0,
-//    ],
+    [
+        'attribute' => 'week_time',
+        'value' => function ($model) {
+            return $model->week_time;
+        },
+        'group' => true,
+        'subGroupOf' => 2,
+    ],
     [
         'attribute' => 'direction_id',
         'filterType' => GridView::FILTER_SELECT2,
@@ -109,7 +72,8 @@ $columns = [
     [
         'attribute' => 'load_time',
         'value' => function ($model) {
-            return $model->load_time /*. ' ' . $model->getTeachersOverLoadNotice()*/ ;
+            return $model->load_time . ' ' . $model->getItemLoadNotice()
+                ;
         },
         'format' => 'raw',
 
@@ -120,6 +84,28 @@ $columns = [
         'width' => '90px',
         'template' => '{create} {update} {delete}',
         'buttons' => [
+            'create' => function ($key, $model) {
+                if ($model->subject_sect_studyplan_id == 0) {
+                    return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                        Url::to(['/studyplan/default/load-items', 'id' => $model->studyplan_id, 'studyplan_subject_id' => $model->studyplan_subject_id, 'mode' => 'create']), [
+                            'title' => Yii::t('art', 'Create'),
+                            'data-method' => 'post',
+                            'data-pjax' => '0',
+                            'disabled' => true
+                        ]
+                    );
+                } else {
+
+                    return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                        Url::to(['/studyplan/default/load-items', 'id' => $model->studyplan_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id, 'mode' => 'create']), [
+                            'title' => Yii::t('art', 'Create'),
+                            'data-method' => 'post',
+                            'data-pjax' => '0',
+                            'disabled' => true
+                        ]
+                    );
+                }
+            },
             'update' => function ($key, $model) {
                 return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
                     Url::to(['/studyplan/default/load-items', 'id' => $model->studyplan_id, 'objectId' => $model->teachers_load_id, 'mode' => 'update']), [
@@ -142,6 +128,9 @@ $columns = [
             },
         ],
         'visibleButtons' => [
+//            'create' => function ($model) {
+//                return $model->getTeachersLoadsNeed();
+//            },
             'delete' => function ($model) {
                 return $model->teachers_load_id !== null;
             },
@@ -174,8 +163,8 @@ $columns = [
                         'beforeHeader' => [
                             [
                                 'columns' => [
-                                    ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
+                                    ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
+                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 5, 'class' => 'text-center info']],
                                 ],
                                 'options' => ['class' => 'skip-export'] // remove this row from export
                             ]
