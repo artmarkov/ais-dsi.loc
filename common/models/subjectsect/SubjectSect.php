@@ -3,9 +3,8 @@
 namespace common\models\subjectsect;
 
 use artsoft\helpers\RefBook;
-use common\models\activities\SubjectSchedule;
 use \common\models\education\EducationUnion;
-use common\models\studyplan\Studyplan;
+use common\models\schedule\SubjectScheduleView;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
@@ -334,7 +333,7 @@ SQL;
 
     public function getSubjectSchedule()
     {
-        $models = SubjectSectScheduleStudyplanView::find()
+        $models = SubjectScheduleView::find()
             ->where(['subject_sect_id' => $this->id])
             ->andWhere(['not', ['subject_schedule_id' => null]])
             ->all();

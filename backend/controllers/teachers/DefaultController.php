@@ -329,7 +329,26 @@ class DefaultController extends MainController
             ]
         ]);
     }
+    public function actionSchedule($id, $readonly = false)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['teachers/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
+        $this->view->params['breadcrumbs'][] = 'Расписание занятий';
+        $this->view->params['tabMenu'] = $this->getMenu($id);
 
+        if (!isset($model)) {
+            throw new NotFoundHttpException("The StudyplanSubject was not found.");
+        }
+
+        // $modelsSubject = $model->studyplanSubject;
+
+        return $this->render('schedule', [
+            'model' => $model,
+            // 'modelsSubject' => (empty($modelsSubject)) ? [new StudyplanSubject()] : $modelsSubject,
+            'readonly' => $readonly
+        ]);
+    }
     public function actionLoadItems($id, $objectId = null, $mode = null)
     {
         $model = $this->findModel($id);
@@ -885,10 +904,10 @@ class DefaultController extends MainController
         return [
             ['label' => 'Монитор', 'url' => ['/teachers/default/monitor', 'id' => $id]],
             ['label' => 'Карточка', 'url' => ['/teachers/default/update', 'id' => $id]],
-            //  ['label' => 'Расписание занятий', 'url' => ['/teachers/default/schedule', 'id' => $id]],
             ['label' => 'Нагрузка', 'url' => ['/teachers/default/load-items', 'id' => $id]],
             ['label' => 'Планирование инд. занятий', 'url' => ['/teachers/default/teachers-plan', 'id' => $id]],
             ['label' => 'Злементы расписания', 'url' => ['/teachers/default/schedule-items', 'id' => $id]],
+            ['label' => 'Расписание занятий', 'url' => ['/teachers/default/schedule', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/teachers/default/consult-items', 'id' => $id]],
             ['label' => 'Журнал успеваемости', 'url' => ['/teachers/default/studyplan-progress', 'id' => $id]],
             ['label' => 'Показатели эффективности', 'url' => ['/teachers/default/efficiency', 'id' => $id]],

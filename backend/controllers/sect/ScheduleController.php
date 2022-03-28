@@ -3,13 +3,12 @@
 namespace backend\controllers\sect;
 
 use artsoft\widgets\ActiveForm;
-use common\models\subjectsect\SubjectSect;
 use Yii;
 use yii\web\Response;
 
 class ScheduleController extends MainController
 {
-    public $modelClass = 'common\models\subjectsect\SubjectSchedule';
+    public $modelClass = 'common\models\schedule\SubjectSchedule';
     public $modelSearchClass = null;
 
     public function actionUpdateSchedule($id = null)

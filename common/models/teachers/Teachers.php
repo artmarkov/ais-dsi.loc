@@ -5,10 +5,12 @@ namespace common\models\teachers;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\db\ActiveRecord;
+use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\guidejob\Level;
 use common\models\guidejob\Position;
 use common\models\guidejob\Work;
+use common\models\schedule\SubjectScheduleView;
 use common\models\user\UserCommon;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -237,5 +239,42 @@ class Teachers extends ActiveRecord
     public static function getTeachersList($direction_id)
     {
         return \yii\helpers\ArrayHelper::map(self::getTeachersById($direction_id), 'id', 'name');
+    }
+
+    public function getTeachersSchedule()
+    {
+        $models = SubjectScheduleView::find()
+            ->where(['teachers_id' => $this->id])
+            ->andWhere(['not', ['subject_schedule_id' => null]])
+            ->all();
+
+        $data = [];
+
+        foreach ($models as $item => $modelSchedule) {
+            $data[] = [
+                'week_day' => $modelSchedule->week_day,
+                'time_in' => $modelSchedule->time_in,
+                'time_out' => $modelSchedule->time_out,
+                'title' => RefBook::find('sect_name_1')->getValue($modelSchedule->subject_sect_studyplan_id),
+                'data' => [
+                    'subject_sect_id' => $this->id,
+                    'schedule_id' => $modelSchedule->subject_schedule_id,
+                    'teachers_load_id' => $modelSchedule->teachers_load_id,
+                    'direction_id' => $modelSchedule->direction_id,
+                    'teachers_id' => $modelSchedule->teachers_id,
+                    'description' => $modelSchedule->description,
+                    'week_num' => $modelSchedule->week_num,
+                    'week_day' => $modelSchedule->week_day,
+                    'auditory_id' => $modelSchedule->auditory_id,
+                    'style' => [
+                        'background' => '#0000ff',
+                        'color' => '#00ff00',
+                        'border' => '#ff0000',
+                    ]
+                ]
+            ];
+        }
+//        print_r($data);
+        return $data;
     }
 }

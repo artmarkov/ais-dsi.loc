@@ -3,13 +3,12 @@
 namespace backend\controllers\studyplan;
 
 use artsoft\widgets\ActiveForm;
-use common\models\subjectsect\SubjectSectSchedule;
 use Yii;
 use yii\web\Response;
 
 class ScheduleController extends MainController
 {
-    public $modelClass = 'common\models\subjectsect\SubjectSchedule';
+    public $modelClass = 'common\models\schedule\SubjectSchedule';
     public $modelSearchClass = null;
 
     /**

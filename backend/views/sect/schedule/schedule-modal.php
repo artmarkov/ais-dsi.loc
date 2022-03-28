@@ -6,10 +6,10 @@ use yii\widgets\MaskedInput;
 use artsoft\helpers\RefBook;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\subjectsect\SubjectSectSchedule */
+/* @var $model common\models\schedule\SubjectSchedule */
 /* @var $modelStudyplan common\models\studyplan\Studyplan */
 /* @var $form artsoft\widgets\ActiveForm */
-/* @var $studyplan_id */
+/* @var $subject_sect_id */
 
 ?>
 <?php $form = ActiveForm::begin([
@@ -17,10 +17,10 @@ use artsoft\helpers\RefBook;
 //    'options' => [
 //        'data-pjax' => true
 //    ],
-    'enableAjaxValidation' => true,
 //            'validateOnChange' => true,
 //            'validateOnSubmit' => true,
     'action' => ['sect/schedule/update-schedule', 'id' => $model->id, 'subject_sect_id' => $subject_sect_id],
+    'enableAjaxValidation' => true,
 
 ]);
 
