@@ -13,8 +13,8 @@ use common\models\education\EducationSpeciality;
 use common\models\parents\Parents;
 use common\models\students\Student;
 use common\models\subject\Subject;
-use common\models\subjectsect\SubjectScheduleView;
-use common\models\subjectsect\SubjectSectScheduleView;
+use common\models\subjectsect\SubjectScheduleStudyplanView;
+use common\models\subjectsect\SubjectSectScheduleStudyplanView;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
@@ -366,7 +366,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
      */
     public function getStudyplanSchedule()
     {
-        $models = SubjectScheduleView::find()
+        $models = SubjectScheduleStudyplanView::find()
             ->where(['studyplan_id' => $this->id])
             ->andWhere(['not', ['subject_schedule_id' => null]])
             ->all();

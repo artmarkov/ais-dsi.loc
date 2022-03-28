@@ -77,7 +77,7 @@ UNION ALL
              left join teachers_load  on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id
                   and teachers_load.studyplan_subject_id = 0)
                    )
-ORDER BY studyplan_subject_id, subject_sect_studyplan_id, direction_id, teachers_id
+ORDER BY subject_sect_studyplan_id, studyplan_subject_id, direction_id, teachers_id
 
         ')->execute();
 
@@ -116,7 +116,7 @@ UNION ALL
 			 left join teachers_load on (subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id 
 			  and teachers_load.studyplan_subject_id = 0)
 			  )
-ORDER BY subject_sect_studyplan_id, direction_id, teachers_id
+ORDER BY subject_sect_studyplan_id, studyplan_subject_id, direction_id, teachers_id
         ')->execute();
 
         $this->createTableWithHistory('subject_schedule', [
@@ -193,7 +193,6 @@ ORDER BY subject_sect_studyplan_id, direction_id, teachers_id
         $this->db->createCommand()->dropView('teachers_load_studyplan_view')->execute();
         $this->dropForeignKey('teachers_load_ibfk_1', 'teachers_load');
         $this->dropForeignKey('teachers_load_ibfk_2', 'teachers_load');
-
         $this->dropTableWithHistory('consult_schedule');
         $this->dropTableWithHistory('teachers_plan');
         $this->dropTableWithHistory('subject_schedule');

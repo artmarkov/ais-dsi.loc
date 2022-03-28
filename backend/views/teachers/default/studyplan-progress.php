@@ -4,7 +4,7 @@ use kartik\grid\GridView;
 use artsoft\helpers\RefBook;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use common\models\subjectsect\SubjectScheduleTeachersView;
+use common\models\schedule\SubjectScheduleStudyplanView;
 use common\models\education\LessonItems;
 
 $this->title = $this->title = Yii::t('art/guide', 'Journal Progress');
@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //echo '<pre>' . print_r($model, true) . '</pre>'; die();
 $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
-    if (SubjectScheduleTeachersView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
+    if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
         if ($model['subject_sect_studyplan_id'] != 0) {
             $content += [3 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
                 Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']),

@@ -1,63 +1,135 @@
 <?php
 
-namespace common\models\subjectsect;
-
+namespace common\models\schedule;
 
 use artsoft\behaviors\TimeFieldBehavior;
+use artsoft\helpers\ArtHelper;
+use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use artsoft\widgets\Notice;
+use artsoft\widgets\Tooltip;
 use common\models\auditory\Auditory;
 use common\models\guidejob\Direction;
 use common\models\studyplan\StudyplanSubject;
-use artsoft\helpers\RefBook;
-use artsoft\helpers\ArtHelper;
-use common\models\subject\SubjectCategory;
-use common\models\subjectsect\search\SubjectSectScheduleViewSearch;
-use common\models\teachers\Teachers;
 use common\models\teachers\TeachersLoad;
+use common\models\teachers\TeachersLoadTrait;
 use Yii;
-use artsoft\widgets\Notice;
-use artsoft\widgets\Tooltip;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
- * This is the model class for table "subject_schedule_view".
+ * This is the model class for table "subject_schedule".
  *
- * @property int|null $teachers_load_id
- * @property int|null $subject_sect_studyplan_id
- * @property int|null $studyplan_subject_id
- * @property int|null $direction_id
- * @property int|null $teachers_id
- * @property float|null $load_time
- * @property int|null $studyplan_id
- * @property int|null $student_id
- * @property int|null $subject_cat_id
- * @property int|null $subject_id
- * @property int|null $subject_type_id
- * @property int|null $subject_vid_id
- * @property float|null $week_time
- * @property float|null $year_time
- * @property int|null $plan_year
- * @property int|null $subject_schedule_id
+ * @property int $id
+ * @property int $teachers_load_id
  * @property int|null $week_num
  * @property int|null $week_day
  * @property int|null $time_in
  * @property int|null $time_out
  * @property int|null $auditory_id
- * @property string|null $description
- * @property int|null $status
- * @property int|null $programm_id
- * @property int|null $speciality_id
- * @property int|null $course
+ * @property string $description
+ * @property int $created_at
+ * @property int|null $created_by
+ * @property int $updated_at
+ * @property int|null $updated_by
+ * @property int $version
+ *
+ * @property TeachersKoad $teachersLoad
  */
-class SubjectScheduleView extends SubjectSchedule
+class SubjectSchedule  extends \artsoft\db\ActiveRecord
 {
-    public $scheduleDisplay;
+    use TeachersLoadTrait;
 
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'subject_schedule_view';
+        return 'subject_schedule';
+    }
+
+    /**
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            BlameableBehavior::class,
+            TimestampBehavior::class,
+            [
+                'class' => TimeFieldBehavior::class,
+                'attributes' => ['time_in', 'time_out'],
+            ]
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            [['teachers_load_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
+            [['teachers_load_id', 'week_day', 'auditory_id', 'time_in', 'time_out'], 'required'],
+            [['time_in', 'time_out', 'teachersLoadId'], 'safe'],
+            [['description'], 'string', 'max' => 512],
+            [['teachers_load_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeachersLoad::class, 'targetAttribute' => ['teachers_load_id' => 'id']],
+            [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
+            [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
+//            [['auditory_id', 'time_in'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
+            //  [['auditory_id'], 'checkScheduleOverLapping', 'skipOnEmpty' => false],
+            [['auditory_id'], 'checkScheduleAccompLimit', 'skipOnEmpty' => false],
+        ];
+    }
+
+
+    public function checkFormatTime($attribute, $params)
+    {
+        if (!preg_match('/^([01]?[0-9]|2[0-3])(:|\.)[0-5][0-9]$/', $this->$attribute)) {
+            $this->addError($attribute, 'Формат ввода времени не верен.');
+        }
+    }
+
+    public function checkScheduleOverLapping($attribute, $params)
+    {
+        if (SubjectSectScheduleStudyplanView::getScheduleOverLapping($this)->exists() === true) {
+            $this->addError($attribute, 'В одной аудитории накладка по времени!');
+        }
+    }
+
+    public function checkScheduleAccompLimit($attribute, $params)
+    {
+        if ($this->direction->parent != null) {
+            $thereIsAnAccompLimit = self::find()->where(
+                ['AND',
+                    ['subject_sect_studyplan_id' => $this->subject_sect_studyplan_id],
+                    ['direction_id' => $this->direction->parent],
+                    ['auditory_id' => $this->auditory_id],
+                    ['<=', 'time_in', Schedule::encodeTime($this->time_in)],
+                    ['>=', 'time_out', Schedule::encodeTime($this->time_out)],
+                    ['=', 'week_day', $this->week_day]
+                ]);
+            if ($this->getAttribute($this->week_num) !== null) {
+                $thereIsAnAccompLimit->andWhere(['=', 'week_num', $this->week_num]);
+            }
+            if ($thereIsAnAccompLimit->exists() === false) {
+                $info = [];
+                $message = 'Концертмейстер может работать только в рамках расписания преподавателя';
+                $teachersSchedule = self::find()->where(
+                    ['AND',
+                        ['subject_sect_studyplan_id' => $this->subject_sect_studyplan_id],
+                        ['direction_id' => $this->direction->parent]
+                    ]);
+                foreach ($teachersSchedule->all() as $itemModel) {
+                    $string = ' ' . ArtHelper::getWeekValue('short', $itemModel->week_num);
+                    $string .= ' ' . ArtHelper::getWeekdayValue('short', $itemModel->week_day) . ' ' . $itemModel->time_in . '-' . $itemModel->time_out;
+                    $string .= ' ' . RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
+                    $info[] = $string;
+                }
+                $this->addError($attribute, $message);
+                Notice::registerWarning($message . ': ' . implode(', ', $info));
+            }
+        }
     }
 
     /**
@@ -66,49 +138,51 @@ class SubjectScheduleView extends SubjectSchedule
     public function attributeLabels()
     {
         return [
-            'teachers_load_id' => Yii::t('art/guide', 'Teachers Load'),
-            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
-            'direction_id' => Yii::t('art/teachers', 'Name Direction'),
-            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
-            'load_time' => Yii::t('art/guide', 'Load Time'),
-            'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
-            'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
-            'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
-            'subject_schedule_id' => Yii::t('art/guide', 'Subject Schedule'),
-            'scheduleDisplay' => Yii::t('art/guide', 'Subject Schedule'),
+            'id' => Yii::t('art', 'ID'),
+            'teachers_load_id' => Yii::t('art/teachers', 'Teachers Load'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
             'week_day' => Yii::t('art/guide', 'Week Day'),
             'time_in' => Yii::t('art/guide', 'Time In'),
             'time_out' => Yii::t('art/guide', 'Time Out'),
             'auditory_id' => Yii::t('art/guide', 'Auditory'),
-            'description' => Yii::t('art/guide', 'Description'),
-
-            'studyplan_subject_id' => Yii::t('art/guide', 'Subject Name'),
-            'studyplan_id' => Yii::t('art/guide', 'Studyplan'),
-            'student_id' => Yii::t('art/student', 'Student'),
-            'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
-            'subject_id' => Yii::t('art/guide', 'Subject Name'),
-            'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
-            'subject_vid_id' => Yii::t('art/guide', 'Subject Vid'),
-            'week_time' => Yii::t('art/guide', 'Week Time'),
-            'year_time' => Yii::t('art/guide', 'Year Time'),
-            'status' => Yii::t('art/guide', 'Status'),
-            'programm_id' => Yii::t('art/studyplan', 'Education Programm'),
-            'speciality_id' => Yii::t('art/studyplan', 'Speciality Name'),
-            'course' => Yii::t('art/studyplan', 'Course'),
+            'description' => Yii::t('art', 'Description'),
+            'created_at' => Yii::t('art', 'Created'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'updated_by' => Yii::t('art', 'Updated By'),
+            'version' => Yii::t('art', 'Version'),
         ];
     }
 
-    public function getDirection()
+    public function optimisticLock()
     {
-        return $this->hasOne(Direction::class, ['id' => 'direction_id']);
+        return 'version';
     }
 
+    /**
+     * Gets query for [[Direction]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
     public function getTeachersLoad()
     {
         return $this->hasOne(TeachersLoad::class, ['id' => 'teachers_load_id']);
     }
 
+    public function getDirectionId()
+    {
+        return $this->teachersLoad->direction_id;
+    }
+
+    public function getTeachersId()
+    {
+        return $this->teachersLoad->teachers_id;
+    }
+
+    public function getDirection()
+    {
+        return Direction::findOne($this->getDirectionId());
+    }
     /**
      * Gets query for [[SubjectSectStudyplan]].
      *
@@ -116,26 +190,28 @@ class SubjectScheduleView extends SubjectSchedule
      */
     public function getSubjectSectStudyplan()
     {
-        return $this->hasOne(SubjectSectStudyplan::class, ['id' => 'subject_sect_studyplan_id']);
+        return $this->teachersLoad->subject_sect_studyplan_id != 0 ? SubjectSectStudyplan::findOne($this->teachersLoad->subject_sect_studyplan_id) : null;
     }
 
+    /**
+     * @return \yii\db\ActiveQuery|null
+     */
     public function getStudyplanSubject()
     {
-        return $this->hasOne(StudyplanSubject::class, ['id' => 'studyplan_subject_id']);
+        return $this->teachersLoad->studyplan_subject_id != 0 ? StudyplanSubject::findOne($this->teachersLoad->studyplan_subject_id) : null;
     }
 
-    public function getSubjectCategory()
-    {
-        return $this->hasOne(SubjectCategory::class, ['id' => 'subject_cat_id']);
-    }
     /**
-     * Gets query for [[Teachers]].
-     *
-     * @return \yii\db\ActiveQuery
+     * @return bool|\yii\db\ActiveQuery
      */
-    public function getTeachers()
+    public function isSubjectMontly()
     {
-        return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
+        if ($this->teachersLoad->subject_sect_studyplan_id != 0) {
+            return $this->subjectSectStudyplan->subjectSect->subjectCat->isMonthly();
+        } elseif ($this->teachersLoad->studyplan_subject_id != 0) {
+            return $this->studyplanSubject->subjectCat->isMonthly();
+        }
+        return false;
     }
 
     /**
@@ -143,9 +219,23 @@ class SubjectScheduleView extends SubjectSchedule
      */
     public function getAuditory()
     {
-        return $this->hasOne(Auditory::class, ['id' => 'auditory_id']);
+        return $this->hasOne(Auditory::class, ['id' => 'teachers_id']);
     }
 
+
+    /**
+     * @return string
+     */
+    public function getTeachersScheduleDisplay()
+    {
+        $auditory = RefBook::find('auditory_memo_1')->getValue($this->auditory_id);
+        $teachers = RefBook::find('teachers_fio')->getValue($this->teachers_id);
+        $direction = $this->direction->slug;
+        $string = $this->week_num != 0 ? ' ' . ArtHelper::getWeekList('short')[$this->week_num] : null;
+        $string .= ' ' . ArtHelper::getWeekdayList('short')[$this->week_day] . ' ' . $this->time_in . '-' . $this->time_out . '->(' . $auditory . ')';
+        $string .= '->' . $teachers . '(' . $direction . ')';
+        return $string;
+    }
     /**
      * @return string
      */
@@ -227,7 +317,7 @@ class SubjectScheduleView extends SubjectSchedule
 
     /**
      * Запрос на полное время занятий расписания преподавателя данной нагрузки
-     * @return array|SubjectSectScheduleView|null|\yii\db\ActiveRecord
+     * @return array|SubjectSectScheduleStudyplanView|null|\yii\db\ActiveRecord
      */
     public function getTeachersOverLoad()
     {
@@ -311,5 +401,15 @@ class SubjectScheduleView extends SubjectSchedule
         }
         return false;
     }
+    public static function getScheduleIsExist($subject_sect_studyplan_id, $studyplan_subject_id)
+    {
+        $studyplan_subject_id = $subject_sect_studyplan_id == 0 ? $studyplan_subject_id : 0;
 
+        $scheduleIsExist = self::find()->where(
+            ['AND',
+                ['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id],
+                ['=', 'studyplan_subject_id', $studyplan_subject_id],
+            ]);
+        return $scheduleIsExist->exists();
+    }
 }

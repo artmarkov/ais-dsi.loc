@@ -9,7 +9,7 @@ use artsoft\helpers\Schedule;
 use common\models\own\Department;
 use common\models\routine\Routine;
 use common\models\schedule\ConsultScheduleTeachersView;
-use common\models\subjectsect\SubjectScheduleTeachersView;
+use common\models\subjectsect\SubjectScheduleTeachersStudyplanView;
 use Yii;
 
 class TeachersTimesheet
@@ -57,7 +57,7 @@ class TeachersTimesheet
         $week_day = Schedule::getWeekDay($day, $this->mon, $this->year); // номер дня недели
         $week_num = Schedule::getWeekNum($day, $this->mon, $this->year);  // номер недели в месяце
 
-        $full_time = SubjectScheduleTeachersView::find()
+        $full_time = SubjectScheduleTeachersStudyplanView::find()
             ->select(new \yii\db\Expression("(SUM(time_out) - SUM(time_in)) as full_time"))
             ->where(['direction_id' => $direction_id])
             ->andWhere(['teachers_id' => $teachers_id])

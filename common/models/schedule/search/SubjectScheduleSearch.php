@@ -1,26 +1,27 @@
 <?php
 
-namespace common\models\subjectsect\search;
+namespace common\models\schedule\search;
 
-use common\models\subjectsect\SubjectSectScheduleView;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use common\models\schedule\SubjectSchedule;
 
 /**
- * SubjectSectScheduleSearch represents the model behind the search form about `common\models\subjectsect\SubjectSectSchedule`.
+ * SubjectScheduleSearch represents the model behind the search form about `common\models\schedule\SubjectSchedule`.
  * @property int $subject_sect_id
  */
-class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
+class SubjectScheduleSearch extends SubjectSchedule
 {
+    public $subject_sect_id;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [[ 'subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
-            [['description', 'studyplan_subject_list'], 'safe'],
+            [['id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
+            [['description', 'subject_sect_id'], 'safe'],
         ];
     }
 
@@ -42,13 +43,18 @@ class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
      */
     public function search($params)
     {
-        $query = SubjectSectScheduleView::find();
+        $query = SubjectSchedule::find();
+        $query->joinWith(['subjectSectStudyplan']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => false,
+            'pagination' => [
+                'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
+            ],
             'sort' => [
-                'defaultOrder' => false,
+                'defaultOrder' => [
+                    'id' => SORT_DESC,
+                ],
             ],
         ]);
 
@@ -61,18 +67,20 @@ class SubjectSectScheduleViewSearch extends SubjectSectScheduleView
         }
 
         $query->andFilterWhere([
+            'id' => $this->id,
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
+            'studyplan_subject_id' => $this->studyplan_subject_id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
             'week_num' => $this->week_num,
             'week_day' => $this->week_day,
-//            'time_in' => $this->time_in,
-//            'time_out' => $this->time_out,
+            'time_in' => $this->time_in,
+            'time_out' => $this->time_out,
             'auditory_id' => $this->auditory_id,
+            'subject_sect_studyplan.subject_sect_id' => $this->subject_sect_id,
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);
-        $query->andFilterWhere(['like', 'studyplan_subject_list', $this->studyplan_subject_list]);
 
         return $dataProvider;
     }

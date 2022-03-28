@@ -4,7 +4,7 @@ namespace common\models\education;
 
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\Schedule;
-use common\models\subjectsect\SubjectScheduleTeachersView;
+use common\models\subjectsect\SubjectScheduleTeachersStudyplanView;
 use common\models\subjectsect\SubjectSectStudyplan;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -120,7 +120,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
 
     public function checkLessonDate($attribute, $params)
     {
-        $checkLesson = SubjectScheduleTeachersView::find()->where(
+        $checkLesson = SubjectScheduleTeachersStudyplanView::find()->where(
             ['AND',
                 ['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id],
                 ['=', 'studyplan_subject_id', $this->studyplan_subject_id],

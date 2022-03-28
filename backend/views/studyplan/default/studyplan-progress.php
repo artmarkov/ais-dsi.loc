@@ -2,7 +2,7 @@
 
 use artsoft\helpers\RefBook;
 use common\models\education\LessonItems;
-use common\models\subjectsect\SubjectScheduleTeachersView;
+use common\models\schedule\SubjectScheduleStudyplanView;
 use yii\helpers\Url;
 use artsoft\helpers\Html;
 use kartik\grid\GridView;
@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //echo '<pre>' . print_r($model['data'], true) . '</pre>'; die();
 $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
-    if (SubjectScheduleTeachersView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
+    if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
         if ($model['subject_sect_studyplan_id'] != 0) {
             $content += [2 => \yii\helpers\Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
                 Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']),

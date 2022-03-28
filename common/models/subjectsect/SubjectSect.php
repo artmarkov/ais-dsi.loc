@@ -334,7 +334,7 @@ SQL;
 
     public function getSubjectSchedule()
     {
-        $models = SubjectSectScheduleView::find()
+        $models = SubjectSectScheduleStudyplanView::find()
             ->where(['subject_sect_id' => $this->id])
             ->andWhere(['not', ['subject_schedule_id' => null]])
             ->all();

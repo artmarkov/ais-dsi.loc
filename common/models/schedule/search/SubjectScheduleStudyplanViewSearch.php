@@ -1,16 +1,16 @@
 <?php
 
-namespace common\models\subjectsect\search;
+namespace common\models\schedule\search;
 
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\subjectsect\SubjectScheduleView;
+use common\models\schedule\SubjectScheduleStudyplanView;
 
 /**
- * SubjectScheduleViewSearch represents the model behind the search form about `common\models\subjectsect\SubjectScheduleView`.
+ * SubjectScheduleViewSearch represents the model behind the search form about `common\models\schedule\SubjectScheduleStudyplanView`.
  */
-class SubjectScheduleViewSearch extends SubjectScheduleView
+class SubjectScheduleStudyplanViewSearch extends SubjectScheduleStudyplanView
 {
     /**
      * @inheritdoc
@@ -18,9 +18,9 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
     public function rules()
     {
         return [
-            [['teachers_load_id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'studyplan_id', 'student_id', 'programm_id','speciality_id','course', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'plan_year', 'subject_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'status', 'programm_id', 'speciality_id', 'course'], 'integer'],
-//            [['teachers_load_week_time', 'week_time', 'year_time'], 'number'],
-            [['description'], 'safe'],
+            [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'studyplan_id', 'student_id', 'plan_year','status','teachers_load_id', 'direction_id', 'teachers_id', 'subject_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
+//            [['load_time', 'week_time'], 'number'],
+            [['description', 'studyplan_subject_list'], 'string'],
         ];
     }
 
@@ -42,7 +42,7 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
      */
     public function search($params)
     {
-        $query = SubjectScheduleView::find();
+        $query = SubjectScheduleStudyplanView::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -61,31 +61,25 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
         }
 
         $query->andFilterWhere([
-            'teachers_load_id' => $this->teachers_load_id,
-            'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
             'studyplan_subject_id' => $this->studyplan_subject_id,
-            'direction_id' => $this->direction_id,
-            'teachers_id' => $this->teachers_id,
-//            'teachers_load_week_time' => $this->teachers_load_week_time,
+//            'week_time' => $this->week_time,
+            'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
+            'studyplan_subject_list' => $this->studyplan_subject_list,
+            'subject_sect_id' => $this->subject_sect_id,
             'studyplan_id' => $this->studyplan_id,
             'student_id' => $this->student_id,
-            'programm_id' => $this->programm_id,
-            'speciality_id' => $this->speciality_id,
-            'course' => $this->course,
-            'subject_cat_id' => $this->subject_cat_id,
-            'subject_id' => $this->subject_id,
-            'subject_type_id' => $this->subject_type_id,
-            'subject_vid_id' => $this->subject_vid_id,
-//            'week_time' => $this->week_time,
-//            'year_time' => $this->year_time,
             'plan_year' => $this->plan_year,
+            'status' => $this->status,
+            'teachers_load_id' => $this->teachers_load_id,
+            'direction_id' => $this->direction_id,
+            'teachers_id' => $this->teachers_id,
+//            'load_time' => $this->load_time,
             'subject_schedule_id' => $this->subject_schedule_id,
             'week_num' => $this->week_num,
             'week_day' => $this->week_day,
             'time_in' => $this->time_in,
             'time_out' => $this->time_out,
             'auditory_id' => $this->auditory_id,
-            'status' => $this->status,
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);

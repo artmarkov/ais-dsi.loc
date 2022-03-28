@@ -55,6 +55,8 @@ $columns = [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+        'group' => true,  // enable grouping
+        'subGroupOf' => 3
     ],
     [
         'attribute' => 'teachers_id',
@@ -67,7 +69,8 @@ $columns = [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-
+        'group' => true,  // enable grouping
+        'subGroupOf' => 4
     ],
     [
         'attribute' => 'load_time',

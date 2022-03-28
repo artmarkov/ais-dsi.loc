@@ -64,7 +64,7 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 2
     ],
     [
         'attribute' => 'direction_id',
@@ -79,7 +79,7 @@ $columns = [
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
 
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 4
     ],
     [
         'attribute' => 'teachers_id',
@@ -93,7 +93,7 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 3
+        'subGroupOf' => 5
     ],
     [
         'attribute' => 'load_time',
@@ -116,7 +116,6 @@ $columns = [
                             'title' => Yii::t('art', 'Create'),
                             'data-method' => 'post',
                             'data-pjax' => '0',
-                            'disabled' => true
                         ]
                     );
                 } else {
@@ -125,7 +124,7 @@ $columns = [
                             'title' => Yii::t('art', 'Create'),
                             'data-method' => 'post',
                             'data-pjax' => '0',
-                            'disabled' => true
+
                         ]
                     );
                 }

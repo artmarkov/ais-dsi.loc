@@ -83,6 +83,12 @@ class Direction extends ActiveRecord
 
     }
 
+    public static function isDirectionSlave($id)
+    {
+        return self::findOne($id)->parent != null;
+
+    }
+
     /**
      * @return false|int|null|string
      */

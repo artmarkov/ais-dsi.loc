@@ -7,7 +7,7 @@ use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use kartik\grid\GridView;
-use common\models\subjectsect\SubjectScheduleView;
+use common\models\subjectsect\SubjectScheduleStudyplanView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\subjectsect\search\SubjectScheduleSearch */

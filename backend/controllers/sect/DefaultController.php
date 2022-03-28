@@ -7,14 +7,14 @@ use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
 use common\models\history\LessonItemsHistory;
-use common\models\subjectsect\SubjectSchedule;
+use common\models\history\SubjectScheduleHistory;
+use common\models\history\TeachersLoadHistory;
+use common\models\schedule\search\SubjectScheduleViewSearch;
+use common\models\schedule\SubjectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
-use common\models\teachers\search\TeachersLoadSectViewSearch;
-use common\models\teachers\search\TeachersLoadStudyplanViewSearch;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\TeachersLoad;
-use common\models\subjectsect\search\SubjectSectScheduleViewSearch;
 use Yii;
 use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
@@ -197,11 +197,11 @@ class DefaultController extends MainController
             ]);
 
         } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['sect/default/load-items', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['sect/default/load-items', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
             $model = TeachersLoad::findOne($objectId);
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/update', 'id' => $model->id]];
-            $data = new SubjectSectScheduleHistory($objectId);
-            return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
+            $data = new TeachersLoadHistory($objectId);
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
             $model = TeachersLoad::findOne($objectId);
@@ -276,14 +276,12 @@ class DefaultController extends MainController
                 'model' => $model,
                 'teachersLoadModel' => $teachersLoadModel,
             ]);
-
-
         } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/schedule-items', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['sect/default/schedule-items', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
             $model = SubjectSchedule::findOne($objectId);
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schedule Items'), 'url' => ['sect/default/schedule-items', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/update', 'id' => $model->id]];
-            $data = new SubjectSectScheduleHistory($objectId);
-            return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
+            $data = new SubjectScheduleHistory($objectId);
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
             $model = SubjectSchedule::findOne($objectId);
@@ -313,7 +311,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $searchModel = new SubjectSectScheduleViewSearch();
+            $searchModel = new SubjectScheduleViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();

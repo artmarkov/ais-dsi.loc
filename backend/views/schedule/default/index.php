@@ -7,7 +7,7 @@ use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use kartik\grid\GridView;
-use common\models\subjectsect\SubjectScheduleView;
+use common\models\subjectsect\SubjectScheduleStudyplanView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\subjectsect\search\SubjectSectScheduleSearch */
@@ -117,9 +117,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'status',
                                 'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => SubjectScheduleView::getStatusList(),
+                                'filter' => SubjectScheduleStudyplanView::getStatusList(),
                                 'value' => function ($model) {
-                                    return SubjectScheduleView::getStatusValue($model->status);
+                                    return SubjectScheduleStudyplanView::getStatusValue($model->status);
                                 },
                                 'filterWidgetOptions' => [
                                     'pluginOptions' => ['allowClear' => true],

@@ -2,9 +2,6 @@
 
 namespace common\models\teachers;
 
-use artsoft\helpers\RefBook;
-use artsoft\widgets\Notice;
-use artsoft\widgets\Tooltip;
 use Yii;
 
 class TeachersLoadView extends TeachersLoad
@@ -59,20 +56,5 @@ class TeachersLoadView extends TeachersLoad
 //        return $this->getTeachersFullLoad() < $this->week_time;
 //    }
 
-    public function getItemLoadNotice()
-    {
-        $tooltip = [];
-        if ($this->studyplan_subject_list == '') {
-            $message = 'В группе ' . RefBook::find('sect_name_2')->getValue($this->subject_sect_studyplan_id) . ' не обнаружено ни одного учащегося!';
-            Notice::registerWarning($message);
-        }
-        if ($this->teachers_load_id) {
-            if ($this->week_time != $this->load_time) {
-                $message = 'Суммарное время нагрузки не соответствует планированию - ' . $this->load_time . ' ак.ч';
-                $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
-            }
-            return implode('', $tooltip);
-        }
-        return null;
-    }
+
 }
