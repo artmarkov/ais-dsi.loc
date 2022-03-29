@@ -111,53 +111,49 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
     <div class="studyplan-progress-index">
         <div class="panel">
             <div class="panel-body">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <?= $this->render('@app/views/studyplan/lesson-items/_search', compact('model_date')) ?>
-                        <?php
-                        echo GridView::widget([
-                            'dataProvider' => new \yii\data\ArrayDataProvider([
-                                'allModels' => $model['data'],
-                                'sort' => false,
-                                'pagination' => false,
-                            ]),
-                            'tableOptions' => ['class' => 'table-condensed'],
-                            'filterModel' => null,
-                            'formatter' => ['class' => 'yii\i18n\Formatter','nullDisplay' => ''],
+                <?= $this->render('@app/views/studyplan/lesson-items/_search', compact('model_date')) ?>
+                <?php
+                echo GridView::widget([
+                    'dataProvider' => new \yii\data\ArrayDataProvider([
+                        'allModels' => $model['data'],
+                        'sort' => false,
+                        'pagination' => false,
+                    ]),
+                    'tableOptions' => ['class' => 'table-condensed'],
+                    'filterModel' => null,
+                    'formatter' => ['class' => 'yii\i18n\Formatter', 'nullDisplay' => ''],
 //                        'showPageSummary' => true,
-                            'pjax' => true,
-                            'hover' => true,
-                            'panel' => [
-                                'heading' => 'Результаты запроса',
-                                'type' => 'default',
-                                'after' => '',
-                                'footer' => $hints,
+                    'pjax' => true,
+                    'hover' => true,
+                    'panel' => [
+                        'heading' => 'Результаты запроса',
+                        'type' => 'default',
+                        'after' => '',
+                        'footer' => $hints,
+                    ],
+                    'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
+                    'columns' => $columns,
+                    'beforeHeader' => [
+                        [
+                            'columns' => [
+                                ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                                ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
                             ],
-                            'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
-                            'columns' => $columns,
-                            'beforeHeader' => [
-                                [
-                                    'columns' => [
-                                        ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-                                        ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
-                                    ],
-                                    'options' => ['class' => 'skip-export'] // remove this row from export
-                                ]
-                            ],
-                            'exportConfig' => [
-                                'html' => [],
-                                'csv' => [],
-                                'txt' => [],
-                                'xls' => [],
-                            ],
-                            'toolbar' => [
-                                '{export}',
-                                '{toggleData}'
-                            ],
-                        ]);
-                        ?>
-                    </div>
-                </div>
+                            'options' => ['class' => 'skip-export'] // remove this row from export
+                        ]
+                    ],
+                    'exportConfig' => [
+                        'html' => [],
+                        'csv' => [],
+                        'txt' => [],
+                        'xls' => [],
+                    ],
+                    'toolbar' => [
+                        '{export}',
+                        '{toggleData}'
+                    ],
+                ]);
+                ?>
             </div>
         </div>
     </div>

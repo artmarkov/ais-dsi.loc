@@ -134,7 +134,7 @@ class SubjectScheduleStudyplanView extends SubjectSchedule
      * Gets query for [[Teachers]].
      *
      * @return \yii\db\ActiveQuery
-//     */
+     * //     */
 //    public function getTeachers()
 //    {
 //        return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
@@ -314,4 +314,12 @@ class SubjectScheduleStudyplanView extends SubjectSchedule
 //        return false;
 //    }
 
+    public static function getScheduleIsExist($subject_sect_studyplan_id, $studyplan_subject_id)
+    {
+        if ($subject_sect_studyplan_id == 0) {
+            return self::find()->where(['=', 'studyplan_subject_id', $studyplan_subject_id])->exists();
+
+        }
+        return self::find()->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])->exists();
+    }
 }

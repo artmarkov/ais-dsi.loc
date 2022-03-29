@@ -170,7 +170,7 @@ UNION ALL
              inner join studyplan_subject on (studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 				   
              inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)			
 				 )
-ORDER BY studyplan_id, subject_sect_studyplan_id, studyplan_subject_id
+ORDER BY subject_sect_studyplan_id, studyplan_subject_id
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_view', '
