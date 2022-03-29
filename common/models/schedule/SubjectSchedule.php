@@ -11,6 +11,7 @@ use artsoft\widgets\Tooltip;
 use common\models\auditory\Auditory;
 use common\models\guidejob\Direction;
 use common\models\studyplan\StudyplanSubject;
+use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadTrait;
 use Yii;
@@ -183,6 +184,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
     {
         return Direction::findOne($this->getDirectionId());
     }
+
     /**
      * Gets query for [[SubjectSectStudyplan]].
      *
@@ -243,7 +245,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
     {
         $string  = ' ' . ArtHelper::getWeekValue('short', $this->week_num);
         $string .= ' ' . ArtHelper::getWeekdayValue('short', $this->week_day) . ' ' . $this->time_in . '-' . $this->time_out;
-        $string .= ' ' . $this->getItemScheduleNotice();
+        $string .= ' ' . $this->getTeachersOverLoadNotice();
         return $this->time_in ? $string : null;
     }
 

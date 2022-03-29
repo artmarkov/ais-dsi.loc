@@ -158,64 +158,60 @@ $columns = [
 <div class="teachers-load-index">
     <div class="panel">
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-body">
 
-                    <?php
-                    Pjax::begin([
-                        'id' => 'teachers-load-grid-pjax',
-                    ])
-                    ?>
+            <?php
+            Pjax::begin([
+                'id' => 'teachers-load-grid-pjax',
+            ])
+            ?>
 
-                    <?=
-                    GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
-                        'tableOptions' => ['class' => 'table-condensed'],
+            <?=
+            GridView::widget([
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'tableOptions' => ['class' => 'table-condensed'],
 //                        'showPageSummary' => true,
-                        'pjax' => true,
-                        'hover' => true,
-                        'panel' => [
-                            'heading' => 'Нагрузка',
-                            'type' => 'default',
-                            'after' => '',
+                'pjax' => true,
+                'hover' => true,
+                'panel' => [
+                    'heading' => 'Нагрузка',
+                    'type' => 'default',
+                    'after' => '',
+                ],
+                'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
+                'columns' => $columns,
+                'beforeHeader' => [
+                    [
+                        'columns' => [
+                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
                         ],
-                        'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
-                        'columns' => $columns,
-                        'beforeHeader' => [
-                            [
-                                'columns' => [
-                                    ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
-                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
-                                ],
-                                'options' => ['class' => 'skip-export'] // remove this row from export
+                        'options' => ['class' => 'skip-export'] // remove this row from export
+                    ]
+                ],
+                'exportConfig' => [
+                    'html' => [],
+                    'csv' => [],
+                    'txt' => [],
+                    'xls' => [],
+                ],
+                'toolbar' => [
+                    [
+                        'content' => Html::a('Очистить',
+                            Url::to(['/sect/default/load-items', 'id' => $id]), [
+                                'title' => 'Очистить',
+                                'data-pjax' => '0',
+                                'class' => 'btn btn-default'
                             ]
-                        ],
-                        'exportConfig' => [
-                            'html' => [],
-                            'csv' => [],
-                            'txt' => [],
-                            'xls' => [],
-                        ],
-                        'toolbar' => [
-                            [
-                                'content' => Html::a('Очистить',
-                                    Url::to(['/sect/default/load-items', 'id' => $id]), [
-                                        'title' => 'Очистить',
-                                        'data-pjax' => '0',
-                                        'class' => 'btn btn-default'
-                                    ]
-                                ),
-                            ],
-                            '{export}',
-                            '{toggleData}'
-                        ],
-                    ]);
-                    ?>
+                        ),
+                    ],
+                    '{export}',
+                    '{toggleData}'
+                ],
+            ]);
+            ?>
 
-                    <?php Pjax::end() ?>
-                </div>
-            </div>
+            <?php Pjax::end() ?>
         </div>
     </div>
 </div>

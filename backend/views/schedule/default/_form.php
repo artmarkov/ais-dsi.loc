@@ -5,7 +5,7 @@ use artsoft\widgets\ActiveForm;
 use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\subjectsect\SubjectSchedule */
+/* @var $model common\models\schedule\SubjectSchedule */
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 

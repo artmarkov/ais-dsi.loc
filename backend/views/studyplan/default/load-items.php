@@ -6,7 +6,7 @@ use artsoft\helpers\Html;
 use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\subjectsect\search\SubjectScheduleSearch */
+/* @var $searchModel common\models\teachers\search\TeachersLoadStudyplanViewSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/guide', 'Teachers Load');
@@ -75,8 +75,7 @@ $columns = [
     [
         'attribute' => 'load_time',
         'value' => function ($model) {
-            return $model->load_time . ' ' . $model->getItemLoadNotice()
-                ;
+            return $model->load_time . ' ' . $model->getItemLoadNotice();
         },
         'format' => 'raw',
 
@@ -147,54 +146,50 @@ $columns = [
 <div class="teachers-load-index">
     <div class="panel">
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <?= GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
-                        'tableOptions' => ['class' => 'table-condensed'],
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'tableOptions' => ['class' => 'table-condensed'],
 //                        'showPageSummary' => true,
-                        'pjax' => true,
-                        'hover' => true,
-                        'panel' => [
-                            'heading' => 'Нагрузка',
-                            'type' => 'default',
-                            'after' => '',
+                'pjax' => true,
+                'hover' => true,
+                'panel' => [
+                    'heading' => 'Нагрузка',
+                    'type' => 'default',
+                    'after' => '',
+                ],
+                'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
+                'columns' => $columns,
+                'beforeHeader' => [
+                    [
+                        'columns' => [
+                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 5, 'class' => 'text-center info']],
                         ],
-                        'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
-                        'columns' => $columns,
-                        'beforeHeader' => [
-                            [
-                                'columns' => [
-                                    ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
-                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 5, 'class' => 'text-center info']],
-                                ],
-                                'options' => ['class' => 'skip-export'] // remove this row from export
+                        'options' => ['class' => 'skip-export'] // remove this row from export
+                    ]
+                ],
+                'exportConfig' => [
+                    'html' => [],
+                    'csv' => [],
+                    'txt' => [],
+                    'xls' => [],
+                ],
+                'toolbar' => [
+                    [
+                        'content' => Html::a('Очистить',
+                            Url::to(['/studyplan/default/load-items', 'id' => $id]), [
+                                'title' => 'Очистить',
+                                'data-pjax' => '0',
+                                'class' => 'btn btn-default'
                             ]
-                        ],
-                        'exportConfig' => [
-                            'html' => [],
-                            'csv' => [],
-                            'txt' => [],
-                            'xls' => [],
-                        ],
-                        'toolbar' => [
-                            [
-                                'content' => Html::a('Очистить',
-                                    Url::to(['/studyplan/default/load-items', 'id' => $id]), [
-                                        'title' => 'Очистить',
-                                        'data-pjax' => '0',
-                                        'class' => 'btn btn-default'
-                                    ]
-                                ),
-                            ],
-                            '{export}',
-                            '{toggleData}'
-                        ],
-                    ]);
-                    ?>
-                </div>
-            </div>
+                        ),
+                    ],
+                    '{export}',
+                    '{toggleData}'
+                ],
+            ]);
+            ?>
         </div>
     </div>
 </div>

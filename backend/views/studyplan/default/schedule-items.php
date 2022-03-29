@@ -1,7 +1,6 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use common\models\studyplan\Studyplan;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
@@ -10,7 +9,7 @@ use kartik\grid\GridView;
 use common\models\subjectsect\SubjectScheduleStudyplanView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\subjectsect\search\SubjectScheduleSearch */
+/* @var $searchModel common\models\schedule\search\SubjectScheduleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/guide', 'Subject Schedule');
@@ -79,11 +78,9 @@ $columns = [
     [
         'attribute' => 'load_time',
         'value' => function ($model) {
-            return $model->load_time . ' ' . $model->getItemLoadNotice()
-                ;
+            return $model->load_time . ' ' . $model->getItemLoadNotice();
         },
         'format' => 'raw',
-
     ],
     [
         'attribute' => 'scheduleDisplay',
@@ -158,76 +155,58 @@ $columns = [
 <div class="subject-schedule-index">
     <div class="panel">
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <?php
-                            /* Uncomment this to activate GridQuickLinks */
-                            /* echo GridQuickLinks::widget([
-                                'model' => SubjectSect::className(),
-                                'searchModel' => $searchModel,
-                            ])*/
-                            ?>
-                        </div>
 
-                        <div class="col-sm-6 text-right">
-                            <?= GridPageSize::widget(['pjaxId' => 'subject-schedule-grid-pjax']) ?>
-                        </div>
-                    </div>
-                    <?php
-                    Pjax::begin([
-                        'id' => 'subject-sect-schedule-grid-pjax',
-                    ])
-                    ?>
-                    <?= GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
-                        'tableOptions' => ['class' => 'table-condensed'],
+            <?php
+            Pjax::begin([
+                'id' => 'subject-sect-schedule-grid-pjax',
+            ])
+            ?>
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'tableOptions' => ['class' => 'table-condensed'],
 //                        'showPageSummary' => true,
-                        'pjax' => true,
-                        'hover' => true,
-                        'panel' => [
-                            'heading' => 'Элементы расписания',
-                            'type' => 'default',
-                            'after' => '',
+                'pjax' => true,
+                'hover' => true,
+                'panel' => [
+                    'heading' => 'Элементы расписания',
+                    'type' => 'default',
+                    'after' => '',
+                ],
+                'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
+                'columns' => $columns,
+                'beforeHeader' => [
+                    [
+                        'columns' => [
+                            ['content' => 'Дисциплина', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
+                            ['content' => 'Расписание занятий', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
                         ],
-                        'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
-                        'columns' => $columns,
-                        'beforeHeader' => [
-                            [
-                                'columns' => [
-                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
-                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
-                                    ['content' => 'Расписание занятий', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
-                                ],
-                                'options' => ['class' => 'skip-export'] // remove this row from export
+                        'options' => ['class' => 'skip-export'] // remove this row from export
+                    ]
+                ],
+                'exportConfig' => [
+                    'html' => [],
+                    'csv' => [],
+                    'txt' => [],
+                    'xls' => [],
+                ],
+                'toolbar' => [
+                    [
+                        'content' => Html::a('Очистить',
+                            Url::to(['/studyplan/default/schedule-items', 'id' => $id]), [
+                                'title' => 'Очистить',
+                                'data-pjax' => '0',
+                                'class' => 'btn btn-default'
                             ]
-                        ],
-                        'exportConfig' => [
-                            'html' => [],
-                            'csv' => [],
-                            'txt' => [],
-                            'xls' => [],
-                        ],
-                        'toolbar' => [
-                            [
-                                'content' => Html::a('Очистить',
-                                    Url::to(['/studyplan/default/schedule-items', 'id' => $id]), [
-                                        'title' => 'Очистить',
-                                        'data-pjax' => '0',
-                                        'class' => 'btn btn-default'
-                                    ]
-                                ),
-                            ],
-                            '{export}',
-                            '{toggleData}'
-                        ],
-                    ]);
-                    ?>
-                    <?php Pjax::end() ?>
-                </div>
-            </div>
+                        ),
+                    ],
+                    '{export}',
+                    '{toggleData}'
+                ],
+            ]);
+            ?>
+            <?php Pjax::end() ?>
         </div>
     </div>
 </div>

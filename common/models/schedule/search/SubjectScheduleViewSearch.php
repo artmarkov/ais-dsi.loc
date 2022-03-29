@@ -26,7 +26,7 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
     {
         return [
             [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'plan_year', 'time_out', 'auditory_id',  'teachers_load_id', 'direction_id', 'teachers_id', 'load_time', 'subject_schedule_id', 'week_num', 'week_day', 'time_in'], 'integer'],
-//            [['load_time', 'week_time'], 'number'],
+            [['load_time', 'week_time'], 'number'],
             [['studyplan_subject_list', 'description'], 'string'],
         ];
     }
@@ -80,8 +80,8 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
             'subject_schedule_id' => $this->subject_schedule_id,
             'week_num' => $this->week_num,
             'week_day' => $this->week_day,
-//            'time_in' => $this->time_in,
-//            'time_out' => $this->time_out,
+            'time_in' => $this->time_in,
+            'time_out' => $this->time_out,
             'auditory_id' => $this->auditory_id,
         ]);
 

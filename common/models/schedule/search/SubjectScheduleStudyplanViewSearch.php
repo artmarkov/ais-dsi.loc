@@ -19,7 +19,7 @@ class SubjectScheduleStudyplanViewSearch extends SubjectScheduleStudyplanView
     {
         return [
             [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'studyplan_id', 'student_id', 'plan_year','status','teachers_load_id', 'direction_id', 'teachers_id', 'subject_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
-//            [['load_time', 'week_time'], 'number'],
+            [['load_time', 'week_time'], 'number'],
             [['description', 'studyplan_subject_list'], 'string'],
         ];
     }
@@ -62,7 +62,6 @@ class SubjectScheduleStudyplanViewSearch extends SubjectScheduleStudyplanView
 
         $query->andFilterWhere([
             'studyplan_subject_id' => $this->studyplan_subject_id,
-//            'week_time' => $this->week_time,
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
             'studyplan_subject_list' => $this->studyplan_subject_list,
             'subject_sect_id' => $this->subject_sect_id,
@@ -73,7 +72,8 @@ class SubjectScheduleStudyplanViewSearch extends SubjectScheduleStudyplanView
             'teachers_load_id' => $this->teachers_load_id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
-//            'load_time' => $this->load_time,
+            'week_time' => $this->week_time,
+            'load_time' => $this->load_time,
             'subject_schedule_id' => $this->subject_schedule_id,
             'week_num' => $this->week_num,
             'week_day' => $this->week_day,
