@@ -38,16 +38,16 @@ $editMarks = function ($model, $key, $index, $widget) {
         }
     }
     foreach ($model['lesson_timestamp'] as $id => $item) {
-        if (LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
+        if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
             $content += [$id + 4 => Html::a('<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
-                    Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $model['lesson_items_id'], 'mode' => 'update']), [
+                    Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
                         'class' => 'btn btn-xs btn-link',
                     ])
                 . Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                    Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $model['lesson_items_id'], 'mode' => 'delete']), [
+                    Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xs btn-link',
                         'data' => [
@@ -83,7 +83,7 @@ $columns = [
         'attribute' => 'subject_sect_studyplan_id',
         'label' => $model['attributes']['subject_sect_studyplan_id'],
         'value' => function ($model) {
-            return RefBook::find('sect_name_2')->getValue($model['subject_sect_studyplan_id'] ?? null);
+            return RefBook::find('sect_name_3')->getValue($model['subject_sect_studyplan_id'] ?? null);
         },
         'format' => 'raw',
         'group' => true,
@@ -128,6 +128,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                         ]),
                         'tableOptions' => ['class' => 'table-condensed'],
                         'filterModel' => null,
+                        'formatter' => ['class' => 'yii\i18n\Formatter','nullDisplay' => ''],
 //                        'showPageSummary' => true,
                         'pjax' => true,
                         'hover' => true,

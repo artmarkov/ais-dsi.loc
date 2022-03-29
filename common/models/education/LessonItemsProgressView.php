@@ -7,15 +7,10 @@ use Yii;
 /**
  * This is the model class for table "lesson_items_progress_view".
  *
- * @property int|null $teachers_load_id
  * @property int|null $subject_sect_studyplan_id
  * @property int|null $studyplan_subject_id
- * @property int|null $direction_id
- * @property int|null $teachers_id
- * @property int|null $plan_year
- * @property int|null $subject_sect_id
  * @property int|null $studyplan_id
- * @property int|null $student_id
+ * @property int|null $subject_sect_id
  * @property int|null $lesson_items_id
  * @property int|null $lesson_date
  * @property string|null $lesson_topic
@@ -31,7 +26,7 @@ use Yii;
  * @property string|null $mark_hint
  * @property float|null $mark_value
  * @property string|null $mark_rem
- *
+ * @property string|null $teachers_list
  */
 class LessonItemsProgressView extends \artsoft\db\ActiveRecord
 {
@@ -49,15 +44,10 @@ class LessonItemsProgressView extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'teachers_load_id' => Yii::t('art/guide', 'Teachers Load ID'),
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Subject Sect Studyplan ID'),
             'studyplan_subject_id' => Yii::t('art/guide', 'Studyplan Subject ID'),
-            'direction_id' => Yii::t('art/guide', 'Direction ID'),
-            'teachers_id' => Yii::t('art/guide', 'Teachers ID'),
-            'plan_year' => Yii::t('art/guide', 'Plan Year'),
-            'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
             'studyplan_id' => Yii::t('art/guide', 'Studyplan ID'),
-            'student_id' => Yii::t('art/guide', 'Student ID'),
+            'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
             'lesson_items_id' => Yii::t('art/guide', 'Lesson Items ID'),
             'lesson_date' => Yii::t('art/guide', 'Lesson Date'),
             'lesson_topic' => Yii::t('art/guide', 'Lesson Topic'),
@@ -73,6 +63,7 @@ class LessonItemsProgressView extends \artsoft\db\ActiveRecord
             'mark_hint' => Yii::t('art/guide', 'Mark Hint'),
             'mark_value' => Yii::t('art/guide', 'Mark Value'),
             'mark_rem' => Yii::t('art/guide', 'Mark Rem'),
+            'teachers_list' => Yii::t('art/guide', 'Teachers List'),
         ];
     }
 }

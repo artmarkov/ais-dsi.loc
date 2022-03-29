@@ -10,17 +10,13 @@ use yii\helpers\Url;
 /**
  * This is the model class for table "lesson_progress_view".
  *
- * @property int|null $teachers_load_id
- * @property int|null $subject_sect_studyplan_id
  * @property int|null $studyplan_subject_id
- * @property int|null $direction_id
- * @property int|null $teachers_id
- * @property int|null $plan_year
+ * @property int|null $subject_sect_studyplan_id
  * @property int|null $subject_sect_id
+ * @property int|null $plan_year
  * @property int|null $studyplan_id
  * @property int|null $student_id
- *
- *
+ * @property string|null $teachers_list
  */
 class LessonProgressView extends \artsoft\db\ActiveRecord
 {
@@ -39,15 +35,13 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'teachers_load_id' => Yii::t('art/guide', 'Teachers Load'),
-            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
             'studyplan_subject_id' => Yii::t('art/guide', 'Subject Name'),
-            'direction_id' => Yii::t('art/teachers', 'Name Direction'),
-            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
-            'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
+            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
+            'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'studyplan_id' => Yii::t('art/guide', 'Studyplan'),
             'student_id' => Yii::t('art/student', 'Student'),
+            'teachers_list' => Yii::t('art/teachers', 'Teachers'),
         ];
     }
 
@@ -89,11 +83,11 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
             foreach ($marks as $id => $mark) {
                 $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
-                $data[$item]['lesson_items_id'] = $mark->lesson_items_id;
                 $data[$item][$date_label] = self::getEditableForm($date_label, $mark);
             }
         }
 
+       // echo '<pre>' . print_r($data, true) . '</pre>';
         return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
     }
 
@@ -135,7 +129,6 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
             foreach ($marks as $id => $mark) {
                 $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
-                $data[$item]['lesson_items_id'] = $mark->lesson_items_id;
                 $data[$item][$date_label] = self::getEditableForm($date_label, $mark);
             }
         }
@@ -156,10 +149,12 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
         $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
             ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
-            ->andWhere(['=', 'teachers_id', $teachers_id])
+            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->orderBy('lesson_date')
             ->asArray()->all();
-        $modelsProgress = self::findAll(['teachers_id' => $teachers_id]);
+        $modelsProgress = self::find()
+            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
+            ->all();;
 
         foreach ($lessonDates as $id => $lessonDate) {
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
@@ -171,7 +166,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $data[$item]['lesson_timestamp'] = $lessonDates;
             $data[$item]['subject_sect_studyplan_id'] = $modelProgress->subject_sect_studyplan_id;
             $data[$item]['studyplan_subject_id'] = $modelProgress->studyplan_subject_id;
-            $data[$item]['teachers_id'] = $modelProgress->teachers_id;
+            $data[$item]['teachers_id'] = $teachers_id;
             $data[$item]['studyplan_id'] = $modelProgress->studyplan_id;
             $data[$item]['student_id'] = $modelProgress->student_id;
 
@@ -182,7 +177,6 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
             foreach ($marks as $id => $mark) {
                 $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
-                $data[$item]['lesson_items_id'] = $mark->lesson_items_id;
                 $data[$item][$date_label] = self::getEditableForm($date_label, $mark);
             }
         }

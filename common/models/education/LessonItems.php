@@ -4,7 +4,7 @@ namespace common\models\education;
 
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\Schedule;
-use common\models\subjectsect\SubjectScheduleTeachersStudyplanView;
+use common\models\schedule\SubjectScheduleView;
 use common\models\subjectsect\SubjectSectStudyplan;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -104,7 +104,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 ['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id],
                 ['=', 'studyplan_subject_id', $studyplan_subject_id],
                 ['=', 'lesson_date', $lesson_timestamp],
-            ])->exists();
+            ])->scalar();
     }
 //    public function checkLesson()
 //    {
@@ -120,7 +120,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
 
     public function checkLessonDate($attribute, $params)
     {
-        $checkLesson = SubjectScheduleTeachersStudyplanView::find()->where(
+        $checkLesson = SubjectScheduleView::find()->where(
             ['AND',
                 ['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id],
                 ['=', 'studyplan_subject_id', $this->studyplan_subject_id],
@@ -206,7 +206,6 @@ class LessonItems extends \artsoft\db\ActiveRecord
      */
     public function getLessonProgress()
     {
-
         if ($this->subject_sect_studyplan_id != 0) {
             // находим только оценки тех учеников, которые числяться в данной группе(переведенные игнорируются)
             $modelsItems = LessonProgress::find()
