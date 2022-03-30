@@ -9,6 +9,9 @@ use common\models\education\LessonProgressView;
 use common\models\history\LessonItemsHistory;
 use common\models\history\SubjectScheduleHistory;
 use common\models\history\TeachersLoadHistory;
+use common\models\schedule\ConsultSchedule;
+use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
+use common\models\schedule\search\ConsultScheduleViewSearch;
 use common\models\schedule\search\SubjectScheduleViewSearch;
 use common\models\schedule\SubjectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
@@ -480,6 +483,79 @@ class DefaultController extends MainController
         }
     }
 
+    public function actionConsultItems($id, $objectId = null, $mode = null)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['studyplan/default/consult-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
+            if (!Yii::$app->request->get('load_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET load_id.");
+            }
+            $teachersLoadModel = TeachersLoad::findOne(Yii::$app->request->get('load_id'));
+            $model = new ConsultSchedule();
+            $model->teachers_load_id = Yii::$app->request->get('load_id');
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/schedule/consult-schedule/_form.php', [
+                'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
+            ]);
+
+
+        } elseif ('history' == $mode && $objectId) {
+            $model = ConsultSchedule::findOne($objectId);
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['studyplan/default/consult-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/update', 'id' => $model->id]];
+            $data = new ConsultScheduleHistory($objectId);
+            return $this->renderIsAjax('/studyplan/default/history', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $model = ConsultSchedule::findOne($objectId);
+            $model->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+
+        } elseif ($objectId) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['studyplan/default/consult-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $model = ConsultSchedule::findOne($objectId);
+            $teachersLoadModel = TeachersLoad::findOne($model->teachers_load_id);
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The SubjectSchedule was not found.");
+            }
+
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/schedule/consult-schedule/_form.php', [
+                'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
+            ]);
+
+        } else {
+            $searchModel = new ConsultScheduleViewSearch();
+
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['studyplan_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel', 'id'));
+        }
+    }
     /**
      * @return false|string
      */

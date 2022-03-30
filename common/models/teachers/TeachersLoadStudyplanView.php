@@ -2,7 +2,6 @@
 
 namespace common\models\teachers;
 
-use Yii;
 
 /**
  * This is the model class for table "teachers_load_studyplan_view".

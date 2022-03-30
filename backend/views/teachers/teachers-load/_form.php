@@ -65,6 +65,8 @@ use artsoft\helpers\RefBook;
 
                     <?= $form->field($model, 'load_time')->textInput() ?>
 
+                    <?= $form->field($model, 'load_time_consult')->textInput() ?>
+
                 </div>
             </div>
         </div>

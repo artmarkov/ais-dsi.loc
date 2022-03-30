@@ -18,6 +18,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $direction_id
  * @property int $teachers_id
  * @property float|null $load_time
+ * @property float|null $load_time_consult
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -59,7 +60,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
             [['subject_sect_studyplan_id', 'studyplan_subject_id'], 'default', 'value' => 0],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['direction_id', 'teachers_id', 'load_time'], 'required'],
-            [['load_time'], 'number'],
+            [['load_time', 'load_time_consult'], 'number'],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
         ];
@@ -77,6 +78,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
             'load_time' => Yii::t('art/guide', 'Load Time'),
+            'load_time_consult' => Yii::t('art/guide', 'Load Time Consult'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),

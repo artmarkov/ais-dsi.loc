@@ -103,15 +103,15 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['sect_name_0', 'subject_sect_view', 'id', 'sect_name_0', 'sect_name_o', null, null, 'Название группы'],
-        ])->execute();
-
-        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['sect_name_1', 'subject_sect_view', 'id', 'sect_name_1', 'sect_name_1', null, null, 'Название группы'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['sect_name_2', 'subject_sect_view', 'id', 'sect_name_2', 'sect_name_2', null, null, 'Название группы с типом занятий'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['sect_name_3', 'subject_sect_view', 'id', 'sect_name_3', 'sect_name_3', null, null, 'Название группы'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [

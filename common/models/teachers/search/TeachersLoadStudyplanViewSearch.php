@@ -18,7 +18,7 @@ class TeachersLoadStudyplanViewSearch extends TeachersLoadStudyplanView
     {
         return [
             [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'studyplan_id', 'student_id', 'plan_year', 'status','teachers_load_id','direction_id', 'teachers_id'], 'integer'],
-            //[['load_time', 'week_time'], 'number'],
+            [['load_time', 'load_time_consult', 'week_time', 'year_time_consult'], 'number'],
         ];
     }
 
@@ -60,7 +60,8 @@ class TeachersLoadStudyplanViewSearch extends TeachersLoadStudyplanView
 
         $query->andFilterWhere([
             'studyplan_subject_id' => $this->studyplan_subject_id,
-          //  'week_time' => $this->week_time,
+            'week_time' => $this->week_time,
+            'year_time_consult' => $this->year_time_consult,
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
             'subject_sect_id' => $this->subject_sect_id,
             'studyplan_id' => $this->studyplan_id,
@@ -70,7 +71,8 @@ class TeachersLoadStudyplanViewSearch extends TeachersLoadStudyplanView
             'teachers_load_id' => $this->teachers_load_id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
-          //  'load_time' => $this->load_time,
+            'load_time' => $this->load_time,
+            'load_time_consult' => $this->load_time_consult,
         ]);
 
         return $dataProvider;

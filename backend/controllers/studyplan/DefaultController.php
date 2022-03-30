@@ -14,6 +14,7 @@ use common\models\history\StudyplanHistory;
 use common\models\history\SubjectScheduleHistory;
 use common\models\history\TeachersLoadHistory;
 use common\models\schedule\ConsultSchedule;
+use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
 use common\models\schedule\search\ConsultScheduleViewSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
@@ -419,7 +420,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $searchModel = new ConsultScheduleViewSearch();
+            $searchModel = new ConsultScheduleStudyplanViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();

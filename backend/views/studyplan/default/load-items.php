@@ -45,6 +45,14 @@ $columns = [
         'subGroupOf' => 2,
     ],
     [
+        'attribute' => 'year_time_consult',
+        'value' => function ($model) {
+            return $model->year_time_consult;
+        },
+        'group' => true,
+        'subGroupOf' => 2,
+    ],
+    [
         'attribute' => 'direction_id',
         'filterType' => GridView::FILTER_SELECT2,
         'filter' => \common\models\guidejob\Direction::getDirectionList(),
@@ -78,7 +86,13 @@ $columns = [
             return $model->load_time . ' ' . $model->getItemLoadNotice();
         },
         'format' => 'raw',
-
+    ],
+    [
+        'attribute' => 'load_time_consult',
+        'value' => function ($model) {
+            return $model->load_time_consult;
+        },
+        'format' => 'raw',
     ],
     [
         'class' => 'kartik\grid\ActionColumn',

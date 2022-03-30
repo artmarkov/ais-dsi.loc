@@ -26,8 +26,8 @@ class TeachersLoadViewSearch extends TeachersLoadView
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'subject_sect_id', 'plan_year', 'week_time', 'teachers_load_id', 'direction_id', 'teachers_id'], 'integer'],
-            [['load_time'], 'number'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'subject_sect_id', 'plan_year', 'teachers_load_id', 'direction_id', 'teachers_id'], 'integer'],
+            [['load_time', 'load_time_consult', 'week_time', 'year_time_consult'], 'number'],
             [['studyplan_subject_list'], 'string'],
         ];
     }
@@ -76,10 +76,12 @@ class TeachersLoadViewSearch extends TeachersLoadView
             'subject_sect_id' => $this->subject_sect_id,
             'plan_year' => $this->plan_year,
             'week_time' => $this->week_time,
+            'year_time_consult' => $this->year_time_consult,
             'teachers_load_id' => $this->teachers_load_id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
             'load_time' => $this->load_time,
+            'load_time_consult' => $this->load_time_consult,
         ]);
         $query->andFilterWhere(['like', 'studyplan_subject_list', $this->studyplan_subject_list]);
         return $dataProvider;

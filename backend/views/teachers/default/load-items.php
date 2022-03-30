@@ -45,6 +45,14 @@ $columns = [
         'subGroupOf' => 2,
     ],
     [
+        'attribute' => 'year_time_consult',
+        'value' => function ($model) {
+            return $model->year_time_consult;
+        },
+        'group' => true,
+        'subGroupOf' => 2,
+    ],
+    [
         'attribute' => 'studyplan_subject_list',
         'width' => '310px',
         'filter' => RefBook::find('students_fio')->getList(),
@@ -99,6 +107,13 @@ $columns = [
         'attribute' => 'load_time',
         'value' => function ($model) {
             return $model->load_time . ' ' . $model->getItemLoadNotice();
+        },
+        'format' => 'raw',
+    ],
+     [
+        'attribute' => 'load_time_consult',
+        'value' => function ($model) {
+            return $model->load_time_consult;
         },
         'format' => 'raw',
     ],

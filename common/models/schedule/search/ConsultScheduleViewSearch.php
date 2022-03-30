@@ -8,7 +8,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * ConsultScheduleView represents the model behind the search form about `common\models\schedule\ConsultScheduleView`.
+ * ConsultScheduleViewSearch represents the model behind the search form about `common\models\schedule\ConsultScheduleView`.
  */
 class ConsultScheduleViewSearch extends ConsultScheduleView
 {
@@ -18,8 +18,10 @@ class ConsultScheduleViewSearch extends ConsultScheduleView
     public function rules()
     {
         return [
-            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'speciality_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'teachers_load_id', 'subject_sect_studyplan_id', 'direction_id', 'teachers_id', 'consult_schedule_id', 'datetime_in', 'datetime_out', 'auditory_id'], 'integer'],
-            [['year_time_consult'], 'number'],
+            [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'plan_year', 'teachers_load_id', 'direction_id', 'teachers_id', 'consult_schedule_id',  'auditory_id'], 'integer'],
+            [['studyplan_subject_list'], 'string'],
+            [['description', 'datetime_in', 'datetime_out'], 'safe'],
+            [['load_time_consult'], 'number'],
         ];
     }
 
@@ -62,21 +64,13 @@ class ConsultScheduleViewSearch extends ConsultScheduleView
         }
 
         $query->andFilterWhere([
-            'studyplan_id' => $this->studyplan_id,
-            'student_id' => $this->student_id,
-            'plan_year' => $this->plan_year,
-            'programm_id' => $this->programm_id,
-            'speciality_id' => $this->speciality_id,
-            'course' => $this->course,
-            'status' => $this->status,
             'studyplan_subject_id' => $this->studyplan_subject_id,
-            'subject_cat_id' => $this->subject_cat_id,
-            'subject_id' => $this->subject_id,
-            'subject_type_id' => $this->subject_type_id,
-            'subject_vid_id' => $this->subject_vid_id,
-            'year_time_consult' => $this->year_time_consult,
-            'teachers_load_id' => $this->teachers_load_id,
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
+            'studyplan_subject_list' => $this->studyplan_subject_list,
+            'subject_sect_id' => $this->subject_sect_id,
+            'plan_year' => $this->plan_year,
+            'load_time_consult' => $this->load_time_consult,
+            'teachers_load_id' => $this->teachers_load_id,
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
             'consult_schedule_id' => $this->consult_schedule_id,

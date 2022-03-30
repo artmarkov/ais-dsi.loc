@@ -1,16 +1,19 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use common\models\studyplan\Studyplan;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
+use artsoft\grid\GridPageSize;
 use kartik\grid\GridView;
+use common\models\subjectsect\SubjectScheduleStudyplanView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\teachers\search\TeachersLoadViewSearch */
+/* @var $searchModel common\models\subjectsect\search\SubjectScheduleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/guide', 'Teachers Load');
+$this->title = Yii::t('art/guide', 'Consult Schedule');
 $this->params['breadcrumbs'][] = $this->title;
 
 $columns = [
@@ -28,7 +31,7 @@ $columns = [
         'filterType' => GridView::FILTER_SELECT2,
         'filter' => RefBook::find('sect_name_3')->getList(),
         'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id);
+            return RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id) ?? 'Индивидуально';
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],
@@ -36,22 +39,6 @@ $columns = [
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1
-    ],
-    [
-        'attribute' => 'week_time',
-        'value' => function ($model) {
-            return $model->week_time;
-        },
-        'group' => true,
-        'subGroupOf' => 2,
-    ],
-    [
-        'attribute' => 'year_time_consult',
-        'value' => function ($model) {
-            return $model->year_time_consult;
-        },
-        'group' => true,
-        'subGroupOf' => 2,
     ],
     [
         'attribute' => 'studyplan_subject_list',
@@ -88,12 +75,12 @@ $columns = [
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
 
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'teachers_id',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('teachers_fio')->getList(),
+        'filter' => false /*RefBook::find('teachers_fio')->getList()*/,
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
@@ -102,21 +89,44 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 1
     ],
     [
-        'attribute' => 'load_time',
-        'value' => function ($model) {
-            return $model->load_time . $model->getItemLoadNotice();
-        },
-        'format' => 'raw',
-    ],
-     [
         'attribute' => 'load_time_consult',
         'value' => function ($model) {
             return $model->load_time_consult;
         },
         'format' => 'raw',
+
+    ],
+    [
+        'attribute' => 'datetime_in',
+        'width' => '300px',
+        'value' => function ($model) {
+            return $model->datetime_in;
+        },
+        'format' => 'raw',
+    ],
+    [
+        'attribute' => 'datetime_out',
+        'width' => '300px',
+        'value' => function ($model) {
+            return $model->datetime_out;
+        },
+        'format' => 'raw',
+    ],
+    [
+        'attribute' => 'auditory_id',
+        'width' => '300px',
+        'filterType' => GridView::FILTER_SELECT2,
+        'filter' => RefBook::find('auditory_memo_1')->getList(),
+        'value' => function ($model) {
+            return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
+        },
+        'filterWidgetOptions' => [
+            'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -126,7 +136,7 @@ $columns = [
         'buttons' => [
             'create' => function ($key, $model) {
                 return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                    Url::to(['/sect/default/load-items', 'id' => $model->subject_sect_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id, 'mode' => 'create']), [
+                    Url::to(['/teachers/default/consult-items', 'id' => $model->teachers_id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']), [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -136,7 +146,7 @@ $columns = [
             },
             'update' => function ($key, $model) {
                 return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
-                    Url::to(['/sect/default/load-items', 'id' => $model->subject_sect_id, 'objectId' => $model->teachers_load_id, 'mode' => 'update']), [
+                    Url::to(['/teachers/default/consult-items', 'id' => $model->teachers_id, 'objectId' => $model->consult_schedule_id, 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -145,7 +155,7 @@ $columns = [
             },
             'delete' => function ($key, $model) {
                 return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                    Url::to(['/sect/default/load-items', 'id' => $model->subject_sect_id, 'objectId' => $model->teachers_load_id, 'mode' => 'delete']), [
+                    Url::to(['/teachers/default/consult-items', 'id' => $model->teachers_id, 'objectId' => $model->consult_schedule_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -156,78 +166,78 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-//            'create' => function ($model) {
-//                return $model->getTeachersLoadsNeed();
-//            },
+            'create' => function ($model) {
+                return $model->getTeachersConsultNeed();
+            },
             'delete' => function ($model) {
-                return $model->teachers_load_id !== null;
+                return $model->consult_schedule_id !== null;
             },
             'update' => function ($model) {
-                return $model->teachers_load_id !== null;
+                return $model->consult_schedule_id !== null;
             }
-        ]
+        ],
     ],
 ];
 ?>
-<div class="teachers-load-index">
+<div class="consult-schedule-index">
     <div class="panel">
         <div class="panel-body">
-
-            <?php
-            Pjax::begin([
-                'id' => 'teachers-load-grid-pjax',
-            ])
-            ?>
-
-            <?=
-            GridView::widget([
-                'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
-                'tableOptions' => ['class' => 'table-condensed'],
+                    <?php
+                    Pjax::begin([
+                        'id' => 'consult-schedule-grid-pjax',
+                    ])
+                    ?>
+                    <?=
+                    GridView::widget([
+                        'dataProvider' => $dataProvider,
+                        'filterModel' => $searchModel,
+                        'tableOptions' => ['class' => 'table-condensed'],
 //                        'showPageSummary' => true,
-                'pjax' => true,
-                'hover' => true,
-                'panel' => [
-                    'heading' => 'Нагрузка',
-                    'type' => 'default',
-                    'after' => '',
-                ],
-                'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
-                'columns' => $columns,
-                'beforeHeader' => [
-                    [
-                        'columns' => [
-                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
-                            ['content' => 'Нагрузка', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
+                        'pjax' => true,
+                        'hover' => true,
+                        'panel' => [
+                            'heading' => 'Элементы расписания',
+                            'type' => 'default',
+                            'after' => '',
                         ],
-                        'options' => ['class' => 'skip-export'] // remove this row from export
-                    ]
-                ],
-                'exportConfig' => [
-                    'html' => [],
-                    'csv' => [],
-                    'txt' => [],
-                    'xls' => [],
-                ],
-                'toolbar' => [
-                    [
-                        'content' => Html::a('Очистить',
-                            Url::to(['/sect/default/load-items', 'id' => $id]), [
-                                'title' => 'Очистить',
-                                'data-pjax' => '0',
-                                'class' => 'btn btn-default'
+                        'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
+                        'columns' => $columns,
+                        'beforeHeader' => [
+                            [
+                                'columns' => [
+                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                                    ['content' => 'Ученики', 'options' => ['colspan' => 2, 'class' => 'text-center success']],
+                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 2, 'class' => 'text-center info']],
+                                    ['content' => 'Расписание консультаций', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
+                                ],
+                                'options' => ['class' => 'skip-export'] // remove this row from export
                             ]
-                        ),
-                    ],
-                    '{export}',
-                    '{toggleData}'
-                ],
-            ]);
-            ?>
-
-            <?php Pjax::end() ?>
+                        ],
+                        'exportConfig' => [
+                            'html' => [],
+                            'csv' => [],
+                            'txt' => [],
+                            'xls' => [],
+                        ],
+                        'toolbar' => [
+                            [
+                                'content' => Html::a('Очистить',
+                                    Url::to(['/teachers/default/consult-items', 'id' => $id]), [
+                                        'title' => 'Очистить',
+                                        'data-pjax' => '0',
+                                        'class' => 'btn btn-default'
+                                    ]
+                                ),
+                            ],
+                            '{export}',
+                            '{toggleData}'
+                        ],
+                    ]);
+                    ?>
+                    <?php Pjax::end() ?>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
 

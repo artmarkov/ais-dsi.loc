@@ -18,6 +18,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
             'direction_id' => $this->integer()->notNull(),
             'teachers_id' => $this->integer()->notNull(),
             'load_time' => $this->float()->notNull(),
+            'load_time_consult' => $this->float()->notNull(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -36,6 +37,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
         $this->db->createCommand()->createView('teachers_load_studyplan_view', '
          (select studyplan_subject.id as studyplan_subject_id,
 			     studyplan_subject.week_time as week_time,
+			     studyplan_subject.year_time_consult as year_time_consult,
 			     0 as subject_sect_studyplan_id,
 			     studyplan_subject.id::text as studyplan_subject_list,
 			     0 as subject_sect_id,
@@ -46,7 +48,8 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
 			     teachers_load.id as teachers_load_id,
 			     teachers_load.direction_id as direction_id,
 			     teachers_load.teachers_id as teachers_id,
-			     teachers_load.load_time as load_time
+			     teachers_load.load_time as load_time,
+			     teachers_load.load_time_consult as load_time_consult
 	         from studyplan_subject
              inner join studyplan on (studyplan_subject.studyplan_id = studyplan.id)
              inner join guide_subject_vid on (guide_subject_vid.id = studyplan_subject.subject_vid_id and guide_subject_vid.qty_min = 1 and guide_subject_vid.qty_max = 1)
@@ -56,6 +59,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
 UNION ALL
          (select studyplan_subject.id as studyplan_subject_id,
                  studyplan_subject.week_time as week_time,
+                 studyplan_subject.year_time_consult as year_time_consult,
                  subject_sect_studyplan.id as subject_sect_studyplan_id,
                  subject_sect_studyplan.studyplan_subject_list as studyplan_subject_list,
                  subject_sect.id as subject_sect_id,
@@ -66,7 +70,8 @@ UNION ALL
                  teachers_load.id as teachers_load_id,
                  teachers_load.direction_id as direction_id,
                  teachers_load.teachers_id as teachers_id,
-                 teachers_load.load_time as load_time
+                 teachers_load.load_time as load_time,
+			     teachers_load.load_time_consult as load_time_consult
              from studyplan_subject
              inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
              left join subject_sect on (subject_sect.subject_cat_id = studyplan_subject.subject_cat_id
@@ -88,10 +93,12 @@ ORDER BY subject_sect_studyplan_id, studyplan_subject_id, direction_id, teachers
                  0 as subject_sect_id,
                  studyplan.plan_year as plan_year,
                  studyplan_subject.week_time as week_time,
+                 studyplan_subject.year_time_consult as year_time_consult,
                  teachers_load.id as teachers_load_id,                         
                  teachers_load.direction_id as direction_id,
                  teachers_load.teachers_id as teachers_id,
-                 teachers_load.load_time as load_time
+                 teachers_load.load_time as load_time,
+			     teachers_load.load_time_consult as load_time_consult
              from studyplan_subject
 			 inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
 			 left join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id 
@@ -107,10 +114,15 @@ UNION ALL
 					 from studyplan_subject 
 					 where studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])
 				 ) as week_time,
+				 (select MAX(year_time_consult) 
+					 from studyplan_subject 
+					 where studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])
+				 ) as year_time_consult,
                  teachers_load.id as teachers_load_id,                         
                  teachers_load.direction_id as direction_id,
                  teachers_load.teachers_id as teachers_id,
-                 teachers_load.load_time as load_time
+                 teachers_load.load_time as load_time,
+			     teachers_load.load_time_consult as load_time_consult
              from subject_sect_studyplan
 			 inner join subject_sect on (subject_sect.id = subject_sect_studyplan.subject_sect_id)
 			 left join teachers_load on (subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id 
