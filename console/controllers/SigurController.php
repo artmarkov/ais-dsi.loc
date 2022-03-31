@@ -1,0 +1,80 @@
+<?php
+
+namespace console\controllers;
+
+use Box\Spout\Common\Entity\Row;
+use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
+use yii\console\Controller;
+
+/**
+ * Description of ObjectController
+ *
+ * Driver={PostgreSQL UNICODE};Server=192.168.0.205;Port=5432;Database=ais_dsi_test;UID=aisadmin;PWD=6Nr4fmmM;
+   select * from users_card_view
+   insert into users_card(user_common_id, key_dec) VALUES (%ID%, %KEY_DEC%)
+   insert into users_card_log(user_common_id, key_dec, datetime, deny_reason, dir_code, dir_name, evtype_code, evtype_name, name, position) VALUES (%ID%, %KEY_DEC%, %DATETIME%, %DENY_REASON%, %DIR_CODE%, %DIR_NAME%, %EVTYPE_CODE%, %EVTYPE_NAME%, %NAME%, %POSITION%)
+ *
+ * run  console command:  php yii sigur
+ *
+ * @author markov-av
+ */
+class SigurController extends Controller
+{
+    public function actionIndex()
+    {
+        $reader = ReaderEntityFactory::createXLSXReader();
+        $reader->open('data/sigur/tc-tmp6036769442600652338.xlsx');
+
+        foreach ($reader->getSheetIterator() as $k => $sheet) {
+            if (1 != $k) {
+                continue;
+            }
+            foreach ($sheet->getRowIterator() as $i => $row) {
+                if ($i < 4) {
+                    continue; // skip header
+                }
+                /* @var $row Row */
+                $v = $row->toArray();
+                $name = explode(' ', $v['1']);
+                $last_name = $this->getUcFirst(isset($name[0]) ? $name[0] : '');
+                $first_name = $this->getUcFirst(isset($name[1]) ? $name[1] : '');
+                $middle_name = $this->getUcFirst(isset($name[2]) ? $name[2] : '');
+
+                $model = $this->findUser($last_name, $first_name, $middle_name);
+                if ($model) {
+                    \Yii::$app->db->createCommand('INSERT INTO users_card (user_common_id, key_dec, timestamp_deny, created_at, created_by, updated_at, updated_by) 
+                                                        VALUES (:user_common_id, :key_dec, :timestamp_deny, :created_at, :created_by, :updated_at, :updated_by)',
+                        [
+                            'user_common_id' => $model['id'],
+                            'key_dec' => trim(str_replace(',','', $v[6])),
+                            'timestamp_deny' => $v[8] != 'не ограничен' ? \Yii::$app->formatter->asDate($v[8], 'php:Y-m-d H:i:s') : null,
+                            'created_at' => \Yii::$app->formatter->asTimestamp($v[7]),
+                            'created_by' => 1000,
+                            'updated_at' => \Yii::$app->formatter->asTimestamp($v[7]),
+                            'updated_by' => 1000,
+                        ])->execute();
+                }
+            }
+        }
+    }
+
+    protected function getUcFirst($str, $encoding = 'UTF-8')
+    {
+        return mb_convert_case($str, MB_CASE_TITLE, $encoding);
+    }
+
+    public function findUser($last_name, $first_name, $middle_name)
+    {
+        $user = \Yii::$app->db->createCommand('SELECT * 
+                                                    FROM user_common 
+                                                    WHERE last_name=:last_name 
+                                                    AND first_name=:first_name 
+                                                    AND middle_name=:middle_name',
+            [
+                'last_name' => $last_name,
+                'first_name' => $first_name,
+                'middle_name' => $middle_name
+            ])->queryOne();
+        return $user ?: false;
+    }
+}
