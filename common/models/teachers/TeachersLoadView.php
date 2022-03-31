@@ -20,6 +20,7 @@ class TeachersLoadView extends TeachersLoad
         return [
             'studyplan_subject_id' => Yii::t('art/guide', 'Subject Name'),
             'week_time' => Yii::t('art/guide', 'Week Time'),
+            'year_time_consult' => Yii::t('art/guide', 'Year Time Consult'),
             'subject_sect_id' => Yii::t('art/guide', 'Sect Name'),
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
             'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),

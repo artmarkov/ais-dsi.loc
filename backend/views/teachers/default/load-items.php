@@ -37,22 +37,6 @@ $columns = [
         'subGroupOf' => 1
     ],
     [
-        'attribute' => 'week_time',
-        'value' => function ($model) {
-            return $model->week_time;
-        },
-        'group' => true,
-        'subGroupOf' => 2,
-    ],
-    [
-        'attribute' => 'year_time_consult',
-        'value' => function ($model) {
-            return $model->year_time_consult;
-        },
-        'group' => true,
-        'subGroupOf' => 2,
-    ],
-    [
         'attribute' => 'studyplan_subject_list',
         'width' => '310px',
         'filter' => RefBook::find('students_fio')->getList(),
@@ -73,6 +57,22 @@ $columns = [
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 2
+    ],
+    [
+        'attribute' => 'week_time',
+        'value' => function ($model) {
+            return $model->week_time;
+        },
+        'group' => true,
+        'subGroupOf' => 2,
+    ],
+    [
+        'attribute' => 'year_time_consult',
+        'value' => function ($model) {
+            return $model->year_time_consult;
+        },
+        'group' => true,
+        'subGroupOf' => 2,
     ],
     [
         'attribute' => 'direction_id',
@@ -206,8 +206,8 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
-                            ['content' => 'Нагрузка', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
+                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 5, 'class' => 'text-center info']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

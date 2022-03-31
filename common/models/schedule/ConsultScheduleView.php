@@ -30,9 +30,9 @@ class ConsultScheduleView extends ConsultScheduleStudyplanView
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
             'consult_schedule_id' => Yii::t('art/guide', 'Consult Schedule ID'),
-            'datetime_in' => Yii::t('art/guide', 'Datetime In'),
-            'datetime_out' => Yii::t('art/guide', 'Datetime Out'),
-            'auditory_id' => Yii::t('art/guide', 'Auditory ID'),
+            'datetime_in' => Yii::t('art/guide', 'Time In'),
+            'datetime_out' => Yii::t('art/guide', 'Time Out'),
+            'auditory_id' => Yii::t('art/guide', 'Auditory'),
             'description' => Yii::t('art/guide', 'Description'),
         ];
     }

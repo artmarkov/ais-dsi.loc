@@ -97,6 +97,8 @@ $columns = [
             return $model->load_time_consult;
         },
         'format' => 'raw',
+        'group' => true,  // enable grouping
+        'subGroupOf' => 1
 
     ],
     [
@@ -205,9 +207,8 @@ $columns = [
                         'beforeHeader' => [
                             [
                                 'columns' => [
-                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
-                                    ['content' => 'Ученики', 'options' => ['colspan' => 2, 'class' => 'text-center success']],
-                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 2, 'class' => 'text-center info']],
+                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
+                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
                                     ['content' => 'Расписание консультаций', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
                                 ],
                                 'options' => ['class' => 'skip-export'] // remove this row from export
