@@ -14,7 +14,7 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
         $this->createTable('users_card', [
             'id' => $this->primaryKey(),
             'users_id' => $this->integer()->notNull(),
-            'key_w26' => $this->char(9)->notNull()->comment('Пропуск (в формате W26)'),
+            'key_w26' => $this->char(16)->notNull()->comment('Пропуск (в формате W26)'),
             'timestamp_deny' => $this->dateTime()->comment('Срок действия в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС'),
             'mode_main' => $this->string(127)->comment('Основной режим'),
             'mode_list' => $this->string(512)->comment('Список режимов'),
@@ -31,7 +31,7 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
         $this->createTable('users_card_log', [
             'id' => $this->primaryKey(),
             'users_id' => $this->integer()->notNull(),
-            'key_w26' => $this->string(9)->notNull()->comment('Пропуск (в формате W26)'),
+            'key_w26' => $this->string(16)->notNull()->comment('Пропуск (в формате W26)'),
             'datetime' => $this->dateTime()->comment('Дата и время события в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС'),
             'deny_reason' => $this->char(32)->comment('Код причины запрета доступа'),
             'dir_code' => $this->integer(1)->comment('Код направления прохода (1=выход, 2=вход, 3=неизвестное).'),
