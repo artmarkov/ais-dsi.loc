@@ -341,6 +341,7 @@ class DefaultController extends MainController
             $subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id');
             $model = new LessonItems();
             $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
+            $model->studyplan_subject_id = 0;
             // предустановка учеников
             $modelsItems = $model->getLessonProgressNew();
 

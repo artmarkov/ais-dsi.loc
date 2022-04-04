@@ -404,4 +404,14 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
         return false;
     }
 
+    public static function getSchedule($subject_sect_studyplan_id, $studyplan_subject_id)
+    {
+        return self::find()
+            ->joinWith('teachersLoad')
+            ->where(
+            ['AND',
+                ['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id],
+                ['=', 'studyplan_subject_id', $studyplan_subject_id],
+            ])->column();
+    }
 }

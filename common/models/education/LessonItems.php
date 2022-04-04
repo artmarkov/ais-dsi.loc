@@ -106,17 +106,8 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 ['=', 'lesson_date', $lesson_timestamp],
             ])->scalar();
     }
-//    public function checkLesson()
-//    {
-//            $checkLesson = self::find()->where(
-//                ['AND',
-//                    ['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id],
-//                    ['=', 'studyplan_subject_id', $this->studyplan_subject_id],
-//                    ['=', 'lesson_date', strtotime($this->lesson_date)],
-//
-//                ]);
-//           return $checkLesson->scalar();
-//    }
+
+
 
     public function checkLessonDate($attribute, $params)
     {
