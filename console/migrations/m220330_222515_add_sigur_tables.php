@@ -13,11 +13,13 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
 
         $this->createTable('users_card', [
             'id' => $this->primaryKey(),
-            'user_common_id' => $this->integer()->notNull(),
-            'key_dec' => $this->char(8)->notNull()->comment('Пропуск (в формате DEC)'),
-            'timestamp_deny' => $this->dateTime()->comment('Срок действия в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС'),
-            'mode_main' => $this->string(127)->comment('Основной режим'),
-            'mode_list' => $this->string(512)->comment('Список режимов'),
+            'user_common_id' => $this->integer()->defaultValue(null),
+            'key_hex' => $this->char(8)->defaultValue(null)->comment('Пропуск (в формате HEX)'),
+            'timestamp_deny' => $this->dateTime()->defaultValue(null)->comment('Срок действия в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС'),
+            'mode_main' => $this->string(127)->defaultValue(null)->comment('Основной режим'),
+            'mode_list' => $this->string(512)->defaultValue(null)->comment('Список режимов'),
+            'photo_bin' => $this->binary()->defaultValue(null)->comment('Фотография'),
+            'photo_ver' => $this->integer()->defaultValue(null)->comment('Версия фотографии'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -30,8 +32,8 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
 
         $this->createTable('users_card_log', [
             'id' => $this->primaryKey(),
-            'user_common_id' => $this->integer()->notNull(),
-            'key_dec' => $this->char(8)->notNull()->comment('Пропуск (в формате DEC)'),
+            'user_common_id' => $this->char(4)->defaultValue(null),
+            'key_hex' => $this->char(8)->comment('Пропуск (в формате HEX)'),
             'datetime' => $this->dateTime()->comment('Дата и время события в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС'),
             'deny_reason' => $this->char(32)->comment('Код причины запрета доступа'),
             'dir_code' => $this->integer(1)->comment('Код направления прохода (1=выход, 2=вход, 3=неизвестное).'),
@@ -53,10 +55,18 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
               WHEN (user_common.user_category = \'students\') THEN \'Ученики АИС\'
               WHEN (user_common.user_category = \'parents\') THEN \'Родители АИС\'
             END AS user_category,
+             CASE
+              WHEN (user_common.user_category = \'employees\') THEN \'Сотрудник\'
+              WHEN (user_common.user_category = \'teachers\') THEN \'Преподаватель\'
+              WHEN (user_common.user_category = \'students\') THEN \'Ученик\'
+              WHEN (user_common.user_category = \'parents\') THEN \'Родитель\'
+            END AS position,
             users_card.timestamp_deny,
-            users_card.key_dec,
+            users_card.key_hex,
             users_card.mode_main,
-            users_card.mode_list
+            users_card.mode_list,
+            users_card.photo_bin,
+            users_card.photo_ver
         from users_card
         inner join user_common on (user_common.id = users_card.user_common_id)
         order by user_category, user_name
