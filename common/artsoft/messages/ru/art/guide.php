@@ -171,6 +171,7 @@ return [
     'Studyplan Progress' => 'Дневник успеваемости',
     'Group Progress' => 'Журнал успеваемости группы',
     'Journal Progress' => 'Журнал успеваемости',
+    'Users Card Logs' => 'Лог СКУД',
 
 ];
 ?>

@@ -63,6 +63,9 @@ use common\models\user\UserCommon;
                     </div>
                 </div>
             </div>
+
+            <?= $this->render('@backend/views/user/_form_card', ['form' => $form, 'model' => $userCard, 'readonly' => $readonly]) ?>
+
             <!--            --><?php //DynamicFormWidget::begin([
             //                'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
             //                'widgetBody' => '.container-items', // required: css class selector
