@@ -240,23 +240,6 @@ class SubjectScheduleStudyplanView extends SubjectSchedule
 //            ->one();
 //    }
 //
-//    /**
-//     * Проверка на суммарное время расписания = времени нагрузки
-//     * $delta_time - погрешность, в зависимости от кол-ва занятий
-//     * @return string|null
-//     * @throws \Exception
-//     */
-//    public function getTeachersOverLoadNotice()
-//    {
-//        $message = null;
-//        $delta_time = Yii::$app->settings->get('module.student_delta_time');
-//        $thereIsAnOverload = $this->getTeachersOverLoad();
-//        $weekTime = Schedule::academ2astr($this->load_time);
-//        if ($this->load_time != 0 && $thereIsAnOverload['full_time'] != null && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
-//            $message = 'Суммарное время в расписании занятий не соответствует нагрузке!';
-//        }
-//        return $message ? Tooltip::widget(['type' => 'warning', 'message' => $message]) : null;
-//    }
 //
 //
 //    /**
@@ -314,6 +297,24 @@ class SubjectScheduleStudyplanView extends SubjectSchedule
 //        return false;
 //    }
 
+    /**
+     * Проверка на суммарное время расписания = времени нагрузки
+     * $delta_time - погрешность, в зависимости от кол-ва занятий
+     * @return string|null
+     * @throws \Exception
+     */
+    public function getTeachersOverLoadNotice()
+    {
+        $message = null;
+        $delta_time = Yii::$app->settings->get('module.student_delta_time');
+        $thereIsAnOverload = $this->getTeachersOverLoad();
+        $weekTime = Schedule::academ2astr($this->load_time);
+        if ($this->load_time != 0 && $thereIsAnOverload['full_time'] != null && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
+            $message = 'Суммарное время в расписании занятий не соответствует нагрузке!';
+        }
+        return $message ? Tooltip::widget(['type' => 'warning', 'message' => $message]) : null;
+    }
+
     public static function getScheduleIsExist($subject_sect_studyplan_id, $studyplan_subject_id)
     {
         if ($subject_sect_studyplan_id == 0) {
@@ -321,5 +322,15 @@ class SubjectScheduleStudyplanView extends SubjectSchedule
 
         }
         return self::find()->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])->exists();
+    }
+    /**
+     * @return string
+     */
+    public function getScheduleDisplay()
+    {
+        $string  = ' ' . ArtHelper::getWeekValue('short', $this->week_num);
+        $string .= ' ' . ArtHelper::getWeekdayValue('short', $this->week_day) . ' ' . $this->time_in . '-' . $this->time_out;
+        $string .= ' ' . $this->getTeachersOverLoadNotice();
+        return $this->time_in ? $string : null;
     }
 }

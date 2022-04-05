@@ -25,55 +25,56 @@ $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($model->subje
     ])
     ?>
     <div class="panel">
+        <div class="panel-heading">
+            <div class="panel-heading">
+                Посещаемость и успеваемость:
+                <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
+                <?php echo RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id); ?>
+
+                <?php if (!$model->isNewRecord): ?>
+                    <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
+                <?php endif; ?>
+            </div>
+
+
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="text-center">№</th>
+                    <th class="text-center">Расписание</th>
+                    <th class="text-center">Аудитория</th>
+                </tr>
+                </thead>
+                <tbody class="container-items">
+                <?php foreach ($models_sch as $index => $id): ?>
+                    <?php $m = \common\models\schedule\SubjectSchedule::findOne($id); ?>
+                    <?php
+                    $string = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
+                    $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out;
+
+                    ?>
+                    <tr class="item">
+                        <td>
+                            <span class="panel-title"><?= $index + 1 ?></span>
+                        </td>
+                        <td>
+                            <span class="panel-title"><?= $string ?></span>
+                        </td>
+                        <td>
+                            <span class="panel-title"><?= RefBook::find('auditory_memo_1')->getValue($m->auditory_id) ?></span>
+                        </td>
+                    <tr/>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel">
         <div class="panel-body">
             <div class="panel">
-                <div class="panel-heading">
-                    Посещаемость и успеваемость:
-                    <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
-                    <?php echo RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id); ?>
 
-                    <?php if (!$model->isNewRecord): ?>
-                        <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
-                    <?php endif; ?>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-heading">
-                        Расписание
-                    </div>
-                    <div class="panel-body">
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                            <tr>
-                                <th class="text-center">№</th>
-                                <th class="text-center">Расписание</th>
-                                <th class="text-center">Аудитория</th>
-                            </tr>
-                            </thead>
-                            <tbody class="container-items">
-                            <?php foreach ($models_sch as $index => $id): ?>
-                                <?php $m = \common\models\schedule\SubjectSchedule::findOne($id); ?>
-                                <?php
-                                $string = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
-                                $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out;
-
-                                ?>
-                                <tr class="item">
-                                    <td>
-                                        <span class="panel-title"><?= $index + 1 ?></span>
-                                    </td>
-                                    <td>
-                                        <span class="panel-title"><?= $string ?></span>
-                                    </td>
-                                    <td>
-                                        <span class="panel-title"><?= RefBook::find('auditory_memo_1')->getValue($m->auditory_id) ?></span>
-                                    </td>
-                                <tr/>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
                 <div class="panel-body">
                     <div class="row">

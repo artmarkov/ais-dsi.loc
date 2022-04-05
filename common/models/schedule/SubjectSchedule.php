@@ -224,30 +224,21 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
         return $this->hasOne(Auditory::class, ['id' => 'teachers_id']);
     }
 
+//
+//    /**
+//     * @return string
+//     */
+//    public function getTeachersScheduleDisplay()
+//    {
+//        $auditory = RefBook::find('auditory_memo_1')->getValue($this->auditory_id);
+//        $teachers = RefBook::find('teachers_fio')->getValue($this->teachers_id);
+//        $direction = $this->direction->slug;
+//        $string = $this->week_num != 0 ? ' ' . ArtHelper::getWeekList('short')[$this->week_num] : null;
+//        $string .= ' ' . ArtHelper::getWeekdayList('short')[$this->week_day] . ' ' . $this->time_in . '-' . $this->time_out . '->(' . $auditory . ')';
+//        $string .= '->' . $teachers . '(' . $direction . ')';
+//        return $string;
+//    }
 
-    /**
-     * @return string
-     */
-    public function getTeachersScheduleDisplay()
-    {
-        $auditory = RefBook::find('auditory_memo_1')->getValue($this->auditory_id);
-        $teachers = RefBook::find('teachers_fio')->getValue($this->teachers_id);
-        $direction = $this->direction->slug;
-        $string = $this->week_num != 0 ? ' ' . ArtHelper::getWeekList('short')[$this->week_num] : null;
-        $string .= ' ' . ArtHelper::getWeekdayList('short')[$this->week_day] . ' ' . $this->time_in . '-' . $this->time_out . '->(' . $auditory . ')';
-        $string .= '->' . $teachers . '(' . $direction . ')';
-        return $string;
-    }
-    /**
-     * @return string
-     */
-    public function getScheduleDisplay()
-    {
-        $string  = ' ' . ArtHelper::getWeekValue('short', $this->week_num);
-        $string .= ' ' . ArtHelper::getWeekdayValue('short', $this->week_day) . ' ' . $this->time_in . '-' . $this->time_out;
-        $string .= ' ' . $this->getTeachersOverLoadNotice();
-        return $this->time_in ? $string : null;
-    }
 
     /**
      * В одной аудитории накладка по времени!
@@ -330,23 +321,6 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             ->one();
     }
 
-    /**
-     * Проверка на суммарное время расписания = времени нагрузки
-     * $delta_time - погрешность, в зависимости от кол-ва занятий
-     * @return string|null
-     * @throws \Exception
-     */
-    public function getTeachersOverLoadNotice()
-    {
-        $message = null;
-        $delta_time = Yii::$app->settings->get('module.student_delta_time');
-        $thereIsAnOverload = $this->getTeachersOverLoad();
-        $weekTime = Schedule::academ2astr($this->load_time);
-        if ($this->load_time != 0 && $thereIsAnOverload['full_time'] != null && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
-            $message = 'Суммарное время в расписании занятий не соответствует нагрузке!';
-        }
-        return $message ? Tooltip::widget(['type' => 'warning', 'message' => $message]) : null;
-    }
 
 
     /**
@@ -404,6 +378,12 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
         return false;
     }
 
+    /**
+     * Получаем расписание группы или дисциплины ученика
+     * @param $subject_sect_studyplan_id
+     * @param $studyplan_subject_id
+     * @return array
+     */
     public static function getSchedule($subject_sect_studyplan_id, $studyplan_subject_id)
     {
         return self::find()
