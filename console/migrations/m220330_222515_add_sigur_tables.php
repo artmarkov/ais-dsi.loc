@@ -13,7 +13,7 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
 
         $this->createTable('users_card', [
             'id' => $this->primaryKey(),
-            'user_common_id' => $this->integer()->defaultValue(null),
+            'user_common_id' => $this->char(4)->defaultValue(null),
             'key_hex' => $this->char(8)->defaultValue(null)->comment('Пропуск (в формате HEX)'),
             'timestamp_deny' => $this->dateTime()->defaultValue(null)->comment('Срок действия в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС'),
             'mode_main' => $this->string(127)->defaultValue(null)->comment('Основной режим'),
@@ -28,7 +28,6 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
 
         $this->addCommentOnTable('users_card', 'Пропуска СКУД Сигур');
         $this->addForeignKey('users_card_ibfk_1', 'users_card', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('users_card_ibfk_2', 'users_card', 'user_common_id', 'user_common', 'id', 'CASCADE', 'CASCADE');
 
         $this->createTable('users_card_log', [
             'id' => $this->primaryKey(),
@@ -47,7 +46,7 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
         $this->addCommentOnTable('users_card_log', 'Лог проходов посетителей');
 
         $this->db->createCommand()->createView('users_card_view', '
-        select user_common.id as id,
+        select user_common.id AS id,
             CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) as user_name,
             CASE
               WHEN (user_common.user_category = \'employees\') THEN \'Сотрудники АИС\'
@@ -68,7 +67,7 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
             users_card.photo_bin,
             users_card.photo_ver
         from users_card
-        inner join user_common on (user_common.id = users_card.user_common_id)
+        inner join user_common on (user_common.id = users_card.user_common_id::int)
         order by user_category, user_name
         ')->execute();
     }
