@@ -3,6 +3,7 @@
 namespace common\models\history;
 
 use common\models\students\Student;
+use common\models\user\UserCommon;
 use common\widgets\history\BaseHistory;
 
 class StudentsHistory extends BaseHistory
@@ -57,6 +58,11 @@ class StudentsHistory extends BaseHistory
         $id = $this->getModelName()::findOne($this->objId)->user->id;
         $vf = new UserCommonHistory($id);
         $selfHistory = array_merge($selfHistory, $vf->getHistory());
+
+        foreach (UsersCardHistory::getLinkedIdList('user_common_id', $id) as $cardId) {
+            $vf = new UsersCardHistory($cardId);
+            $selfHistory = array_merge($selfHistory, $vf->getHistory());
+        }
 
         foreach (StudentDependenceHistory::getLinkedIdList('student_id', $this->objId) as $studentId) {
             $vf = new StudentDependenceHistory($studentId);

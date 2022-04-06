@@ -34,6 +34,12 @@ class EmployeesHistory extends BaseHistory
         $id = $this->getModelName()::findOne($this->objId)->user->id;
         $vf = new UserCommonHistory($id);
         $selfHistory = array_merge($selfHistory, $vf->getHistory());
+
+        foreach (UsersCardHistory::getLinkedIdList('user_common_id', $id) as $cardId) {
+            $vf = new UsersCardHistory($cardId);
+            $selfHistory = array_merge($selfHistory, $vf->getHistory());
+        }
+
         krsort($selfHistory);
         return $selfHistory;
     }

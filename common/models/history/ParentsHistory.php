@@ -56,7 +56,12 @@ class ParentsHistory extends BaseHistory
         $vf = new UserCommonHistory($id);
         $selfHistory = array_merge($selfHistory, $vf->getHistory());
 
-      foreach (ParentDependenceHistory::getLinkedIdList('parent_id', $this->objId) as $parentId) {
+        foreach (UsersCardHistory::getLinkedIdList('user_common_id', $id) as $cardId) {
+            $vf = new UsersCardHistory($cardId);
+            $selfHistory = array_merge($selfHistory, $vf->getHistory());
+        }
+
+        foreach (ParentDependenceHistory::getLinkedIdList('parent_id', $this->objId) as $parentId) {
             $vf = new ParentDependenceHistory($parentId);
             $selfHistory = array_merge($selfHistory, $vf->getHistory());
         }

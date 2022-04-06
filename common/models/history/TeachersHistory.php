@@ -84,6 +84,11 @@ class TeachersHistory extends BaseHistory
         $vf = new UserCommonHistory($id);
         $selfHistory = array_merge($selfHistory, $vf->getHistory());
 
+        foreach (UsersCardHistory::getLinkedIdList('user_common_id', $id) as $cardId) {
+            $vf = new UsersCardHistory($cardId);
+            $selfHistory = array_merge($selfHistory, $vf->getHistory());
+        }
+
         foreach (TeachersActivityHistory::getLinkedIdList('teachers_id', $this->objId) as $teachersId) {
             $vf = new TeachersActivityHistory($teachersId);
             $selfHistory = array_merge($selfHistory, $vf->getHistory());

@@ -11,7 +11,7 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('users_card', [
+        $this->createTableWithHistory('users_card', [
             'id' => $this->primaryKey(),
             'user_common_id' => $this->char(4)->defaultValue(null),
             'key_hex' => $this->char(8)->defaultValue(null)->comment('Пропуск (в формате HEX)'),
@@ -24,6 +24,7 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
             'updated_by' => $this->integer(),
+            'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
         $this->addCommentOnTable('users_card', 'Пропуска СКУД Сигур');
@@ -76,6 +77,6 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
     {
         $this->db->createCommand()->dropView('users_card_view')->execute();
         $this->dropTable('users_card_log');
-        $this->dropTable('users_card');
+        $this->dropTableWithHistory('users_card');
     }
 }
