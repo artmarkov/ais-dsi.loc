@@ -40,8 +40,8 @@ class AvatarHelper
             Imagine::thumbnail($sourceFile, $size, $size)->save($avatarUrl);
             $avatars[$alias] = "/$avatarUrl";
         }
+        Yii::$app->user->identity->removeAvatar(); // удаляем старую аватарку
         Yii::$app->user->identity->setAvatars($avatars);
-
         UsersCard::setSigurPhoto($sourceFile);
 
         return $avatars;
