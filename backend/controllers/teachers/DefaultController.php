@@ -18,6 +18,7 @@ use common\models\schedule\search\ConsultScheduleTeachersViewSearch;
 use common\models\schedule\search\ConsultScheduleViewSearch;
 use common\models\schedule\search\SubjectScheduleViewSearch;
 use common\models\schedule\SubjectSchedule;
+use common\models\sigur\UsersCard;
 use common\models\studyplan\StudyplanSubject;
 use common\models\schedule\SubjectScheduleView;
 use common\models\teachers\search\TeachersLoadViewSearch;
@@ -56,17 +57,19 @@ class DefaultController extends MainController
 
         $user = new User();
         $userCommon = new UserCommon();
+        $userCard = new UsersCard();
         // $userCommon->scenario = UserCommon::SCENARIO_NEW;
         $model = new $this->modelClass;
         $modelsActivity = [new TeachersActivity];
 
-        if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
+        if ($userCommon->load(Yii::$app->request->post()) && $userCard->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
             $modelsActivity = Model::createMultiple(TeachersActivity::class);
             Model::loadMultiple($modelsActivity, Yii::$app->request->post());
 
             // validate all models
             $valid = $userCommon->validate();
+            $valid = $userCard->validate() && $valid;
             $valid = $model->validate() && $valid;
             $valid = Model::validateMultiple($modelsActivity) && $valid;
             //$valid = true;
@@ -86,13 +89,16 @@ class DefaultController extends MainController
                         $userCommon->user_category = UserCommon::USER_CATEGORY_TEACHERS;
                         $userCommon->user_id = $user->id;
                         if ($flag = $userCommon->save(false)) {
-                            $model->user_common_id = $userCommon->id;
-                            if ($flag = $model->save(false)) {
-                                foreach ($modelsActivity as $modelActivity) {
-                                    $modelActivity->teachers_id = $model->id;
-                                    if (!($flag = $modelActivity->save(false))) {
-                                        $transaction->rollBack();
-                                        break;
+                            $userCard->user_common_id = $userCommon->id;
+                            if ($flag = $userCard->save(false)) {
+                                $model->user_common_id = $userCommon->id;
+                                if ($flag = $model->save(false)) {
+                                    foreach ($modelsActivity as $modelActivity) {
+                                        $modelActivity->teachers_id = $model->id;
+                                        if (!($flag = $modelActivity->save(false))) {
+                                            $transaction->rollBack();
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -111,6 +117,7 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax('create', [
             'userCommon' => $userCommon,
+            'userCard' => $userCard,
             'model' => $model,
             'modelsActivity' => (empty($modelsActivity)) ? [new TeachersActivity] : $modelsActivity,
             'readonly' => false
@@ -130,6 +137,7 @@ class DefaultController extends MainController
 
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_TEACHERS]);
+        $userCard = UsersCard::findOne(['user_common_id' => $model->user_common_id]) ?: new UsersCard();
         // $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
 
         if (!isset($model, $userCommon)) {
@@ -138,7 +146,7 @@ class DefaultController extends MainController
 
         $modelsActivity = $model->teachersActivity;
 
-        if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
+        if ($userCommon->load(Yii::$app->request->post()) && $userCard->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
             $oldIDs = ArrayHelper::map($modelsActivity, 'id', 'id');
             $modelsActivity = Model::createMultiple(TeachersActivity::class, $modelsActivity);
@@ -147,6 +155,7 @@ class DefaultController extends MainController
 
             // validate all models
             $valid = $userCommon->validate();
+            // $valid = $userCard->validate() && $valid;
             $valid = $model->validate() && $valid;
             $valid = Model::validateMultiple($modelsActivity) && $valid;
 
@@ -154,15 +163,18 @@ class DefaultController extends MainController
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $userCommon->save(false)) {
-                        if ($flag = $model->save(false)) {
-                            if (!empty($deletedIDs)) {
-                                TeachersActivity::deleteAll(['id' => $deletedIDs]);
-                            }
-                            foreach ($modelsActivity as $modelActivity) {
-                                $modelActivity->teachers_id = $model->id;
-                                if (!($flag = $modelActivity->save(false))) {
-                                    $transaction->rollBack();
-                                    break;
+                        $userCard->user_common_id = $userCommon->id;
+                        if ($flag && $flag = $userCard->save(false)) {
+                            if ($flag = $model->save(false)) {
+                                if (!empty($deletedIDs)) {
+                                    TeachersActivity::deleteAll(['id' => $deletedIDs]);
+                                }
+                                foreach ($modelsActivity as $modelActivity) {
+                                    $modelActivity->teachers_id = $model->id;
+                                    if (!($flag = $modelActivity->save(false))) {
+                                        $transaction->rollBack();
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -179,6 +191,7 @@ class DefaultController extends MainController
 
         return $this->render('update', [
             'userCommon' => $userCommon,
+            'userCard' => $userCard,
             'model' => $model,
             'modelsActivity' => (empty($modelsActivity)) ? [new TeachersActivity] : $modelsActivity,
             'readonly' => $readonly

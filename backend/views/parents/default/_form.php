@@ -6,12 +6,12 @@ use artsoft\widgets\ActiveForm;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
 use wbraganca\dynamicform\DynamicFormWidget;
-use common\models\user\UserCommon;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\parents\Parents */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $userCommon common\models\user\UserCommon */
+/* @var $userCard common\models\sigur\UsersCard */
 /* @var $modelsDependence \common\models\students\StudentDependence */
 /* @var $readonly */
 /* @var $form artsoft\widgets\ActiveForm */
@@ -106,6 +106,8 @@ JS
                     </div>
                 </div>
             </div>
+            <?= $this->render('@backend/views/user/_form_card', ['form' => $form, 'model' => $userCard, 'readonly' => $readonly]) ?>
+
             <?php DynamicFormWidget::begin([
                 'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items', // required: css class selector

@@ -74,7 +74,7 @@ class UsersCard extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art/guide', 'ID'),
             'user_common_id' => Yii::t('art/guide', 'User Common ID'),
             'key_hex' => 'Пропуск',
-            'timestamp_deny' => 'Срок действия',
+            'timestamp_deny' => 'Действует до',
             'mode_main' => 'Основной режим',
             'mode_list' => 'Список режимов',
             'photo_bin' => 'Фотография',

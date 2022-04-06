@@ -89,7 +89,7 @@ class DefaultController extends MainController
 
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_EMPLOYEES]);
-        $userCard = UsersCard::findOne(['user_common_id' => $model->user_common_id]);
+        $userCard = UsersCard::findOne(['user_common_id' => $model->user_common_id]) ?: new UsersCard();
 //        $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
 
         if (!isset($model, $userCommon, $userCard)) {
@@ -105,6 +105,7 @@ class DefaultController extends MainController
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $userCommon->save(false)) {
+                        $userCard->user_common_id = $userCommon->id;
                         if ($flag && $flag = $userCard->save(false)) {
                             $flag = $model->save(false);
                         }

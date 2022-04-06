@@ -13,6 +13,7 @@ use artsoft\helpers\RefBook;
 /* @var $this yii\web\View */
 /* @var $model common\models\teachers\Teachers */
 /* @var $userCommon UserCommon */
+/* @var $userCard common\models\sigur\UsersCard */
 /* @var $modelsActivity \common\models\teachers\TeachersActivity */
 /* @var $readonly */
 /* @var $form artsoft\widgets\ActiveForm */
@@ -166,6 +167,9 @@ EOF;
                     </div>
                 </div>
             </div>
+
+            <?= $this->render('@backend/views/user/_form_card', ['form' => $form, 'model' => $userCard, 'readonly' => $readonly]) ?>
+
             <?php DynamicFormWidget::begin([
                 'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items', // required: css class selector

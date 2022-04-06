@@ -4,6 +4,7 @@ namespace backend\controllers\parents;
 
 use artsoft\models\User;
 use backend\models\Model;
+use common\models\sigur\UsersCard;
 use common\models\students\StudentDependence;
 use common\models\user\UserCommon;
 use yii\helpers\ArrayHelper;
@@ -30,17 +31,19 @@ class DefaultController extends MainController
 
         $user = new User();
         $userCommon = new UserCommon();
+        $userCard = new UsersCard();
 //        $userCommon->scenario = UserCommon::SCENARIO_NEW;
         $model = new $this->modelClass;
         $modelsDependence = [new StudentDependence(['scenario' => StudentDependence::SCENARIO_STUDENT])];
 
-        if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
+        if ($userCommon->load(Yii::$app->request->post()) && $userCard->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
             $modelsDependence = Model::createMultiple(StudentDependence::class);
             Model::loadMultiple($modelsDependence, Yii::$app->request->post());
 
             // validate all models
             $valid = $userCommon->validate();
+            $valid = $userCard->validate() && $valid;
             $valid = $model->validate() && $valid;
             $valid = Model::validateMultiple($modelsDependence) && $valid;
             //$valid = true;
@@ -60,13 +63,16 @@ class DefaultController extends MainController
                         $userCommon->user_category = UserCommon::USER_CATEGORY_PARENTS;
                         $userCommon->user_id = $user->id;
                         if ($flag = $userCommon->save(false)) {
-                            $model->user_common_id = $userCommon->id;
-                            if ($flag = $model->save(false)) {
-                                foreach ($modelsDependence as $modelDependence) {
-                                    $modelDependence->parent_id = $model->id;
-                                    if (!($flag = $modelDependence->save(false))) {
-                                        $transaction->rollBack();
-                                        break;
+                            $userCard->user_common_id = $userCommon->id;
+                            if ($flag = $userCard->save(false)) {
+                                $model->user_common_id = $userCommon->id;
+                                if ($flag = $model->save(false)) {
+                                    foreach ($modelsDependence as $modelDependence) {
+                                        $modelDependence->parent_id = $model->id;
+                                        if (!($flag = $modelDependence->save(false))) {
+                                            $transaction->rollBack();
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -85,6 +91,7 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax('create', [
             'userCommon' => $userCommon,
+            'userCard' => $userCard,
             'model' => $model,
             'modelsDependence' => (empty($modelsDependence)) ? [new StudentDependence()] : $modelsDependence,
             'readonly' => false
@@ -104,6 +111,7 @@ class DefaultController extends MainController
 
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_PARENTS]);
+        $userCard = UsersCard::findOne(['user_common_id' => $model->user_common_id]) ?: new UsersCard();
 //        $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
 
         if (!isset($model, $userCommon)) {
@@ -114,7 +122,7 @@ class DefaultController extends MainController
         foreach ($modelsDependence as $m) {
             $m->scenario = StudentDependence::SCENARIO_STUDENT;
         }
-        if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
+        if ($userCommon->load(Yii::$app->request->post()) && $userCard->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
 
             $oldIDs = ArrayHelper::map($modelsDependence, 'id', 'id');
             $modelsDependence = Model::createMultiple(StudentDependence::class, $modelsDependence);
@@ -123,6 +131,7 @@ class DefaultController extends MainController
 
             // validate all models
             $valid = $userCommon->validate();
+            // $valid = $userCard->validate() && $valid;
             $valid = $model->validate() && $valid;
             $valid = Model::validateMultiple($modelsDependence) && $valid;
 
@@ -130,15 +139,18 @@ class DefaultController extends MainController
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $userCommon->save(false)) {
-                        if ($flag = $model->save(false)) {
-                            if (!empty($deletedIDs)) {
-                                StudentDependence::deleteAll(['id' => $deletedIDs]);
-                            }
-                            foreach ($modelsDependence as $modelDependence) {
-                                $modelDependence->parent_id = $model->id;
-                                if (!($flag = $modelDependence->save(false))) {
-                                    $transaction->rollBack();
-                                    break;
+                        $userCard->user_common_id = $userCommon->id;
+                        if ($flag && $flag = $userCard->save(false)) {
+                            if ($flag = $model->save(false)) {
+                                if (!empty($deletedIDs)) {
+                                    StudentDependence::deleteAll(['id' => $deletedIDs]);
+                                }
+                                foreach ($modelsDependence as $modelDependence) {
+                                    $modelDependence->parent_id = $model->id;
+                                    if (!($flag = $modelDependence->save(false))) {
+                                        $transaction->rollBack();
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -155,6 +167,7 @@ class DefaultController extends MainController
 
         return $this->render('update', [
             'userCommon' => $userCommon,
+            'userCard' => $userCard,
             'model' => $model,
             'modelsDependence' => (empty($modelsDependence)) ? [new StudentDependence] : $modelsDependence,
             'readonly' => $readonly

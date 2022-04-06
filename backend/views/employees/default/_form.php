@@ -12,6 +12,7 @@ use common\models\user\UserCommon;
 /* @var $model common\models\employees\Employees */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $userCommon common\models\user\UserCommon */
+/* @var $userCard common\models\sigur\UsersCard */
 /* @var $readonly */
 ?>
 
@@ -48,9 +49,7 @@ use common\models\user\UserCommon;
             <?php endif; ?>
         </div>
         <div class="panel-body">
-
             <?= $this->render('@backend/views/user/_form', ['form' => $form, 'model' => $userCommon, 'readonly' => $readonly]) ?>
-
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Служебные данные
@@ -63,26 +62,7 @@ use common\models\user\UserCommon;
                     </div>
                 </div>
             </div>
-
             <?= $this->render('@backend/views/user/_form_card', ['form' => $form, 'model' => $userCard, 'readonly' => $readonly]) ?>
-
-            <!--            --><?php //DynamicFormWidget::begin([
-            //                'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-            //                'widgetBody' => '.container-items', // required: css class selector
-            //                'widgetItem' => '.item', // required: css class
-            //                'limit' => 4, // the maximum times, an element can be added (default 999)
-            //                'min' => 1, // 0 or 1 (default 1)
-            //                'insertButton' => '.add-item', // css class
-            //                'deleteButton' => '.remove-item', // css class
-            //                'model' => $modelsRelations[0],
-            //                'formId' => 'student-form',
-            //                'formFields' => [
-            //                    'work_id',
-            //                    'direction_id',
-            //                    'stake_id',
-            //                ],
-            //            ]); ?>
-
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
