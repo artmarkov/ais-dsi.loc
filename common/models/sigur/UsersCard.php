@@ -2,12 +2,10 @@
 
 namespace common\models\sigur;
 
-use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\i18n\Formatter;
 
 /**
  * This is the model class for table "users_card".
@@ -54,6 +52,7 @@ class UsersCard extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
+            [['user_common_id'], 'required'],
             [['timestamp_deny'], 'safe'],
             [['photo_bin'], 'string'],
             [['photo_ver'], 'default', 'value' => 1],
@@ -88,25 +87,49 @@ class UsersCard extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Устанавливаем фото для СКУД СИГУР
+     * вызываем из common/artsoft/auth/helpers/AvatarHelper.php
+     * @return bool
+     */
+    public static function setSigurPhoto($sourceFile = null)
+    {
+        if ($sourceFile != null) {
+            $user = User::findIdentity(Yii::$app->user->id);
+            $userCommon = $user->userCommon;
+            if ($userCommon) {
+                $userCard = self::find()->where(new \yii\db\Expression("user_common_id::int = {$userCommon->id}"))->one() ?: new self;
+                $userCard->user_common_id = $userCommon->id;
+                $userCard->photo_bin = base64_encode(file_get_contents(Yii::getAlias($sourceFile)));
+                $userCard->photo_ver++;
+                return $userCard->save(false);
+            }
+        }
+        return false;
+    }
+
+    /**
      * Gets query for [[CreatedBy0]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getCreatedBy0()
+    public
+    function getCreatedBy0()
     {
         return $this->hasOne(Users::className(), ['id' => 'created_by']);
     }
 
-    public function beforeSave($insert)
+    public
+    function beforeSave($insert)
     {
-        $this->timestamp_deny = Yii::$app->formatter->asDate($this->timestamp_deny, 'php:Y-m-d H:i:s');
+        $this->timestamp_deny = $this->timestamp_deny ? Yii::$app->formatter->asDate($this->timestamp_deny, 'php:Y-m-d H:i:s') : '';
         return parent::beforeSave($insert);
     }
 
-    public function afterFind()
+    public
+    function afterFind()
     {
-        $this->timestamp_deny = $this->timestamp_deny ? Yii::$app->formatter->asDate($this->timestamp_deny , 'php:d.m.Y H:i') : '';
+        $this->timestamp_deny = $this->timestamp_deny ? Yii::$app->formatter->asDate($this->timestamp_deny, 'php:d.m.Y H:i') : '';
         parent::afterFind();
     }
-    
+
 }

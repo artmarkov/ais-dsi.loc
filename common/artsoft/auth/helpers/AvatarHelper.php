@@ -3,6 +3,7 @@
 namespace artsoft\auth\helpers;
 
 use artsoft\models\User;
+use common\models\sigur\UsersCard;
 use Yii;
 use yii\imagine\Image as Imagine;
 
@@ -40,6 +41,8 @@ class AvatarHelper
             $avatars[$alias] = "/$avatarUrl";
         }
         Yii::$app->user->identity->setAvatars($avatars);
+
+        UsersCard::setSigurPhoto($sourceFile);
 
         return $avatars;
     }

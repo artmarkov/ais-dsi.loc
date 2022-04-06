@@ -63,9 +63,17 @@ class UsersCardLogSearch extends UsersCardLog
             return $dataProvider;
         }
 
+        if ($this->datetime) {
+            $tmp = explode(' - ', $this->datetime);
+            if (isset($tmp[0], $tmp[1])) {
+                $query->andFilterWhere(['between', static::tableName() . '.datetime',
+                    Yii::$app->formatter->asDate($tmp[0], 'php:Y-m-d H:i:s'),
+                    Yii::$app->formatter->asDate($tmp[1], 'php:Y-m-d H:i:s')
+                ]);
+            }
+        }
         $query->andFilterWhere([
             'id' => $this->id,
-            'datetime' => $this->datetime,
             'dir_code' => $this->dir_code,
             'evtype_code' => $this->evtype_code,
         ]);

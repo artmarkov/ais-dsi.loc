@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\widgets\DateRangePicker;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -49,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'users-card-log-grid',
-                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art','Delete')] //Configure here you bulk actions
+                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
@@ -62,7 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'name',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                 'options' => ['style' => 'width:350px'],
+                                'options' => ['style' => 'width:350px'],
                                 'controller' => '/logs/sigur',
                                 'title' => function (UsersCardLog $model) {
                                     return Html::a($model->name, ['view', 'id' => $model->id], ['data-pjax' => 0]);
@@ -76,8 +77,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'evtype_code',
                                 'optionsArray' => [
-                                    [1, 'проход', 'success'],
-                                    [2, 'запрет', 'danger'],
+                                    [1, 'Проход', 'success'],
+                                    [2, 'Запрет', 'danger'],
                                 ],
                                 'options' => ['style' => 'width:150px']
                             ],
@@ -85,17 +86,24 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'dir_code',
                                 'optionsArray' => [
-                                    [1, 'выход', 'info'],
-                                    [2, 'вход', 'success'],
-                                    [3, 'неизвестное', 'warning'],
+                                    [1, 'Выход', 'info'],
+                                    [2, 'Вход', 'primary'],
+                                    [3, 'Неизвестное', 'warning'],
                                 ],
                                 'options' => ['style' => 'width:150px']
                             ],
-                            'deny_reason',
+                            [
+                                'attribute' => 'deny_reason',
+                                'filter' =>  UsersCardLog::DENY_REASON,
+                                'value' => function (UsersCardLog $model) {
+                                    return (int)$model->deny_reason != null ? UsersCardLog::DENY_REASON[(int)$model->deny_reason] : '';
+                                },
+                                'format' => 'raw'
+                            ],
                             [
                                 'attribute' => 'user_common_id',
                                 'value' => function (UsersCardLog $model) {
-                                    return trim($model->user_common_id) !== '' ? 'Да' : 'Нет';
+                                    return (int)$model->user_common_id != null ? 'Да' : 'Нет';
                                 },
                                 'label' => 'Зарегистрирован в АИС',
                             ],
@@ -110,4 +118,11 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 
-
+<?php
+DateRangePicker::widget([
+    'model' => $searchModel,
+    'attribute' => 'datetime',
+    'format' => 'YYYY-MM-DD HH:mm',
+    'opens' => 'left',
+])
+?>
