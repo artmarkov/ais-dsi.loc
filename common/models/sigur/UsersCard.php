@@ -22,6 +22,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $created_by
  * @property int $updated_at
  * @property int|null $updated_by
+ * @property int $version
  *
  * @property Users $createdBy0
  */
@@ -56,7 +57,7 @@ class UsersCard extends \artsoft\db\ActiveRecord
             [['timestamp_deny'], 'safe'],
             [['photo_bin'], 'string'],
             [['photo_ver'], 'default', 'value' => 1],
-            [['photo_ver', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['photo_ver', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['user_common_id'], 'string', 'max' => 4],
             [['key_hex'], 'string', 'max' => 8],
             [['mode_main'], 'string', 'max' => 127],
@@ -83,7 +84,13 @@ class UsersCard extends \artsoft\db\ActiveRecord
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
+            'version' => Yii::t('art', 'Version'),
         ];
+    }
+
+    public function optimisticLock()
+    {
+        return 'version';
     }
 
     /**
@@ -109,24 +116,20 @@ class UsersCard extends \artsoft\db\ActiveRecord
 
     /**
      * Gets query for [[CreatedBy0]].
-     *
      * @return \yii\db\ActiveQuery
      */
-    public
-    function getCreatedBy0()
+    public function getCreatedBy0()
     {
         return $this->hasOne(Users::className(), ['id' => 'created_by']);
     }
 
-    public
-    function beforeSave($insert)
+    public function beforeSave($insert)
     {
         $this->timestamp_deny = $this->timestamp_deny ? Yii::$app->formatter->asDate($this->timestamp_deny, 'php:Y-m-d H:i:s') : '';
         return parent::beforeSave($insert);
     }
 
-    public
-    function afterFind()
+    public function afterFind()
     {
         $this->timestamp_deny = $this->timestamp_deny ? Yii::$app->formatter->asDate($this->timestamp_deny, 'php:d.m.Y H:i') : '';
         parent::afterFind();
