@@ -98,4 +98,8 @@ class ConsultSchedule extends \yii\db\ActiveRecord
     {
         return $this->hasOne(TeachersLoad::className(), ['id' => 'teachers_load_id']);
     }
+
+    public function getTeachersConsultNeed() {
+        return true;
+    }
 }

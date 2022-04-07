@@ -20,8 +20,8 @@ class SubjectScheduleSearch extends SubjectSchedule
     public function rules()
     {
         return [
-            [['id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
-            [['description', 'subject_sect_id'], 'safe'],
+            [['id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
+            [['description'], 'string'],
         ];
     }
 
@@ -68,16 +68,11 @@ class SubjectScheduleSearch extends SubjectSchedule
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
-            'studyplan_subject_id' => $this->studyplan_subject_id,
-            'direction_id' => $this->direction_id,
-            'teachers_id' => $this->teachers_id,
             'week_num' => $this->week_num,
             'week_day' => $this->week_day,
             'time_in' => $this->time_in,
             'time_out' => $this->time_out,
             'auditory_id' => $this->auditory_id,
-            'subject_sect_studyplan.subject_sect_id' => $this->subject_sect_id,
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);

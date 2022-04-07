@@ -7,7 +7,6 @@ use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use artsoft\widgets\Notice;
-use artsoft\widgets\Tooltip;
 use common\models\auditory\Auditory;
 use common\models\guidejob\Direction;
 use common\models\studyplan\StudyplanSubject;
@@ -224,22 +223,6 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
         return $this->hasOne(Auditory::class, ['id' => 'teachers_id']);
     }
 
-//
-//    /**
-//     * @return string
-//     */
-//    public function getTeachersScheduleDisplay()
-//    {
-//        $auditory = RefBook::find('auditory_memo_1')->getValue($this->auditory_id);
-//        $teachers = RefBook::find('teachers_fio')->getValue($this->teachers_id);
-//        $direction = $this->direction->slug;
-//        $string = $this->week_num != 0 ? ' ' . ArtHelper::getWeekList('short')[$this->week_num] : null;
-//        $string .= ' ' . ArtHelper::getWeekdayList('short')[$this->week_day] . ' ' . $this->time_in . '-' . $this->time_out . '->(' . $auditory . ')';
-//        $string .= '->' . $teachers . '(' . $direction . ')';
-//        return $string;
-//    }
-
-
     /**
      * В одной аудитории накладка по времени!
      * @param $model
@@ -321,63 +304,6 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             ->one();
     }
 
-
-
-    /**
-     * В одной аудитории накладка по времени!
-     * Одновременное посещение разных дисциплин недопустимо!
-     * Накладка по времени занятий концертмейстера!
-     * Заданное расписание не соответствует планированию индивидуальных занятий!
-     * Преподаватель не может работать в одно и тоже время в разных аудиториях!
-     * Концертмейстер не может работать в одно и тоже время в разных аудиториях!
-     *
-     * @return null|string
-     * @throws \Exception
-     */
-    public function getItemScheduleNotice()
-    {
-        $tooltip = [];
-        if ($this->subject_schedule_id) {
-            $model = SubjectSchedule::findOne($this->subject_schedule_id);
-            if (self::getScheduleOverLapping($model)->exists() === true) {
-                $info = [];
-                foreach (self::getScheduleOverLapping($model)->all() as $itemModel) {
-                    $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
-                }
-                $message = 'В одной аудитории накладка по времени! ' . implode(', ', $info);
-                //  Notice::registerDanger($message);
-                $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
-            }
-
-            if (self::getTeachersOverLapping($model)->exists() === true) {
-                $info = [];
-                foreach (self::getScheduleOverLapping($model)->all() as $itemModel) {
-                    $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
-                }
-                $message = 'Преподаватель(концертмейстер) не может работать в одно и тоже время в разных аудиториях! ' . implode(', ', $info);
-                //   Notice::registerDanger($message);
-                $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
-            }
-            return implode('', $tooltip);
-        }
-        return null;
-    }
-
-    /**
-     * Проверка на необходимость добавления расписания
-     * @return bool
-     */
-    public function getTeachersScheduleNeed()
-    {
-        $delta_time = Yii::$app->settings->get('module.student_delta_time');
-        $thereIsAnOverload = $this->getTeachersOverLoad();
-        $weekTime = Schedule::academ2astr($this->load_time);
-        if ($this->load_time != 0 && $weekTime > $thereIsAnOverload['full_time'] && abs(($weekTime - $thereIsAnOverload['full_time'])) > ($delta_time * $thereIsAnOverload['qty'])) {
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Получаем расписание группы или дисциплины ученика
      * @param $subject_sect_studyplan_id
@@ -394,4 +320,19 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
                 ['=', 'studyplan_subject_id', $studyplan_subject_id],
             ])->column();
     }
+
+    //
+//    /**
+//     * @return string
+//     */
+//    public function getTeachersScheduleDisplay()
+//    {
+//        $auditory = RefBook::find('auditory_memo_1')->getValue($this->auditory_id);
+//        $teachers = RefBook::find('teachers_fio')->getValue($this->getTeachersId());
+//        $direction = $this->direction->slug;
+//        $string = $this->week_num != 0 ? ' ' . ArtHelper::getWeekList('short')[$this->week_num] : null;
+//        $string .= ' ' . ArtHelper::getWeekdayList('short')[$this->week_day] . ' ' . $this->time_in . '-' . $this->time_out . '->(' . $auditory . ')';
+//        $string .= '->' . $teachers . '(' . $direction . ')';
+//        return $string;
+//    }
 }
