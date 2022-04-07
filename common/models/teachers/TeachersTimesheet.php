@@ -8,8 +8,8 @@ use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use common\models\own\Department;
 use common\models\routine\Routine;
-use common\models\schedule\ConsultScheduleTeachersView;
-use common\models\subjectsect\SubjectScheduleTeachersStudyplanView;
+use common\models\schedule\ConsultScheduleView;
+use common\models\schedule\SubjectScheduleView;
 use Yii;
 
 class TeachersTimesheet
@@ -22,6 +22,7 @@ class TeachersTimesheet
 
     protected $date_in;
     protected $date_out;
+    protected $subject_type_id;
     protected $activity_list;
     protected $mon;
     protected $year;
@@ -31,6 +32,7 @@ class TeachersTimesheet
     {
         $this->date_in = $model_date->date_in;
         $this->date_out = $model_date->date_out;
+        $this->subject_type_id = $model_date->subject_type_id;
         $this->activity_list = implode(',', $model_date->activity_list);
         $this->mon = date('n', strtotime($this->date_in));
         $this->year = date('Y', strtotime($this->date_in));
@@ -57,12 +59,13 @@ class TeachersTimesheet
         $week_day = Schedule::getWeekDay($day, $this->mon, $this->year); // номер дня недели
         $week_num = Schedule::getWeekNum($day, $this->mon, $this->year);  // номер недели в месяце
 
-        $full_time = SubjectScheduleTeachersStudyplanView::find()
+        $full_time = SubjectScheduleView::find()
             ->select(new \yii\db\Expression("(SUM(time_out) - SUM(time_in)) as full_time"))
             ->where(['direction_id' => $direction_id])
             ->andWhere(['teachers_id' => $teachers_id])
             ->andWhere(['week_day' => $week_day])
             ->andWhere(['plan_year' => $this->plan_year])
+            ->andWhere(['subject_type_id' => $this->subject_type_id])
             ->andWhere(new \yii\db\Expression("case when week_num is not null then week_num = {$week_num} else week_num is null end"))
             ->scalar();
 
@@ -74,10 +77,11 @@ class TeachersTimesheet
         $timestamp_up = mktime(0, 0, 0, $this->mon, $day, $this->year); // начало суток
         $timestamp_end = mktime(23, 59, 59, $this->mon, $day, $this->year); // конец суток
 
-        $full_time = ConsultScheduleTeachersView::find()
+        $full_time = ConsultScheduleView::find()
             ->select(new \yii\db\Expression("(SUM(datetime_out) - SUM(datetime_in)) as full_time"))
             ->where(['direction_id' => $direction_id])
             ->andWhere(['teachers_id' => $teachers_id])
+            ->andWhere(['subject_type_id' => $this->subject_type_id])
             ->andWhere(['and', ['>=', 'datetime_in', $timestamp_up], ['<=', 'datetime_in', $timestamp_end]])
             ->scalar();
 
@@ -171,6 +175,7 @@ class TeachersTimesheet
             'period_out' => date('j', strtotime($this->date_out)),
             'period_month' => ArtHelper::getMonthsList()[$this->mon],
             'period_year' => date('Y', strtotime($this->date_in)),
+            'subject_type_name' => RefBook::find('subject_type_name')->getValue($this->subject_type_id),
             'org_briefname' => Yii::$app->settings->get('own.shortname'),
             'departments' => $this->getDepartmentsString($departmentsIds),
             'leader_iof' => Yii::$app->settings->get('own.head'),

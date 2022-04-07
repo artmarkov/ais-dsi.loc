@@ -35,6 +35,8 @@ $form = ActiveForm::begin([
 
             <?= $form->field($model_date, "date_out")->widget(DatePicker::class)->label('Дата окончания периода'); ?>
 
+            <?= $form->field($model_date, "subject_type_id")->dropDownList(\artsoft\helpers\RefBook::find('subject_type_name')->getList())->label('Тип занятий'); ?>
+
             <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
         </div>
     </div>
