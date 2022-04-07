@@ -190,7 +190,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
         /* @var $model \artsoft\db\ActiveRecord */
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
             $this->getSubmitAction($model);
         }

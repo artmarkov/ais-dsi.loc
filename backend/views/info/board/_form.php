@@ -75,7 +75,11 @@ use kartik\date\DatePicker;
 
                     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
-                    <?= $form->field($model, 'board_date')->widget(DatePicker::class, ['options' => ['value' => date('d.m.Y')]]); ?>
+                    <?= $form->field($model, 'board_date')->widget(DatePicker::class, [
+                        'options' => [
+                            'value' => $model->isNewRecord ? date('d.m.Y') : $model->board_date
+                        ]
+                    ]); ?>
 
                     <?= $form->field($model, 'delete_date')->widget(DatePicker::class); ?>
 

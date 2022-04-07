@@ -9,6 +9,8 @@ use backend\models\Model;
 use common\models\education\EducationCat;
 use common\models\education\EducationProgrammLevel;
 use common\models\history\StudyplanHistory;
+use common\models\info\Document;
+use common\models\info\search\DocumentSearch;
 use common\models\sigur\UsersCard;
 use common\models\students\StudentDependence;
 use common\models\studyplan\search\StudyplanSearch;
@@ -41,7 +43,7 @@ class DefaultController extends MainController
         $user = new User();
         $userCommon = new UserCommon();
         $userCard = new UsersCard();
-       // $userCommon->scenario = UserCommon::SCENARIO_NEW;
+        // $userCommon->scenario = UserCommon::SCENARIO_NEW;
         $model = new $this->modelClass;
         $modelsDependence = [new StudentDependence(['scenario' => StudentDependence::SCENARIO_PARENT])];
 
@@ -121,7 +123,7 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_STUDENTS]);
         $userCard = UsersCard::findOne(['user_common_id' => $model->user_common_id]) ?: new UsersCard();
-       // $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
+        // $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
 
         if (!isset($model, $userCommon)) {
             throw new NotFoundHttpException("The user was not found.");
@@ -372,6 +374,84 @@ class DefaultController extends MainController
         }
     }
 
+    public function actionDocument($id, $objectId = null, $mode = null, $readonly = false)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/student', 'Students'), 'url' => ['index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['students/default/view', 'id' => $id]];
+
+        if ('create' == $mode) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Documents'), 'url' => ['/students/default/document', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление документа';
+            $modelDoc = new Document();
+            $modelDoc->user_common_id = $model->user_common_id;
+
+            if ($modelDoc->load(Yii::$app->request->post()) && $modelDoc->save()) {
+                Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($modelDoc);
+            }
+            return $this->renderIsAjax('/info/document/_form', [
+                'model' => $modelDoc,
+                'readonly' => $readonly,
+                'student_id' => $id
+            ]);
+
+
+        } elseif ('delete' == $mode && $objectId) {
+            $modelDoc = Document::findOne($objectId);
+            $modelDoc->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $modelDoc));
+
+        } elseif ($objectId) {
+            if ('view' == $mode) {
+                $readonly = true;
+            }
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Documents'), 'url' => ['/students/default/document', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $modelDoc = Document::findOne($objectId);
+
+            if (!isset($modelDoc)) {
+                throw new NotFoundHttpException("The Document was not found.");
+            }
+
+            if ($modelDoc->load(Yii::$app->request->post()) && $modelDoc->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($modelDoc);
+            }
+            return $this->render('/info/document/_form', [
+                'model' => $modelDoc,
+                'readonly' => $readonly,
+                'student_id' => $id
+            ]);
+
+        } else {
+            $modelClass = 'common\models\info\Document';
+            $searchModel = new DocumentSearch();
+
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+
+            if ($restrictAccess) {
+                $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $params[$searchName]['user_common_id'] = $model->user_common_id;
+
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('document', [
+                'dataProvider' => $dataProvider,
+                'searchModel' => $searchModel,
+                'student_id' => $id
+            ]);
+        }
+    }
+
     /**
      * @param $id
      * @return array
@@ -384,6 +464,7 @@ class DefaultController extends MainController
             ['label' => 'Индивидуальные планы', 'url' => ['/students/default/studyplan', 'id' => $id]],
             ['label' => 'Испытания', 'url' => ['/students/default/examination', 'id' => $id]],
             ['label' => 'История обучения', 'url' => ['/students/default/education-history', 'id' => $id]],
+            ['label' => 'Документы', 'url' => ['/students/default/document', 'id' => $id]],
         ];
     }
 }

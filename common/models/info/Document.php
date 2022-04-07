@@ -2,9 +2,13 @@
 
 namespace common\models\info;
 
+use artsoft\behaviors\ArrayFieldBehavior;
+use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
 use common\models\user\UserCommon;
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "document".
@@ -20,11 +24,10 @@ use Yii;
  * @property int|null $updated_by
  *
  * @property UserCommon $userCommon
- * @property Users $createdBy0
- * @property Users $updatedBy0
  */
 class Document extends \artsoft\db\ActiveRecord
 {
+    public $countFiles;
     /**
      * {@inheritdoc}
      */
@@ -34,19 +37,35 @@ class Document extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class,
+            BlameableBehavior::class,
+            [
+                'class' => DateFieldBehavior::class,
+                'attributes' => ['doc_date'],
+            ],
+            [
+                'class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class,
+            ],
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['user_common_id', 'title', 'description', 'doc_date', 'created_at', 'updated_at'], 'required'],
-            [['user_common_id', 'doc_date', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'default', 'value' => null],
-            [['user_common_id', 'doc_date', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['user_common_id', 'title', 'doc_date'], 'required'],
+            [['user_common_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['doc_date', 'countFiles'], 'safe'],
             [['title'], 'string', 'max' => 127],
             [['description'], 'string', 'max' => 1024],
-            [['user_common_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::className(), 'targetAttribute' => ['user_common_id' => 'id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
+            [['user_common_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['user_common_id' => 'id']],
         ];
     }
 
@@ -56,15 +75,17 @@ class Document extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('art/guide', 'ID'),
-            'user_common_id' => Yii::t('art/guide', 'User Common ID'),
-            'title' => Yii::t('art/guide', 'Title'),
-            'description' => Yii::t('art/guide', 'Description'),
+            'id' => Yii::t('art', 'ID'),
+            'user_common_id' => Yii::t('art', 'User'),
+            'title' => Yii::t('art', 'Title'),
+            'description' => Yii::t('art', 'Description'),
             'doc_date' => Yii::t('art/guide', 'Doc Date'),
-            'created_at' => Yii::t('art/guide', 'Created At'),
-            'created_by' => Yii::t('art/guide', 'Created By'),
-            'updated_at' => Yii::t('art/guide', 'Updated At'),
-            'updated_by' => Yii::t('art/guide', 'Updated By'),
+            'fullName' => Yii::t('art', 'Full Name'),
+            'countFiles' => Yii::t('art/guide', 'Count Files'),
+            'created_at' => Yii::t('art', 'Created'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'updated_by' => Yii::t('art', 'Updated By'),
         ];
     }
 
@@ -75,26 +96,7 @@ class Document extends \artsoft\db\ActiveRecord
      */
     public function getUserCommon()
     {
-        return $this->hasOne(UserCommon::className(), ['id' => 'user_common_id']);
+        return $this->hasOne(UserCommon::class, ['id' => 'user_common_id']);
     }
 
-    /**
-     * Gets query for [[CreatedBy0]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy0()
-    {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
-    }
-
-    /**
-     * Gets query for [[UpdatedBy0]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdatedBy0()
-    {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
-    }
 }

@@ -40,7 +40,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Список преподавателей', 'icon' => 'fa fa-minus', 'url' => ['/teachers/default/index']],
                     ['label' => 'Список учеников', 'icon' => 'fa fa-minus', 'url' => ['/students/default/index']],
                     ['label' => 'Список родителей', 'icon' => 'fa fa-minus', 'url' => ['/parents/default/index']],
-                    ['label' => 'Заявления', 'icon' => 'fa fa-minus', 'url' => ['/order/default/index']],
+                    ['label' => 'Документы', 'icon' => 'fa fa-minus', 'url' => ['/info/document/index']],
                 ],
             ],
             [

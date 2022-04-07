@@ -15,6 +15,7 @@ use yii\behaviors\TimestampBehavior;
  * This is the model class for table "students".
  *
  * @property int $id
+ * @property int $user_common_id
  * @property int $position_id
  * @property string $sert_name
  * @property string $sert_series
@@ -64,7 +65,7 @@ class Student extends ActiveRecord
     public function rules()
     {
         return [
-            [['position_id'], 'required'],
+            [['user_common_id', 'position_id'], 'required'],
             [['position_id'], 'integer'],
             [['sert_date'], 'safe'],
             [['sert_name', 'sert_series', 'sert_num'], 'string', 'max' => 32],
@@ -88,6 +89,7 @@ class Student extends ActiveRecord
             }, 'enableClientValidation' => false],
             ['sert_date', 'default', 'value' => NULL],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['user_common_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['user_common_id' => 'id']],
         ];
     }
 

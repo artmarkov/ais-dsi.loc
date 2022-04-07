@@ -11,6 +11,7 @@ use artsoft\grid\GridPageSize;
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\info\search\DocumentSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $teachers_id */
 
 $this->title = Yii::t('art/guide', 'Documents');
 $this->params['breadcrumbs'][] = $this->title;
@@ -44,24 +45,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'document-grid-pjax',
                     ])
                     ?>
-
                     <?=
                     GridView::widget([
                         'id' => 'document-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                        'bulkActionOptions' => [
-                            'gridId' => 'document-grid',
-                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-                        ],
-                        'rowOptions' => function(Document $model) {
-                            if($model->getFilesCount() == 0) {
+                        'rowOptions' => function (Document $model) {
+                            if ($model->getFilesCount() == 0) {
                                 return ['class' => 'danger'];
                             }
                             return [];
                         },
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
                                 'options' => ['style' => 'width:10px'],
@@ -72,18 +67,46 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'title',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/info/document',
-                                'title' => function (Document $model) {
-                                    return Html::a($model->title, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'controller' => '/teachers/default',
+                                'title' => function ($model) use ($teachers_id) {
+                                    return Html::a($model->title, ['/teachers/default/document', 'id' => $teachers_id, 'objectId' => $model->id, 'mode' => 'view'], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
+                                'buttons' => [
+                                    'update' => function ($url, $model, $key) use ($teachers_id) {
+                                        return Html::a(Yii::t('art', 'Edit'),
+                                            Url::to(['/teachers/default/document', 'id' => $teachers_id, 'objectId' => $model->id, 'mode' => 'update']), [
+                                                'title' => Yii::t('art', 'Edit'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                    'view' => function ($url, $model, $key) use ($teachers_id) {
+                                        return Html::a(Yii::t('art', 'View'),
+                                            Url::to(['/teachers/default/document', 'id' => $teachers_id, 'objectId' => $model->id, 'mode' => 'view']), [
+                                                'title' => Yii::t('art', 'View'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                    'delete' => function ($url, $model, $key) use ($teachers_id) {
+                                        return Html::a(Yii::t('art', 'Delete'),
+                                            Url::to(['/teachers/default/document', 'id' => $teachers_id, 'objectId' => $model->id, 'mode' => 'delete']), [
+                                                'title' => Yii::t('art', 'Delete'),
+                                                'aria-label' => Yii::t('art', 'Delete'),
+                                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
                             ],
-                            [
-                                'attribute' => 'fullName',
-                                'value' => function (Document $model) {
-                                    return $model->userCommon->getFullName();
-                                },
-                            ],
+
+//                            'user_common_id',
+//                            'description',
                             'doc_date:date',
                             [
                                 'attribute' => 'countFiles',
@@ -91,7 +114,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return $model->getFilesCount();
                                 },
                             ],
-//                            'description',
                         ],
                     ]);
                     ?>

@@ -2,6 +2,8 @@
 
 namespace backend\controllers\teachers;
 
+use artsoft\helpers\ArtHelper;
+use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
@@ -13,6 +15,8 @@ use common\models\history\EfficiencyHistory;
 use common\models\history\LessonItemsHistory;
 use common\models\history\SubjectScheduleHistory;
 use common\models\history\TeachersLoadHistory;
+use common\models\info\Document;
+use common\models\info\search\DocumentSearch;
 use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleTeachersViewSearch;
 use common\models\schedule\search\ConsultScheduleViewSearch;
@@ -911,6 +915,94 @@ class DefaultController extends MainController
 
     /**
      * @param $id
+     * @param null $objectId
+     * @param null $mode
+     * @param bool $readonly
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function actionDocument($id, $objectId = null, $mode = null, $readonly = false)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
+
+        if ('create' == $mode) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Documents'), 'url' => ['/teachers/default/document', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление документа';
+            $modelDoc = new Document();
+            $modelDoc->user_common_id = $model->user_common_id;
+
+            if ($modelDoc->load(Yii::$app->request->post()) && $modelDoc->save()) {
+                Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($modelDoc);
+            }
+            return $this->renderIsAjax('/info/document/_form', [
+                'model' => $modelDoc,
+                'readonly' => $readonly,
+                'teachers_id' => $id
+            ]);
+
+
+        } elseif ('delete' == $mode && $objectId) {
+            $modelDoc = Document::findOne($objectId);
+            $modelDoc->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $modelDoc));
+
+        } elseif ($objectId) {
+            if ('view' == $mode) {
+                $readonly = true;
+            }
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Documents'), 'url' => ['/teachers/default/document', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $modelDoc = Document::findOne($objectId);
+
+            if (!isset($modelDoc)) {
+                throw new NotFoundHttpException("The Document was not found.");
+            }
+
+            if ($modelDoc->load(Yii::$app->request->post()) && $modelDoc->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($modelDoc);
+            }
+            return $this->render('/info/document/_form', [
+                'model' => $modelDoc,
+                'readonly' => $readonly,
+                'teachers_id' => $id
+            ]);
+
+        } else {
+            $modelClass = 'common\models\info\Document';
+            $searchModel = new DocumentSearch();
+
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+
+            if ($restrictAccess) {
+                $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $params[$searchName]['user_common_id'] = $model->user_common_id;
+
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('document', [
+                'dataProvider' => $dataProvider,
+                'searchModel' => $searchModel,
+                'teachers_id' => $id
+            ]);
+        }
+    }
+
+    /**
+     * @param $id
      * @return array
      */
     public function getMenu($id)
@@ -926,6 +1018,7 @@ class DefaultController extends MainController
             ['label' => 'Журнал успеваемости', 'url' => ['/teachers/default/studyplan-progress', 'id' => $id]],
             ['label' => 'Показатели эффективности', 'url' => ['/teachers/default/efficiency', 'id' => $id]],
             ['label' => 'Портфолио', 'url' => ['/teachers/default/portfolio', 'id' => $id]],
+            ['label' => 'Документы', 'url' => ['/teachers/default/document', 'id' => $id]],
         ];
     }
 }

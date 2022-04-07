@@ -22,11 +22,11 @@ class m220407_085200_create_table_document extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('document', 'Документы пользователей');
+        $this->db->createCommand()->resetSequence('document', 1000)->execute();
         $this->addForeignKey('board_ibfk_1', 'document', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('board_ibfk_2', 'document', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('board_ibfk_3', 'document', 'user_common_id', 'user_common', 'id', 'CASCADE', 'CASCADE');
 
-        $this->db->createCommand()->resetSequence('board', 1000)->execute();
     }
 
     public function down()

@@ -10,6 +10,7 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use artsoft\db\ActiveRecord;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
 /**
@@ -284,6 +285,30 @@ class UserCommon extends ActiveRecord
             ->asArray()->all(), 'user_id', 'name');
     }
 
+    /**
+     * getUsersList
+     *
+     * @return array
+     */
+    public static function getUsersCommonListByCategory($category = [])
+    {
+        $users = static::find()->select([
+            'id',
+            'CONCAT(last_name, \' \',first_name, \' \',middle_name) as fullname',
+            'CASE
+                  WHEN (user_category = \'employees\') THEN \'' . static::getUserCategoryValue('employees') . '\'
+                  WHEN (user_category = \'teachers\') THEN \'' . static::getUserCategoryValue('teachers') . '\'
+                  WHEN (user_category = \'students\') THEN \'' . static::getUserCategoryValue('students') . '\'
+                  WHEN (user_category = \'parents\') THEN \'' . static::getUserCategoryValue('parents') . '\'
+                  ELSE \'\'
+            END as category_name'
+        ])
+            ->where(['in', 'user_category', $category])
+            ->andWhere(['=', 'status', self::STATUS_ACTIVE])
+            ->orderBy('category_name, fullname')
+            ->asArray()->all();
+        return ArrayHelper::map($users, 'id', 'fullname', 'category_name');
+    }
     /**
      * Gets query for [[User]].
      *

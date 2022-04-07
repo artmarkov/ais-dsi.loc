@@ -62,7 +62,6 @@ class UsersCard extends \artsoft\db\ActiveRecord
             [['key_hex'], 'string', 'max' => 8],
             [['mode_main'], 'string', 'max' => 127],
             [['mode_list'], 'string', 'max' => 512],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
         ];
     }
 
@@ -112,15 +111,6 @@ class UsersCard extends \artsoft\db\ActiveRecord
             }
         }
         return false;
-    }
-
-    /**
-     * Gets query for [[CreatedBy0]].
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreatedBy0()
-    {
-        return $this->hasOne(Users::className(), ['id' => 'created_by']);
     }
 
     public function beforeSave($insert)
