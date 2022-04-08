@@ -8,7 +8,7 @@ use artsoft\models\User;
 use backend\models\Model;
 use common\models\info\Document;
 use common\models\info\search\DocumentSearch;
-use common\models\sigur\UsersCard;
+use common\models\service\UsersCard;
 use common\models\students\StudentDependence;
 use common\models\user\UserCommon;
 use yii\helpers\ArrayHelper;

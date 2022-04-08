@@ -3,16 +3,12 @@
 use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
-use kartik\date\DatePicker;
-use yii\widgets\MaskedInput;
-use wbraganca\dynamicform\DynamicFormWidget;
-use common\models\user\UserCommon;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\employees\Employees */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $userCommon common\models\user\UserCommon */
-/* @var $userCard common\models\sigur\UsersCard */
+/* @var $userCard common\models\service\UsersCard */
 /* @var $readonly */
 ?>
 

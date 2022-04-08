@@ -13,7 +13,7 @@ use artsoft\helpers\RefBook;
 /* @var $this yii\web\View */
 /* @var $model common\models\teachers\Teachers */
 /* @var $userCommon UserCommon */
-/* @var $userCard common\models\sigur\UsersCard */
+/* @var $userCard common\models\service\UsersCard */
 /* @var $modelsActivity \common\models\teachers\TeachersActivity */
 /* @var $readonly */
 /* @var $form artsoft\widgets\ActiveForm */

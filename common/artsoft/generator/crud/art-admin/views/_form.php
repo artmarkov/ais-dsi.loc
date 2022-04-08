@@ -35,22 +35,17 @@ use artsoft\helpers\Html;
     ?>
 
     <div class="panel">
+        <div class="panel-heading">
+            <?= "<?= " ?> Html::encode($this->title) ?>
+        </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <?= "<?= " ?> Html::encode($this->title) ?>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                    <?php foreach ($generator->getColumnNames() as $attribute) {
-                        if (in_array($attribute, $safeAttributes)) {
-                            echo "\n                    <?= " . $generator->generateActiveField($attribute) . " ?>\n";
-                        }
-                    } ?>
-
-                        </div>
-                    </div>
+            <div class="row">
+                <div class="col-sm-12">
+            <?php foreach ($generator->getColumnNames() as $attribute) {
+                if (in_array($attribute, $safeAttributes)) {
+                    echo "\n                    <?= " . $generator->generateActiveField($attribute) . " ?>\n";
+                }
+            } ?>
                 </div>
             </div>
         </div>

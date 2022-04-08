@@ -35,23 +35,21 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= "<?= " ?>\artsoft\helpers\ButtonHelper::createButton(); ?>
         </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <?= "<?php \n" ?>
-                            /* Uncomment this to activate GridQuickLinks */
-                            /* echo GridQuickLinks::widget([
-                                'model' => <?= $modelClass ?>::className(),
-                                'searchModel' => $searchModel,
-                            ])*/
-                            ?>
-                        </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <?= "<?php \n" ?>
+                    /* Uncomment this to activate GridQuickLinks */
+                    /* echo GridQuickLinks::widget([
+                        'model' => <?= $modelClass ?>::className(),
+                        'searchModel' => $searchModel,
+                    ])*/
+                    ?>
+                </div>
 
-                        <div class="col-sm-6 text-right">
-                            <?= "<?= " ?> GridPageSize::widget(['pjaxId' => '<?= $modelClassId ?>-grid-pjax']) ?>
-                        </div>
-                    </div>
+                <div class="col-sm-6 text-right">
+                    <?= "<?= " ?> GridPageSize::widget(['pjaxId' => '<?= $modelClassId ?>-grid-pjax']) ?>
+                </div>
+            </div>
 
                     <?= "<?php \n" ?>
                     Pjax::begin([
@@ -66,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?= !empty($generator->searchModelClass) ? '\'filterModel\' => $searchModel,'.PHP_EOL : ''?>
                         'bulkActionOptions' => [
                             'gridId' => '<?= $modelClassId ?>-grid',
-                            'actions' => [ Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
+                            'actions' => [ Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
@@ -107,8 +105,6 @@ if (($tableSchema = $generator->getTableSchema()) === false) {
             ?>
 
                     <?= "<?php" ?> Pjax::end() ?>
-                </div>
-            </div>
         </div>
     </div>
 </div>

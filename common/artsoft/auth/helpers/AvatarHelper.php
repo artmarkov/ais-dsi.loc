@@ -3,7 +3,7 @@
 namespace artsoft\auth\helpers;
 
 use artsoft\models\User;
-use common\models\sigur\UsersCard;
+use common\models\service\UsersCard;
 use Yii;
 use yii\imagine\Image as Imagine;
 

@@ -2,7 +2,7 @@
 
 namespace common\models\history;
 
-use common\models\sigur\UsersCard;
+use common\models\service\UsersCard;
 use common\widgets\history\BaseHistory;
 
 class UsersCardHistory extends BaseHistory

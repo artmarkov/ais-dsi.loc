@@ -11,7 +11,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
 /* @var $model common\models\parents\Parents */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $userCommon common\models\user\UserCommon */
-/* @var $userCard common\models\sigur\UsersCard */
+/* @var $userCard common\models\service\UsersCard */
 /* @var $modelsDependence \common\models\students\StudentDependence */
 /* @var $readonly */
 /* @var $form artsoft\widgets\ActiveForm */

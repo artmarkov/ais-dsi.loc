@@ -40,7 +40,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Список преподавателей', 'icon' => 'fa fa-minus', 'url' => ['/teachers/default/index']],
                     ['label' => 'Список учеников', 'icon' => 'fa fa-minus', 'url' => ['/students/default/index']],
                     ['label' => 'Список родителей', 'icon' => 'fa fa-minus', 'url' => ['/parents/default/index']],
-                    ['label' => 'Документы', 'icon' => 'fa fa-minus', 'url' => ['/info/document/index']],
+                    ['label' => 'Реестр документов', 'icon' => 'fa fa-minus', 'url' => ['/info/document/index']],
                 ],
             ],
             [
@@ -48,10 +48,10 @@ use artsoft\widgets\Nav;
                 'icon' => 'fa fa-university',
                 'url' => '#',
                 'items' => [
+                    ['label' => 'Производственный календарь', 'icon' => 'fa fa-minus', 'url' => ['/routine/default/calendar']],
                     ['label' => 'Учебные планы', 'icon' => 'fa fa-minus', 'url' => ['/education/default/index']],
-                    ['label' => 'Счета за обучение', 'icon' => 'fa fa-minus', 'url' => ['/invoices/default/index']],
-                    ['label' => 'Производственный календарь', 'icon' => 'fa fa-minus', 'url' => ['/routine/default/index']],
                     ['label' => 'Работы и сертификаты', 'icon' => 'fa fa-minus', 'url' => ['/creative/default/index']],
+                    ['label' => 'Счета за обучение', 'icon' => 'fa fa-minus', 'url' => ['/invoices/default/index']],
                 ],
             ],
             [
@@ -59,14 +59,14 @@ use artsoft\widgets\Nav;
                 'icon' => 'fa fa-graduation-cap',
                 'url' => '#',
                 'items' => [
-                    ['label' => 'Испытания', 'icon' => 'fa fa-minus', 'url' => ['/examination/default/index']],
                     ['label' => 'Индивидуальные планы', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
-                    ['label' => 'Движение учеников', 'icon' => 'fa fa-minus', 'url' => ['/transfer/default/index']],
-                    ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/schedule/default/index']],
-                    ['label' => 'Расписание консультаций', 'icon' => 'fa fa-minus', 'url' => ['/consult/default/index']],
-                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/index']],
-                    ['label' => 'Журнал успеваемости', 'icon' => 'fa fa-minus', 'url' => ['/progress/default/index']],
                     ['label' => 'Учебные группы', 'icon' => 'fa fa-minus', 'url' => ['/sect/default/index']],
+                    ['label' => 'Испытания', 'icon' => 'fa fa-minus', 'url' => ['/examination/default/index']],
+                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/index']],
+                    ['label' => 'Движение учеников', 'icon' => 'fa fa-minus', 'url' => ['/transfer/default/index']],
+//                    ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/schedule/default/index']],
+//                    ['label' => 'Расписание консультаций', 'icon' => 'fa fa-minus', 'url' => ['/consult/default/index']],
+//                    ['label' => 'Журнал успеваемости', 'icon' => 'fa fa-minus', 'url' => ['/progress/default/index']],
                 ],
             ],
             [
@@ -75,11 +75,19 @@ use artsoft\widgets\Nav;
                 'url' => '#',
                 'items' => [
                     ['label' => 'Отчеты', 'icon' => 'fa fa-minus', 'url' => ['/reports/default/index']],
-                    ['label' => 'Журнал посещений', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/default/index']],
                     ['label' => 'Показатели эфективности', 'icon' => 'fa fa-minus', 'url' => ['/efficiency/default/index']],
-                    ['label' => 'Портфолио преподавателей', 'icon' => 'fa fa-minus', 'url' => ['/portfolio/default/index']],
                     ['label' => 'Контроль исполнения', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/index']],
-                    ['label' => 'Сводная успеваемость', 'icon' => 'fa fa-minus', 'url' => ['/summary-progress/default/index']],
+//                    ['label' => 'Портфолио преподавателей', 'icon' => 'fa fa-minus', 'url' => ['/portfolio/default/index']],
+//                    ['label' => 'Сводная успеваемость', 'icon' => 'fa fa-minus', 'url' => ['/summary-progress/default/index']],
+                ],
+            ],
+            [
+                'label' => 'Сервис',
+                'icon' => 'fa fa-industry',
+                'url' => '#',
+                'items' => [
+                    ['label' => 'Журнал пропусков', 'icon' => 'fa fa-minus', 'url' => ['/service/default/index']],
+                    ['label' => 'Журнал выдачи ключей', 'icon' => 'fa fa-minus', 'url' => ['/service/attandlog/index']],
                 ],
             ],
             [
@@ -114,7 +122,7 @@ use artsoft\widgets\Nav;
                 'items' => [
                     ['label' => 'Назначенные задания', 'icon' => 'fa fa-minus', 'url' => ['/queue-schedule/default/index']],
                     ['label' => 'Текстовые блоки', 'icon' => 'fa fa-minus', 'url' => ['/block/default/index']],
-                    ['label' => 'Инструменты админа', 'icon' => 'fa fa-minus', 'url' => ['/admintools']],
+//                    ['label' => 'Инструменты админа', 'icon' => 'fa fa-minus', 'url' => ['/admintools']],
                     ['label' => 'Debug', 'icon' => 'fa fa-minus', 'url' => ['/debug'], 'visible' => \artsoft\models\User::hasPermission('viewDebug')],
                     ['label' => 'Gii', 'icon' => 'fa fa-minus', 'url' => ['/gii'], 'visible' => \artsoft\models\User::hasPermission('viewGii')],
                 ],

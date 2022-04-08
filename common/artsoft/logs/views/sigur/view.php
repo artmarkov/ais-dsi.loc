@@ -1,10 +1,10 @@
 <?php
 
-use common\models\sigur\UsersCardLog;
+use common\models\service\UsersCardLog;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\sigur\UsersCardLog */
+/* @var $model common\models\service\UsersCardLog */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Users Card Logs'), 'url' => ['default/index']];

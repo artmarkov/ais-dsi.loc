@@ -7,7 +7,7 @@ use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use common\models\info\Document;
 use common\models\info\search\DocumentSearch;
-use common\models\sigur\UsersCard;
+use common\models\service\UsersCard;
 use common\models\user\UserCommon;
 use Yii;
 use yii\helpers\StringHelper;

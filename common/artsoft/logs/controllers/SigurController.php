@@ -3,12 +3,12 @@
 namespace artsoft\logs\controllers;
 
 /**
- * DefaultController implements the CRUD actions for common\models\sigur\UsersCardLog model.
+ * SigurController implements the CRUD actions for common\models\service\UsersCardLog model.
  */
 class SigurController extends MainController
 {
-    public $modelClass       = 'common\models\sigur\UsersCardLog';
-    public $modelSearchClass = 'common\models\sigur\search\UsersCardLogSearch';
+    public $modelClass       = 'common\models\service\UsersCardLog';
+    public $modelSearchClass = 'common\models\service\search\UsersCardLogSearch';
 
     public $disabledActions = ['create', 'update'];
 

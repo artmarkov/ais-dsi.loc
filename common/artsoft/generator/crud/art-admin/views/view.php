@@ -22,37 +22,37 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('<?= $generator->messageCate
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>-view">
-
-<div class="panel">
-    <div class="panel-heading">
-        <?= "<?= " ?>\artsoft\helpers\ButtonHelper::createButton(); ?>
-    </div>
-    <div class="panel-body">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <div class="form-group btn-group">
-                    <?= "<?= " ?>\artsoft\helpers\ButtonHelper::viewButtons($model) ?>
+    <div class="panel">
+        <div class="panel-heading">
+            <?= "<?= " ?>\artsoft\helpers\ButtonHelper::createButton(); ?>
+        </div>
+        <div class="panel-body">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="form-group btn-group">
+                        <?= "<?= " ?>\artsoft\helpers\ButtonHelper::viewButtons($model) ?>
+                    </div>
                 </div>
-            </div>
-            <div class="panel-body">
-                <div class="row">
-                    <?= "<?= " ?>DetailView::widget([
-                'model' => $model,
-                'attributes' => [
-                    <?php
-                    if (($tableSchema = $generator->getTableSchema()) === false) {
-                        foreach ($generator->getColumnNames() as $name) {
-                            echo "'" . $name . "',\n";
+                <div class="panel-body">
+                    <div class="row">
+                        <?= "<?= " ?>DetailView::widget([
+                    'model' => $model,
+                    'attributes' => [
+                        <?php
+                        if (($tableSchema = $generator->getTableSchema()) === false) {
+                            foreach ($generator->getColumnNames() as $name) {
+                                echo "'" . $name . "',\n";
+                            }
+                        } else {
+                            foreach ($generator->getTableSchema()->columns as $column) {
+                                $format = $generator->generateColumnFormat($column);
+                                echo "'" . $column->name . ($format === 'text' ? "" : ":" . $format) . "',\n";
+                            }
                         }
-                    } else {
-                        foreach ($generator->getTableSchema()->columns as $column) {
-                            $format = $generator->generateColumnFormat($column);
-                            echo "'" . $column->name . ($format === 'text' ? "" : ":" . $format) . "',\n";
-                        }
-                    }
-                    ?>
-                ],
-            ])?>
+                        ?>
+                    ],
+                ])?>
+                    </div>
                 </div>
             </div>
         </div>

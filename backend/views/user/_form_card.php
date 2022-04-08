@@ -3,7 +3,7 @@
 use kartik\datetime\DateTimePicker;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\sigur\UsersCard */
+/* @var $model common\models\service\UsersCard */
 /* @var $readonly */
 ?>
 <div class="panel panel-primary">

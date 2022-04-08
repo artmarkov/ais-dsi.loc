@@ -11,7 +11,7 @@ use common\models\education\EducationProgrammLevel;
 use common\models\history\StudyplanHistory;
 use common\models\info\Document;
 use common\models\info\search\DocumentSearch;
-use common\models\sigur\UsersCard;
+use common\models\service\UsersCard;
 use common\models\students\StudentDependence;
 use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\Studyplan;

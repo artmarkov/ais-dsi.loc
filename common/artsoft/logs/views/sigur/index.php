@@ -5,12 +5,12 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\sigur\UsersCardLog;
+use common\models\service\UsersCardLog;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\sigur\search\UsersCardLogSearch */
+/* @var $searchModel common\models\service\search\UsersCardLogSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/guide', 'Users Card Logs');
