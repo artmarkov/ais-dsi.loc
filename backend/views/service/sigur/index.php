@@ -10,7 +10,7 @@ use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\service\search\UsersCardLogSearch */
+/* @var $searchModel common\models\service\search\UsersCardLogsearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/guide', 'Users Card Logs');
@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'name',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:350px'],
-                                'controller' => '/logs/sigur',
+                                'controller' => '/service/sigur',
                                 'title' => function (UsersCardLog $model) {
                                     return Html::a($model->name, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },

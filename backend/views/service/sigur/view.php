@@ -60,8 +60,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="panel-footer">
                     <div class="form-group btn-group">
-                        <?= \artsoft\helpers\ButtonHelper::exitButton(['/logs/sigur/index']); ?>
-                        <?= \artsoft\helpers\ButtonHelper::deleteButton(['/logs/sigur/delete', 'id' => $model->id]); ?>
+                        <?= \artsoft\helpers\ButtonHelper::exitButton(['/service/sigur/index']); ?>
+                        <?= \artsoft\helpers\ButtonHelper::deleteButton(['/service/sigur/delete', 'id' => $model->id]); ?>
                     </div>
                 </div>
             </div>

@@ -10,7 +10,6 @@ class MainController extends BaseController
         ['url' => ['/logs/default/index'], 'label' => 'Лог Посещения', 'visible' => 1],
         ['url' => ['/logs/session/index'], 'label' => 'Сеансы'],
         ['url' => ['/logs/request/index'], 'label' => 'Запросы'],
-        ['url' => ['/logs/sigur/index'], 'label' => 'Лог СКУД'],
     ];
 
 }
