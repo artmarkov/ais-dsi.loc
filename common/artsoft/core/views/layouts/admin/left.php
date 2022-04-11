@@ -87,7 +87,7 @@ use artsoft\widgets\Nav;
                 'url' => '#',
                 'items' => [
                     ['label' => 'Журнал пропусков', 'icon' => 'fa fa-minus', 'url' => ['/service/default/index']],
-                    ['label' => 'Журнал выдачи ключей', 'icon' => 'fa fa-minus', 'url' => ['/service/attandlog/index']],
+                    ['label' => 'Журнал выдачи ключей', 'icon' => 'fa fa-minus', 'url' => ['/service/attendlog/index']],
                     ['label' => 'Журнал СКУД', 'icon' => 'fa fa-minus', 'url' => ['/service/sigur/index']],
                 ],
             ],

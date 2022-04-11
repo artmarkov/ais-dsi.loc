@@ -175,6 +175,9 @@ return [
     'Journal Progress' => 'Журнал успеваемости',
     'Users Card Logs' => 'Лог СКУД',
     'Users Cards' => 'Журнал пропусков',
+    'Users Attendlogs' => 'Журнал выдачи ключей',
+    'Time Received' => 'Время выдачи',
+    'Time Over' => 'Время сдачи',
 
 ];
 ?>

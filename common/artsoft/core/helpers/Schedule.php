@@ -108,8 +108,28 @@ public static function astr2academ($astr_hour)
         return ((int)(($day + date("w", mktime(0, 0, 0, $mon, 1, $year)) - 2) / 7)) + 1;
     }
 
+    public static function timestamp2WeekNum($timestamp)
+    {
+        $day = date('d', $timestamp);
+        return ((int)(($day + date("w", $timestamp) - 2) / 7)) + 1;
+    }
+
     public static function getPlanYear($mon, $year)
     {
         return $mon < 8 ?  $year-1 : $year;
+    }
+
+    /**
+     * @param bool $timestamp
+     * @return array
+     */
+    public static function getStartEndDay($timestamp = false)
+    {
+        $timestamp = $timestamp ? $timestamp : time();
+        $m = date('m', $timestamp);
+        $d = date('d', $timestamp);
+        $y = date('Y', $timestamp);
+
+        return [mktime(0, 0, 0, $m, $d, $y), mktime(23, 59, 59, $m, $d, $y)];
     }
 }

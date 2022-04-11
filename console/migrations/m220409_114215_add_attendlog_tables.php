@@ -31,7 +31,8 @@ class m220409_114215_add_attendlog_tables extends \artsoft\db\BaseMigration
 
 
         $this->db->createCommand()->createView('users_attendlog_view', '
-        select user_common.id AS id,
+        select users_attendlog.id as id,
+            user_common.id AS user_common_id,
             CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) as user_name,
             user_common.user_category,
             CASE
@@ -42,10 +43,11 @@ class m220409_114215_add_attendlog_tables extends \artsoft\db\BaseMigration
             END AS user_category_name,
             users_attendlog.auditory_id,
             users_attendlog.timestamp_received,
-            users_attendlog.timestamp_over
+            users_attendlog.timestamp_over,
+            users_attendlog.created_at as timestamp
         from users_attendlog
         inner join user_common on (user_common.id = users_attendlog.user_common_id)
-        order by user_category, user_name
+        order by timestamp, user_category, user_name
         ')->execute();
 
     }

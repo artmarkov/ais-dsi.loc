@@ -92,7 +92,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
 
     public function checkScheduleOverLapping($attribute, $params)
     {
-        if (SubjectSectScheduleStudyplanView::getScheduleOverLapping($this)->exists() === true) {
+        if (SubjectScheduleStudyplanView::getScheduleOverLapping($this)->exists() === true) {
             $this->addError($attribute, 'В одной аудитории накладка по времени!');
         }
     }
