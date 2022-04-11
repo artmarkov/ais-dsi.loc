@@ -66,8 +66,8 @@ $columns = [
     [
         'attribute' => 'timestamp_over',
         'value' => function (UsersAttendlogView $model) {
-            return $model->timestamp_over ?: Html::a('<i class="fa fa-key" aria-hidden="true"></i> Сдать ключ',
-                Url::to(['/service/attendlog/ower', 'id' => $model->id]), [
+            return $model->timestamp_over ?: Html::a('<i class="fa fa-key" aria-hidden="true"></i> Вернуть ключ',
+                Url::to(['/service/attendlog/over', 'id' => $model->id]), [
                     'class' => 'btn btn-sm btn-warning btn-block',
                     'title' => 'Сдать ключ',
                     'data-method' => 'post',

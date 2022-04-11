@@ -53,6 +53,7 @@ return [
     'Female' => 'Женский',
     'First Name' => 'Имя',
     'For example' => 'Например',
+    'Finding' => 'Поиск',
     'Gender' => 'Пол',
     'Group' => 'Группа',
     'Home' => 'Главная',

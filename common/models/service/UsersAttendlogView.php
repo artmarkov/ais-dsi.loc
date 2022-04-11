@@ -7,6 +7,8 @@ use Yii;
 /**
  * This is the model class for table "users_attendlog_view".
  *
+ * @property int $id
+ * @property int $users_attendlog_id
  * @property int|null $user_common_id
  * @property string|null $user_name
  * @property string|null $user_category

@@ -21,7 +21,7 @@ $form = ActiveForm::begin([
             <?= $form->field($model_date, 'date')->widget(DatePicker::class)->label('Дата'); ?>
 
             <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); ?>
-            <?= \artsoft\helpers\ButtonHelper::createButton(['/admin/service/attendlog/find', 'date' => Yii::$app->formatter->asTimestamp($model_date->date)]); ?>
+            <?= \artsoft\helpers\ButtonHelper::createButton(['/service/attendlog/find']); ?>
         </div>
     </div>
 </div>
