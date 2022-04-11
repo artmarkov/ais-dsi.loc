@@ -29,10 +29,14 @@ $columns = [
     [
         'attribute' => 'user_name',
         'value' => function (UsersAttendlogView $model) {
-
-            $user = \common\models\user\UserCommon::findOne($model->user_common_id);
-            return Html::a($model->user_name, $user->getRelatedUrl($model->user_common_id), ['title' => 'Перейти в реестр', 'target' => '_blank', 'data-pjax' => 0]);
-        },
+          return  Html::a($model->user_name,
+                Url::to(['/service/attendlog/update', 'id' => $model->users_attendlog_id]), [
+                    'title' => Yii::t('art', 'Edit'),
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                ]
+            );
+            },
         'format' => 'raw',
         'group' => true,  // enable grouping
     ],
@@ -77,42 +81,7 @@ $columns = [
         },
         'format' => 'raw',
     ],
-    [
-        'class' => 'kartik\grid\ActionColumn',
-        'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
-        'width' => '90px',
-        'template' => '{create} {update} {delete}',
-        'buttons' => [
-            'update' => function ($key, $model) {
-                return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
-                    Url::to(['/service/attendlog/update', 'id' => $model->users_attendlog_id]), [
-                        'title' => Yii::t('art', 'Edit'),
-                        'data-method' => 'post',
-                        'data-pjax' => '0',
-                    ]
-                );
-            },
-            'delete' => function ($key, $model) {
-                return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                    Url::to(['/service/attendlog/delete', 'id' => $model->users_attendlog_id]), [
-                        'title' => Yii::t('art', 'Delete'),
-                        'aria-label' => Yii::t('art', 'Delete'),
-                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                        'data-method' => 'post',
-                        'data-pjax' => '0',
-                    ]
-                );
-            },
-        ],
-        'visibleButtons' => [
-            'delete' => function ($model) {
-                return true;
-            },
-            'update' => function ($model) {
-                return true;
-            }
-        ]
-    ],
+
 ];
 ?>
 <div class="users-attendlog-index">

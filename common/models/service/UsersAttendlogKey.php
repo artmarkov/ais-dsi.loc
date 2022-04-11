@@ -64,13 +64,25 @@ class UsersAttendlogKey extends \artsoft\db\ActiveRecord
             [['users_attendlog_id', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
             [['users_attendlog_id'], 'exist', 'skipOnError' => true, 'targetClass' => UsersAttendlog::class, 'targetAttribute' => ['users_attendlog_id' => 'id']],
-            [['timestamp_over'], 'compare', 'compareAttribute' => 'timestamp_received', 'operator' => '>', 'message' => 'Время сдачи не может быть меньше или равно времени выдачи.'],
+//            [['timestamp_over'], 'compare', 'compareAttribute' => 'timestamp_received', 'operator' => '>', 'message' => 'Время сдачи не может быть меньше или равно времени выдачи.'],
             [['auditory_id'], 'checkKeyExist', 'skipOnEmpty' => false],
+            [['timestamp_over'], 'compareTimestamp', 'skipOnEmpty' => false],
 
         ];
     }
 
-    public function checkKeyExist($attribute, $params)
+    public function compareTimestamp($attribute, $params, $validator)
+    {
+        $timestamp_received = Yii::$app->formatter->asTimestamp($this->timestamp_received);
+        $timestamp_over = Yii::$app->formatter->asTimestamp($this->timestamp_over);
+
+        if ($this->timestamp_over && $timestamp_received > $timestamp_over) {
+            $message = 'Время сдачи не может быть меньше или равно времени выдачи.';
+            $this->addError($attribute, $message);
+        }
+    }
+
+    public function checkKeyExist($attribute, $params, $validator)
     {
         if ($this->isNewRecord) {
 

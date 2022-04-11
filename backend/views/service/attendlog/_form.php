@@ -17,6 +17,24 @@ function initSelect2Loading(a,b){ initS2Loading(a,b); }
 function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
 JS
     , \yii\web\View::POS_END);
+
+$this->registerJs(<<<JS
+jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
+    console.log("after insert");
+    var date = new Date();
+    var start = ('0' + date.getDate()).slice(-2)+ '.' + ('0'+ (date.getMonth()+1)).slice(-2)+'.'+  date.getFullYear()+' '+ ('0' + date.getHours()).slice(-2)+':'+ ('0' + date.getMinutes()).slice(-2);
+    
+    var set = jQuery(".dynamicform_wrapper .js-slab-name");
+    var length = set.length;
+    set.each(function(index) {
+        if(index == (length - 1)) {
+                 //console.log(start);
+        jQuery(this).val(start);
+        }
+    }); 
+});
+JS
+    , \yii\web\View::POS_END);
 ?>
 
 <div class="users-attendlog-form">
@@ -30,30 +48,13 @@ JS
 
     <div class="panel">
         <div class="panel-heading">
-            <?= Html::encode($this->title) ?>
+            <?= \common\models\user\UserCommon::getUserCategoryValue($model->userCommon->user_category) . ':'; ?>
+            <?= $model->userCommon->getFullName() ?>
         </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-
-                    <?= $form->field($model->loadDefaultValues(), 'user_common_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees', 'students']),
-                        'showToggleAll' => false,
-                        'options' => [
-                            //  'disabled' => true,
-                            'value' => $model->user_common_id,
-                            'placeholder' => Yii::t('art/guide', 'Select...'),
-                            'multiple' => false,
-                        ],
-                        'pluginOptions' => [
-                            'allowClear' => false,
-                            'minimumInputLength' => 3,
-                        ],
-
-                    ])->label(Yii::t('art', 'Username'));
-
-                    ?>
-
+                    <?= Html::activeHiddenInput($model, 'user_common_id'); ?>
                 </div>
             </div>
 
@@ -134,7 +135,7 @@ JS
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_received", ['class' => 'form-control', 'disabled' => true]); ?>
+                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_received", ['readonly' => false, "class" => "form-control js-slab-name"]); ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>
@@ -145,7 +146,7 @@ JS
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_over", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_over", ['class' => 'form-control', 'readonly' => false]); ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>
