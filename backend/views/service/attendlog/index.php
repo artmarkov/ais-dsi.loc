@@ -66,7 +66,7 @@ $columns = [
     [
         'attribute' => 'timestamp_over',
         'value' => function (UsersAttendlogView $model) {
-            return $model->timestamp_over ?: Html::a('<i class="fa fa-key" aria-hidden="true"></i> Вернуть ключ',
+            return $model->timestamp_over ? Yii::$app->formatter->asDate($model->timestamp_over, 'php:d.m.Y H:i') : Html::a('<i class="fa fa-key" aria-hidden="true"></i> Вернуть ключ',
                 Url::to(['/service/attendlog/over', 'id' => $model->id]), [
                     'class' => 'btn btn-sm btn-warning btn-block',
                     'title' => 'Сдать ключ',
@@ -85,7 +85,7 @@ $columns = [
         'buttons' => [
             'update' => function ($key, $model) {
                 return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
-                    Url::to(['/service/attendlog/update', 'id' => $model->id]), [
+                    Url::to(['/service/attendlog/update', 'id' => $model->users_attendlog_id]), [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -94,7 +94,7 @@ $columns = [
             },
             'delete' => function ($key, $model) {
                 return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                    Url::to(['/service/attendlog/delete', 'id' => $model->id]), [
+                    Url::to(['/service/attendlog/delete', 'id' => $model->users_attendlog_id]), [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),

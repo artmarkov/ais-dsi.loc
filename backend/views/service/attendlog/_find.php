@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); ?>
+                <?= Html::submitButton('<i class="fa fa-search" aria-hidden="true"></i> Поиск', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); ?>
 
             </div>
         </div>

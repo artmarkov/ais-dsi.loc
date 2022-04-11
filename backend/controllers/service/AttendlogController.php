@@ -3,14 +3,18 @@
 namespace backend\controllers\service;
 
 use artsoft\helpers\Schedule;
+use backend\models\Model;
 use common\models\service\search\UsersAttendlogViewSearch;
 use common\models\service\UsersAttendlog;
+use common\models\service\UsersAttendlogKey;
 use common\models\service\UsersAttendlogView;
 use common\models\service\UsersCard;
 use Yii;
 use artsoft\controllers\admin\BaseController;
 use yii\base\DynamicModel;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+use yii\web\NotFoundHttpException;
 
 /**
  * AttendlogController implements the CRUD actions for common\models\service\UsersAttendlog model.
@@ -51,15 +55,101 @@ class AttendlogController extends BaseController
             throw new NotFoundHttpException("Отсутствует обязательный параметр GET user_common_id.");
         }
 
-        return $this->renderIsAjax('create', compact('model'));
+        $model = new $this->modelClass;
+        $model->user_common_id = Yii::$app->request->get('user_common_id');
+        $modelsDependency = [new UsersAttendlogKey()];
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            $modelsDependency = Model::createMultiple(UsersAttendlogKey::class);
+            Model::loadMultiple($modelsDependency, Yii::$app->request->post());
+
+            // validate all models
+            $valid = $model->validate();
+            $valid = Model::validateMultiple($modelsDependency) && $valid;
+           $valid = true;
+            if ($valid) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try {
+
+                    if ($flag = $model->save(false)) {
+                        foreach ($modelsDependency as $modelDependency) {
+                            $modelDependency->users_attendlog_id = $model->id;
+                            if (!($flag = $modelDependency->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+                    }
+
+                    if ($flag) {
+                        $transaction->commit();
+                        $this->getSubmitAction($model);
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                }
+            }
+        }
+        return $this->renderIsAjax('create', [
+            'model' => $model,
+            'modelsDependency' => (empty($modelsDependency)) ? [new UsersAttendlogKey] : $modelsDependency,
+            'readonly' => false
+        ]);
     }
 
     public function actionUpdate($id)
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
+        $model = $this->findModel($id);
 
+        if (!isset($model)) {
+            throw new NotFoundHttpException("The CreativeWorks was not found.");
+        }
 
-        return $this->renderIsAjax('update', compact('model'));
+        $modelsDependency = $model->userAttendlogKey;
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            $oldIDs = ArrayHelper::map($modelsDependency, 'id', 'id');
+            $modelsDependency = Model::createMultiple(UsersAttendlogKey::class, $modelsDependency);
+            Model::loadMultiple($modelsDependency, Yii::$app->request->post());
+            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsDependency, 'id', 'id')));
+
+            // validate all models
+            $valid = $model->validate();
+            $valid = Model::validateMultiple($modelsDependency) && $valid;
+
+            if ($valid) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try {
+                    if ($flag = $model->save(false)) {
+                        if (!empty($deletedIDs)) {
+                            UsersAttendlogKey::deleteAll(['id' => $deletedIDs]);
+                        }
+                        foreach ($modelsDependency as $modelDependency) {
+                            $modelDependency->users_attendlog_id = $model->id;
+                            if (!($flag = $modelDependency->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                        $this->getSubmitAction($model);
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                }
+            }
+        }
+
+        return $this->renderIsAjax('update', [
+            'model' => $model,
+            'modelsDependency' => (empty($modelsDependency)) ? [new UsersAttendlogKey] : $modelsDependency,
+            'readonly' => false
+        ]);
     }
     /**
      * @param $id
@@ -69,7 +159,7 @@ class AttendlogController extends BaseController
      */
     public function actionOver($id)
     {
-        $model = $this->findModel($id);
+        $model = UsersAttendlogKey::findOne($id);
         if ($model->overKey()) {
             Yii::$app->session->setFlash('info', 'Ключ успешно сдан.');
         } else {

@@ -34,7 +34,7 @@ class UsersAttendlogKey extends \artsoft\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'users_attendlog';
+        return 'users_attendlog_key';
     }
 
     /**
@@ -59,7 +59,7 @@ class UsersAttendlogKey extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_common_id', 'auditory_id', 'timestamp_received'], 'required'],
+            [['auditory_id', 'timestamp_received'], 'required'],
             [['timestamp_received', 'timestamp_over'], 'safe'],
             [['users_attendlog_id', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],

@@ -18,7 +18,7 @@ use Yii;
  * @property int|null $timestamp_over
  * @property int|null $timestamp
  */
-class UsersAttendlogView extends UsersAttendlog
+class UsersAttendlogView extends UsersAttendlogKey
 {
     /**
      * {@inheritdoc}

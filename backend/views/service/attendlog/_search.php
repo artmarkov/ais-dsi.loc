@@ -1,7 +1,6 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
@@ -15,14 +14,22 @@ $form = ActiveForm::begin([
     'validateOnBlur' => false,
 ])
 ?>
-<div class="attendlog-search">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <?= $form->field($model_date, 'date')->widget(DatePicker::class)->label('Дата'); ?>
-
-            <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); ?>
-            <?= \artsoft\helpers\ButtonHelper::createButton(['/service/attendlog/find']); ?>
+    <div class="attendlog-search">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <?= $form->field($model_date, 'date')->widget(DatePicker::class, [
+                    'pluginEvents' => ['changeDate' => "function(e){
+                           $(e.target).closest('form').submit();
+                        }"
+                    ]
+                ])->label('Дата');
+                ?>
+                <?php
+                if ($model_date->date == Yii::$app->formatter->asDate(time(), 'php:d.m.Y')) {
+                    echo \artsoft\helpers\ButtonHelper::createButton(['/service/attendlog/find']);
+                }
+                ?>
+            </div>
         </div>
     </div>
-</div>
 <?php ActiveForm::end(); ?>

@@ -57,6 +57,22 @@ class UsersAttendlog extends \artsoft\db\ActiveRecord
         ];
     }
 
+    public function checkKeyExist($attribute, $params)
+    {
+        if ($this->isNewRecord) {
+
+            $timestamp = Schedule::getStartEndDay($this->created_at);
+
+            $thereIsKeyExist = self::find()
+                ->where(['user_common_id' => $this->user_common_id])
+                ->andWhere(['between', 'created_at', $timestamp[0], $timestamp[1]]);
+
+            if ($thereIsKeyExist->exists() === true) {
+                $message = 'Пользователь уже есть в списке на текущий день';
+                $this->addError($attribute, $message);
+            }
+        }
+    }
     /**
      * {@inheritdoc}
      */
@@ -84,6 +100,8 @@ class UsersAttendlog extends \artsoft\db\ActiveRecord
 
     public function getUserAttendlogKey()
     {
-        return $this->hasMany(UsersAttendlogKey::class, ['users_attendlog_id' => 'id']);
+        $timestamp = Schedule::getStartEndDay(Yii::$app->formatter->asTimestamp($this->created_at));
+        return $this->hasMany(UsersAttendlogKey::class, ['users_attendlog_id' => 'id'])
+            ->where(['between', 'created_at', $timestamp[0], $timestamp[1]]);
     }
 }
