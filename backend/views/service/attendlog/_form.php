@@ -95,6 +95,7 @@ JS
                                     <th class="text-center">Аудитория</th>
                                     <th class="text-center">Время выдачи</th>
                                     <th class="text-center">Время сдачи</th>
+                                    <th class="text-center">Примечание</th>
                                     <th class="text-center">
                                         <?php if (!$readonly): ?>
                                             <button type="button" class="add-item btn btn-success btn-xs"><span
@@ -160,6 +161,17 @@ JS
                                             ?>
                                             <div class="col-sm-12">
                                                 <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_over", ['class' => 'form-control', 'readonly' => true]); ?>
+                                                <p class="help-block help-block-error"></p>
+                                            </div>
+                                            <?= $field->end(); ?>
+                                        </td>
+                                        <td>
+                                            <?php
+                                            $field = $form->field($modelDependency, "[{$index}]comment");
+                                            echo $field->begin();
+                                            ?>
+                                            <div class="col-sm-12">
+                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]comment", ['class' => 'form-control', 'readonly' => $readonly]); ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>

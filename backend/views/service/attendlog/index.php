@@ -81,6 +81,7 @@ $columns = [
         },
         'format' => 'raw',
     ],
+    'comment:text',
 
 ];
 ?>

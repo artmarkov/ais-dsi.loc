@@ -20,6 +20,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $auditory_id
  * @property int $timestamp_received Ключ выдан
  * @property int|null $timestamp_over Ключ сдан
+ * @property string|null $comment
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -62,10 +63,10 @@ class UsersAttendlogKey extends \artsoft\db\ActiveRecord
         return [
             [['auditory_id', 'timestamp_received'], 'required'],
             [['timestamp_received', 'timestamp_over'], 'safe'],
+            [['comment'], 'string', 'max' => 127],
             [['users_attendlog_id', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
             [['users_attendlog_id'], 'exist', 'skipOnError' => true, 'targetClass' => UsersAttendlog::class, 'targetAttribute' => ['users_attendlog_id' => 'id']],
-//            [['timestamp_over'], 'compare', 'compareAttribute' => 'timestamp_received', 'operator' => '>', 'message' => 'Время сдачи не может быть меньше или равно времени выдачи.'],
             [['auditory_id'], 'checkKeyExist', 'skipOnEmpty' => false],
             [['timestamp_over'], 'compareTimestamp', 'skipOnEmpty' => false],
 
@@ -91,9 +92,9 @@ class UsersAttendlogKey extends \artsoft\db\ActiveRecord
                 ->andWhere(['is', 'timestamp_over', null]);
 
             if ($thereIsKeyExist->exists() === true) {
-                $message = 'Ключ от аудитории ' . RefBook::find('auditory_memo_1')->getValue($this->auditory_id) . ' не был сдан';
+                $message = 'Ключ от аудитории ' . RefBook::find('auditory_memo_1')->getValue($this->auditory_id) . ' <b>Не был сдан!</b>';
                 $this->addError($attribute, $message);
-                Notice::registerInfo($message);
+                Notice::registerDanger($message);
             }
         }
     }
@@ -109,6 +110,7 @@ class UsersAttendlogKey extends \artsoft\db\ActiveRecord
             'auditory_id' => Yii::t('art/guide', 'Auditory'),
             'timestamp_received' => Yii::t('art/guide', 'Time Received'),
             'timestamp_over' => Yii::t('art/guide', 'Time Over'),
+            'comment' => Yii::t('art', 'Comment'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),

@@ -31,6 +31,7 @@ class m220409_114215_add_attendlog_tables extends \artsoft\db\BaseMigration
             'auditory_id' => $this->integer()->notNull(),
             'timestamp_received' => $this->integer()->notNull()->comment('Ключ выдан'),
             'timestamp_over' => $this->integer()->comment('Ключ сдан'),
+            'comment' => $this->string(127),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -59,6 +60,7 @@ class m220409_114215_add_attendlog_tables extends \artsoft\db\BaseMigration
             users_attendlog_key.auditory_id,
             users_attendlog_key.timestamp_received,
             users_attendlog_key.timestamp_over,
+            users_attendlog_key.comment,
             users_attendlog.timestamp
         from users_attendlog
         inner join users_attendlog_key on(users_attendlog_key.users_attendlog_id = users_attendlog.id)
