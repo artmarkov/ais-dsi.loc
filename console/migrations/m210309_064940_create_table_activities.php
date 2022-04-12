@@ -10,7 +10,7 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
         $this->createTable('guide_activities_cat', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 999999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'name' => $this->string(128)->notNull(),
             'color' => $this->string(32),
             'rendering' => $this->tinyInteger(1)->notNull()->defaultValue('0')->comment('как фон или бар'),
@@ -28,7 +28,7 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
         ])->execute();
 
         $this->createTableWithHistory('activities', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 999999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'category_id' => $this->integer()->notNull(),
             'auditory_id' => $this->integer()->notNull(),
             'title' => $this->string(100),
@@ -39,7 +39,7 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('activities' ,'Календарь мероприятий');
-        $this->db->createCommand()->resetSequence('activities', 1000)->execute();
+        $this->db->createCommand()->resetSequence('activities', 10000)->execute();
 
         $this->addForeignKey('activities_ibfk_1', 'activities', 'category_id', 'guide_activities_cat', 'id', 'RESTRICT', 'RESTRICT');
         $this->addForeignKey('activities_ibfk_2', 'activities', 'auditory_id', 'auditory', 'id', 'RESTRICT', 'RESTRICT');
