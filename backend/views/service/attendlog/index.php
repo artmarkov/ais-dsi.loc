@@ -70,10 +70,10 @@ $columns = [
     [
         'attribute' => 'timestamp_over',
         'value' => function (UsersAttendlogView $model) {
-            return $model->timestamp_over ? Yii::$app->formatter->asDate($model->timestamp_over, 'php:d.m.Y H:i') : Html::a('<i class="fa fa-key" aria-hidden="true"></i> Вернуть ключ',
+            return $model->timestamp_over ? Yii::$app->formatter->asDatetime($model->timestamp_over) : Html::a('<i class="fa fa-key" aria-hidden="true"></i> Вернуть ключ',
                 Url::to(['/service/attendlog/over', 'id' => $model->id]), [
-                    'class' => 'btn btn-sm btn-warning btn-block',
-                    'title' => 'Сдать ключ',
+                    'class' => 'btn btn-sm btn-default btn-block',
+                    'title' => 'Вернуть ключ',
                     'data-method' => 'post',
                     'data-pjax' => '0',
                 ]

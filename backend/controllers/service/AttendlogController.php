@@ -67,7 +67,7 @@ class AttendlogController extends BaseController
             // validate all models
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsDependency) && $valid;
-           $valid = true;
+           //$valid = true;
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {

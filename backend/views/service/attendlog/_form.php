@@ -135,7 +135,13 @@ JS
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_received", ['readonly' => false, "class" => "form-control js-slab-name"]); ?>
+                                                <?php
+                                                $options = [];
+                                                if ($modelDependency->isNewRecord) {
+                                                    $options = ['value' => Yii::$app->formatter->asDatetime(time())];
+                                                }
+                                                ?>
+                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_received", array_merge($options, ['readonly' => $readonly,  "class" => "form-control js-slab-name"])); ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>
@@ -146,7 +152,7 @@ JS
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_over", ['class' => 'form-control', 'readonly' => false]); ?>
+                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_over", ['class' => 'form-control', 'readonly' => $readonly]); ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>

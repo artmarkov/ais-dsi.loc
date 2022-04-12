@@ -51,28 +51,29 @@ class UsersAttendlog extends \artsoft\db\ActiveRecord
     {
         return [
             [['user_common_id'], 'required'],
+            [['user_common_id', 'created_at'], 'unique', 'targetAttribute' => ['user_common_id', 'created_at']],
             [['user_common_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['user_common_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['user_common_id' => 'id']],
 
         ];
     }
 
-    public function checkKeyExist($attribute, $params)
-    {
-        if ($this->isNewRecord) {
-
-            $timestamp = Schedule::getStartEndDay($this->created_at);
-
-            $thereIsKeyExist = self::find()
-                ->where(['user_common_id' => $this->user_common_id])
-                ->andWhere(['between', 'created_at', $timestamp[0], $timestamp[1]]);
-
-            if ($thereIsKeyExist->exists() === true) {
-                $message = 'Пользователь уже есть в списке на текущий день';
-                $this->addError($attribute, $message);
-            }
-        }
-    }
+//    public function checkKeyExist($attribute, $params)
+//    {
+//        if ($this->isNewRecord) {
+//
+//            $timestamp = Schedule::getStartEndDay($this->created_at);
+//
+//            $thereIsKeyExist = self::find()
+//                ->where(['user_common_id' => $this->user_common_id])
+//                ->andWhere(['between', 'created_at', $timestamp[0], $timestamp[1]]);
+//
+//            if ($thereIsKeyExist->exists() === true) {
+//                $message = 'Пользователь уже есть в списке на текущий день';
+//                $this->addError($attribute, $message);
+//            }
+//        }
+//    }
     /**
      * {@inheritdoc}
      */
@@ -100,8 +101,6 @@ class UsersAttendlog extends \artsoft\db\ActiveRecord
 
     public function getUserAttendlogKey()
     {
-        $timestamp = Schedule::getStartEndDay(Yii::$app->formatter->asTimestamp($this->created_at));
-        return $this->hasMany(UsersAttendlogKey::class, ['users_attendlog_id' => 'id'])
-            ->where(['between', 'created_at', $timestamp[0], $timestamp[1]]);
+        return $this->hasMany(UsersAttendlogKey::class, ['users_attendlog_id' => 'id']);
     }
 }
