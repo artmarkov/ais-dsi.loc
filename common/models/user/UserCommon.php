@@ -220,19 +220,19 @@ class UserCommon extends ActiveRecord
     /**
      * @return false|int|null|string
      */
-    public function getRelatedId($id)
+    public function getRelatedId()
     {
         return self::find()->select(self::getRelatedTable() . '.id')->innerJoin(self::getRelatedTable(), 'user_common_id = user_common.id')
-            ->where(['=', 'user_common.id', $id])
+            ->where(['=', 'user_common.id', $this->id])
             ->scalar();
     }
 
     /**
      * @return string
      */
-    public function getRelatedUrl($id)
+    public function getRelatedUrl()
     {
-        return Url::to(['/' . self::getRelatedTable() . '/default/view', 'id' => self::getRelatedId($id)]);
+        return Url::to(['/' . self::getRelatedTable() . '/default/view', 'id' => self::getRelatedId()]);
 
     }
 

@@ -5,12 +5,21 @@ use common\models\service\UsersAttendlog;
 use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
 use wbraganca\dynamicform\DynamicFormWidget;
+use yii\helpers\Url;
+use common\widgets\ActivityWidget;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\service\UsersAttendlog */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $readonly */
 /* @var $modelsDependency */
+
+//$this->registerJs(<<<JS
+//$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
+//	    $( "#users-attendlog-form" ).submit(); // вызываем событие submit на элементе <form>
+//	  });
+//JS
+//    , \yii\web\View::POS_END);
 
 $this->registerJs(<<<JS
 function initSelect2Loading(a,b){ initS2Loading(a,b); }
@@ -20,15 +29,12 @@ JS
 
 $this->registerJs(<<<JS
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
-    console.log("after insert");
-    var date = new Date();
-    var start = ('0' + date.getDate()).slice(-2)+ '.' + ('0'+ (date.getMonth()+1)).slice(-2)+'.'+  date.getFullYear()+' '+ ('0' + date.getHours()).slice(-2)+':'+ ('0' + date.getMinutes()).slice(-2);
-    
-    var set = jQuery(".dynamicform_wrapper .js-slab-name");
-    var length = set.length;
+    let date = new Date();
+    let start = ('0' + date.getDate()).slice(-2)+ '.' + ('0'+ (date.getMonth()+1)).slice(-2)+'.'+  date.getFullYear()+' '+ ('0' + date.getHours()).slice(-2)+':'+ ('0' + date.getMinutes()).slice(-2);
+    let set = jQuery(".dynamicform_wrapper .js-received");
+    let length = set.length;
     set.each(function(index) {
         if(index == (length - 1)) {
-                 //console.log(start);
         jQuery(this).val(start);
         }
     }); 
@@ -43,7 +49,8 @@ JS
     $form = ActiveForm::begin([
         'id' => 'users-attendlog-form',
         'validateOnBlur' => false,
-    ])
+    ]);
+    echo ActivityWidget::widget(['user_common_id' => $model->user_common_id, 'timestamp' => $model->timestamp]);
     ?>
 
     <div class="panel">
@@ -55,6 +62,7 @@ JS
             <div class="row">
                 <div class="col-sm-12">
                     <?= Html::activeHiddenInput($model, 'user_common_id'); ?>
+                    <?= Html::activeHiddenInput($model, 'timestamp'); ?>
                 </div>
             </div>
 
@@ -116,7 +124,6 @@ JS
                                                         'attribute' => "[{$index}]auditory_id",
                                                         'data' => RefBook::find('auditory_memo_1')->getList(),
                                                         'options' => [
-
                                                             'disabled' => $readonly,
                                                             'placeholder' => Yii::t('art', 'Select...'),
                                                         ],
@@ -141,7 +148,7 @@ JS
                                                     $options = ['value' => Yii::$app->formatter->asDatetime(time())];
                                                 }
                                                 ?>
-                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_received", array_merge($options, ['readonly' => $readonly,  "class" => "form-control js-slab-name"])); ?>
+                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_received", array_merge($options, ['readonly' => true, "class" => "form-control js-received"])); ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>
@@ -152,7 +159,7 @@ JS
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_over", ['class' => 'form-control', 'readonly' => $readonly]); ?>
+                                                <?= \yii\helpers\Html::activeTextInput($modelDependency, "[{$index}]timestamp_over", ['class' => 'form-control', 'readonly' => true]); ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>

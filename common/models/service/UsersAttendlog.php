@@ -16,6 +16,7 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property int $id
  * @property int $user_common_id
+ * @property int $timestamp
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -50,8 +51,8 @@ class UsersAttendlog extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_common_id'], 'required'],
-            [['user_common_id', 'created_at'], 'unique', 'targetAttribute' => ['user_common_id', 'created_at']],
+            [['user_common_id', 'timestamp'], 'required'],
+            [['user_common_id', 'timestamp'], 'unique', 'targetAttribute' => ['user_common_id', 'timestamp']],
             [['user_common_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['user_common_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['user_common_id' => 'id']],
 
@@ -101,6 +102,6 @@ class UsersAttendlog extends \artsoft\db\ActiveRecord
 
     public function getUserAttendlogKey()
     {
-        return $this->hasMany(UsersAttendlogKey::class, ['users_attendlog_id' => 'id']);
+        return $this->hasMany(UsersAttendlogKey::class, ['users_attendlog_id' => 'id'])->orderBy('id');
     }
 }

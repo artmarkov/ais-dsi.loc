@@ -32,7 +32,7 @@ $columns = [
         'value' => function (ServiceCardView $model) {
 
             $user = \common\models\user\UserCommon::findOne($model->user_common_id);
-            return Html::a($model->user_name, $user->getRelatedUrl($model->user_common_id), ['title' => 'Перейти в реестр', 'target' => '_blank', 'data-pjax' => 0]);
+            return Html::a($model->user_name, $user->getRelatedUrl(), ['title' => 'Перейти в реестр', 'target' => '_blank', 'data-pjax' => 0]);
         },
         'format' => 'raw'
     ],

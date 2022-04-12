@@ -5,6 +5,7 @@ namespace common\models\service;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use artsoft\widgets\Notice;
 use common\models\auditory\Auditory;
 use common\models\user\UserCommon;
 use Yii;
@@ -85,17 +86,14 @@ class UsersAttendlogKey extends \artsoft\db\ActiveRecord
     public function checkKeyExist($attribute, $params, $validator)
     {
         if ($this->isNewRecord) {
-
-            $timestamp = Schedule::getStartEndDay($this->created_at);
-
             $thereIsKeyExist = self::find()
                 ->where(['auditory_id' => $this->auditory_id])
-                ->andWhere(['between', 'created_at', $timestamp[0], $timestamp[1]])
                 ->andWhere(['is', 'timestamp_over', null]);
 
             if ($thereIsKeyExist->exists() === true) {
                 $message = 'Ключ от аудитории ' . RefBook::find('auditory_memo_1')->getValue($this->auditory_id) . ' не был сдан';
                 $this->addError($attribute, $message);
+                Notice::registerInfo($message);
             }
         }
     }

@@ -25,7 +25,7 @@ $form = ActiveForm::begin([
                 ])->label('Дата');
                 ?>
                 <?php
-                if ($model_date->date == Yii::$app->formatter->asDate(time(), 'php:d.m.Y')) {
+                if ($model_date->date == Yii::$app->formatter->asDate(time())) {
                     echo \artsoft\helpers\ButtonHelper::createButton(['/service/attendlog/find']);
                 }
                 ?>

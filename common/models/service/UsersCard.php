@@ -56,6 +56,7 @@ class UsersCard extends \artsoft\db\ActiveRecord
         return [
             [['user_common_id'], 'required'],
             [['user_common_id'], 'unique', 'message' => 'Пропуск у данного пользователя уже задан.'],
+            [['key_hex'], 'unique'],
             [['timestamp_deny', 'photo_bin'], 'safe'],
             [['photo_ver'], 'default', 'value' => 1],
             [['photo_ver', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],

@@ -52,7 +52,7 @@ use kartik\date\DatePicker;
                 </div>
                 <div class="panel-footer">
                     <?= Html::a('<i class="fa fa-user-o" aria-hidden="true"></i> Открыть в новом окне',
-                        $model->userCommon->getRelatedUrl($model->userCommon->id),
+                        $model->userCommon->getRelatedUrl(),
                         [
                             'target' => '_blank',
                             'class' => 'btn btn-default',

@@ -72,7 +72,7 @@ $columns = [
         'value' => function (UsersAttendlogView $model) {
             return $model->timestamp_over ? Yii::$app->formatter->asDatetime($model->timestamp_over) : Html::a('<i class="fa fa-key" aria-hidden="true"></i> Вернуть ключ',
                 Url::to(['/service/attendlog/over', 'id' => $model->id]), [
-                    'class' => 'btn btn-sm btn-default btn-block',
+                    'class' => 'btn btn-sm btn-primary',
                     'title' => 'Вернуть ключ',
                     'data-method' => 'post',
                     'data-pjax' => '0',

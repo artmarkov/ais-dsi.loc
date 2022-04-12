@@ -25,7 +25,6 @@ class AttendlogController extends BaseController
 
     public function actionIndex()
     {
-        $session = Yii::$app->session;
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model_date = new DynamicModel(['date']);
@@ -34,12 +33,11 @@ class AttendlogController extends BaseController
 
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $timestamp = Schedule::getStartEndDay();
-            $model_date->date = $session->get('_attendlog_date') ?? Yii::$app->formatter->asDate($timestamp[0], 'php:d.m.Y');
+            $model_date->date = Yii::$app->formatter->asDate($timestamp[0]);
         }
-        $session->set('_attendlog_date', $model_date->date);
-        $timestamp = Schedule::getStartEndDay(Yii::$app->formatter->asTimestamp($model_date->date));
+        $timestamp = Yii::$app->formatter->asTimestamp($model_date->date);
 
-        $query = UsersAttendlogView::find()->where(['between', 'timestamp', $timestamp[0], $timestamp[1]]);
+        $query = UsersAttendlogView::find()->where(['=', 'timestamp', $timestamp]);
         $searchModel = new UsersAttendlogViewSearch($query);
         $params = Yii::$app->request->getQueryParams();
         $dataProvider = $searchModel->search($params);
@@ -54,9 +52,10 @@ class AttendlogController extends BaseController
         if (!Yii::$app->request->get('user_common_id')) {
             throw new NotFoundHttpException("Отсутствует обязательный параметр GET user_common_id.");
         }
-
+        $timestamp = Schedule::getStartEndDay();
         $model = new $this->modelClass;
         $model->user_common_id = Yii::$app->request->get('user_common_id');
+        $model->timestamp = $timestamp[0];
         $modelsDependency = [new UsersAttendlogKey()];
 
         if ($model->load(Yii::$app->request->post())) {
@@ -170,9 +169,6 @@ class AttendlogController extends BaseController
 
     public function actionFind()
     {
-//        $week_day = Schedule::timestamp2WeekDay($timestamp);
-//        $week_num = Schedule::timestamp2WeekNum($timestamp);
-
         $model = new DynamicModel(['user_common_id', 'key_hex', 'key_flag']);
         $model->addRule(['key_flag'], 'required')
             ->addRule(['user_common_id', 'key_flag'], 'integer')
@@ -194,10 +190,9 @@ class AttendlogController extends BaseController
             }
             if ($user_common_id) {
                 $timestamp = Schedule::getStartEndDay();
-
                 $id = UsersAttendlog::find()
                     ->where(['user_common_id' => $user_common_id])
-                    ->andWhere(['between', 'created_at', $timestamp[0], $timestamp[1]])->scalar();
+                    ->andWhere(['=', 'timestamp',  $timestamp[0]])->scalar();
 
                 return $this->redirect($id ? Url::to(['update', 'id' => $id]) : Url::to(['create', 'user_common_id' => $user_common_id]));
             }
