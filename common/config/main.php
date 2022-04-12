@@ -87,6 +87,13 @@ return [
 //            'as workerMonitor' => \zhuravljov\yii\queue\monitor\WorkerMonitor::class,
             'as queueSchedule' => \artsoft\queue\JobSchedule::class,
         ],
+        'formatter' => [
+            'datetimeFormat' => 'php:d.m.Y H:i',
+            'dateFormat' => 'php:d.m.Y',
+            'timeFormat' => 'php:H:i',
+            'defaultTimeZone' => 'Europe/Moscow',
+            'sizeFormatBase' => 1000
+        ],
     ],
     'modules' => [
         'gii' => [

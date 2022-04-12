@@ -42,11 +42,11 @@ SettingsAsset::register($this);
 
                     <?= $form->field($model, 'instagram')->textInput(['maxlength' => true])->hint($model->getDescription('instagram')) ?>
 
-                    <?= $form->field($model, 'timezone')->dropDownList(GeneralSettings::getTimezones())->hint($model->getDescription('timezone')) ?>
+<!--                    $form->field($model, 'timezone')->dropDownList(GeneralSettings::getTimezones())->hint($model->getDescription('timezone'))-->
 
-                    <?= $form->field($model, 'dateformat')->dropDownList(GeneralSettings::getDateFormats())->hint($model->getDescription('dateformat')) ?>
+<!--                     $form->field($model, 'dateformat')->dropDownList(GeneralSettings::getDateFormats())->hint($model->getDescription('dateformat')) -->
 
-                    <?= $form->field($model, 'timeformat')->dropDownList(GeneralSettings::getTimeFormats())->hint($model->getDescription('timeformat')) ?>
+<!--                     $form->field($model, 'timeformat')->dropDownList(GeneralSettings::getTimeFormats())->hint($model->getDescription('timeformat'))-->
                 </div>
             </div>
         </div>

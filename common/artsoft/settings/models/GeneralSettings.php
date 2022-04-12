@@ -30,7 +30,7 @@ class GeneralSettings extends BaseSettingsModel
     {
         return ArrayHelper::merge(parent::rules(),
             [
-                [['title', 'email', 'timezone', 'dateformat', 'timeformat'], 'required'],
+                [['title', 'email', /*'timezone', 'dateformat', 'timeformat'*/], 'required'],
                 [['email'], 'email'],
                 [['description', 'phone', 'facebook', 'instagram'], 'safe'],
                 ['title', 'default', 'value' => 'Art Site'],
