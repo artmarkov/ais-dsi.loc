@@ -1,19 +1,19 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\activities\ActivitiesPlan;
+use common\models\schoolplan\Schoolplan;
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\activities\ActivitiesPlan */
+/* @var $model common\models\schoolplan\Schoolplan */
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 
-<div class="activities-plan-form">
+<div class="schoolplan-plan-form">
 
     <?php 
     $form = ActiveForm::begin([
-            'id' => 'activities-plan-form',
+            'id' => 'schoolplan-plan-form',
             'validateOnBlur' => false,
         ])
     ?>
@@ -26,8 +26,6 @@ use artsoft\helpers\Html;
             <div class="row">
                 <div class="col-sm-12">
             
-                    <?= $form->field($model, 'author_id')->textInput() ?>
-
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'datetime_in')->textInput() ?>
@@ -72,15 +70,6 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'num_visitors')->textInput() ?>
 
-                    <?= $form->field($model, 'created_at')->textInput() ?>
-
-                    <?= $form->field($model, 'created_by')->textInput() ?>
-
-                    <?= $form->field($model, 'updated_at')->textInput() ?>
-
-                    <?= $form->field($model, 'updated_by')->textInput() ?>
-
-                    <?= $form->field($model, 'version')->textInput() ?>
                 </div>
             </div>
         </div>

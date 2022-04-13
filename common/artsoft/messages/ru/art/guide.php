@@ -178,6 +178,8 @@ return [
     'Users Attendlogs' => 'Журнал выдачи ключей',
     'Time Received' => 'Время выдачи',
     'Time Over' => 'Время сдачи',
+    'Plan Tree' => 'Дерево категорий мероприятий',
+    'School Plans' => 'План работы школы',
 
 ];
 ?>

@@ -1,16 +1,16 @@
 <?php
 
-namespace common\models\activities\search;
+namespace common\models\schoolplan\search;
 
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\activities\ActivitiesPlan;
+use common\models\schoolplan\Schoolplan;
 
 /**
- * ActivitiesPlanSearch represents the model behind the search form about `common\models\activities\ActivitiesPlan`.
+ * SchoolplanSearch represents the model behind the search form about `common\models\schoolplan\Schoolplan`.
  */
-class ActivitiesPlanSearch extends ActivitiesPlan
+class SchoolplanSearch extends Schoolplan
 {
     /**
      * @inheritdoc
@@ -18,7 +18,7 @@ class ActivitiesPlanSearch extends ActivitiesPlan
     public function rules()
     {
         return [
-            [['id', 'author_id', 'datetime_in', 'datetime_out', 'auditory_id', 'category_id', 'form_partic', 'visit_flag', 'important_flag', 'num_users', 'num_winners', 'num_visitors', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['id', 'datetime_in', 'datetime_out', 'auditory_id', 'category_id', 'form_partic', 'visit_flag', 'important_flag', 'num_users', 'num_winners', 'num_visitors', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['name', 'places', 'department_list', 'teachers_list', 'partic_price', 'visit_content', 'region_partners', 'site_url', 'site_media', 'description', 'rider', 'result'], 'safe'],
         ];
     }
@@ -41,7 +41,7 @@ class ActivitiesPlanSearch extends ActivitiesPlan
      */
     public function search($params)
     {
-        $query = ActivitiesPlan::find();
+        $query = Schoolplan::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -65,7 +65,6 @@ class ActivitiesPlanSearch extends ActivitiesPlan
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'author_id' => $this->author_id,
             'datetime_in' => $this->datetime_in,
             'datetime_out' => $this->datetime_out,
             'auditory_id' => $this->auditory_id,

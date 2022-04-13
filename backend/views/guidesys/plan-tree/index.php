@@ -8,7 +8,6 @@ use yii\helpers\Url;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/guide', 'Plan Tree');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Plan Tree'), 'url' => ['efficiency/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 $mainTemplate = <<< HTML
 <div class="panel">
@@ -34,7 +33,7 @@ HTML;
                     <?=
                     TreeView::widget([
                         'mainTemplate' => $mainTemplate,
-                        'query' => \common\models\activities\GuidePlanTree::find()->addOrderBy('root, lft'),
+                        'query' => \common\models\guidesys\GuidePlanTree::find()->addOrderBy('root, lft'),
                         'headingOptions' => ['label' => ''],
                         'fontAwesome' => true, // optional
                         'isAdmin' => true, // optional (toggle to enable admin mode)

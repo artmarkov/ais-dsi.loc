@@ -1,20 +1,48 @@
 <?php
 
-namespace common\models\activities;
+namespace common\models\guidesys;
 
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * @property int $content_type
  */
 class GuidePlanTree extends \kartik\tree\models\Tree
 {
+    const CATEGORY_SELL = [
+        0 => 'Не задано',
+        1 => 'Внутреннее мероприятие',
+        2 => 'Внешнее мероприятие',
+    ];
+    const COMMISSION_SELL = [
+        0 => 'Не требуется',
+        1 => 'Аттестационная комиссия',
+        2 => 'Приемная комиссия',
+    ];
+
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
         return 'guide_plan_tree';
+    }
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        $behaviors[] = [
+            'class' => TimestampBehavior::class,
+            'createdAtAttribute' => 'created_at',
+            'updatedAtAttribute' => NULL,
+        ];
+        $behaviors[] = [
+            'class' => BlameableBehavior::class,
+            'createdByAttribute' => 'created_by',
+            'updatedByAttribute' => NULL,
+        ];
+        return $behaviors;
     }
 
     /**
@@ -25,7 +53,8 @@ class GuidePlanTree extends \kartik\tree\models\Tree
         $rules = parent::rules();
 
         $rules[] =  ['description', 'string', 'max' => 512];
-        $rules[] =  ['category_flag', 'integer'];
+        $rules[] =  ['category_sell', 'integer'];
+        $rules[] =  ['commission_sell', 'integer'];
         $rules[] =  ['preparing_flag', 'boolean'];
         $rules[] =  ['description_flag', 'boolean'];
         $rules[] =  ['afisha_flag', 'boolean'];
@@ -34,7 +63,6 @@ class GuidePlanTree extends \kartik\tree\models\Tree
         $rules[] =  ['schedule_flag', 'boolean'];
         $rules[] =  ['consult_flag', 'boolean'];
         $rules[] =  ['partners_flag', 'boolean'];
-        $rules[] =  ['commission_flag', 'integer'];
 
 
         return $rules;
@@ -47,16 +75,16 @@ class GuidePlanTree extends \kartik\tree\models\Tree
     {
         $attr = parent::attributeLabels();
         $attr['description'] = Yii::t('art', 'Description');
-        $attr['category_flag'] = 'Категория мероприятия(внутреннее и (или) внешнее';
+        $attr['category_sell'] = 'Категория мероприятия';
+        $attr['commission_sell'] = 'Требуется комиссия';
         $attr['preparing_flag'] = 'Требуется подготовка к мероприятию' ;
         $attr['description_flag'] = 'Требуется описание мероприятия';
         $attr['afisha_flag'] = 'Требуется афиша и программа';
         $attr['bars_flag'] = 'Требуется отправлять в БАРС';
-        $attr['efficiency_flag'] = 'ребуется подключение показателей эффективности';
+        $attr['efficiency_flag'] = 'Требуется подключение показателей эффективности';
         $attr['schedule_flag'] = 'Мероприятие в рамках расписания занятий';
         $attr['consult_flag'] = 'Мероприятие в рамках расписания консультаций';
         $attr['partners_flag'] = 'Возможность участия региональных партнеров';
-        $attr['commission_flag'] = 'Требуется аттестационная или приемная комиссия';
 
         return $attr;
     }
@@ -83,5 +111,45 @@ class GuidePlanTree extends \kartik\tree\models\Tree
     public static function getEfficiencyLiaves()
     {
         return  self::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
+    }
+
+    /**
+     * getStatusList
+     * @return array
+     */
+    public static function getCategoryList()
+    {
+        return self::CATEGORY_SELL;
+    }
+
+    /**
+     * getStatusValue
+     * @param string $val
+     * @return string
+     */
+    public static function getCategoryValue($val)
+    {
+        $ar = self::getCategoryList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    /**
+     * getStatusList
+     * @return array
+     */
+    public static function getComissionList()
+    {
+        return self::COMMISSION_SELL;
+    }
+
+    /**
+     * getStatusValue
+     * @param string $val
+     * @return string
+     */
+    public static function getComissionValue($val)
+    {
+        $ar = self::getComissionList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 }

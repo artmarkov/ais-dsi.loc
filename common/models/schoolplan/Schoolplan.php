@@ -1,17 +1,20 @@
 <?php
 
-namespace common\models\activities;
+namespace common\models\schoolplan;
 
-use artsoft\models\User;
+use artsoft\behaviors\ArrayFieldBehavior;
+use artsoft\behaviors\DateFieldBehavior;
+use artsoft\fileinput\behaviors\FileManagerBehavior;
 use common\models\auditory\Auditory;
-use common\models\user\UserCommon;
+use common\models\guidesys\GuidePlanTree;
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
- * This is the model class for table "activities_plan".
+ * This is the model class for table "schoolplan".
  *
  * @property int $id
- * @property int $author_id Автор записи
  * @property string|null $name Название мероприятия
  * @property int $datetime_in Дата и время начала
  * @property int $datetime_out Дата и время окончания
@@ -42,35 +45,55 @@ use Yii;
  *
  * @property Auditory $auditory
  * @property GuidePlanTree $category
- * @property UserCommon $author
  */
-class ActivitiesPlan extends \artsoft\db\ActiveRecord
+class Schoolplan extends \artsoft\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'activities_plan';
+        return 'schoolplan';
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class,
+            BlameableBehavior::class,
+            [
+                'class' => DateFieldBehavior::class,
+                'attributes' => ['datetime_in', 'datetime_out'],
+                'timeFormat' => 'd.m.Y H:i'
+            ],
+            [
+                'class' => ArrayFieldBehavior::class,
+                'attributes' => ['department_list', 'teachers_list'],
+            ],
+            [
+                'class' => FileManagerBehavior::class,
+            ],
+        ];
+    }
+    
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['author_id', 'datetime_in', 'datetime_out', 'category_id', 'created_at', 'updated_at'], 'required'],
-            [['author_id', 'datetime_in', 'datetime_out', 'auditory_id', 'category_id', 'form_partic', 'visit_flag', 'important_flag', 'num_users', 'num_winners', 'num_visitors', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'default', 'value' => null],
-            [['author_id', 'datetime_in', 'datetime_out', 'auditory_id', 'category_id', 'form_partic', 'visit_flag', 'important_flag', 'num_users', 'num_winners', 'num_visitors', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['datetime_in', 'datetime_out', 'category_id', 'created_at', 'updated_at'], 'required'],
+            [['datetime_in', 'datetime_out', 'auditory_id', 'category_id', 'form_partic', 'visit_flag', 'important_flag', 'num_users', 'num_winners', 'num_visitors'], 'integer'],
             [['visit_content', 'region_partners', 'description', 'rider', 'result'], 'string'],
             [['name'], 'string', 'max' => 100],
             [['places'], 'string', 'max' => 512],
             [['department_list', 'teachers_list'], 'string', 'max' => 1024],
             [['partic_price', 'site_url', 'site_media'], 'string', 'max' => 255],
-            [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::className(), 'targetAttribute' => ['auditory_id' => 'id']],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuidePlanTree::className(), 'targetAttribute' => ['category_id' => 'id']],
-            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::className(), 'targetAttribute' => ['author_id' => 'id']],
+            [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuidePlanTree::class, 'targetAttribute' => ['category_id' => 'id']],
         ];
     }
 
@@ -81,7 +104,6 @@ class ActivitiesPlan extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'author_id' => 'Автор записи',
             'name' => 'Название мероприятия',
             'datetime_in' => 'Дата и время начала',
             'datetime_out' => 'Дата и время окончания',
@@ -112,6 +134,11 @@ class ActivitiesPlan extends \artsoft\db\ActiveRecord
         ];
     }
 
+    public function optimisticLock()
+    {
+        return 'version';
+    }
+    
     /**
      * Gets query for [[Auditory]].
      *
@@ -119,7 +146,7 @@ class ActivitiesPlan extends \artsoft\db\ActiveRecord
      */
     public function getAuditory()
     {
-        return $this->hasOne(Auditory::className(), ['id' => 'auditory_id']);
+        return $this->hasOne(Auditory::class, ['id' => 'auditory_id']);
     }
 
     /**
@@ -129,18 +156,7 @@ class ActivitiesPlan extends \artsoft\db\ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(GuidePlanTree::className(), ['id' => 'category_id']);
+        return $this->hasOne(GuidePlanTree::class, ['id' => 'category_id']);
     }
-
-    /**
-     * Gets query for [[Author]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAuthor()
-    {
-        return $this->hasOne(UserCommon::className(), ['id' => 'author_id']);
-    }
-
 
 }
