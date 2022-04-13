@@ -13,11 +13,16 @@ use artsoft\helpers\Html;
 
 <div class="schoolplan-plan-form">
 
-    <?php 
+    <?php
     $form = ActiveForm::begin([
-            'id' => 'schoolplan-plan-form',
-            'validateOnBlur' => false,
-        ])
+        'fieldConfig' => [
+            'inputOptions' => ['readonly' => $readonly]
+        ],
+        'id' => 'schoolplan-plan-form',
+        'validateOnBlur' => false,
+        'options' => ['enctype' => 'multipart/form-data'],
+    ])
+
     ?>
 
     <div class="panel">
@@ -25,6 +30,7 @@ use artsoft\helpers\Html;
             Карточка мероприятия
         </div>
         <div class="panel-body">
+
             <div class="row">
                 <div class="col-sm-12">
 
@@ -40,7 +46,7 @@ use artsoft\helpers\Html;
                     <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
                         'data' => Department::getDepartmentList(),
                         'options' => [
-                           // 'disabled' => $readonly,
+                            'disabled' => $readonly,
                             'placeholder' => Yii::t('art/teachers', 'Select Department...'),
                             'multiple' => true,
                         ],
@@ -53,60 +59,137 @@ use artsoft\helpers\Html;
                         'data' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees']),
                         'showToggleAll' => false,
                         'options' => [
-                           // 'disabled' => true,
+                            'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
                             'multiple' => true,
                         ],
                         'pluginOptions' => [
                             'allowClear' => false,
-                           // 'minimumInputLength' => 3,
+                            // 'minimumInputLength' => 3,
                         ],
 
-                    ])->label(Yii::t('art', 'Executors'));
+                    ]);
 
                     ?>
 
-                    <?= $form->field($model, 'category_id')->textInput() ?>
+                    <?= $form->field($model, 'category_id')->widget(\kartik\tree\TreeViewInput::class, [
+                        'options' => [
+                            'disabled' => $readonly,
+                            'id' => "category_id",
+                        ],
+                        'query' => \common\models\guidesys\GuidePlanTree::find()->addOrderBy('root, lft'),
+                        'dropdownConfig' => [
+                            'input' => ['placeholder' => 'Выберите категорию мероприятия...'],
+                        ],
+                        'fontAwesome' => true,
+                        'multiple' => false,
+                        'rootOptions' => [
+                            'label' => '',
+                            'class' => 'text-default'
+                        ],
+                        'childNodeIconOptions' => ['class' => ''],
+                        'defaultParentNodeIcon' => '',
+                        'defaultParentNodeOpenIcon' => '',
+                        'defaultChildNodeIcon' => '',
+                        'childNodeIconOptions' => ['class' => ''],
+                        'parentNodeIconOptions' => ['class' => ''],
+                    ]);
+                    ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Дополнительные сведения
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
 
-                    <?= $form->field($model, 'form_partic')->radioList(Schoolplan::getFormParticList()) ?>
+                                    <?= $form->field($model, 'form_partic')->radioList(Schoolplan::getFormParticList()) ?>
 
-                    <?= $form->field($model, 'partic_price')->textInput(['maxlength' => true])->hint('Укажите стоимость участия одного человека/организации в рублях.') ?>
+                                    <?= $form->field($model, 'partic_price')->textInput(['maxlength' => true])->hint('Укажите стоимость участия одного человека/организации в рублях.') ?>
 
-                    <?= $form->field($model, 'visit_poss')->radioList(Schoolplan::getVisitPossList()) ?>
+                                    <?= $form->field($model, 'visit_poss')->radioList(Schoolplan::getVisitPossList()) ?>
 
-                    <?= $form->field($model, 'visit_content')->textarea(['rows' => 2])->hint('Укажите, является запланированное мероприятие открытым или закрытым. Открытое мероприятие - вход возможен для всех желающих (в независимости от того, платный он или нет). Закрытое мероприятие - вход возможен для ограниченного круга лиц, например: «Приглашаются выпускники и их родители».') ?>
+                                    <?= $form->field($model, 'visit_content')->textarea(['rows' => 2])->hint('Укажите, является запланированное мероприятие открытым или закрытым. Открытое мероприятие - вход возможен для всех желающих (в независимости от того, платный он или нет). Закрытое мероприятие - вход возможен для ограниченного круга лиц, например: «Приглашаются выпускники и их родители».') ?>
 
-                    <?= $form->field($model, 'important_event')->textInput() ?>
+                                    <?= $form->field($model, 'important_event')->radioList(Schoolplan::getImportantList()) ?>
 
-                    <?= $form->field($model, 'region_partners')->textarea(['rows' => 2]) ?>
+                                    <?= $form->field($model, 'region_partners')->textarea(['rows' => 2]) ?>
 
-                    <?= $form->field($model, 'site_url')->textInput(['maxlength' => true]) ?>
+                                    <?= $form->field($model, 'site_url')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'site_media')->textInput(['maxlength' => true]) ?>
+                                    <?= $form->field($model, 'site_media')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'description')->textarea(['rows' => 6])->hint('Введите полное описание мероприятия, включающее важную и существенную информацию. Оно может содержать программу мероприятия, историю возникновения, значимость мероприятия для учреждения и участников, поименное перечисление участников, выступающих, организаторов, направленность мероприятия в форме развернутого ответа. Объем текста - не менее 1000 знаков и не более 4000 знаков.') ?>
+                                    <div id="count_schoolplan-description" class="fa-pull-right"></div>
+                                    <?= $form->field($model, 'description')->textarea(['rows' => 6])->hint('Введите полное описание мероприятия, включающее важную и существенную информацию. Оно может содержать программу мероприятия, историю возникновения, значимость мероприятия для учреждения и участников, поименное перечисление участников, выступающих, организаторов, направленность мероприятия в форме развернутого ответа. Объем текста - не менее 1000 знаков и не более 4000 знаков.') ?>
+                                    <?= $form->field($model, 'rider')->textarea(['rows' => 3])->hint('свет, микрофоны, хоровые станки и т.п.') ?>
 
-                    <?= $form->field($model, 'rider')->textarea(['rows' => 3])->hint('свет, микрофоны, хоровые станки и т.п.') ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Краткие итоги мероприятия
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
 
-                    <?= $form->field($model, 'result')->textarea(['rows' => 6])->hint('Введите данные о результатах мероприятия с указанием фамилии и имени учащихся, ФИО преподавателей и концертмейстеров в формате: Иванов Иван (преп. Петров П.П., конц. Сидоров С.С.) – лауреат I степени. В случае, если учащийся не получил награды по итогам мероприятия, он вносится как участник. Если участие в мероприятии не состоялось, укажите причину, по которой оно было отменено.') ?>
+                                    <?= $form->field($model, 'result')->textarea(['rows' => 6])->hint('Введите данные о результатах мероприятия с указанием фамилии и имени учащихся, ФИО преподавателей и концертмейстеров в формате: Иванов Иван (преп. Петров П.П., конц. Сидоров С.С.) – лауреат I степени. В случае, если учащийся не получил награды по итогам мероприятия, он вносится как участник. Если участие в мероприятии не состоялось, укажите причину, по которой оно было отменено.') ?>
 
-                    <?= $form->field($model, 'num_users')->textInput()->hint('Укажите, какое количество человек предположительно будет принимать участие в мероприятии. В случае, если Вы сами являетесь организатором, указывается точное количество участников, включая организаторов и преподавателей. Если вы не являетесь организатором указанного мероприятия, то в критерии учитываются только участники непосредственно от учреждения.') ?>
+                                    <?= $form->field($model, 'num_users')->textInput()->hint('Укажите, какое количество человек предположительно будет принимать участие в мероприятии. В случае, если Вы сами являетесь организатором, указывается точное количество участников, включая организаторов и преподавателей. Если вы не являетесь организатором указанного мероприятия, то в критерии учитываются только участники непосредственно от учреждения.') ?>
 
-                    <?= $form->field($model, 'num_winners')->textInput() ?>
+                                    <?= $form->field($model, 'num_winners')->textInput() ?>
 
-                    <?= $form->field($model, 'num_visitors')->textInput() ?>
-
+                                    <?= $form->field($model, 'num_visitors')->textInput() ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?=  \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
             </div>
-            <?=  \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
+            <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>
 
-    <?php  ActiveForm::end(); ?>
+    <?php ActiveForm::end(); ?>
 
 </div>
+
+
+<?php
+// колличество символов
+$js = <<<JS
+    document.getElementById('schoolplan-description').addEventListener("input", function () {
+    document.getElementById('count_schoolplan-description').innerText = 'Введено: ' + this.value.length + ' символа(ов), включая пробелы.';
+    console.log(this.value.length);
+});
+JS;
+
+$this->registerJs($js, \yii\web\View::POS_LOAD);
+?>
+<?php
+$css = <<<CSS
+#count_schoolplan-description {
+    font-size: smaller;
+    padding-right: 10px;
+    color: blue;
+}
+
+CSS;
+
+$this->registerCss($css);
+?>

@@ -54,7 +54,7 @@ use kartik\date\DatePicker;
                         'options' => [
                             'disabled' => $model->class,
                         ],
-                        'query' => \common\models\efficiency\EfficiencyTree::find()->addOrderBy('root, lft'),
+                        'query' => \common\models\efficiency\EfficiencyTree::find()->andWhere(['!=', 'root', 3])->addOrderBy('root, lft'),
                         'dropdownConfig' => [
                             'input' => ['placeholder' => 'Выберите показатель эффективности...'],
                         ],

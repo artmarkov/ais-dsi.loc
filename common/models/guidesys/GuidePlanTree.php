@@ -92,7 +92,7 @@ class GuidePlanTree extends \kartik\tree\models\Tree
     /**
      * @return mixed
      */
-    public static function getEfficiencyList()
+    public static function getPlanList()
     {
         return  self::find()->where(['disabled' => false])->select(['name', 'id'])->indexBy('id')->column();
     }
@@ -100,7 +100,7 @@ class GuidePlanTree extends \kartik\tree\models\Tree
     /**
      * @return mixed
      */
-    public static function getEfficiencyRoots()
+    public static function getPlanRoots()
     {
         return  self::find()->roots()->select(['name', 'id'])->indexBy('id')->column();
     }
@@ -108,7 +108,7 @@ class GuidePlanTree extends \kartik\tree\models\Tree
     /**
      * @return mixed
      */
-    public static function getEfficiencyLiaves()
+    public static function getPlanLiaves()
     {
         return  self::find()->leaves()->select(['root', 'id'])->indexBy('id')->column();
     }

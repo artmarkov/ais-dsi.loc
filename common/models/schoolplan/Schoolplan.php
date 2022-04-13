@@ -58,6 +58,11 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         '2' => 'Закрытое',
     ];
 
+    const IMPORTANT = [
+        '1' => 'Обычное',
+        '2' => 'Значимое',
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -208,5 +213,35 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         $ar = self::getVisitPossList();
         return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    /**
+     * getImportantList
+     * @return array
+     */
+    public static function getImportantList()
+    {
+        return self::IMPORTANT;
+    }
+    /**
+     * getImportantValue
+     * @param string $val
+     * @return string
+     */
+    public static function getImportantValue($val)
+    {
+        $ar = self::getImportantList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    public function getPlanCategory()
+    {
+        return $this->hasOne(GuidePlanTree::class, ['id' => 'category_id']);
+    }
+
+    /* Геттер для названия категории */
+    public function getPlanCategoryName()
+    {
+        return $this->planCategory->name;
     }
 }

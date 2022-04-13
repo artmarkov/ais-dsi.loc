@@ -72,7 +72,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     'datetime_in:datetime',
                     'datetime_out:datetime',
-                    'category_id',
+                    [
+                        'attribute' => 'category_id',
+                        'value' => 'planCategoryName',
+                        'options' => ['style' => 'width:350px'],
+                        'filter' => \common\models\guidesys\GuidePlanTree::getPlanList(),
+                    ],
                     'places',
                     'auditory_id',
 //                    'department_list',
@@ -87,7 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     // 'site_media',
                     'description:ntext',
                     'rider:ntext',
-                    'result:ntext',
+//                    'result:ntext',
 //                    'num_users',
 //                    'num_winners',
 //                    'num_visitors',
