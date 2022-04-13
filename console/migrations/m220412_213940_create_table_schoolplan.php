@@ -105,13 +105,13 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             'places' => $this->string(512)->comment('Место проведения'),
             'auditory_id' => $this->integer()->defaultValue(0)->comment('Аудитория'),
             'department_list' => $this->string(1024)->comment('Отделы'),
-            'teachers_list' => $this->string(1024)->comment('Ответственные'),
+            'executors_list' => $this->string(1024)->comment('Ответственные'),
             'category_id' => $this->integer()->notNull()->comment('Категория мероприятия'),
-            'form_partic' => $this->integer()->defaultValue(0)->comment('Форма участия'),
+            'form_partic' => $this->integer()->defaultValue(1)->comment('Форма участия'),
             'partic_price' => $this->string()->defaultValue(null)->comment('Стоимость участия'),
-            'visit_flag' => $this->integer()->defaultValue(0)->comment('Возможность посещения'),
+            'visit_poss' => $this->integer()->defaultValue(1)->comment('Возможность посещения'),
             'visit_content' => $this->text()->comment('Комментарий по посещению'),
-            'important_flag' => $this->integer()->defaultValue(0)->comment('Значимость мероприятия'),
+            'important_event' => $this->integer()->defaultValue(1)->comment('Значимость мероприятия'),
             'region_partners' => $this->text()->defaultValue(null)->comment('Зарубежные и региональные партнеры'),
             'site_url' => $this->string()->defaultValue(null)->comment('Ссылка на мероприятие (сайт/соцсети)'),
             'site_media' => $this->string()->defaultValue(null)->comment('Ссылка на медиаресурс'),
@@ -129,7 +129,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('schoolplan', 'План мероприятий');
-        $this->db->createCommand()->resetSequence('activities', 10000)->execute();
+        $this->db->createCommand()->resetSequence('schoolplan', 10000)->execute();
 
         $this->addForeignKey('schoolplan_ibfk_1', 'schoolplan', 'category_id', 'guide_plan_tree', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('schoolplan_ibfk_2', 'schoolplan', 'auditory_id', 'auditory', 'id', 'NO ACTION', 'NO ACTION');

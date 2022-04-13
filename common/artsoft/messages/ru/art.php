@@ -49,6 +49,7 @@ return [
     'E-mail' => 'E-mail',
     'Edit' => 'Редактировать',
     'Error' => 'Ошибка',
+    'Executors' => 'Исполнители',
     'Failed to flush cache.' => 'Не удалось очистить кэш.',
     'Female' => 'Женский',
     'First Name' => 'Имя',

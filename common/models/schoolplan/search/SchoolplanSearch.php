@@ -18,8 +18,8 @@ class SchoolplanSearch extends Schoolplan
     public function rules()
     {
         return [
-            [['id', 'datetime_in', 'datetime_out', 'auditory_id', 'category_id', 'form_partic', 'visit_flag', 'important_flag', 'num_users', 'num_winners', 'num_visitors', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['name', 'places', 'department_list', 'teachers_list', 'partic_price', 'visit_content', 'region_partners', 'site_url', 'site_media', 'description', 'rider', 'result'], 'safe'],
+            [['id', 'datetime_in', 'datetime_out', 'auditory_id', 'category_id', 'form_partic', 'visit_poss', 'important_event', 'num_users', 'num_winners', 'num_visitors', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['name', 'places', 'department_list', 'executors_list', 'partic_price', 'visit_content', 'region_partners', 'site_url', 'site_media', 'description', 'rider', 'result'], 'safe'],
         ];
     }
 
@@ -70,8 +70,8 @@ class SchoolplanSearch extends Schoolplan
             'auditory_id' => $this->auditory_id,
             'category_id' => $this->category_id,
             'form_partic' => $this->form_partic,
-            'visit_flag' => $this->visit_flag,
-            'important_flag' => $this->important_flag,
+            'visit_poss' => $this->visit_poss,
+            'important_event' => $this->important_event,
             'num_users' => $this->num_users,
             'num_winners' => $this->num_winners,
             'num_visitors' => $this->num_visitors,
@@ -85,7 +85,7 @@ class SchoolplanSearch extends Schoolplan
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'places', $this->places])
             ->andFilterWhere(['like', 'department_list', $this->department_list])
-            ->andFilterWhere(['like', 'teachers_list', $this->teachers_list])
+            ->andFilterWhere(['like', 'executors_list', $this->executors_list])
             ->andFilterWhere(['like', 'partic_price', $this->partic_price])
             ->andFilterWhere(['like', 'visit_content', $this->visit_content])
             ->andFilterWhere(['like', 'region_partners', $this->region_partners])

@@ -36,7 +36,7 @@ AvatarAsset::register($this);
                             'options' => [
                                 'disabled' => true,
                                 'value' => $model->user_common_id,
-                                'placeholder' => Yii::t('art/guide', 'Select...'),
+                                'placeholder' => Yii::t('art', 'Select...'),
                                 'multiple' => false,
                             ],
                             'pluginOptions' => [
