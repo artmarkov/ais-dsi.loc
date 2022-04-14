@@ -65,7 +65,8 @@
     "wolfpack-it/yii2-youtube": "^1.0",
     "kartik-v/yii2-sortable-input": "dev-master",
     "kartik-v/yii2-editable": "dev-master",
-    "kartik-v/yii2-grid": "@dev"
+    "kartik-v/yii2-grid": "@dev",
+    "kartik-v/yii2-widget-spinner": "dev-master"
 
   },
   "require-dev": {

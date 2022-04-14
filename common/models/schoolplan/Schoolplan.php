@@ -7,6 +7,7 @@ use artsoft\behaviors\DateFieldBehavior;
 use artsoft\fileinput\behaviors\FileManagerBehavior;
 use common\models\auditory\Auditory;
 use common\models\guidesys\GuidePlanTree;
+use phpDocumentor\Reflection\Types\Self_;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -28,6 +29,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $visit_poss Возможность посещения
  * @property string|null $visit_content Комментарий по посещению
  * @property int|null $important_event Значимость мероприятия
+ * @property int|null $format_event Формат мероприятия
  * @property string|null $region_partners Зарубежные и региональные партнеры
  * @property string|null $site_url Ссылка на мероприятие (сайт/соцсети)
  * @property string|null $site_media Ссылка на медиаресурс
@@ -42,6 +44,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
+ * @property int $bars_flag
  *
  * @property Auditory $auditory
  * @property GuidePlanTree $category
@@ -49,8 +52,8 @@ use yii\behaviors\TimestampBehavior;
 class Schoolplan extends \artsoft\db\ActiveRecord
 {
     const FORM_PARTIC = [
-        '1' => 'Беcплатное',
-        '2' => 'Платное',
+        1 => 'Беcплатное',
+        2 => 'Платное',
     ];
 
     const VISIT_POSS = [
@@ -61,6 +64,10 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     const IMPORTANT = [
         '1' => 'Обычное',
         '2' => 'Значимое',
+    ];
+    const FORMAT = [
+        '1' => 'Очный формат',
+        '2' => 'Дистанционный on-line формат',
     ];
 
     /**
@@ -93,7 +100,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ],
         ];
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -101,20 +108,38 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         return [
             [['name', 'datetime_in', 'datetime_out', 'category_id'], 'required'],
-            [['visit_poss'], 'required'],
-            [['places', 'department_list', 'executors_list', 'category_id', 'form_partic'], 'required'],
-            [['auditory_id', 'category_id', 'form_partic', 'visit_poss', 'important_event', 'num_users', 'num_winners', 'num_visitors'], 'integer'],
+            [['department_list', 'executors_list', 'category_id'], 'required'],
+            [['partic_price'], 'required', 'when' => function($model) {
+                return $model->form_partic == '2'; }, 'enableClientValidation' => false],
+             [['places'], 'required', 'when' => function($model) {
+                return $model->getPlanCategorySell() == 2; }, 'enableClientValidation' => false],
+            [['auditory_id'], 'required', 'when' => function($model) {
+                return $model->getPlanCategorySell() == 1; }, 'enableClientValidation' => false],
+            [['department_list', 'executors_list', 'datetime_in', 'datetime_out'], 'safe'],
+            [['auditory_id', 'category_id', 'form_partic', 'visit_poss', 'important_event', 'format_event', 'num_users', 'num_winners', 'num_visitors'], 'integer'],
             [['visit_content', 'region_partners', 'rider', 'result'], 'string'],
+            [['site_url', 'site_media'], 'url', 'defaultScheme' => 'http'],
             [['name'], 'string', 'max' => 100],
             [['places'], 'string', 'max' => 512],
-            [['department_list', 'executors_list', 'datetime_in', 'datetime_out'], 'safe'],
             [['partic_price', 'site_url', 'site_media'], 'string', 'max' => 255],
             ['description', 'string', 'max' => 4000, 'min' => 1000],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuidePlanTree::class, 'targetAttribute' => ['category_id' => 'id']],
+            [['datetime_out'], 'compareTimestamp', 'skipOnEmpty' => false],
+            ['bars_flag', 'boolean']
         ];
     }
 
+    public function compareTimestamp($attribute, $params, $validator)
+    {
+        $timestamp_in = Yii::$app->formatter->asTimestamp($this->datetime_in);
+        $timestamp_out = Yii::$app->formatter->asTimestamp($this->datetime_out);
+
+        if ($this->datetime_out && $timestamp_in >= $timestamp_out) {
+            $message = 'Время окончания мероприятия не может быть меньше или равно времени начала.';
+            $this->addError($attribute, $message);
+        }
+    }
     /**
      * {@inheritdoc}
      */
@@ -135,6 +160,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'visit_poss' => 'Возможность посещения',
             'visit_content' => 'Комментарий по посещению',
             'important_event' => 'Значимость мероприятия',
+            'format_event' => 'Формат мероприятия',
             'region_partners' => 'Зарубежные и региональные партнеры',
             'site_url' => 'Ссылка на мероприятие (сайт/соцсети)',
             'site_media' => 'Ссылка на медиаресурс',
@@ -144,6 +170,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'num_users' => 'Количество участников',
             'num_winners' => 'Количество победителей',
             'num_visitors' => 'Количество зрителей',
+            'bars_flag' => 'Отправлено в БАРС',
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -156,7 +183,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         return 'version';
     }
-    
+
     /**
      * Gets query for [[Auditory]].
      *
@@ -185,6 +212,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         return self::FORM_PARTIC;
     }
+
     /**
      * getFormParticValue
      * @param string $val
@@ -204,6 +232,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         return self::VISIT_POSS;
     }
+
     /**
      * getVisitPossValue
      * @param string $val
@@ -223,6 +252,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         return self::IMPORTANT;
     }
+
     /**
      * getImportantValue
      * @param string $val
@@ -233,15 +263,54 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         $ar = self::getImportantList();
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
+    /**
+     * getFormatList
+     * @return array
+     */
+    public static function getFormatList()
+    {
+        return self::FORMAT;
+    }
+    /**
+     * getFormatValue
+     * @param string $val
+     * @return string
+     */
+    public static function getFormatValue($val)
+    {
+        $ar = self::getFormatList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
 
     public function getPlanCategory()
     {
         return $this->hasOne(GuidePlanTree::class, ['id' => 'category_id']);
     }
 
-    /* Геттер для названия категории */
     public function getPlanCategoryName()
     {
         return $this->planCategory->name;
+    }
+
+    public function getPlanCategorySell()
+    {
+        return $this->planCategory->category_sell;
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if ($this->form_partic == 1) {
+            $this->partic_price = null;
+        }
+        if ($this->getPlanCategorySell() == 1) {
+            $this->places = null;
+        } else {
+            $this->auditory_id = null;
+        }
+        return parent::beforeSave($insert);
     }
 }

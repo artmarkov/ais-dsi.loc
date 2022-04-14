@@ -2,6 +2,7 @@
 
 namespace backend\controllers\schoolplan;
 
+use common\models\guidesys\GuidePlanTree;
 use Yii;
 use artsoft\controllers\admin\BaseController;
 
@@ -75,5 +76,16 @@ class DefaultController extends MainController
             ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id]],
             ['label' => 'Протокол мероприятия', 'url' => ['/schoolplan/default/protocol', 'id' => $id]],
         ];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function actionSelect()
+    {
+        $id = \Yii::$app->request->post('id');
+        $model = GuidePlanTree::find()->where(['id' => $id])->asArray()->one();
+
+        return $model['category_sell'];
     }
 }
