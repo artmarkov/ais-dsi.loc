@@ -97,6 +97,7 @@ use artsoft\helpers\Html;
                     ?>
                 </div>
             </div>
+            <?php if (!$model->isNewRecord) : ?>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="panel panel-info">
@@ -117,7 +118,7 @@ use artsoft\helpers\Html;
 
                                     <?= $form->field($model, 'important_event')->radioList(Schoolplan::getImportantList()) ?>
 
-                                    <?= $form->field($model, 'region_partners')->textarea(['rows' => 2]) ?>
+                                    <?= $form->field($model, 'region_partners')->textInput(['maxlength' => true]) ?>
 
                                     <?= $form->field($model, 'site_url')->textInput(['maxlength' => true]) ?>
 
@@ -125,8 +126,25 @@ use artsoft\helpers\Html;
 
                                     <div id="count_schoolplan-description" class="fa-pull-right"></div>
                                     <?= $form->field($model, 'description')->textarea(['rows' => 6])->hint('Введите полное описание мероприятия, включающее важную и существенную информацию. Оно может содержать программу мероприятия, историю возникновения, значимость мероприятия для учреждения и участников, поименное перечисление участников, выступающих, организаторов, направленность мероприятия в форме развернутого ответа. Объем текста - не менее 1000 знаков и не более 4000 знаков.') ?>
+
                                     <?= $form->field($model, 'rider')->textarea(['rows' => 3])->hint('свет, микрофоны, хоровые станки и т.п.') ?>
 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Загруженные материалы
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], /*'pluginOptions' => ['theme' => 'explorer'],*/ 'disabled' => $readonly]) ?>
                                 </div>
                             </div>
                         </div>
@@ -157,6 +175,7 @@ use artsoft\helpers\Html;
                 </div>
             </div>
         </div>
+        <?php endif; ?>
         <div class="panel-footer">
             <div class="form-group btn-group">
                 <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
@@ -186,7 +205,7 @@ $css = <<<CSS
 #count_schoolplan-description {
     font-size: smaller;
     padding-right: 10px;
-    color: blue;
+    color: #a94442;
 }
 
 CSS;

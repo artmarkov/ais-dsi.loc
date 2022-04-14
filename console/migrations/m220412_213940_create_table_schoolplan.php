@@ -112,7 +112,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             'visit_poss' => $this->integer()->defaultValue(1)->comment('Возможность посещения'),
             'visit_content' => $this->text()->comment('Комментарий по посещению'),
             'important_event' => $this->integer()->defaultValue(1)->comment('Значимость мероприятия'),
-            'region_partners' => $this->text()->defaultValue(null)->comment('Зарубежные и региональные партнеры'),
+            'region_partners' => $this->string()->defaultValue(null)->comment('Зарубежные и региональные партнеры'),
             'site_url' => $this->string()->defaultValue(null)->comment('Ссылка на мероприятие (сайт/соцсети)'),
             'site_media' => $this->string()->defaultValue(null)->comment('Ссылка на медиаресурс'),
             'description' => $this->text()->defaultValue(null)->comment('Описание мероприятия'),
