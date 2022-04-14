@@ -2,16 +2,19 @@
 
 namespace backend\controllers\schoolplan;
 
+use common\models\efficiency\search\TeachersEfficiencySearch;
+use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
+use common\models\history\EfficiencyHistory;
 use Yii;
-use artsoft\controllers\admin\BaseController;
+use yii\helpers\StringHelper;
 
 /**
  * ActivitiesPlanController implements the CRUD actions for common\models\activities\ActivitiesPlan model.
  */
 class DefaultController extends MainController
 {
-    public $modelClass       = 'common\models\schoolplan\Schoolplan';
+    public $modelClass = 'common\models\schoolplan\Schoolplan';
     public $modelSearchClass = 'common\models\schoolplan\search\SchoolplanSearch';
 
     /**
@@ -63,6 +66,98 @@ class DefaultController extends MainController
     public function actionView($id)
     {
         return $this->actionUpdate($id, true);
+    }
+
+    public function actionTeachersEfficiency($id, $objectId = null, $mode = null, $readonly = false)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'School Plans'), 'url' => ['schoolplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['schoolplan/default/view', 'id' => $id]];
+
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+
+            $this->view->params['breadcrumbs'][] = Yii::t('art', 'Create');
+
+            $modelEfficiency = new TeachersEfficiency();
+            $flag = false;
+            if ($modelEfficiency->load(Yii::$app->request->post())) {
+                $valid = $modelEfficiency->validate();
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        foreach ($modelEfficiency->teachers_id as $item => $teachers_id) {
+                            $m = new TeachersEfficiency();
+                            $m->teachers_id = $teachers_id;
+                            $m->efficiency_id = $modelEfficiency->efficiency_id;
+                            $m->bonus = $modelEfficiency->bonus;
+                            $m->date_in = $modelEfficiency->date_in;
+                            $m->class = \yii\helpers\StringHelper::basename(get_class($model));
+                            $m->item_id = $id;
+                            if (!($flag = $m->save())) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                            $this->getSubmitAction($modelEfficiency);
+                        }
+                    } catch (\Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+            }
+
+            return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
+                'model' => $modelEfficiency,
+                'readonly' => false
+            ]);
+        } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['schoolplan/default/teachers-efficiency', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $model = TeachersEfficiency::findOne($objectId);
+            $data = new EfficiencyHistory($objectId);
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $modelEfficiency = TeachersEfficiency::findOne($objectId);
+            $modelEfficiency->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $modelEfficiency));
+
+        } elseif ($objectId) {
+            if ('view' == $mode) {
+                $readonly = true;
+            }
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['schoolplan/default/teachers-efficiency', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $modelEfficiency = TeachersEfficiency::findOne($objectId);
+
+            if ($modelEfficiency->load(Yii::$app->request->post()) AND $modelEfficiency->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($modelEfficiency);
+            }
+
+            return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
+                'model' => $modelEfficiency,
+                'readonly' => $readonly
+            ]);
+
+        } else {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies')];
+            $searchModel = new TeachersEfficiencySearch();
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['class'] = \yii\helpers\StringHelper::basename(get_class($model));
+            $params[$searchName]['item_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('teachers-efficiency', compact('dataProvider', 'searchModel', 'id'));
+        }
     }
 
     /**
