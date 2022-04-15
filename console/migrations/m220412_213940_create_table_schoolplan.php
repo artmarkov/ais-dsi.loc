@@ -49,14 +49,14 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             'created_by' => $this->integer()->notNull(),
 
         ], $tableOptions);
-        $this->addCommentOnTable(self::TABLE_NAME_TREE, 'Категории мероприятий');
+        $this->addCommentOnTable(self::TABLE_NAME_TREE, 'Категории мероприятий плана работы');
 
-        $this->createIndex('guide_plan_tree_i1', self::TABLE_NAME_TREE, 'root');
-        $this->createIndex('guide_plan_tree_i2', self::TABLE_NAME_TREE, 'lft');
-        $this->createIndex('guide_plan_tree_i3', self::TABLE_NAME_TREE, 'rgt');
-        $this->createIndex('guide_plan_tree_i4', self::TABLE_NAME_TREE, 'lvl');
-        $this->createIndex('guide_plan_tree_i5', self::TABLE_NAME_TREE, 'active');
-        $this->addForeignKey('guide_plan_tree_ibfk_1', self::TABLE_NAME_TREE, 'created_by', 'users', 'id', 'RESTRICT', 'RESTRICT');
+        $this->createIndex(self::TABLE_NAME_TREE . '_i1', self::TABLE_NAME_TREE, 'root');
+        $this->createIndex(self::TABLE_NAME_TREE . '_i2', self::TABLE_NAME_TREE, 'lft');
+        $this->createIndex(self::TABLE_NAME_TREE . '_i3', self::TABLE_NAME_TREE, 'rgt');
+        $this->createIndex(self::TABLE_NAME_TREE . '_i4', self::TABLE_NAME_TREE, 'lvl');
+        $this->createIndex(self::TABLE_NAME_TREE . '_i5', self::TABLE_NAME_TREE, 'active');
+        $this->addForeignKey(self::TABLE_NAME_TREE . '_ibfk_1', self::TABLE_NAME_TREE, 'created_by', 'users', 'id', 'RESTRICT', 'RESTRICT');
 
         $this->db->createCommand()->batchInsert(self::TABLE_NAME_TREE, ['id', 'root', 'lft', 'rgt', 'lvl', 'name', 'description', 'category_sell', 'commission_sell', 'preparing_flag', 'description_flag', 'afisha_flag', 'bars_flag', 'efficiency_flag', 'schedule_flag', 'consult_flag',
             'partners_flag', 'icon', 'icon_type', 'active', 'selected', 'disabled', 'readonly', 'visible', 'collapsed', 'movable_u', 'movable_d',
@@ -99,7 +99,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
 
         $this->createTableWithHistory('schoolplan', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
-            'name' => $this->string(100)->comment('Название мероприятия'),
+            'title' => $this->string(100)->comment('Название мероприятия'),
             'datetime_in' => $this->integer()->notNull()->comment('Дата и время начала'),
             'datetime_out' => $this->integer()->notNull()->comment('Дата и время окончания'),
             'places' => $this->string(512)->comment('Место проведения'),
@@ -107,6 +107,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             'department_list' => $this->string(1024)->comment('Отделы'),
             'executors_list' => $this->string(1024)->comment('Ответственные'),
             'category_id' => $this->integer()->notNull()->comment('Категория мероприятия'),
+            'activities_over_id' => $this->integer()->defaultValue(null)->comment('ИД мероприятия вне плана (подготовка к мероприятию)'),
             'form_partic' => $this->integer()->defaultValue(1)->comment('Форма участия'),
             'partic_price' => $this->string()->defaultValue(null)->comment('Стоимость участия'),
             'visit_poss' => $this->integer()->defaultValue(1)->comment('Возможность посещения'),
@@ -137,10 +138,38 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
         $this->addForeignKey('schoolplan_ibfk_2', 'schoolplan', 'auditory_id', 'auditory', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('schoolplan_ibfk_3', 'schoolplan', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('schoolplan_ibfk_4', 'schoolplan', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+
+        $this->createTableWithHistory('activities_over', [
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'title' => $this->string(100)->comment('Название мероприятия'),
+            'over_category' => $this->integer()->defaultValue(0)->comment('Категория мероприятия (подготовка, штатно, замена, отмена и пр.)'),
+            'datetime_in' => $this->integer()->notNull()->comment('Дата и время начала'),
+            'datetime_out' => $this->integer()->notNull()->comment('Дата и время окончания'),
+            'auditory_id' => $this->integer()->defaultValue(0)->comment('Аудитория'),
+            'department_list' => $this->string(1024)->comment('Отделы'),
+            'executors_list' => $this->string(1024)->comment('Ответственные'),
+            'description' => $this->text()->defaultValue(null)->comment('Описание мероприятия'),
+            'created_at' => $this->integer()->notNull(),
+            'created_by' => $this->integer(),
+            'updated_at' => $this->integer()->notNull(),
+            'updated_by' => $this->integer(),
+            'version' => $this->bigInteger()->notNull()->defaultValue(0),
+        ], $tableOptions);
+
+        $this->addCommentOnTable('activities_over' ,'Календарь мероприятий вне плана');
+        $this->db->createCommand()->resetSequence('activities_over', 10000)->execute();
+
+        $this->addForeignKey('activities_over_ibfk_1', 'activities_over', 'auditory_id', 'auditory', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('activities_over_ibfk_2', 'activities_over', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('activities_over_ibfk_3', 'activities_over', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('schoolplan_ibfk_5', 'schoolplan', 'activities_over_id', 'activities_over', 'id', 'SET DEFAULT', 'NO ACTION');
+
     }
 
     public function down()
     {
+        $this->dropForeignKey('schoolplan_ibfk_5', 'schoolplan');
+        $this->dropTableWithHistory('activities_over');
         $this->dropTableWithHistory('schoolplan');
         $this->dropTable(self::TABLE_NAME_TREE);
     }

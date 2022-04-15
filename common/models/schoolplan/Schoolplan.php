@@ -5,9 +5,9 @@ namespace common\models\schoolplan;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\fileinput\behaviors\FileManagerBehavior;
+use common\models\activities\ActivitiesOver;
 use common\models\auditory\Auditory;
 use common\models\guidesys\GuidePlanTree;
-use phpDocumentor\Reflection\Types\Self_;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -16,7 +16,7 @@ use yii\behaviors\TimestampBehavior;
  * This is the model class for table "schoolplan".
  *
  * @property int $id
- * @property string|null $name Название мероприятия
+ * @property string|null $title Название мероприятия
  * @property int $datetime_in Дата и время начала
  * @property int $datetime_out Дата и время окончания
  * @property string|null $places Место проведения
@@ -24,6 +24,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string|null $department_list Отделы
  * @property string|null $executors_list Ответственные
  * @property int $category_id Категория мероприятия
+ * @property int $activities_over_id Категория мероприятия
  * @property int|null $form_partic Форма участия
  * @property string|null $partic_price Стоимость участия
  * @property int|null $visit_poss Возможность посещения
@@ -39,22 +40,28 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $num_users Количество участников
  * @property int|null $num_winners Количество победителей
  * @property int|null $num_visitors Количество зрителей
+ * @property int $bars_flag Отправлено в БАРС
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
- * @property int $bars_flag
+ *
+ * @property int $period_over Период подготовки перед мероприятием мин.
  *
  * @property Auditory $auditory
  * @property GuidePlanTree $category
  */
 class Schoolplan extends \artsoft\db\ActiveRecord
 {
+    public $period_over;
+
     const FORM_PARTIC = [
         1 => 'Беcплатное',
         2 => 'Платное',
     ];
+
+    const PERIOD_OVER = [30, 60, 90, 120];
 
     const VISIT_POSS = [
         '1' => 'Открытое',
@@ -107,26 +114,31 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'datetime_in', 'datetime_out', 'category_id'], 'required'],
-            [['department_list', 'executors_list', 'category_id'], 'required'],
-            [['partic_price'], 'required', 'when' => function($model) {
-                return $model->form_partic == '2'; }, 'enableClientValidation' => false],
-             [['places'], 'required', 'when' => function($model) {
-                return $model->getPlanCategorySell() == 2; }, 'enableClientValidation' => false],
-            [['auditory_id'], 'required', 'when' => function($model) {
-                return $model->getPlanCategorySell() == 1; }, 'enableClientValidation' => false],
+            [['title', 'datetime_in', 'datetime_out', 'category_id'], 'required'],
+            [['department_list', 'executors_list'], 'required'],
+            [['partic_price'], 'required', 'when' => function ($model) {
+                return $model->form_partic == '2';
+            }, 'enableClientValidation' => false],
+            [['places'], 'required', 'when' => function ($model) {
+                return $model->getPlanCategorySell() == 2;
+            }, 'enableClientValidation' => false],
+            [['auditory_id'], 'required', 'when' => function ($model) {
+                return $model->getPlanCategorySell() == 1;
+            }, 'enableClientValidation' => false],
             [['department_list', 'executors_list', 'datetime_in', 'datetime_out'], 'safe'],
-            [['auditory_id', 'category_id', 'form_partic', 'visit_poss', 'important_event', 'format_event', 'num_users', 'num_winners', 'num_visitors'], 'integer'],
+            [['auditory_id', 'category_id', 'activities_over_id', 'form_partic', 'visit_poss', 'important_event', 'format_event', 'num_users', 'num_winners', 'num_visitors'], 'integer'],
             [['visit_content', 'region_partners', 'rider', 'result'], 'string'],
             [['site_url', 'site_media'], 'url', 'defaultScheme' => 'http'],
-            [['name'], 'string', 'max' => 100],
+            [['title'], 'string', 'max' => 100],
             [['places'], 'string', 'max' => 512],
             [['partic_price', 'site_url', 'site_media'], 'string', 'max' => 255],
             ['description', 'string', 'max' => 4000, 'min' => 1000],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuidePlanTree::class, 'targetAttribute' => ['category_id' => 'id']],
+            [['activities_over_id'], 'exist', 'skipOnError' => true, 'targetClass' => ActivitiesOver::class, 'targetAttribute' => ['activities_over_id' => 'id']],
             [['datetime_out'], 'compareTimestamp', 'skipOnEmpty' => false],
-            ['bars_flag', 'boolean']
+            ['bars_flag', 'boolean'],
+            ['period_over', 'integer'],
         ];
     }
 
@@ -140,6 +152,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $this->addError($attribute, $message);
         }
     }
+
     /**
      * {@inheritdoc}
      */
@@ -147,7 +160,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Название мероприятия',
+            'title' => 'Название мероприятия',
             'datetime_in' => 'Дата и время начала',
             'datetime_out' => 'Дата и время окончания',
             'places' => 'Место проведения',
@@ -155,6 +168,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'department_list' => 'Отделы',
             'executors_list' => 'Ответственные',
             'category_id' => 'Категория мероприятия',
+            'activities_over_id' => 'ИД мероприятия вне плана (подготовка к мероприятию)',
             'form_partic' => 'Форма участия',
             'partic_price' => 'Стоимость участия',
             'visit_poss' => 'Возможность посещения',
@@ -176,6 +190,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'period_over' => 'Период подготовки перед мероприятием мин.',
         ];
     }
 
@@ -202,6 +217,16 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function getCategory()
     {
         return $this->hasOne(GuidePlanTree::class, ['id' => 'category_id']);
+    }
+
+    /**
+     * Gets query for [[ActivitiesOver]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getActivitiesOver()
+    {
+        return $this->hasOne(ActivitiesOver::class, ['id' => 'activities_over_id']);
     }
 
     /**
@@ -263,6 +288,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         $ar = self::getImportantList();
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
+
     /**
      * getFormatList
      * @return array
@@ -271,6 +297,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         return self::FORMAT;
     }
+
     /**
      * getFormatValue
      * @param string $val
@@ -295,6 +322,35 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function getPlanCategorySell()
     {
         return $this->planCategory->category_sell;
+    }
+
+    public function setActivitiesOver()
+    {
+        $timestamp = Yii::$app->formatter->asTimestamp($this->datetime_in) - $this->period_over * 60;
+        $model = new ActivitiesOver();
+        $model->auditory_id = $this->auditory_id;
+        $model->datetime_in = Yii::$app->formatter->asDatetime($timestamp);
+        $model->datetime_out = $this->datetime_in;
+        $model->title = 'Подготовка к мероприятию';
+        $model->department_list = $this->department_list;
+        $model->executors_list = $this->executors_list;
+        if ($model->save(false)) {
+            return $model->id;
+        }
+        return false;
+    }
+
+    /**
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function afterDelete()
+    {
+        if ($this->activities_over_id) {
+            $model = ActivitiesOver::findOne($this->activities_over_id);
+            $model->delete();
+        }
+        parent::afterDelete();
     }
 
     /**

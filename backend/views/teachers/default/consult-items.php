@@ -197,7 +197,7 @@ $columns = [
                         'pjax' => true,
                         'hover' => true,
                         'panel' => [
-                            'heading' => 'Элементы расписания',
+                            'heading' => 'Расписание консультаций',
                             'type' => 'default',
                             'after' => '',
                         ],

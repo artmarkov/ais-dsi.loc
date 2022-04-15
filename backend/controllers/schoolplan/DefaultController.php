@@ -2,6 +2,7 @@
 
 namespace backend\controllers\schoolplan;
 
+use common\models\activities\ActivitiesOver;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
@@ -10,7 +11,7 @@ use Yii;
 use yii\helpers\StringHelper;
 
 /**
- * ActivitiesPlanController implements the CRUD actions for common\models\activities\ActivitiesPlan model.
+ * DefaultController implements the CRUD actions for common\models\schoolplan\Schoolplan model.
  */
 class DefaultController extends MainController
 {
@@ -28,9 +29,27 @@ class DefaultController extends MainController
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
-            $this->getSubmitAction($model);
+        if ($model->load(Yii::$app->request->post())) {
+            $valid = $model->validate();
+            if ($valid) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try {
+                    $flag = true;
+                    if ($id = $model->setActivitiesOver()) {
+                        if ($id) {
+                            $model->activities_over_id = $id;
+                            $flag = $model->save(false);
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                        Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                        $this->getSubmitAction($model);
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                }
+            }
         }
 
         return $this->renderIsAjax('create', [
@@ -50,15 +69,32 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
         /* @var $model \artsoft\db\ActiveRecord */
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-            $this->getSubmitAction($model);
+        $modelActivitiesOver = $model->activitiesOver;
+        if ($model->load(Yii::$app->request->post()) && $modelActivitiesOver->load(Yii::$app->request->post())) {
+            $valid = $model->validate();
+            $valid = $modelActivitiesOver->validate() && $valid;
+            if ($valid) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try {
+                    if ($flag = $modelActivitiesOver->save(false)) {
+                        $model->activities_over_id = $model->id;
+                        if ($flag) {
+                            $flag = $model->save(false);
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                        Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                        $this->getSubmitAction($model);
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                }
+            }
         }
-
-
         return $this->render('update', [
             'model' => $model,
+            'modelActivitiesOver' => (empty($modelActivitiesOver)) ? new ActivitiesOver() : $modelActivitiesOver,
             'readonly' => $readonly
         ]);
     }

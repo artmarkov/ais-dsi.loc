@@ -19,7 +19,7 @@ class SchoolplanSearch extends Schoolplan
     {
         return [
             [['id', 'datetime_in', 'datetime_out', 'auditory_id', 'category_id', 'form_partic', 'visit_poss', 'important_event', 'num_users', 'num_winners', 'num_visitors', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['name', 'places', 'department_list', 'executors_list', 'partic_price', 'visit_content', 'region_partners', 'site_url', 'site_media', 'description', 'rider', 'result'], 'safe'],
+            [['title', 'places', 'department_list', 'executors_list', 'partic_price', 'visit_content', 'region_partners', 'site_url', 'site_media', 'description', 'rider', 'result'], 'safe'],
         ];
     }
 
@@ -82,7 +82,7 @@ class SchoolplanSearch extends Schoolplan
             'version' => $this->version,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
+        $query->andFilterWhere(['like', 'title', $this->title])
             ->andFilterWhere(['like', 'places', $this->places])
             ->andFilterWhere(['like', 'department_list', $this->department_list])
             ->andFilterWhere(['like', 'executors_list', $this->executors_list])

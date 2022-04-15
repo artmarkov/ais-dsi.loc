@@ -1,22 +1,23 @@
 <?php
 
+use artsoft\helpers\RefBook;
 use common\models\own\Department;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\schoolplan\Schoolplan;
+use common\models\activities\ActivitiesOver;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\schoolplan\search\SchoolplanSearch */
+/* @var $searchModel common\models\activities\search\ActivitiesOverSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/guide', 'School Plans');
+$this->title = Yii::t('art/guide', 'Activities Overs');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="schoolplan-plan-index">
+<div class="activities-over-index">
     <div class="panel">
         <div class="panel-heading">
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
@@ -27,69 +28,62 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php
                     /* Uncomment this to activate GridQuickLinks */
                     /* echo GridQuickLinks::widget([
-                        'model' => ActivitiesPlan::className(),
+                        'model' => ActivitiesOver::className(),
                         'searchModel' => $searchModel,
                     ])*/
                     ?>
                 </div>
 
                 <div class="col-sm-6 text-right">
-                    <?= GridPageSize::widget(['pjaxId' => 'schoolplan-plan-grid-pjax']) ?>
+                    <?= GridPageSize::widget(['pjaxId' => 'activities-over-grid-pjax']) ?>
                 </div>
             </div>
 
             <?php
             Pjax::begin([
-                'id' => 'schoolplan-plan-grid-pjax',
+                'id' => 'activities-over-grid-pjax',
             ])
             ?>
 
             <?=
             GridView::widget([
-                'id' => 'schoolplan-plan-grid',
+                'id' => 'activities-over-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'bulkActionOptions' => [
-                    'gridId' => 'schoolplan-plan-grid',
+                    'gridId' => 'activities-over-grid',
                     'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                 ],
                 'columns' => [
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
                         'attribute' => 'id',
-                        'value' => function (Schoolplan $model) {
+                        'value' => function (ActivitiesOver $model) {
                             return sprintf('#%06d', $model->id);
                         },
                     ],
                     [
                         'attribute' => 'title',
+                        'options' => ['style' => 'width:200px'],
                         'class' => 'artsoft\grid\columns\TitleActionColumn',
-                        'controller' => '/schoolplan/default',
-                        'title' => function (Schoolplan $model) {
+                        'controller' => '/activities/activities-over',
+                        'title' => function (ActivitiesOver $model) {
                             return Html::a($model->title, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                         },
                         'buttonsTemplate' => '{update} {view} {delete}',
                     ],
-
-                    'datetime_in:datetime',
-                    'datetime_out:datetime',
-                    [
-                        'attribute' => 'category_id',
-                        'value' => 'planCategoryName',
-                        'options' => ['style' => 'width:350px'],
-                        'filter' => \common\models\guidesys\GuidePlanTree::getPlanList(),
-                    ],
-                    'places',
                     [
                         'attribute' => 'auditory_id',
-                        'value' => 'auditoryName',
-                        'label' => Yii::t('art/guide', 'Name Auditory'),
-                        'filter' => \common\models\auditory\Auditory::getAuditoryList(),
+                        'options' => ['style' => 'width:200px'],
+                        'filter' => RefBook::find('auditory_memo_1')->getList(),
+                        'value' => function ($model) {
+                            return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
+                        },
                     ],
                     [
                         'attribute' => 'department_list',
                         'filter' => Department::getDepartmentList(),
-                        'value' => function (Schoolplan $model) {
+                        'value' => function (ActivitiesOver $model) {
                             $v = [];
                             foreach ($model->department_list as $id) {
                                 if (!$id) {
@@ -102,22 +96,26 @@ $this->params['breadcrumbs'][] = $this->title;
                         'options' => ['style' => 'width:350px'],
                         'format' => 'raw',
                     ],
-//                    'executors_list',
-                    // 'form_partic',
-                    // 'partic_price',
-                    // 'visit_poss',
-                    // 'visit_content:ntext',
-                    // 'important_event',
-                    // 'region_partners:ntext',
-                    // 'site_url:url',
-                    // 'site_media',
+                    [
+                        'attribute' => 'executors_list',
+                        'filter' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees', 'students']),
+                        'value' => function (ActivitiesOver $model) {
+                            $v = [];
+                            foreach ($model->executors_list as $id) {
+                                if (!$id) {
+                                    continue;
+                                }
+                                $v[] = \common\models\user\UserCommon::findOne($id)->getFullName();
+                            }
+                            return implode('<br/> ', $v);
+                        },
+                        'options' => ['style' => 'width:350px'],
+                        'format' => 'raw',
+                    ],
                     'description:ntext',
-                    'rider:ntext',
-//                    'result:ntext',
-//                    'num_users',
-//                    'num_winners',
-//                    'num_visitors',
-
+                    'datetime_in:datetime',
+                    'datetime_out:datetime',
+                    //'over_category',
                 ],
             ]);
             ?>
@@ -127,4 +125,11 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 
-
+<?php
+\artsoft\widgets\DateRangePicker::widget([
+    'model' => $searchModel,
+    'attribute' => 'datetime_in',
+    'format' => 'DD.MM.YYYY H:mm',
+    'opens' => 'left',
+])
+?>

@@ -23,8 +23,7 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
             ['Согласно плану работы', '#0000ff'],
             ['Согласно расписанию', '#ff0000'],
             ['Консультации', '#6aa84f'],
-            ['Внеплановые мероприятия', '#ff00ff'],
-            ['Учебное время', '#ffd966'],
+            ['Внеплановые мероприятия', '#ffd966'],
         ])->execute();
 
         $this->createTableWithHistory('activities', [

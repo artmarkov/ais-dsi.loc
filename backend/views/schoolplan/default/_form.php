@@ -8,6 +8,7 @@ use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\schoolplan\Schoolplan */
+/* @var $modelActivitiesOver common\models\activities\ActivitiesOver */
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 
@@ -43,7 +44,7 @@ use artsoft\helpers\Html;
 
                                         <?= $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput() ?>
 
-                                        <?= $form->field($model, 'name')->textInput(['maxlength' => true])->hint('Введите официальное название мероприятия, которое указано в положении. Например: «X Международный фестиваль «Ипполитовская хоровая весна». В случае проведения самостоятельного мероприятия вместе с более крупным, укажите название более крупного мероприятия, используя связку «в рамках», например: Мастер-класс по лепке из глины в рамках Большого фестиваля детских школ искусств. Название указывается в кавычках. Если мероприятие посвящено какому-либо событию и (или) памятной дате, вводится пояснение с указанием основной цели мероприятия. Например: Концерт «Симфония весны», посвящённый Международному женскому дню 8 Марта.') ?>
+                                        <?= $form->field($model, 'title')->textInput(['maxlength' => true])->hint('Введите официальное название мероприятия, которое указано в положении. Например: «X Международный фестиваль «Ипполитовская хоровая весна». В случае проведения самостоятельного мероприятия вместе с более крупным, укажите название более крупного мероприятия, используя связку «в рамках», например: Мастер-класс по лепке из глины в рамках Большого фестиваля детских школ искусств. Название указывается в кавычках. Если мероприятие посвящено какому-либо событию и (или) памятной дате, вводится пояснение с указанием основной цели мероприятия. Например: Концерт «Симфония весны», посвящённый Международному женскому дню 8 Марта.') ?>
 
                                         <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
                                             'data' => Department::getDepartmentList(),
@@ -68,7 +69,7 @@ use artsoft\helpers\Html;
                                             ],
                                             'pluginOptions' => [
                                                 'allowClear' => false,
-                                                // 'minimumInputLength' => 3,
+                                                //'minimumInputLength' => 3,
                                             ],
 
                                         ]);
@@ -123,7 +124,7 @@ use artsoft\helpers\Html;
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-sm-12">
-
+                                        <?= $form->field($model, 'period_over')->textInput(['maxlength' => true])?>
 
                                     </div>
                                 </div>
