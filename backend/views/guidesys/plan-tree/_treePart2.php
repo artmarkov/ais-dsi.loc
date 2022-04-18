@@ -8,8 +8,8 @@
     <div class="col-sm-12">
 
         <?= $form->field($node, 'description')->textarea(['rows' => 3]) ?>
-        <?= $form->field($node, 'category_sell')->radioList(\common\models\guidesys\GuidePlanTree::getCategoryList()) ?>
-        <?= $form->field($node, 'commission_sell')->radioList(\common\models\guidesys\GuidePlanTree::getComissionList()) ?>
+        <?= $form->field($node, 'category_sell')->radioList(\common\models\guidesys\GuidePlanTree::getCategoryList())->label(false) ?>
+        <?= $form->field($node, 'commission_sell')->radioList(\common\models\guidesys\GuidePlanTree::getComissionList())->label(false) ?>
         <?= $form->field($node, 'preparing_flag')->checkbox() ?>
         <?= $form->field($node, 'description_flag')->checkbox() ?>
         <?= $form->field($node, 'afisha_flag')->checkbox() ?>
