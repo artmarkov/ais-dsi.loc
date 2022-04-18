@@ -30,6 +30,23 @@ SettingsAsset::register($this);
         <div class="panel-body">
             <div class="panel panel-default">
                 <div class="panel-heading">
+                    Модуль: Логи и журналы
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <?= $form->field($model, 'shelf_life_pass')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'shelf_life_attendlog')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'shelf_life_sitelog')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'shelf_life_requestlog')->textInput(['maxlength' => true]) ?>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
                     Модуль: Показатели эффективности
                 </div>
                 <div class="panel-body">

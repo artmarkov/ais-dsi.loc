@@ -14,6 +14,11 @@ class ModuleSettings extends BaseSettingsModel
     public $student_delta_time;
     public $study_plan_month_in;
 
+    public $shelf_life_pass;
+    public $shelf_life_attendlog;
+    public $shelf_life_sitelog;
+    public $shelf_life_requestlog;
+
     /**
      * @inheritdoc
      */
@@ -23,6 +28,9 @@ class ModuleSettings extends BaseSettingsModel
             [
                 [['day_in', 'day_out', 'student_delta_time', 'study_plan_month_in'], 'required'],
                 [['day_in', 'day_out', 'student_delta_time', 'study_plan_month_in'], 'string'],
+
+                [['shelf_life_pass', 'shelf_life_attendlog', 'shelf_life_sitelog', 'shelf_life_requestlog'], 'required'],
+                [['shelf_life_pass', 'shelf_life_attendlog', 'shelf_life_sitelog', 'shelf_life_requestlog'], 'string'],
             ]);
     }
 
@@ -33,6 +41,10 @@ class ModuleSettings extends BaseSettingsModel
             'day_out' => 'День окончания периода',
             'student_delta_time' => 'Возможный допуск на отклонение от полного времени проведения занятия',
             'study_plan_month_in' => 'Месяц начала учебного года(расчетного периода)',
+            'shelf_life_pass' => 'Срок хранения проходов через СКУД (дней)',
+            'shelf_life_attendlog' => 'Срок хранения Журнала выдачи ключей (дней)',
+            'shelf_life_sitelog' => 'Срок хранения Лога посещения сайта (дней)',
+            'shelf_life_requestlog' => 'Срок хранения Лога запросов (дней)',
         ];
     }
 
