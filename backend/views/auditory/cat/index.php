@@ -49,6 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     GridView::widget([
                         'id' => 'auditory-cat-grid',
                         'dataProvider' => $dataProvider,
+                        'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'auditory-cat-grid',
                             'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions

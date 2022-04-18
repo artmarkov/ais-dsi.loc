@@ -69,28 +69,28 @@ abstract class BaseController extends \artsoft\controllers\BaseController
      * @var string
      */
     public $layout = '@artsoft/views/layouts/admin/main.php';
-    
+
     /**
      * Index page view
      *
      * @var string
      */
     public $indexView = 'index';
-    
+
     /**
      * View page view
      *
      * @var string
      */
     public $viewView = 'view';
-    
+
     /**
      * Create page view
      *
      * @var string
      */
     public $createView = 'create';
-    
+
     /**
      * Update page view
      *
@@ -112,6 +112,37 @@ abstract class BaseController extends \artsoft\controllers\BaseController
     }
 
     /**
+     * Получаем параметры для поисковой модели
+     * @return array|mixed
+     */
+    public function getParams()
+    {
+        $searchModel = $this->modelSearchClass;
+        if ($searchModel) {
+            $params = Yii::$app->request->getQueryParams();
+            $searchName = StringHelper::basename($searchModel::className());
+            $session = Yii::$app->session;
+            if (count($params) == 0) {
+
+                if (isset(Yii::$app->session[$searchName . '_params'])) {
+                    $params = $session->get($searchName . '_params');
+                    $_GET = Yii::$app->session[$searchName . '_params'];
+                } else {
+                    $session->set($searchName . '_params', $params);
+                }
+            } else {
+                if (isset(Yii::$app->request->queryParams[$searchName])) {
+                    $session->set($searchName . '_params', $params);
+                } else {
+                    $params = $session->get($searchName . '_params');
+                }
+            }
+            return $params;
+        }
+        return [];
+    }
+
+    /**
      * Lists all models.
      * @return mixed
      */
@@ -125,7 +156,8 @@ abstract class BaseController extends \artsoft\controllers\BaseController
 
         if ($searchModel) {
             $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
+            $params = $this->getParams(); //TODO 
+           // $params = Yii::$app->request->getQueryParams();
 
             if ($restrictAccess) {
                 $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
@@ -229,6 +261,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
         $data = new $this->modelHistoryClass($id);
         return $this->renderIsAjax('history', compact(['model', 'data']));
     }
+
     /**
      * @param string $attribute
      * @param int $id
@@ -352,7 +385,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
     {
         $modelClass = $this->modelClass;
         $model = new $modelClass;
-        
+
         if (method_exists($model, 'isMultilingual') && $model->isMultilingual()) {
             $condition = [];
             $primaryKey = $modelClass::primaryKey();

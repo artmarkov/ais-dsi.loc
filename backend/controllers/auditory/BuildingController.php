@@ -8,6 +8,6 @@ namespace backend\controllers\auditory;
 class BuildingController extends MainController
 {
     public $modelClass       = 'common\models\auditory\AuditoryBuilding';
-    public $modelSearchClass = 'common\models\auditory\search\AuditoryBuildingSearch';
+   // public $modelSearchClass = 'common\models\auditory\search\AuditoryBuildingSearch';
 
 }

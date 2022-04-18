@@ -64,14 +64,14 @@ class SubjectSearch extends Subject
         }
         $query->andFilterWhere([
             'id' => $this->id,
+            'status' => $this->status,
         ]);
         $query->andFilterWhere(['like', 'department_list', $this->department_list]);
         $query->andFilterWhere(['like', 'category_list', $this->category_list]);
         $query->andFilterWhere(['like', 'vid_list', $this->vid_list]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'slug', $this->slug])
-            ->andFilterWhere(['like', 'status', $this->status]);
+            ->andFilterWhere(['like', 'slug', $this->slug]);
 
         return $dataProvider;
     }
