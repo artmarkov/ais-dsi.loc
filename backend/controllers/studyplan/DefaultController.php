@@ -9,13 +9,14 @@ use common\models\education\EducationProgrammLevel;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
+use common\models\history\ConsultScheduleHistory;
 use common\models\history\LessonItemsHistory;
 use common\models\history\StudyplanHistory;
+use common\models\history\SubjectCharacteristicHistory;
 use common\models\history\SubjectScheduleHistory;
 use common\models\history\TeachersLoadHistory;
 use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
-use common\models\schedule\search\ConsultScheduleViewSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
 use common\models\studyplan\StudyplanThematic;
@@ -386,11 +387,12 @@ class DefaultController extends MainController
 
 
         } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['studyplan/default/consult-items', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/consult-items', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
             $model = ConsultSchedule::findOne($objectId);
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['studyplan/default/consult-items', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/update', 'id' => $model->id]];
             $data = new ConsultScheduleHistory($objectId);
-            return $this->renderIsAjax('/studyplan/default/history', compact(['model', 'data']));
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
+
 
         } elseif ('delete' == $mode && $objectId) {
             $model = ConsultSchedule::findOne($objectId);
@@ -459,11 +461,11 @@ class DefaultController extends MainController
             ]);
 
         } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Characteristic'), 'url' => ['studyplan/default/characteristic-items', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/characteristic-items', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
             $model = ConsultSchedule::findOne($objectId);
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Characteristic'), 'url' => ['studyplan/default/characteristic-items', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['studyplan/default/update', 'id' => $model->id]];
             $data = new SubjectCharacteristicHistory($objectId);
-            return $this->renderIsAjax('/studyplan/default/history', compact(['model', 'data']));
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
             $model = SubjectCharacteristic::findOne($objectId);

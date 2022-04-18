@@ -21,27 +21,26 @@ use artsoft\widgets\ActiveForm;
     ?>
 
     <div class="panel">
+        <div class="panel-heading">
+            Элемент характеристики по предметам:
+            <?php echo RefBook::find('subject_memo_2')->getValue($studyplanSubjectModel->id); ?>
+            <?php if (!$model->isNewRecord): ?>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
+            <?php endif; ?>
+        </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Элемент характеристики по предметам:
-                    <?php echo RefBook::find('subject_memo_2')->getValue($studyplanSubjectModel->id); ?>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <?php
-                            echo Html::activeHiddenInput($model, 'studyplan_subject_id');
-                            ?>
+            <div class="row">
+                <div class="col-sm-12">
+                    <?php
+                    echo Html::activeHiddenInput($model, 'studyplan_subject_id');
+                    ?>
 
-                            <?= $form->field($model, 'teachers_id')->dropDownList(RefBook::find('teachers_fio')->getList(), [
-                                'disabled' => false,
-                            ]);
-                            ?>
-                            <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+                    <?= $form->field($model, 'teachers_id')->dropDownList(RefBook::find('teachers_fio')->getList(), [
+                        'disabled' => false,
+                    ]);
+                    ?>
+                    <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

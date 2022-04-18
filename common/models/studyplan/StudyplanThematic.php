@@ -62,6 +62,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'template_flag', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['thematic_category', 'period_in', 'period_out'], 'required'],
             [['period_in', 'period_out'], 'safe'],
+            [['period_out'], 'compareTimestamp', 'skipOnEmpty' => false],
             [['template_name'], 'string', 'max' => 256],
             [['template_name'], 'unique'],
             [['template_name'], 'required', 'when' => function ($model) {
@@ -71,6 +72,17 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
                                 return $('input[id=\"studyplanthematic-template_flag\"]').prop('checked');
                             }"],
         ];
+    }
+
+    public function compareTimestamp($attribute, $params, $validator)
+    {
+        $timestamp_in = Yii::$app->formatter->asTimestamp($this->period_in);
+        $timestamp_out = Yii::$app->formatter->asTimestamp($this->period_out);
+
+        if ($this->period_out && $timestamp_in >= $timestamp_out) {
+            $message = 'Время окончания периода не может быть меньше или равно времени начала.';
+            $this->addError($attribute, $message);
+        }
     }
 
     /**

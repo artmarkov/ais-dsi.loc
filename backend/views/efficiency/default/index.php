@@ -57,9 +57,9 @@ use artsoft\grid\GridPageSize;
                                     'class' => 'artsoft\grid\columns\TitleActionColumn',
                                     'controller' => '/efficiency/default',
                                     'title' => function (TeachersEfficiency $model) {
-                                        return Html::a(sprintf('#%06d', $model->id), ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                        return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                     },
-                                    'buttonsTemplate' => '{update} {delete}',
+                                    'buttonsTemplate' => '{update} {view} {delete}',
                                 ],
                                 [
                                     'attribute' => 'efficiency_id',

@@ -51,17 +51,17 @@ class GuidePlanTree extends \kartik\tree\models\Tree
     {
         $rules = parent::rules();
 
-        $rules[] =  ['description', 'string', 'max' => 512];
-        $rules[] =  ['category_sell', 'integer'];
-        $rules[] =  ['commission_sell', 'integer'];
-        $rules[] =  ['preparing_flag', 'boolean'];
-        $rules[] =  ['description_flag', 'boolean'];
-        $rules[] =  ['afisha_flag', 'boolean'];
-        $rules[] =  ['bars_flag', 'boolean'];
-        $rules[] =  ['efficiency_flag', 'boolean'];
-        $rules[] =  ['schedule_flag', 'boolean'];
-        $rules[] =  ['consult_flag', 'boolean'];
-        $rules[] =  ['partners_flag', 'boolean'];
+        $rules[] = ['description', 'string', 'max' => 512];
+        $rules[] = ['category_sell', 'integer'];
+        $rules[] = ['commission_sell', 'integer'];
+        $rules[] = ['preparing_flag', 'boolean'];
+        $rules[] = ['description_flag', 'boolean'];
+        $rules[] = ['afisha_flag', 'boolean'];
+        $rules[] = ['bars_flag', 'boolean'];
+        $rules[] = ['efficiency_flag', 'boolean'];
+        $rules[] = ['schedule_flag', 'boolean'];
+        $rules[] = ['rider_flag', 'boolean'];
+        $rules[] = ['partners_flag', 'boolean'];
 
 
         return $rules;
@@ -76,13 +76,13 @@ class GuidePlanTree extends \kartik\tree\models\Tree
         $attr['description'] = Yii::t('art', 'Description');
         $attr['category_sell'] = 'Категория мероприятия';
         $attr['commission_sell'] = 'Требуется комиссия';
-        $attr['preparing_flag'] = 'Требуется подготовка к мероприятию' ;
-        $attr['description_flag'] = 'Требуется описание мероприятия';
+        $attr['preparing_flag'] = 'Требуется подготовка к мероприятию';
+        $attr['description_flag'] = 'Требуется описание мероприятия (1000 знаков)';
         $attr['afisha_flag'] = 'Требуется афиша и программа';
         $attr['bars_flag'] = 'Требуется отправлять в БАРС';
         $attr['efficiency_flag'] = 'Требуется подключение показателей эффективности';
         $attr['schedule_flag'] = 'Мероприятие в рамках расписания занятий';
-        $attr['consult_flag'] = 'Мероприятие в рамках расписания консультаций';
+        $attr['rider_flag'] = 'Требуется техническая подготовка';
         $attr['partners_flag'] = 'Возможность участия региональных партнеров';
 
         return $attr;

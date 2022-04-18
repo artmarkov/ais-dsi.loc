@@ -5,6 +5,7 @@ use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
 use common\models\user\UserCommon;
 use kartik\date\DatePicker;
+use common\models\efficiency\EfficiencyTree;
 
 /* @var $this yii\web\View */
 /* @var $form artsoft\widgets\ActiveForm */
@@ -13,6 +14,9 @@ use kartik\date\DatePicker;
 <div class="teachers-efficiency-form">
     <?php
     $form = ActiveForm::begin([
+        'fieldConfig' => [
+            'inputOptions' => ['readonly' => $readonly]
+        ],
         'id' => 'teachers-efficiency-form',
         'validateOnBlur' => false,
     ])
@@ -54,7 +58,7 @@ use kartik\date\DatePicker;
                         'options' => [
                             'disabled' => $model->class,
                         ],
-                        'query' => \common\models\efficiency\EfficiencyTree::find()->andWhere(['!=', 'root', 3])->addOrderBy('root, lft'),
+                        'query' => $model->isNewRecord ? EfficiencyTree::find()->where(['=', 'class', $class])->addOrderBy('root, lft') : EfficiencyTree::find()->addOrderBy('root, lft'),
                         'dropdownConfig' => [
                             'input' => ['placeholder' => 'Выберите показатель эффективности...'],
                         ],
@@ -85,15 +89,18 @@ use kartik\date\DatePicker;
                     ])->label(Yii::t('art/teachers', 'Teachers'));
                     ?>
 
-                    <?= $form->field($model, 'bonus')->textInput(['maxlength' => true, 'readonly' => !Yii::$app->user->isSuperadmin]) ?>
+                    <?= $form->field($model, 'bonus')->textInput(['maxlength' => true, 'readonly' => $readonly]) ?>
 
-                    <?= $form->field($model, 'date_in')->widget(DatePicker::class)->textInput(['autocomplete' => 'off']); ?>
+                    <?= $form->field($model, 'date_in')->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
                 </div>
             </div>
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?= $model->isNewRecord ? \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit', 'btn-md') : \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                <?= $model->isNewRecord ? \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit', 'btn-md') :
+                    (!$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model));
+
+                ?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

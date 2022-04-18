@@ -115,7 +115,35 @@ class DefaultController extends MainController
             }
         }
 
-        return $this->renderIsAjax($this->createView, compact('model'));
+        return $this->renderIsAjax($this->createView, [
+            'model' => $model,
+            'class' => StringHelper::basename($this->modelClass::className()),
+            'readonly' => false
+        ]);
+    }
+
+    public function actionUpdate($id, $readonly = false)
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        /* @var $model \artsoft\db\ActiveRecord */
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+            $this->getSubmitAction($model);
+        }
+
+        return $this->renderIsAjax($this->updateView, [
+            'model' => $model,
+            'class' => StringHelper::basename($this->modelClass::className()),
+            'readonly' => $readonly
+        ]);
+    }
+
+    public function actionView($id)
+    {
+        return $this->actionUpdate($id, true);
     }
 
     /**

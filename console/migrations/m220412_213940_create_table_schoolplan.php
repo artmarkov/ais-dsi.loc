@@ -23,12 +23,12 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             'category_sell' => $this->smallInteger(1)->defaultValue(1)->comment('Категория мероприятия(внутреннее или внешнее'),
             'commission_sell' => $this->smallInteger(1)->defaultValue(1)->comment('Требуется аттестационная или приемная комиссия'),
             'preparing_flag' => $this->boolean()->defaultValue(false)->comment('Требуется подготовка к мероприятию'),
-            'description_flag' => $this->boolean()->defaultValue(false)->comment('Требуется описание мероприятия'),
+            'description_flag' => $this->boolean()->defaultValue(false)->comment('Требуется описание мероприятия (1000 знаков)'),
             'afisha_flag' => $this->boolean()->defaultValue(false)->comment('Требуется афиша и программа'),
             'bars_flag' => $this->boolean()->defaultValue(false)->comment('Требуется отправлять в БАРС'),
             'efficiency_flag' => $this->boolean()->defaultValue(false)->comment('Требуется подключение показателей эффективности'),
             'schedule_flag' => $this->boolean()->defaultValue(false)->comment('Мероприятие в рамках расписания занятий'),
-            'consult_flag' => $this->boolean()->defaultValue(false)->comment('Мероприятие в рамках расписания консультаций'),
+            'rider_flag' => $this->boolean()->defaultValue(false)->comment('Требуется техническая подготовка'),
             'partners_flag' => $this->boolean()->defaultValue(false)->comment('Возможность участия региональных партнеров'),
             'icon' => $this->string(255),
             'icon_type' => $this->smallInteger(1)->notNull()->defaultValue(1),
@@ -58,7 +58,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
         $this->createIndex(self::TABLE_NAME_TREE . '_i5', self::TABLE_NAME_TREE, 'active');
         $this->addForeignKey(self::TABLE_NAME_TREE . '_ibfk_1', self::TABLE_NAME_TREE, 'created_by', 'users', 'id', 'RESTRICT', 'RESTRICT');
 
-        $this->db->createCommand()->batchInsert(self::TABLE_NAME_TREE, ['id', 'root', 'lft', 'rgt', 'lvl', 'name', 'description', 'category_sell', 'commission_sell', 'preparing_flag', 'description_flag', 'afisha_flag', 'bars_flag', 'efficiency_flag', 'schedule_flag', 'consult_flag',
+        $this->db->createCommand()->batchInsert(self::TABLE_NAME_TREE, ['id', 'root', 'lft', 'rgt', 'lvl', 'name', 'description', 'category_sell', 'commission_sell', 'preparing_flag', 'description_flag', 'afisha_flag', 'bars_flag', 'efficiency_flag', 'schedule_flag', 'rider_flag',
             'partners_flag', 'icon', 'icon_type', 'active', 'selected', 'disabled', 'readonly', 'visible', 'collapsed', 'movable_u', 'movable_d',
             'movable_l', 'movable_r', 'removable', 'removable_all', 'child_allowed', 'created_at', 'created_by'], [
             [1, 1, 1, 16, 0, '1. Учебная работа','', 1, 0, false, false, false, false, false, false, false, false,'', 1, true, false, true, false, true, true, false, false, false, false, false, false, true, time(),1000],

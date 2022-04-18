@@ -64,13 +64,21 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'attribute' => 'title',
-                        'options' => ['style' => 'width:200px'],
+                        'options' => ['style' => 'width:300px'],
                         'class' => 'artsoft\grid\columns\TitleActionColumn',
                         'controller' => '/activities/activities-over',
                         'title' => function (ActivitiesOver $model) {
                             return Html::a($model->title, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                         },
                         'buttonsTemplate' => '{update} {view} {delete}',
+                    ],
+                    [
+                        'attribute' => 'over_category',
+                        'options' => ['style' => 'width:200px'],
+                        'filter' => ActivitiesOver::getOverCategoryList(),
+                        'value' => function ($model) {
+                            return ActivitiesOver::getOverCategoryValue($model->over_category);
+                        },
                     ],
                     [
                         'attribute' => 'auditory_id',
@@ -112,10 +120,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         'options' => ['style' => 'width:350px'],
                         'format' => 'raw',
                     ],
-                    'description:ntext',
+//                    'description:ntext',
                     'datetime_in:datetime',
                     'datetime_out:datetime',
-                    //'over_category',
                 ],
             ]);
             ?>

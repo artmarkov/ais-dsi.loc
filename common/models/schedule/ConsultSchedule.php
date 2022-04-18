@@ -59,9 +59,30 @@ class ConsultSchedule extends \yii\db\ActiveRecord
             [['teachers_load_id', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['teachers_load_id', 'datetime_in', 'datetime_out', 'auditory_id'], 'required'],
             [['datetime_in', 'datetime_out', ], 'safe'],
+            [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
+            [['datetime_out'], 'compareTimestamp', 'skipOnEmpty' => false],
             [['description'], 'string', 'max' => 512],
             [['teachers_load_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeachersLoad::className(), 'targetAttribute' => ['teachers_load_id' => 'id']],
         ];
+    }
+
+    public function checkFormatDateTime($attribute, $params)
+
+    {
+        if (!preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])(-|\.)(0[1-9]|1[0-2])(-|\.)[0-9]{4}(\s)([01]?[0-9]|2[0-3])(:|\.)[0-5][0-9]$/", $this->$attribute)) {
+            $this->addError($attribute, 'Формат ввода даты и времени не верен.');
+        }
+    }
+
+    public function compareTimestamp($attribute, $params, $validator)
+    {
+        $timestamp_in = Yii::$app->formatter->asTimestamp($this->datetime_in);
+        $timestamp_out = Yii::$app->formatter->asTimestamp($this->datetime_out);
+
+        if ($this->datetime_out && $timestamp_in >= $timestamp_out) {
+            $message = 'Время окончания периода не может быть меньше или равно времени начала.';
+            $this->addError($attribute, $message);
+        }
     }
 
     /**

@@ -6,6 +6,7 @@ use Yii;
 use common\models\efficiency\TeachersEfficiency;
 use backend\models\Model;
 use yii\helpers\ArrayHelper;
+use yii\helpers\StringHelper;
 
 /**
  * DefaultController implements the CRUD actions for common\models\creative\CreativeWorks model.
@@ -64,6 +65,7 @@ class DefaultController extends MainController
         return $this->renderIsAjax('create', [
             'model' => $model,
             'modelsEfficiency' => (empty($modelsEfficiency)) ? [new TeachersEfficiency] : $modelsEfficiency,
+            'class' => StringHelper::basename($this->modelClass::className()),
             'readonly' => false
         ]);
     }
@@ -127,6 +129,7 @@ class DefaultController extends MainController
         return $this->render('update', [
             'model' => $model,
             'modelsEfficiency' => (empty($modelsEfficiency)) ? [new TeachersEfficiency] : $modelsEfficiency,
+            'class' => StringHelper::basename($this->modelClass::className()),
             'readonly' => $readonly
         ]);
     }

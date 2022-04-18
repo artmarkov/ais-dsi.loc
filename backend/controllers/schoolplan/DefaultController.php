@@ -2,7 +2,6 @@
 
 namespace backend\controllers\schoolplan;
 
-use common\models\activities\ActivitiesOver;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
@@ -17,6 +16,7 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\schoolplan\Schoolplan';
     public $modelSearchClass = 'common\models\schoolplan\search\SchoolplanSearch';
+    public $modelHistoryClass = 'common\models\history\SchoolplanHistory';
 
     /**
      * @return mixed|string|\yii\web\Response
@@ -32,22 +32,9 @@ class DefaultController extends MainController
         if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
             if ($valid) {
-                $transaction = \Yii::$app->db->beginTransaction();
-                try {
-                    $flag = true;
-                    if ($id = $model->setActivitiesOver()) {
-                        if ($id) {
-                            $model->activities_over_id = $id;
-                            $flag = $model->save(false);
-                        }
-                    }
-                    if ($flag) {
-                        $transaction->commit();
-                        Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                        $this->getSubmitAction($model);
-                    }
-                } catch (Exception $e) {
-                    $transaction->rollBack();
+                if ($model->setActivitiesOver()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                    $this->getSubmitAction($model);
                 }
             }
         }
@@ -69,32 +56,18 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
         /* @var $model \artsoft\db\ActiveRecord */
         $model = $this->findModel($id);
-        $modelActivitiesOver = $model->activitiesOver;
-        if ($model->load(Yii::$app->request->post()) && $modelActivitiesOver->load(Yii::$app->request->post())) {
+        $model->initActivitiesOver();
+        if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
-            $valid = $modelActivitiesOver->validate() && $valid;
             if ($valid) {
-                $transaction = \Yii::$app->db->beginTransaction();
-                try {
-                    if ($flag = $modelActivitiesOver->save(false)) {
-                        $model->activities_over_id = $model->id;
-                        if ($flag) {
-                            $flag = $model->save(false);
-                        }
-                    }
-                    if ($flag) {
-                        $transaction->commit();
-                        Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                        $this->getSubmitAction($model);
-                    }
-                } catch (Exception $e) {
-                    $transaction->rollBack();
+                if ($model->setActivitiesOver($model->activities_over_id)) {
+                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                    $this->getSubmitAction($model);
                 }
             }
         }
         return $this->render('update', [
             'model' => $model,
-            'modelActivitiesOver' => (empty($modelActivitiesOver)) ? new ActivitiesOver() : $modelActivitiesOver,
             'readonly' => $readonly
         ]);
     }
@@ -149,6 +122,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
                 'model' => $modelEfficiency,
+                'class' => StringHelper::basename($this->modelClass::className()),
                 'readonly' => false
             ]);
         } elseif ('history' == $mode && $objectId) {
@@ -180,6 +154,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
                 'model' => $modelEfficiency,
+                'class' => StringHelper::basename($this->modelClass::className()),
                 'readonly' => $readonly
             ]);
 
@@ -202,10 +177,12 @@ class DefaultController extends MainController
      */
     public function getMenu($id)
     {
+        $model = $this->findModel($id);
         return [
             ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/update', 'id' => $id]],
-            ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id]],
-            ['label' => 'Протокол мероприятия', 'url' => ['/schoolplan/default/protocol', 'id' => $id]],
+            ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id], 'visible' => $model->category->efficiency_flag],
+            ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol-attestations', 'id' => $id], 'visible' => $model->category->commission_sell == 1],
+            ['label' => 'Протокол приемной комиссии', 'url' => ['/schoolplan/default/protocol-reception', 'id' => $id], 'visible' => $model->category->commission_sell == 2],
         ];
     }
 

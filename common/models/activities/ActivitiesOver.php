@@ -5,6 +5,7 @@ namespace common\models\activities;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use common\models\auditory\Auditory;
+use common\models\schoolplan\Schoolplan;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -31,6 +32,13 @@ use yii\behaviors\TimestampBehavior;
  */
 class ActivitiesOver extends \artsoft\db\ActiveRecord
 {
+    const OVER_CATEGORY = [
+        1 => 'Внеплановое мероприятие',
+        2 => 'Подготовка к мероприятию',
+        3 => 'Замена расписания занятий',
+        4 => 'Отмена расписания звнятий',
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -63,7 +71,7 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'datetime_in', 'datetime_out', 'auditory_id', 'department_list', 'executors_list'], 'required'],
+            [['over_category', 'title', 'datetime_in', 'datetime_out', 'auditory_id', 'department_list', 'executors_list'], 'required'],
             [['over_category', 'auditory_id'], 'integer'],
             [['over_category'], 'default', 'value' => 0],
             [['datetime_in', 'datetime_out'], 'safe'],
@@ -71,6 +79,7 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
             [['title'], 'string', 'max' => 100],
             [['description'], 'string'],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
+            [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['datetime_out'], 'compareTimestamp', 'skipOnEmpty' => false],
         ];
     }
@@ -84,6 +93,14 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
             $this->addError($attribute, $message);
         }
     }
+
+    public function checkFormatDateTime($attribute, $params)
+
+    {
+        if (!preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])(-|\.)(0[1-9]|1[0-2])(-|\.)[0-9]{4}(\s)([01]?[0-9]|2[0-3])(:|\.)[0-5][0-9]$/", $this->$attribute)) {
+            $this->addError($attribute, 'Формат ввода даты и времени не верен.');
+        }
+    }
     /**
      * {@inheritdoc}
      */
@@ -92,7 +109,7 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Название мероприятия',
-            'over_category' => 'Статус мероприятия',
+            'over_category' => 'Категория мероприятия',
             'datetime_in' => 'Дата и время начала',
             'datetime_out' => 'Дата и время окончания',
             'auditory_id' => 'Аудитория',
@@ -122,4 +139,31 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
         return $this->hasOne(Auditory::class, ['id' => 'auditory_id']);
     }
 
+
+    public function getDependence()
+    {
+        if($this->over_category == 2) {
+            return $this->hasOne(Schoolplan::class, ['activities_over_id' => 'id']);
+        }
+    }
+
+    /**
+     * getOverCategoryList
+     * @return array
+     */
+    public static function getOverCategoryList()
+    {
+        return self::OVER_CATEGORY;
+    }
+
+    /**
+     * getOverCategoryValue
+     * @param string $val
+     * @return string
+     */
+    public static function getOverCategoryValue($val)
+    {
+        $ar = self::getOverCategoryList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
 }

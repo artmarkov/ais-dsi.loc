@@ -852,6 +852,8 @@ class DefaultController extends MainController
             }
             return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
                 'model' => $model,
+                'class' => StringHelper::basename(TeachersEfficiency::className()),
+                'readonly' => false
             ]);
 
         } elseif ('bar' == $mode) {
@@ -895,6 +897,8 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
                 'model' => $model,
+                'class' => StringHelper::basename(TeachersEfficiency::className()),
+                'readonly' => false
             ]);
         } else {
             $user = \common\models\teachers\Teachers::findOne($id)->getFullName();

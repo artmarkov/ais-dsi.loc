@@ -24,8 +24,8 @@ use common\models\own\Department;
 
     <div class="panel">
         <div class="panel-heading">
-           Карточка мероприятия
-            <?php if (!$model->isNewRecord):?>
+            Карточка мероприятия
+            <?php if (!$model->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
             <?php endif; ?>
         </div>
@@ -33,9 +33,11 @@ use common\models\own\Department;
             <div class="row">
                 <div class="col-sm-12">
 
-                    <?= $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(); ?>
+                    <?= $form->field($model, 'over_category')->dropDownList($model->getOverCategoryList(), ['disabled' => 'disabled']); ?>
 
-                    <?= $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput() ?>
+                    <?= $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
+
+                    <?= $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]) ?>
 
                     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
@@ -63,6 +65,7 @@ use common\models\own\Department;
                         'pluginOptions' => [
                             'allowClear' => false,
                             'minimumInputLength' => 3,
+                            'maximumSelectionLength' => (!$model->isNewRecord && $model->over_category == 2) ? 1 : false,
                         ],
 
                     ]);

@@ -58,13 +58,22 @@ use artsoft\grid\GridPageSize;
                                     'class' => 'artsoft\grid\columns\TitleActionColumn',
                                     'controller' => '/teachers/efficiency',
                                     'title' => function (TeachersEfficiency $model) {
-                                        return Html::a(sprintf('#%06d', $model->id), ['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update'], ['data-pjax' => 0]);
+                                        return Html::a(sprintf('#%06d', $model->id), ['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'view'], ['data-pjax' => 0]);
                                     },
-                                    'buttonsTemplate' => '{update} {delete}',
+                                    'buttonsTemplate' => '{update} {view} {delete}',
                                     'buttons' => [
                                         'update' => function ($key, $model) {
-                                            return Html::a(Yii::t('art', 'Update'),
+                                            return Html::a(Yii::t('art', 'Edit'),
                                                 Url::to(['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update']), [
+                                                    'title' => Yii::t('art', 'Edit'),
+                                                    'data-method' => 'post',
+                                                    'data-pjax' => '0',
+                                                ]
+                                            );
+                                        },
+                                        'view' => function ($key, $model) {
+                                            return Html::a(Yii::t('art', 'View'),
+                                                Url::to(['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'view']), [
                                                     'title' => Yii::t('art', 'Edit'),
                                                     'data-method' => 'post',
                                                     'data-pjax' => '0',

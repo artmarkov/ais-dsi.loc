@@ -5,6 +5,7 @@ namespace common\models\efficiency;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\ExcelObjectList;
+use common\models\schoolplan\Schoolplan;
 use Yii;
 use common\models\teachers\Teachers;
 use yii\behaviors\BlameableBehavior;
@@ -138,6 +139,18 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     public function getDependence()
     {
         switch ($this->class) {
+            case 'Schoolplan':
+                return [
+                    'model' => Schoolplan::findOne($this->item_id),
+                    'attributes' => [
+                        'title',
+                        'datetime_in',
+                        'datetime_out',
+                    ],
+                    'link' => ['/schoolplan/default/view', 'id' => $this->item_id],
+                    'title' => 'Сведения об учебном плане',
+                ];
+                break;
             case 'CreativeWorks':
                 return [
                     'model' => \common\models\creative\CreativeWorks::findOne($this->item_id),
@@ -149,6 +162,7 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
                     'link' => ['/creative/default/view', 'id' => $this->item_id],
                     'title' => 'Сведения о работе',
                 ];
+                break;
             default:
                 return false;
         }
