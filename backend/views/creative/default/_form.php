@@ -229,7 +229,7 @@ JS
                                     ])->label(Yii::t('art/teachers', 'Teachers'));
                                     ?>
                                     <?= $form->field($modelEfficiency, "[{$index}]bonus")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
-                                    <?= $form->field($modelEfficiency, "[{$index}]date_in")->widget(DatePicker::class)->textInput(['autocomplete' => 'off']); ?>
+                                    <?= $form->field($modelEfficiency, "[{$index}]date_in")->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
                                 </div>
                             </div>
                         <?php endforeach; ?>

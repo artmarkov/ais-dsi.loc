@@ -112,7 +112,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
     }
 
     /**
-     * Получаем параметры для поисковой модели
+     * Получаем параметры, сохраняя поисковую модель
      * @return array|mixed
      */
     public function getParams()
@@ -123,19 +123,15 @@ abstract class BaseController extends \artsoft\controllers\BaseController
             $searchName = StringHelper::basename($searchModel::className());
             $session = Yii::$app->session;
             if (count($params) == 0) {
-
-                if (isset(Yii::$app->session[$searchName . '_params'])) {
-                    $params = $session->get($searchName . '_params');
-                    $_GET = Yii::$app->session[$searchName . '_params'];
+                if (preg_match('/update|create|view/', Yii::$app->request->referrer)) { // если нет параметров и зашли с update или create, то берем параметры из сессии
+                    if ($params = $session->get($searchName . '_params')) {
+                        $_GET = $params; // и прописываем в GET для сохранения pagination
+                    }
                 } else {
-                    $session->set($searchName . '_params', $params);
+                    $session->remove($searchName . '_params'); // если зашли с index, то очищаем пораметры сессии
                 }
             } else {
-                if (isset(Yii::$app->request->queryParams[$searchName])) {
-                    $session->set($searchName . '_params', $params);
-                } else {
-                    $params = $session->get($searchName . '_params');
-                }
+                $session->set($searchName . '_params', $params); // если параметры заданы, записываем их в сессию
             }
             return $params;
         }
@@ -157,7 +153,7 @@ abstract class BaseController extends \artsoft\controllers\BaseController
         if ($searchModel) {
             $searchName = StringHelper::basename($searchModel::className());
             $params = $this->getParams(); //TODO 
-           // $params = Yii::$app->request->getQueryParams();
+            // $params = Yii::$app->request->getQueryParams();
 
             if ($restrictAccess) {
                 $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
