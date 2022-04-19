@@ -1,9 +1,11 @@
 <?php
 
 namespace backend\controllers\service;
-use Yii;
 
-class DebugController extends \backend\controllers\DefaultController
+use Yii;
+use artsoft\controllers\admin\BaseController;
+
+class DebugController extends BaseController
 {
     const DEBUG_COOKIE = 'yii_debug';
 
