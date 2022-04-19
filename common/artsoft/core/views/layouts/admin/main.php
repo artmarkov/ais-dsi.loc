@@ -135,7 +135,7 @@ MetisMenuAsset::register($this);
 </div>
 <footer class="footer">
     <div class="container">
-        <a title="debug" class="text-sm" href="<?= \yii\helpers\Url::to(['/debug']) ?>"><i class="fa fa-bug"></i></a>
+        <a title="debug" class="text-sm" href="<?= \yii\helpers\Url::to(['/service/debug']) ?>"><i class="fa fa-bug"></i></a>
         <?php if (Request::$request): ?>
             <span class="text-sm"><i class="fa fa-tag"></i><?= Request::$request->id ?></span>
             <span class="text-sm"><i class="fa fa-clock-o"></i><?= round(Request::getTimeSpent(), 2) ?>s</span>
