@@ -1,28 +1,11 @@
 <?php
 
 namespace artsoft\grid;
-
 use artsoft\widgets\JumpPager as LinkPager;
 use yii\helpers\ArrayHelper;
 
-class GridView extends \kartik\grid\GridView
+class GridViewOld extends \yii\grid\GridView
 {
-
-    public $pjax = true;
-    public $responsive = true;
-    public $bordered = false;
-    public $striped = true;
-    public $condensed = false;
-    public $hover = true;
-    public $tableOptions = ['class' => 'table table-striped'];
-    public $toggleDataContainer = ['class' => 'btn-group mr-2 me-2'];
-    public $exportConfig = [
-        'html' => [],
-        'csv' => [],
-        'txt' => [],
-        'xls' => [],
-    ];
-
     public $bulkActions;
     public $bulkActionOptions = [];
     public $filterPosition = self::FILTER_POS_HEADER;
@@ -35,23 +18,15 @@ class GridView extends \kartik\grid\GridView
         'nextPageLabel' => '>',
         'lastPageLabel' => '>>',
     ];
-    public $panel = ['type' => ''];
-    public $panelHeadingTemplate = <<< HTML
-    {title}
-    <div class="clearfix"></div>
-HTML;
-    public $panelFooterTemplate = <<< HTML
-     <div class="kv-panel-pager">
-       <div class="col-xs-4 col-md-3">{bulkActions}</div>
-       <div class="col-xs-8 col-md-9 text-right">{summary}</div>
-    </div>
-    <div class="col-xs-12 text-center">
-        {pager}
-    </div>
-    {footer}
-    <div class="clearfix"></div>
-HTML;
-
+    public $tableOptions = ['class' => 'table table-striped'];
+    public $layout = '<div class="table-responsive">{items}</div>'
+                    . '<div class="row">'
+                    . '<div class="col-xs-4 col-md-3">{bulkActions}</div>'
+                    . '<div class="col-xs-8 col-md-9 text-right">{summary}</div>'
+                    . '</div>'
+                    . '<div class="row">'
+                    . '<div class="col-xs-12 text-center">{pager}</div>'
+                    . '</div>';
 
     public function renderSection($name)
     {

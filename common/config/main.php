@@ -96,6 +96,9 @@ return [
         ],
     ],
     'modules' => [
+        'gridview' =>  [
+            'class' => '\kartik\grid\Module'
+        ],
         'gii' => [
             'class' => 'yii\gii\Module',
             'allowedIPs' => ['*'],

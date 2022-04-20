@@ -18,7 +18,7 @@ class AuditoryCatSearch extends AuditoryCat
     public function rules()
     {
         return [
-            ['id', 'integer'],
+            [['id'], 'integer'],
             [['name', 'description', 'study_flag'], 'safe'],
         ];
     }
@@ -65,11 +65,11 @@ class AuditoryCatSearch extends AuditoryCat
 
         $query->andFilterWhere([
             'id' => $this->id,
+            'study_flag' => $this->study_flag,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'description', $this->description])
-            ->andFilterWhere(['like', 'study_flag', $this->study_flag]);
+            ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;
     }

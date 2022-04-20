@@ -2,7 +2,7 @@
 
 use yii\helpers\Url;
 use yii\widgets\Pjax;
-use kartik\grid\GridView;
+use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
 use common\models\service\ServiceCardView;
 use artsoft\helpers\Html;
