@@ -281,7 +281,7 @@ class DefaultController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'id'));
+            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel'));
         }
     }
 
@@ -354,7 +354,7 @@ class DefaultController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'id'));
+            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel'));
         }
     }
 
@@ -429,7 +429,7 @@ class DefaultController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel', 'id'));
+            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel'));
         }
     }
 
@@ -502,7 +502,7 @@ class DefaultController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('characteristic-items', compact('dataProvider', 'searchModel', 'id'));
+            return $this->renderIsAjax('characteristic-items', compact('dataProvider', 'searchModel'));
         }
     }
 
@@ -639,7 +639,7 @@ class DefaultController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('thematic-items', compact('dataProvider', 'searchModel', 'id'));
+            return $this->renderIsAjax('thematic-items', compact('dataProvider', 'searchModel'));
         }
     }
 

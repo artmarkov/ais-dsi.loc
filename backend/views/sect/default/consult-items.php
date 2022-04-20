@@ -1,13 +1,10 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use common\models\studyplan\Studyplan;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
-use artsoft\grid\GridPageSize;
-use kartik\grid\GridView;
-use common\models\subjectsect\SubjectScheduleStudyplanView;
+use artsoft\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\subjectsect\search\SubjectScheduleSearch */
@@ -183,61 +180,48 @@ $columns = [
 ?>
 <div class="consult-schedule-index">
     <div class="panel">
+        <div class="panel-heading">
+            Расписание консультаций
+        </div>
         <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-6">
                     <?php
-                    Pjax::begin([
-                        'id' => 'consult-schedule-grid-pjax',
-                    ])
+                    /* Uncomment this to activate GridQuickLinks */
+                    /* echo GridQuickLinks::widget([
+                        'model' => SubjectSect::className(),
+                        'searchModel' => $searchModel,
+                    ])*/
                     ?>
-                    <?=
-                    GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
-                        'tableOptions' => ['class' => 'table-condensed'],
-//                        'showPageSummary' => true,
-                        'pjax' => true,
-                        'hover' => true,
-                        'panel' => [
-                            'heading' => 'Элементы расписания',
-                            'type' => 'default',
-                            'after' => '',
-                        ],
-                        'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
-                        'columns' => $columns,
-                        'beforeHeader' => [
-                            [
-                                'columns' => [
-                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
-                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
-                                    ['content' => 'Расписание консультаций', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
-                                ],
-                                'options' => ['class' => 'skip-export'] // remove this row from export
-                            ]
-                        ],
-                        'exportConfig' => [
-                            'html' => [],
-                            'csv' => [],
-                            'txt' => [],
-                            'xls' => [],
-                        ],
-                        'toolbar' => [
-                            [
-                                'content' => Html::a('Очистить',
-                                    Url::to(['/teachers/default/consult-items', 'id' => $id]), [
-                                        'title' => 'Очистить',
-                                        'data-pjax' => '0',
-                                        'class' => 'btn btn-default'
-                                    ]
-                                ),
-                            ],
-                            '{export}',
-                            '{toggleData}'
-                        ],
-                    ]);
-                    ?>
-                    <?php Pjax::end() ?>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'consult-schedule-grid-pjax']) ?>
                 </div>
             </div>
+            <?php
+            Pjax::begin([
+                'id' => 'consult-schedule-grid-pjax',
+            ])
+            ?>
+            <?=
+            GridView::widget([
+                'id' => 'consult-schedule-grid',
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'columns' => $columns,
+                'beforeHeader' => [
+                    [
+                        'columns' => [
+                            ['content' => 'Дисциплина', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
+                            ['content' => 'Расписание консультаций', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
+                        ],
+                        'options' => ['class' => 'skip-export'] // remove this row from export
+                    ]
+                ],
+            ]);
+            ?>
+            <?php Pjax::end() ?>
         </div>
     </div>
 </div>

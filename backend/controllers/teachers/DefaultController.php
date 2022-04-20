@@ -434,7 +434,7 @@ class DefaultController extends MainController
             $params = Yii::$app->request->getQueryParams();
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'id'));
+            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel'));
         }
     }
 
@@ -503,7 +503,7 @@ class DefaultController extends MainController
             $params = Yii::$app->request->getQueryParams();
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'id'));
+            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel'));
         }
     }
 
@@ -567,7 +567,7 @@ class DefaultController extends MainController
             $params[$searchName]['teachers_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('teachers-plan', compact('dataProvider', 'searchModel', 'id'));
+            return $this->renderIsAjax('teachers-plan', compact('dataProvider', 'searchModel'));
         }
 
     }
@@ -642,7 +642,7 @@ class DefaultController extends MainController
             $params[$searchName]['teachers_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel', 'id'));
+            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel'));
         }
     }
 

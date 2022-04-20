@@ -4,8 +4,7 @@ use artsoft\helpers\RefBook;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
-use artsoft\grid\GridPageSize;
-use kartik\grid\GridView;
+use artsoft\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\studyplan\search\SubjectCharacteristicViewSearch */
@@ -139,7 +138,24 @@ $columns = [
 ?>
 <div class="subject-characteristic-index">
     <div class="panel">
+        <div class="panel-heading">
+            Характерисики по предметам
+        </div>
         <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <?php
+                    /* Uncomment this to activate GridQuickLinks */
+                    /* echo GridQuickLinks::widget([
+                        'model' => SubjectSect::className(),
+                        'searchModel' => $searchModel,
+                    ])*/
+                    ?>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'subject-characteristic-grid-pjax']) ?>
+                </div>
+            </div>
             <?php
             Pjax::begin([
                 'id' => 'subject-characteristic-grid-pjax',
@@ -147,18 +163,10 @@ $columns = [
             ?>
             <?=
             GridView::widget([
+                'id' => 'subject-characteristic-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'tableOptions' => ['class' => 'table-condensed'],
-//                        'showPageSummary' => true,
-                'pjax' => true,
-                'hover' => true,
-                'panel' => [
-                    'heading' => 'Элементы расписания',
-                    'type' => 'default',
-                    'after' => '',
-                ],
-                'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
                 'columns' => $columns,
                 'beforeHeader' => [
                     [
@@ -168,25 +176,6 @@ $columns = [
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]
-                ],
-                'exportConfig' => [
-                    'html' => [],
-                    'csv' => [],
-                    'txt' => [],
-                    'xls' => [],
-                ],
-                'toolbar' => [
-                    [
-                        'content' => Html::a('Очистить',
-                            Url::to(['/studyplan/default/characteristic-items', 'id' => $id]), [
-                                'title' => 'Очистить',
-                                'data-pjax' => '0',
-                                'class' => 'btn btn-default'
-                            ]
-                        ),
-                    ],
-                    '{export}',
-                    '{toggleData}'
                 ],
             ]);
             ?>

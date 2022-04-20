@@ -35,11 +35,16 @@ class GridView extends \kartik\grid\GridView
         'nextPageLabel' => '>',
         'lastPageLabel' => '>>',
     ];
-    public $panel = ['type' => ''];
+    public $panel = [
+        'type' => '',
+        'heading' => false,
+    ];
+
     public $panelHeadingTemplate = <<< HTML
     {title}
     <div class="clearfix"></div>
 HTML;
+
     public $panelFooterTemplate = <<< HTML
      <div class="kv-panel-pager">
        <div class="col-xs-4 col-md-3">{bulkActions}</div>
@@ -51,7 +56,6 @@ HTML;
     {footer}
     <div class="clearfix"></div>
 HTML;
-
 
     public function renderSection($name)
     {
@@ -73,7 +77,8 @@ HTML;
 
     /**
      * Renders the pager.
-     * @return string the rendering result
+     * @return string
+     * @throws \Exception
      */
     public function renderPager()
     {

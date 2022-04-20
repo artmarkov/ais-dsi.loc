@@ -1,11 +1,12 @@
 <?php
 
-use kartik\grid\GridView;
+use artsoft\grid\GridView;
 use artsoft\helpers\RefBook;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use common\models\schedule\SubjectScheduleStudyplanView;
 use common\models\education\LessonItems;
+use yii\widgets\Pjax;
 
 $this->title = Yii::t('art/guide', 'Group Progress');
 $this->params['breadcrumbs'][] = $this->title;
@@ -94,48 +95,58 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
     <div class="panel">
         <div class="panel-body">
             <?= $this->render('@app/views/studyplan/lesson-items/_search', compact('model_date')) ?>
-            <?php
-            echo GridView::widget([
-                'dataProvider' => new \yii\data\ArrayDataProvider([
-                    'allModels' => $model['data'],
-                    'sort' => false,
-                    'pagination' => false,
-                ]),
-                'tableOptions' => ['class' => 'table-condensed'],
-                'filterModel' => null,
-                'formatter' => ['class' => 'yii\i18n\Formatter', 'nullDisplay' => ''],
-//                        'showPageSummary' => true,
-                'pjax' => true,
-                'hover' => true,
-                'panel' => [
-                    'heading' => 'Результаты запроса',
-                    'type' => 'default',
-                    'after' => '',
-                    'footer' => $hints,
-                ],
-                'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
-                'columns' => $columns,
-                'beforeHeader' => [
-                    [
-                        'columns' => [
-                            ['content' => 'Группа/Ученик', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-                            ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Результаты запроса
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <?php
+                            /* Uncomment this to activate GridQuickLinks */
+                            /* echo GridQuickLinks::widget([
+                                'model' => SubjectSect::className(),
+                                'searchModel' => $searchModel,
+                            ])*/
+                            ?>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'studyplan-progress-grid-pjax']) ?>
+                        </div>
+                    </div>
+                    <?php
+                    Pjax::begin([
+                        'id' => 'studyplan-progress-grid-pjax',
+                    ])
+                    ?>
+                    <?= GridView::widget([
+                        'id' => 'studyplan-progress-grid',
+                        'dataProvider' => new \yii\data\ArrayDataProvider([
+                            'allModels' => $model['data'],
+                            'sort' => false,
+                            'pagination' => false,
+                        ]),
+                        'filterModel' => null,
+                        'columns' => $columns,
+                        'panel' => [
+                            'heading' => false,
+                            'type' => '',
+                            'footer' => $hints,
                         ],
-                        'options' => ['class' => 'skip-export'] // remove this row from export
-                    ]
-                ],
-                'exportConfig' => [
-                    'html' => [],
-                    'csv' => [],
-                    'txt' => [],
-                    'xls' => [],
-                ],
-                'toolbar' => [
-                    '{export}',
-                    '{toggleData}'
-                ],
-            ]);
-            ?>
+                        'beforeHeader' => [
+                            [
+                                'columns' => [
+                                    ['content' => 'Группа/Ученик', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                                    ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
+                                ],
+                                'options' => ['class' => 'skip-export'] // remove this row from export
+                            ]
+                        ],
+                    ]);
+                    ?>
+                    <?php Pjax::end() ?>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -1,11 +1,12 @@
 <?php
 
-use kartik\grid\GridView;
+use artsoft\grid\GridView;
 use artsoft\helpers\RefBook;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use common\models\schedule\SubjectScheduleStudyplanView;
 use common\models\education\LessonItems;
+use yii\widgets\Pjax;
 
 $this->title = $this->title = Yii::t('art/guide', 'Journal Progress');
 $this->params['breadcrumbs'][] = $this->title;
@@ -117,26 +118,43 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
     <div class="panel">
         <div class="panel-body">
             <?= $this->render('@app/views/studyplan/lesson-items/_search', compact('model_date')) ?>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Результаты запроса
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <?php
+                            /* Uncomment this to activate GridQuickLinks */
+                            /* echo GridQuickLinks::widget([
+                                'model' => SubjectSect::className(),
+                                'searchModel' => $searchModel,
+                            ])*/
+                            ?>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'teachers-progress-grid-pjax']) ?>
+                        </div>
+                    </div>
+                    <?php
+                    Pjax::begin([
+                        'id' => 'teachers-progress-grid-pjax',
+                    ])
+                    ?>
             <?php
             echo GridView::widget([
+                'id' => 'teachers-progress-grid',
                 'dataProvider' => new \yii\data\ArrayDataProvider([
                     'allModels' => $model['data'],
                     'sort' => false,
                     'pagination' => false,
                 ]),
-                'tableOptions' => ['class' => 'table-condensed'],
-                'filterModel' => null,
-                'formatter' => ['class' => 'yii\i18n\Formatter', 'nullDisplay' => ''],
-//                        'showPageSummary' => true,
-                'pjax' => true,
-                'hover' => true,
                 'panel' => [
-                    'heading' => 'Результаты запроса',
-                    'type' => 'default',
-                    'after' => '',
+                    'heading' => false,
+                    'type' => '',
                     'footer' => $hints,
                 ],
-                'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
                 'columns' => $columns,
                 'beforeHeader' => [
                     [
@@ -146,16 +164,6 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]
-                ],
-                'exportConfig' => [
-                    'html' => [],
-                    'csv' => [],
-                    'txt' => [],
-                    'xls' => [],
-                ],
-                'toolbar' => [
-                    '{export}',
-                    '{toggleData}'
                 ],
             ]);
             ?>
