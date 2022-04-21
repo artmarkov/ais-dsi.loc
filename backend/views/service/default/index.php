@@ -105,63 +105,57 @@ $columns = [
 ?>
 <div class="users-card-index">
     <div class="panel">
+        <div class="panel-heading">
+            Журнал пропусков
+        </div>
         <div class="panel-body">
-            <?php
-            Pjax::begin([
-                'id' => 'users-card-grid-pjax',
-            ])
-            ?>
-            <div class="row">
-                <div class="col-sm-12">
-                    <?= GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
-                        'tableOptions' => ['class' => 'table-condensed'],
-                        //                        'showPageSummary' => true,
-                        'pjax' => true,
-                        'hover' => true,
-                        'panel' => [
-                            'heading' => 'Журнал пропусков',
-                            'type' => 'default',
-                            'after' => '',
-                        ],
-                        'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
-                        'columns' => $columns,
-                        'beforeHeader' => [
-                            [
-                                'columns' => [
-                                    ['content' => 'Пользователь', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
-                                    ['content' => 'Пропуск', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
-                                ],
-                                'options' => ['class' => 'skip-export'] // remove this row from export
-                            ]
-                        ],
-                        'exportConfig' => [
-                            'html' => [],
-                            'csv' => [],
-                            'txt' => [],
-                            'xls' => [],
-                        ],
-                        'toolbar' => [
-                            [
-                                'content' => Html::a('Очистить',
-                                    Url::to(['/service/default']), [
-                                        'title' => 'Очистить',
-                                        'data-pjax' => '0',
-                                        'class' => 'btn btn-default'
-                                    ]
-                                ),
-                            ],
-                            '{export}',
-                            '{toggleData}'
-                        ],
-                    ]);
-                    ?>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <?php
+                            /* Uncomment this to activate GridQuickLinks */
+                            /* echo GridQuickLinks::widget([
+                                'model' => UsersCardLog::className(),
+                                'searchModel' => $searchModel,
+                            ])*/
+                            ?>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <?= GridPageSize::widget(['pjaxId' => 'users-card-grid-pjax']) ?>
+                        </div>
+                    </div>
 
+                    <?php
+                    Pjax::begin([
+                        'id' => 'users-card-grid-pjax',
+                    ])
+                    ?>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <?= GridView::widget([
+                                'id' => 'users-card-grid',
+                                'dataProvider' => $dataProvider,
+                                'filterModel' => $searchModel,
+                                'columns' => $columns,
+                                'beforeHeader' => [
+                                    [
+                                        'columns' => [
+                                            ['content' => 'Пользователь', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
+                                            ['content' => 'Пропуск', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
+                                        ],
+                                        'options' => ['class' => 'skip-export'] // remove this row from export
+                                    ]
+                                ],
+                            ]);
+                            ?>
+
+                        </div>
+                    </div>
+
+                    <?php Pjax::end() ?>
                 </div>
             </div>
-
-            <?php Pjax::end() ?>
         </div>
     </div>
 </div>

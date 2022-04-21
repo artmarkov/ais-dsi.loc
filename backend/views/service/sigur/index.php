@@ -18,6 +18,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="users-card-log-index">
     <div class="panel">
+        <div class="panel-heading">
+            Журнал СКУД
+        </div>
         <div class="panel-body">
             <div class="panel panel-default">
                 <div class="panel-body">
