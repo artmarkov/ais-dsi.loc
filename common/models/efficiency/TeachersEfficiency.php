@@ -140,20 +140,27 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     {
         switch ($this->class) {
             case 'Schoolplan':
-                return [
-                    'model' => Schoolplan::findOne($this->item_id),
-                    'attributes' => [
-                        'title',
-                        'datetime_in',
-                        'datetime_out',
-                    ],
-                    'link' => ['/schoolplan/default/view', 'id' => $this->item_id],
-                    'title' => 'Сведения об учебном плане',
-                ];
+                $model = Schoolplan::findOne($this->item_id);
+                if ($model) {
+                    return [
+                        'model' => $model,
+                        'attributes' => [
+                            'title',
+                            'datetime_in',
+                            'datetime_out',
+                        ],
+                        'link' => ['/schoolplan/default/view', 'id' => $this->item_id],
+                        'title' => 'Сведения об учебном плане',
+                    ];
+                } else {
+                    return false;
+                }
                 break;
-            case 'CreativeWorks':
+                case 'CreativeWorks':
+                    $model = \common\models\creative\CreativeWorks::findOne($this->item_id);
+                    if ($model) {
                 return [
-                    'model' => \common\models\creative\CreativeWorks::findOne($this->item_id),
+                    'model' => $model,
                     'attributes' => [
                         'name',
                         'description',
@@ -162,6 +169,9 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
                     'link' => ['/creative/default/view', 'id' => $this->item_id],
                     'title' => 'Сведения о работе',
                 ];
+                 } else {
+                    return false;
+                }
                 break;
             default:
                 return false;

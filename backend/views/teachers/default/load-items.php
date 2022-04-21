@@ -207,6 +207,7 @@ $columns = [
             <?=
             GridView::widget([
                 'id' => 'subject-load-grid',
+                'pjax' => false,
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'columns' => $columns,

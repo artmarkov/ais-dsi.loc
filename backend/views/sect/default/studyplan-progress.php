@@ -121,6 +121,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                     ?>
                     <?= GridView::widget([
                         'id' => 'studyplan-progress-grid',
+                        'pjax' => false,
                         'dataProvider' => new \yii\data\ArrayDataProvider([
                             'allModels' => $model['data'],
                             'sort' => false,

@@ -185,6 +185,7 @@ $columns = [
             ?>
             <?= GridView::widget([
                 'id' => 'teachers-load-grid',
+                'pjax' => false,
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'columns' => $columns,

@@ -7,7 +7,6 @@ use yii\helpers\ArrayHelper;
 
 class GridView extends \kartik\grid\GridView
 {
-
     public $pjax = true;
     public $responsive = true;
     public $bordered = false;

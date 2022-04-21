@@ -54,10 +54,24 @@ class ContactForm extends Model
     public function sendEmail($email)
     {
         return Yii::$app->mailer->compose()
+            ->setFrom($email)
             ->setTo($email)
-            ->setFrom([$this->email => $this->name])
             ->setSubject($this->subject)
             ->setTextBody($this->body)
             ->send();
     }
+//    public function sendEmail($email)
+//    {
+//        return Yii::$app->mailer->compose(
+//            Yii::$app->art->emailTemplates['send-contact'],
+//            [
+//                'body' => $this->body,
+//                'subject' => $this->subject,
+//                'email' => $this->email,
+//            ])
+//            ->setFrom($email)
+//            ->setTo($email)
+//            ->setSubject(Yii::t('art', 'Message for') . ' ' . \artsoft\helpers\Html::encode(Yii::$app->settings->get('general.title', Yii::$app->name, Yii::$app->language)))
+//            ->send();
+//    }
 }

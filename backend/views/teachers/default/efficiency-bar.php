@@ -6,7 +6,7 @@ use dosamigos\chartjs\ChartJs;
 /* @var $data */
 /* @var $model_date */
 
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['efficiency/default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['/teachers/default/efficiency', 'id' => $id]];
 $this->params['breadcrumbs'][] = 'График';
 ?>
 

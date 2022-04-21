@@ -140,13 +140,14 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['site_url', 'site_media'], 'url', 'defaultScheme' => 'http'],
             [['title'], 'string', 'max' => 100],
             [['places'], 'string', 'max' => 512],
+            [['description'], 'default', 'value' => null],
             [['partic_price', 'site_url', 'site_media'], 'string', 'max' => 255],
             ['description', 'string', 'max' => 4000, 'min' => 1000, 'when' => function ($model) {
-                return $model->category->description_flag;
-            }, 'enableClientValidation' => false, 'skipOnEmpty' => false],
+                return $model->category->description_flag && !$model->isNewRecord;
+            }, 'enableClientValidation' => false, 'skipOnEmpty' => false, 'message' => 'Введите описание мероприятия минимум 1000 знаков, включая пробелы.'],
             ['description', 'string', 'max' => 4000, 'min' => 500, 'when' => function ($model) {
-                return !$model->category->description_flag;
-            }, 'enableClientValidation' => false],
+                return !$model->category->description_flag && !$model->isNewRecord;
+            }, 'enableClientValidation' => false, 'message' => 'Введите описание мероприятия минимум 500 знаков, включая пробелы.'],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuidePlanTree::class, 'targetAttribute' => ['category_id' => 'id']],
             [['activities_over_id'], 'exist', 'skipOnError' => true, 'targetClass' => ActivitiesOver::class, 'targetAttribute' => ['activities_over_id' => 'id']],

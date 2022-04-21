@@ -207,6 +207,7 @@ $columns = [
                     <?=
                     GridView::widget([
                         'id' => 'consult-schedule-grid',
+                        'pjax' => false,
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
                         'columns' => $columns,
