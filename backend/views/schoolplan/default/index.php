@@ -77,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'datetime_out:datetime',
                             [
                                 'attribute' => 'category_id',
-                                'value' => 'planCategoryName',
+                                'value' => 'categoryName',
                                 'options' => ['style' => 'width:350px'],
                                 'filter' => \common\models\guidesys\GuidePlanTree::getPlanList(),
                             ],
