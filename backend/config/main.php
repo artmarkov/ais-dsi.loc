@@ -40,6 +40,9 @@ $config =  [
             'class' => '\kartik\tree\Module',
             // other module settings, refer detailed documentation
         ],
+        'dbmanager' =>  [
+            'class' => '\artsoft\dbmanager\DbmanagerModule',
+        ],
     ],
     'components' => [
         'request' => [

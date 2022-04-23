@@ -125,6 +125,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Назначенные задания', 'icon' => 'fa fa-minus', 'url' => ['/queue-schedule/default/index']],
                     ['label' => 'Текстовые блоки', 'icon' => 'fa fa-minus', 'url' => ['/block/default/index']],
 //                    ['label' => 'Инструменты админа', 'icon' => 'fa fa-minus', 'url' => ['/admintools']],
+                    ['label' => 'Менеджер БД', 'icon' => 'fa fa-minus', 'url' => ['/dbmanager/default/index'], 'visible' => \artsoft\models\User::hasPermission('viewDb')],
                     ['label' => 'Debug', 'icon' => 'fa fa-minus', 'url' => ['/service/debug'], 'visible' => \artsoft\models\User::hasPermission('viewDebug')],
                     ['label' => 'Gii', 'icon' => 'fa fa-minus', 'url' => ['/gii'], 'visible' => \artsoft\models\User::hasPermission('viewGii')],
                 ],
