@@ -1,0 +1,104 @@
+/*.sidebar ul li a.mm-active {
+    background-color: #ddd;
+}*/
+.box {
+    position: relative;
+    border-radius: 3px;
+    background: #ffffff;
+    border-top: 3px solid #d2d6de;
+    margin-bottom: 20px;
+    width: 100%;
+}
+.box-header.with-border {
+    border-bottom: 1px solid #f4f4f4;
+}
+.box-header {
+    color: #444;
+    display: block;
+    padding: 10px;
+    position: relative;
+}
+.box-header .box-title {
+    display: inline-block;
+    font-size: 18px;
+    margin: 0;
+    line-height: 1;
+}
+.box-header>.box-tools {
+    position: absolute;
+    right: 10px;
+    top: -12px;
+}
+.mailbox-controls.with-border {
+    border-bottom: 1px solid #f4f4f4;
+}
+.mailbox-controls {
+    padding: 5px;
+}
+.text-center {
+    text-align: center;
+}
+.mailbox-read-info {
+    border-bottom: 1px solid #f4f4f4;
+    padding: 10px;
+}
+.box-body {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    padding: 10px;
+}
+.no-padding {
+    padding: 0 !important;
+}
+.mailbox-read-time {
+    color: #999;
+    font-size: 13px;
+}
+.mailbox-read-message {
+    padding: 10px;
+}
+.mailbox-read-info h3 {
+    font-size: 20px;
+    margin: 0;
+}
+.mailbox-read-info h5 {
+    margin: 0;
+    padding: 5px 0 0 0;
+}
+.box-footer {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top: 1px solid #f4f4f4;
+    padding: 10px;
+    background-color: #fff;
+}
+.box .nav-stacked>li {
+    border-bottom: 1px solid #f4f4f4;
+    margin: 0;
+}
+.nav-stacked>li {
+    float: none;
+}
+.nav-pills>li {
+    float: left;
+}
+.nav>li {
+    position: relative;
+    display: block;
+}
+.box.box-solid {
+    border-top: 0;
+}
+.margin-bottom {
+    margin-bottom: 20px !important;
+}
+.mailbox-nav ul li {
+    border-bottom: 1px solid #f4f4f4;
+}
+.pager li {
+    padding: 0px 2px 0px 2px;
+}

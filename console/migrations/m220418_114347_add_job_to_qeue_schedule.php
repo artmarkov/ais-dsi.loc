@@ -11,10 +11,19 @@ class m220418_114347_add_job_to_qeue_schedule extends \artsoft\db\BaseMigration
         $this->insert('{{%queue_schedule}}', ['class' => 'console\jobs\ClianAttendLog', 'title' => 'Очистка Журнала выдачи ключей', 'content' => 'Очищает Журнал выдачи ключей (срок хранения задается в настройках модулей)', 'cron_expression' => '0 1 10 * *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 1000, 'updated_by' => 1000]);
         $this->insert('{{%queue_schedule}}', ['class' => 'console\jobs\ClianSiteLog', 'title' => 'Очистка Лога посещения сайта', 'content' => 'Очищает Лог посещения сайта (срок хранения задается в настройках модулей)', 'cron_expression' => '0 1 10 * *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 1000, 'updated_by' => 1000]);
         $this->insert('{{%queue_schedule}}', ['class' => 'console\jobs\ClianRequestLog', 'title' => 'Очистка Лога запросов', 'content' => 'Очищает Лог запросов (срок хранения задается в настройках модулей)', 'cron_expression' => '0 1 10 * *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 1000, 'updated_by' => 1000]);
+
+        $this->insert('{{%queue_schedule}}', ['class' => 'console\jobs\ClianDeletedMailJob', 'title' => 'Уничтожение удаленных писем', 'content' => 'Удаляет все письма физически из корзины.', 'cron_expression' => '0 0 */15 * *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 1000, 'updated_by' => 1000]);
+        $this->insert('{{%queue_schedule}}', ['class' => 'console\jobs\MessageNewEmailJob', 'title' => 'Оповещение пользователей о новых сообщениях', 'content' => '', 'cron_expression' => '0 8 * * *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 1000, 'updated_by' => 1000]);
+        $this->insert('{{%queue_schedule}}', ['class' => 'console\jobs\TrashMailJob', 'title' => 'Очистка всех корзин', 'content' => 'Очищает корзины всех пользователей', 'cron_expression' => '0 0 1 */6 *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 1000, 'updated_by' => 1000]);
+
     }
 
     public function down()
     {
+        $this->delete('{{%queue_schedule}}', ['class' => 'console\jobs\ClianDeletedMailJob']);
+        $this->delete('{{%queue_schedule}}', ['class' => 'console\jobs\MessageNewEmailJob']);
+        $this->delete('{{%queue_schedule}}', ['class' => 'console\jobs\TrashMailJob']);
+
         $this->delete('{{%queue_schedule}}', ['class' => 'console\jobs\ClianRequestLog']);
         $this->delete('{{%queue_schedule}}', ['class' => 'console\jobs\ClianSiteLog']);
         $this->delete('{{%queue_schedule}}', ['class' => 'console\jobs\ClianAttendLog']);

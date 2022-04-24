@@ -21,6 +21,9 @@ $config =  [
             'class' => '\kartik\tree\Module',
             // other module settings, refer detailed documentation
         ],
+        'mailbox' => [
+            'class' => 'artsoft\mailbox\MailboxModule',
+        ],
     ],
     'components' => [
         'view' => [
@@ -52,31 +55,19 @@ $config =  [
                 '<module:auth>/<action:(oauth)>/<authclient:\w+>' => '<module>/default/<action>',
                 '/' => 'site/index',
                 '<action:[\w \-]+>' => 'site/<action>',
-                '<module:[\w_\-]+>/' => '<module>/default/index',
+                '<module:[\w_\-]+>/<action:default>/' => '<module>/default/index',
                 '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<mode:(create)>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(view)>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(update)>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(delete)>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>/<mode:(history)>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>/<objectId:\d+>' => '<module>/default/<action>',
-                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>' => '<module>/default/<action>',
+//                '<module:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<action:(create)>' => '<module>/default/<action>',
                 '<module:[\w_\-]+>/<controller:[\w_\-]+>' => '<module>/<controller>/index',
                 '<module:[\w_\-]+>/<controller:[\w_\-]+>/<id:\d+>/<action:[\w_\-]+>' => '<module>/<controller>/<action>',
                 '<module:[\w_\-]+>/<controller:[\w_\-]+>/<action:[\w_\-]+>' => '<module>/<controller>/<action>',
             ],
-//            'multilingualRules' => [
-//                '<module:auth>/<action:\w+>' => '<module>/default/<action>',
-//                '<controller:(category|tag)>/<slug:[\w \-]+>' => '<controller>/index',
-//                '<controller:(category|tag)>' => '<controller>/index',
-////                '<slug:[\w \-]+>' => 'site/index/',
-//                '/' => 'site/index',
-//                '<action:[\w \-]+>' => 'site/<action>',
-//                '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
-//            ],
-//            'nonMultilingualUrls' => [
-//                'auth/default/oauth',
-//            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

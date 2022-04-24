@@ -30,7 +30,7 @@ class ActiveField extends \yii\bootstrap\ActiveField
     {
 
         parent::init();
-        $this->template =   "<div class=\"col-sm-3\">{label}</div><div class=\"col-sm-9\">{input}\n{hint}\n{error}</div>";
+        $this->template = "<div class=\"col-sm-3\">{label}</div><div class=\"col-sm-9\">{input}\n{hint}\n{error}</div>";
 
         $languages = Yii::$app->art->languages;
         $isCurrentLanguage = (Yii::$app->language == $this->language);

@@ -41,7 +41,7 @@ $config =  [
             // other module settings, refer detailed documentation
         ],
         'dbmanager' =>  [
-            'class' => '\artsoft\dbmanager\DbmanagerModule',
+            'class' => 'artsoft\dbmanager\DbmanagerModule',
         ],
     ],
     'components' => [

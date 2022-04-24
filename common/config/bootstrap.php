@@ -17,3 +17,4 @@ Yii::setAlias('artsoft/eav', dirname(__DIR__) . '/artsoft/eav');
 Yii::setAlias('artsoft/fileinput', dirname(__DIR__) . '/artsoft/fileinput');
 Yii::setAlias('artsoft/block', dirname(__DIR__) . '/artsoft/block');
 Yii::setAlias('artsoft/dbmanager', dirname(__DIR__) . '/artsoft/dbmanager');
+Yii::setAlias('artsoft/mailbox', dirname(__DIR__) . '/artsoft/mailbox');
