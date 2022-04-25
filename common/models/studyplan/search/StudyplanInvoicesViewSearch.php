@@ -12,15 +12,17 @@ use yii\data\ActiveDataProvider;
  */
 class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
 {
+    public $studentFio;
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['studyplan_subject_id', 'subject_type_id', 'studyplan_id', 'student_id', 'plan_year', 'status', 'teachers_load_id', 'direction_id', 'teachers_id', 'studyplan_invoices_id', 'invoices_id', 'studyplan_invoices_status'], 'integer'],
+            [['studyplan_subject_id', 'subject_type_id', 'subject_vid_id', 'education_cat_id', 'course', 'studyplan_id', 'programm_id', 'student_id', 'plan_year', 'status', 'teachers_load_id', 'direction_id', 'teachers_id', 'studyplan_invoices_id', 'invoices_id', 'studyplan_invoices_status'], 'integer'],
             [['invoices_summ', 'week_time', 'load_time'], 'number'],
-            [['month_time_fact'], 'safe'],
+            [['month_time_fact', 'studentFio', 'invoices_date'], 'safe'],
         ];
     }
 
@@ -65,8 +67,12 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
         $query->andFilterWhere([
             'studyplan_subject_id' => $this->studyplan_subject_id,
             'subject_type_id' => $this->subject_type_id,
+            'subject_vid_id' => $this->subject_vid_id,
+            'education_cat_id' => $this->education_cat_id,
+            'course' => $this->course,
             'week_time' => $this->week_time,
             'studyplan_id' => $this->studyplan_id,
+            'programm_id' => $this->programm_id,
             'student_id' => $this->student_id,
             'plan_year' => $this->plan_year,
             'status' => $this->status,
@@ -76,9 +82,16 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
             'studyplan_invoices_id' => $this->studyplan_invoices_id,
             'invoices_id' => $this->invoices_id,
             'invoices_summ' => $this->invoices_summ,
+            'invoices_date' => $this->invoices_date,
             'week_time' => $this->week_time,
             'load_time' => $this->load_time,
         ]);
+
+        if($this->studentFio) {
+            $query->andFilterWhere([
+                'student_id' => $this->studentFio,
+            ]);
+        }
 
         return $dataProvider;
     }

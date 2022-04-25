@@ -47,11 +47,15 @@ class m220425_112414_add_table_stadyplan_invoices extends \artsoft\db\BaseMigrat
         $this->db->createCommand()->createView('studyplan_invoices_view', '
         (select studyplan_subject.id as studyplan_subject_id,
 				 studyplan_subject.subject_type_id as subject_type_id,
+				 studyplan_subject.subject_vid_id as subject_vid_id,
 			     studyplan_subject.week_time as week_time,
 			     studyplan.id as studyplan_id,
+			     studyplan.programm_id as programm_id,
 			     studyplan.student_id as student_id,
 			     studyplan.plan_year as plan_year,
+			     studyplan.course as course,
 			     studyplan.status as status,
+                 education_programm.education_cat_id as education_cat_id,
 			     teachers_load.id as teachers_load_id,
 			     teachers_load.direction_id as direction_id,
 			     teachers_load.teachers_id as teachers_id,
@@ -60,9 +64,13 @@ class m220425_112414_add_table_stadyplan_invoices extends \artsoft\db\BaseMigrat
 				 studyplan_invoices.invoices_id as invoices_id,
 				 studyplan_invoices.status as studyplan_invoices_status,
 				 studyplan_invoices.month_time_fact as month_time_fact,
-				 studyplan_invoices.invoices_summ as invoices_summ
+				 studyplan_invoices.invoices_summ as invoices_summ,
+				 studyplan_invoices.invoices_date as invoices_date,
+				 studyplan_invoices.payment_time as payment_time,
+				 studyplan_invoices.payment_time_fact as payment_time_fact
 	         from studyplan_subject
              inner join studyplan on (studyplan_subject.studyplan_id = studyplan.id)
+             inner join education_programm on (education_programm.id = studyplan.programm_id)
              inner join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id
 				  and teachers_load.subject_sect_studyplan_id = 0)
 			 left join studyplan_invoices on (studyplan_invoices.studyplan_id = studyplan.id 
@@ -72,11 +80,15 @@ class m220425_112414_add_table_stadyplan_invoices extends \artsoft\db\BaseMigrat
 UNION ALL 
 		(select studyplan_subject.id as studyplan_subject_id,
 				 studyplan_subject.subject_type_id as subject_type_id,
+				 studyplan_subject.subject_vid_id as subject_vid_id,
 			     studyplan_subject.week_time as week_time,
 			     studyplan.id as studyplan_id,
+			     studyplan.programm_id as programm_id,
 			     studyplan.student_id as student_id,
 			     studyplan.plan_year as plan_year,
+			     studyplan.course as course,
 			     studyplan.status as status,
+		         education_programm.education_cat_id as education_cat_id,
 			     teachers_load.id as teachers_load_id,
 			     teachers_load.direction_id as direction_id,
 			     teachers_load.teachers_id as teachers_id,
@@ -85,9 +97,13 @@ UNION ALL
 				 studyplan_invoices.invoices_id as invoices_id,
 				 studyplan_invoices.status as studyplan_invoices_status,
 				 studyplan_invoices.month_time_fact as month_time_fact,
-				 studyplan_invoices.invoices_summ as invoices_summ
+				 studyplan_invoices.invoices_summ as invoices_summ,
+				 studyplan_invoices.invoices_date as invoices_date,
+				 studyplan_invoices.payment_time as payment_time,
+				 studyplan_invoices.payment_time_fact as payment_time_fact
 	         from studyplan_subject
              inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
+		     inner join education_programm on (education_programm.id = studyplan.programm_id)
              left join subject_sect on (subject_sect.subject_cat_id = studyplan_subject.subject_cat_id
                   and subject_sect.subject_id = studyplan_subject.subject_id
                   and subject_sect.subject_vid_id = studyplan_subject.subject_vid_id)

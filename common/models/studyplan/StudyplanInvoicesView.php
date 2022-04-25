@@ -9,8 +9,12 @@ use Yii;
  *
  * @property int|null $studyplan_subject_id
  * @property int|null $subject_type_id
+ * @property int|null $ubject_vid_id
+ * @property int|null $education_cat_id
+ * @property int|null $course
  * @property float|null $week_time
  * @property int|null $studyplan_id
+ * @property int|null $programm_id
  * @property int|null $student_id
  * @property int|null $plan_year
  * @property int|null $status
@@ -26,6 +30,7 @@ use Yii;
  */
 class StudyplanInvoicesView extends StudyplanInvoices
 {
+
     /**
      * {@inheritdoc}
      */
@@ -40,19 +45,27 @@ class StudyplanInvoicesView extends StudyplanInvoices
     public function attributeLabels()
     {
         $attr = parent::attributeLabels();
-            $attr['studyplan_subject_id'] = Yii::t('art/guide', 'Subject Name');
-            $attr['subject_type_id'] = Yii::t('art/guide', 'Type Name');
+            $attr['studyplan_subject_id'] = 'Дисциплина';
+            $attr['subject_type_id'] = 'Тип занятия';
+            $attr['subject_vid_id'] = 'Вид занятия';
+            $attr['education_cat_id'] = 'Вид программы';
+            $attr['course'] = Yii::t('art/guide', 'Course');
             $attr['week_time'] = Yii::t('art/guide', 'Week Time');
             $attr['studyplan_id'] = Yii::t('art/guide', 'Studyplan');
+            $attr['programm_id'] = Yii::t('art/studyplan', 'Education Programm');
             $attr['student_id'] = Yii::t('art/student', 'Student');
+            $attr['studentFio'] = Yii::t('art/student', 'Student');
             $attr['plan_year'] = Yii::t('art/studyplan', 'Plan Year');
             $attr['status'] = Yii::t('art/guide', 'Status');
             $attr['teachers_load_id'] = Yii::t('art/guide', 'Teachers Load');
             $attr['direction_id'] = Yii::t('art/teachers', 'Name Direction');
-            $attr['teachers_id'] = Yii::t('art/teachers', 'Teachers');
+            $attr['teachers_id'] = Yii::t('art/teachers', 'Teacher');
             $attr['load_time'] = Yii::t('art/guide', 'Load Time');
             $attr['studyplan_invoices_id'] ='ID';
             $attr['studyplan_invoices_status'] = 'Статус платежа';
         return $attr;
+    }
+    public function getStudentFio() {
+        return $this->student_id;
     }
 }

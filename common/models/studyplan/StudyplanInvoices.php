@@ -60,10 +60,10 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
         return [
             TimestampBehavior::class,
             BlameableBehavior::class,
-//            [
-//                'class' => DateFieldBehavior::class,
-//                'attributes' => ['invoices_date', 'payment_time', 'payment_time_fact'],
-//            ],
+            [
+                'class' => DateFieldBehavior::class,
+                'attributes' => ['invoices_date', 'payment_time', 'payment_time_fact'],
+            ],
         ];
     }
     /**

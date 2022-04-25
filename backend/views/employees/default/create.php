@@ -4,7 +4,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\employees\Employees */
-/* @var $userCard common\models\sigur\UsersCard */
+/* @var $userCard common\models\service\UsersCard */
 /* @var $userCommon common\models\user\UserCommon */
 /* @var $readonly */
 

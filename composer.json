@@ -67,7 +67,8 @@
     "kartik-v/yii2-editable": "dev-master",
     "kartik-v/yii2-grid": "@dev",
     "kartik-v/yii2-widget-spinner": "dev-master",
-    "2amigos/yii2-tinymce-widget": "~1.1"
+    "2amigos/yii2-tinymce-widget": "~1.1",
+    "nterms/yii2-mailqueue": "*"
 
   },
   "require-dev": {
