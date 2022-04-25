@@ -9,6 +9,7 @@ return [
     'Select Education Programm...' => 'Выберите учебный план...',
     'Select Subject Type...' => 'Выберите тип занятий...',
     'Studyplan Thematic' => 'Тематический план',
+    'Studyplan Invoices' => 'Счета за обучение',
     'Thematic Category' => 'Категория плана',
     'Period In' => 'Начало периода',
     'Period Out' => 'Окончание периода',
