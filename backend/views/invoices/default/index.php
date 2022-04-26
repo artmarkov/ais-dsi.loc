@@ -43,16 +43,17 @@ $columns = [
     ],
     [
         'attribute' => 'programm_id',
-        'filter' => RefBook::find('education_programm_name')->getList(),
+        'filter' => RefBook::find('education_programm_short_name')->getList(),
         'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model) {
-            return RefBook::find('education_programm_name')->getValue($model->programm_id);
+            return RefBook::find('education_programm_short_name')->getValue($model->programm_id);
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'education_cat_id',
@@ -66,6 +67,7 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'course',
@@ -79,6 +81,7 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'studyplan_subject_id',
@@ -86,6 +89,7 @@ $columns = [
             return RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id);
         },
         'group' => true,
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'subject_type_id',
@@ -99,6 +103,7 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'subject_vid_id',
@@ -112,6 +117,7 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'direction_id',
@@ -124,9 +130,6 @@ $columns = [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-
-        'group' => true,  // enable grouping
-
     ],
     [
         'attribute' => 'teachers_id',
@@ -139,8 +142,6 @@ $columns = [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'group' => true,  // enable grouping
-
     ],
     [
         'attribute' => 'load_time',
@@ -157,7 +158,7 @@ $columns = [
         'contentOptions' => function ($model) {
             switch ($model->studyplan_invoices_status) {
                 case 1:
-                    return ['class' => 'info'];
+                    return ['class' => 'warning'];
                 case 2:
                     return ['class' => 'success'];
                 case 3:
