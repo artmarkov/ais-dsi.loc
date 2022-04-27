@@ -91,4 +91,23 @@ class Invoices extends \artsoft\db\ActiveRecord
     {
         return 'version';
     }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+
+    public static function getInvoicesList()
+    {
+        return \yii\helpers\ArrayHelper::map(self::find()->all(), 'id', 'name');
+
+    }
+
+    /**
+     * @param $val
+     * @return mixed
+     */
+    public static function getInvoicesValue($val)
+    {
+        $ar = self::getInvoicesList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
 }

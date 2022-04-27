@@ -17,6 +17,10 @@ $this->title = Yii::t('art/studyplan', 'Studyplan Invoices');
 $this->params['breadcrumbs'][] = $this->title;
 
 $columns = [
+    ['class' => 'artsoft\grid\CheckboxColumn',  'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
+        return ['value' => $model->studyplan_invoices_id];
+    }
+      ],
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'student_id',
@@ -53,7 +57,7 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 2
     ],
     [
         'attribute' => 'education_cat_id',
@@ -67,7 +71,7 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 2
     ],
     [
         'attribute' => 'course',
@@ -81,74 +85,25 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 2
     ],
     [
-        'attribute' => 'studyplan_subject_id',
+        'attribute' => 'studyplan_subject_ids',
         'value' => function ($model) {
-            return RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id);
+            $v = [];
+            foreach (explode(',', $model->studyplan_subject_ids) as $studyplan_subject_id) {
+                if (!$studyplan_subject_id) {
+                    continue;
+                }
+                $v[] = RefBook::find('subject_memo_3')->getValue($studyplan_subject_id);
+            }
+            return implode('<br/> ', $v);
         },
-        'group' => true,
-        'subGroupOf' => 1
-    ],
-    [
-        'attribute' => 'subject_type_id',
-        'filter' => RefBook::find('subject_type_name')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
-        'value' => function ($model) {
-            return RefBook::find('subject_type_name')->getValue($model->subject_type_id);
-        },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'group' => true,  // enable grouping
-        'subGroupOf' => 1
-    ],
-    [
-        'attribute' => 'subject_vid_id',
-        'filter' => RefBook::find('subject_vid_name')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
-        'value' => function ($model) {
-            return RefBook::find('subject_vid_name')->getValue($model->subject_vid_id);
-        },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'group' => true,  // enable grouping
-        'subGroupOf' => 1
-    ],
-    [
-        'attribute' => 'direction_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => \common\models\guidejob\Direction::getDirectionList(),
-        'value' => function ($model, $key, $index, $widget) {
-            return $model->direction ? $model->direction->name : null;
-        },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-    ],
-    [
-        'attribute' => 'teachers_id',
-        'filter' => RefBook::find('teachers_fio')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
-        'value' => function ($model) {
-            return RefBook::find('teachers_fio')->getValue($model->teachers_id);
-        },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-    ],
-    [
-        'attribute' => 'load_time',
-        'value' => function ($model) {
-            return $model->load_time;
-        },
+        'width' => '400px',
         'format' => 'raw',
+        'noWrap' => true,
+        'group' => true,  // enable grouping
+        'subGroupOf' => 2
     ],
     [
         'attribute' => 'invoices_summ',
@@ -157,11 +112,13 @@ $columns = [
         },
         'contentOptions' => function ($model) {
             switch ($model->studyplan_invoices_status) {
-                case 1:
+                case StudyplanInvoices::STATUS_WORK:
                     return ['class' => 'warning'];
-                case 2:
+                case StudyplanInvoices::STATUS_PAYD:
+                    return ['class' => 'info'];
+                case StudyplanInvoices::STATUS_RECEIPT:
                     return ['class' => 'success'];
-                case 3:
+                case StudyplanInvoices::STATUS_ARREARS:
                     return ['class' => 'danger'];
                 default:
                     return [];
@@ -177,7 +134,7 @@ $columns = [
         'buttons' => [
             'create' => function ($key, $model) {
                 return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                    Url::to(['/invoices/default/create']), [
+                    Url::to(['/invoices/default/create', 'studyplan_id' => $model->studyplan_id]), [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -207,7 +164,7 @@ $columns = [
         ],
         'visibleButtons' => [
             'create' => function ($model) {
-                return $model->studyplan_invoices_id == null;
+                return true;
             },
             'delete' => function ($model) {
                 return $model->studyplan_invoices_id !== null;
@@ -249,16 +206,20 @@ $columns = [
 
             <?= GridView::widget([
                 'id' => 'studyplan-invoices-grid',
-                'pjax' => false,
+                'pjax' => true,
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
+                'bulkActionOptions' => [
+                    'gridId' => 'studyplan-invoices-grid',
+                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art','Delete')] //Configure here you bulk actions
+                ],
                 'columns' => $columns,
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
-                            ['content' => 'Дисциплина/Преподаватель', 'options' => ['colspan' => 5, 'class' => 'text-center info']],
-                            ['content' => 'Счета за обучение', 'options' => ['colspan' => 3, 'class' => 'text-center success']],
+                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 7, 'class' => 'text-center warning']],
+                            ['content' => 'Дисциплина/Преподаватель', 'options' => ['colspan' => 1, 'class' => 'text-center info']],
+                            ['content' => 'Счета за обучение', 'options' => ['colspan' => 2, 'class' => 'text-center success']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

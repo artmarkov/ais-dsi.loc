@@ -20,9 +20,10 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
     public function rules()
     {
         return [
-            [['studyplan_subject_id', 'subject_type_id', 'subject_vid_id', 'education_cat_id', 'course', 'studyplan_id', 'programm_id', 'student_id', 'plan_year', 'status', 'teachers_load_id', 'direction_id', 'teachers_id', 'studyplan_invoices_id', 'invoices_id', 'studyplan_invoices_status'], 'integer'],
-            [['invoices_summ', 'week_time', 'load_time'], 'number'],
-            [['month_time_fact', 'studentFio', 'invoices_date'], 'safe'],
+            [['studyplan_id', 'programm_id', 'student_id', 'plan_year', 'course', 'status', 'education_cat_id', 'studyplan_invoices_id', 'plan_year', 'studyplan_invoices_status', 'invoices_id'], 'integer'],
+            [['invoices_summ'], 'number'],
+            [['studyplan_subject_ids', 'subject_list', 'subject_type_list', 'subject_type_sect_list', 'subject_vid_list', 'teachers_list'], 'string'],
+            [['month_time_fact', 'studentFio', 'invoices_date', 'payment_time', 'payment_time_fact'], 'safe'],
         ];
     }
 
@@ -65,32 +66,32 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
         }
 
         $query->andFilterWhere([
-            'studyplan_subject_id' => $this->studyplan_subject_id,
-            'subject_type_id' => $this->subject_type_id,
-            'subject_vid_id' => $this->subject_vid_id,
-            'education_cat_id' => $this->education_cat_id,
-            'course' => $this->course,
-            'week_time' => $this->week_time,
             'studyplan_id' => $this->studyplan_id,
             'programm_id' => $this->programm_id,
             'student_id' => $this->student_id,
             'plan_year' => $this->plan_year,
+            'course' => $this->course,
             'status' => $this->status,
-            'teachers_load_id' => $this->teachers_load_id,
-            'direction_id' => $this->direction_id,
-            'teachers_id' => $this->teachers_id,
+            'education_cat_id' => $this->education_cat_id,
             'studyplan_invoices_id' => $this->studyplan_invoices_id,
+            'plan_year' => $this->plan_year,
+            'studyplan_invoices_status' => $this->studyplan_invoices_status,
             'invoices_id' => $this->invoices_id,
-            'invoices_summ' => $this->invoices_summ,
+            'month_time_fact' => $this->month_time_fact,
             'invoices_date' => $this->invoices_date,
-            'week_time' => $this->week_time,
-            'load_time' => $this->load_time,
+            'payment_time' => $this->payment_time,
+            'payment_time_fact' => $this->payment_time_fact,
+            'invoices_summ' => $this->invoices_summ
         ]);
 
         if($this->studentFio) {
             $query->andFilterWhere([
                 'student_id' => $this->studentFio,
             ]);
+        }
+        if ($this->subject_list) {
+            $query->andFilterWhere(['like', 'subject_list', $this->subject_list]);
+
         }
 
         return $dataProvider;

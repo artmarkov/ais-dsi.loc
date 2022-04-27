@@ -3,6 +3,7 @@
 namespace common\models\studyplan;
 
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\Schedule;
 use common\models\guidejob\Direction;
 use common\models\own\Invoices;
 use common\models\subject\SubjectType;
@@ -44,6 +45,11 @@ use Yii;
  */
 class StudyplanInvoices extends \artsoft\db\ActiveRecord
 {
+    const STATUS_WORK = 2;
+    const STATUS_PAYD = 3;
+    const STATUS_ARREARS = 4;
+    const STATUS_RECEIPT = 5;
+
     /**
      * {@inheritdoc}
      */
@@ -60,22 +66,29 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
         return [
             TimestampBehavior::class,
             BlameableBehavior::class,
-            [
-                'class' => DateFieldBehavior::class,
-                'attributes' => ['invoices_date', 'payment_time', 'payment_time_fact'],
-            ],
         ];
     }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['studyplan_id', 'invoices_id', 'type_id'], 'required'],
-            [['studyplan_id', 'invoices_id', 'direction_id', 'teachers_id', 'type_id', 'vid_id', 'month_time_fact', 'invoices_tabel_flag',  'status'], 'integer'],
+            [['studyplan_id', 'invoices_id', 'type_id', 'invoices_summ', 'invoices_app'], 'required'],
+            [['studyplan_id', 'invoices_id', 'direction_id', 'teachers_id', 'type_id', 'vid_id', 'month_time_fact', 'invoices_tabel_flag', 'status'], 'integer'],
             [['invoices_date', 'payment_time', 'payment_time_fact'], 'safe'],
             [['invoices_summ'], 'number'],
+            ['status', 'default', 'value' => function () {
+                return self::STATUS_WORK;
+            }],
+            ['invoices_date', 'default', 'value' => function () {
+                return Schedule::getStartEndDay()[0];
+            }],
+            ['payment_time', 'default', 'value' => function () {
+                return Schedule::getStartEndDay()[0]; }, 'when' => function () { return $this->status == self::STATUS_PAYD; }],
+            ['payment_time_fact', 'default', 'value' => function () {
+                return Schedule::getStartEndDay()[0]; }, 'when' => function () { return $this->status == self::STATUS_RECEIPT; }],
             [['invoices_app'], 'string', 'max' => 256],
             [['invoices_rem'], 'string', 'max' => 512],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['type_id' => 'id']],
@@ -120,7 +133,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
     {
         return 'version';
     }
-    
+
     /**
      * Gets query for [[SubjectType]].
      *
@@ -166,9 +179,33 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
+
     public function getTeachers()
     {
         return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
     }
-    
+
+    /**
+     * @return array
+     */
+    public static function getStatusList()
+    {
+        return array(
+            self::STATUS_WORK => 'Счет в работе',
+            self::STATUS_PAYD => 'Счет оплачен',
+            self::STATUS_ARREARS => 'Задолженность по оплате',
+            self::STATUS_RECEIPT => 'Поступили средства',
+        );
+    }
+
+    /**
+     * getStatusValue
+     * @param string $val
+     * @return string
+     */
+    public static function getStatusValue($val)
+    {
+        $ar = self::getStatusList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
 }
