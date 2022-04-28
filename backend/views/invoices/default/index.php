@@ -178,9 +178,7 @@ $columns = [
 ?>
 <div class="studyplan-invoices-index">
     <div class="panel">
-        <div class="panel-heading">
-            Счета за обучение
-        </div>
+        <?= $this->render('_search', compact('model_date')) ?>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-6">
@@ -208,10 +206,14 @@ $columns = [
                 'id' => 'studyplan-invoices-grid',
                 'pjax' => true,
                 'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
+               // 'filterModel' => $searchModel,
                 'bulkActionOptions' => [
                     'gridId' => 'studyplan-invoices-grid',
-                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art','Delete')] //Configure here you bulk actions
+                    'actions' => [
+                        Url::to(['bulk-delete']) => 'Удалить квитанции',
+                        Url::to(['bulk-load']) => 'Выгрузить квитанции в Excel',
+                        Url::to(['bulk-new']) => 'Создать новые квитанции',
+                    ] //Configure here you bulk actions
                 ],
                 'columns' => $columns,
                 'beforeHeader' => [

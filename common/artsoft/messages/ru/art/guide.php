@@ -59,6 +59,7 @@ return [
     'Subject Name' => 'Название дисциплины',
     'Subject Vid' => 'Форма занятий',
     'Subject Type' => 'Тип занятий',
+    'Subject Type Sect' => 'Тип занятий группы',
     'Select Department...' => 'Выберите отдел...',
     'Select Subject Category...' => 'Выберите категорию дисциплины...',
     'Select Subject Name...' => 'Выберите дисциплину...',

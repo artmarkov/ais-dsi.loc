@@ -4,7 +4,9 @@ namespace common\models\subject;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\db\ActiveRecord;
+use common\models\own\Department;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "subject".
@@ -54,7 +56,7 @@ class Subject extends ActiveRecord
             ['status', 'integer'],
             [['name'], 'string', 'max' => 64],
             [['slug'], 'string', 'max' => 32],
-            [['department_list', 'category_list', 'vid_list'], 'safe'],
+            [['department_list', 'category_list', 'vid_list'], 'string'],
         ];
     }
 
@@ -77,17 +79,9 @@ class Subject extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getSubjectCategories()
-    {
-        return $this->hasMany(SubjectCategory::class, ['subject_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getSubjectDepartments()
     {
-        return $this->hasMany(SubjectDepartment::class, ['subject_id' => 'id']);
+        return $this->hasMany(Department::class, ['subject_id' => 'id']);
     }
 
     /**
@@ -109,17 +103,16 @@ class Subject extends ActiveRecord
 
     /**
      * @return \yii\db\ActiveQuery
-     * Полный список городов страны по id
      */
-    public static function getSubjectById($category_id) {
-        $data = self::find()->select(['id','name'])
-            ->where(['like', 'category_list', $category_id])
-            ->asArray()->all();
+    public static function getSubjectById($category_id = null) {
+        $data = self::find()->select(['id','name']);
+             $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
+        $data = $data->asArray()->all();
 
         return $data;
     }
 
-    public static function getSubjectByCategory($category_id)
+    public static function getSubjectByCategory($category_id = null)
     {
         $data = self::find()->select(['name', 'id']);
         $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
@@ -127,4 +120,5 @@ class Subject extends ActiveRecord
 
         return $data;
     }
+
 }

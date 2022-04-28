@@ -5,6 +5,9 @@ namespace backend\controllers\invoices;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use Yii;
 use artsoft\controllers\admin\BaseController;
+use yii\base\DynamicModel;
+use yii\helpers\ArrayHelper;
+use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -17,12 +20,46 @@ class DefaultController extends BaseController
 
     public function actionIndex()
     {
-        $searchModel = new StudyplanInvoicesViewSearch();
+        $session = Yii::$app->session;
 
-        $params = Yii::$app->request->getQueryParams();
+        $day_in = 1;
+        $day_out = date("t");
+
+        $model_date = new DynamicModel(['date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'teachers_id']);
+        $model_date->addRule(['date_in', 'date_out' ], 'required')
+            ->addRule(['date_in', 'date_out'], 'string')
+            ->addRule(['programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'teachers_id'], 'integer');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $mon = date('m');
+            $year = date('Y');
+
+            $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:d.m.Y');
+            $model_date->date_out = $session->get('_invoices_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
+        }
+        $session->set('_invoices_date_in', $model_date->date_in);
+        $session->set('_invoices_date_out', $model_date->date_out);
+
+        $searchName = StringHelper::basename($this->modelSearchClass::className());
+        $searchModel = new $this->modelSearchClass;
+        $params = ArrayHelper::merge(Yii::$app->request->getQueryParams(), [
+            $searchName => [
+                'date_in' => $model_date->date_in,
+                'date_out' => $model_date->date_out,
+                'programm_id' => $model_date->programm_id,
+                'education_cat_id' => $model_date->education_cat_id,
+                'course' => $model_date->course,
+                'subject_id' => $model_date->subject_id,
+                'subject_type_id' => $model_date->subject_type_id,
+                'subject_type_sect_id' => $model_date->subject_type_sect_id,
+                'subject_vid_id' => $model_date->subject_vid_id,
+                'studyplan_invoices_status' => $model_date->studyplan_invoices_status,
+                'student_id' => $model_date->student_id,
+                'teachers_id' => $model_date->teachers_id,
+            ]
+        ]);
         $dataProvider = $searchModel->search($params);
 
-        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel'));
+        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel', 'model_date'));
     }
 
     public function actionCreate()
