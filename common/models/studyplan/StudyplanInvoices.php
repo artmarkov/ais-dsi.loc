@@ -2,25 +2,19 @@
 
 namespace common\models\studyplan;
 
-use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
-use artsoft\helpers\PriceHelper;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
-use common\models\education\EducationProgrammLevel;
 use common\models\guidejob\Direction;
 use common\models\own\Invoices;
-use common\models\parents\Parents;
-use common\models\students\Student;
 use common\models\subject\SubjectType;
 use common\models\teachers\Teachers;
 use common\widgets\qrcode\QRcode;
-use common\widgets\qrcode\widgets\Text;
+use common\widgets\qrcode\widgets\Link;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
-use function morphos\Russian\inflectName;
 
 /**
  * This is the model class for table "studyplan_invoices".
@@ -236,44 +230,83 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
         $model = $this;
         $invoices = $model->invoices;
         $studyplan = $model->studyplan;
-        $teachers = $model->teachers;
         $save_as = str_replace(' ', '_', $model->studyplan_id);
 
         $data[] = [
             'rank' => 'doc',
             'invoices_date' => date('j', $model->invoices_date) . ' ' . ArtHelper::getMonthsList()[date('n', $model->invoices_date)] . ' ' . date('Y', $model->invoices_date), // дата платежа
-            'invoices_summ' => $model->invoices_summ . ' руб.',
+            'invoices_summ' => $model->invoices_summ,
             'invoices_app' => $model->invoices_app,
             'student' => $studyplan->student->getFullName(), // Полное имя ученика
-            'student_address' => $studyplan->student->getUserAddress(),
+            'last_name' => $studyplan->student->user->last_name,
+            'first_name' => $studyplan->student->user->first_name,
+            'middle_name' => $studyplan->student->user->middle_name,
+            'student_address' => $studyplan->student->getUserAddress() ?: '_________________________',
             'student_fls' => sprintf('%06d', $model->studyplan_id),
             'recipient' => $invoices->recipient,
             'inn' => $invoices->inn,
             'payment_account' => $invoices->payment_account,
+            'corr_account' => $invoices->corr_account,
             'kpp' => $invoices->kpp,
+            'okato' => '',
             'personal_account' => $invoices->personal_account,
             'bank_name' => $invoices->bank_name,
             'bik' => $invoices->bik,
             'kbk' => $invoices->kbk,
-            'class_teacher_info' => RefBook::find('education_programm_short_name')->getValue($studyplan->programm_id) . ' ' . $studyplan->course . ' класс ' . isset($model->teachers_id) ? RefBook::find('teachers_fio')->getValue($model->teachers_id) : '',
-            'qr_code' => Text::widget([
-                'outputDir' => '@webroot/upload/qrcode',
-                'outputDirWeb' => '@web/upload/qrcode',
+            'pay_period' => date('m.Y', $model->invoices_date),
+            'inst_num' => Yii::$app->settings->get('own.shortname', ""),
+            'class_info' => RefBook::find('education_programm_short_name')->getValue($studyplan->programm_id) . ' ' . $studyplan->course . ' класс ',
+            'teacher_info' => isset($model->teachers_id) ? RefBook::find('teachers_fio')->getValue($model->teachers_id) : '',
+        ];
+        $data_qr[] = [
+            'rank' => 'qr',
+            'qr_code' => Link::widget([
+                'outputDir' => '@runtime/cache/qrcode',
+                'outputDirWeb' => '@runtime/cache/qrcode',
                 'ecLevel' => QRcode::QR_ECLEVEL_L,
-                'text' => 'ST00012|Name=ГБУДО г. Москвы "ДШИ им.И.Ф.Стравинского")|PersonalAcc=03224643450000007300|BankName=ГУ Банка России по ЦФО//УФК по г.Москве г.Москва|BIC=004525988|CorrespAcc=40102810545370000003|Sum=340000|Purpose= Оплата за март 2021 г.ВН|PayeeINN=7733098705|KPP=773301001|CBC=05600000000131131022|OKATO=|lastName=Туйцына|firstName=Анастасия|middleName=Евгеньевна|persAcc=03992|childFio=Туйцына Анастасия Евгеньевна|paymPeriod=Март, 2021 г.|instNum=ДШИ им.И.Ф.Стравинского|classNum=Веселые нотки',
-                'size' => 2,
+                'text' => $this->getQrContent($data[0]),
             ]),
         ];
-
         $output_file_name = str_replace('.', '_' . $save_as . '_' . Yii::$app->formatter->asDate($model->invoices_date, 'php:Y_m_d') . '.', basename($template));
 
-        $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data) {
+        $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data, $data_qr) {
             /* @var $tbs clsTinyButStrong */
             $tbs->MergeBlock('doc', $data);
+            $tbs->MergeBlock('qr', $data_qr);
 
         })->prepare();
         $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);
         exit;
+    }
+
+    protected function getQrContent($data)
+    {
+        $str = 'ST00012';
+        $data = [
+            'Name' => $data['recipient'] ?: '',
+            'PersonalAcc' => $data['personal_account'] ?: '',
+            'BankName' => $data['bank_name'] ?: '',
+            'BIC' => $data['bik'] ?: '',
+            'CorrespAcc' => $data['corr_account'] ?: '',
+            'Sum' => $data['invoices_summ'] ?: '',
+            'Purpose' => $data['invoices_app'] ?: '',
+            'PayeeINN' => $data['inn'] ?: '',
+            'KPP' => $data['kpp'] ?: '',
+            'CBC' => $data['kbk'] ?: '',
+            'OKATO' => $data['okato'] ?: '',
+            'lastName' => $data['last_name'] ?: '',
+            'firstName' => $data['first_name'] ?: '',
+            'middleName' => $data['middle_name'] ?: '',
+            'persAcc' => $data['student_fls'] ?: '',
+            'childFio' => $data['student'] ?: '',
+            'paymPeriod' => $data['pay_period'] ?: '',
+            'instNum' => $data['inst_num'] ?: '',
+            'classNum' => $data['class_info'] ?: '',
+        ];
+        foreach ($data as $iten => $val) {
+            $str .= '|' . $iten . '=' . $val;
+        }
+        return $str;
     }
 
 }
