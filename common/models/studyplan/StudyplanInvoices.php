@@ -258,11 +258,12 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
             'class_info' => RefBook::find('education_programm_short_name')->getValue($studyplan->programm_id) . ' ' . $studyplan->course . ' класс ',
             'teacher_info' => isset($model->teachers_id) ? RefBook::find('teachers_fio')->getValue($model->teachers_id) : '',
         ];
+
         $data_qr[] = [
             'rank' => 'qr',
             'qr_code' => Link::widget([
-                'outputDir' => '@runtime/cache/qrcode',
-                'outputDirWeb' => '@runtime/cache/qrcode',
+                'outputDir' => '@runtime/qrcode',
+                'outputDirWeb' => '@runtime/qrcode',
                 'ecLevel' => QRcode::QR_ECLEVEL_L,
                 'text' => $this->getQrContent($data[0]),
             ]),
@@ -279,6 +280,11 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
         exit;
     }
 
+    /**
+     * Формирует строку для QR-code квитанции
+     * @param $data
+     * @return string
+     */
     protected function getQrContent($data)
     {
         $str = 'ST00012';
