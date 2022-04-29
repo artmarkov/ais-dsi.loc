@@ -3,6 +3,8 @@
 namespace backend\controllers\invoices;
 
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
+use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanInvoicesView;
 use Yii;
 use artsoft\controllers\admin\BaseController;
 use yii\base\DynamicModel;
@@ -25,10 +27,10 @@ class DefaultController extends BaseController
         $day_in = 1;
         $day_out = date("t");
 
-        $model_date = new DynamicModel(['date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'teachers_id']);
+        $model_date = new DynamicModel(['date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
         $model_date->addRule(['date_in', 'date_out' ], 'required')
             ->addRule(['date_in', 'date_out'], 'string')
-            ->addRule(['programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'teachers_id'], 'integer');
+            ->addRule(['programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
@@ -54,7 +56,9 @@ class DefaultController extends BaseController
                 'subject_vid_id' => $model_date->subject_vid_id,
                 'studyplan_invoices_status' => $model_date->studyplan_invoices_status,
                 'student_id' => $model_date->student_id,
+                'direction_id' => $model_date->direction_id,
                 'teachers_id' => $model_date->teachers_id,
+                'status' => Studyplan::STATUS_ACTIVE,
             ]
         ]);
         $dataProvider = $searchModel->search($params);
@@ -78,5 +82,10 @@ class DefaultController extends BaseController
         }
 
         return $this->renderIsAjax($this->createView, compact('model'));
+    }
+
+    public function actionMakeInvoices($id) {
+        $model = $this->findModel($id);
+      return  $model->makeDocx();
     }
 }

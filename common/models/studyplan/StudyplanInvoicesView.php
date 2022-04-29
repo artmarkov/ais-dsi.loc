@@ -19,6 +19,7 @@ use Yii;
  * @property string|null $subject_type_list
  * @property string|null $subject_type_sect_list
  * @property string|null $subject_vid_list
+ * @property string|null $direction_list
  * @property string|null $teachers_list
  * @property int|null $studyplan_invoices_id
  * @property int|null $invoices_id
@@ -60,6 +61,7 @@ class StudyplanInvoicesView extends StudyplanInvoices
             $attr['subject_type_list'] = 'Тип занятия';
             $attr['subject_type_sect_list'] = 'Тип занятия';
             $attr['subject_vid_list'] = 'Вид занятия';
+            $attr['direction_list'] = Yii::t('art/teachers', 'Direction');
             $attr['teachers_list'] = Yii::t('art/teachers', 'Teacher');
             $attr['studyplan_invoices_id'] ='ID';
             $attr['studyplan_invoices_status'] = 'Статус платежа';

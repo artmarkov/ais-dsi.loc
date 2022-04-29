@@ -129,9 +129,26 @@ select * from
 										   		and teachers_load.studyplan_subject_id = 0) 
 											  inner join subject_schedule on (subject_schedule.teachers_load_id = teachers_load.id)
 									   			where studyplan_subject.studyplan_id = studyplan.id and studyplan_subject.status != 0) 
-																			) as t), \',\')::text as subject_vid_list,					   
+																			) as t), \',\')::text as subject_vid_list,
+				  array_to_string(ARRAY(select DISTINCT t.direction_id from (
+											(select teachers_load.direction_id from teachers_load 
+											   inner join studyplan_subject on (studyplan_subject.id = teachers_load.studyplan_subject_id 
+												 and teachers_load.subject_sect_studyplan_id = 0)
+											   inner join subject_schedule on (subject_schedule.teachers_load_id = teachers_load.id)
+												 where studyplan_subject.studyplan_id = studyplan.id and studyplan_subject.status != 0)
+										 UNION ALL            
+											(select teachers_load.direction_id from studyplan_subject 
+                 							  inner join subject_sect on (subject_sect.subject_cat_id = studyplan_subject.subject_cat_id
+												and subject_sect.subject_id = studyplan_subject.subject_id
+												and subject_sect.subject_vid_id = studyplan_subject.subject_vid_id)
+                 							  inner join subject_sect_studyplan on (subject_sect_studyplan.subject_sect_id = subject_sect.id and studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 
+				 							  inner join teachers_load on (teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id
+										   		and teachers_load.studyplan_subject_id = 0) 
+											  inner join subject_schedule on (subject_schedule.teachers_load_id = teachers_load.id)
+									   			where studyplan_subject.studyplan_id = studyplan.id and studyplan_subject.status != 0) 
+																			) as t), \',\')::text as direction_list,																				   
 				 array_to_string(ARRAY(select DISTINCT t.teachers_id from (
-											(select teachers_id from teachers_load 
+											(select teachers_load.teachers_id from teachers_load 
 											   inner join studyplan_subject on (studyplan_subject.id = teachers_load.studyplan_subject_id 
 												 and teachers_load.subject_sect_studyplan_id = 0)
 											   inner join subject_schedule on (subject_schedule.teachers_load_id = teachers_load.id)

@@ -18,6 +18,7 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
     public $subject_type_id;
     public $subject_type_sect_id;
     public $subject_vid_id;
+    public $direction_id;
     public $teachers_id;
 
     /**
@@ -29,8 +30,8 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
             [['studyplan_id', 'programm_id', 'student_id', 'plan_year', 'course', 'status', 'education_cat_id', 'studyplan_invoices_id', 'plan_year', 'studyplan_invoices_status', 'invoices_id'], 'integer'],
             [['month_time_fact', 'invoices_date', 'payment_time', 'payment_time_fact'], 'integer'],
             [['invoices_summ'], 'number'],
-            [['studyplan_subject_ids', 'subject_list', 'subject_type_list', 'subject_type_sect_list', 'subject_vid_list', 'teachers_list'], 'string'],
-            [['date_in', 'date_out', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'teachers_id'], 'safe'],
+            [['studyplan_subject_ids', 'subject_list', 'subject_type_list', 'subject_type_sect_list', 'subject_vid_list', 'direction_list', 'teachers_list'], 'string'],
+            [['date_in', 'date_out', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'direction_id', 'teachers_id'], 'safe'],
         ];
     }
 
@@ -90,7 +91,7 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
             'invoices_summ' => $this->invoices_summ
         ]);
         if ($this->date_in && $this->date_out) {
-            $query->andFilterWhere(['between', 'invoices_date', Yii::$app->formatter->asTimestamp($this->date_in), Yii::$app->formatter->asTimestamp($this->date_out)]);
+            $query->andWhere(['OR', ['between', 'invoices_date', Yii::$app->formatter->asTimestamp($this->date_in), Yii::$app->formatter->asTimestamp($this->date_out)], ['IS', 'invoices_date', NULL]]);
         }
         if ($this->subject_id) {
             $query->andWhere(new \yii\db\Expression(":subject_id = any(string_to_array(subject_list, ',')::int[])"), [':subject_id' => $this->subject_id]);
@@ -103,6 +104,9 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
         }
         if ($this->subject_vid_id) {
             $query->andWhere(new \yii\db\Expression(":subject_vid_id = any(string_to_array(subject_vid_list, ',')::int[])"), [':subject_vid_id' => $this->subject_vid_id]);
+        }
+        if ($this->direction_id) {
+            $query->andWhere(new \yii\db\Expression(":direction_id = any(string_to_array(direction_list, ',')::int[])"), [':direction_id' => $this->direction_id]);
         }
         if ($this->teachers_id) {
             $query->andWhere(new \yii\db\Expression(":teachers_id = any(string_to_array(teachers_list, ',')::int[])"), [':teachers_id' => $this->teachers_id]);

@@ -4,6 +4,7 @@ use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $form artsoft\widgets\ActiveForm */
@@ -57,15 +58,30 @@ $form = ActiveForm::begin([
                                             ],
                                         ])->label(Yii::t('art/guide', 'Education Cat')); ?>
 
-                                        <?= $form->field($model_date, "teachers_id")->widget(\kartik\select2\Select2::class, [
-                                            'data' => RefBook::find('teachers_fio')->getList(),
+                                        <?= $form->field($model_date, 'direction_id')->widget(\kartik\select2\Select2::class, [
+                                            'data' => \common\models\guidejob\Direction::getDirectionList(),
                                             'options' => [
-                                                'placeholder' => Yii::t('art/guide', 'Select...'),
+                                                'id' => 'direction_id',
+                                                'placeholder' => Yii::t('art', 'Select...'),
                                             ],
                                             'pluginOptions' => [
                                                 'allowClear' => true
                                             ],
-                                        ])->label(Yii::t('art/teachers', 'Teacher')); ?>
+                                        ])->label(Yii::t('art/teachers', 'Name Direction'));
+                                        ?>
+
+                                        <?= $form->field($model_date, 'teachers_id')->widget(\kartik\depdrop\DepDrop::class, [
+                                            'data' => \common\models\teachers\Teachers::getTeachersList($model_date->direction_id),
+                                            'options' => [
+                                                'placeholder' => Yii::t('art', 'Select...'),
+                                            ],
+                                            'pluginOptions' => [
+                                                'depends' => ['direction_id'],
+                                                'placeholder' => Yii::t('art', 'Select...'),
+                                                'url' => Url::to(['/teachers/default/teachers'])
+                                            ]
+                                        ])->label(Yii::t('art/teachers', 'Teacher'));
+                                        ?>
 
                                         <?= $form->field($model_date, "student_id")->widget(\kartik\select2\Select2::class, [
                                             'data' => RefBook::find('students_fio')->getList(),

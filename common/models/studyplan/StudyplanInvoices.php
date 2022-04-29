@@ -3,14 +3,22 @@
 namespace common\models\studyplan;
 
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\ArtHelper;
+use artsoft\helpers\DocTemplate;
+use artsoft\helpers\PriceHelper;
+use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use common\models\education\EducationProgrammLevel;
 use common\models\guidejob\Direction;
 use common\models\own\Invoices;
+use common\models\parents\Parents;
+use common\models\students\Student;
 use common\models\subject\SubjectType;
 use common\models\teachers\Teachers;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
+use function morphos\Russian\inflectName;
 
 /**
  * This is the model class for table "studyplan_invoices".
@@ -86,9 +94,15 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
                 return Schedule::getStartEndDay()[0];
             }],
             ['payment_time', 'default', 'value' => function () {
-                return Schedule::getStartEndDay()[0]; }, 'when' => function () { return $this->status == self::STATUS_PAYD; }],
+                return Schedule::getStartEndDay()[0];
+            }, 'when' => function () {
+                return $this->status == self::STATUS_PAYD;
+            }],
             ['payment_time_fact', 'default', 'value' => function () {
-                return Schedule::getStartEndDay()[0]; }, 'when' => function () { return $this->status == self::STATUS_RECEIPT; }],
+                return Schedule::getStartEndDay()[0];
+            }, 'when' => function () {
+                return $this->status == self::STATUS_RECEIPT;
+            }],
             [['invoices_app'], 'string', 'max' => 256],
             [['invoices_rem'], 'string', 'max' => 512],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['type_id' => 'id']],
@@ -109,7 +123,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
             'studyplan_id' => 'Учебный план',
             'invoices_id' => 'Вид платежа',
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
-            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
+            'teachers_id' => Yii::t('art/teachers', 'Teacher'),
             'type_id' => 'Тип платежа',
             'vid_id' => 'Вид платежа',
             'month_time_fact' => 'Фактически оплаченные часы',
@@ -208,4 +222,50 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
         $ar = self::getStatusList();
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
+
+    /**
+     * формирование квитанции
+     *
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function makeDocx()
+    {
+        $template = 'document/invoices_pd4.docx';
+        $model = $this;
+        $invoices = $model->invoices;
+        $studyplan = $model->studyplan;
+        $teachers = $model->teachers;
+        $save_as = str_replace(' ', '_', $model->studyplan_id);
+
+        $data[] = [
+            'rank' => 'doc',
+            'invoices_date' => date('j', strtotime($model->invoices_date)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->invoices_date))] . ' ' . date('Y', strtotime($model->invoices_date)), // дата платежа
+            'invoices_summ' => $model->invoices_summ . ' руб.',
+            'invoices_app' => $model->invoices_app,
+            'student' => $studyplan->student->getFullName(), // Полное имя ученика
+            'student_address' => $studyplan->student->getUserAddress(),
+            'student_fls' => sprintf('%06d', $model->studyplan_id),
+            'recipient' => $invoices->recipient,
+            'inn' => $invoices->inn,
+            'payment_account' => $invoices->payment_account,
+            'kpp' => $invoices->kpp,
+            'personal_account' => $invoices->personal_account,
+            'bank_name' => $invoices->bank_name,
+            'bik' => $invoices->bik,
+            'kbk' => $invoices->kbk,
+            'class_teacher_info' => RefBook::find('education_programm_short_name')->getValue($studyplan->programm_id) . ' ' . $studyplan->course . ' класс ' . isset($model->teachers_id) ? RefBook::find('teachers_fio')->getValue($model->teachers_id) : '',
+            'qr_code' => $studyplan->programm_id,
+        ];
+
+        $output_file_name = str_replace('.', '_' . $save_as . '_' . $model->invoices_date . '.', basename($template));
+
+        $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data) {
+            /* @var $tbs clsTinyButStrong */
+            $tbs->MergeBlock('doc', $data);
+
+        })->prepare();
+        $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);
+        exit;
+    }
+
 }
