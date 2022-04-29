@@ -20,7 +20,7 @@ use yii\helpers\Url;
 
     <div class="panel">
         <div class="panel-heading">
-            <?= Html::encode($this->title) ?>
+           Карточка платежа
         </div>
         <div class="panel-body">
             <div class="row">
@@ -94,9 +94,9 @@ use yii\helpers\Url;
             </div>
             <div class="pull-right">
                 <div class="form-group btn-group">
-                    <?= Html::a('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Сформировать квитанцию',
+                    <?= Html::a('<i class="fa fa-file-word-o" aria-hidden="true"></i> Сформировать квитанцию',
                         ['/invoices/default/make-invoices', 'id' => $model->id],
-                        ['class' => 'btn btn-warning']); ?>
+                        ['class' => 'btn btn-info']); ?>
 
                 </div>
             </div>

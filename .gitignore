@@ -30,3 +30,6 @@ phpunit.phar
 
 # env files
 .env
+
+/frontend/web/uploads
+/backend/web/upload

@@ -15,6 +15,8 @@ use common\models\parents\Parents;
 use common\models\students\Student;
 use common\models\subject\SubjectType;
 use common\models\teachers\Teachers;
+use common\widgets\qrcode\QRcode;
+use common\widgets\qrcode\widgets\Text;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
@@ -239,7 +241,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
 
         $data[] = [
             'rank' => 'doc',
-            'invoices_date' => date('j', strtotime($model->invoices_date)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->invoices_date))] . ' ' . date('Y', strtotime($model->invoices_date)), // дата платежа
+            'invoices_date' => date('j', $model->invoices_date) . ' ' . ArtHelper::getMonthsList()[date('n', $model->invoices_date)] . ' ' . date('Y', $model->invoices_date), // дата платежа
             'invoices_summ' => $model->invoices_summ . ' руб.',
             'invoices_app' => $model->invoices_app,
             'student' => $studyplan->student->getFullName(), // Полное имя ученика
@@ -254,10 +256,16 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
             'bik' => $invoices->bik,
             'kbk' => $invoices->kbk,
             'class_teacher_info' => RefBook::find('education_programm_short_name')->getValue($studyplan->programm_id) . ' ' . $studyplan->course . ' класс ' . isset($model->teachers_id) ? RefBook::find('teachers_fio')->getValue($model->teachers_id) : '',
-            'qr_code' => $studyplan->programm_id,
+            'qr_code' => Text::widget([
+                'outputDir' => '@webroot/upload/qrcode',
+                'outputDirWeb' => '@web/upload/qrcode',
+                'ecLevel' => QRcode::QR_ECLEVEL_L,
+                'text' => 'ST00012|Name=ГБУДО г. Москвы "ДШИ им.И.Ф.Стравинского")|PersonalAcc=03224643450000007300|BankName=ГУ Банка России по ЦФО//УФК по г.Москве г.Москва|BIC=004525988|CorrespAcc=40102810545370000003|Sum=340000|Purpose= Оплата за март 2021 г.ВН|PayeeINN=7733098705|KPP=773301001|CBC=05600000000131131022|OKATO=|lastName=Туйцына|firstName=Анастасия|middleName=Евгеньевна|persAcc=03992|childFio=Туйцына Анастасия Евгеньевна|paymPeriod=Март, 2021 г.|instNum=ДШИ им.И.Ф.Стравинского|classNum=Веселые нотки',
+                'size' => 2,
+            ]),
         ];
 
-        $output_file_name = str_replace('.', '_' . $save_as . '_' . $model->invoices_date . '.', basename($template));
+        $output_file_name = str_replace('.', '_' . $save_as . '_' . Yii::$app->formatter->asDate($model->invoices_date, 'php:Y_m_d') . '.', basename($template));
 
         $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data) {
             /* @var $tbs clsTinyButStrong */
