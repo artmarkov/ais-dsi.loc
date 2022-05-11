@@ -35,7 +35,7 @@ Yii::$container->set(\kartik\datetime\DateTimePicker::class, [
 ]);
 
 return [
-    'name' => 'My Application',
+    'name' => 'АИС "Школа Искусств"',
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'bootstrap' => ['art', 'queue'],
     'language' => 'ru',
@@ -48,6 +48,9 @@ return [
                 'ru' => 'Россия',
             ],
             'languageRedirects' => ['ru' => 'ru'],
+            'emailTemplates' => [
+                'send-contact' => '/mail/send-contact-html',
+            ],
         ],
         'session' => [
             'class' => 'yii\web\DbSession',

@@ -11,9 +11,10 @@ use Yii;
 class SupportController extends \frontend\controllers\DefaultController
 {
     public function actionIndex()
-    {        $model = new SupportForm();
+    {
+        $model = new SupportForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
+            if ($model->sendEmail(Yii::$app->params['supportEmail'])) {
                 Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
             } else {
                 Yii::$app->session->setFlash('error', 'There was an error sending email.');

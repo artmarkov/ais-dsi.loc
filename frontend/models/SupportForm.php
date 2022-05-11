@@ -55,10 +55,10 @@ class SupportForm extends Model
     public function sendEmail($email)
     {
         return Yii::$app->mailer->compose()
+            ->setFrom(Yii::$app->art->emailSender)
             ->setTo($email)
-            ->setFrom([$this->email => $this->name])
-            ->setSubject($this->subject)
-            ->setTextBody($this->body)
+            ->setSubject($this->subject . ' '. $this->email)
+            ->setTextBody($this->body . ' ' . $this->email)
             ->send();
     }
 }
