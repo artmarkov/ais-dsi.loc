@@ -4,6 +4,7 @@ namespace frontend\models;
 
 use Yii;
 use yii\base\Model;
+use yii\web\UploadedFile;
 
 /**
  * SupportForm is the model behind the contact form.
@@ -26,6 +27,7 @@ class SupportForm extends Model
         return [
             [['name', 'email', 'phone', 'subject', 'body'], 'required'],
             ['email', 'email'],
+            [['name', 'email', 'phone', 'subject', 'body', 'phone_optional'], 'string'],
             ['file', 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, pdf'],
         ];
     }
@@ -49,16 +51,31 @@ class SupportForm extends Model
     /**
      * Sends an email to the specified email address using the information collected by this model.
      *
-     * @param  string $email the target email address
+     * @param string $email the target email address
      * @return boolean whether the email was sent
      */
     public function sendEmail($email)
     {
-        return Yii::$app->mailer->compose()
-            ->setFrom(Yii::$app->art->emailSender)
+        $this->file = UploadedFile::getInstance($this, 'file');
+
+        $sender = Yii::$app->mailer->compose(
+            Yii::$app->art->emailTemplates['send-support'],
+            [
+                'email' => $this->email,
+                'phone' => $this->phone,
+                'phone_optional' => $this->phone_optional,
+                'subject' => $this->subject,
+                'body' => $this->body,
+            ]);
+        if ($this->file) {
+            $this->file->saveAs(Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . $this->file->name);
+            $sender->attach(Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . $this->file->name);
+        }
+        $sender->setFrom(Yii::$app->art->emailSender)
             ->setTo($email)
-            ->setSubject($this->subject . ' '. $this->email)
-            ->setTextBody($this->body . ' ' . $this->email)
+            ->setSubject(Yii::t('art/mail', 'Message to the technical service') . ' ' . \artsoft\helpers\Html::encode(Yii::$app->settings->get('general.title', Yii::$app->name, Yii::$app->language)))
             ->send();
+
+        return $sender;
     }
 }

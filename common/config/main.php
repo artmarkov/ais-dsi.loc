@@ -35,7 +35,7 @@ Yii::$container->set(\kartik\datetime\DateTimePicker::class, [
 ]);
 
 return [
-    'name' => 'АИС "Школа Искусств"',
+    'name' => 'АИС Школа Искусств',
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'bootstrap' => ['art', 'queue'],
     'language' => 'ru',
@@ -49,7 +49,8 @@ return [
             ],
             'languageRedirects' => ['ru' => 'ru'],
             'emailTemplates' => [
-                'send-contact' => '/mail/send-contact-html',
+                'send-contact' => '@common/views/mail/send-contact-html',
+                'send-support' => '@common/views/mail/send-support-html',
             ],
         ],
         'session' => [
@@ -89,6 +90,12 @@ return [
 //            'as jobMonitor' => \zhuravljov\yii\queue\monitor\JobMonitor::class,
 //            'as workerMonitor' => \zhuravljov\yii\queue\monitor\WorkerMonitor::class,
             'as queueSchedule' => \artsoft\queue\JobSchedule::class,
+        ],
+        'mailqueue' => [
+            'class' => 'nterms\mailqueue\MailQueue',
+            'table' => 'mail_queue',
+            'mailsPerRound' => 10,
+            'maxAttempts' => 3,
         ],
         'formatter' => [
             'datetimeFormat' => 'php:d.m.Y H:i',

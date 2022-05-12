@@ -6,21 +6,6 @@ class m170529_050554_create_table_system extends Migration
 {
     public function up()
     {
-        $this->createTable('mail_queue', [
-            'id'               => $this->primaryKey(),
-            'created_at'       => $this->dateTime()->notNull(),
-            'sent_at'          => $this->dateTime(),
-            'created_by'       => $this->integer()->notNull(),
-            'rcpt_to'          => $this->string(4000),
-            'subject'          => $this->string(500),
-            'message'          => $this->text(),
-            'content_type'     => $this->string(30)->notNull(),
-            'file_name'        => $this->string(500),
-            'file_type'        => $this->string(50),
-            'file_data'        => $this->binary()
-        ]);
-        $this->addCommentOnTable('mail_queue','Журнал отправленных email-сообщений');
-
         $this->createTable('files', [
             'id'               => $this->primaryKey(),
             'name'             => $this->string(500)->notNull(),

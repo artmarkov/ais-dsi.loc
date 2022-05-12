@@ -38,7 +38,7 @@ return [
         ],
         'urlManager' => [
             'enablePrettyUrl' => true,
-            'scriptUrl' => 'http://artsoft.loc',
+            'scriptUrl' => 'https://test.stravinskiy.ru',
         ],
         'user' => [
             'class' => 'artsoft\helpers\ConsoleUser',

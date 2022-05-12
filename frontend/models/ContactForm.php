@@ -22,11 +22,9 @@ class ContactForm extends Model
     public function rules()
     {
         return [
-            // name, email, subject and body are required
             [['name', 'email', 'subject', 'body', 'verifyCode'], 'required'],
-            // email has to be a valid email address
+            [['name', 'email', 'subject', 'body'], 'string'],
             ['email', 'email'],
-            // verifyCode needs to be entered correctly
             ['verifyCode', 'captcha'],
         ];
     }
@@ -51,27 +49,19 @@ class ContactForm extends Model
      * @param  string $email the target email address
      * @return boolean whether the email was sent
      */
+
     public function sendEmail($email)
     {
-        return Yii::$app->mailer->compose()
+        return Yii::$app->mailer->compose(
+            Yii::$app->art->emailTemplates['send-contact'],
+            [
+                'body' => $this->body,
+                'subject' => $this->subject,
+                'email' => $this->email,
+            ])
             ->setFrom(Yii::$app->art->emailSender)
             ->setTo($email)
-            ->setSubject($this->subject)
-            ->setTextBody($this->body)
+            ->setSubject(Yii::t('art/mail', 'Message from the feedback form') . ' ' . \artsoft\helpers\Html::encode(Yii::$app->settings->get('general.title', Yii::$app->name, Yii::$app->language)))
             ->send();
     }
-//    public function sendEmail($email)
-//    {
-//        return Yii::$app->mailer->compose(
-//            Yii::$app->art->emailTemplates['send-contact'],
-//            [
-//                'body' => $this->body,
-//                'subject' => $this->subject,
-//                'email' => $this->email,
-//            ])
-//            ->setFrom($email)
-//            ->setTo($email)
-//            ->setSubject(Yii::t('art', 'Message for') . ' ' . \artsoft\helpers\Html::encode(Yii::$app->settings->get('general.title', Yii::$app->name, Yii::$app->language)))
-//            ->send();
-//    }
 }
