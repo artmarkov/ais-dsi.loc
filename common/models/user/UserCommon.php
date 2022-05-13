@@ -3,6 +3,7 @@
 namespace common\models\user;
 
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\Schedule;
 use artsoft\models\User;
 use common\models\students\Student;
 use dosamigos\transliterator\TransliteratorHelper;
@@ -10,6 +11,7 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use artsoft\db\ActiveRecord;
 use Yii;
+use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
@@ -286,7 +288,7 @@ class UserCommon extends ActiveRecord
     }
 
     /**
-     * getUsersList
+     * getUsersCommonListByCategory
      *
      * @return array
      */
@@ -308,6 +310,37 @@ class UserCommon extends ActiveRecord
             ->orderBy('category_name, fullname')
             ->asArray()->all();
         return ArrayHelper::map($users, 'id', 'fullname', 'category_name');
+    }
+
+    /**
+     * Дни рождения на дату для выбранных категорий
+     * @param array $category
+     * @param bool $timestamp
+     * @return array|UserCommon[]|\yii\db\ActiveRecord[]
+     */
+    public static function getUsersBirthdayByCategory($category = [], $timestamp = false)
+    {
+        $timestamp = $timestamp ?: time();
+        return static::find()
+            ->select([
+                'id',
+                'CONCAT(last_name, \' \',first_name, \' \',middle_name) as fullname',
+                'CASE
+                  WHEN (user_category = \'employees\') THEN \'Сотрудник\'
+                  WHEN (user_category = \'teachers\') THEN \'Преподаватель\'
+                  WHEN (user_category = \'students\') THEN \'Ученик\'
+                  WHEN (user_category = \'parents\') THEN \'Родитель\'
+                  ELSE \'\'
+            END as category_name',
+                'birth_date'
+            ])
+            ->where(['in', 'user_category', $category])
+            ->andWhere(['=', 'status', self::STATUS_ACTIVE])
+            ->andWhere(new \yii\db\Expression( "date_part('day', to_timestamp(birth_date)) = date_part('day', to_timestamp(:timestamp))"), [':timestamp' => $timestamp])
+            ->andWhere(new \yii\db\Expression( "date_part('month', to_timestamp(birth_date)) = date_part('month', to_timestamp(:timestamp))"), [':timestamp' => $timestamp])
+            ->orderBy('category_name')
+            ->asArray()
+            ->all();
     }
     /**
      * Gets query for [[User]].

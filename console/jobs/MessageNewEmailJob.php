@@ -47,6 +47,8 @@ class MessageNewEmailJob extends \yii\base\BaseObject implements \yii\queue\JobI
         $textBody = 'Здравствуйте, ' . strip_tags($model['receiver']['username']) . PHP_EOL;
         $textBody .= 'По состоянию на ' . date('d.n.Y H:i', time()) . ' в Ваш почтовый ящик поступило ' . strip_tags($model['qty']) . 'новых писем.' . PHP_EOL . PHP_EOL;
         $textBody .=  Html::a(Html::encode($link), $link);
+        $textBody .= '--------------------------';
+        $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
 
         $htmlBody = '<p><b>Здравствуйте</b>, ' . strip_tags($model['receiver']['username']) . '</p>';
         $htmlBody .= '<p>По состоянию на ' . date('d.n.Y H:i', time()) . ' в Ваш почтовый ящик поступило <b>' . strip_tags($model['qty']) . '</b> новых писем.</p>';        
@@ -54,12 +56,12 @@ class MessageNewEmailJob extends \yii\base\BaseObject implements \yii\queue\JobI
         $htmlBody .= '<hr>';
         $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
 
-        return Yii::$app->mailer->compose()
+        return Yii::$app->mailqueue->compose()
             ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
             ->setTo($model['receiver']['email'])
             ->setSubject('Сообщение с сайта ' . Yii::$app->name)
             ->setTextBody($textBody)
             ->setHtmlBody($htmlBody)
-            ->send();
+            ->queue();
     }
 }

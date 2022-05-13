@@ -304,4 +304,28 @@ class ArtHelper
 
         return isset($week_list[$val]) ? $week_list[$val] : null;
     }
+
+    public static function per($i)
+    {
+        $per_pr = '';
+        if ($i > 20) $i = substr($i, strlen($i) - 1, strlen($i));
+        if ($i == 1) $per_pr = "год";
+        if ($i == 0 or $i > 4) $per_pr = "лет";
+        if ($i > 1 and $i < 5) $per_pr = "года";
+        return $per_pr;
+    }
+
+    public static function age($birthday, $timestamp = false)
+    {
+        $current_time = $timestamp != false ? $timestamp : time();
+        $period = $current_time - $birthday; // возрастной период в секундах
+
+        $age_year = floor($period / (365.2421896 * 24 * 60 * 60)); // полных лет
+        $age_month = floor((round(($period / (365.2421896 * 24 * 60 * 60)), 2) - $age_year) * 12); // полных месяцев за вычетом полных лет
+
+        return [
+            'age_year' => $age_year,
+            'age_month' => $age_month,
+        ];
+    }
 }

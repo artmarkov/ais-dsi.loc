@@ -52,7 +52,7 @@ class ContactForm extends Model
 
     public function sendEmail($email)
     {
-        return Yii::$app->mailer->compose(
+        return Yii::$app->mailqueue->compose(
             Yii::$app->art->emailTemplates['send-contact'],
             [
                 'body' => $this->body,
@@ -62,6 +62,6 @@ class ContactForm extends Model
             ->setFrom(Yii::$app->art->emailSender)
             ->setTo($email)
             ->setSubject(Yii::t('art/mail', 'Message from the feedback form') . ' ' . \artsoft\helpers\Html::encode(Yii::$app->settings->get('general.title', Yii::$app->name, Yii::$app->language)))
-            ->send();
+            ->queue();
     }
 }

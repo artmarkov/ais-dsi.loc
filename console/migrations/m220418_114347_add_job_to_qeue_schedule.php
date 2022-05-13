@@ -16,10 +16,15 @@ class m220418_114347_add_job_to_qeue_schedule extends \artsoft\db\BaseMigration
         $this->insert('{{%queue_schedule}}', ['class' => 'console\jobs\MessageNewEmailJob', 'title' => 'Оповещение пользователей о новых сообщениях', 'content' => '', 'cron_expression' => '0 8 * * *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 1000, 'updated_by' => 1000]);
         $this->insert('{{%queue_schedule}}', ['class' => 'console\jobs\TrashMailJob', 'title' => 'Очистка всех корзин', 'content' => 'Очищает корзины всех пользователей', 'cron_expression' => '0 0 1 */6 *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 1000, 'updated_by' => 1000]);
 
+        $this->insert('{{%queue_schedule}}', ['class' => 'console\jobs\MailQueue', 'title' => 'Рассылка писем из очереди', 'content' => 'Осуществляет рассылку писем из очереди не более 20 писем в минуту', 'cron_expression' => '* * * * *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 1000, 'updated_by' => 1000]);
+        $this->insert('{{%queue_schedule}}', ['class' => 'console\jobs\BirthdayTask', 'title' => 'Дни рождения сегодня', 'content' => 'Осуществляет отправку письма со списком сотрудников и преподавателей, у которых сегодня день рождения', 'cron_expression' => '0 6 * * *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 1000, 'updated_by' => 1000]);
     }
 
     public function down()
     {
+        $this->delete('{{%queue_schedule}}', ['class' => 'console\jobs\BirthdayTask']);
+        $this->delete('{{%queue_schedule}}', ['class' => 'console\jobs\MailQueue']);
+
         $this->delete('{{%queue_schedule}}', ['class' => 'console\jobs\ClianDeletedMailJob']);
         $this->delete('{{%queue_schedule}}', ['class' => 'console\jobs\MessageNewEmailJob']);
         $this->delete('{{%queue_schedule}}', ['class' => 'console\jobs\TrashMailJob']);

@@ -78,7 +78,7 @@ return [
             }
         ],
         'db' => require __DIR__ . '/_db.php',
-        'mailer' => require __DIR__ . '/_mailer.php',
+        'mailqueue' => require __DIR__ . '/_mailer.php',
         'queue' => [
             'class' => \yii\queue\db\Queue::class,
             'db' => 'db', // DB connection component or its config 
@@ -90,12 +90,6 @@ return [
 //            'as jobMonitor' => \zhuravljov\yii\queue\monitor\JobMonitor::class,
 //            'as workerMonitor' => \zhuravljov\yii\queue\monitor\WorkerMonitor::class,
             'as queueSchedule' => \artsoft\queue\JobSchedule::class,
-        ],
-        'mailqueue' => [
-            'class' => 'nterms\mailqueue\MailQueue',
-            'table' => 'mail_queue',
-            'mailsPerRound' => 10,
-            'maxAttempts' => 3,
         ],
         'formatter' => [
             'datetimeFormat' => 'php:d.m.Y H:i',
