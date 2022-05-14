@@ -79,6 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'id' => 'mailbox-trash-grid',
                                 'dataProvider' => $dataProvider,
                                 'filterModel' => $searchModel,
+                                'toolbar' => false,
                                 'bulkActionOptions' => [
                                     'gridId' => 'mailbox-trash-grid',
                                     'confirmationText' => Yii::t('art/mailbox', 'Are you sure you want to delete this mail?'),

@@ -67,6 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'id' => 'mailbox-inbox-grid',
                                 'dataProvider' => $dataProvider,
                                 'filterModel' => $searchModel,
+                                'toolbar' => false,
                                 'bulkActionOptions' => [
                                     'gridId' => 'mailbox-inbox-grid',
                                     'actions' => [

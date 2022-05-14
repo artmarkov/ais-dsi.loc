@@ -1,7 +1,7 @@
 <?php
 
 use artsoft\helpers\Html;
-use artsoft\grid\GridView;
+use yii\grid\GridView;
 
 $this->title = Yii::t('art/queue', 'Examples Cron Expression.');
 ?>
