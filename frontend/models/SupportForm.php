@@ -58,7 +58,7 @@ class SupportForm extends Model
     {
         $this->file = UploadedFile::getInstance($this, 'file');
 
-        $sender = Yii::$app->mailer->compose(
+        $sender = Yii::$app->mailqueue->compose(
             Yii::$app->art->emailTemplates['send-support'],
             [
                 'email' => $this->email,

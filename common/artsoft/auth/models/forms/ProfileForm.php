@@ -44,7 +44,7 @@ class ProfileForm extends UserCommon
 
     protected function sendConfirmationEmail($user)
     {
-        return Yii::$app->mailer->compose(Yii::$app->art->emailTemplates['profile-email-confirmation'], ['user' => $user])
+        return Yii::$app->mailqueue->compose(Yii::$app->art->emailTemplates['profile-email-confirmation'], ['user' => $user])
             ->setFrom(Yii::$app->art->emailSender)
             ->setTo($user->email)
             ->setSubject(Yii::t('art/auth', 'E-mail confirmation for') . ' ' . Yii::$app->name)

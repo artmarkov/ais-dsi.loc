@@ -3,6 +3,7 @@
 namespace artsoft\user\controllers;
 
 use artsoft\models\User;
+use artsoft\models\UserIdentity;
 use Yii;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
@@ -101,11 +102,37 @@ class DefaultController extends MainController
      */
     public function actionSendLogin($id = null)
     {
+        $user = User::findOne($id);
+        $user->generateConfirmationToken();
 
+        if (!$user->save(false) && !$this->sendLoginToEmail($user)) {
+            Yii::$app->session->setFlash('error', 'Ошибка отправки регистрационных данных.');
+        } else {
+            Yii::$app->session->setFlash('success', 'Регистрационные данные успешно отправлены.');
 
-        return $this->goHome();
+        }
+        return Yii::$app->getResponse()->redirect(Yii::$app->getRequest()->referrer);
     }
 
+    /**
+     * @param $user
+     * @return mixed
+     */
+    protected function sendLoginToEmail($user)
+    {
+        return Yii::$app->mailqueue->compose(Yii::$app->art->emailTemplates['password-reset'],
+            ['user' => $user])
+            ->setFrom(Yii::$app->art->emailSender)
+            ->setTo($user->email)
+            ->setSubject(Yii::t('art/auth', 'Password reset for') . ' ' . Yii::$app->name)
+            ->send();
+    }
+
+    /**
+     * @param $action
+     * @param null $model
+     * @return array
+     */
     protected function getRedirectPage($action, $model = null)
     {
         switch ($action) {
