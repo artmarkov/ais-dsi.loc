@@ -8,7 +8,6 @@ use yii\helpers\Url;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Дерево показателей';
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['efficiency/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 $mainTemplate = <<< HTML
 <div class="panel">

@@ -5,7 +5,7 @@
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/student','Position'), 'url' => ['index']];
 $this->title = Yii::t('art','Update'). ' : ' . ' ' . $model->name;
-$this->params['breadcrumbs'][] = Yii::t('art','Update');
+$this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 ?>
 <div class="student-position-update">
     <?= $this->render('_form', compact('model')) ?>

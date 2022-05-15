@@ -1,7 +1,6 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\activities\Activities;
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */

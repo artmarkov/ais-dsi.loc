@@ -7,8 +7,7 @@
 
 $this->title = Yii::t('art', 'Update');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
-$this->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 ?>
 <div class="subject-sect-update">
     <?= $this->render('_form', [

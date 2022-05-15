@@ -3,12 +3,12 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\AuditoryCat */
+/* @var $model common\models\auditory\AuditoryCat */
 
 $this->title = Yii::t('art','Update'). ' : ' . ' ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide','Auditory'), 'url' => ['auditory/default/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide','Auditory Cat'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = Yii::t('art','Update');
+$this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 ?>
 <div class="auditory-cat-update">
     <?=  $this->render('_form', compact('model')) ?>

@@ -46,7 +46,7 @@ return [
     'Your cart is empty.' => 'Ваша корзина пуста.',
     'All carts has been emptied.' => 'Все корзины были очищены.',
     'All carts is empty.' => 'Все корзины пусты.',
-    'Your mail has been posted.' => 'Ваше писмо отправлено.',
+    'Your mail has been posted.' => 'Ваше письмо отправлено.',
     'Your mail has been moved to the drafts folder.' => 'Ваше письмо было перемещено в папку Черновики',
     'New' => 'Новое',
     'Read' => 'Прочитано',

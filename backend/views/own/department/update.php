@@ -6,9 +6,8 @@ use yii\helpers\Html;
 /* @var $model common\models\own\Department */
 
 $this->title = Yii::t('art','Update') . ' : ' . ' ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Division'), 'url' => ['/own/division/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Department'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = Yii::t('art','Update');
+$this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 ?>
 <div class="department-update">
     <?= $this->render('_form', compact('model')) ?>

@@ -5,7 +5,7 @@ namespace backend\controllers\routine;
 class MainController extends \backend\controllers\DefaultController
 {
     public $tabMenu = [
-        ['label' => 'Календарь',  'url' => ['/routine/default/calendar']],
         ['label' => 'События',  'url' => ['/routine/default/index']],
+        ['label' => 'Календарь',  'url' => ['/routine/default/calendar']],
     ];
 }

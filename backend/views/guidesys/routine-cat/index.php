@@ -5,7 +5,6 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\subject\SubjectCategory;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use common\models\routine\RoutineCat;
@@ -14,7 +13,6 @@ use common\models\routine\RoutineCat;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/routine', 'Routine Cats');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/routine', 'Routine'), 'url' => ['routine/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="routine-cat-index">

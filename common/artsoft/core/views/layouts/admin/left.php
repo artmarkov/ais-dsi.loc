@@ -48,7 +48,7 @@ use artsoft\widgets\Nav;
                 'icon' => 'fa fa-university',
                 'url' => '#',
                 'items' => [
-                    ['label' => 'Производственный календарь', 'icon' => 'fa fa-minus', 'url' => ['/routine/default/calendar']],
+                    ['label' => 'Производственный календарь', 'icon' => 'fa fa-minus', 'url' => ['/routine/default/index']],
                     ['label' => 'План работы школы', 'icon' => 'fa fa-minus', 'url' => ['/schoolplan/default/index']],
                     ['label' => 'Учебные планы', 'icon' => 'fa fa-minus', 'url' => ['/education/default/index']],
                     ['label' => 'Работы и сертификаты', 'icon' => 'fa fa-minus', 'url' => ['/creative/default/index']],
@@ -123,7 +123,7 @@ use artsoft\widgets\Nav;
                 'url' => '#',
                 'items' => [
                     ['label' => 'Назначенные задания', 'icon' => 'fa fa-minus', 'url' => ['/queue-schedule/default/index']],
-                    ['label' => 'Текстовые блоки', 'icon' => 'fa fa-minus', 'url' => ['/block/default/index']],
+                    ['label' => 'HTML блоки', 'icon' => 'fa fa-minus', 'url' => ['/block/default/index']],
 //                    ['label' => 'Инструменты админа', 'icon' => 'fa fa-minus', 'url' => ['/admintools']],
                     ['label' => 'Менеджер БД', 'icon' => 'fa fa-minus', 'url' => ['/dbmanager/default/index'], 'visible' => \artsoft\models\User::hasPermission('viewDb')],
                     ['label' => 'Debug', 'icon' => 'fa fa-minus', 'url' => ['/service/debug'], 'visible' => \artsoft\models\User::hasPermission('viewDebug')],

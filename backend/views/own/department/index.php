@@ -12,7 +12,6 @@ use artsoft\grid\GridPageSize;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/guide', 'Department');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Division'), 'url' => ['/own/division/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="department-index">

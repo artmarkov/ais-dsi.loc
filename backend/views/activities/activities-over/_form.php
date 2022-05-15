@@ -32,8 +32,18 @@ use common\models\own\Department;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-
-                    <?= $form->field($model, 'over_category')->dropDownList($model->getOverCategoryList(), ['disabled' => 'disabled']); ?>
+                    <?= $form->field($model, 'over_category')->widget(\kartik\select2\Select2::class, [
+                        'data' => $model->getOverCategoryList(),
+                        'options' => [
+                            'disabled' => true,
+                            'placeholder' => Yii::t('art/guide', 'Select...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ]);
+                    ?>
 
                     <?= $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 

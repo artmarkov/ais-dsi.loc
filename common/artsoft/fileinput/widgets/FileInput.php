@@ -96,7 +96,7 @@ class FileInput extends \yii\base\Widget
                     'showRemove' => true,
                     'removeIcon' => '<i class="fa fa-trash"></i>',
                     'zoomIcon' => '<i class="fa fa-search"></i>',
-                    'downloadIcon' => '<i class="fa fa-upload"></i>',
+                    'downloadIcon' => '<i class="fa fa-download"></i>',
                     'dragIcon' => '<i class="fa fa-arrows"></i>',
                 ],
                 'previewZoomButtonIcons' => [

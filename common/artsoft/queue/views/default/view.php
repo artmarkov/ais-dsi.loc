@@ -9,7 +9,7 @@ use artsoft\queue\models\QueueSchedule;
 
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/queue', 'Queue Schedules'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 ?>
 <div class="queue-schedule-view">
     <div class="panel">
