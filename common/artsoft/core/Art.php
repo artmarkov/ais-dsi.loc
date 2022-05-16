@@ -212,9 +212,9 @@ class Art extends Component
      * @var array
      */
     protected $_defaultEmailTemplates = [
-        'signup-confirmation' => '/mail/signup-email-confirmation-html',
-        'password-reset' => '/mail/password-reset-html',
-        'confirm-email' => '/mail/email-confirmation-html',
+        'signup-confirmation' => '@artsoft/auth/views/mail/signup-email-confirmation-html',
+        'password-reset' => '@artsoft/auth/views/mail/password-reset-html',
+        'confirm-email' => '@artsoft/auth/views/mail/email-confirmation-html',
     ];
 
     /**

@@ -94,7 +94,7 @@ use kartik\date\DatePicker;
                                 [
                                     'class' => 'btn btn-default btn-sm',
                                     'data' => [
-                                        'confirm' => Yii::t('yii', 'Are you sure you want to send registration data?'),
+                                        'confirm' => Yii::t('art', 'Are you sure you want to send registration data?'),
                                         'method' => 'post',
                                     ],
                                 ]);

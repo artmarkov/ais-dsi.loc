@@ -4,8 +4,9 @@
  * @var $user artsoft\models\User
  */
 use yii\helpers\Html;
+use yii\helpers\Url;
 
-$resetLink = Yii::$app->urlManager->createAbsoluteUrl(['/auth/default/reset-password-request', 'token' => $user->confirmation_token]);
+$resetLink = Yii::$app->request->hostInfo . '/auth/default/reset-password-request?token=' . $user->confirmation_token;
 ?>
 
 <div class="password-reset">

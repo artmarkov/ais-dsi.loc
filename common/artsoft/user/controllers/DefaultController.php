@@ -104,8 +104,9 @@ class DefaultController extends MainController
     {
         $user = User::findOne($id);
         $user->generateConfirmationToken();
+        $user->save(false);
 
-        if (!$user->save(false) && !$this->sendLoginToEmail($user)) {
+        if (!$this->sendLoginToEmail($user)) {
             Yii::$app->session->setFlash('error', 'Ошибка отправки регистрационных данных.');
         } else {
             Yii::$app->session->setFlash('success', 'Регистрационные данные успешно отправлены.');
