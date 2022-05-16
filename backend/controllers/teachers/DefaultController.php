@@ -72,7 +72,7 @@ class DefaultController extends MainController
 
             // validate all models
             $valid = $userCommon->validate();
-            $valid = $userCard->validate() && $valid;
+//            $valid = $userCard->validate() && $valid;
             $valid = $model->validate() && $valid;
             $valid = Model::validateMultiple($modelsActivity) && $valid;
             //$valid = true;

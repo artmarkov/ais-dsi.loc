@@ -24,6 +24,7 @@ class LoginForm extends Model
             ['rememberMe', 'boolean'],
             ['password', 'validatePassword'],
             ['username', 'validateIP'],
+            ['username', 'validateStatus'],
         ];
     }
 
@@ -69,6 +70,15 @@ class LoginForm extends Model
             if (!in_array(ArtHelper::getRealIp(), $ips)) {
                 $this->addError('password', Yii::t('art/auth', "You could not login from this IP"));
             }
+        }
+    }
+
+    public function validateStatus()
+    {
+        $user = $this->getUser();
+
+        if ($user AND $user->status == User::STATUS_INACTIVE) {
+            $this->addError('username', 'Пользователь заблокирован системой. Возможно Вам требуется подтвердить свой E-mail. Проверьте свою почту или обратитесь в тех. поддержку.');
         }
     }
 

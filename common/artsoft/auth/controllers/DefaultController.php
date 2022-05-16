@@ -616,7 +616,7 @@ class DefaultController extends BaseController
             throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
         }
 
-        $user = User::findIdentity(Yii::$app->user->id);
+        $user = ProfileForm::findIdentity(Yii::$app->user->id);
         $userCommon = $user->userCommon;
         if (!$userCommon) {
             Yii::$app->session->addFlash('error', 'Недостаточно данных для загрузки формы.');
@@ -633,7 +633,6 @@ class DefaultController extends BaseController
                 try {
                     if ($user->save(false) && $userCommon->save(false)) {
                         $transaction->commit();
-                        Yii::$app->session->addFlash('success', 'Данные успешно сохранены.');
                         return $this->redirect(['profile']);
                     }
                 } catch (Exception $e) {

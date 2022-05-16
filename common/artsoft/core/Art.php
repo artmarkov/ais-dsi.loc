@@ -213,6 +213,7 @@ class Art extends Component
      */
     protected $_defaultEmailTemplates = [
         'signup-confirmation' => '@artsoft/auth/views/mail/signup-email-confirmation-html',
+        'profile-email-confirmation' => '@artsoft/auth/views/mail/profile-email-confirmation-html',
         'password-reset' => '@artsoft/auth/views/mail/password-reset-html',
         'confirm-email' => '@artsoft/auth/views/mail/email-confirmation-html',
     ];
