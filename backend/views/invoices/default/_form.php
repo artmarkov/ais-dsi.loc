@@ -20,7 +20,7 @@ use yii\helpers\Url;
 
     <div class="panel">
         <div class="panel-heading">
-           Карточка платежа
+            Карточка платежа
         </div>
         <div class="panel-body">
             <div class="row">
@@ -92,14 +92,16 @@ use yii\helpers\Url;
             <div class="form-group btn-group">
                 <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
             </div>
-            <div class="pull-right">
-                <div class="form-group btn-group">
-                    <?= Html::a('<i class="fa fa-file-word-o" aria-hidden="true"></i> Сформировать квитанцию',
-                        ['/invoices/default/make-invoices', 'id' => $model->id],
-                        ['class' => 'btn btn-info']); ?>
+            <?php if (!$model->isNewRecord): ?>
+                <div class="pull-right">
+                    <div class="form-group btn-group">
+                        <?= Html::a('<i class="fa fa-file-word-o" aria-hidden="true"></i> Сформировать квитанцию',
+                            ['/invoices/default/make-invoices', 'id' => $model->id],
+                            ['class' => 'btn btn-info']); ?>
 
+                    </div>
                 </div>
-            </div>
+            <?php endif; ?>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>

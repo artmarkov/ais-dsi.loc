@@ -89,12 +89,12 @@ use kartik\date\DatePicker;
                 <?php if (!$model->isNewRecord): ?>
                     <div class="panel-footer">
                         <div class="form-group btn-group">
-                            <?= Html::a('<i class="fa fa-envelope-o" aria-hidden="true"></i> ' . Yii::t('art', 'Reset your password and send registration data'),
+                            <?= Html::a('<i class="fa fa-envelope-o" aria-hidden="true"></i> ' . Yii::t('art', 'Send a link to reset your password'),
                                 ['/user/default/send-login', 'id' => $model->id],
                                 [
                                     'class' => 'btn btn-default btn-sm',
                                     'data' => [
-                                        'confirm' => Yii::t('art', 'Are you sure you want to send registration data?'),
+                                        'confirm' => Yii::t('art', 'Are you sure?'),
                                         'method' => 'post',
                                     ],
                                 ]);

@@ -163,7 +163,7 @@ return [
     'Full Name' => 'Полное имя',
     'User Category' => 'Группа',
     'Login as user' => 'Войти под пользователем',
-    'Reset your password and send registration data' => 'Сбросить пароль и отправить регистрационные данные',
-    'Are you sure you want to send registration data?' => 'Вы уверены, что хотите отправить регистрационные данные?',
+    'Send a link to reset your password' => 'Отправить ссылку для сброса пароля',
+    'Are you sure?' => 'Вы уверены?',
     'Previous successful login' => 'Предыдущий успешный вход',
 ];
