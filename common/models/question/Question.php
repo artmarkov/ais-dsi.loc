@@ -2,6 +2,7 @@
 
 namespace common\models\question;
 
+use artsoft\Art;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
@@ -66,10 +67,6 @@ class Question extends \artsoft\db\ActiveRecord
             TimestampBehavior::class,
             BlameableBehavior::class,
             [
-                'class' => BlameableBehavior::class,
-                'createdByAttribute' => 'author_id',
-            ],
-            [
                 'class' => ArrayFieldBehavior::class,
                 'attributes' => ['division_list'],
             ],
@@ -86,7 +83,7 @@ class Question extends \artsoft\db\ActiveRecord
     {
         return [
             [['author_id', 'name', 'category_id', 'users_cat', 'vid_id', 'division_list', 'timestamp_in', 'timestamp_out'], 'required'],
-            [['author_id', 'category_id', 'users_cat', 'vid_id', 'status'], 'default', 'value' => null],
+            [['category_id', 'users_cat', 'vid_id', 'status'], 'default', 'value' => null],
             [['email_flag', 'email_author_flag'], 'default', 'value' => 0],
             [['author_id', 'category_id', 'users_cat', 'vid_id', 'status', 'email_flag', 'email_author_flag'], 'integer'],
             [['timestamp_in', 'timestamp_out'], 'safe'],
@@ -154,7 +151,7 @@ class Question extends \artsoft\db\ActiveRecord
     public static function getCategoryList()
     {
         return array(
-            self::CAT_SURVEY => 'Форма',
+            self::CAT_SURVEY => 'Опрос',
             self::CAT_APP => 'Заявка',
         );
     }

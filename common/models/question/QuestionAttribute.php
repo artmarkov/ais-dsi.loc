@@ -2,6 +2,7 @@
 
 namespace common\models\question;
 
+use artsoft\behaviors\SluggableBehavior;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -31,6 +32,16 @@ use yii\behaviors\TimestampBehavior;
  */
 class QuestionAttribute extends \artsoft\db\ActiveRecord
 {
+    const TYPE_STRING = 1;
+    const TYPE_TEXT = 2;
+    const TYPE_DATE = 3;
+    const TYPE_DATETIME = 4;
+    const TYPE_EMAIL = 5;
+    const TYPE_PHONE = 6;
+    const TYPE_RADIOLIST = 7;
+    const TYPE_CHECKLIST = 8;
+    const TYPE_FILE = 9;
+
     /**
      * {@inheritdoc}
      */
@@ -47,16 +58,22 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
         return [
             TimestampBehavior::class,
             BlameableBehavior::class,
+            [
+                'class' => SluggableBehavior::className(),
+                'in_attribute' => 'label',
+                'out_attribute' => 'name',
+                'translit' => true
+            ],
         ];
     }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['question_id', 'type_id', 'name', 'label', 'required'], 'required'],
-            [['question_id', 'type_id', 'name', 'required', 'sort_order'], 'default', 'value' => null],
+            [['question_id', 'type_id', 'label', 'required'], 'required'],
             [['question_id', 'type_id', 'name', 'required', 'sort_order'], 'integer'],
             [['label', 'hint', 'default_value', 'description'], 'string', 'max' => 255],
             [['question_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::className(), 'targetAttribute' => ['question_id' => 'id']],
@@ -75,8 +92,8 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
             'name' => 'Название поля формы(en)',
             'label' => 'Название атрибута формы',
             'hint' => 'Подсказка атрибута формы',
-            'required' => 'Обязательность атрибута',
-            'default_value' => 'Default Value',
+            'required' => 'Обязательно к заполнению',
+            'default_value' => 'Значение по умолчанию',
             'description' => 'Description',
             'sort_order' => 'Sort Order',
             'created_at' => Yii::t('art', 'Created'),
@@ -92,6 +109,31 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
         return 'version';
     }
 
+    public static function getTypeList()
+    {
+        return array(
+            self::TYPE_STRING => 'Строка',
+            self::TYPE_TEXT => 'Текст',
+            self::TYPE_DATE => 'Дата',
+            self::TYPE_DATETIME => 'Дата:время',
+            self::TYPE_EMAIL => 'E-mail',
+            self::TYPE_PHONE => 'Телефон',
+            self::TYPE_RADIOLIST => 'Радио-лист',
+            self::TYPE_CHECKLIST => 'Чек-лист',
+            self::TYPE_FILE => 'Файл',
+        );
+    }
+
+    /**
+     * @param $val
+     * @return mixed
+     */
+    public static function getTypeValue($val)
+    {
+        $ar = self::getTypeList();
+
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
 
     /**
      * Gets query for [[Question]].
