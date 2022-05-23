@@ -48,7 +48,7 @@ return [
     'Division' => 'Отделение',
     'Department' => 'Отделы',
     'Documents' => 'Документы',
-    'Select Name Division...' => 'Выберите отделение',
+    'Select Division...' => 'Выберите отделение',
     'Subject Category' => 'Раздел учебных предметов',
     'Qty Min' => 'Мин',
     'Qty Max' => 'Макс',

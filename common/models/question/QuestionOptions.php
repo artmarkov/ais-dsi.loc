@@ -48,7 +48,6 @@ class QuestionOptions extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['attribute_id'], 'required'],
             [['attribute_id', 'free_flag', 'sort_order'], 'default', 'value' => null],
             [['attribute_id', 'free_flag', 'sort_order'], 'integer'],
             [['name'], 'string', 'max' => 255],
@@ -64,7 +63,7 @@ class QuestionOptions extends \artsoft\db\ActiveRecord
         return [
             'id' => 'ID',
             'attribute_id' => 'Attribute ID',
-            'name' => 'Название опции атрибута',
+            'name' => 'Опция',
             'free_flag' => 'Свободная строка',
             'sort_order' => 'Sort Order',
             'created_at' => Yii::t('art', 'Created'),

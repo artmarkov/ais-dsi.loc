@@ -47,7 +47,6 @@ class m220518_100419_add_table_question extends \artsoft\db\BaseMigration
             'hint' => $this->string(512)->comment('Подсказка атрибута формы'),
             'required' => $this->integer()->notNull()->comment('Обязательность атрибута (Да, Нет)'),
             'default_value' => $this->string(127)->defaultValue(null),
-            'description' => $this->string(1024)->defaultValue(null),
             'sort_order' => $this->integer()->defaultValue(null),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),

@@ -61,6 +61,7 @@ class DefaultController extends BaseController
                             }
                             if (isset($modelsQuestionOptions[$index]) && is_array($modelsQuestionOptions[$index])) {
                                 foreach ($modelsQuestionOptions[$index] as $indexTime => $modelQuestionOptions) {
+                                    $modelQuestionOptions->attribute_id = $modelQuestionAttribute->id;
                                     if (!($flag = $modelQuestionOptions->save(false))) {
                                         break;
                                     }
@@ -106,7 +107,7 @@ class DefaultController extends BaseController
 
         if (!empty($modelsQuestionAttribute)) {
             foreach ($modelsQuestionAttribute as $index => $modelQuestionAttribute) {
-                $times = $modelQuestionAttribute->QuestionOptions;
+                $times = $modelQuestionAttribute->questionOptions;
                 $modelsQuestionOptions[$index] = $times;
                 $oldTimes = ArrayHelper::merge(ArrayHelper::index($times, 'id'), $oldTimes);
             }
@@ -124,7 +125,7 @@ class DefaultController extends BaseController
 
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsQuestionAttribute) && $valid;
-
+            $valid = true;
             $timesIDs = [];
             if (isset($_POST['QuestionOptions'][0][0])) {
                 foreach ($_POST['QuestionOptions'] as $index => $times) {
@@ -167,7 +168,7 @@ class DefaultController extends BaseController
 
                             if (isset($modelsQuestionOptions[$index]) && is_array($modelsQuestionOptions[$index])) {
                                 foreach ($modelsQuestionOptions[$index] as $indexTime => $modelQuestionOptions) {
-
+                                    $modelQuestionOptions->attribute_id = $modelQuestionAttribute->id;
                                     if (!($flag = $modelQuestionOptions->save(false))) {
                                         break;
                                     }

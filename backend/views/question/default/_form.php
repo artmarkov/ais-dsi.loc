@@ -15,6 +15,13 @@ use wbraganca\dynamicform\DynamicFormWidget;
 /* @var $modelsQuestionOptions common\models\question\QuestionOptions */
 /* @var $readonly */
 
+//$this->registerJs(<<<JS
+//$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
+//	    $( "#question-form" ).submit(); // вызываем событие submit на элементе <form>
+//	  });
+//JS
+//    , \yii\web\View::POS_END);
+
 $this->registerJs(<<<JS
 function initSelect2Loading(a,b){ initS2Loading(a,b); }
 function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
@@ -38,6 +45,17 @@ jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
 JS;
 
 $this->registerJs($js);
+
+
+
+$this->registerJs(<<<JS
+    jQuery(".dynamicform_wrapper .typeId").each(function(index) {
+       document.getElementById("questionattribute-"+index+"-type_id").addEventListener('change', (event) => {
+  console.log(event.target.value)
+});
+    });
+JS
+    , \yii\web\View::POS_END);
 ?>
 
 <div class="question-form">
@@ -128,7 +146,7 @@ $this->registerJs($js);
                 'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items', // required: css class selector
                 'widgetItem' => '.item', // required: css class
-                'limit' => 10, // the maximum times, an element can be added (default 999)
+                'limit' => 50, // the maximum times, an element can be added (default 999)
                 'min' => 1, // 0 or 1 (default 1)
                 'insertButton' => '.add-item', // css class
                 'deleteButton' => '.remove-item', // css class
@@ -171,24 +189,21 @@ $this->registerJs($js);
                                         echo Html::activeHiddenInput($modelQuestionAttribute, "[{$index}]id");
                                     }
                                     ?>
+
                                     <div class="col-sm-12">
-                                        <?= $this->render('_form-options', [
-                                            'form' => $form,
-                                            'index' => $index,
-                                            'model' => $model,
-                                            'modelsQuestionOptions' => $modelsQuestionOptions[$index],
-                                            'readonly' => $readonly,
-                                        ]) ?>
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <?= $form->field($modelQuestionAttribute, "[{$index}]type_id")->dropDownList(\common\models\question\QuestionAttribute::getTypeList(), ['disabled' => $readonly]) ?>
+                                        <?= $form->field($modelQuestionAttribute, "[{$index}]type_id")->dropDownList(\common\models\question\QuestionAttribute::getTypeList(), ['disabled' => $readonly, 'class' => 'form-control typeId']) ?>
                                         <?= $form->field($modelQuestionAttribute, "[{$index}]label")->textInput(['maxlength' => true, 'disabled' => false]) ?>
                                         <?= $form->field($modelQuestionAttribute, "[{$index}]hint")->textInput(['maxlength' => true, 'disabled' => false]) ?>
                                         <?= $form->field($modelQuestionAttribute, "[{$index}]required")->checkbox() ?>
                                         <?= $form->field($modelQuestionAttribute, "[{$index}]default_value")->textInput(['maxlength' => true, 'disabled' => false]) ?>
-                                        <?= $form->field($modelQuestionAttribute, "[{$index}]description")->textInput(['maxlength' => true, 'disabled' => false]) ?>
 
                                     </div>
+                                        <?= $this->render('_form-options', [
+                                            'form' => $form,
+                                            'index' => $index,
+                                            'modelsQuestionOptions' => $modelsQuestionOptions[$index],
+                                            'readonly' => $readonly,
+                                        ]) ?>
                                 </div>
                             </div>
                         <?php endforeach; ?>

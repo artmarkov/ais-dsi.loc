@@ -18,7 +18,6 @@ use yii\behaviors\TimestampBehavior;
  * @property string|null $hint Подсказка атрибута формы
  * @property int $required Обязательность атрибута (Да, Нет)
  * @property string|null $default_value
- * @property string|null $description
  * @property int|null $sort_order
  * @property int $created_at
  * @property int|null $created_by
@@ -75,7 +74,7 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
         return [
             [['question_id', 'type_id', 'label', 'required'], 'required'],
             [['question_id', 'type_id', 'name', 'required', 'sort_order'], 'integer'],
-            [['label', 'hint', 'default_value', 'description'], 'string', 'max' => 255],
+            [['label', 'hint', 'default_value'], 'string', 'max' => 255],
             [['question_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::className(), 'targetAttribute' => ['question_id' => 'id']],
         ];
     }
@@ -94,7 +93,6 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
             'hint' => 'Подсказка атрибута формы',
             'required' => 'Обязательно к заполнению',
             'default_value' => 'Значение по умолчанию',
-            'description' => 'Description',
             'sort_order' => 'Sort Order',
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
