@@ -4,6 +4,7 @@ use artsoft\models\User;
 use artsoft\widgets\ActiveForm;
 use common\models\question\Question;
 use artsoft\helpers\Html;
+use common\models\question\QuestionOptions;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use wbraganca\dynamicform\DynamicFormWidget;
@@ -15,29 +16,16 @@ use wbraganca\dynamicform\DynamicFormWidget;
 /* @var $modelsQuestionOptions common\models\question\QuestionOptions */
 /* @var $readonly */
 
-//$this->registerJs(<<<JS
-//$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
-//	    $( "#question-form" ).submit(); // вызываем событие submit на элементе <form>
-//	  });
-//JS
-//    , \yii\web\View::POS_END);
-
-$this->registerJs(<<<JS
-function initSelect2Loading(a,b){ initS2Loading(a,b); }
-function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
-JS
-    , \yii\web\View::POS_END);
-
 $js = <<<JS
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("Атрибут: " + (index + 1))
+        jQuery(this).html("Вопрос: " + (index + 1))
     });
 });
 
 jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
     jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("Атрибут: " + (index + 1))
+        jQuery(this).html("Вопрос: " + (index + 1))
     });
 });
 
@@ -46,13 +34,22 @@ JS;
 
 $this->registerJs($js);
 
-
-
 $this->registerJs(<<<JS
+   function toggle(index, value) {
+      if(value == 7 || value == 8) {
+             $('.questionForm_' + index).show();
+             $('.field-questionattribute-' + index + '-default_value').hide();
+         } else {
+             $('.questionForm_' + index).hide();
+             $('.field-questionattribute-' + index + '-default_value').show();
+         }
+    }
     jQuery(".dynamicform_wrapper .typeId").each(function(index) {
-       document.getElementById("questionattribute-"+index+"-type_id").addEventListener('change', (event) => {
-  console.log(event.target.value)
-});
+        let field = document.getElementById("questionattribute-" + index + "-type_id");
+        toggle(index, field.value);
+        field.addEventListener('change', (event) => {
+          toggle(index, event.target.value);
+        });
     });
 JS
     , \yii\web\View::POS_END);
@@ -165,14 +162,14 @@ JS
 
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    Атрибуты формы
+                    Вопросы
                 </div>
                 <div class="panel-body">
                     <div class="container-items"><!-- widgetBody -->
                         <?php foreach ($modelsQuestionAttribute as $index => $modelQuestionAttribute): ?>
                             <div class="item panel panel-info"><!-- widgetItem -->
                                 <div class="panel-heading">
-                                    <span class="panel-title-activities">Атрибут: <?= ($index + 1) ?></span>
+                                    <span class="panel-title-activities">Вопрос: <?= ($index + 1) ?></span>
                                     <?php if (!$readonly): ?>
                                         <div class="pull-right">
                                             <button type="button" class="remove-item btn btn-default btn-xs">
@@ -189,21 +186,28 @@ JS
                                         echo Html::activeHiddenInput($modelQuestionAttribute, "[{$index}]id");
                                     }
                                     ?>
-
                                     <div class="col-sm-12">
-                                        <?= $form->field($modelQuestionAttribute, "[{$index}]type_id")->dropDownList(\common\models\question\QuestionAttribute::getTypeList(), ['disabled' => $readonly, 'class' => 'form-control typeId']) ?>
+                                        <?= $form->field($modelQuestionAttribute, "[{$index}]type_id")->dropDownList(
+                                                \common\models\question\QuestionAttribute::getTypeList(),
+                                            [
+                                                'disabled' => $readonly,
+                                                'class' => 'form-control typeId',
+                                                'onChange' => "this.form.submit()"
+                                            ]) ?>
                                         <?= $form->field($modelQuestionAttribute, "[{$index}]label")->textInput(['maxlength' => true, 'disabled' => false]) ?>
                                         <?= $form->field($modelQuestionAttribute, "[{$index}]hint")->textInput(['maxlength' => true, 'disabled' => false]) ?>
                                         <?= $form->field($modelQuestionAttribute, "[{$index}]required")->checkbox() ?>
                                         <?= $form->field($modelQuestionAttribute, "[{$index}]default_value")->textInput(['maxlength' => true, 'disabled' => false]) ?>
 
                                     </div>
-                                        <?= $this->render('_form-options', [
-                                            'form' => $form,
-                                            'index' => $index,
-                                            'modelsQuestionOptions' => $modelsQuestionOptions[$index],
-                                            'readonly' => $readonly,
-                                        ]) ?>
+                                    <?= $this->render('_form-options', [
+                                        'form' => $form,
+                                        'index' => $index,
+                                        'modelsQuestionOptions' =>  (empty($modelsQuestionOptions[$index])) ? [new QuestionOptions] : $modelsQuestionOptions[$index],
+
+                                        'model' => $modelQuestionAttribute,
+                                        'readonly' => $readonly,
+                                    ]) ?>
                                 </div>
                             </div>
                         <?php endforeach; ?>

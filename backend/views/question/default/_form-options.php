@@ -9,13 +9,13 @@ use wbraganca\dynamicform\DynamicFormWidget;
 /* @var $readonly */
 
 ?>
-<!--<div id="question-form">-->
+<div class="questionForm_<?=$index?>">
     <?php DynamicFormWidget::begin([
         'widgetContainer' => 'dynamicform_inner',
         'widgetBody' => '.container-time',
         'widgetItem' => '.room-item',
         'limit' => 20,
-        'min' => 1,
+        'min' => ($model->type_id == \common\models\question\QuestionAttribute::TYPE_RADIOLIST || $model->type_id == \common\models\question\QuestionAttribute::TYPE_CHECKLIST) ? 1:0,
         'insertButton' => '.add-time',
         'deleteButton' => '.remove-time',
         'model' => $modelsQuestionOptions[0],
@@ -71,4 +71,4 @@ use wbraganca\dynamicform\DynamicFormWidget;
         </table>
     </div>
     <?php DynamicFormWidget::end(); ?>
-<!--</div>-->
+</div>

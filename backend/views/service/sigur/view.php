@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model common\models\service\UsersCardLog */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Users Card Logs'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Users Card Logs'), 'url' => ['service/sigur/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="users-card-log-view">

@@ -87,10 +87,10 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
         return [
             'id' => 'ID',
             'question_id' => 'Question ID',
-            'type_id' => 'Тип атрибута формы',
-            'name' => 'Название поля формы(en)',
-            'label' => 'Название атрибута формы',
-            'hint' => 'Подсказка атрибута формы',
+            'type_id' => 'Тип поля',
+            'name' => 'Название поля',
+            'label' => 'Название поля',
+            'hint' => 'Подсказка поля',
             'required' => 'Обязательно к заполнению',
             'default_value' => 'Значение по умолчанию',
             'sort_order' => 'Sort Order',
@@ -116,8 +116,8 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
             self::TYPE_DATETIME => 'Дата:время',
             self::TYPE_EMAIL => 'E-mail',
             self::TYPE_PHONE => 'Телефон',
-            self::TYPE_RADIOLIST => 'Радио-лист',
-            self::TYPE_CHECKLIST => 'Чек-лист',
+            self::TYPE_RADIOLIST => 'Радио-лист (ед.выбор)',
+            self::TYPE_CHECKLIST => 'Чек-лист (мн.выбор)',
             self::TYPE_FILE => 'Файл',
         );
     }

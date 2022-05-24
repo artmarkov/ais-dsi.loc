@@ -20,7 +20,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $updated_by
  * @property int $version
  *
- * @property QuestionAttribute $attribute0
+ * @property QuestionAttribute $questionAttribute
  */
 class QuestionOptions extends \artsoft\db\ActiveRecord
 {
@@ -48,6 +48,7 @@ class QuestionOptions extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
+
             [['attribute_id', 'free_flag', 'sort_order'], 'default', 'value' => null],
             [['attribute_id', 'free_flag', 'sort_order'], 'integer'],
             [['name'], 'string', 'max' => 255],
@@ -80,11 +81,11 @@ class QuestionOptions extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Attribute0]].
+     * Gets query for [[QuestionAttribute]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getAttribute0()
+    public function getQuestionAttribute()
     {
         return $this->hasOne(QuestionAttribute::className(), ['id' => 'attribute_id']);
     }
