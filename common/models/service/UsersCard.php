@@ -24,8 +24,8 @@ use yii\behaviors\TimestampBehavior;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
+ * @property int $access_work Разрешение на доступ к работе получен
  *
- * @property Users $createdBy0
  */
 class UsersCard extends \artsoft\db\ActiveRecord
 {
@@ -59,7 +59,7 @@ class UsersCard extends \artsoft\db\ActiveRecord
             [['key_hex'], 'unique'],
             [['timestamp_deny', 'photo_bin'], 'safe'],
             [['photo_ver'], 'default', 'value' => 1],
-            [['photo_ver', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['photo_ver', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'access_work_flag'], 'integer'],
             [['user_common_id'], 'string', 'max' => 4],
             [['key_hex'], 'string', 'max' => 8, 'min' => 8],
             [['key_hex'], 'match', 'pattern' =>'/^[0-9,A-Z]+$/', 'message' => 'Код пропуска должен содержать только символы [0-9,A-Z].'],
@@ -87,6 +87,7 @@ class UsersCard extends \artsoft\db\ActiveRecord
             'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'access_work_flag' => 'Разрешение на доступ к работе получено'
         ];
     }
 

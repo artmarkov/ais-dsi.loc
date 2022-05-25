@@ -20,6 +20,7 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
             'mode_list' => $this->string(512)->defaultValue(null)->comment('Список режимов'),
             'photo_bin' => $this->binary()->defaultValue(null)->comment('Фотография'),
             'photo_ver' => $this->integer()->defaultValue(null)->comment('Версия фотографии'),
+            'access_work_flag' => $this->integer()->defaultValue(0)->comment('Разрешение на доступ к работе получен'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -91,7 +92,8 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
             users_card.timestamp_deny,
             users_card.mode_main,
             users_card.mode_list,
-            users_card.photo_bin
+            users_card.photo_bin,
+            users_card.access_work_flag
         from user_common 
         left join users_card on (user_common.id = users_card.user_common_id::int)
         order by user_category_name, user_name;

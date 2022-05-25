@@ -47,9 +47,12 @@ AvatarAsset::register($this);
                         ])->label(Yii::t('art', 'Username'));
 
                         ?>
-                        <?= $form->field($model, 'key_hex')->textInput(['maxlength' => true]) ?>
+                        <?= $form->field($model, 'access_work_flag')->checkbox(['disabled' => false]) ?>
+
+                        <?= $form->field($model, 'key_hex')->textInput(['maxlength' => true])->hint('Для получени пропуска необходимо пройти первичный инструктаж по охране труда.') ?>
 
                         <?= $form->field($model, 'timestamp_deny')->widget(\kartik\datetime\DateTimePicker::class, ['disabled' => false]); ?>
+
 
                     </div>
                     <div class="col-sm-2">
@@ -84,4 +87,25 @@ $css = <<<CSS
 CSS;
 
 $this->registerCss($css);
+?>
+
+<?php
+$js = <<<JS
+    function toggle(field) {
+       if ($(field).is(':checked') ) {
+        $('input[name="UsersCard[key_hex]"]').attr("disabled", false);
+        $('input[name="UsersCard[timestamp_deny]"]').attr("disabled", false);
+    } else {
+        $('input[name="UsersCard[key_hex]"]').attr("disabled", true);
+        $('input[name="UsersCard[timestamp_deny]"]').attr("disabled", true);
+    }
+    }
+    toggle('input[name="UsersCard[access_work_flag]"]');
+    $('input[name="UsersCard[access_work_flag]"]').on('click', function () {
+        console.log(this);
+       toggle(this);
+     });
+JS;
+
+$this->registerJs($js, \yii\web\View::POS_LOAD);
 ?>
