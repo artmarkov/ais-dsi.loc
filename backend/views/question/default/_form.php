@@ -53,6 +53,26 @@ $this->registerJs(<<<JS
     });
 JS
     , \yii\web\View::POS_END);
+
+$js = <<<JS
+    function toggleQuestion(value) {
+      if (value === '1'){
+          $('.field-question-users_cat').show();
+          $('.field-question-division_list').show();
+          $('.field-question-moderator_list').hide();
+      } else {
+          $('.field-question-users_cat').hide();
+          $('.field-question-division_list').hide();
+          $('.field-question-moderator_list').show();
+      }
+    }
+    toggleQuestion($('input[name="Question[vid_id]"]:checked').val());
+    $('input[name="Question[vid_id]"]').click(function(){
+       toggleQuestion($(this).val());
+     });
+JS;
+
+$this->registerJs($js, \yii\web\View::POS_LOAD);
 ?>
 
 <div class="question-form">
@@ -70,6 +90,9 @@ JS
     <div class="panel">
         <div class="panel-heading">
             Карточка формы
+            <?php if (!$model->isNewRecord): ?>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
+            <?php endif; ?>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -82,13 +105,13 @@ JS
                         'showToggleAll' => false,
                         'options' => [
                             'disabled' => $readonly,
-                            'value' => $model->author_id,
+                            //'value' => $model->author_id,
                             'placeholder' => Yii::t('art/guide', 'Select Authors...'),
                             'multiple' => false,
                         ],
                         'pluginOptions' => [
                             'allowClear' => false,
-                            'minimumInputLength' => 3,
+                            //'minimumInputLength' => 3,
                         ],
 
                     ]);
@@ -97,11 +120,14 @@ JS
 
                 <?= $form->field($model, 'category_id')->radioList(Question::getCategoryList()) ?>
 
+
+                <?= $form->field($model, 'vid_id')->radioList(Question::getVidList()) ?>
+
                 <?= $form->field($model, 'users_cat')->widget(Select2::className(), [
                     'data' => Question::getGroupList(),
                     'options' => [
                         'disabled' => $readonly,
-                        'placeholder' => Yii::t('art/guide', 'Select...'),
+                        'placeholder' => Yii::t('art', 'Select...'),
                         'multiple' => false,
                     ],
                     'pluginOptions' => [
@@ -110,7 +136,18 @@ JS
                 ]);
                 ?>
 
-                <?= $form->field($model, 'vid_id')->radioList(Question::getVidList()) ?>
+                <?= $form->field($model, 'moderator_list')->widget(Select2::className(), [
+                    'data' => User::getUsersListByCategory(['teachers', 'employees']),
+                    'options' => [
+                        'disabled' => $readonly,
+                        'placeholder' => Yii::t('art', 'Select...'),
+                        'multiple' => true,
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]);
+                ?>
 
                 <?= $form->field($model, 'division_list')->widget(Select2::className(), [
                     'data' => \common\models\own\Division::getDivisionList(),

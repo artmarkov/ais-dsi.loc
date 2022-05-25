@@ -2,7 +2,6 @@
 
 namespace common\models\question;
 
-use artsoft\Art;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\models\User;
@@ -20,6 +19,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $users_cat Группа пользователей (Сотрудники, Преподаватели, Ученики, Родители, Гости)
  * @property int $vid_id Вид формы (Открытая, Закрытая)
  * @property string $division_list Список отделений
+ * @property string $moderator_list Список модераторов
  * @property string|null $description Описание формы
  * @property int $timestamp_in Начало действия формы
  * @property int $timestamp_out Окончание действия формы
@@ -68,7 +68,7 @@ class Question extends \artsoft\db\ActiveRecord
             BlameableBehavior::class,
             [
                 'class' => ArrayFieldBehavior::class,
-                'attributes' => ['division_list'],
+                'attributes' => ['division_list', 'moderator_list'],
             ],
             [
                 'class' => DateFieldBehavior::class,
@@ -82,15 +82,27 @@ class Question extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['author_id', 'name', 'category_id', 'users_cat', 'vid_id', 'division_list', 'timestamp_in', 'timestamp_out'], 'required'],
+            [['author_id', 'name', 'category_id', 'vid_id', 'timestamp_in', 'timestamp_out'], 'required'],
             [['category_id', 'users_cat', 'vid_id', 'status'], 'default', 'value' => null],
             [['email_flag', 'email_author_flag'], 'default', 'value' => 0],
             [['author_id', 'category_id', 'users_cat', 'vid_id', 'status', 'email_flag', 'email_author_flag'], 'integer'],
             [['timestamp_in', 'timestamp_out'], 'safe'],
-            [['division_list'], 'safe'],
+            [['division_list', 'moderator_list'], 'safe'],
             [['description'], 'string', 'max' => 1024],
             [['name'], 'string', 'max' => 127],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['author_id' => 'id']],
+            [['division_list', 'users_cat'], 'required', 'when' => function ($model) {
+                return $model->vid_id === '1';
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[name=\"Question[vid_id]\"]:checked').val() === '1';
+                            }"],
+            [['moderator_list'], 'required', 'when' => function ($model) {
+                return $model->vid_id !== '1';
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[name=\"Question[vid_id]\"]:checked').val() !== '1';
+                            }"],
         ];
     }
 
@@ -107,6 +119,7 @@ class Question extends \artsoft\db\ActiveRecord
             'users_cat' => 'Группа пользователей',
             'vid_id' => 'Вид формы',
             'division_list' => 'Список отделений',
+            'moderator_list' => 'Список модераторов',
             'description' => 'Описание формы',
             'timestamp_in' => 'Начало действия формы',
             'timestamp_out' => 'Окончание действия формы',
@@ -213,5 +226,20 @@ class Question extends \artsoft\db\ActiveRecord
     public function getQuestionUsers()
     {
         return $this->hasMany(QuestionUsers::className(), ['question_id' => 'id']);
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if ($this->vid_id == self::VID_OPEN) {
+            $this->moderator_list = null;
+        } else {
+            $this->division_list = null;
+            $this->users_cat = null;
+        }
+        return parent::beforeSave($insert);
     }
 }
