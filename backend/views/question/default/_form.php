@@ -232,8 +232,13 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
                                                 'onChange' => "this.form.submit()"
                                             ]) ?>
                                         <?= $form->field($modelQuestionAttribute, "[{$index}]label")->textInput(['maxlength' => true, 'disabled' => false]) ?>
-                                        <?= $form->field($modelQuestionAttribute, "[{$index}]hint")->textInput(['maxlength' => true, 'disabled' => false]) ?>
+
+                                        <?= $form->field($modelQuestionAttribute, "[{$index}]description")->textarea(['maxlength' => true, 'disabled' => false]) ?>
+
+                                        <?= $form->field($modelQuestionAttribute, "[{$index}]hint")->textInput(['maxlength' => true, 'disabled' => false])->hint('Так будет выглядеть подсказка поля') ?>
+
                                         <?= $form->field($modelQuestionAttribute, "[{$index}]required")->checkbox() ?>
+
                                         <?= $form->field($modelQuestionAttribute, "[{$index}]default_value")->textInput(['maxlength' => true, 'disabled' => false]) ?>
 
                                     </div>

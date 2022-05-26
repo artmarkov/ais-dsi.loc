@@ -45,6 +45,7 @@ class m220518_100419_add_table_question extends \artsoft\db\BaseMigration
             'type_id' => $this->integer()->notNull()->comment('Тип атрибута формы (Строка, Текст, Дата, Дата:время, E-mail, Телефон, Радио-лист, Чек-лист, Файл)'),
             'name' => $this->string(127)->notNull()->comment('Название поля формы(en)'),
             'label' => $this->string(127)->notNull()->comment('Название атрибута формы'),
+            'description' => $this->string(1024)->comment('Описание вопроса'),
             'hint' => $this->string(512)->comment('Подсказка атрибута формы'),
             'required' => $this->integer()->notNull()->comment('Обязательность атрибута (Да, Нет)'),
             'default_value' => $this->string(127)->defaultValue(null),

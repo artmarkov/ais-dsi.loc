@@ -2,17 +2,21 @@
 
 namespace backend\controllers\question;
 
+use artsoft\helpers\ArtHelper;
+use artsoft\models\OwnerAccess;
 use backend\models\Model;
 use common\models\question\QuestionAttribute;
 use common\models\question\QuestionOptions;
 use artsoft\controllers\admin\BaseController;
+use common\models\question\QuestionValue;
 use yii\helpers\ArrayHelper;
 use Yii;
+use yii\web\NotFoundHttpException;
 
 /**
  * DefaultController implements the CRUD actions for common\models\question\Question model.
  */
-class DefaultController extends BaseController 
+class DefaultController extends MainController
 {
     public $modelClass       = 'common\models\question\Question';
     public $modelSearchClass = 'common\models\question\search\QuestionSearch';
@@ -93,7 +97,7 @@ class DefaultController extends BaseController
 
     public function actionUpdate($id, $readonly = false)
     {
-        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['tabMenu'] = $this->getMenu($id);
 
         /* @var $model \artsoft\db\ActiveRecord */
         $model = $this->findModel($id);
@@ -202,4 +206,90 @@ class DefaultController extends BaseController
         return $this->actionUpdate($id, true);
     }
 
+    public function actionAnswers($id, $objectId = null, $mode = null, $readonly = false)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Questions'), 'url' => ['question/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['question/default/view', 'id' => $id]];
+
+        if ('create' == $mode) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Answers'), 'url' => ['/question/default/answers', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление ответа';
+            $modelVal = new QuestionValue();
+
+            if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
+                Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($modelVal);
+            }
+            return $this->renderIsAjax('/question/answers/_form', [
+                'model' => $modelVal,
+                'readonly' => $readonly,
+            ]);
+
+
+        } elseif ('delete' == $mode && $objectId) {
+            $modelVal = QuestionValue::findOne($objectId);
+            $modelVal->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $modelVal));
+
+        } elseif ($objectId) {
+            if ('view' == $mode) {
+                $readonly = true;
+            }
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Answers'), 'url' => ['/question/default/answers', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $modelVal = QuestionValue::findOne($objectId);
+
+            if (!isset($modelVal)) {
+                throw new NotFoundHttpException("The QuestionValue was not found.");
+            }
+
+            if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($modelVal);
+            }
+            return $this->render('/question/answers/_form', [
+                'model' => $modelVal,
+                'readonly' => $readonly,
+            ]);
+
+        } else {
+            $modelClass = 'common\models\question\QuestionValue';
+            $dataProvider = [];
+
+            return $this->renderIsAjax('answers', [
+                'dataProvider' => $dataProvider,
+            ]);
+        }
+    }
+
+    public function actionStat($id)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Questions'), 'url' => ['question/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['question/default/view', 'id' => $id]];
+
+        $dataProvider = [];
+
+        return $this->renderIsAjax('stat', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getMenu($id)
+    {
+        return [
+            ['label' => 'Карточка формы', 'url' => ['/question/default/update', 'id' => $id]],
+            ['label' => 'Ответы',  'url' => ['/question/default/answers', 'id' => $id]],
+            ['label' => 'Статистика',  'url' => ['/question/default/stat', 'id' => $id]],
+        ];
+    }
 }

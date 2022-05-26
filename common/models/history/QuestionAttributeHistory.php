@@ -21,10 +21,10 @@ class QuestionAttributeHistory extends BaseHistory
     {
         return [
             'type_id',
-            'name',
             'label',
             'hint',
             'required',
+            'description',
             'default_value',
         ];
     }
@@ -40,7 +40,7 @@ class QuestionAttributeHistory extends BaseHistory
     {
         switch ($name) {
             case 'type_id':
-                return isset($model->category_id) ? $model::getTypeValue($value) : $value;
+                return isset($model->type_id) ? $model::getTypeValue($value) : $value;
             case 'required':
                 return isset($model->required) ? ($model->required ? 'Да' : 'Нет') : $value;
 
