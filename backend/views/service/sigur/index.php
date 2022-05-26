@@ -106,9 +106,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'user_common_id',
                                 'value' => function (UsersCardLog $model) {
-                                    return (int)$model->user_common_id != null ? 'Да' : 'Нет';
+                                    return (int)$model->user_common_id != null ? '<span class="label label-success">Да</span>' : '<span class="label label-danger">Нет</span>';
                                 },
                                 'label' => 'Зарегистрирован в АИС',
+                                'format' => 'raw',
+                                'contentOptions' => ['style' => "text-align:center; vertical-align: middle;"]
                             ],
                         ],
                     ]);
