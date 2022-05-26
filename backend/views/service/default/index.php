@@ -1,6 +1,5 @@
 <?php
 
-use common\models\service\UsersCardLog;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -50,14 +49,6 @@ $columns = [
     'email',
     'key_hex',
     'timestamp_deny',
-    [
-        'attribute' => 'access_work_flag',
-        'label' => 'Доступ открыт',
-        'value' => function (ServiceCardView $model) {
-            return $model->access_work_flag == 1 ? 'Да' : 'Нет';
-        },
-        'format' => 'raw'
-    ],
 //                    'mode_main',
 //                    'mode_list',
 //                    'status',
