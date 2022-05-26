@@ -133,11 +133,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:120px']
                             ],
                             [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'access_work_flag',
-                                'value' => function (Teachers $model) {
-                                    return (int)$model->access_work_flag == 1 ? 'Да' : 'Нет';
-                                },
+                                'optionsArray' => [
+                                    [1, 'Да', 'success'],
+                                    [0, 'Нет', 'danger'],
+                                ],
                                 'label' => 'Доступ к работе',
+                                'options' => ['style' => 'width:150px']
                             ],
                         ],
                     ]);
