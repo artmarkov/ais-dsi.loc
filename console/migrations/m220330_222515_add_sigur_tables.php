@@ -13,8 +13,8 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
 
         $this->createTableWithHistory('users_card', [
             'id' => $this->primaryKey(),
-            'user_common_id' => $this->char(4)->defaultValue(null),
-            'key_hex' => $this->char(8)->defaultValue(null)->comment('Пропуск (в формате HEX)'),
+            'user_common_id' => $this->string(4)->defaultValue(null),
+            'key_hex' => $this->string(8)->defaultValue(null)->comment('Пропуск (в формате HEX)'),
             'timestamp_deny' => $this->dateTime()->defaultValue(null)->comment('Срок действия в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС'),
             'mode_main' => $this->string(127)->defaultValue(null)->comment('Основной режим'),
             'mode_list' => $this->string(512)->defaultValue(null)->comment('Список режимов'),
@@ -32,10 +32,10 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
 
         $this->createTable('users_card_log', [
             'id' => $this->primaryKey(),
-            'user_common_id' => $this->char(4)->defaultValue(null),
-            'key_hex' => $this->char(8)->comment('Пропуск (в формате HEX)'),
+            'user_common_id' => $this->string(4)->defaultValue(null),
+            'key_hex' => $this->string(8)->comment('Пропуск (в формате HEX)'),
             'datetime' => $this->dateTime()->comment('Дата и время события в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС'),
-            'deny_reason' => $this->char(32)->comment('Код причины запрета доступа'),
+            'deny_reason' => $this->string(32)->comment('Код причины запрета доступа'),
             'dir_code' => $this->integer(1)->comment('Код направления прохода (1=выход, 2=вход, 3=неизвестное).'),
             'dir_name' => $this->string(16)->comment('Наименование направления прохода (OUT, IN, UNKNOWN)'),
             'evtype_code' => $this->integer(1)->comment('Тип события (1=проход, 2=запрет)'),

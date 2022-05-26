@@ -97,6 +97,7 @@ class ImportController extends Controller
                             $model->level_id = $this->getLevelId($v[11]);
                             $model->tab_num = $v[13];
                             $model->work_id = $v[14] == 'Основная' ? 1000 : 1001;
+                            $model->access_work_flag = 1;
                             $dep = [];
                             foreach (explode(';', $v[19]) as $name) {
                                 if ($name != '') {
@@ -205,6 +206,7 @@ class ImportController extends Controller
                         if ($flag = $userCommon->save(false)) {
                             $model->user_common_id = $userCommon->id;
                             $model->position = $v[13];
+                            $model->access_work_flag = 1;
                             if (!($flag = $model->save(false))) {
                                 $transaction->rollBack();
                                 break;

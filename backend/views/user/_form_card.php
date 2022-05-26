@@ -13,8 +13,11 @@ use kartik\datetime\DateTimePicker;
     <div class="panel-body">
         <div class="row">
             <div class="col-sm-12">
+
                 <?= $form->field($model, 'key_hex')->textInput(['maxlength' => true]) ?>
+
                 <?= $form->field($model, 'timestamp_deny')->widget(DateTimePicker::class, ['disabled' => $readonly]); ?>
+
             </div>
         </div>
     </div>

@@ -203,6 +203,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'date_serv_spec' => $this->integer(),
             'bonus_list' => $this->string(1024),
             'bonus_summ' => $this->float(),
+            'access_work_flag' => $this->integer()->defaultValue(0)->comment('Разрешение на доступ к работе получено'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

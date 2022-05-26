@@ -12,6 +12,7 @@ class m210310_145345_create_table_employees_parents extends \artsoft\db\BaseMigr
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
             'user_common_id' => $this->integer(),
             'position' => $this->string(256),
+            'access_work_flag' => $this->integer()->defaultValue(0)->comment('Разрешение на доступ к работе получено'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

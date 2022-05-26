@@ -59,10 +59,10 @@ class UsersCard extends \artsoft\db\ActiveRecord
             [['key_hex'], 'unique'],
             [['timestamp_deny', 'photo_bin'], 'safe'],
             [['photo_ver'], 'default', 'value' => 1],
-            [['photo_ver', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['photo_ver', 'version'], 'integer'],
             [['user_common_id'], 'string', 'max' => 4],
             [['key_hex'], 'string', 'max' => 8, 'min' => 8],
-            [['key_hex'], 'match', 'pattern' =>'/^[0-9,A-Z]+$/', 'message' => 'Код пропуска должен содержать только символы [0-9,A-Z].'],
+            [['key_hex'], 'match', 'pattern' =>'/^[0-9,A-Z]+$/', 'message' => 'Код пропуска должен содержать только символы [0-9,A-Z].', 'skipOnEmpty' => true],
             [['mode_main'], 'string', 'max' => 127],
             [['mode_list'], 'string', 'max' => 512],
         ];

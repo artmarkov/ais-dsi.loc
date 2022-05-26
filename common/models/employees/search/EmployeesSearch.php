@@ -20,7 +20,7 @@ class EmployeesSearch extends Employees
     public function rules()
     {
         return [
-            [['id', 'user_common_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'userStatus'], 'integer'],
+            [['id', 'user_common_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'userStatus', 'access_work_flag'], 'integer'],
             [['position'], 'safe'],
             ['fullName', 'string'],
         ];
@@ -60,6 +60,7 @@ class EmployeesSearch extends Employees
             'attributes' => [
                 'id',
                 'position',
+                'access_work_flag',
                 'userStatus' => [
                     'asc' => ['user_common.status' => SORT_ASC],
                     'desc' => ['user_common.status' => SORT_DESC],
@@ -82,6 +83,7 @@ class EmployeesSearch extends Employees
 
         $query->andFilterWhere([
             'id' => $this->id,
+            'access_work_flag' => $this->access_work_flag,
             'user_common.status' => $this->userStatus,
         ]);
 

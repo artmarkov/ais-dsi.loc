@@ -21,7 +21,7 @@ class TeachersSearch extends Teachers
     public function rules()
     {
         return [
-            [['id', 'year_serv', 'year_serv_spec', 'date_serv', 'date_serv_spec', 'userStatus'], 'integer'],
+            [['id', 'year_serv', 'year_serv_spec', 'date_serv', 'date_serv_spec', 'userStatus', 'access_work_flag'], 'integer'],
             [['position_id', 'level_id', 'tab_num', 'bonus_summ'], 'safe'],
             ['fullName', 'string'],
             [['department_list', 'bonus_list'], 'string'],
@@ -69,6 +69,7 @@ class TeachersSearch extends Teachers
                 'level_id',
                 'tab_num',
                 'bonus_summ',
+                'access_work_flag',
                 'userStatus' => [
                     'asc' => ['user_common.status' => SORT_ASC],
                     'desc' => ['user_common.status' => SORT_DESC],
@@ -97,6 +98,7 @@ class TeachersSearch extends Teachers
             'year_serv_spec' => $this->year_serv_spec,
             'bonus_summ' => $this->bonus_summ,
             'user_common.status' => $this->userStatus,
+            'access_work_flag' => $this->access_work_flag,
         ]);
 
         $query->andFilterWhere(['like', 'department_list', $this->department_list]);

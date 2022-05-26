@@ -132,6 +132,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'options' => ['style' => 'width:120px']
                             ],
+                            [
+                                'attribute' => 'access_work_flag',
+                                'value' => function (Teachers $model) {
+                                    return (int)$model->access_work_flag == 1 ? 'Да' : 'Нет';
+                                },
+                                'label' => 'Доступ к работе',
+                            ],
                         ],
                     ]);
                     ?>

@@ -35,6 +35,7 @@ use Yii;
  * @property int $created_by
  * @property int $updated_by
  * @property int $version
+ * @property int $access_work_flag Разрешение на доступ к работе получено
  * @property string $bonus_list
  * @property string $department_list
  *
@@ -80,7 +81,8 @@ class Teachers extends ActiveRecord
     {
         return [
             [['position_id', 'department_list', 'level_id', 'work_id'], 'required'],
-            [['position_id', 'level_id', 'user_common_id', 'work_id'], 'integer'],
+            [['position_id', 'level_id', 'user_common_id', 'work_id', 'access_work_flag'], 'integer'],
+            [['access_work_flag'], 'default', 'value' => 0],
             [['tab_num'], 'string', 'max' => 16],
             ['bonus_summ', 'safe'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
@@ -134,6 +136,7 @@ class Teachers extends ActiveRecord
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
             'userStatus' => Yii::t('art', 'Status'),
+            'access_work_flag' => 'Разрешение на доступ к работе получено'
         ];
     }
 

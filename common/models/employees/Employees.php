@@ -18,6 +18,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
+ * @property int $access_work_flag Разрешение на доступ к работе получено
  */
 class Employees extends \artsoft\db\ActiveRecord
 {
@@ -44,8 +45,8 @@ class Employees extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_common_id', 'version'], 'integer'],
-            [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
+            [['user_common_id', 'version', 'access_work_flag'], 'integer'],
+            [['access_work_flag'], 'default', 'value' => 0],
             [['position'], 'string', 'max' => 256],
         ];
     }
@@ -65,6 +66,7 @@ class Employees extends \artsoft\db\ActiveRecord
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
             'userStatus' => Yii::t('art', 'Status'),
+            'access_work_flag' => 'Разрешение на доступ к работе получено'
         ];
     }
 

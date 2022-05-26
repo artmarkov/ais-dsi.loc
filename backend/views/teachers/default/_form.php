@@ -163,11 +163,19 @@ EOF;
                                 ],
                             ])->label(Yii::t('art/guide', 'Department'));
                             ?>
+                            <?= $form->field($model, 'access_work_flag')->checkbox(['disabled' => false]) ?>
                         </div>
                     </div>
                 </div>
             </div>
-
+            <?php
+            if(!$model->access_work_flag || $model->access_work_flag != 1) {
+                echo \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info-circle"></i> Для получени пропуска необходимо пройти первичный инструктаж по охране труда.',
+                    'options' => ['class' => 'alert-info'],
+                ]);
+            }
+            ?>
             <?= $this->render('@backend/views/user/_form_card', ['form' => $form, 'model' => $userCard, 'readonly' => $readonly]) ?>
 
             <?php DynamicFormWidget::begin([
@@ -290,3 +298,24 @@ EOF;
     </div>
     <?php ActiveForm::end(); ?>
 </div>
+
+<?php
+$js = <<<JS
+    function toggle(field) {
+       if ($(field).is(':checked') ) {
+        $('input[name="UsersCard[key_hex]"]').attr("readonly", false);
+        $('input[name="UsersCard[timestamp_deny]"]').attr("disabled", false);
+    } else {
+        $('input[name="UsersCard[key_hex]"]').attr("readonly", true);
+        $('input[name="UsersCard[timestamp_deny]"]').attr("disabled", true);
+    }
+    }
+    toggle('input[name="Employees[access_work_flag]"]');
+    $('input[name="Employees[access_work_flag]"]').on('click', function () {
+        // console.log(this);
+       toggle(this);
+     });
+JS;
+
+$this->registerJs($js, \yii\web\View::POS_LOAD);
+?>

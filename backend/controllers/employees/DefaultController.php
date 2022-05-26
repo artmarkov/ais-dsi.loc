@@ -103,7 +103,7 @@ class DefaultController extends MainController
         if ($userCommon->load(Yii::$app->request->post()) && $userCard->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
             // validate all models
             $valid = $userCommon->validate();
-          //  $valid = $userCard->validate() && $valid;
+           // $valid = $userCard->validate() && $valid;
             $valid = $model->validate() && $valid;
 
             if ($valid) {
