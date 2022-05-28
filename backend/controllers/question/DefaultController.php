@@ -8,6 +8,7 @@ use backend\models\Model;
 use common\models\question\QuestionAttribute;
 use common\models\question\QuestionOptions;
 use artsoft\controllers\admin\BaseController;
+use common\models\question\QuestionUsers;
 use common\models\question\QuestionValue;
 use yii\helpers\ArrayHelper;
 use Yii;
@@ -216,7 +217,7 @@ class DefaultController extends MainController
         if ('create' == $mode) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Answers'), 'url' => ['/question/default/answers', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = 'Добавление ответа';
-            $modelVal = new QuestionValue();
+            $modelVal = new QuestionUsers();
 
             if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
                 Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
@@ -229,7 +230,7 @@ class DefaultController extends MainController
 
 
         } elseif ('delete' == $mode && $objectId) {
-            $modelVal = QuestionValue::findOne($objectId);
+            $modelVal = QuestionUsers::findOne($objectId);
             $modelVal->delete();
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
@@ -241,7 +242,7 @@ class DefaultController extends MainController
             }
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Answers'), 'url' => ['/question/default/answers', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $modelVal = QuestionValue::findOne($objectId);
+            $modelVal = QuestionUsers::findOne($objectId);
 
             if (!isset($modelVal)) {
                 throw new NotFoundHttpException("The QuestionValue was not found.");
@@ -257,11 +258,8 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $modelClass = 'common\models\question\QuestionValue';
-            $dataProvider = [];
-
             return $this->renderIsAjax('answers', [
-                'dataProvider' => $dataProvider,
+                'data' => $model->getAnswersData($id),
             ]);
         }
     }

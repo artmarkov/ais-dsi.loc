@@ -98,7 +98,7 @@ class m220518_100419_add_table_question extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey(),
             'question_users_id' => $this->integer()->notNull(),
             'question_attribute_id' => $this->integer()->notNull(),
-            'question_option_id' => $this->integer(),
+            'question_option_list' => $this->string(1024),
             'value_string' => $this->string(1024),
             'value_file' => $this->binary(),
         ], $tableOptions);

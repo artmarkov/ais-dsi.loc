@@ -10,7 +10,7 @@ use Yii;
  * @property int $id
  * @property int $question_users_id
  * @property int $question_attribute_id
- * @property int|null $question_option_id
+ * @property string|null $question_option_list
  * @property string|null $value_string
  * @property resource|null $value_file
  *
@@ -34,10 +34,10 @@ class QuestionValue extends \artsoft\db\ActiveRecord
     {
         return [
             [['question_users_id', 'question_attribute_id'], 'required'],
-            [['question_users_id', 'question_attribute_id', 'question_option_id'], 'default', 'value' => null],
-            [['question_users_id', 'question_attribute_id', 'question_option_id'], 'integer'],
+            [['question_users_id', 'question_attribute_id'], 'default', 'value' => null],
+            [['question_users_id', 'question_attribute_id'], 'integer'],
             [['value_file'], 'safe'],
-            [['value_string'], 'string', 'max' => 1024],
+            [['value_string', 'question_option_list'], 'string', 'max' => 1024],
             [['question_attribute_id'], 'exist', 'skipOnError' => true, 'targetClass' => QuestionAttribute::className(), 'targetAttribute' => ['question_attribute_id' => 'id']],
             [['question_users_id'], 'exist', 'skipOnError' => true, 'targetClass' => QuestionUsers::className(), 'targetAttribute' => ['question_users_id' => 'id']],
         ];
@@ -52,7 +52,7 @@ class QuestionValue extends \artsoft\db\ActiveRecord
             'id' => 'ID',
             'question_users_id' => 'Question Users ID',
             'question_attribute_id' => 'Question Attribute ID',
-            'question_option_id' => 'Question Option ID',
+            'question_option_list' => 'Question Option List',
             'value_string' => 'Value String',
             'value_file' => 'Value File',
         ];
