@@ -247,6 +247,11 @@ class Question extends \artsoft\db\ActiveRecord
 
     public function getAnswersData()
     {
+        $attributes = ['id' => '#'];
+        foreach (QuestionAttribute::find()->asArray()->all() as $model) {
+            $attributes += [$model['name'] => $model['label']];
+        }
+        
         $models = QuestionValue::find()->select('*')
             ->innerJoin('question_attribute', 'question_attribute.id = question_value.question_attribute_id')
             ->innerJoin('question_users', 'question_users.id = question_value.question_users_id')
@@ -254,10 +259,8 @@ class Question extends \artsoft\db\ActiveRecord
             ->asArray()
             ->all();
 //        echo '<pre>' . print_r($models, true) . '</pre>';
-        $attributes = ['id' => '#'];
         $data = [];
         foreach ($models as $model) {
-            $attributes += [$model['name'] => $model['label']];
             $data[$model['question_users_id']]['question_id'] = $model['question_id'];
             $data[$model['question_users_id']]['id'] = $model['question_users_id'];
             switch ($model['type_id']) {
