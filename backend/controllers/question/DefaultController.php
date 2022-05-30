@@ -10,6 +10,7 @@ use common\models\question\QuestionOptions;
 use artsoft\controllers\admin\BaseController;
 use common\models\question\QuestionUsers;
 use common\models\question\QuestionValue;
+use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
 use Yii;
 use yii\web\NotFoundHttpException;
@@ -19,7 +20,7 @@ use yii\web\NotFoundHttpException;
  */
 class DefaultController extends MainController
 {
-    public $modelClass       = 'common\models\question\Question';
+    public $modelClass = 'common\models\question\Question';
     public $modelSearchClass = 'common\models\question\search\QuestionSearch';
     public $modelHistoryClass = 'common\models\history\QuestionHistory';
 
@@ -217,14 +218,19 @@ class DefaultController extends MainController
         if ('create' == $mode) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Answers'), 'url' => ['/question/default/answers', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = 'Добавление ответа';
-            $modelVal = new QuestionUsers();
+//print_r(QuestionAttribute::find()->where(['=', 'question_id',  $id])->andWhere(['=', 'required', 1])->exists()); die();
+            $modelVal = new DynamicModel(array_values(ArrayHelper::map(QuestionAttribute::find()->select(['id','name'])->where(['=', 'question_id',  $id])->asArray()->all(),'id', 'name')));
+            if (QuestionAttribute::find()->where(['=', 'question_id',  $id])->andWhere(['=', 'required', 1])->exists()) {
+                $modelVal->addRule(array_values(ArrayHelper::map(QuestionAttribute::find()->select(['id','name'])->where(['=', 'question_id',  $id])->andWhere(['=', 'required', 1])->asArray()->all(),'id', 'name')), 'required');
+            }
 
-            if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
+            if ($modelVal->load(Yii::$app->request->post()) && $modelVal->validate()) {
                 Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
                 $this->getSubmitAction($modelVal);
             }
             return $this->renderIsAjax('/question/answers/_form', [
                 'model' => $modelVal,
+                'modelAttributes' => QuestionAttribute::find()->where(['=', 'question_id',  $id])->asArray()->all(),
                 'readonly' => $readonly,
             ]);
 
@@ -286,8 +292,8 @@ class DefaultController extends MainController
     {
         return [
             ['label' => 'Карточка формы', 'url' => ['/question/default/update', 'id' => $id]],
-            ['label' => 'Ответы',  'url' => ['/question/default/answers', 'id' => $id]],
-            ['label' => 'Статистика',  'url' => ['/question/default/stat', 'id' => $id]],
+            ['label' => 'Ответы', 'url' => ['/question/default/answers', 'id' => $id]],
+            ['label' => 'Статистика', 'url' => ['/question/default/stat', 'id' => $id]],
         ];
     }
 }

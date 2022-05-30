@@ -2,7 +2,10 @@
 
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
+use artsoft\helpers\ButtonHelper;
 
+//print_r($modelAttributes);
+//die();
 ?>
 
 <div class="answers-form">
@@ -21,16 +24,28 @@ use artsoft\helpers\Html;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
+                    <?php
+                    foreach ($modelAttributes as $id => $item):
+                    ?>
+                      <?= $form->field($model, $item['name'])
+                        ->textInput(['maxlength' => true])
+                        ->label($item['label'])
+                        ->hint($item['hint'])
 
+                        ?>
 
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+                <?php $result = ButtonHelper::exitButton();
+                $result .= ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit');
+                $result .= ButtonHelper::saveButton();
+                echo $result;
+                ?>
             </div>
-            <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>
 
