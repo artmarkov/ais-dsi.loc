@@ -248,6 +248,7 @@ class Question extends \artsoft\db\ActiveRecord
     public function getAnswersData()
     {
         $attributes = ['id' => '#'];
+        $attributes += ['users_id' => 'Пользователь'];
         foreach (QuestionAttribute::find()->asArray()->all() as $model) {
             $attributes += [$model['name'] => $model['label']];
         }
@@ -262,6 +263,7 @@ class Question extends \artsoft\db\ActiveRecord
         $data = [];
         foreach ($models as $model) {
             $data[$model['question_users_id']]['question_id'] = $model['question_id'];
+            $data[$model['question_users_id']]['users_id'] = $model['users_id'];
             $data[$model['question_users_id']]['id'] = $model['question_users_id'];
             switch ($model['type_id']) {
                 case QuestionAttribute::TYPE_STRING :

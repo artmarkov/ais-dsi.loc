@@ -230,6 +230,7 @@ class DefaultController extends MainController
             }
             return $this->renderIsAjax('/question/answers/_form', [
                 'model' => $modelVal,
+                'modelQuestion' => $model,
                 'modelAttributes' => QuestionAttribute::find()->where(['=', 'question_id',  $id])->asArray()->all(),
                 'readonly' => $readonly,
             ]);

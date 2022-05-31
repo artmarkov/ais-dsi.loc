@@ -2,6 +2,7 @@
 
 namespace common\models\question;
 
+use artsoft\behaviors\DynamicAttributeBehavior;
 use artsoft\behaviors\SluggableBehavior;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -59,10 +60,9 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
             TimestampBehavior::class,
             BlameableBehavior::class,
             [
-                'class' => SluggableBehavior::className(),
+                'class' => DynamicAttributeBehavior::class,
                 'in_attribute' => 'label',
-                'out_attribute' => 'name',
-                'translit' => true
+                'out_attribute' => 'name'
             ],
         ];
     }

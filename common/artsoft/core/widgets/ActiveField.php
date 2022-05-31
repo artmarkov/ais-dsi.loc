@@ -109,7 +109,7 @@ class ActiveField extends \yii\bootstrap\ActiveField
                     'label' => $encode ? Html::encode($label) : $label,
                     'value' => $value
                 ], $itemOptions);
-                return '<div class="checkbox">' . Html::checkbox($name, $checked, $options) . '</div>';
+                return Html::checkbox($name, $checked, $options);
             };
         }
         parent::checkboxList($items, $options);
