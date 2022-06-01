@@ -5,6 +5,7 @@ namespace backend\controllers\question;
 use artsoft\helpers\ArtHelper;
 use artsoft\models\OwnerAccess;
 use backend\models\Model;
+use common\models\question\QuestionAnswers;
 use common\models\question\QuestionAttribute;
 use common\models\question\QuestionOptions;
 use artsoft\controllers\admin\BaseController;
@@ -218,20 +219,16 @@ class DefaultController extends MainController
         if ('create' == $mode) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Answers'), 'url' => ['/question/default/answers', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = 'Добавление ответа';
-//print_r(QuestionAttribute::find()->where(['=', 'question_id',  $id])->andWhere(['=', 'required', 1])->exists()); die();
-            $modelVal = new DynamicModel(array_values(ArrayHelper::map(QuestionAttribute::find()->select(['id','name'])->where(['=', 'question_id',  $id])->asArray()->all(),'id', 'name')));
-            if (QuestionAttribute::find()->where(['=', 'question_id',  $id])->andWhere(['=', 'required', 1])->exists()) {
-                $modelVal->addRule(array_values(ArrayHelper::map(QuestionAttribute::find()->select(['id','name'])->where(['=', 'question_id',  $id])->andWhere(['=', 'required', 1])->asArray()->all(),'id', 'name')), 'required');
-            }
 
-            if ($modelVal->load(Yii::$app->request->post()) && $modelVal->validate()) {
+            $modelVal = new QuestionAnswers(['id' => $id]);
+
+            if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
                 Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
                 $this->getSubmitAction($modelVal);
             }
             return $this->renderIsAjax('/question/answers/_form', [
                 'model' => $modelVal,
                 'modelQuestion' => $model,
-                'modelAttributes' => QuestionAttribute::find()->where(['=', 'question_id',  $id])->asArray()->all(),
                 'readonly' => $readonly,
             ]);
 
@@ -249,7 +246,7 @@ class DefaultController extends MainController
             }
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Answers'), 'url' => ['/question/default/answers', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $modelVal = QuestionUsers::findOne($objectId);
+            $modelVal = QuestionAnswers::findModel($id, $objectId);
 
             if (!isset($modelVal)) {
                 throw new NotFoundHttpException("The QuestionValue was not found.");
@@ -261,12 +258,14 @@ class DefaultController extends MainController
             }
             return $this->render('/question/answers/_form', [
                 'model' => $modelVal,
+                'modelQuestion' => $model,
                 'readonly' => $readonly,
             ]);
 
         } else {
+            $modelVal = new QuestionAnswers(['id' => $id]);
             return $this->renderIsAjax('answers', [
-                'data' => $model->getAnswersData($id),
+                'data' => $modelVal->getData(),
             ]);
         }
     }
