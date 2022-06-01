@@ -75,7 +75,7 @@ class QuestionAnswers extends DynamicModel
         return ArrayHelper::map($this->getModel()->asArray()->all(), 'name', 'hint');
     }
 
-    private function getQuestionValue()
+    private function findAll()
     {
         return QuestionValue::find()->select('*')
             ->innerJoin('question_attribute', 'question_attribute.id = question_value.question_attribute_id')
@@ -85,35 +85,58 @@ class QuestionAnswers extends DynamicModel
             ->all();
     }
 
+    public function findOne($objectId)
+    {
+        return QuestionValue::find()->select('*')
+            ->innerJoin('question_attribute', 'question_attribute.id = question_value.question_attribute_id')
+            ->innerJoin('question_users', 'question_users.id = question_value.question_users_id')
+            ->where(['=', 'question_attribute.question_id', $this->id])
+            ->andWhere(['=', 'question_users.id', $objectId])
+            ->asArray()
+            ->all();
+    }
+
     public function getData()
     {
         $data = [];
-        foreach ($this->getQuestionValue() as $model) {
-            $data[$model['question_users_id']]['question_id'] = $model['question_id'];
-            $data[$model['question_users_id']]['users_id'] = $model['users_id'];
-            $data[$model['question_users_id']]['id'] = $model['question_users_id'];
-            switch ($model['type_id']) {
-                case QuestionAttribute::TYPE_STRING :
-                case QuestionAttribute::TYPE_TEXT :
-                case QuestionAttribute::TYPE_DATE :
-                case QuestionAttribute::TYPE_DATETIME :
-                case QuestionAttribute::TYPE_EMAIL :
-                case QuestionAttribute::TYPE_PHONE :
-                    $value = $model['value_string'];
-                    break;
-                case QuestionAttribute::TYPE_RADIOLIST :
-                case QuestionAttribute::TYPE_CHECKLIST :
-                    $value = $model['question_option_list']; // TODO развернуть в цикле
-                    break;
-                case QuestionAttribute::TYPE_FILE :
-                    $value = $model['value_file'];
-                    break;
-                default:
-                    $value = $model['value_string'];
-            }
-            $data[$model['question_users_id']][$model['name']] = $value;
+        foreach ($this->findAll() as $model) {
+            $data[$model['question_users_id']] = $this->getValues($model);
         }
         return ['data' => $data, 'attributes' => $this->labels()];
+    }
+
+    public function findModel($objectId)
+    {
+       $model = $this->findOne($objectId);
+       $data[$model['question_users_id']] = $this->getValues($model);
+    }
+
+    public function getValues($model)
+    {
+        $data['question_id'] = $model['question_id'];
+        $data['users_id'] = $model['users_id'];
+        $data['id'] = $model['question_users_id'];
+        switch ($model['type_id']) {
+            case QuestionAttribute::TYPE_STRING :
+            case QuestionAttribute::TYPE_TEXT :
+            case QuestionAttribute::TYPE_DATE :
+            case QuestionAttribute::TYPE_DATETIME :
+            case QuestionAttribute::TYPE_EMAIL :
+            case QuestionAttribute::TYPE_PHONE :
+                $value = $model['value_string'];
+                break;
+            case QuestionAttribute::TYPE_RADIOLIST :
+            case QuestionAttribute::TYPE_CHECKLIST :
+                $value = $model['question_option_list']; // TODO развернуть в цикле
+                break;
+            case QuestionAttribute::TYPE_FILE :
+                $value = $model['value_file'];
+                break;
+            default:
+                $value = $model['value_string'];
+        }
+        $data[$model['name']] = $value;
+        return $data;
     }
 
     public function getForm($form, $item, $options = ['readonly' => false])
@@ -161,9 +184,10 @@ class QuestionAnswers extends DynamicModel
         return true;// TODO
     }
 
-    public static function findModel($id, $objectId)
+    public function delete()
     {
 
         return true;// TODO
     }
+
 }

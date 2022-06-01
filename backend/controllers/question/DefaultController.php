@@ -212,6 +212,8 @@ class DefaultController extends MainController
     public function actionAnswers($id, $objectId = null, $mode = null, $readonly = false)
     {
         $model = $this->findModel($id);
+        $modelVal = new QuestionAnswers(['id' => $id]);
+
         $this->view->params['tabMenu'] = $this->getMenu($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Questions'), 'url' => ['question/default/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['question/default/view', 'id' => $id]];
@@ -219,8 +221,6 @@ class DefaultController extends MainController
         if ('create' == $mode) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Answers'), 'url' => ['/question/default/answers', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = 'Добавление ответа';
-
-            $modelVal = new QuestionAnswers(['id' => $id]);
 
             if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
                 Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
@@ -234,7 +234,6 @@ class DefaultController extends MainController
 
 
         } elseif ('delete' == $mode && $objectId) {
-            $modelVal = QuestionUsers::findOne($objectId);
             $modelVal->delete();
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
@@ -246,8 +245,8 @@ class DefaultController extends MainController
             }
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Answers'), 'url' => ['/question/default/answers', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $modelVal = QuestionAnswers::findModel($id, $objectId);
 
+            $modelVal = $modelVal->findModel($objectId);
             if (!isset($modelVal)) {
                 throw new NotFoundHttpException("The QuestionValue was not found.");
             }
@@ -263,7 +262,6 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $modelVal = new QuestionAnswers(['id' => $id]);
             return $this->renderIsAjax('answers', [
                 'data' => $modelVal->getData(),
             ]);
