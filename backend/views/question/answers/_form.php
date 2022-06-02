@@ -16,8 +16,12 @@ $options = [];
 
     <?php
     $form = ActiveForm::begin([
+        'fieldConfig' => [
+            'inputOptions' => ['readonly' => $readonly]
+        ],
         'id' => 'answers-form',
         'validateOnBlur' => false,
+        'options' => ['enctype' => 'multipart/form-data'],
     ])
     ?>
     <div class="panel">

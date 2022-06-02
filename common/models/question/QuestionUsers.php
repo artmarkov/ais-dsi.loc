@@ -33,7 +33,11 @@ class QuestionUsers extends \artsoft\db\ActiveRecord
     public function behaviors()
     {
         return [
-            TimestampBehavior::class,
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => NULL,
+            ],
         ];
     }
     /**

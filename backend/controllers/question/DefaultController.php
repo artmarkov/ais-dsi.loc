@@ -223,6 +223,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = 'Добавление ответа';
 
             if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
+               // print_r(Yii::$app->request->post());
                 Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
                 $this->getSubmitAction($modelVal);
             }
@@ -234,10 +235,10 @@ class DefaultController extends MainController
 
 
         } elseif ('delete' == $mode && $objectId) {
-            $modelVal->delete();
+            $modelVal->delete($objectId);
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-            return $this->redirect($this->getRedirectPage('delete', $modelVal));
+            return $this->redirect($this->getRedirectPage('delete', $model));
 
         } elseif ($objectId) {
             if ('view' == $mode) {
@@ -246,7 +247,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Answers'), 'url' => ['/question/default/answers', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
 
-            $modelVal = $modelVal->findModel($objectId);
+            $modelVal = $modelVal->getDataOne($objectId);
             if (!isset($modelVal)) {
                 throw new NotFoundHttpException("The QuestionValue was not found.");
             }
@@ -263,7 +264,7 @@ class DefaultController extends MainController
 
         } else {
             return $this->renderIsAjax('answers', [
-                'data' => $modelVal->getData(),
+                'data' => $modelVal->getDataAll(),
             ]);
         }
     }

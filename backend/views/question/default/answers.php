@@ -5,7 +5,7 @@ use artsoft\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 
-//echo '<pre>' . print_r($data, true) . '</pre>';
+//echo '<pre>' . print_r($data, true) . '</pre>'; die();
 $columns = [];
 foreach ($data['attributes'] as $attribute => $label) {
     if ($attribute == 'id') {
@@ -16,7 +16,7 @@ foreach ($data['attributes'] as $attribute => $label) {
             'controller' => '/questions/default',
             'title' => function ($data) {
                 return Html::a(sprintf('#%06d', $data['id']),
-                    Url::to(['questions/default/answers', 'id' => $data['question_id'], 'objectId' => $data['id'], 'mode' => 'view']), [
+                    Url::to(['question/default/answers', 'id' => $data['question_id'], 'objectId' => $data['id'], 'mode' => 'view']), [
                         'data-method' => 'post',
                         'data-pjax' => '0',
                     ]);
@@ -25,7 +25,7 @@ foreach ($data['attributes'] as $attribute => $label) {
             'buttons' => [
                 'update' => function ($url, $data, $key) {
                     return Html::a(Yii::t('art', 'Edit'),
-                        Url::to(['questions/default/answers', 'id' => $data['question_id'], 'objectId' => $data['id'], 'mode' => 'update']), [
+                        Url::to(['question/default/answers', 'id' => $data['question_id'], 'objectId' => $data['id'], 'mode' => 'update']), [
                             'title' => Yii::t('art', 'Edit'),
                             'data-method' => 'post',
                             'data-pjax' => '0',
@@ -34,14 +34,14 @@ foreach ($data['attributes'] as $attribute => $label) {
                 },
                 'view' => function ($url, $data, $key) {
                     return Html::a(Yii::t('art', 'View'),
-                        Url::to(['questions/default/answers', 'id' => $data['question_id'], 'objectId' => $data['id'], 'mode' => 'view']), [
+                        Url::to(['question/default/answers', 'id' => $data['question_id'], 'objectId' => $data['id'], 'mode' => 'view']), [
                             'data-method' => 'post',
                             'data-pjax' => '0',
                         ]);
                 },
                 'delete' => function ($url, $data, $key) {
                     return Html::a(Yii::t('art', 'Delete'),
-                        Url::to(['questions/default/answers', 'id' => $data['question_id'], 'objectId' => $data['id'], 'mode' => 'delete']), [
+                        Url::to(['question/default/answers', 'id' => $data['question_id'], 'objectId' => $data['id'], 'mode' => 'delete']), [
                             'title' => Yii::t('art', 'Delete'),
                             'aria-label' => Yii::t('art', 'Delete'),
                             'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
