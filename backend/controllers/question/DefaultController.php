@@ -264,7 +264,7 @@ class DefaultController extends MainController
 
         } else {
             return $this->renderIsAjax('answers', [
-                'data' => $modelVal->getDataAll(),
+                'data' => $modelVal->getDataArrayAll(),
             ]);
         }
     }

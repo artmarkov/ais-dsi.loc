@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\helpers\Html;
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\ButtonHelper;
 
@@ -41,7 +42,27 @@ $options = [];
                     ?>
                     <div class="row">
                         <div class="col-sm-12">
+<!--                            --><?//= $form->field($model, 'users_id')->label(false)->hiddenInput(['value' => $model->users_id]) ?>
+                            <?= $form->field($model, 'users_id')->widget(\kartik\select2\Select2::class, [
+                                'data' => \artsoft\models\User::getUsersListByCategory(['teachers', 'employees']),
+                                'showToggleAll' => false,
+                                'options' => [
+                                    'disabled' => $readonly,
+                                    'value' => $model->users_id,
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                    'multiple' => false,
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => false,
+                                ],
+
+                            ]);
+
+                            ?>
+<!--                            --><?//= $form->field($model, 'users_id')->textInput() ?>
+
                             <?php foreach ($model->getModel()->all() as $id => $item): ?>
+<!--                        --><?php //echo '<pre>' . print_r($item, true) . '</pre>'; die(); ?>
                                 <?= $model->getForm($form, $item, ['readonly' => $readonly]); ?>
                             <?php endforeach; ?>
                         </div>

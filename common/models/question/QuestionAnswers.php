@@ -2,6 +2,7 @@
 
 namespace common\models\question;
 
+use artsoft\models\User;
 use kartik\date\DatePicker;
 use kartik\datetime\DateTimePicker;
 use Yii;
@@ -20,11 +21,9 @@ class QuestionAnswers extends DynamicModel
     public function __construct($config = [])
     {
         $this->id = $config['id'];
-        $this->attributes = array_values($this->attributes());
+        $this->attributes = array_merge(array_values($this->attributes()), ['question_users_id', 'users_id']);
         $this->addRules();
         $this->setAttributeLabels($this->labels());
-
-        //echo '<pre>' . print_r($this->attributes, true) . '</pre>';
         parent::__construct($this->attributes, $config);
     }
 
@@ -74,7 +73,7 @@ class QuestionAnswers extends DynamicModel
 
     private function labels()
     {
-        $labels = ['id' => '#'];
+        $labels = ['question_users_id' => '#'];
         $labels += ['users_id' => 'Пользователь'];
         $labels += ArrayHelper::map($this->getModel()->asArray()->all(), 'name', 'label');
         return $labels;
@@ -112,30 +111,33 @@ class QuestionAnswers extends DynamicModel
         return $this->loadQuery()->andWhere(['=', 'question_users.id', $objectId])->asArray()->all();
     }
 
-    public function getDataAll()
+    public function getDataArrayAll()
     {
         $data = [];
 //        echo '<pre>' . print_r($this->loadValues(), true) . '</pre>'; die();
         foreach ($this->loadValues() as $model) {
-            $data[$model['question_users_id']] = isset($data[$model['question_users_id']]) ? array_merge($data[$model['question_users_id']], $this->addData($model)) : $this->addData($model);
+            $data[$model['question_users_id']] = isset($data[$model['question_users_id']]) ? array_merge($data[$model['question_users_id']], $this->getDataArray($model)) : $this->getDataArray($model);
         }
         return ['data' => $data, 'attributes' => $this->labels()];
     }
 
     public function getDataOne($objectId)
     {
-        foreach ($this->loadValue($objectId) as $item => $model) {
+        foreach ($this->loadValue($objectId) as $model) {
+            $this->question_users_id = $model['question_users_id'];
+            $this->users_id = $model['users_id'];
             $name = $model['name'];
-            $this->$name = $this->getValue($model);;
-            }
+            $this->$name = $this->getValue($model);
+        }
         return $this;
     }
 
-    public function addData($model)
+    public function getDataArray($model)
     {
+        $user = User::findOne($model['users_id']);
         $data['question_id'] = $model['question_id'];
-        $data['users_id'] = $model['users_id'];
-        $data['id'] = $model['question_users_id'];
+        $data['users_id'] = $user->username;
+        $data['question_users_id'] = $model['question_users_id'];
         $data[$model['name']] = $this->getValue($model);
         return $data;
     }
@@ -163,6 +165,7 @@ class QuestionAnswers extends DynamicModel
         }
         return $value;
     }
+
     public function getForm($form, $item, $options = ['readonly' => false])
     {
         $form = $form->field($this, $item['name']);
@@ -209,7 +212,8 @@ class QuestionAnswers extends DynamicModel
         $data = Yii::$app->request->post();
         $user = new QuestionUsers();
         $user->question_id = $this->id;
-        $user->users_id = Yii::$app->getUser()->getId();
+       // $user->users_id = Yii::$app->getUser()->getId();
+        $user->users_id = $data[StringHelper::basename($this::className())]['users_id'];
 
         $valid = $user->validate();
         if ($valid) {
