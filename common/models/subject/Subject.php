@@ -56,7 +56,7 @@ class Subject extends ActiveRecord
             ['status', 'integer'],
             [['name'], 'string', 'max' => 64],
             [['slug'], 'string', 'max' => 32],
-            [['department_list', 'category_list', 'vid_list'], 'string'],
+            [['department_list', 'category_list', 'vid_list'], 'safe'],
         ];
     }
 

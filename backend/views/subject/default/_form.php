@@ -46,7 +46,7 @@ use common\models\own\Department;
                         'data' => SubjectCategory::getCategoryList(),
                         'options' => [
                             // 'disabled' => $readonly,
-                            'placeholder' => Yii::t('art/teachers', 'Select Subject Category...'),
+                            'placeholder' => Yii::t('art/guide', 'Select Subject Category...'),
                             'multiple' => true,
                         ],
                         'pluginOptions' => [
@@ -58,7 +58,7 @@ use common\models\own\Department;
                         'data' => SubjectVid::getVidList(),
                         'options' => [
                             // 'disabled' => $readonly,
-                            'placeholder' => Yii::t('art/teachers', 'Select Subject Vid...'),
+                            'placeholder' => Yii::t('art/guide', 'Select Subject Vid...'),
                             'multiple' => true,
                         ],
                         'pluginOptions' => [
