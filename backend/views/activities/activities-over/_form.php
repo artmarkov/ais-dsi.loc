@@ -36,7 +36,6 @@ use common\models\own\Department;
                         'data' => $model->getOverCategoryList(),
                         'options' => [
                             'disabled' => true,
-                            'placeholder' => Yii::t('art/guide', 'Select...'),
                             'multiple' => false,
                         ],
                         'pluginOptions' => [
@@ -80,7 +79,10 @@ use common\models\own\Department;
 
                     ]);
                     ?>
-                    <?= $form->field($model, "auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList()) ?>
+                    <?= $form->field($model, "auditory_id")->dropDownList(RefBook::find('auditory_memo_1')->getList(), [
+                        'prompt' => Yii::t('art/guide', 'Select auditory...'), ['disabled' => $readonly]
+                    ])
+                    ?>
 
                     <?= $form->field($model, 'description')->textarea(['rows' => 3]) ?>
 

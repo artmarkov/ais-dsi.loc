@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'category_id',
                                 'value' => 'catName',
-                                'label' => Yii::t('art/guide', 'Name Category'),
+                                'label' => Yii::t('art/guide', 'Category'),
                                 'filter' => \common\models\activities\ActivitiesCat::getCatList(),
                             ],
                             [

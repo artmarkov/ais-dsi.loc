@@ -1011,7 +1011,7 @@ class DefaultController extends MainController
     public function getMenu($id)
     {
         return [
-            ['label' => 'Монитор', 'url' => ['/teachers/default/monitor', 'id' => $id]],
+//            ['label' => 'Монитор', 'url' => ['/teachers/default/monitor', 'id' => $id]],
             ['label' => 'Карточка', 'url' => ['/teachers/default/update', 'id' => $id]],
             ['label' => 'Нагрузка', 'url' => ['/teachers/default/load-items', 'id' => $id]],
             ['label' => 'Планирование инд. занятий', 'url' => ['/teachers/default/teachers-plan', 'id' => $id]],
