@@ -60,9 +60,9 @@ use artsoft\widgets\Nav;
                 'icon' => 'fa fa-graduation-cap',
                 'url' => '#',
                 'items' => [
+                    ['label' => 'Вступительные экзамены', 'icon' => 'fa fa-minus', 'url' => ['/entrant/default/index']],
                     ['label' => 'Индивидуальные планы', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
                     ['label' => 'Учебные группы', 'icon' => 'fa fa-minus', 'url' => ['/sect/default/index']],
-                    ['label' => 'Испытания', 'icon' => 'fa fa-minus', 'url' => ['/examination/default/index']],
                     ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/index']],
                     ['label' => 'Движение учеников', 'icon' => 'fa fa-minus', 'url' => ['/transfer/default/index']],
 //                    ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/schedule/default/index']],

@@ -13,5 +13,6 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Категории произведений',  'url' => ['/guidestudy/piece-category/index']],
         ['label' => 'Оценки уроков',  'url' => ['/guidestudy/lesson-mark/index']],
         ['label' => 'Виды испытаний',  'url' => ['/guidestudy/lesson-test/index']],
+        ['label' => 'Приемные испытания',  'url' => ['/guidestudy/entrant-test/index']],
     ];
 }

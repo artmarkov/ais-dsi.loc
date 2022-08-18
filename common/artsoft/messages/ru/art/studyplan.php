@@ -28,5 +28,6 @@ return [
     'Current Avg Mark' => 'Средняя оценка текущая',
     'Middle Avg Mark' => 'Средняя оценка ПА',
     'Finish Avg Mark' => 'Средняя оценка ИА',
+    'Lesson Tests' => 'Виды испытвний',
 
 ];

@@ -183,6 +183,15 @@ return [
     'Plan Tree' => 'Дерево категорий мероприятий',
     'School Plans' => 'План работы школы',
     'Activities Overs' => 'Внеплановые мероприятия',
+    'Guide Entrant Tests' => 'Приемные испытания',
+    'Entrant Comms' => 'Вступительные экзамены',
+    'Timestamp In' => 'Начало работы',
+    'Timestamp Out' => 'Окончание работы',
+    'Leader' => 'Председатель комиссии',
+    'Secretary' => 'Секретарь комиссии',
+    'Members List' => 'Члены комиссии',
+    'Prep On Test List' => 'Испытания с подготовкой',
+    'Prep Off Test List' => 'Испытания без подготовки',
 
 ];
 ?>
