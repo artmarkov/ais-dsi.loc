@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model common\models\entrant\EntrantComm */
 
 $this->title = Yii::t('art', 'Update "{item}"', ['item' => $model->id]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Entrant Comms'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Entrant Comms'), 'url' => ['/entrant/default/index']];
 $this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 ?>
 <div class="entrant-comm-update">

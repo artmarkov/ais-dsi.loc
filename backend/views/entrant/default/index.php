@@ -1,6 +1,5 @@
 <?php
 
-use common\models\studyplan\Studyplan;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
