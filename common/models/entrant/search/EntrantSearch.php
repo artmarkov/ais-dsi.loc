@@ -19,7 +19,7 @@ class EntrantSearch extends Entrant
     {
         return [
             [['id', 'student_id', 'comm_id', 'group_id', 'decision_id', 'unit_reason_id', 'plan_id', 'course', 'type_id', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['last_experience', 'remark', 'reason'], 'safe'],
+            [['last_experience', 'remark', 'reason', 'subject_list'], 'safe'],
             [['mid_mark'], 'number'],
         ];
     }
@@ -84,6 +84,7 @@ class EntrantSearch extends Entrant
         ]);
 
         $query->andFilterWhere(['like', 'last_experience', $this->last_experience])
+            ->andFilterWhere(['like', 'subject_list', $this->subject_list])
             ->andFilterWhere(['like', 'remark', $this->remark])
             ->andFilterWhere(['like', 'reason', $this->reason]);
 

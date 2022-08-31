@@ -2,6 +2,7 @@
 
 namespace common\models\entrant;
 
+use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\models\User;
 use common\models\students\Student;
 use common\models\studyplan\Studyplan;
@@ -16,10 +17,10 @@ use yii\behaviors\TimestampBehavior;
  * @property int $student_id
  * @property int $comm_id Комиссия Id
  * @property int $group_id Группа экзаменационная
+ * @property string $subject_list Выбранный инструмент
  * @property string $last_experience Где обучался ранее
  * @property string $remark Примечание
  * @property int|null $decision_id Решение комиссии (Рекомендован, Не рекомендован)
- * @property float|null $mid_mark Средняя оценка
  * @property string|null $reason Причина комиссии
  * @property int|null $unit_reason_id Рекомендовано отделение
  * @property int|null $plan_id Назначен учебный план
@@ -56,6 +57,10 @@ class Entrant extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
+            [
+                'class' => ArrayFieldBehavior::class,
+                'attributes' => ['subject_list'],
+            ],
         ];
     }
 
@@ -65,11 +70,23 @@ class Entrant extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['student_id', 'comm_id', 'group_id', 'last_experience', 'remark', 'created_at', 'updated_at'], 'required'],
+            [['student_id', 'comm_id', 'group_id', 'last_experience', 'subject_list'], 'required'],
             [['student_id', 'comm_id', 'group_id', 'decision_id', 'unit_reason_id', 'plan_id', 'course', 'type_id', 'status', 'version'], 'integer'],
-            [['mid_mark'], 'number'],
             [['last_experience', 'remark'], 'string', 'max' => 127],
+            [['subject_list'], 'safe'],
             [['reason'], 'string', 'max' => 1024],
+            [['unit_reason_id', 'plan_id', 'course', 'type_id'], 'required', 'when' => function ($model) {
+                return $model->decision_id === '1';
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[name=\"Entrant[decision_id]\"]:checked').val() === '1';
+                            }"],
+            [['reason'], 'required', 'when' => function ($model) {
+                return $model->decision_id === '2';
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[name=\"Entrant[decision_id]\"]:checked').val() === '2';
+                            }"],
             [['comm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantComm::className(), 'targetAttribute' => ['comm_id' => 'id']],
             [['group_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantGroup::className(), 'targetAttribute' => ['group_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::className(), 'targetAttribute' => ['student_id' => 'id']],
@@ -84,18 +101,18 @@ class Entrant extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => Yii::t('art/guide', 'ID'),
-            'student_id' => Yii::t('art/guide', 'Student'),
+            'student_id' => Yii::t('art/student', 'Student'),
             'comm_id' => Yii::t('art/guide', 'Commission'),
             'group_id' => Yii::t('art/guide', 'Group'),
+            'subject_list' => Yii::t('art/guide', 'Subject List'),
             'last_experience' => Yii::t('art/guide', 'Last Experience'),
             'remark' => Yii::t('art/guide', 'Remark'),
             'decision_id' => Yii::t('art/guide', 'Decision'),
-            'mid_mark' => Yii::t('art/guide', 'Mid Mark'),
             'reason' => Yii::t('art/guide', 'Reason'),
             'unit_reason_id' => Yii::t('art/guide', 'Unit Reason'),
-            'plan_id' => Yii::t('art/guide', 'Plan'),
-            'course' => Yii::t('art/guide', 'Course'),
-            'type_id' => Yii::t('art/guide', 'Type'),
+            'plan_id' => Yii::t('art/guide', 'Plan Reason'),
+            'course' => Yii::t('art/guide', 'Course Reason'),
+            'type_id' => Yii::t('art/guide', 'Type Reason'),
             'status' => Yii::t('art', 'Status'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -158,5 +175,57 @@ class Entrant extends \artsoft\db\ActiveRecord
     public function getEntrantTests()
     {
         return $this->hasMany(EntrantTest::className(), ['entrant_id' => 'id']);
+    }
+
+    public static function getDecisionList()
+    {
+        return array(
+            0 => 'Не обработано',
+            1 => 'Рекомендован',
+            2 => 'Не рекомендован',
+        );
+    }
+
+    public static function getDecisionValue($val)
+    {
+        $ar = self::getDecisionList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getCommGroupList($comm_id)
+    {
+        return \yii\helpers\ArrayHelper::map(EntrantGroup::find()->andWhere(['=', 'comm_id', $comm_id])->all(), 'id', 'name');
+    }
+
+    public static function getCommGroupValue($comm_id, $val)
+    {
+        $ar = self::getCommGroupList($comm_id);
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if ($this->decision_id == 1) {
+            $this->reason = null;
+        } elseif ($this->decision_id == 2) {
+            $this->unit_reason_id = null;
+            $this->plan_id = null;
+            $this->course = null;
+            $this->type_id = null;
+        } else {
+            $this->reason = null;
+            $this->unit_reason_id = null;
+            $this->plan_id = null;
+            $this->course = null;
+            $this->type_id = null;
+        }
+        return parent::beforeSave($insert);
     }
 }

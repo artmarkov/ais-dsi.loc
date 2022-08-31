@@ -1,8 +1,6 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\entrant\EntrantComm;
-use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
@@ -14,8 +12,9 @@ use kartik\date\DatePicker;
 
     <?php
     $form = ActiveForm::begin([
-        'id' => 'entrant-comm-form',
-        'validateOnBlur' => false,
+        'fieldConfig' => [
+            'inputOptions' => ['readonly' => $readonly]
+        ],
     ])
     ?>
 
@@ -34,13 +33,14 @@ use kartik\date\DatePicker;
                     <?php
                     echo $form->field($model, 'division_id')->dropDownList(\common\models\own\Division::getDivisionList(), [
                         'prompt' => Yii::t('art/guide', 'Select Name Division...'),
-                        'id' => 'division_id'
+                        'id' => 'division_id',
+                        'disabled' => $readonly
                     ])->label(Yii::t('art/guide', 'Name Division'));
                     ?>
 
                     <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                         [
-                            // 'disabled' => $model->plan_year ? true : $readonly,
+                            'disabled' => $readonly,
                             'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' => $model->isNewRecord ? true : false]
                             ]
                         ]);
@@ -48,15 +48,15 @@ use kartik\date\DatePicker;
 
                     <?= $form->field($model, 'description')->textarea(['rows' => '3', 'maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'timestamp_in')->widget(DatePicker::class)->textInput(['autocomplete' => 'off'/*, 'disabled' => $readonly*/]); ?>
+                    <?= $form->field($model, 'timestamp_in')->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
-                    <?= $form->field($model, 'timestamp_out')->widget(DatePicker::class)->textInput(['autocomplete' => 'off'/*, 'disabled' => $readonly*/]); ?>
+                    <?= $form->field($model, 'timestamp_out')->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
                 </div>
             </div>
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    Экзаменоционная комиссия
+                    Экзаменационная комиссия
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -65,7 +65,7 @@ use kartik\date\DatePicker;
                                 'data' => \artsoft\models\User::getUsersListByCategory(['teachers', 'employees']),
                                 'showToggleAll' => false,
                                 'options' => [
-                                    //'disabled' => $readonly,
+                                    'disabled' => $readonly,
                                     'value' => $model->leader_id,
                                     'placeholder' => Yii::t('art', 'Select...'),
                                     'multiple' => false,
@@ -81,7 +81,7 @@ use kartik\date\DatePicker;
                                 'data' => \artsoft\models\User::getUsersListByCategory(['teachers', 'employees']),
                                 'showToggleAll' => false,
                                 'options' => [
-                                    //'disabled' => $readonly,
+                                    'disabled' => $readonly,
                                     'value' => $model->secretary_id,
                                     'placeholder' => Yii::t('art', 'Select...'),
                                     'multiple' => false,
@@ -97,7 +97,7 @@ use kartik\date\DatePicker;
                                 'data' => \artsoft\models\User::getUsersListByCategory(['teachers']),
                                 'showToggleAll' => false,
                                 'options' => [
-                                    //'disabled' => $readonly,
+                                    'disabled' => $readonly,
                                     'placeholder' => Yii::t('art', 'Select...'),
                                     'multiple' => true,
                                 ],
@@ -123,7 +123,7 @@ use kartik\date\DatePicker;
                                 'data' => \artsoft\helpers\RefBook::find('entrant_test_name')->getList(),
                                 'showToggleAll' => false,
                                 'options' => [
-                                    //'disabled' => $readonly,
+                                    'disabled' => $readonly,
                                     'placeholder' => Yii::t('art', 'Select...'),
                                     'multiple' => true,
                                 ],
@@ -138,7 +138,7 @@ use kartik\date\DatePicker;
                                 'data' => \artsoft\helpers\RefBook::find('entrant_test_name')->getList(),
                                 'showToggleAll' => false,
                                 'options' => [
-                                    //'disabled' => $readonly,
+                                    'disabled' => $readonly,
                                     'placeholder' => Yii::t('art', 'Select...'),
                                     'multiple' => true,
                                 ],
@@ -165,7 +165,7 @@ use kartik\date\DatePicker;
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
                 </div>
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>

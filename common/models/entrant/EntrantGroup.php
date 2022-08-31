@@ -2,6 +2,7 @@
 
 namespace common\models\entrant;
 
+use artsoft\behaviors\DateFieldBehavior;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -40,8 +41,9 @@ class EntrantGroup extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['comm_id', 'timestamp_in', 'created_at', 'updated_at'], 'required'],
-            [['comm_id', 'prep_flag', 'timestamp_in', 'version'], 'integer'],
+            [['comm_id', 'timestamp_in', 'prep_flag', 'name'], 'required'],
+            [['comm_id', 'prep_flag', 'version'], 'integer'],
+            [['timestamp_in'], 'safe'],
             [['name'], 'string', 'max' => 255],
             [['description'], 'string', 'max' => 1024],
             [['comm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantComm::className(), 'targetAttribute' => ['comm_id' => 'id']],
@@ -56,6 +58,11 @@ class EntrantGroup extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
+            [
+                'class' => DateFieldBehavior::class,
+                'attributes' => ['timestamp_in'],
+                'timeFormat' => 'd.m.Y H:i'
+            ],
         ];
     }
     /**
@@ -66,10 +73,10 @@ class EntrantGroup extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/guide', 'ID'),
             'comm_id' => Yii::t('art/guide', 'Comm ID'),
-            'name' => Yii::t('art/guide', 'Name'),
+            'name' => Yii::t('art/guide', 'Group Name'),
             'prep_flag' => Yii::t('art/guide', 'Prep Flag'),
-            'timestamp_in' => Yii::t('art/guide', 'Timestamp In'),
-            'description' => Yii::t('art/guide', 'Description'),
+            'timestamp_in' => Yii::t('art/guide', 'Group Timestamp'),
+            'description' => Yii::t('art', 'Description'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -102,5 +109,21 @@ class EntrantGroup extends \artsoft\db\ActiveRecord
     {
         return $this->hasOne(EntrantComm::className(), ['id' => 'comm_id']);
     }
+
+    public static function getPrepList()
+    {
+        return array(
+            1 => 'С подготовкой',
+            0 => 'Без подготовки',
+        );
+    }
+
+    public static function getPrepValue($val)
+    {
+        $ar = self::getPrepList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+
 
 }

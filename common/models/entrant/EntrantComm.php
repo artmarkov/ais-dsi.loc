@@ -163,4 +163,5 @@ class EntrantComm extends \artsoft\db\ActiveRecord
     {
         return $this->hasMany(EntrantGroup::className(), ['comm_id' => 'id']);
     }
+
 }

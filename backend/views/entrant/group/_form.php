@@ -1,8 +1,8 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\entrant\EntrantGroup;
 use artsoft\helpers\Html;
+use kartik\datetime\DateTimePicker;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\entrant\EntrantGroup */
@@ -11,47 +11,48 @@ use artsoft\helpers\Html;
 
 <div class="entrant-group-form">
 
-    <?php 
+    <?php
     $form = ActiveForm::begin([
-            'id' => 'entrant-group-form',
-            'validateOnBlur' => false,
-        ])
+        'fieldConfig' => [
+            'inputOptions' => ['readonly' => $readonly]
+        ],
+        'id' => 'entrant-group-form',
+        'validateOnBlur' => false,
+    ])
     ?>
 
     <div class="panel">
         <div class="panel-heading">
-            <?=  Html::encode($this->title) ?>
+            <?= Html::encode($this->title) ?>
         </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-            
-                    <?= $form->field($model, 'comm_id')->textInput() ?>
-
+                    <?php
+                    // necessary for update action.
+                    if (!$model->isNewRecord) {
+                        echo Html::activeHiddenInput($model, "comm_id");
+                    }
+                    ?>
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'prep_flag')->textInput() ?>
+                    <?= $form->field($model, 'prep_flag')->radioList($model->getPrepList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
 
-                    <?= $form->field($model, 'timestamp_in')->textInput() ?>
+                    <?= $form->field($model, 'timestamp_in')->widget(DateTimePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
-                    <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'description')->textarea(['rows' => '3', 'maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'created_at')->textInput() ?>
-
-                    <?= $form->field($model, 'updated_at')->textInput() ?>
-
-                    <?= $form->field($model, 'version')->textInput() ?>
                 </div>
             </div>
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?=  \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
             </div>
-            <?=  \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
+            <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>
 
-    <?php  ActiveForm::end(); ?>
+    <?php ActiveForm::end(); ?>
 
 </div>
