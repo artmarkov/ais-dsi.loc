@@ -16,15 +16,14 @@ RUN apt-get -qq update && apt-get -qqy install  \
     && apt-get clean all
 
 RUN cd /tmp && \
-    git clone https://git.php.net/repository/pecl/networking/ssh2.git && \
-    cd /tmp/ssh2/ && \
+    git clone https://github.com/php/pecl-networking-ssh2.git && \
+    cd /tmp/pecl-networking-ssh2/ && \
     .travis/build.sh && \
-    docker-php-ext-enable ssh2
+    docker-php-ext-enable ssh2 && \
+    rm -rf /tmp/pecl-networking-ssh2/
 
-RUN yes | pecl install xdebug; \
-    docker-php-ext-enable xdebug; \
+RUN pecl uninstall xdebug; yes | pecl install xdebug-2.9.8; \
     docker-php-ext-install xsl
-
 # set ru_RU locale
 RUN sed -i -e 's/# ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/' /etc/locale.gen && \
     sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
@@ -38,6 +37,8 @@ RUN cd /tmp && \
     cmake . && \
     make && \
     cp /tmp/engine/bin/gost.so /usr/lib/x86_64-linux-gnu/engines-1.1
+
+RUN composer self-update --1
 
 COPY openssl.cnf /etc/ssl/openssl.cnf
 COPY server.crt /etc/apache2/ssl/server.crt
