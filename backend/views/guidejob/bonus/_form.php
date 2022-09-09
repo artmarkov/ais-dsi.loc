@@ -7,7 +7,7 @@ use common\models\service\MeasureUnit;
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\guidejob\BonusItem */
+/* @var $model common\models\guidejob\Bonus */
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 
@@ -37,6 +37,8 @@ use artsoft\helpers\Html;
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
+
+                    <?= $form->field($model, 'bonus_vid_id')->radioList(\common\models\efficiency\EfficiencyTree::getBobusVidList()) ?>
 
                     <?= $form->field($model, 'value_default')->textInput(['maxlength' => true]) ?>
 

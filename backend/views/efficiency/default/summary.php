@@ -60,23 +60,20 @@ foreach ($data['root'] as $id => $name) {
 $columns[] = [
     'attribute' => 'stake',
     'label' => $data['attributes']['stake'],
+    'footer' => 'Итого:',
     'headerOptions' => ['class' => "grid"]
 ];
 $columns[] = [
     'attribute' => 'total',
     'label' => $data['attributes']['total'],
-    'footer' => 'Итого:',
-    'headerOptions' => ['class' => "grid"]
-];
-$columns[] = [
-    'attribute' => 'total_sum',
-    'label' => $data['attributes']['total_sum'],
     'value' => function ($data) {
-        return number_format($data['total_sum'], 2);
+        return '<b>' . number_format($data['total'], 2) . '</b>';
     },
     'footer' => number_format($data['all_summ'], 2),
-    'headerOptions' => ['class' => "grid"]
+    'headerOptions' => ['class' => "grid"],
+    'format' => 'raw',
 ];
+
 ?>
 
     <div class="teachers-efficiency-summary">
@@ -101,6 +98,9 @@ $columns[] = [
                                 'pagination' => false,
                             ]),
                             'columns' => $columns,
+                            'toolbar' => [
+                                '{toggleData}'
+                            ],
                             'showFooter' => true,
                         ]);
                         ?>

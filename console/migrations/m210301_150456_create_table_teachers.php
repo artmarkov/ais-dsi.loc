@@ -158,6 +158,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'bonus_category_id' => $this->integer()->notNull(),
             'name' => $this->string(127),
             'slug' => $this->string(32),
+            'bonus_vid_id' => $this->integer(),
             'value_default' => $this->string(127),
             'status' => $this->integer()->notNull(),
         ], $tableOptions);
@@ -165,24 +166,24 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->addCommentOnTable('guide_teachers_bonus' ,'Достижения');
         $this->db->createCommand()->resetSequence('guide_teachers_bonus', 1000)->execute();
 
-        $this->db->createCommand()->batchInsert('guide_teachers_bonus', ['bonus_category_id', 'name', 'slug', 'value_default', 'status'], [
-            [1000, 'Кандидат наук', 'КН', '20', 1],
-            [1000, 'Доктор наук', 'ДН', '30', 1],
-            [1001, 'Народный артист', 'НА', '50', 1],
-            [1001, 'Заслуженный деятель искусств', 'ЗДИ', '50', 1],
-            [1001, 'Заслуженный артист', 'ЗА', '50', 1],
-            [1001, 'Заслуженный работник культуры', 'ЗРК', '50', 1],
-            [1001, 'Заслуженный учитель', 'ЗУ', '50', 1],
-            [1001, 'Почетный работник культуры', 'ПРК', '30', 1],
-            [1001, 'Обладатель нагрудного знака', 'ОНЗ', '30', 1],
-            [1001, 'Звание лауреата', 'ЗЛ', '30', 1],
-            [1002, 'Молодой специалист + проезд', 'МС+', '55', 1],
-            [1002, 'Молодой специалист-отличник + проезд', 'МСО+', '65', 1],
-            [1003, 'Руководство отделением', 'РО', '30', 1],
-            [1003, 'Руководство выставочной работой', 'РВР', '30', 1],
-            [1003, 'Участие в экспертной группе город', 'ЭГГ', '30', 1],
-            [1003, 'Участие в экспертной группе округ', 'ЭГО', '15', 1],
-            [1003, 'Заведование секцией', 'ЗС', '15', 1],
+        $this->db->createCommand()->batchInsert('guide_teachers_bonus', ['bonus_category_id', 'name', 'slug', 'bonus_vid_id', 'value_default', 'status'], [
+            [1000, 'Кандидат наук', 'КН', 2, '4000', 1],
+            [1000, 'Доктор наук', 'ДН', 2, '7500', 1],
+            [1001, 'Народный артист', 'НА', 1, '50%', 1],
+            [1001, 'Заслуженный деятель искусств', 'ЗДИ', 1, '50%', 1],
+            [1001, 'Заслуженный артист', 'ЗА', 1, '50%', 1],
+            [1001, 'Заслуженный работник культуры', 'ЗРК', 1, '50%', 1],
+            [1001, 'Заслуженный учитель', 'ЗУ', 1, '50%', 1],
+            [1001, 'Почетный работник культуры', 'ПРК', 1, '30%', 1],
+            [1001, 'Обладатель нагрудного знака', 'ОНЗ', 1, '30%', 1],
+            [1001, 'Звание лауреата', 'ЗЛ', 1, '30%', 1],
+            [1002, 'Молодой специалист + проезд', 'МС+', 1, '55%', 1],
+            [1002, 'Молодой специалист-отличник + проезд', 'МСО+', 1, '65%', 1],
+            [1003, 'Руководство отделением', 'РО', 2, '7500', 1],
+            [1003, 'Руководство выставочной работой', 'РВР', 2, '7500', 1],
+            [1003, 'Участие в экспертной группе город', 'ЭГГ', 2, '5000', 1],
+            [1003, 'Участие в экспертной группе округ', 'ЭГО', 2, '5000', 1],
+            [1003, 'Заведование секцией', 'ЗС', 2, '3700', 1],
         ])->execute();
 
         $this->createIndex('status', 'guide_teachers_bonus', 'status');
@@ -203,6 +204,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'date_serv_spec' => $this->integer(),
             'bonus_list' => $this->string(1024),
             'bonus_summ' => $this->float(),
+            'bonus_summ_abs' => $this->float(),
             'access_work_flag' => $this->integer()->defaultValue(0)->comment('Разрешение на доступ к работе получено'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
@@ -272,7 +274,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->db->createCommand()->createView('teachers_stake_view', '
         SELECT teachers_activity.teachers_id, teachers_activity.stake_id, teachers_cost.stake_value
         FROM teachers_activity INNER JOIN teachers_cost  ON teachers_activity.stake_id = teachers_cost.id
-        WHERE teachers_activity.direction_vid_id = 1;   
+        WHERE teachers_activity.direction_vid_id = 1000;   
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [

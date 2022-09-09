@@ -97,6 +97,7 @@ class DefaultController extends MainController
                         $m = new $this->modelClass;
                         $m->teachers_id = $teachers_id;
                         $m->efficiency_id = $model->efficiency_id;
+                        $m->bonus_vid_id = $model->bonus_vid_id;
                         $m->bonus = $model->bonus;
                         $m->date_in = $model->date_in;
                         if (!($flag = $m->save(false))) {
@@ -154,7 +155,7 @@ class DefaultController extends MainController
         $id = \Yii::$app->request->post('id');
         $model = EfficiencyTree::findOne(['id' => $id]);
 
-        return $model->value_default;
+        return json_encode(['id' => $model->bonus_vid_id, 'value' => $model->value_default]);
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\widgets\DateRangePicker;
+use common\models\guidejob\Bonus;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -77,8 +78,15 @@ use artsoft\grid\GridPageSize;
                                 [
                                     'attribute' => 'bonus',
                                     'value' => function (TeachersEfficiency $model) {
-                                        return $model->bonus . '%';
+                                        return $model->bonus;
                                     },
+                                ],
+                                [
+                                    'attribute' => 'bonus_vid_id',
+                                    'value' => function (TeachersEfficiency $model) {
+                                        return \common\models\efficiency\EfficiencyTree::getBobusVidValue('short', $model->bonus_vid_id);
+                                    },
+                                    'filter' => \common\models\efficiency\EfficiencyTree::getBobusVidList('short'),
                                 ],
                                 [
                                     'attribute' => 'date_in',

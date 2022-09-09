@@ -36,9 +36,11 @@ $this->registerJs($js);
 
 $JSUnselect = <<<EOF
         function(e) {
-         console.log('select2:unselect', e.params.data);
-         var bonus0 =  parseFloat(document.getElementById('teachers-bonus_summ').value);
-         if (isNaN(bonus0) == true) bonus0 = 0;
+         //console.log('select2:unselect', e.params.data);
+         var b0 =  parseFloat(document.getElementById('teachers-bonus_summ').value);
+         var b1 =  parseFloat(document.getElementById('teachers-bonus_summ_abs').value);
+         if (isNaN(b0) == true) b0 = 0;
+         if (isNaN(b1) == true) b1 = 0;
          
          $.ajax({
             url: '/admin/teachers/default/select',
@@ -47,9 +49,19 @@ $JSUnselect = <<<EOF
                 id: e.params.data.id 
             },
             success: function (bonus) {
-             var bonus = bonus0 - parseFloat(bonus);
-              if (bonus < 0) bonus = 0;
-             document.getElementById('teachers-bonus_summ').value = bonus;
+            p = jQuery.parseJSON(bonus);
+          //  console.log(p.value);
+            if(p.id == 1) {
+                var b = b0 - parseFloat(p.value);
+                 if (b < 0) b = 0;
+             document.getElementById('teachers-bonus_summ').value = b;
+            }
+            else {
+                var b = b1 - parseFloat(p.value);
+                 if (b < 0) b = 0;
+             document.getElementById('teachers-bonus_summ_abs').value = b;
+            }
+             
             },
             error: function () {
                 alert('Error!!!');
@@ -59,9 +71,11 @@ $JSUnselect = <<<EOF
 EOF;
 $JSSelect = <<<EOF
         function(e) {
-         console.log('select2:select', e.params.data);
-         var bonus0 =  parseFloat(document.getElementById('teachers-bonus_summ').value);
-         if (isNaN(bonus0) == true) bonus0 = 0;
+        // console.log('select2:select', e.params.data);
+         var b0 =  parseFloat(document.getElementById('teachers-bonus_summ').value);
+         var b1 =  parseFloat(document.getElementById('teachers-bonus_summ_abs').value);
+         if (isNaN(b0) == true) b0 = 0;
+         if (isNaN(b1) == true) b1 = 0;
          
          $.ajax({
             url: '/admin/teachers/default/select',
@@ -70,8 +84,17 @@ $JSSelect = <<<EOF
                 id: e.params.data.id 
             },
             success: function (bonus) {
-            var bonus = bonus0 + parseFloat(bonus);
-             document.getElementById('teachers-bonus_summ').value = bonus;
+            p = jQuery.parseJSON(bonus);
+          //  console.log(p.value);
+            if(p.id == 1) {
+                var b = b0 + parseFloat(p.value);
+             document.getElementById('teachers-bonus_summ').value = b;
+            }
+            else {
+                var b = b1 + parseFloat(p.value);
+             document.getElementById('teachers-bonus_summ_abs').value = b;
+            }
+            
             },
             error: function () {
                 alert('Error!!!');
@@ -282,7 +305,9 @@ EOF;
                                 ])->label(Yii::t('art/teachers', 'Teachers Bonus'));
                                 ?>
 
-                                <?= $form->field($model, 'bonus_summ')->textInput()->hint('При начальной загрузке Будет учтена сумма бонусов всех выбранных достижений.') ?>
+                                <?= $form->field($model, 'bonus_summ')->textInput()->hint('Сумма бонусов выбранных достижений в %.') ?>
+
+                                <?= $form->field($model, 'bonus_summ_abs')->textInput()->hint('Сумма бонусов выбранных достижений в абсолютной величине (руб).') ?>
                             </div>
                         </div>
                     </div>

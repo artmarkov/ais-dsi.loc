@@ -75,6 +75,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'value_default',
                             [
+                                'attribute' => 'bonus_vid_id',
+                                'value' => function (Bonus $model) {
+                                    return \common\models\efficiency\EfficiencyTree::getBobusVidValue('short', $model->bonus_vid_id);
+                                },
+                                'filter' => \common\models\efficiency\EfficiencyTree::getBobusVidList('short'),
+                            ],
+                            [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'status',
                                 'optionsArray' => [

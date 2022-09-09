@@ -211,7 +211,7 @@ class DefaultController extends MainController
         $id = \Yii::$app->request->post('id');
         $model = Bonus::findOne(['id' => $id]);
 
-        return $model->value_default;
+        return json_encode(['id' => $model->bonus_vid_id, 'value' => $model->value_default]);
     }
 
     public function actionSetLoad()

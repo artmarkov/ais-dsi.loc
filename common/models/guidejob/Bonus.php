@@ -10,6 +10,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property int $bonus_category_id
+ * @property int $bonus_vid_id
  * @property string $name
  * @property string $slug
  * @property string $value_default
@@ -34,7 +35,7 @@ class Bonus extends \artsoft\db\ActiveRecord
     {
         return [
             [['bonus_category_id', 'name', 'slug'], 'required'],
-            [['bonus_category_id', 'status'], 'integer'],
+            [['bonus_category_id', 'bonus_vid_id', 'status'], 'integer'],
             [['name', 'value_default'], 'string', 'max' => 127],
             [['slug'], 'string', 'max' => 32],
             [['bonus_category_id'], 'exist', 'skipOnError' => true, 'targetClass' => BonusCategory::class, 'targetAttribute' => ['bonus_category_id' => 'id']],
@@ -51,6 +52,7 @@ class Bonus extends \artsoft\db\ActiveRecord
             'bonus_category_id' => Yii::t('art/teachers', 'Bonus Category ID'),
             'name' => Yii::t('art/teachers', 'Name'),
             'slug' => Yii::t('art/teachers', 'Slug'),
+            'bonus_vid_id' => Yii::t('art/guide', 'Bonus Vid'),
             'value_default' => Yii::t('art/teachers', 'Bonus Value'),
             'status' => Yii::t('art/teachers', 'Status'),
         ];

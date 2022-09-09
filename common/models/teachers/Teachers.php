@@ -30,6 +30,7 @@ use Yii;
  * @property int $date_serv
  * @property int $date_serv_spec
  * @property float $bonus_summ
+ * @property float $bonus_summ_abs
  * @property int $created_at
  * @property int $updated_at
  * @property int $created_by
@@ -84,7 +85,7 @@ class Teachers extends ActiveRecord
             [['position_id', 'level_id', 'user_common_id', 'work_id', 'access_work_flag'], 'integer'],
             [['access_work_flag'], 'default', 'value' => 0],
             [['tab_num'], 'string', 'max' => 16],
-            ['bonus_summ', 'safe'],
+            [['bonus_summ', 'bonus_summ_abs'], 'safe'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['work_id'], 'exist', 'skipOnError' => true, 'targetClass' => Work::class, 'targetAttribute' => ['work_id' => 'id']],
             [['level_id'], 'exist', 'skipOnError' => true, 'targetClass' => Level::class, 'targetAttribute' => ['level_id' => 'id']],
@@ -125,6 +126,7 @@ class Teachers extends ActiveRecord
             'date_serv_spec' => Yii::t('art/teachers', 'Date Serv Spec'),
             'bonus_list' => Yii::t('art/teachers', 'Bonus'),
             'bonus_summ' => Yii::t('art/teachers', 'Bonus Summ %'),
+            'bonus_summ_abs' => Yii::t('art/teachers', 'Bonus Summ Abs'),
             'department_list' => Yii::t('art/guide', 'Department'),
             'year_serv' => Yii::t('art/teachers', 'Year Serv'),
             'year_serv_spec' => Yii::t('art/teachers', 'Year Serv Spec'),

@@ -59,13 +59,14 @@ $this->registerJs(<<<JS
                     id: key
                 },
                 success: function (bonus) {
-                 document.getElementById('teachersefficiency-' + index + '-bonus').value = bonus;
+                   let  p = jQuery.parseJSON(bonus);
+                    document.getElementsByName('TeachersEfficiency[' + index + '][bonus_vid_id]')[p.id].checked = true;
+                    document.getElementById('teachersefficiency-' + index + '-bonus').value = p.value;
                 },
                 error: function () {
-                    alert('Error!!!');
+                    alert('Error!!!');  
                 }
             });
-
         });
     });
 JS
@@ -162,6 +163,7 @@ JS
                 'formFields' => [
                     'efficiency_id',
                     'teachers_id',
+                    'bonus_vid_id',
                     'bonus',
                     'date_in',
                 ],
@@ -228,6 +230,7 @@ JS
                                         ],
                                     ])->label(Yii::t('art/teachers', 'Teachers'));
                                     ?>
+                                    <?= $form->field($modelEfficiency, "[{$index}]bonus_vid_id")->radioList(\common\models\efficiency\EfficiencyTree::getBobusVidList(), ['itemOptions' => ['disabled' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]]) ?>
                                     <?= $form->field($modelEfficiency, "[{$index}]bonus")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
                                     <?= $form->field($modelEfficiency, "[{$index}]date_in")->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
                                 </div>

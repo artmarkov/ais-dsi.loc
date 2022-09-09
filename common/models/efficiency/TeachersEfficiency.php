@@ -18,6 +18,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $efficiency_id
  * @property int $teachers_id
  * @property int $item_id
+ * @property int $bonus_vid_id
  * @property string|null $bonus
  * @property int $date_in
  * @property int $created_at
@@ -63,8 +64,8 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['efficiency_id', 'teachers_id', 'date_in', 'bonus'], 'required'],
-            [['efficiency_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'item_id'], 'integer'],
+            [['efficiency_id', 'teachers_id', 'date_in', 'bonus_vid_id', 'bonus'], 'required'],
+            [['efficiency_id', 'bonus_vid_id', 'version', 'item_id'], 'integer'],
             [['date_in', 'teachers_id'], 'safe'],
             [['version'], 'default', 'value' => 0],
             [['bonus'], 'string', 'max' => 127],
@@ -85,6 +86,7 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
             'class' => Yii::t('art/guide', 'Class'),
             'item_id' => Yii::t('art/guide', 'Item'),
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
+            'bonus_vid_id' => Yii::t('art/guide', 'Bonus Vid'),
             'bonus' => Yii::t('art/guide', 'Bonus'),
             'date_in' => Yii::t('art/guide', 'Date Bonus In'),
             'created_at' => Yii::t('art', 'Created'),
@@ -223,8 +225,7 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
         $attributes = ['name' => 'Фамилия И.О.'];
         $attributes += $root;
         $attributes += ['stake' => 'Ставка руб.'];
-        $attributes += ['total' => 'Надбавка %'];
-        $attributes += ['total_sum' => 'Сумма руб.'];
+        $attributes += ['total' => 'Надбавка руб.'];
 
         $models = self::find()
             ->where(['between', 'date_in', $timestamp_in, $timestamp_out])
@@ -233,9 +234,13 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
         $res = [];
         $all_summ = 0;
         foreach ($models as $model) {
+            if($model['bonus_vid_id'] == 1) { // Если надбавка в % от оклада, переводим проценты в рубли
+                $model['bonus'] = $model['bonus'] * \artsoft\helpers\RefBook::find('teachers_stake')->getValue($model['teachers_id']) * 0.01;
+            }
             $res[$model['teachers_id']][$tree[$model['efficiency_id']]] = isset($res[$model['teachers_id']][$tree[$model['efficiency_id']]]) ? $res[$model['teachers_id']][$tree[$model['efficiency_id']]] + $model['bonus'] : $model['bonus'];
             $res[$model['teachers_id']]['total'] = isset($res[$model['teachers_id']]['total']) ? $res[$model['teachers_id']]['total'] + $model['bonus'] : $model['bonus'];
         }
+       // print_r($models);
         $data = [];
         foreach (\artsoft\helpers\RefBook::find('teachers_fio', \common\models\user\UserCommon::STATUS_ACTIVE)->getList() as $id => $name) {
             if (!($model_date->hidden_flag && !isset($res[$id]))) { // скрываем пустые строки
@@ -243,8 +248,7 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
                 $data[$id]['id'] = $id;
                 $data[$id]['name'] = $name;
                 $data[$id]['stake'] = \artsoft\helpers\RefBook::find('teachers_stake')->getValue($id);
-                $data[$id]['total_sum'] = $data[$id]['total'] * $data[$id]['stake'] * 0.01;
-                $all_summ += $data[$id]['total_sum'];
+                $all_summ += isset($res[$id]['total']) ? $res[$id]['total'] : null;
                 $data[$id]['date_in'] = $timestamp_in;
                 $data[$id]['date_out'] = $timestamp_out;
             }
@@ -259,6 +263,7 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
     /**
      * @param $data
      * @return bool
+     * @throws \yii\base\Exception
      */
     public static function sendXlsx($data)
     {
@@ -268,7 +273,7 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
             foreach ($data['data'] as $item) { // данные
                 $x->addData($item);
             }
-            $x->addData(['total' => 'Итого', 'total_sum' => $data['all_summ']]);
+            $x->addData(['stake' => 'Итого', 'total' => $data['all_summ']]);
 
             \Yii::$app->response
                 ->sendContentAsFile($x, strtotime('now') . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '_teachers_efficiency.xlsx', ['mimeType' => 'application/vnd.ms-excel'])

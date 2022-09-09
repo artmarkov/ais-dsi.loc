@@ -20,7 +20,7 @@ class BonusSearch extends Bonus
     public function rules()
     {
         return [
-            [['id', 'bonus_category_id'], 'integer'],
+            [['id', 'bonus_category_id', 'bonus_vid_id'], 'integer'],
             [['name', 'slug', 'value_default', 'status'], 'safe'],
             [['bonusCategoryName'], 'string'],
         ];
@@ -70,6 +70,7 @@ class BonusSearch extends Bonus
 
         $query->andFilterWhere([
             'id' => $this->id,
+            'bonus_vid_id' => $this->bonus_vid_id,
             'bonus_category_id' => $this->bonus_category_id,
             'status' => $this->status,
 

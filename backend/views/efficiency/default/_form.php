@@ -89,6 +89,8 @@ use common\models\efficiency\EfficiencyTree;
                     ])->label(Yii::t('art/teachers', 'Teachers'));
                     ?>
 
+                    <?= $form->field($model, 'bonus_vid_id')->radioList(\common\models\efficiency\EfficiencyTree::getBobusVidList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
+
                     <?= $form->field($model, 'bonus')->textInput(['maxlength' => true, 'readonly' => $readonly]) ?>
 
                     <?= $form->field($model, 'date_in')->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
@@ -122,7 +124,9 @@ $("#efficiency_tree").on('treeview:change', function(event, key) {
                 id: key
             },
             success: function (bonus) {
-             document.getElementById('teachersefficiency-bonus').value = bonus;
+                 let  p = jQuery.parseJSON(bonus);
+                    document.getElementsByName('TeachersEfficiency[bonus_vid_id]')[p.id].checked = true;
+                    document.getElementById('teachersefficiency-bonus').value = p.value;
             },
             error: function () {
                 alert('Error!!!');

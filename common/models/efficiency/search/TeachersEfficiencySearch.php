@@ -18,7 +18,7 @@ class TeachersEfficiencySearch extends TeachersEfficiency
     public function rules()
     {
         return [
-            [['id', 'efficiency_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'item_id'], 'integer'],
+            [['id', 'efficiency_id', 'teachers_id', 'bonus_vid_id', 'version', 'item_id'], 'integer'],
             [['bonus', 'date_in', 'class'], 'safe'],
         ];
     }
@@ -72,6 +72,7 @@ class TeachersEfficiencySearch extends TeachersEfficiency
         $query->andFilterWhere([
             'id' => $this->id,
             'item_id' => $this->item_id,
+            'bonus_vid_id' => $this->bonus_vid_id,
             'efficiency_id' => $this->efficiency_id,
             'teachers_id' => $this->teachers_id,
 //            'date_in' => $this->date_in,

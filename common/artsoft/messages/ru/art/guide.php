@@ -88,7 +88,7 @@ return [
     'Frequency' => 'Периодичность занятий',
     'Weekly' => 'Еженедельно',
     'Monthly' => 'Ежемесячно',
-    'Bonus' => 'Бонус',
+    'Bonus' => 'Надбавка',
     'Date Bonus In' => 'Дата начисления',
     'Period Study' => 'Период обучения',
     'Education Programms' => 'Учебные планы',
@@ -209,6 +209,7 @@ return [
     'Subject List' => 'Выбранные дисциплины',
     'Last Experience' => 'Где обучался ранее',
     'Commission' => 'Экзаменационная комиссия',
+    'Bonus Vid' => 'Вид надбавки',
 
 ];
 ?>
