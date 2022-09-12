@@ -56,9 +56,9 @@ use common\models\efficiency\EfficiencyTree;
                     <?= $form->field($model, 'efficiency_id')->widget(\kartik\tree\TreeViewInput::class, [
                         'id' => 'efficiency_tree',
                         'options' => [
-                            'disabled' => $model->class,
+                            'disabled' => isset($model->class) ? true : $readonly,
                         ],
-                        'query' => $model->isNewRecord ? EfficiencyTree::find()->where(['=', 'class', $class])->addOrderBy('root, lft') : EfficiencyTree::find()->addOrderBy('root, lft'),
+                        'query' => $model->isNewRecord ? EfficiencyTree::find()->where(['=', 'class', ''])->addOrderBy('root, lft') : EfficiencyTree::find()->addOrderBy('root, lft'),
                         'dropdownConfig' => [
                             'input' => ['placeholder' => 'Выберите показатель эффективности...'],
                         ],
@@ -79,7 +79,7 @@ use common\models\efficiency\EfficiencyTree;
                     <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
                         'options' => [
-                            'disabled' => $model->class,
+                            'disabled' => isset($model->class) ? true : $readonly,
                             'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
                             'multiple' => $model->isNewRecord ? true : false,
                         ],
