@@ -10,7 +10,7 @@ use yii\widgets\MaskedInput;
 /* @var $this yii\web\View */
 /* @var $model common\models\education\LessonItems */
 /* @var $form artsoft\widgets\ActiveForm */
-/* @var $modelsItems artsoft\widgets\$modelsItems */
+/* @var $modelsItems */
 /* @var $studyplan_subject_id */
 /* @var $subject_sect_studyplan_id */
 

@@ -122,4 +122,12 @@ class LessonMark extends \artsoft\db\ActiveRecord
             ->where(['is not', 'mark_hint', null])
             ->asArray()->all(), 'mark_label', 'mark_hint');
     }
+
+    public static function getMarkLabelForEntrant()
+    {
+        return ArrayHelper::map(self::find()
+            ->select('id, mark_label')
+            ->where(['is not', 'mark_value', null])
+            ->asArray()->all(), 'id', 'mark_label');
+    }
 }

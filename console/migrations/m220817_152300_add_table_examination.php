@@ -137,13 +137,10 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
         $this->addForeignKey('entrant_ibfk_5', 'entrant', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('entrant_ibfk_6', 'entrant', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
-
-        $this->createTableWithHistory('entrant_test', [
+        $this->createTableWithHistory('entrant_members', [
             'id' => $this->primaryKey(),
             'entrant_id' => $this->integer()->notNull(),
             'members_id' => $this->integer()->notNull()->comment('Член комиссии'),
-            'entrant_test_id' => $this->integer()->notNull(),
-            'entrant_mark_id' => $this->integer(),
             'mark_rem' => $this->string(127),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
@@ -152,8 +149,25 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
+        $this->addCommentOnTable('entrant_members', 'Связь членов комиссии с поступающими');
+        $this->addForeignKey('entrant_members_ibfk_1', 'entrant_members', 'entrant_id', 'entrant', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('entrant_members_ibfk_2', 'entrant_members', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('entrant_members_ibfk_3', 'entrant_members', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+
+        $this->createTableWithHistory('entrant_test', [
+            'id' => $this->primaryKey(),
+            'entrant_members_id' => $this->integer()->notNull(),
+            'entrant_test_id' => $this->integer()->notNull(),
+            'entrant_mark_id' => $this->integer(),
+            'created_at' => $this->integer()->notNull(),
+            'created_by' => $this->integer(),
+            'updated_at' => $this->integer()->notNull(),
+            'updated_by' => $this->integer(),
+            'version' => $this->bigInteger()->notNull()->defaultValue(0),
+        ], $tableOptions);
+
         $this->addCommentOnTable('entrant_test', 'Испытания абитуриентов');
-        $this->addForeignKey('entrant_test_ibfk_1', 'entrant_test', 'entrant_id', 'entrant', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('entrant_test_ibfk_1', 'entrant_test', 'entrant_members_id', 'entrant_members', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('entrant_test_ibfk_2', 'entrant_test', 'entrant_test_id', 'guide_entrant_test', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('entrant_test_ibfk_3', 'entrant_test', 'entrant_mark_id', 'guide_lesson_mark', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('entrant_test_ibfk_4', 'entrant_test', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
@@ -164,6 +178,7 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
     public function down()
     {
         $this->dropTableWithHistory('entrant_test');
+        $this->dropTableWithHistory('entrant_members');
         $this->dropTableWithHistory('entrant');
         $this->dropTableWithHistory('entrant_group');
         $this->dropTableWithHistory('entrant_comm');

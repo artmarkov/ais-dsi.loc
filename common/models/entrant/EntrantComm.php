@@ -9,6 +9,7 @@ use common\models\own\Division;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\web\NotFoundHttpException;
 
 /**
  * This is the model class for table "entrant_comm".
@@ -162,6 +163,21 @@ class EntrantComm extends \artsoft\db\ActiveRecord
     public function getEntrantGroups()
     {
         return $this->hasMany(EntrantGroup::className(), ['comm_id' => 'id']);
+    }
+
+    /**
+     * @param $id
+     * @return GuideEntrantTest[]
+     * @throws NotFoundHttpException
+     */
+    public function getTests($id)
+    {
+        $model = EntrantGroup::findOne($id);
+        if (!isset($model)) {
+            throw new NotFoundHttpException("The EntrantGroup was not found.");
+        }
+        $ids = $model->prep_flag == 1 ? $this->prep_on_test_list : $this->prep_off_test_list;
+        return GuideEntrantTest::findAll(['id' => $ids]);
     }
 
 }

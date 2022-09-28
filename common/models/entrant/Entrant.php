@@ -3,12 +3,12 @@
 namespace common\models\entrant;
 
 use artsoft\behaviors\ArrayFieldBehavior;
-use artsoft\models\User;
 use common\models\students\Student;
 use common\models\studyplan\Studyplan;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\web\NotFoundHttpException;
 
 /**
  * This is the model class for table "entrant".
@@ -37,7 +37,7 @@ use yii\behaviors\TimestampBehavior;
  * @property EntrantGroup $group
  * @property Students $student
  * @property Studyplan $studyplan
- * @property EntrantTest[] $entrantTests
+ * @property EntrantMembers[] $entrantMembers
  */
 class Entrant extends \artsoft\db\ActiveRecord
 {
@@ -73,6 +73,7 @@ class Entrant extends \artsoft\db\ActiveRecord
             [['student_id', 'comm_id', 'group_id', 'last_experience', 'subject_list'], 'required'],
             [['student_id', 'comm_id', 'group_id', 'decision_id', 'unit_reason_id', 'plan_id', 'course', 'type_id', 'status', 'version'], 'integer'],
             [['last_experience', 'remark'], 'string', 'max' => 127],
+            [['decision_id'], 'default', 'value' => 0],
             [['subject_list'], 'safe'],
             [['reason'], 'string', 'max' => 1024],
             [['unit_reason_id', 'plan_id', 'course', 'type_id'], 'required', 'when' => function ($model) {
@@ -168,15 +169,57 @@ class Entrant extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[EntrantTests]].
+     * Gets query for [[EntrantMembers]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getEntrantTests()
+    public function getEntrantMembers()
     {
-        return $this->hasMany(EntrantTest::className(), ['entrant_id' => 'id']);
+        return $this->hasMany(EntrantMembers::className(), ['entrant_id' => 'id']);
     }
 
+    /**
+     * средняя оценка абитуриента
+     * @return float|int
+     */
+    public function getEntrantMidMark()
+    {
+        $mark = 0;
+        $i = 0;
+        if(isset($this->entrantMembers)) {
+            foreach ($this->entrantMembers as $members) {
+                if(isset($members->entrantTest)) {
+                    foreach ($members->entrantTest as $test) {
+                        if (isset($test->entrantMark)) {
+                            $mark += $test->entrantMark->mark_value;
+                            $i++;
+                        }
+                    }
+                }
+            }
+        }
+        return $i != 0 ? round($mark/$i, 2) : 0;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEntrantMembersDefault()
+    {
+        $models = [];
+        $modelComm = $this->comm;
+        foreach ($modelComm->members_list as $item => $members_id){
+            $model = EntrantMembers::find()->andWhere(['members_id' => $members_id])->andWhere(['entrant_id' => $this->id])->one() ?: new EntrantMembers();
+            $model->members_id = $members_id;
+            $model->entrant_id = $this->id;
+            $models[] = $model;
+        }
+        return $models;
+    }
+
+    /**
+     * @return array
+     */
     public static function getDecisionList()
     {
         return array(
@@ -186,6 +229,10 @@ class Entrant extends \artsoft\db\ActiveRecord
         );
     }
 
+    /**
+     * @param $val
+     * @return mixed
+     */
     public static function getDecisionValue($val)
     {
         $ar = self::getDecisionList();
@@ -200,6 +247,11 @@ class Entrant extends \artsoft\db\ActiveRecord
         return \yii\helpers\ArrayHelper::map(EntrantGroup::find()->andWhere(['=', 'comm_id', $comm_id])->all(), 'id', 'name');
     }
 
+    /**
+     * @param $comm_id
+     * @param $val
+     * @return mixed
+     */
     public static function getCommGroupValue($comm_id, $val)
     {
         $ar = self::getCommGroupList($comm_id);

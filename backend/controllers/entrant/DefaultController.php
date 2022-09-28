@@ -6,11 +6,14 @@ use artsoft\helpers\ArtHelper;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use backend\models\Model;
+use common\models\entrant\EntrantMembers;
+use common\models\entrant\EntrantTest;
 use common\models\entrant\Entrant;
 use common\models\entrant\EntrantGroup;
 use common\models\entrant\search\EntrantGroupSearch;
 use common\models\entrant\search\EntrantSearch;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
 
@@ -91,6 +94,9 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Applicants'), 'url' => ['/entrant/default/applicants', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = 'Добавление поступающего';
             $model = new Entrant();
+            if (!Yii::$app->request->get('id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET id.");
+            }
             $model->comm_id = Yii::$app->request->get('id') ?: null;
 
             if ($model->load(Yii::$app->request->post())) {
@@ -104,10 +110,12 @@ class DefaultController extends MainController
             }
 
             return $this->renderIsAjax('/entrant/applicants/_form', [
-                'model' => $model,
-                'readonly' => $readonly
-            ]);
-
+                    'model' => $model,
+                    'modelsMembers' =>  [new EntrantMembers],
+                    'modelsTest' => [[new EntrantTest]],
+                    'readonly' => false
+                ]
+            );
 
         } elseif ('history' == $mode && $objectId) {
             $model = Entrant::findOne($objectId);
@@ -135,23 +143,98 @@ class DefaultController extends MainController
             if (!isset($model)) {
                 throw new NotFoundHttpException("The Entrant was not found.");
             }
+            
+            $modelsMembers = $model->getEntrantMembersDefault();
+            $modelsTest = [];
+            $oldTest = [];
 
+            if (!empty($modelsMembers)) {
+                foreach ($modelsMembers as $index => $modelMembers) {
+                    $tests = $modelMembers->getEntrantTestDefault();
+                    $modelsTest[$index] = $tests;
+                    $tests2 = $modelMembers->entrantTest;
+                    $oldTest = ArrayHelper::merge(ArrayHelper::index($tests2, 'id'), $oldTest);
+                }
+            }
             if ($model->load(Yii::$app->request->post())) {
+                // reset
+                $modelsMembers = $model->entrantMembers;
+                $modelsTest = [];
+
+                $oldMembersIDs = ArrayHelper::map($modelsMembers, 'id', 'id');
+                $modelsMembers = Model::createMultiple(EntrantMembers::class, $modelsMembers);
+                Model::loadMultiple($modelsMembers, Yii::$app->request->post());
+                $deletedMembersIDs = array_diff($oldMembersIDs, array_filter(ArrayHelper::map($modelsMembers, 'id', 'id')));
+
                 $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsMembers) && $valid;
+
+                $testsIDs = [];
+                if (isset($_POST['EntrantTest'][0][0])) {
+                    foreach ($_POST['EntrantTest'] as $index => $tests) {
+                    $testsIDs = ArrayHelper::merge($testsIDs, array_filter(ArrayHelper::getColumn($tests, 'id')));
+                        foreach ($tests as $indexTest => $test) {
+                            $data['EntrantTest'] = $test;
+                            $modelTest = (isset($test['id']) && isset($oldTest[$test['id']])) ? $oldTest[$test['id']] : new EntrantTest;
+                            $modelTest->load($data);
+                            $modelsTest[$index][$indexTest] = $modelTest;
+                            $valid = $modelTest->validate();
+                        }
+                    }
+                }
+
+                $oldTestIDs = ArrayHelper::getColumn($oldTest, 'id');
+                $deletedTestsIDs = array_diff($oldTestIDs, $testsIDs);
+
                 if ($valid) {
-                    if ($model->save()) {
-                        Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                        $this->getSubmitAction($model);
+                    $transaction = Yii::$app->db->beginTransaction();
+                    try {
+                        if ($flag = $model->save(false)) {
+                            if (!empty($deletedTestsIDs)) {
+                                EntrantTest::deleteAll(['id' => $deletedTestsIDs]);
+                            }
+                            if (!empty($deletedMembersIDs)) {
+                                EntrantMembers::deleteAll(['id' => $deletedMembersIDs]);
+                            }
+
+                            foreach ($modelsMembers as $index => $modelMembers) {
+                                if ($flag === false) {
+                                    break;
+                                }
+                                $modelMembers->entrant_id = $model->id;
+                                if (!($flag = $modelMembers->save(false))) {
+                                    break;
+                                }
+                                $modelMembers = EntrantMembers::findOne(['id' => $modelMembers->id]);
+                                if (isset($modelsTest[$index]) && is_array($modelsTest[$index])) {
+                                    foreach ($modelsTest[$index] as $indexTest => $modelTest) {
+                                        $modelTest->entrant_members_id = $modelMembers->id;
+                                        if (!($flag = $modelTest->save(false))) {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            return $this->getSubmitAction($model);
+                        } else {
+                            $transaction->rollBack();
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
                     }
                 }
             }
 
             return $this->renderIsAjax('/entrant/applicants/_form', [
-                'model' => $model,
-                'readonly' => $readonly
-            ]);
-
-
+                    'model' => $model,
+                    'modelsMembers' => (empty($modelsMembers)) ? [new EntrantMembers] : $modelsMembers,
+                    'modelsTest' => (empty($modelsTest)) ? [[new EntrantTest]] : $modelsTest,
+                    'readonly' => false
+                ]
+            );
         } else {
             $this->view->params['breadcrumbs'][] = Yii::t('art/guide', 'Applicants');
             $modelClass = 'common\models\entrant\Entrant';
