@@ -107,8 +107,8 @@ use artsoft\grid\GridPageSize;
 //            'comm_id',
                     [
                         'attribute' => 'group_id',
-                        'filter' =>  function (Entrant $model) {
-                            return \common\models\entrant\Entrant::getCommGroupList($model->comm_id);
+                        'filter' =>  function (EntrantComm $model) {
+                            return \common\models\entrant\EntrantComm::getEntrantGroupsList();
                         },
                         'value' => function (Entrant $model) {
                             return\common\models\entrant\Entrant::getCommGroupValue($model->comm_id, $model->group_id);

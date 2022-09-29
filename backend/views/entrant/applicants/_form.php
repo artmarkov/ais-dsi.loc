@@ -168,7 +168,13 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
                                             echo Html::activeHiddenInput($modelMembers, "[{$index}]members_id");
                                             ?>
                                             <div class="col-sm-12">
-                                                 <span class="panel-title-activities"><?= \artsoft\models\User::findOne($modelMembers->members_id)->userCommon->getFullName(); ?></span>
+                                                 <span class="panel-title-activities">
+                                                     <?php
+                                                     if(isset(\artsoft\models\User::findOne($modelMembers->members_id)->userCommon)) {
+                                                         echo \artsoft\models\User::findOne($modelMembers->members_id)->userCommon->getFullName();
+                                                     }
+                                                     ?>
+                                                 </span>
                                             </div>
 
                                         </td>
@@ -185,7 +191,7 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
                                             echo $field->begin();
                                             ?>
                                             <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelMembers, "[{$index}]mark_rem", ['class' => 'form-control']); ?>
+                                                <?= \yii\helpers\Html::activeTextInput($modelMembers, "[{$index}]mark_rem", ['class' => 'form-control', 'disabled' => $readonly]); ?>
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>

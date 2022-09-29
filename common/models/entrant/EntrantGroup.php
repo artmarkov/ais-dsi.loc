@@ -124,6 +124,4 @@ class EntrantGroup extends \artsoft\db\ActiveRecord
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
-
-
 }

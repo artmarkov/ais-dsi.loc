@@ -9,6 +9,7 @@ use common\models\own\Division;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -163,6 +164,14 @@ class EntrantComm extends \artsoft\db\ActiveRecord
     public function getEntrantGroups()
     {
         return $this->hasMany(EntrantGroup::className(), ['comm_id' => 'id']);
+    }
+
+    /**
+     * @return array
+     */
+    public function getEntrantGroupsList()
+    {
+        return ArrayHelper::map($this->entrantGroups, 'id', 'name');
     }
 
     /**

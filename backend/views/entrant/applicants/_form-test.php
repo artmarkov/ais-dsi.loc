@@ -44,6 +44,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
                 $field = $form->field($modelTest, "[{$index}][{$indexTest}]entrant_mark_id");
                 echo $field->begin();
                 ?>
+
                 <div class="col-sm-12">
                     <?= \kartik\select2\Select2::widget(
                         [

@@ -99,21 +99,70 @@ class DefaultController extends MainController
             }
             $model->comm_id = Yii::$app->request->get('id') ?: null;
 
+            $modelsMembers = [new EntrantMembers];
+            $modelsTest = [[new EntrantTest]];
+
             if ($model->load(Yii::$app->request->post())) {
+
+                $modelsMembers = Model::createMultiple(EntrantMembers::class);
+                Model::loadMultiple($modelsMembers, Yii::$app->request->post());
+
+                // validate person and houses models
                 $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsMembers) && $valid;
+
+                if (isset($_POST['EntrantTest'][0][0])) {
+                    foreach ($_POST['EntrantTest'] as $index => $tests) {
+                        foreach ($tests as $indexTest => $test) {
+                            $data['EntrantTest'] = $test;
+                            $modelTest = new EntrantTest;
+                            $modelTest->load($data);
+                            $modelsTest[$index][$indexTest] = $modelTest;
+                            $valid = $modelTest->validate();
+                        }
+                    }
+                }
+
                 if ($valid) {
-                    if ($model->save()) {
-                        Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                        $this->getSubmitAction($model);
+                    $transaction = Yii::$app->db->beginTransaction();
+                    try {
+                        if ($flag = $model->save(false)) {
+                            foreach ($modelsMembers as $index => $modelMembers) {
+                                if ($flag === false) {
+                                    break;
+                                }
+                                $modelMembers->entrant_id = $model->id;
+                                if (!($flag = $modelMembers->save(false))) {
+                                    break;
+                                }
+                                $modelMembers = EntrantMembers::findOne(['id' => $modelMembers->id]);
+                                if (isset($modelsTest[$index]) && is_array($modelsTest[$index])) {
+                                    foreach ($modelsTest[$index] as $indexTest => $modelTest) {
+                                        $modelTest->entrant_members_id = $modelMembers->id;
+                                        if (!($flag = $modelTest->save(false))) {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            return $this->getSubmitAction($model);
+                        } else {
+                            $transaction->rollBack();
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
                     }
                 }
             }
 
             return $this->renderIsAjax('/entrant/applicants/_form', [
                     'model' => $model,
-                    'modelsMembers' =>  [new EntrantMembers],
-                    'modelsTest' => [[new EntrantTest]],
-                    'readonly' => false
+                    'modelsMembers' => (empty($modelsMembers)) ? [new EntrantMembers] : $modelsMembers,
+                    'modelsTest' => (empty($modelsTest)) ? [[new EntrantTest]] : $modelsTest,
+                    'readonly' => $readonly
                 ]
             );
 
@@ -143,7 +192,7 @@ class DefaultController extends MainController
             if (!isset($model)) {
                 throw new NotFoundHttpException("The Entrant was not found.");
             }
-            
+
             $modelsMembers = $model->getEntrantMembersDefault();
             $modelsTest = [];
             $oldTest = [];
@@ -172,7 +221,7 @@ class DefaultController extends MainController
                 $testsIDs = [];
                 if (isset($_POST['EntrantTest'][0][0])) {
                     foreach ($_POST['EntrantTest'] as $index => $tests) {
-                    $testsIDs = ArrayHelper::merge($testsIDs, array_filter(ArrayHelper::getColumn($tests, 'id')));
+                        $testsIDs = ArrayHelper::merge($testsIDs, array_filter(ArrayHelper::getColumn($tests, 'id')));
                         foreach ($tests as $indexTest => $test) {
                             $data['EntrantTest'] = $test;
                             $modelTest = (isset($test['id']) && isset($oldTest[$test['id']])) ? $oldTest[$test['id']] : new EntrantTest;
@@ -182,7 +231,6 @@ class DefaultController extends MainController
                         }
                     }
                 }
-
                 $oldTestIDs = ArrayHelper::getColumn($oldTest, 'id');
                 $deletedTestsIDs = array_diff($oldTestIDs, $testsIDs);
 
@@ -232,7 +280,7 @@ class DefaultController extends MainController
                     'model' => $model,
                     'modelsMembers' => (empty($modelsMembers)) ? [new EntrantMembers] : $modelsMembers,
                     'modelsTest' => (empty($modelsTest)) ? [[new EntrantTest]] : $modelsTest,
-                    'readonly' => false
+                    'readonly' => $readonly
                 ]
             );
         } else {
@@ -267,6 +315,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = 'Добавление группы';
             $model = new EntrantGroup();
             $model->comm_id = Yii::$app->request->get('id') ?: null;
+            $model->prep_flag = 1;
 
             if ($model->load(Yii::$app->request->post())) {
                 $valid = $model->validate();
@@ -325,7 +374,6 @@ class DefaultController extends MainController
                 'model' => $model,
                 'readonly' => $readonly
             ]);
-
 
         } else {
             $this->view->params['breadcrumbs'][] = Yii::t('art/guide', 'Entrant Groups');
@@ -438,6 +486,7 @@ class DefaultController extends MainController
             return $this->renderIsAjax('applicants', compact('dataProvider', 'searchModel', 'id'));
         }
     }
+
     /**
      * @param $id
      * @return array

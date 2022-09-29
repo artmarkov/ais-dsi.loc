@@ -51,7 +51,7 @@ class EntrantTest extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['entrant_members_id', 'entrant_test_id'], 'required'],
+            [['entrant_test_id'], 'required'],
             [['entrant_members_id', 'entrant_test_id', 'entrant_mark_id', 'version'], 'integer'],
             [['entrant_members_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantMembers::className(), 'targetAttribute' => ['entrant_members_id' => 'id']],
             [['entrant_test_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuideEntrantTest::className(), 'targetAttribute' => ['entrant_test_id' => 'id']],
