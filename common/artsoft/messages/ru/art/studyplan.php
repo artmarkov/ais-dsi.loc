@@ -25,6 +25,7 @@ return [
     'Lesson Qty' => 'Число уроков',
     'Current Qty' => 'Число оценок',
     'Absence Qty' => 'Число неявок',
+    'Avg Mark' => 'Средняя оценка',
     'Current Avg Mark' => 'Средняя оценка текущая',
     'Middle Avg Mark' => 'Средняя оценка ПА',
     'Finish Avg Mark' => 'Средняя оценка ИА',

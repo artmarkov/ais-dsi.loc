@@ -22,8 +22,8 @@ use yii\web\NotFoundHttpException;
  * @property string $remark Примечание
  * @property int|null $decision_id Решение комиссии (Рекомендован, Не рекомендован)
  * @property string|null $reason Причина комиссии
- * @property int|null $unit_reason_id Рекомендовано отделение
- * @property int|null $plan_id Назначен учебный план
+ * @property int|null $programm_id Назначена программа
+ * @property int|null $speciality_id Назначена специализация
  * @property int|null $course Назначен курс
  * @property int|null $type_id Назначен вид обучения(бюджет, внебюджет)
  * @property int $status Статус (Активная, Не активная)
@@ -71,12 +71,12 @@ class Entrant extends \artsoft\db\ActiveRecord
     {
         return [
             [['student_id', 'comm_id', 'group_id', 'last_experience', 'subject_list'], 'required'],
-            [['student_id', 'comm_id', 'group_id', 'decision_id', 'unit_reason_id', 'plan_id', 'course', 'type_id', 'status', 'version'], 'integer'],
+            [['student_id', 'comm_id', 'group_id', 'decision_id', 'speciality_id', 'programm_id', 'course', 'type_id', 'status', 'version'], 'integer'],
             [['last_experience', 'remark'], 'string', 'max' => 127],
             [['decision_id'], 'default', 'value' => 0],
             [['subject_list'], 'safe'],
             [['reason'], 'string', 'max' => 1024],
-            [['unit_reason_id', 'plan_id', 'course', 'type_id'], 'required', 'when' => function ($model) {
+            [['speciality_id', 'programm_id', 'course', 'type_id'], 'required', 'when' => function ($model) {
                 return $model->decision_id === '1';
             },
                 'whenClient' => "function (attribute, value) {
@@ -91,7 +91,7 @@ class Entrant extends \artsoft\db\ActiveRecord
             [['comm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantComm::className(), 'targetAttribute' => ['comm_id' => 'id']],
             [['group_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantGroup::className(), 'targetAttribute' => ['group_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::className(), 'targetAttribute' => ['student_id' => 'id']],
-            [['plan_id'], 'exist', 'skipOnError' => true, 'targetClass' => Studyplan::className(), 'targetAttribute' => ['plan_id' => 'id']],
+            [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => Studyplan::className(), 'targetAttribute' => ['programm_id' => 'id']],
         ];
     }
 
@@ -110,8 +110,8 @@ class Entrant extends \artsoft\db\ActiveRecord
             'remark' => Yii::t('art/guide', 'Remark'),
             'decision_id' => Yii::t('art/guide', 'Decision'),
             'reason' => Yii::t('art/guide', 'Reason'),
-            'unit_reason_id' => Yii::t('art/guide', 'Unit Reason'),
-            'plan_id' => Yii::t('art/guide', 'Plan Reason'),
+            'speciality_id' => Yii::t('art/guide', 'Unit Reason'),
+            'programm_id' => Yii::t('art/guide', 'Plan Reason'),
             'course' => Yii::t('art/guide', 'Course Reason'),
             'type_id' => Yii::t('art/guide', 'Type Reason'),
             'status' => Yii::t('art', 'Status'),
@@ -165,7 +165,7 @@ class Entrant extends \artsoft\db\ActiveRecord
      */
     public function getStudyplan()
     {
-        return $this->hasOne(Studyplan::className(), ['id' => 'plan_id']);
+        return $this->hasOne(Studyplan::className(), ['id' => 'programm_id']);
     }
 
     /**
@@ -267,14 +267,14 @@ class Entrant extends \artsoft\db\ActiveRecord
         if ($this->decision_id == 1) {
             $this->reason = null;
         } elseif ($this->decision_id == 2) {
-            $this->unit_reason_id = null;
-            $this->plan_id = null;
+            $this->speciality_id = null;
+            $this->programm_id = null;
             $this->course = null;
             $this->type_id = null;
         } else {
             $this->reason = null;
-            $this->unit_reason_id = null;
-            $this->plan_id = null;
+            $this->speciality_id = null;
+            $this->programm_id = null;
             $this->course = null;
             $this->type_id = null;
         }

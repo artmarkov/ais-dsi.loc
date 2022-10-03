@@ -4,7 +4,9 @@ use artsoft\widgets\ActiveForm;
 use common\models\entrant\Entrant;
 use artsoft\helpers\Html;
 use common\models\entrant\EntrantComm;
+use kartik\depdrop\DepDrop;
 use wbraganca\dynamicform\DynamicFormWidget;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\entrant\Entrant */
@@ -227,10 +229,32 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
                             <?= $form->field($model, 'reason')->textInput(['maxlength' => true]) ?>
                         </div>
                         <div class="dec1 col-sm-12">
-                            <?= $form->field($model, 'unit_reason_id')->textInput() ?>
+                            <?= $form->field($model, "programm_id")->widget(\kartik\select2\Select2::class, [
+                                'data' => RefBook::find('education_programm_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
+                                'options' => [
+                                    'id' => 'programm_id',
+                                    'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art/studyplan', 'Select Education Programm...'),
+                                    'multiple' => false,
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ]
+                            ]);
+                            ?>
 
-                            <?= $form->field($model, 'plan_id')->textInput() ?>
-
+                            <?= $form->field($model, "speciality_id")->widget(DepDrop::class, [
+                                'data' => \common\models\education\EducationProgramm::getSpecialityByProgramm($model->programm_id),
+                                'options' => ['prompt' => Yii::t('art/studyplan', 'Select Education Speciality...'),
+                                    'disabled' => $readonly,
+                                ],
+                                'pluginOptions' => [
+                                    'depends' => ['programm_id'],
+                                    'placeholder' => Yii::t('art/guide', 'Select Education Speciality...'),
+                                    'url' => Url::to(['/studyplan/default/speciality'])
+                                ]
+                            ]);
+                            ?>
                             <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
                                 'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                                 'options' => [

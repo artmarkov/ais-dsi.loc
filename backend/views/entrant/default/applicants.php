@@ -133,6 +133,13 @@ use artsoft\grid\GridPageSize;
                     ],
                     'last_experience',
                     [
+                        'attribute' => 'mid_mark',
+                        'value' => function (\common\models\entrant\EntrantView $model) {
+                            return round($model->mid_mark, 2);
+                        },
+                        'format' => 'raw'
+                    ],
+                    [
                         'class' => 'artsoft\grid\columns\StatusColumn',
                         'attribute' => 'decision_id',
                         'optionsArray' => [
@@ -151,12 +158,6 @@ use artsoft\grid\GridPageSize;
                         ],
                         'options' => ['style' => 'width:120px']
                     ],
-                    // 'reason',
-                    // 'unit_reason_id',
-                    // 'plan_id',
-                    // 'course',
-                    // 'type_id',
-
                 ],
             ]);
             ?>

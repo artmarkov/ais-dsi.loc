@@ -394,99 +394,7 @@ class DefaultController extends MainController
             return $this->renderIsAjax('group', compact('dataProvider', 'searchModel', 'id'));
         }
     }
-
-    public function actionStat($id, $objectId = null, $mode = null, $readonly = false)
-    {
-        $model = $this->findModel($id);
-        $this->view->params['tabMenu'] = $this->getMenu($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Entrant Comms'), 'url' => ['index']];
-        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['entrant/default/view', 'id' => $id]];
-
-        if ('create' == $mode) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Applicants'), 'url' => ['/entrant/default/applicants', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = 'Добавление поступающего';
-            $model = new Entrant();
-            $model->comm_id = Yii::$app->request->get('id') ?: null;
-
-            if ($model->load(Yii::$app->request->post())) {
-                $valid = $model->validate();
-                if ($valid) {
-                    if ($model->save()) {
-                        Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                        $this->getSubmitAction($model);
-                    }
-                }
-            }
-
-            return $this->renderIsAjax('/entrant/applicants/_form', [
-                'model' => $model,
-                'readonly' => $readonly
-            ]);
-
-
-        } elseif ('history' == $mode && $objectId) {
-            $model = Entrant::findOne($objectId);
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Applicants'), 'url' => ['/entrant/default/applicants', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['/entrant/default/applicants', 'id' => $id, 'objectId' => $objectId, 'mode' => 'view']];
-            $data = new EntrantHistory($objectId);
-            return $this->renderIsAjax('/entrant/default/history', compact(['model', 'data']));
-
-        } elseif ('delete' == $mode && $objectId) {
-            $model = Entrant::findOne($objectId);
-            $model->delete();
-
-            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-            return $this->redirect($this->getRedirectPage('delete', $model));
-
-        } elseif ($objectId) {
-
-            if ('view' == $mode) {
-                $readonly = true;
-            }
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Applicants'), 'url' => ['/entrant/default/applicants', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $model = Entrant::findOne($objectId);
-
-            if (!isset($model)) {
-                throw new NotFoundHttpException("The Entrant was not found.");
-            }
-
-            if ($model->load(Yii::$app->request->post())) {
-                $valid = $model->validate();
-                if ($valid) {
-                    if ($model->save()) {
-                        Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                        $this->getSubmitAction($model);
-                    }
-                }
-            }
-
-            return $this->renderIsAjax('/entrant/applicants/_form', [
-                'model' => $model,
-                'readonly' => $readonly
-            ]);
-
-
-        } else {
-            $this->view->params['breadcrumbs'][] = Yii::t('art/guide', 'Entrant Test');
-            $modelClass = 'common\models\entrant\Entrant';
-            $searchModel = new EntrantSearch();
-
-            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
-                && !User::hasPermission($modelClass::getFullAccessPermission()));
-            $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
-
-            if ($restrictAccess) {
-                $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
-            }
-            $params[$searchName]['comm_id'] = $id;
-            $dataProvider = $searchModel->search($params);
-
-            return $this->renderIsAjax('applicants', compact('dataProvider', 'searchModel', 'id'));
-        }
-    }
-
+    
     /**
      * @param $id
      * @return array
@@ -497,9 +405,8 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         return [
             ['label' => 'Карточка вступительных экзаменов', 'url' => ['/entrant/default/update', 'id' => $id]],
-            ['label' => 'Поступающие', 'url' => ['/entrant/default/applicants', 'id' => $id]],
             ['label' => 'Экзаменационные группы', 'url' => ['/entrant/default/group', 'id' => $id]],
-            ['label' => 'Экзаменационная ведомость', 'url' => ['/entrant/default/stat', 'id' => $id]],
+            ['label' => 'Экзаменационная ведомость', 'url' => ['/entrant/default/applicants', 'id' => $id]],
         ];
 
     }

@@ -116,8 +116,8 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
             'remark' => $this->string(127)->notNull()->comment('Примечание'),
             'decision_id' => $this->integer()->comment('Решение комиссии (Рекомендован, Не рекомендован)'),
             'reason' => $this->string(1024)->comment('Причина комиссии'),
-            'unit_reason_id' => $this->integer()->comment('Рекомендовано отделение'),
-            'plan_id' => $this->integer()->comment('Назначен учебный план'),
+            'programm_id' => $this->integer()->comment('Назначена программа'),
+            'speciality_id' => $this->integer()->comment('Назначена специализация'),
             'course' => $this->integer()->comment('Назначен курс'),
             'type_id' => $this->integer()->comment('Назначен вид обучения(бюджет, внебюджет)'),
             'status' => $this->smallInteger()->notNull()->defaultValue(1)->comment('Статус (Активная, Не активная)'),
@@ -133,9 +133,10 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
         $this->addForeignKey('entrant_ibfk_1', 'entrant', 'student_id', 'students', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('entrant_ibfk_2', 'entrant', 'comm_id', 'entrant_comm', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('entrant_ibfk_3', 'entrant', 'group_id', 'entrant_group', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('entrant_ibfk_4', 'entrant', 'plan_id', 'studyplan', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('entrant_ibfk_5', 'entrant', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('entrant_ibfk_6', 'entrant', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('entrant_ibfk_4', 'entrant', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('entrant_ibfk_5', 'entrant', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('entrant_ibfk_6', 'entrant', 'programm_id', 'education_programm', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('entrant_ibfk_7', 'entrant', 'speciality_id', 'education_speciality', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('entrant_members', [
             'id' => $this->primaryKey(),
@@ -173,10 +174,38 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
         $this->addForeignKey('entrant_test_ibfk_4', 'entrant_test', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('entrant_test_ibfk_5', 'entrant_test', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
+        $this->db->createCommand()->createView('entrant_view', '
+        select 
+                entrant.id,
+                entrant.student_id,
+                entrant.comm_id,
+                entrant.group_id,
+                entrant.subject_list,
+                entrant.last_experience,
+                entrant.decision_id,
+                entrant.reason,
+                entrant.programm_id,
+                entrant.speciality_id,
+                entrant.course,
+                entrant.type_id,
+                entrant.status,
+                entrant_comm.timestamp_in,
+                (
+                    select AVG(guide_lesson_mark.mark_value) from entrant_members
+                    inner join entrant_test on (entrant_test.entrant_members_id = entrant_members.id)
+                    inner join guide_lesson_mark on (guide_lesson_mark.id = entrant_test.entrant_mark_id)
+                    where entrant_members.entrant_id = entrant.id
+                ) as mid_mark
+                from entrant 
+                inner join entrant_group on (entrant_group.id = entrant.group_id)
+                inner join entrant_comm on (entrant_comm.id = entrant.comm_id)
+                order by entrant.comm_id;
+        ')->execute();
     }
 
     public function down()
     {
+        $this->db->createCommand()->dropView('entrant_view')->execute();
         $this->dropTableWithHistory('entrant_test');
         $this->dropTableWithHistory('entrant_members');
         $this->dropTableWithHistory('entrant');
