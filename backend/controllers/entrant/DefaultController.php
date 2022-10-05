@@ -12,6 +12,8 @@ use common\models\entrant\Entrant;
 use common\models\entrant\EntrantGroup;
 use common\models\entrant\search\EntrantGroupSearch;
 use common\models\entrant\search\EntrantSearch;
+use common\models\history\EntrantGroupHistory;
+use common\models\history\EntrantHistory;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
@@ -24,6 +26,7 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\entrant\EntrantComm';
     public $modelSearchClass = 'common\models\entrant\search\EntrantCommSearch';
+    public $modelHistoryClass = 'common\models\history\EntrantCommHistory';
 
     /**
      * @return mixed|string|\yii\web\Response
@@ -171,7 +174,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Applicants'), 'url' => ['/entrant/default/applicants', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['/entrant/default/applicants', 'id' => $id, 'objectId' => $objectId, 'mode' => 'view']];
             $data = new EntrantHistory($objectId);
-            return $this->renderIsAjax('/entrant/default/history', compact(['model', 'data']));
+            return $this->renderIsAjax('/history/index', compact(['model', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
             $model = Entrant::findOne($objectId);
@@ -338,7 +341,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Entrant Groups'), 'url' => ['/entrant/default/group', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['/entrant/default/group', 'id' => $id, 'objectId' => $objectId, 'mode' => 'view']];
             $data = new EntrantGroupHistory($objectId);
-            return $this->renderIsAjax('/entrant/default/history', compact(['model', 'data']));
+            return $this->renderIsAjax('/history/index', compact(['model', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
             $model = EntrantGroup::findOne($objectId);
@@ -394,7 +397,7 @@ class DefaultController extends MainController
             return $this->renderIsAjax('group', compact('dataProvider', 'searchModel', 'id'));
         }
     }
-    
+
     /**
      * @param $id
      * @return array
