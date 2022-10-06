@@ -6,6 +6,9 @@ use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
 use common\models\history\EfficiencyHistory;
+use common\models\history\SchoolplanProtocolHistory;
+use common\models\schoolplan\SchoolplanProtocol;
+use common\models\schoolplan\search\SchoolplanProtocolSearch;
 use Yii;
 use yii\helpers\StringHelper;
 
@@ -180,90 +183,65 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if ('create' == $mode) {
-
             $this->view->params['breadcrumbs'][] = Yii::t('art', 'Create');
-
-            $modelEfficiency = new TeachersEfficiency();
-            $flag = false;
-            if ($modelEfficiency->load(Yii::$app->request->post())) {
-                $valid = $modelEfficiency->validate();
-                if ($valid) {
-                    $transaction = \Yii::$app->db->beginTransaction();
-                    try {
-                        foreach ($modelEfficiency->teachers_id as $item => $teachers_id) {
-                            $m = new TeachersEfficiency();
-                            $m->teachers_id = $teachers_id;
-                            $m->efficiency_id = $modelEfficiency->efficiency_id;
-                            $m->bonus = $modelEfficiency->bonus;
-                            $m->date_in = $modelEfficiency->date_in;
-                            $m->class = \yii\helpers\StringHelper::basename(get_class($model));
-                            $m->item_id = $id;
-                            if (!($flag = $m->save())) {
-                                $transaction->rollBack();
-                                break;
-                            }
-                        }
-                        if ($flag) {
-                            $transaction->commit();
-                            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                            $this->getSubmitAction($modelEfficiency);
-                        }
-                    } catch (\Exception $e) {
-                        $transaction->rollBack();
-                    }
-                }
+            $modelProtocol = new SchoolplanProtocol();
+            $modelProtocol->schoolplan_id = $id;
+            if ($modelProtocol->load(Yii::$app->request->post()) && $modelProtocol->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($modelProtocol);
             }
 
-            return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
-                'model' => $modelEfficiency,
+            return $this->renderIsAjax('@backend/views/schoolplan/schoolplan-protocol/_form.php', [
+                'model' => $modelProtocol,
                 'class' => StringHelper::basename($this->modelClass::className()),
                 'readonly' => false
             ]);
-        } elseif ('history' == $mode && $objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Protocol Event'), 'url' => ['schoolplan/default/protocol_event', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $model = TeachersEfficiency::findOne($objectId);
-            $data = new EfficiencyHistory($objectId);
+        } elseif('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocols'), 'url' => ['schoolplan/default/protocol-event', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['schoolplan/default/protocol-event', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
+            $model = SchoolplanProtocol::findOne($objectId);
+            $data = new SchoolplanProtocolHistory($objectId);
             return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
 
-        } elseif ('delete' == $mode && $objectId) {
-            $modelEfficiency = TeachersEfficiency::findOne($objectId);
-            $modelEfficiency->delete();
+        } elseif('delete' == $mode && $objectId) {
+            $modelProtocol = SchoolplanProtocol::findOne($objectId);
+            $modelProtocol->delete();
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-            return $this->redirect($this->getRedirectPage('delete', $modelEfficiency));
+            return $this->redirect($this->getRedirectPage('delete', $modelProtocol));
 
-        } elseif ($objectId) {
+        } elseif($objectId) {
             if ('view' == $mode) {
                 $readonly = true;
             }
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Protocol Event'), 'url' => ['schoolplan/default/protocol_event', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocols'), 'url' => ['schoolplan/default/protocol-event', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $modelEfficiency = TeachersEfficiency::findOne($objectId);
+            $modelProtocol = SchoolplanProtocol::findOne($objectId);
 
-            if ($modelEfficiency->load(Yii::$app->request->post()) AND $modelEfficiency->save()) {
+            if ($modelProtocol->load(Yii::$app->request->post()) AND $modelProtocol->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction($modelEfficiency);
+                $this->getSubmitAction($modelProtocol);
             }
 
-            return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
-                'model' => $modelEfficiency,
+            return $this->renderIsAjax('@backend/views/schoolplan/schoolplan-protocol/_form.php', [
+                'model' => $modelProtocol,
                 'class' => StringHelper::basename($this->modelClass::className()),
                 'readonly' => $readonly
             ]);
 
         } else {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Protocol Event')];
-            $searchModel = new TeachersEfficiencySearch();
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocols')];
+            $searchModel = new SchoolplanProtocolSearch();
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();
             $params[$searchName]['class'] = \yii\helpers\StringHelper::basename(get_class($model));
-            $params[$searchName]['item_id'] = $id;
+            $params[$searchName]['schoolplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('teachers-efficiency', compact('dataProvider', 'searchModel', 'id'));
+            return $this->renderIsAjax('schoolplan-protocol', compact('dataProvider', 'searchModel', 'id'));
         }
     }
+
     /**
      * @param $id
      * @return array
@@ -274,9 +252,9 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         return [
             ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/update', 'id' => $id]],
-            ['label' => 'Протокол мероприятия', 'url' => ['/schoolplan/default/protocol-event', 'id' => $id], 'visible' => !($model->category->commission_sell == 1 && $model->category->commission_sell == 2)],
-            ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol-attestations', 'id' => $id], 'visible' => $model->category->commission_sell == 1],
-            ['label' => 'Протокол приемной комиссии', 'url' => ['/schoolplan/default/protocol-reception', 'id' => $id], 'visible' => $model->category->commission_sell == 2],
+            ['label' => 'Протоколы мероприятия', 'url' => ['/schoolplan/default/protocol-event', 'id' => $id], 'visible' => !($model->category->commission_sell == 1 && $model->category->commission_sell == 2)],
+            ['label' => 'Протоколы аттестационной комиссии', 'url' => ['/schoolplan/default/protocol-attestations', 'id' => $id], 'visible' => $model->category->commission_sell == 1],
+            ['label' => 'Протоколы приемной комиссии', 'url' => ['/schoolplan/default/protocol-reception', 'id' => $id], 'visible' => $model->category->commission_sell == 2],
             ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id], 'visible' => $model->category->efficiency_flag],
         ];
     }

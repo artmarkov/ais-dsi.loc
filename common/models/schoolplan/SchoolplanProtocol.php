@@ -20,7 +20,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $leader_id Реководитель комиссии user_id
  * @property int $secretary_id Секретарь комиссии user_id
  * @property string $members_list Члены комиссии user_id
- * @property int|null $subject_list Дисциплины
+ * @property string $subject_list Дисциплины
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -53,7 +53,7 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
             [
                 'class' => DateFieldBehavior::class,
                 'attributes' => ['protocol_date'],
-                'timeFormat' => 'd.m.Y H:i'
+                'timeFormat' => 'd.m.Y'
             ],
             [
                 'class' => ArrayFieldBehavior::class,
@@ -68,12 +68,12 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['protocol_name', 'protocol_date', 'leader_id', 'secretary_id', 'members_list'], 'required'],
+            [['protocol_name', 'protocol_date', 'leader_id', 'secretary_id', 'members_list', 'subject_list'], 'required'],
             [['schoolplan_id', 'protocol_date', 'leader_id', 'secretary_id', 'subject_list'], 'default', 'value' => null],
-            [['schoolplan_id', 'protocol_date', 'leader_id', 'secretary_id', 'subject_list', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['schoolplan_id', 'leader_id', 'secretary_id'], 'integer'],
             [['protocol_name'], 'string', 'max' => 127],
             [['description'], 'string', 'max' => 512],
-            [['members_list'], 'string', 'max' => 1024],
+            [['members_list', 'protocol_date', 'subject_list'], 'safe'],
             [['schoolplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolplan::className(), 'targetAttribute' => ['schoolplan_id' => 'id']],
             [['leader_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['leader_id' => 'id']],
             [['secretary_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['secretary_id' => 'id']],

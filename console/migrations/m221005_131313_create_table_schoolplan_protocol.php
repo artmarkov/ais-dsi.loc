@@ -19,7 +19,7 @@ class m221005_131313_create_table_schoolplan_protocol extends \artsoft\db\BaseMi
             'leader_id' => $this->integer()->notNull()->comment('Реководитель комиссии user_id'),
             'secretary_id' => $this->integer()->notNull()->comment('Секретарь комиссии user_id'),
             'members_list' => $this->string(1024)->notNull()->comment('Члены комиссии user_id'),
-            'subject_list' => $this->integer()->comment('Дисциплины'),
+            'subject_list' => $this->string(1024)->notNull()->comment('Дисциплины'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
