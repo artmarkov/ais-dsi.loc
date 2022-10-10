@@ -1,7 +1,6 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use common\models\entrant\Entrant;
 use common\models\subject\Subject;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
@@ -60,7 +59,7 @@ use artsoft\grid\GridPageSize;
                         'class' => 'artsoft\grid\columns\TitleActionColumn',
                         'controller' => '/schoolplan/default',
                         'title' => function (SchoolplanProtocol $model) {
-                            return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                            return Html::a(sprintf('#%06d', $model->id),['/schoolplan/default/protocol-event', 'id' => $model->schoolplan_id, 'objectId' => $model->id, 'mode' => 'view'], ['data-pjax' => 0]);
                         },
                         'buttonsTemplate' => '{update} {view} {delete}',
                         'buttons' => [
