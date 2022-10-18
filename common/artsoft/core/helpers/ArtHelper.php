@@ -216,10 +216,11 @@ class ArtHelper
      * @param int $month_dev
      * @return false|int|string
      */
-    public static function getStudyYearDefault($month_dev = null)
+    public static function getStudyYearDefault($month_dev = null, $timestamp = null)
     {
         $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 6) : $month_dev;
-        return date("n") < $month_dev ? date("Y") - 1 : date("Y");
+        $month = $timestamp == null ? date("n") : date("n", $timestamp);
+        return $month < $month_dev ? date("Y") - 1 : date("Y");
     }
 
     public static function getStudyYearParams($year = null, $month_dev = null)

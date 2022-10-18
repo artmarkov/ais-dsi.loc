@@ -2,15 +2,16 @@
 
 namespace common\models\schoolplan\search;
 
+use common\models\schoolplan\SchoolplanProtocolItemsView;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\schoolplan\SchoolplanProtocolItems;
 
 /**
- * SchoolplanProtocolItemsSearch represents the model behind the search form about `common\models\schoolplan\SchoolplanProtocolItems`.
+ * SchoolplanProtocolItemsSearch represents the model behind the search form about `common\models\schoolplan\SchoolplanProtocolItemsView`.
  */
-class SchoolplanProtocolItemsSearch extends SchoolplanProtocolItems
+class SchoolplanProtocolItemsViewSearch extends SchoolplanProtocolItemsView
 {
     /**
      * @inheritdoc
@@ -18,8 +19,9 @@ class SchoolplanProtocolItemsSearch extends SchoolplanProtocolItems
     public function rules()
     {
         return [
-            [['id', 'schoolplan_protocol_id', 'studyplan_subject_id', 'lesson_mark_id', 'status_exe', 'status_sign', 'signer_id'], 'integer'],
+            [['id', 'studyplan_id', 'schoolplan_protocol_id', 'studyplan_subject_id', 'lesson_mark_id', 'status_exe', 'status_sign', 'signer_id'], 'integer'],
             [['thematic_items_list', 'winner_id', 'resume'], 'safe'],
+            [['schoolplan_id', 'protocol_name', 'protocol_date', 'title', 'datetime_in', 'datetime_out'], 'safe'],
         ];
     }
 
@@ -41,7 +43,7 @@ class SchoolplanProtocolItemsSearch extends SchoolplanProtocolItems
      */
     public function search($params)
     {
-        $query = SchoolplanProtocolItems::find();
+        $query = SchoolplanProtocolItemsView::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -65,6 +67,7 @@ class SchoolplanProtocolItemsSearch extends SchoolplanProtocolItems
 
         $query->andFilterWhere([
             'id' => $this->id,
+            'studyplan_id' => $this->studyplan_id,
             'schoolplan_protocol_id' => $this->schoolplan_protocol_id,
             'studyplan_subject_id' => $this->studyplan_subject_id,
             'lesson_mark_id' => $this->lesson_mark_id,

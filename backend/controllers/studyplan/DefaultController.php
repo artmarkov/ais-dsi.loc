@@ -17,6 +17,9 @@ use common\models\history\SubjectScheduleHistory;
 use common\models\history\TeachersLoadHistory;
 use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
+use common\models\schoolplan\SchoolplanProtocolItems;
+use common\models\schoolplan\search\SchoolplanProtocolItemsSearch;
+use common\models\schoolplan\search\SchoolplanProtocolItemsViewSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
 use common\models\studyplan\StudyplanThematic;
@@ -461,9 +464,9 @@ class DefaultController extends MainController
             ]);
 
         } elseif ('history' == $mode && $objectId) {
+            $model = SubjectCharacteristic::findOne($objectId);
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Characteristic'), 'url' => ['studyplan/default/characteristic-items', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/characteristic-items', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
-            $model = ConsultSchedule::findOne($objectId);
             $data = new SubjectCharacteristicHistory($objectId);
             return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
 
@@ -807,6 +810,79 @@ class DefaultController extends MainController
         }
     }
 
+    public function actionStudyplanPerform($id, $objectId = null, $mode = null)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Studyplan Perform'), 'url' => ['studyplan/default/characteristic-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление мероприятия';
+            if (!Yii::$app->request->get('studyplan_subject_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id.");
+            }
+            $protocolItemsModel = StudyplanSubject::findOne(Yii::$app->request->get('studyplan_subject_id'));
+            $model = new SchoolplanProtocolItems();
+            $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id');
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/schoolplan/schoolplan-protocol-items/_form.php', [
+                'model' => $model,
+                'protocolItemsModel' => $protocolItemsModel,
+            ]);
+
+        } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Characteristic'), 'url' => ['studyplan/default/characteristic-items', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/characteristic-items', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
+            $model = SchoolplanProtocolItems::findOne($objectId);
+            $data = new ProtocolItemsHistory($objectId);
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $model = SubjectCharacteristic::findOne($objectId);
+            $model->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+
+        } elseif ($objectId) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Characteristic'), 'url' => ['studyplan/default/characteristic-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $model = SubjectCharacteristic::findOne($objectId);
+            $studyplanSubjectModel = StudyplanSubject::findOne($model->studyplan_subject_id);
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The SubjectSchedule was not found.");
+            }
+
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/studyplan/subject-characteristic/_form.php', [
+                'model' => $model,
+                'studyplanSubjectModel' => $studyplanSubjectModel,
+            ]);
+
+        } else {
+            $searchModel = new SchoolplanProtocolItemsViewSearch();
+
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['studyplan_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('protocol-items', compact('dataProvider', 'searchModel'));
+        }
+    }
+
     /**
      *  формируем список дисциплин для widget DepDrop::classname()
      * @return false|string
@@ -866,6 +942,7 @@ class DefaultController extends MainController
             ['label' => 'Тематические планы', 'url' => ['/studyplan/default/thematic-items', 'id' => $id]],
             ['label' => 'Дневник успеваемости', 'url' => ['/studyplan/default/studyplan-progress', 'id' => $id]],
             ['label' => 'Оплата за обучение', 'url' => ['/studyplan/default/studyplan-invoices', 'id' => $id]],
+            ['label' => 'Выполнение плана и участие в мероприятиях', 'url' => ['/studyplan/default/studyplan-perform', 'id' => $id]],
         ];
     }
 }

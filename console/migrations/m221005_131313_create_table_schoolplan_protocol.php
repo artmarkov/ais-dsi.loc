@@ -38,7 +38,7 @@ class m221005_131313_create_table_schoolplan_protocol extends \artsoft\db\BaseMi
             'schoolplan_protocol_id' => $this->integer()->defaultValue(0)->comment('Протокол'),
             'studyplan_subject_id' => $this->integer()->notNull()->comment('Дисциплина ученика'),
             'thematic_items_list' => $this->string(1024)->comment('Список заданий из тематич/реп плана'),
-            'lesson_progress_id' => $this->integer()->notNull()->comment('Связь с уроком и оценкой'),
+            'lesson_mark_id' =>  $this->integer()->comment('Оценка'),
             'winner_id' => $this->string()->defaultValue(0)->comment('Звание/Диплом'),
             'resume' => $this->string(1024)->notNull()->comment('Отзыв комиссии/Результат'),
             'status_exe' => $this->integer()->comment('Статус выполнения'),
@@ -55,12 +55,37 @@ class m221005_131313_create_table_schoolplan_protocol extends \artsoft\db\BaseMi
 
         $this->addForeignKey('schoolplan_protocol_items_ibfk_1', 'schoolplan_protocol_items', 'schoolplan_protocol_id', 'schoolplan_protocol', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('schoolplan_protocol_items_ibfk_2', 'schoolplan_protocol_items', 'studyplan_subject_id', 'studyplan_subject', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('schoolplan_protocol_items_ibfk_3', 'schoolplan_protocol_items', 'lesson_progress_id', 'lesson_progress', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('schoolplan_protocol_items_ibfk_3', 'schoolplan_protocol_items', 'lesson_mark_id', 'guide_lesson_mark', 'id', 'NO ACTION', 'NO ACTION');
 
+        $this->db->createCommand()->createView('schoolplan_protocol_items_view', '
+        SELECT schoolplan_protocol_items.id,
+                schoolplan_protocol_items.schoolplan_protocol_id,
+                schoolplan_protocol_items.studyplan_subject_id,
+                studyplan_subject.studyplan_id,
+                schoolplan_protocol_items.thematic_items_list,
+                schoolplan_protocol_items.lesson_mark_id,
+                schoolplan_protocol_items.winner_id,
+                schoolplan_protocol_items.resume,
+                schoolplan_protocol_items.status_exe,
+                schoolplan_protocol_items.status_sign,
+                schoolplan_protocol_items.signer_id,
+                schoolplan_protocol.schoolplan_id,
+                schoolplan_protocol.protocol_name,
+                schoolplan_protocol.protocol_date,
+                schoolplan.title,
+                schoolplan.datetime_in,
+                schoolplan.datetime_out
+	FROM schoolplan_protocol_items
+	INNER JOIN schoolplan_protocol ON schoolplan_protocol.id = schoolplan_protocol_items.schoolplan_protocol_id
+	INNER JOIN schoolplan ON schoolplan.id = schoolplan_protocol.schoolplan_id
+	INNER JOIN studyplan_subject ON studyplan_subject.id = schoolplan_protocol_items.studyplan_subject_id
+	ORDER BY studyplan_subject.studyplan_id
+        ')->execute();
     }
 
     public function down()
     {
+        $this->db->createCommand()->dropView('schoolplan_protocol_items_view')->execute();
         $this->dropTableWithHistory('schoolplan_protocol_items');
         $this->dropTableWithHistory('schoolplan_protocol');
     }

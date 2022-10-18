@@ -1,7 +1,6 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
-use common\models\schoolplan\SchoolplanProtocolItems;
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */

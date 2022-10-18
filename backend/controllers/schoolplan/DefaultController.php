@@ -2,14 +2,20 @@
 
 namespace backend\controllers\schoolplan;
 
+use backend\models\Model;
+use common\models\education\LessonItems;
+use common\models\education\LessonProgress;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
 use common\models\history\EfficiencyHistory;
 use common\models\history\SchoolplanProtocolHistory;
 use common\models\schoolplan\SchoolplanProtocol;
+use common\models\schoolplan\SchoolplanProtocolItems;
 use common\models\schoolplan\search\SchoolplanProtocolSearch;
+use common\models\studyplan\StudyplanSubject;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
 
 /**
@@ -186,6 +192,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = Yii::t('art', 'Create');
             $modelProtocol = new SchoolplanProtocol();
             $modelProtocol->schoolplan_id = $id;
+
             if ($modelProtocol->load(Yii::$app->request->post()) && $modelProtocol->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
                 $this->getSubmitAction($modelProtocol);
@@ -193,39 +200,70 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/schoolplan/schoolplan-protocol/_form.php', [
                 'model' => $modelProtocol,
-                'class' => StringHelper::basename($this->modelClass::className()),
+                'modelsProtocolItems' => (empty($modelsProtocolItems)) ? [new SchoolplanProtocolItems()] : $modelsProtocolItems,
                 'readonly' => false
             ]);
-        } elseif('history' == $mode && $objectId) {
+        } elseif ('history' == $mode && $objectId) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocols'), 'url' => ['schoolplan/default/protocol-event', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['schoolplan/default/protocol-event', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
             $model = SchoolplanProtocol::findOne($objectId);
             $data = new SchoolplanProtocolHistory($objectId);
             return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
 
-        } elseif('delete' == $mode && $objectId) {
+        } elseif ('delete' == $mode && $objectId) {
             $modelProtocol = SchoolplanProtocol::findOne($objectId);
             $modelProtocol->delete();
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
             return $this->redirect($this->getRedirectPage('delete', $modelProtocol));
 
-        } elseif($objectId) {
+        } elseif ($objectId) {
             if ('view' == $mode) {
                 $readonly = true;
             }
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocols'), 'url' => ['schoolplan/default/protocol-event', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $modelProtocol = SchoolplanProtocol::findOne($objectId);
+            $modelsProtocolItems = $modelProtocol->schoolplanProtocolItems;
 
-            if ($modelProtocol->load(Yii::$app->request->post()) AND $modelProtocol->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction($modelProtocol);
+            if ($modelProtocol->load(Yii::$app->request->post())) {
+
+                $oldIDs = ArrayHelper::map($modelsProtocolItems, 'id', 'id');
+                $modelsProtocolItems = Model::createMultiple(SchoolplanProtocolItems::class, $modelsProtocolItems);
+                Model::loadMultiple($modelsProtocolItems, Yii::$app->request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsProtocolItems, 'id', 'id')));
+                // validate all models
+                $valid = $modelProtocol->validate();
+                $valid = Model::validateMultiple($modelsProtocolItems) && $valid;
+
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        if ($flag = $modelProtocol->save(false)) {
+                            if (!empty($deletedIDs)) {
+                                SchoolplanProtocolItems::deleteAll(['id' => $deletedIDs]);
+                            }
+                            foreach ($modelsProtocolItems as $index => $modelProtocolItems) {
+                                $modelProtocolItems->schoolplan_protocol_id = $modelProtocol->id;
+                                if (!($flag = $modelProtocolItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction();
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
             }
 
             return $this->renderIsAjax('@backend/views/schoolplan/schoolplan-protocol/_form.php', [
                 'model' => $modelProtocol,
-                'class' => StringHelper::basename($this->modelClass::className()),
+                'modelsProtocolItems' => (empty($modelsProtocolItems)) ? [new SchoolplanProtocolItems()] : $modelsProtocolItems,
                 'readonly' => $readonly
             ]);
 

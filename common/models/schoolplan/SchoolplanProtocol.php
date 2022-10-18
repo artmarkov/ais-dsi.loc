@@ -8,6 +8,7 @@ use artsoft\models\User;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "schoolplan_protocol".
@@ -146,5 +147,42 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
     public function getSchoolplanProtocolItems()
     {
         return $this->hasMany(SchoolplanProtocolItems::className(), ['schoolplan_protocol_id' => 'id']);
+    }
+
+    /**
+     * Получаем всех учеников для выбранных дисциплин для протокола мероприятия в учебном году
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public function getStudyplanSubjectList()
+    {
+        $subject_list = implode(',', $this->subject_list);
+        $study_year = \artsoft\helpers\ArtHelper::getStudyYearDefault($month_dev = null, $timestamp = Yii::$app->formatter->asTimestamp($this->protocol_date))-1;
+        $funcSql = <<< SQL
+                    select studyplan_subject_id, memo_4
+                    from studyplan_subject_view where subject_id in ({$subject_list})
+                        and plan_year = {$study_year}
+SQL;
+        return ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'studyplan_subject_id', 'memo_4');
+    }
+
+    /**
+     * Нахождение всех элементов репертуарного плана для $studyplan_subject_id
+     * @param $studyplan_subject_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getStudyplanThematicItemsList($studyplan_subject_id)
+    {
+        $funcSql = <<< SQL
+                    select studyplan_thematic_items.id,
+		                   concat(studyplan_thematic_items.author , ' - ', studyplan_thematic_items.piece_name, ' (', guide_piece_category.name, ')') AS piece
+                    FROM studyplan_thematic_view 
+                    INNER JOIN studyplan_thematic_items ON studyplan_thematic_view.studyplan_thematic_id = studyplan_thematic_items.studyplan_thematic_id 
+                    INNER JOIN guide_piece_category ON guide_piece_category.id = studyplan_thematic_items.piece_category_id
+                    where thematic_category = 2 and studyplan_subject_id = {$studyplan_subject_id}
+                        
+SQL;
+        return ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'id', 'piece');
     }
 }
