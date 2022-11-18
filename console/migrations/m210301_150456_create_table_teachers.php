@@ -49,7 +49,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'status' => $this->integer()->notNull(),
         ], $tableOptions);
 
-        $this->addCommentOnTable('guide_teachers_stake' ,'Ставки');
+        $this->addCommentOnTable('guide_teachers_stake' ,'Категории ставки');
 
         $this->db->createCommand()->batchInsert('guide_teachers_stake', ['id', 'name', 'slug', 'status'], [
             [1000, 'Без категории', 'БК', 0],

@@ -114,7 +114,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable( 'studyplan_subject', 'Дисциплины индивидуального плана');
+        $this->addCommentOnTable( 'studyplan_subject', 'Предметы индивидуального плана');
         $this->db->createCommand()->resetSequence('studyplan_subject', 10000)->execute();
 
         $this->createIndex('studyplan_id', 'studyplan_subject', 'studyplan_id');

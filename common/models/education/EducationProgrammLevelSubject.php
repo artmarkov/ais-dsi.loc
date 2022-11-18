@@ -132,15 +132,15 @@ class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
      * @param bool $insert
      * @return bool
      */
-    public function beforeSave($insert)
-    {
-        if ($this->programmLevel->programm->catType != \common\models\education\EducationCat::BASIS_FREE) {
-            $this->year_time_consult = 0;
-        } else {
-            $this->cost_hour = 0;
-            $this->cost_month_summ = 0;
-            $this->cost_year_summ = 0;
-        }
-        return parent::beforeSave($insert);
-    }
+//    public function beforeSave($insert)
+//    {
+//        if ($this->programmLevel->programm->catType != \common\models\education\EducationCat::BASIS_FREE) {
+//            $this->year_time_consult = 0;
+//        } else {
+//            $this->cost_hour = 0;
+//            $this->cost_month_summ = 0;
+//            $this->cost_year_summ = 0;
+//        }
+//        return parent::beforeSave($insert);
+//    }
 }

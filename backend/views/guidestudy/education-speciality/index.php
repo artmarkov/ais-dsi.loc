@@ -75,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = Department::findOne($id)->name;
+                                        $v[] = Department::findOne($id)->name ?? null;
                                     }
                                     return implode('<br/> ', $v);
                                 },

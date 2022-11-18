@@ -13,17 +13,16 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey(),
             'name' => $this->string(127),
             'short_name' => $this->string(64)->notNull(),
-            'type_id' => $this->integer(),
             'status' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_education_cat', 'Наименование образовательной программы');
 
-        $this->db->createCommand()->batchInsert('guide_education_cat', ['id', 'name', 'short_name', 'type_id', 'status'], [
-            [1, 'Дополнительная общеобразовательная общеразвивающая программа', 'ОП.', 1, 1],
-            [2, 'Дополнительная предпрофессиональная общеобразовательная программа', 'ПП.', 0, 1],
-        ])->execute();
+        $this->db->createCommand()->batchInsert('guide_education_cat', ['name', 'short_name', 'status'], [
+            ['Дополнительная общеобразовательная общеразвивающая программа', 'ОП.', 1],
+            ['Дополнительная предпрофессиональная общеобразовательная программа', 'ПП.', 1],
 
+        ])->execute();
         $this->createTable('guide_education_level', [
             'id' => $this->primaryKey(),
             'name' => $this->string(127),
@@ -32,12 +31,12 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_education_level', 'Образовательный уровень');
-        $this->db->createCommand()->batchInsert('guide_education_level', ['id', 'name', 'short_name', 'status'], [
-            [1, 'Стартовый', 'Старт.', 1],
-            [2, 'Базовый', 'База.', 1],
-            [3, 'Продвинутый', 'Прод.', 1],
-            [4, 'Основной', 'Осн.', 1],
-            [5, 'Углубленный', 'Углуб.', 1],
+        $this->db->createCommand()->batchInsert('guide_education_level', ['name', 'short_name', 'status'], [
+            ['Стартовый', 'Старт.', 1],
+            ['Базовый', 'База.', 1],
+            ['Продвинутый', 'Прод.', 1],
+            ['Основной', 'Осн.', 1],
+            ['Углубленный', 'Углуб.', 1],
         ])->execute();
 
         $this->createTable('education_speciality', [
@@ -100,8 +99,8 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'education_cat_id' => $this->integer()->notNull(),
             'name' => $this->string(512),
             'short_name' => $this->string(512),
-            'term_mastering' => $this->string(512),
-            'speciality_list' => $this->string(1024),
+            'term_mastering' => $this->integer()->notNull(),
+//            'speciality_list' => $this->string(1024),
             'description' => $this->string(1024),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
@@ -111,7 +110,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable('education_programm', 'Учебные планы');
+        $this->addCommentOnTable('education_programm', 'Образовательные программы');
         $this->createIndex('education_cat_id', 'education_programm', 'education_cat_id');
         $this->addForeignKey('education_programm_ibfk_1', 'education_programm', 'education_cat_id', 'guide_education_cat', 'id', 'NO ACTION', 'NO ACTION');
 
@@ -156,7 +155,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable('education_programm_level_subject', 'Дисциплины учебной программы по годам');
+        $this->addCommentOnTable('education_programm_level_subject', 'Предметы учебной программы по годам');
         $this->createIndex('programm_level_id', 'education_programm_level_subject', 'programm_level_id');
         $this->addForeignKey('education_programm_level_subject_ibfk_1', 'education_programm_level_subject', 'programm_level_id', 'education_programm_level', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('education_programm_level_subject_ibfk_2', 'education_programm_level_subject', 'subject_cat_id', 'guide_subject_category', 'id', 'NO ACTION', 'NO ACTION');

@@ -6,6 +6,8 @@ use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\db\ActiveRecord;
 use common\models\own\Department;
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -17,7 +19,12 @@ use yii\helpers\ArrayHelper;
  * @property string $department_list
  * @property string $category_list
  * @property string $vid_list
+ * @property int|null $created_by
+ * @property int $updated_at
+ * @property int|null $updated_by
+ * @property int $version
  * @property int $status
+ *
  * @property SubjectCategory[] $subjectCategories
  * @property SubjectDepartment[] $subjectDepartments
  * @property SubjectVid[] $subjectVids
@@ -38,6 +45,8 @@ class Subject extends ActiveRecord
     public function behaviors()
     {
         return [
+            TimestampBehavior::class,
+            BlameableBehavior::class,
             [
                 'class' => ArrayFieldBehavior::class,
                 'attributes' => ['department_list', 'category_list', 'vid_list'],
@@ -69,28 +78,23 @@ class Subject extends ActiveRecord
             'id' => Yii::t('art/guide', 'ID'),
             'name' => Yii::t('art/guide', 'Name'),
             'slug' => Yii::t('art/guide', 'Slug'),
-            'status' => Yii::t('art/guide', 'Status'),
             'department_list' => Yii::t('art/guide', 'Department'),
             'category_list' => Yii::t('art/guide', 'Subject Category'),
             'vid_list' => Yii::t('art/guide', 'Subject Vid'),
+            'created_at' => Yii::t('art', 'Created'),
+            'created_by' => Yii::t('art', 'Created By'),
+            'updated_at' => Yii::t('art', 'Updated'),
+            'updated_by' => Yii::t('art', 'Updated By'),
+            'status' => Yii::t('art', 'Status'),
+            'version' => Yii::t('art', 'Version'),
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSubjectDepartments()
+    public function optimisticLock()
     {
-        return $this->hasMany(Department::class, ['subject_id' => 'id']);
+        return 'version';
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSubjectVids()
-    {
-        return $this->hasMany(SubjectVid::class, ['subject_id' => 'id']);
-    }
 
     /**
      * {@inheritdoc}

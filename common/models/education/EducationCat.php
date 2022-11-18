@@ -36,7 +36,7 @@ class EducationCat extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'short_name', 'type_id', 'status'], 'required'],
+            [['name', 'short_name', /*'type_id',*/ 'status'], 'required'],
             [['status'], 'default', 'value' => null],
             [['status', 'type_id'], 'integer'],
             [['name'], 'string', 'max' => 127],

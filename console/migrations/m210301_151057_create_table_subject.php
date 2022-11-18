@@ -27,7 +27,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
         $this->db->createCommand()->batchInsert('guide_subject_category', ['name', 'slug', 'sort_order', 'status', 'dep_flag', 'frequency'], [
             ['Специальность', 'Спец.', 1000, 1, 1, 0],
             ['Музыкальный инструмент', 'Инстр', 1001, 1, 0, 0],
-            ['Дисциплины отдела', 'Дис.отд.', 1002, 1, 1, 0],
+            ['Предметы отдела', 'Дис.отд.', 1002, 1, 1, 0],
             ['Общие дисциплины', 'Общ.', 1003, 1, 0, 0],
             ['Предмет по выбору', 'П/в.', 1004, 1, 0, 0],
             ['Коллективное музицирование', 'Кол.муз.', 1005, 1, 0, 0],
@@ -82,7 +82,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable('subject', 'Дисциплины школы');
+        $this->addCommentOnTable('subject', 'Учебные предметы школы');
         $this->db->createCommand()->resetSequence('subject', 1000)->execute();
         $this->db->createCommand()->batchInsert('subject', ['name', 'slug', 'status', 'created_at', 'updated_at', 'created_by', 'updated_by'], [
             ['Академический вокал', 'Акад.вок.', 1, time(), time(), 1000, 1000],

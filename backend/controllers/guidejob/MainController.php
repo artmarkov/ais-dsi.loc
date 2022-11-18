@@ -10,8 +10,8 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Направление деятельности',  'url' => ['/guidejob/direction/index']],
         ['label' => 'Образование',  'url' => ['/guidejob/level/index']],
         ['label' => 'Должность',  'url' => ['/guidejob/position/index']],
-        ['label' => 'Ставки',  'url' => ['/guidejob/stake/index']],
-        ['label' => 'Значение ставки',  'url' => ['/guidejob/cost/index']],
+        ['label' => 'Категории',  'url' => ['/guidejob/stake/index']],
+        ['label' => 'Ставки',  'url' => ['/guidejob/cost/index']],
         ['label' => 'Достижения',  'url' => ['/guidejob/bonus/index']],
         ['label' => 'Категории достижений',  'url' => ['/guidejob/bonus-category/index']],
     ];

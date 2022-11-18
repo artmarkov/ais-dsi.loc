@@ -68,30 +68,40 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'education_cat_id',
-                                'filter' => RefBook::find('education_cat_short')->getList(),
+                                'filter' => RefBook::find('education_cat')->getList(),
                                 'value' => function (EducationProgramm $model) {
-                                    return RefBook::find('education_cat_short')->getValue($model->education_cat_id);
+                                    return RefBook::find('education_cat')->getValue($model->education_cat_id);
                                 },
                             ],
 
                             'name',
-                            [
-                                'attribute' => 'speciality_list',
-                                'filter' => RefBook::find('education_speciality')->getList(),
-                                'value' => function (EducationProgramm $model) {
-                                    $v = [];
-                                    foreach ($model->speciality_list as $id) {
-                                        if (!$id) {
-                                            continue;
-                                        }
-                                        $v[] = RefBook::find('education_speciality')->getValue($id);
-                                    }
-                                    return implode('<br/> ', $v);
-                                },
-                                'options' => ['style' => 'width:350px'],
-                                'format' => 'raw',
-                            ],
+                            'term_mastering',
+//                            [
+//                                'attribute' => 'speciality_list',
+//                                'filter' => RefBook::find('education_speciality')->getList(),
+//                                'value' => function (EducationProgramm $model) {
+//                                    $v = [];
+//                                    foreach ($model->speciality_list as $id) {
+//                                        if (!$id) {
+//                                            continue;
+//                                        }
+//                                        $v[] = RefBook::find('education_speciality')->getValue($id);
+//                                    }
+//                                    return implode('<br/> ', $v);
+//                                },
+//                                'options' => ['style' => 'width:350px'],
+//                                'format' => 'raw',
+//                            ],
                             'description',
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'status',
+                                'optionsArray' => [
+                                    [EducationProgramm::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
+                                    [EducationProgramm::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
+                                ],
+                                'options' => ['style' => 'width:120px']
+                            ],
                         ],
                     ]);
                     ?>

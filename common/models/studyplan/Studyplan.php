@@ -7,6 +7,7 @@ use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\PriceHelper;
 use artsoft\helpers\RefBook;
+use artsoft\models\Role;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\EducationSpeciality;
@@ -18,6 +19,7 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
 
+use yii\helpers\ArrayHelper;
 use function morphos\Russian\inflectName;
 
 /**

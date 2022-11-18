@@ -19,7 +19,7 @@ class EducationProgrammSearch extends EducationProgramm
     {
         return [
             [['id', 'education_cat_id',  'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
-            [['name', 'speciality_list', 'description'], 'safe'],
+            [['name', 'speciality_list', 'term_mastering', 'description'], 'safe'],
         ];
     }
 
@@ -75,7 +75,8 @@ class EducationProgrammSearch extends EducationProgramm
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'speciality_list', $this->speciality_list])
+           // ->andFilterWhere(['like', 'speciality_list', $this->speciality_list])
+            ->andFilterWhere(['like', 'term_mastering', $this->term_mastering])
             ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;

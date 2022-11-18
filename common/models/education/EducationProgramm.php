@@ -63,7 +63,7 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'short_name', 'term_mastering', 'education_cat_id', 'speciality_list', 'status'], 'required'],
+            [['name', 'short_name', 'term_mastering', 'education_cat_id', /*'speciality_list',*/ 'status'], 'required'],
             [['education_cat_id', 'status'], 'default', 'value' => null],
             [['education_cat_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['name', 'short_name', 'term_mastering'], 'string', 'max' => 512],
@@ -157,16 +157,16 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     {
         $data = [];
         if ($category_id) {
-            $dep_flag = SubjectCategory::find()->select(['dep_flag'])
-                ->andFilterWhere(['=', 'id', $category_id])
-                ->scalar(); // зависимость от выбора отдела
+//            $dep_flag = SubjectCategory::find()->select(['dep_flag'])
+//                ->andFilterWhere(['=', 'id', $category_id])
+//                ->scalar(); // зависимость от выбора отдела
             $data = Subject::find()->select(['id', 'name']);
-            if ($dep_flag) {
-                foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-                    $data->orWhere(['like', 'department_list', $department_id]);
-
-                }
-            }
+//            if ($dep_flag) {
+//                foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+//                    $data->orWhere(['like', 'department_list', $department_id]);
+//
+//                }
+//            }
             $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
             $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
             $data = $data->asArray()->all();
@@ -183,16 +183,16 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     {
         $data = [];
         if ($category_id) {
-            $dep_flag = SubjectCategory::find()->select(['dep_flag'])
-                ->andFilterWhere(['=', 'id', $category_id])
-                ->scalar(); // зависимость от выбора отдела
+//            $dep_flag = SubjectCategory::find()->select(['dep_flag'])
+//                ->andFilterWhere(['=', 'id', $category_id])
+//                ->scalar(); // зависимость от выбора отдела
             $data = Subject::find()->select(['name', 'id']);
-            if ($dep_flag) {
-                foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-                    $data->orWhere(['like', 'department_list', $department_id]);
-
-                }
-            }
+//            if ($dep_flag) {
+//                foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+//                    $data->orWhere(['like', 'department_list', $department_id]);
+//
+//                }
+//            }
             $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
             $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
             $data = $data->indexBy('id')->column();
@@ -204,46 +204,46 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
      * Получаем все отделы из всех спецификаций Программы
      * @return array
      */
-    public function getSpecialityDepartments()
-    {
-        $data = [];
-        if ($this->speciality_list) {
-            foreach ($this->speciality_list as $item => $speciality_id) {
-                $department_list = EducationSpeciality::find()->select(['department_list'])->where(['=', 'id', $speciality_id])->scalar();
-
-                $data = array_merge($data, explode(',', $department_list));
-            }
-        }
-        sort($data);
-        return array_unique($data);
-    }
-
-    public static function getSpecialityByProgramm($programm_id)
-    {
-        $data = [];
-        if ($programm_id) {
-            $speciality_list = self::find()->select(['speciality_list'])->where(['=', 'id', $programm_id])->scalar();
-            foreach (explode(',', $speciality_list) as $item => $speciality_id) {
-                $data[$speciality_id] = EducationSpeciality::find()->select(['name'])->where(['=', 'id', $speciality_id])->scalar();
-            }
-        }
-        return $data;
-    }
-
-    public static function getSpecialityByProgrammId($programm_id)
-    {
-        $data = [];
-        if ($programm_id) {
-            $speciality_list = self::find()->select(['speciality_list'])->where(['=', 'id', $programm_id])->scalar();
-            foreach (explode(',', $speciality_list) as $item => $speciality_id) {
-                $data[] = [
-                    'id' => $speciality_id,
-                    'name' => EducationSpeciality::find()->select(['name'])->where(['=', 'id', $speciality_id])->scalar(),
-                ];
-            }
-        }
-        return $data;
-    }
+//    public function getSpecialityDepartments()
+//    {
+//        $data = [];
+//        if ($this->speciality_list) {
+//            foreach ($this->speciality_list as $item => $speciality_id) {
+//                $department_list = EducationSpeciality::find()->select(['department_list'])->where(['=', 'id', $speciality_id])->scalar();
+//
+//                $data = array_merge($data, explode(',', $department_list));
+//            }
+//        }
+//        sort($data);
+//        return array_unique($data);
+//    }
+//
+//    public static function getSpecialityByProgramm($programm_id)
+//    {
+//        $data = [];
+//        if ($programm_id) {
+//            $speciality_list = self::find()->select(['speciality_list'])->where(['=', 'id', $programm_id])->scalar();
+//            foreach (explode(',', $speciality_list) as $item => $speciality_id) {
+//                $data[$speciality_id] = EducationSpeciality::find()->select(['name'])->where(['=', 'id', $speciality_id])->scalar();
+//            }
+//        }
+//        return $data;
+//    }
+//
+//    public static function getSpecialityByProgrammId($programm_id)
+//    {
+//        $data = [];
+//        if ($programm_id) {
+//            $speciality_list = self::find()->select(['speciality_list'])->where(['=', 'id', $programm_id])->scalar();
+//            foreach (explode(',', $speciality_list) as $item => $speciality_id) {
+//                $data[] = [
+//                    'id' => $speciality_id,
+//                    'name' => EducationSpeciality::find()->select(['name'])->where(['=', 'id', $speciality_id])->scalar(),
+//                ];
+//            }
+//        }
+//        return $data;
+//    }
 //
 //    public static function getSubjectVidBySubject($subject_id)
 //    {

@@ -7,7 +7,7 @@ class m210301_151059_add_subject_permissions extends PermissionsMigration
 
     public function beforeUp()
     {
-        $this->addPermissionsGroup('subjectManagement', 'Справочник "Дисциплины"');
+        $this->addPermissionsGroup('subjectManagement', 'Справочник "Предметы"');
     }
 
     public function afterDown()
@@ -27,7 +27,7 @@ class m210301_151059_add_subject_permissions extends PermissionsMigration
                     '/admin/subject/vid/*',
                 ],
                 'viewSubject' => [
-                    'title' => 'Просмотр "Дисциплины"',
+                    'title' => 'Просмотр "Предметы"',
                     'links' => [
                         '/admin/subject/default/index',
                         '/admin/subject/default/view',
@@ -48,7 +48,7 @@ class m210301_151059_add_subject_permissions extends PermissionsMigration
                     ],
                 ],
                 'editSubject' => [
-                    'title' => 'Редактирование записи "Дисциплины"',
+                    'title' => 'Редактирование записи "Предметы"',
                     'links' => [
                         '/admin/subject/default/update',
                         '/admin/subject/category/update',
@@ -63,7 +63,7 @@ class m210301_151059_add_subject_permissions extends PermissionsMigration
                     ],
                 ],
                 'createSubject' => [
-                    'title' => 'Добавление записи в "Дисциплины"',
+                    'title' => 'Добавление записи в "Предметы"',
                     'links' => [
                         '/admin/subject/default/create',
                         '/admin/subject/category/create',
@@ -79,7 +79,7 @@ class m210301_151059_add_subject_permissions extends PermissionsMigration
                     ],
                 ],
                 'deleteSubject' => [
-                    'title' => 'Удаление записи из "Дисциплины"',
+                    'title' => 'Удаление записи из "Предметы"',
                     'links' => [
                         '/admin/subject/default/delete',
                         '/admin/subject/default/bulk-delete',

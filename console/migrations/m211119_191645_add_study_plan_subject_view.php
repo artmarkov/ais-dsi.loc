@@ -20,11 +20,11 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_name', 'subject', 'id', 'name', 'name', 'status', null, 'Дисциплины(полное)'],
+            ['subject_name', 'subject', 'id', 'name', 'name', 'status', null, 'Предметы(полное)'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_name_dev', 'subject', 'id', 'slug', 'slug', 'status', null, 'Дисциплины(сокр)'],
+            ['subject_name_dev', 'subject', 'id', 'slug', 'slug', 'status', null, 'Предметы(сокр)'],
         ])->execute();
 
         $this->db->createCommand()->createView('studyplan_subject_view', '
@@ -116,15 +116,15 @@ UNION ALL
             ['subject_memo_1', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_1', 'studyplan_id', null, null, 'Предмет ученика с хар-ми 1-й вид'],
         ])->execute();
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_memo_2', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_2', 'studyplan_id', null, null, 'Предмет ученика с хар-ми 2-й вид'],
+            ['subject_memo_2', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_2', 'studyplan_id', 'studyplan_id', null, 'Предмет ученика с хар-ми 2-й вид'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_memo_3', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_3', 'studyplan_id', null, null, 'Предмет ученика с хар-ми 3-й вид'],
+            ['subject_memo_3', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_3', 'studyplan_id', 'studyplan_id', null, 'Предмет ученика с хар-ми 3-й вид'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_memo_4', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_4', 'studyplan_id', null, null, 'Предмет ученика с хар-ми 4-й вид'],
+            ['subject_memo_4', 'studyplan_subject_view', 'studyplan_subject_id', 'memo_4', 'studyplan_id', 'studyplan_id', null, 'Предмет ученика с хар-ми 4-й вид'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [

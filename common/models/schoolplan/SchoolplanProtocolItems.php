@@ -11,6 +11,7 @@ use common\models\subjectsect\SubjectSect;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "schoolplan_protocol_items".
@@ -133,6 +134,11 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
         return $this->hasOne(SchoolplanProtocol::className(), ['id' => 'schoolplan_protocol_id']);
     }
 
+    public function getSchoolplanProtocols()
+    {
+        $schoolplan_id = $this->schoolplanProtocol->schoolplan_id ?? null;
+        return ArrayHelper::map(SchoolplanProtocol::find()->select(['id', 'protocol_name'])->andWhere(['=', 'schoolplan_id', $schoolplan_id])->asArray()->all(), 'id', 'protocol_name');
+    }
     /**
      * Gets query for [[StudyplanSubject]].
      *
@@ -152,6 +158,18 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
             1 => 'В работе',
             2 => 'Выполнено',
             3 => 'Не выполнено',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public static function getStatusExeOptionsList()
+    {
+        return [
+            [1, 'В работе', 'info'],
+            [2, 'Выполнено', 'success'],
+            [3, 'Не выполнено', 'danger']
         ];
     }
 
@@ -178,6 +196,17 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
         ];
     }
 
+    /**
+     * @return array
+     */
+    public static function getStatusSignOptionsList()
+    {
+        return [
+            [1, 'На подписи', 'info'],
+            [2, 'Подписано', 'success'],
+            [3, 'Не подписано', 'danger']
+        ];
+    }
     /**
      * @param $val
      * @return mixed

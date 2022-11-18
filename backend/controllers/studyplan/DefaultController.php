@@ -17,6 +17,7 @@ use common\models\history\SubjectScheduleHistory;
 use common\models\history\TeachersLoadHistory;
 use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
+use common\models\schoolplan\SchoolplanProtocol;
 use common\models\schoolplan\SchoolplanProtocolItems;
 use common\models\schoolplan\search\SchoolplanProtocolItemsSearch;
 use common\models\schoolplan\search\SchoolplanProtocolItemsViewSearch;
@@ -821,54 +822,50 @@ class DefaultController extends MainController
 
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Studyplan Perform'), 'url' => ['studyplan/default/characteristic-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление мероприятия';
-            if (!Yii::$app->request->get('studyplan_subject_id')) {
-                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id.");
-            }
-            $protocolItemsModel = StudyplanSubject::findOne(Yii::$app->request->get('studyplan_subject_id'));
-            $model = new SchoolplanProtocolItems();
-            $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id');
-            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+            $modelProtocolItems = new SchoolplanProtocolItems();
+            if ($modelProtocolItems->load(Yii::$app->request->post()) AND $modelProtocolItems->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                $this->getSubmitAction($model);
+                $this->getSubmitAction($modelProtocolItems);
             }
 
             return $this->renderIsAjax('@backend/views/schoolplan/schoolplan-protocol-items/_form.php', [
                 'model' => $model,
-                'protocolItemsModel' => $protocolItemsModel,
+                'modelProtocolItems' => $modelProtocolItems,
+                'readonly' => false,
             ]);
 
         } elseif ('history' == $mode && $objectId) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Characteristic'), 'url' => ['studyplan/default/characteristic-items', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/characteristic-items', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
-            $model = SchoolplanProtocolItems::findOne($objectId);
+            $modelProtocolItems = SchoolplanProtocolItems::findOne($objectId);
             $data = new ProtocolItemsHistory($objectId);
-            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['modelProtocolItems', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
-            $model = SubjectCharacteristic::findOne($objectId);
-            $model->delete();
+            $modelProtocolItems = SchoolplanProtocolItems::findOne($objectId);
+            $modelProtocolItems->delete();
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-            return $this->redirect($this->getRedirectPage('delete', $model));
+            return $this->redirect($this->getRedirectPage('delete', $modelProtocolItems));
 
         } elseif ($objectId) {
 
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Characteristic'), 'url' => ['studyplan/default/characteristic-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $model = SubjectCharacteristic::findOne($objectId);
-            $studyplanSubjectModel = StudyplanSubject::findOne($model->studyplan_subject_id);
-            if (!isset($model)) {
-                throw new NotFoundHttpException("The SubjectSchedule was not found.");
+            $modelProtocolItems = SchoolplanProtocolItems::findOne($objectId);
+            if (!isset($modelProtocolItems)) {
+                throw new NotFoundHttpException("The SchoolplanProtocolItems was not found.");
             }
 
-            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+            if ($model->load(Yii::$app->request->post()) AND $modelProtocolItems->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
                 $this->getSubmitAction($model);
             }
 
-            return $this->renderIsAjax('@backend/views/studyplan/subject-characteristic/_form.php', [
+            return $this->renderIsAjax('@backend/views/schoolplan/schoolplan-protocol-items/_form.php', [
                 'model' => $model,
-                'studyplanSubjectModel' => $studyplanSubjectModel,
+                'modelProtocolItems' => $modelProtocolItems,
+                'readonly' => false,
             ]);
 
         } else {
