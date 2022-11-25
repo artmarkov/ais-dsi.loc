@@ -18,8 +18,8 @@ class EducationProgrammSearch extends EducationProgramm
     public function rules()
     {
         return [
-            [['id', 'education_cat_id',  'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
-            [['name', 'speciality_list', 'term_mastering', 'description'], 'safe'],
+            [['id', 'education_cat_id', 'status'], 'integer'],
+            [['name', 'short_name', 'term_mastering', 'description'], 'safe'],
         ];
     }
 
@@ -66,16 +66,11 @@ class EducationProgrammSearch extends EducationProgramm
         $query->andFilterWhere([
             'id' => $this->id,
             'education_cat_id' => $this->education_cat_id,
-            'created_at' => $this->created_at,
-            'created_by' => $this->created_by,
-            'updated_at' => $this->updated_at,
-            'updated_by' => $this->updated_by,
-            'status' => $this->status,
-            'version' => $this->version,
+            'status' => $this->status
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-           // ->andFilterWhere(['like', 'speciality_list', $this->speciality_list])
+            ->andFilterWhere(['like', 'short_name', $this->short_name])
             ->andFilterWhere(['like', 'term_mastering', $this->term_mastering])
             ->andFilterWhere(['like', 'description', $this->description]);
 

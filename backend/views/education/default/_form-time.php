@@ -35,17 +35,17 @@ use wbraganca\dynamicform\DynamicFormWidget;
 <table class="table table-bordered table-striped">
     <thead>
     <tr>
-        <th class="text-center" style="min-width: 100px">Раздел</br>учебных</br>предметов</th>
+        <th class="text-center" style="min-width: 100px">Раздел<br>учебных<br>предметов</th>
         <th class="text-center" style="min-width: 100px">Предмет</th>
-        <th class="text-center" style="min-width: 100px">Форма</br>занятий</th>
-        <th class="text-center">Часов</br>в неделю</th>
-        <th class="text-center">Часов</br>в год</th>
+        <th class="text-center" style="min-width: 100px">Форма<br>занятий</th>
+        <th class="text-center">Часов<br>в неделю</th>
+        <th class="text-center">Часов<br>в год</th>
         <?php if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
             <th class="text-center">Стоимость часа</th>
             <th class="text-center">Оплата в месяц</th>
             <th class="text-center">Сумма в рублях за учебный год</th>
         <?php else: ?>
-            <th class="text-center">Консультации</br>часов в год</th>
+            <th class="text-center">Консультации<br>часов в год</th>
         <?php endif; ?>
         <th class="text-center">
             <?php if (!$readonly): ?>

@@ -11,6 +11,7 @@ use common\models\subject\SubjectVid;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "education_programm".
@@ -20,7 +21,6 @@ use yii\behaviors\TimestampBehavior;
  * @property string|null $name
  * @property string|null $short_name
  * @property string|null $term_mastering
- * @property string|null $speciality_list
  * @property string|null $description
  * @property int $created_at
  * @property int|null $created_by
@@ -50,10 +50,6 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
-            [
-                'class' => ArrayFieldBehavior::class,
-                'attributes' => ['speciality_list'],
-            ],
         ];
     }
 
@@ -63,12 +59,11 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'short_name', 'term_mastering', 'education_cat_id', /*'speciality_list',*/ 'status'], 'required'],
-            [['education_cat_id', 'status'], 'default', 'value' => null],
-            [['education_cat_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
+            [['name', 'short_name', 'term_mastering', 'education_cat_id', 'status'], 'required'],
+            [['education_cat_id', 'status', 'version'], 'integer'],
+            [['status'], 'default', 'value' => null],
             [['name', 'short_name', 'term_mastering'], 'string', 'max' => 512],
             [['description'], 'string', 'max' => 1024],
-            [['speciality_list'], 'safe'],
             [['education_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationCat::class, 'targetAttribute' => ['education_cat_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
@@ -87,7 +82,6 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             'name' => Yii::t('art', 'Name'),
             'short_name' => Yii::t('art', 'Short Name'),
             'term_mastering' => Yii::t('art/guide', 'Term Mastering'),
-            'speciality_list' => Yii::t('art/guide', 'Education Specializations'),
             'description' => Yii::t('art', 'Description'),
             'status' => Yii::t('art', 'Status'),
             'created_at' => Yii::t('art', 'Created'),
@@ -103,20 +97,6 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
         return 'version';
     }
 
-
-    /**
-     * getStatusValue
-     *
-     * @param string $val
-     *
-     * @return string
-     */
-    public static function getStatusValue($val)
-    {
-        $ar = self::getStatusList();
-
-        return isset($ar[$val]) ? $ar[$val] : $val;
-    }
 
     /**
      * Gets query for [[EducationCat]].
@@ -271,4 +251,28 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
 //        }
 //        return $data;
 //    }
+
+    public function copy()
+    {
+        $modelsEducationProgrammLevel = $this->programmLevel;
+        $index = count($modelsEducationProgrammLevel);
+        if ($index < $this->term_mastering) {
+            if (!empty($modelsEducationProgrammLevel[$index - 1])) {
+                $modelEducationProgrammLevel = $modelsEducationProgrammLevel[$index - 1];
+                $m = new EducationProgrammLevel();
+                $modelEducationProgrammLevel->programm_id = $this->id;
+                $modelEducationProgrammLevel->course = $index + 1;
+                $modelEducationProgrammLevel->level_id = null;
+                $m->setAttributes($modelEducationProgrammLevel->getAttributes());
+                $m->save(false);
+                $modelsEducationProgrammLevelSubject = $modelEducationProgrammLevel->educationProgrammLevelSubject;
+                foreach ($modelsEducationProgrammLevelSubject as $index2 => $modelEducationProgrammLevelSubject) {
+                    $mm = new EducationProgrammLevelSubject();
+                    $modelEducationProgrammLevelSubject->programm_level_id = $m->id;
+                    $mm->setAttributes($modelEducationProgrammLevelSubject->getAttributes());
+                    $mm->save(false);
+                }
+            }
+        }
+    }
 }

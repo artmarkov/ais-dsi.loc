@@ -57,7 +57,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'studyplan_subject_id'], 'default', 'value' => 0],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'load_time_consult'], 'default', 'value' => 0],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['direction_id', 'teachers_id', 'load_time'], 'required'],
             [['load_time', 'load_time_consult'], 'number'],

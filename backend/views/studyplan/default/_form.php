@@ -60,7 +60,7 @@ JS
                     ])->label(Yii::t('art/student', 'Student'));
                     ?>
                     <?= $form->field($model, "programm_id")->widget(\kartik\select2\Select2::class, [
-                        'data' => RefBook::find('education_programm_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
+                        'data' => RefBook::find('education_programm_short_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
                         'options' => [
                             'id' => 'programm_id',
                             'disabled' => $model->programm_id ? true : $readonly,
@@ -71,19 +71,6 @@ JS
                             'allowClear' => true
                         ]
                     ])->label(Yii::t('art/studyplan', 'Education Programm'));
-                    ?>
-
-                    <?= $form->field($model, "speciality_id")->widget(DepDrop::class, [
-                        'data' => \common\models\education\EducationProgramm::getSpecialityByProgramm($model->programm_id),
-                        'options' => ['prompt' => Yii::t('art/studyplan', 'Select Education Speciality...'),
-                            'disabled' => $model->speciality_id ? true : $readonly,
-                        ],
-                        'pluginOptions' => [
-                            'depends' => ['programm_id'],
-                            'placeholder' => Yii::t('art/guide', 'Select Education Speciality...'),
-                            'url' => Url::to(['/studyplan/default/speciality'])
-                        ]
-                    ]);
                     ?>
 
                     <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
@@ -238,7 +225,7 @@ JS
                                                         [
                                                             'model' => $modelStudyplanSubject,
                                                             'attribute' => "[{$index}]subject_type_id",
-                                                            'data' => \common\models\education\EducationSpeciality::getTypeList($model->speciality_id),
+                                                            'data' => \common\models\subject\SubjectType::getTypeList(),
                                                             'options' => [
 
                                                                 'disabled' => $readonly,

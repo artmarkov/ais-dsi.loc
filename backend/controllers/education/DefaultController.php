@@ -185,6 +185,9 @@ class DefaultController extends MainController
 
                     if ($flag) {
                         $transaction->commit();
+                        if (Yii::$app->request->post('submitAction') == 'copy') {
+                            $model->copy();
+                        }
                         return $this->getSubmitAction($model);
                     } else {
                         $transaction->rollBack();

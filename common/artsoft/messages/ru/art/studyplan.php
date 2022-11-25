@@ -1,12 +1,12 @@
 <?php
 return [
     'Course' => 'Класс',
-    'Education Programm' => 'Учебный план',
+    'Education Programm' => 'Учебная программа',
     'Speciality Name' => 'Специализация',
     'Individual plans' => 'Индивидуальные планы',
     'Plan Year' => 'Учебный год',
     'Select Student...' => 'Выберите ученика...',
-    'Select Education Programm...' => 'Выберите учебный план...',
+    'Select Education Programm...' => 'Выберите учебную программу...',
     'Select Subject Type...' => 'Выберите тип занятий...',
     'Studyplan Thematic' => 'Тематический план',
     'Studyplan Invoices' => 'Счета за обучение',

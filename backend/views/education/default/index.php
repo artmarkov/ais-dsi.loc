@@ -3,7 +3,6 @@
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
-use common\models\education\EducationSpeciality;
 use common\models\education\EducationProgramm;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
@@ -28,10 +27,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-6">
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
-                            /* echo GridQuickLinks::widget([
+                            echo \artsoft\grid\GridQuickLinks::widget([
                                 'model' => EducationProgramm::className(),
                                 'searchModel' => $searchModel,
-                            ])*/
+                            ])
                             ?>
                         </div>
 
@@ -73,35 +72,26 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return RefBook::find('education_cat')->getValue($model->education_cat_id);
                                 },
                             ],
+                            [
+                                'attribute' => 'term_mastering',
+                                'filter' => \artsoft\helpers\ArtHelper::getTermList(),
+                                'value' => function (EducationProgramm $model) {
+                                    return \artsoft\helpers\ArtHelper::getTermList()[$model->term_mastering];
+                                },
+                            ],
 
                             'name',
-                            'term_mastering',
+                            'short_name',
+//                            'description',
 //                            [
-//                                'attribute' => 'speciality_list',
-//                                'filter' => RefBook::find('education_speciality')->getList(),
-//                                'value' => function (EducationProgramm $model) {
-//                                    $v = [];
-//                                    foreach ($model->speciality_list as $id) {
-//                                        if (!$id) {
-//                                            continue;
-//                                        }
-//                                        $v[] = RefBook::find('education_speciality')->getValue($id);
-//                                    }
-//                                    return implode('<br/> ', $v);
-//                                },
-//                                'options' => ['style' => 'width:350px'],
-//                                'format' => 'raw',
+//                                'class' => 'artsoft\grid\columns\StatusColumn',
+//                                'attribute' => 'status',
+//                                'optionsArray' => [
+//                                    [EducationProgramm::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
+//                                    [EducationProgramm::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+//                                ],
+//                                'options' => ['style' => 'width:150px']
 //                            ],
-                            'description',
-                            [
-                                'class' => 'artsoft\grid\columns\StatusColumn',
-                                'attribute' => 'status',
-                                'optionsArray' => [
-                                    [EducationProgramm::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
-                                    [EducationProgramm::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
-                                ],
-                                'options' => ['style' => 'width:120px']
-                            ],
                         ],
                     ]);
                     ?>

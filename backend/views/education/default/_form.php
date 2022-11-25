@@ -66,24 +66,21 @@ $this->registerJs($js);
                     <?= $form->field($model, 'education_cat_id')->dropDownList(RefBook::find('education_cat', $model->isNewRecord ? EducationCat::STATUS_ACTIVE : '')->getList(),
                         ['prompt' => '', 'encodeSpaces' => true, 'disabled' => $model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true]) ?>
 
-                    <?= $form->field($model, 'name')->textInput(['maxlength' => true])->hint('Укажите название учебной программы') ?>
+                    <?= $form->field($model, 'name')->textInput(['maxlength' => true])->hint('Укажите название образовательной программы') ?>
 
-                    <?= $form->field($model, 'short_name')->textInput(['maxlength' => true])->hint('Укажите сокращенное название учебной программы') ?>
+                    <?= $form->field($model, 'short_name')->textInput(['maxlength' => true])->hint('Укажите сокращенное название образовательной программы') ?>
 
-                    <?= $form->field($model, 'term_mastering')->textInput(['maxlength' => true])->hint('Укажите срок обучения. Например: 5.') ?>
-
-                    <?php
-//                    $form->field($model, 'speciality_list')->widget(\kartik\select2\Select2::class, [
-//                        'data' => \common\models\subject\Subject::getSubjectByCategory(),
-//                        'options' => [
-//                            'disabled' => $model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true,
-//                            'placeholder' => Yii::t('art/guide', 'Select Education Specializations...'),
-//                            'multiple' => true,
-//                        ],
-//                        'pluginOptions' => [
-//                            'allowClear' => true
-//                        ],
-//                    ]);
+                    <?= $form->field($model, 'term_mastering')->widget(\kartik\select2\Select2::class, [
+                        'data' => \artsoft\helpers\ArtHelper::getTermList(),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/guide', 'Select...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->hint('Укажите срок обучения')
                     ?>
 
                     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
@@ -99,7 +96,7 @@ $this->registerJs($js);
                     'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                     'widgetBody' => '.container-items', // required: css class selector
                     'widgetItem' => '.item', // required: css class
-                    'limit' => 10, // the maximum times, an element can be added (default 999)
+                    'limit' => $model->term_mastering ?? 10, // the maximum times, an element can be added (default 999)
                     'min' => 0, // 0 or 1 (default 1)
                     'insertButton' => '.add-item', // css class
                     'deleteButton' => '.remove-item', // css class
@@ -138,22 +135,22 @@ $this->registerJs($js);
                                         }
                                         ?>
                                         <?php
-//                                        if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
-                                            <?php
-                                            echo $form->field($modelEducationProgrammLevel, "[{$index}]level_id")->widget(\kartik\select2\Select2::class, [
-                                                'data' => RefBook::find('education_level')->getList(),
-                                                'options' => [
-                                                    'disabled' => $readonly,
-                                                    'placeholder' => Yii::t('art/guide', 'Select Education Level...'),
-                                                    'multiple' => false,
-                                                ],
-                                                'pluginOptions' => [
-                                                    'allowClear' => true
-                                                ],
-                                            ]);
-                                            ?>
+                                        //                                        if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
                                         <?php
-//                                        endif; ?>
+                                        echo $form->field($modelEducationProgrammLevel, "[{$index}]level_id")->widget(\kartik\select2\Select2::class, [
+                                            'data' => RefBook::find('education_level')->getList(),
+                                            'options' => [
+                                                'disabled' => $readonly,
+                                                'placeholder' => Yii::t('art/guide', 'Select Education Level...'),
+                                                'multiple' => false,
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ]);
+                                        ?>
+                                        <?php
+                                        //                                        endif; ?>
                                         <?= $form->field($modelEducationProgrammLevel, "[{$index}]course")->widget(\kartik\select2\Select2::class, [
                                             'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                                             'options' => [
@@ -179,12 +176,12 @@ $this->registerJs($js);
                                             <?= $form->field($modelEducationProgrammLevel, "[{$index}]year_time_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
 
                                             <?php
-//                                            if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
-                                                <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
-                                                <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
-<!--                                            --><?php //else: ?>
-                                                <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false])->label('Сумма в рублях за учебный год из средств бюджета') ?>
-<!--                                            --><?php //endif; ?>
+                                            //                                            if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
+                                            <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
+                                            <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
+                                            <!--                                            --><?php //else: ?>
+                                            <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false])->label('Сумма в рублях за учебный год из средств бюджета') ?>
+                                            <!--                                            --><?php //endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -194,10 +191,10 @@ $this->registerJs($js);
                     <?php if (!$readonly): ?>
                         <div class="panel-footer">
                             <div class="form-group btn-group">
-
                                 <button type="button" class="add-item btn btn-success btn-sm pull-right">
                                     <i class="glyphicon glyphicon-plus"></i> Добавить
                                 </button>
+                                    <?= Html::submitButton('<i class="fa fa-plus" aria-hidden="true"></i> Скопировать и добавить', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'copy']); ?>
                             </div>
                         </div>
                     <?php endif; ?>

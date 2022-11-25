@@ -25,7 +25,6 @@ class EducationProgrammHistory extends BaseHistory
             'education_cat_id',
             'name',
             'short_name',
-            'speciality_list',
             'description',
             'status',
         ];
@@ -41,15 +40,6 @@ class EducationProgrammHistory extends BaseHistory
     protected static function getDisplayValue($model, $name, $value)
     {
         switch ($name) {
-            case 'speciality_list':
-                if (isset($model->speciality_list)) {
-                    $v = [];
-                    foreach (Json::decode($model->speciality_list) as $id) {
-                        $v[] = $id != null ? RefBook::find('education_speciality')->getValue($id) : null;
-                    }
-                    return implode(', ', $v);
-                }
-
             case 'education_cat_id':
                 return isset($model->education_cat_id) ? RefBook::find('education_cat')->getValue($value) : $value;
             case 'status':

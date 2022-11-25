@@ -247,6 +247,24 @@ class ArtHelper
     }
 
     /**
+     * @param int $min
+     * @param int $max
+     * @return array
+     */
+    public static function getTermList($min = 1, $max = 8)
+    {
+        $course = [];
+        $per_pr = '';
+        for ($i = $min; $i <= $max; $i++) {
+            if ($i == 1) $per_pr = " год";
+            if ($i == 0 or $i > 4) $per_pr = " лет";
+            if ($i > 1 and $i < 5) $per_pr = " года";
+            $course[$i] = $i . $per_pr;
+        }
+        return $course;
+    }
+
+    /**
      * @param string $vid
      * @param int $from
      * @param int $to

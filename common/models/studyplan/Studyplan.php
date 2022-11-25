@@ -10,7 +10,6 @@ use artsoft\helpers\RefBook;
 use artsoft\models\Role;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
-use common\models\education\EducationSpeciality;
 use common\models\parents\Parents;
 use common\models\students\Student;
 use common\models\subject\Subject;
@@ -28,7 +27,6 @@ use function morphos\Russian\inflectName;
  * @property int $id
  * @property int $student_id
  * @property int $programm_id
- * @property int $speciality_id
  * @property int|null $course
  * @property int|null $plan_year
  * @property string|null $description
@@ -87,18 +85,17 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year'], 'required'],
+            [['student_id', 'programm_id', 'course', 'plan_year'], 'required'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) {
                 return !$model->isNewRecord;
             }],
-            [['student_id', 'programm_id', 'speciality_id', 'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
+            [['student_id', 'programm_id',  'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
             [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
             ['doc_date', 'default', 'value' => date('d.m.Y')],
             [['description'], 'string', 'max' => 1024],
             [['year_time_total', 'cost_month_total', 'cost_year_total'], 'number'],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['programm_id' => 'id']],
-            [['speciality_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationSpeciality::class, 'targetAttribute' => ['speciality_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
             [['doc_signer'], 'exist', 'skipOnError' => true, 'targetClass' => Parents::class, 'targetAttribute' => ['doc_signer' => 'id']],
         ];
@@ -114,7 +111,6 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'student_id' => Yii::t('art/student', 'Student'),
             'programm_id' => Yii::t('art/studyplan', 'Education Programm'),
             'programmName' => Yii::t('art/studyplan', 'Education Programm'),
-            'speciality_id' => Yii::t('art/studyplan', 'Speciality Name'),
             'course' => Yii::t('art/studyplan', 'Course'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'description' => Yii::t('art', 'Description'),
@@ -151,27 +147,20 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $this->hasOne(EducationProgramm::class, ['id' => 'programm_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSpeciality()
-    {
-        return $this->hasOne(EducationSpeciality::class, ['id' => 'speciality_id']);
-    }
 
-    /**
-     * Получаем первую категорию дисциплины из спецификации
-     * @return array
-     */
-    public function getTypeScalar()
-    {
-        $subject_type_list = EducationSpeciality::find()
-            ->select(['subject_type_list'])
-            ->where(['=', 'id', $this->speciality_id])
-            ->scalar();
-        $subject_type = explode(',', $subject_type_list);
-        return $subject_type[0];
-    }
+//    /**
+//     * Получаем первую категорию дисциплины из спецификации
+//     * @return array
+//     */
+//    public function getTypeScalar()
+//    {
+//        $subject_type_list = EducationSpeciality::find()
+//            ->select(['subject_type_list'])
+//            ->where(['=', 'id', $this->speciality_id])
+//            ->scalar();
+//        $subject_type = explode(',', $subject_type_list);
+//        return $subject_type[0];
+//    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -220,10 +209,10 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $data = [];
         if ($category_id) {
             $data = Subject::find()->select(['id', 'name']);
-            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-                $data->orWhere(['like', 'department_list', $department_id]);
-
-            }
+//            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+//                $data->orWhere(['like', 'department_list', $department_id]);
+//
+//            }
             $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
             $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
             $data = $data->asArray()->all();
@@ -241,10 +230,10 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $data = [];
         if ($category_id) {
             $data = Subject::find()->select(['name', 'id']);
-            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-                $data->orWhere(['like', 'department_list', $department_id]);
-
-            }
+//            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
+//                $data->orWhere(['like', 'department_list', $department_id]);
+//
+//            }
             $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
             $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
             $data = $data->indexBy('id')->column();
@@ -256,16 +245,16 @@ class Studyplan extends \artsoft\db\ActiveRecord
      * Получаем все отделы из спецификации
      * @return array
      */
-    public function getSpecialityDepartments()
-    {
-        $department_list = EducationSpeciality::find()
-            ->select(['department_list'])
-            ->where(['=', 'id', $this->speciality_id])
-            ->scalar();
-        $data = explode(',', $department_list);
-        sort($data);
-        return $data;
-    }
+//    public function getSpecialityDepartments()
+//    {
+//        $department_list = EducationSpeciality::find()
+//            ->select(['department_list'])
+//            ->where(['=', 'id', $this->speciality_id])
+//            ->scalar();
+//        $data = explode(',', $department_list);
+//        sort($data);
+//        return $data;
+//    }
 
     /**
      * формирование документов: Согласие на обработку пд и Договор об оказании услуг

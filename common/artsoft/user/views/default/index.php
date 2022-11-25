@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="row">
                         <div class="col-sm-6">
                             <?= GridQuickLinks::widget([
-                                'model' => User::className(),
+                                'model' => User::class,
                                 'searchModel' => $searchModel,
                                 'options' => [
                                     ['label' => Yii::t('art', 'All'), 'filterWhere' => []],
@@ -85,8 +85,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'buttonsTemplate' => '{update} {delete} {permissions} {password}',
                                 'buttons' => [
+                                    'update' => function ($url, $model, $key) {
+                                        return Html::a(Yii::t('art', 'Edit'),
+                                            ['/user/default/update', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Edit'),
+                                                'data-pjax' => '0'
+                                            ]
+                                        );
+                                    },
                                     'delete' => function ($url, $model, $key) {
-                                        return !$model->userCommon ? Html::a(Yii::t('art', 'Delete'),
+                                        return !$model->user_common_id ? Html::a(Yii::t('art', 'Delete'),
                                             Url::to(['delete', 'id' => $model->id]), [
                                                 'title' => Yii::t('art', 'Delete'),
                                                 'aria-label' => Yii::t('art', 'Delete'),
@@ -116,7 +124,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-                            'userCommon.user_category',
+                            'user_category_name',
+                            [
+                                'attribute' => 'user_name',
+                                'options' => ['style' => 'width:150px']
+                            ],
                             [
                                 'attribute' => 'email',
                                 'format' => 'raw',
@@ -139,16 +151,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                                 'visible' => User::hasPermission('viewUserRoles'),
                             ],
-                              [
-                              'attribute' => 'registration_ip',
-                              'value' => function(User $model) {
-                              return Html::a($model->registration_ip,
-                              "http://ipinfo.io/".$model->registration_ip,
-                              ["target" => "_blank"]);
-                              },
-                              'format' => 'raw',
-                              'visible' => User::hasPermission('viewRegistrationIp'),
-                              ],
+                            [
+                                'attribute' => 'registration_ip',
+                                'value' => function (User $model) {
+                                    return Html::a($model->registration_ip,
+                                        "http://ipinfo.io/" . $model->registration_ip,
+                                        ["target" => "_blank"]);
+                                },
+                                'format' => 'raw',
+                                'visible' => User::hasPermission('viewRegistrationIp'),
+                            ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'superadmin',

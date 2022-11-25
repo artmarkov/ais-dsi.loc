@@ -2,9 +2,14 @@
 
 namespace artsoft\user\controllers;
 
+use artsoft\helpers\ArtHelper;
+use artsoft\models\OwnerAccess;
 use artsoft\models\User;
-use artsoft\models\UserIdentity;
+use artsoft\user\models\search\UserSearch;
+use common\models\user\search\UsersViewSearch;
 use Yii;
+use yii\data\ActiveDataProvider;
+use yii\helpers\StringHelper;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
@@ -28,6 +33,27 @@ class DefaultController extends MainController
     public $modelSearchClass = 'artsoft\user\models\search\UserSearch';
 
     public $disabledActions = ['view'];
+
+    public function actionIndex()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $modelClass = 'common\models\user\UsersView';
+        $searchModel =  new UsersViewSearch();
+        $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+            && !User::hasPermission($modelClass::getFullAccessPermission()));
+
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = $this->getParams(); //TODO
+            // $params = Yii::$app->request->getQueryParams();
+
+            if ($restrictAccess) {
+                $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $dataProvider = $searchModel->search($params);
+
+        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel'));
+    }
 
     /**
      * @return mixed|string|\yii\web\Response
