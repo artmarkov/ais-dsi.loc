@@ -111,7 +111,7 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
      */
     public function getEducationProgrammLevelSubject()
     {
-        return $this->hasMany(EducationProgrammLevelSubject::class, ['programm_level_id' => 'id']);
+        return $this->hasMany(EducationProgrammLevelSubject::class, ['programm_level_id' => 'id'])->innerJoin('guide_subject_category', 'guide_subject_category.id = education_programm_level_subject.subject_cat_id')->orderBy('sort_order');
     }
 
     /**
@@ -120,10 +120,10 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
      */
     public function beforeSave($insert)
     {
-        if ($this->programm->catType == \common\models\education\EducationCat::BASIS_FREE) {
-            $this->level_id = null;
-            $this->cost_month_total = 0;
-        }
+//        if ($this->programm->catType == \common\models\education\EducationCat::BASIS_FREE) {
+//            $this->level_id = null;
+//            $this->cost_month_total = 0;
+//        }
         return parent::beforeSave($insert);
     }
 }

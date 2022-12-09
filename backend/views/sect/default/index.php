@@ -68,6 +68,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttonsTemplate' => '{update} {view} {delete}',
                             ],
                             [
+                                'attribute' => 'union_id',
+                                'filter' => RefBook::find('union_name')->getList(),
+                                'value' => function (SubjectSect $model) {
+                                    return RefBook::find('union_name')->getValue($model->union_id);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
+                            [
                                 'attribute' => 'subject_cat_id',
                                 'filter' => RefBook::find('subject_category_name')->getList(),
                                 'value' => function (SubjectSect $model) {

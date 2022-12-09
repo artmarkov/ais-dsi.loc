@@ -65,6 +65,8 @@ $columns = [
         },
         'group' => true,
         'subGroupOf' => 2,
+        'pageSummary' => true,
+        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'attribute' => 'year_time_consult',
@@ -73,6 +75,8 @@ $columns = [
         },
         'group' => true,
         'subGroupOf' => 2,
+        'pageSummary' => true,
+        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'attribute' => 'direction_id',
@@ -109,6 +113,8 @@ $columns = [
             return $model->load_time . ' ' . $model->getItemLoadNotice();
         },
         'format' => 'raw',
+        'pageSummary' => true,
+        'pageSummaryFunc' => GridView::F_SUM
     ],
      [
         'attribute' => 'load_time_consult',
@@ -116,6 +122,8 @@ $columns = [
             return $model->load_time_consult;
         },
         'format' => 'raw',
+         'pageSummary' => true,
+         'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -210,6 +218,7 @@ $columns = [
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
+                'showPageSummary' => true,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

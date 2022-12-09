@@ -233,7 +233,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
         and subject_cat_id = {$this->subject_cat_id}
         and subject_id = {$this->subject_id}
         and subject_vid_id = {$this->subject_vid_id}
-        and case when {$this->subject_type_id} != 0 then subject_type_id = {$this->subject_type_id} else subject_type_id is not null end
+        and case when {$this->subject_type_id} != 0 then studyplan_subject.subject_type_id = {$this->subject_type_id} else studyplan_subject.subject_type_id is not null end
         and case when {$this->course} != 0 then course = {$this->course} else course is not null end
 		
 SQL;

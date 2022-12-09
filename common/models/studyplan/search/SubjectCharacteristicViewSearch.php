@@ -18,7 +18,7 @@ class SubjectCharacteristicViewSearch extends SubjectCharacteristicView
     public function rules()
     {
         return [
-            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'speciality_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'subject_characteristic_id', 'teachers_id'], 'integer'],
+            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'subject_characteristic_id', 'teachers_id'], 'integer'],
             [['description'], 'safe'],
         ];
     }
@@ -66,7 +66,6 @@ class SubjectCharacteristicViewSearch extends SubjectCharacteristicView
             'student_id' => $this->student_id,
             'plan_year' => $this->plan_year,
             'programm_id' => $this->programm_id,
-            'speciality_id' => $this->speciality_id,
             'course' => $this->course,
             'status' => $this->status,
             'studyplan_subject_id' => $this->studyplan_subject_id,

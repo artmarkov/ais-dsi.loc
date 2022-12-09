@@ -73,6 +73,19 @@ JS
                     ])->label(Yii::t('art/studyplan', 'Education Programm'));
                     ?>
 
+                    <?= $form->field($model, 'subject_type_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => \common\models\subject\SubjectType::getTypeList(),
+                        'options' => [
+                            'disabled' =>  $model->subject_type_id ? true : $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Subject Type'));
+                    ?>
+
                     <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
                         'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                         'options' => [
@@ -131,7 +144,7 @@ JS
                                     ],
                                 ]); ?>
                                 <table class="table table-bordered table-striped">
-                                    <thead>
+                                    <thead class="bg-warning">
                                     <tr>
                                         <th class="text-center" style="min-width: 100px">Раздел</br>учебных</br>предметов</th>
                                         <th class="text-center" style="min-width: 150px">Предмет</th>
@@ -155,7 +168,17 @@ JS
                                     </tr>
                                     </thead>
                                     <tbody class="container-items">
+                                    <?php
+                                    $sum_week_time = 0;
+                                    $sum_year_time = 0;
+                                    $sum_year_time_consult = 0;
+                                    ?>
                                     <?php foreach ($modelsStudyplanSubject as $index => $modelStudyplanSubject): ?>
+                                        <?php
+                                        $sum_week_time += $modelStudyplanSubject->week_time;
+                                        $sum_year_time += $modelStudyplanSubject->year_time;
+                                        $sum_year_time_consult += $modelStudyplanSubject->year_time_consult;
+                                        ?>
                                         <tr class="item">
                                             <?php
                                             // necessary for update action.
@@ -341,6 +364,21 @@ JS
                                         </tr>
                                     <?php endforeach; ?>
                                     </tbody>
+                                    <tfoot>
+                                    <tr class="bg-warning">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><?= $sum_week_time;?></td>
+                                        <td><?= $sum_year_time;?></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><?= $sum_year_time_consult;?></td>
+                                        <td></td>
+                                    </tr>
+                                    </tfoot>
                                 </table>
                                 <?php DynamicFormWidget::end(); ?>
                             </div>

@@ -30,7 +30,7 @@ use artsoft\helpers\Html;
                     <?= $form->field($model, 'union_name')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'programm_list')->widget(\kartik\select2\Select2::className(), [
-                        'data' => RefBook::find('education_programm_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
+                        'data' => RefBook::find('education_programm_short_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
                         'options' => [
                             // 'disabled' => $readonly,
                             Yii::t('art/studyplan', 'Select Education Programm...'),

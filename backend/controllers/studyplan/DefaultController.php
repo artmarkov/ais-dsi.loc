@@ -30,6 +30,7 @@ use common\models\schedule\search\SubjectScheduleStudyplanViewSearch;
 use common\models\schedule\SubjectSchedule;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\subject\SubjectType;
 use common\models\teachers\search\TeachersLoadStudyplanViewSearch;
 use common\models\teachers\TeachersLoad;
 use yii\base\DynamicModel;
@@ -45,6 +46,29 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\studyplan\Studyplan';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanSearch';
+
+    public function actionIndex()
+    {
+        $session = Yii::$app->session;
+
+        $model_date = new DynamicModel(['plan_year']);
+        $model_date->addRule(['plan_year'], 'required');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->plan_year = $session->get('_studyplan_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+        }
+        $session->set('_studyplan_plan_year', $model_date->plan_year);
+
+        $searchName = StringHelper::basename($this->modelSearchClass::className());
+        $searchModel = new $this->modelSearchClass;
+        $params = ArrayHelper::merge(Yii::$app->request->getQueryParams(), [
+            $searchName => [
+                'plan_year' => $model_date->plan_year,
+            ]
+        ]);
+        $dataProvider = $searchModel->search($params);
+
+        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel', 'model_date'));
+    }
 
     /**
      * @return mixed|string|\yii\web\Response
@@ -144,8 +168,10 @@ class DefaultController extends MainController
                         if (!empty($deletedIDs)) {
                             StudyplanSubject::deleteAll(['id' => $deletedIDs]);
                         }
+
                         foreach ($modelsStudyplanSubject as $modelStudyplanSubject) {
                             $modelStudyplanSubject->studyplan_id = $model->id;
+                            $modelStudyplanSubject->subject_type_id = $modelStudyplanSubject->subject_type_id != null ? $modelStudyplanSubject->subject_type_id : $model->subject_type_id;
                             if (!($flag = $modelStudyplanSubject->save(false))) {
                                 $transaction->rollBack();
                                 break;
@@ -162,7 +188,7 @@ class DefaultController extends MainController
             }
         }
         if (Yii::$app->request->post('submitAction') == 'doc_contract') {
-            if ($model->programm->catType == EducationCat::BASIS_FREE) {
+            if ($model->subject_type_id == SubjectType::BASIS_FREE) {
                 $model->makeDocx(Studyplan::template_csf);
             } else {
                 $model->makeDocx(Studyplan::template_cs);
@@ -930,7 +956,7 @@ class DefaultController extends MainController
     public function getMenu($id)
     {
         return [
-            ['label' => 'Карточка индивидуального плана', 'url' => ['/studyplan/default/update', 'id' => $id]],
+            ['label' => 'Карточка плана учащегося', 'url' => ['/studyplan/default/update', 'id' => $id]],
             ['label' => 'Нагрузка', 'url' => ['/studyplan/default/load-items', 'id' => $id]],
             ['label' => 'Элементы расписания', 'url' => ['/studyplan/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/studyplan/default/schedule', 'id' => $id]],

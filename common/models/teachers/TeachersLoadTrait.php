@@ -17,20 +17,20 @@ trait TeachersLoadTrait
      */
     public static function getTeachersSubjectAll($teachers_id)
     {
-        $query1 = self::find()
+        $query1 = TeachersLoadStudyplanView::find()
             ->select('subject_sect_studyplan_id')
             ->distinct()
             ->where(['studyplan_subject_id' => 0])
             ->andWhere(['teachers_id' => $teachers_id])
             ->column();
-        $query2 = self::find()
+        $query2 = TeachersLoadStudyplanView::find()
             ->select('studyplan_subject_id')
             ->distinct()
             ->where(['subject_sect_studyplan_id' => 0])
             ->andWhere(['teachers_id' => $teachers_id])
             ->column();
 
-        return self::find()
+        return TeachersLoadStudyplanView::find()
             ->where(['subject_sect_studyplan_id' => $query1])
             ->orWhere(['studyplan_subject_id' => $query2])
             ->column();
@@ -38,7 +38,7 @@ trait TeachersLoadTrait
 
     public function getTeachersFullLoad()
     {
-        return self::find()
+        return TeachersLoadStudyplanView::find()
             ->select(new \yii\db\Expression('SUM(load_time)'))
             ->where(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
             ->andWhere(['=', 'studyplan_subject_id', $this->studyplan_subject_id])
@@ -49,7 +49,7 @@ trait TeachersLoadTrait
     public function getItemLoadNotice()
     {
         $tooltip = [];
-        if ($this->studyplan_subject_list == '') {
+        if ($this->studyplan_subject_list == '' && $this->subject_sect_studyplan_id !== null) {
             $message = 'В группе ' . RefBook::find('sect_name_2')->getValue($this->subject_sect_studyplan_id) . ' не обнаружено ни одного учащегося!';
             Notice::registerWarning($message);
         }
@@ -69,4 +69,5 @@ trait TeachersLoadTrait
         }
         return null;
     }
+
 }

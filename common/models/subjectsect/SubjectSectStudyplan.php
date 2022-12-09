@@ -125,7 +125,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     /**
      * @return array
      */
-    public function getSubjectSectStudyplans($readonly)
+    public function getSubjectSectStudyplans($readonly = false)
     {
         $data = [];
         if (!empty($this->studyplan_subject_list)) {

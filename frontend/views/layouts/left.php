@@ -61,7 +61,7 @@ use artsoft\widgets\Nav;
 //                'url' => '#',
 //                'items' => [
 //                    ['label' => 'Испытания', 'icon' => 'fa fa-minus', 'url' => ['/examination/default/index']],
-//                    ['label' => 'Индивидуальные планы', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
+//                    ['label' => 'Планы учащихся', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
 //                    ['label' => 'Движение учеников', 'icon' => 'fa fa-minus', 'url' => ['/transfer/default/index']],
 //                    ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/schedule/default/index']],
 //                    ['label' => 'Расписание консультаций', 'icon' => 'fa fa-minus', 'url' => ['/consult/default/index']],

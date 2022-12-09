@@ -26,20 +26,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-6">
+                            <?= $this->render('_search', compact('model_date')) ?>
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
-                            echo GridQuickLinks::widget([
+                           /* echo GridQuickLinks::widget([
                                 'model' => Studyplan::className(),
                                 'searchModel' => $searchModel,
-                            ])
+                            ])*/
                             ?>
                         </div>
-
                         <div class="col-sm-6 text-right">
                             <?= GridPageSize::widget(['pjaxId' => 'studyplan-grid-pjax']) ?>
                         </div>
                     </div>
-
                     <?php
                     Pjax::begin([
                         'id' => 'studyplan-grid-pjax',
@@ -91,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'plan_year',
-                                'filter' => \artsoft\helpers\ArtHelper::getStudyYearsList(),
+                                'filter' => false,
                                 'value' => function (Studyplan $model) {
                                     return \artsoft\helpers\ArtHelper::getStudyYearsList()[$model->plan_year];
                                 },

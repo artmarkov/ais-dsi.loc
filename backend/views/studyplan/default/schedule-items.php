@@ -35,6 +35,7 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
+        'subGroupOf' => 1,
 
     ],
     [
@@ -43,7 +44,7 @@ $columns = [
             return $model->week_time;
         },
         'group' => true,
-        'subGroupOf' => 2,
+        'subGroupOf' => 1,
     ],
     [
         'attribute' => 'direction_id',
@@ -78,6 +79,8 @@ $columns = [
         'value' => function ($model) {
             return $model->load_time . ' ' . $model->getItemLoadNotice();
         },
+         'group' => true,  // enable grouping
+        'subGroupOf' => 4,
         'format' => 'raw',
     ],
     [

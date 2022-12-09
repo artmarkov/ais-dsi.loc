@@ -72,7 +72,7 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'week_time', 'year_time'], 'required'],
+            [['subject_cat_id', 'subject_id', /*'subject_type_id',*/ 'subject_vid_id', 'week_time', 'year_time'], 'required'],
             [['studyplan_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'status', 'version'], 'integer'],
             [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'number'],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
@@ -310,7 +310,7 @@ SQL;
         $this->studyplan_id = $model->id;
         $this->subject_cat_id = $modelSubTime->subject_cat_id;
         $this->subject_id = $modelSubTime->subject_id;
-//        $this->subject_type_id = $model->getTypeScalar();
+        $this->subject_type_id = $model->subject_type_id;
         $this->subject_vid_id = $modelSubTime->subject_vid_id;
         $this->week_time = $modelSubTime->week_time;
         $this->year_time = $modelSubTime->year_time;

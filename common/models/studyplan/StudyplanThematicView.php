@@ -11,7 +11,6 @@ use Yii;
  * @property int|null $student_id
  * @property int|null $plan_year
  * @property int|null $programm_id
- * @property int|null $speciality_id
  * @property int|null $course
  * @property int|null $status
  * @property int|null $studyplan_subject_id
@@ -41,7 +40,7 @@ class StudyplanThematicView extends StudyplanThematic
     public function rules()
     {
         return [
-            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'speciality_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'studyplan_thematic_id', 'subject_sect_studyplan_id', 'thematic_category', 'period_in', 'period_out'], 'integer'],
+            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'studyplan_thematic_id', 'subject_sect_studyplan_id', 'thematic_category', 'period_in', 'period_out'], 'integer'],
         ];
     }
 
@@ -56,7 +55,6 @@ class StudyplanThematicView extends StudyplanThematic
             'student_id' => Yii::t('art/guide', 'Student ID'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'programm_id' => Yii::t('art/studyplan', 'Education Programm'),
-            'speciality_id' => Yii::t('art/studyplan', 'Speciality Name'),
             'course' => Yii::t('art/studyplan', 'Course'),
             'status' => Yii::t('art/guide', 'Status'),
             'studyplan_subject_id' => Yii::t('art/guide', 'Subject Name'),

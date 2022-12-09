@@ -28,13 +28,14 @@ $columns = [
         'filterType' => GridView::FILTER_SELECT2,
         'filter' => RefBook::find('sect_name_3')->getList(),
         'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id) ?? 'Индивидуально';
+            return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' : RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id);
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
+        'subGroupOf' => 1,
 
     ],
     [
@@ -43,7 +44,9 @@ $columns = [
             return $model->week_time;
         },
         'group' => true,
-        'subGroupOf' => 2,
+        'subGroupOf' => 1,
+        'pageSummary' => true,
+        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'attribute' => 'year_time_consult',
@@ -51,7 +54,9 @@ $columns = [
             return $model->year_time_consult;
         },
         'group' => true,
-        'subGroupOf' => 2,
+        'subGroupOf' => 1,
+        'pageSummary' => true,
+        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'attribute' => 'direction_id',
@@ -87,6 +92,8 @@ $columns = [
             return $model->load_time . ' ' . $model->getItemLoadNotice();
         },
         'format' => 'raw',
+        'pageSummary' => true,
+        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'attribute' => 'load_time_consult',
@@ -94,6 +101,8 @@ $columns = [
             return $model->load_time_consult;
         },
         'format' => 'raw',
+        'pageSummary' => true,
+        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -145,9 +154,9 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-//            'create' => function ($model) {
-//                return $model->getTeachersLoadsNeed();
-//            },
+            'create' => function ($model) {
+                return $model->subject_sect_studyplan_id !== null;
+            },
             'delete' => function ($model) {
                 return $model->teachers_load_id !== null;
             },
@@ -188,6 +197,7 @@ $columns = [
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
+                'showPageSummary' => true,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

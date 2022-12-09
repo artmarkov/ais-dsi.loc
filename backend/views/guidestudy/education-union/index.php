@@ -69,14 +69,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             'class_index',
                             [
                                 'attribute' => 'programm_list',
-                                'filter' => RefBook::find('education_programm_name', \common\models\education\EducationProgramm::STATUS_ACTIVE)->getList(),
+                                'filter' => RefBook::find('education_programm_short_name', \common\models\education\EducationProgramm::STATUS_ACTIVE)->getList(),
                                 'value' => function (EducationUnion $model) {
                                     $v = [];
                                     foreach ($model->programm_list as $id) {
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = RefBook::find('education_programm_name', \common\models\education\EducationProgramm::STATUS_ACTIVE)->getValue($id);
+                                        $v[] = RefBook::find('education_programm_short_name', \common\models\education\EducationProgramm::STATUS_ACTIVE)->getValue($id);
                                     }
                                     return implode('<br/> ', $v);
                                 },

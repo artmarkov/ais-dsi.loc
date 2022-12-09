@@ -14,6 +14,7 @@ use common\models\parents\Parents;
 use common\models\students\Student;
 use common\models\subject\Subject;
 use common\models\schedule\SubjectScheduleStudyplanView;
+use common\models\subject\SubjectType;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
@@ -27,6 +28,7 @@ use function morphos\Russian\inflectName;
  * @property int $id
  * @property int $student_id
  * @property int $programm_id
+ * @property int $subject_type_id
  * @property int|null $course
  * @property int|null $plan_year
  * @property string|null $description
@@ -85,17 +87,18 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['student_id', 'programm_id', 'course', 'plan_year'], 'required'],
-            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) {
-                return !$model->isNewRecord;
-            }],
-            [['student_id', 'programm_id',  'course', 'plan_year', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
+            [['student_id', 'programm_id', 'subject_type_id', 'course', 'plan_year'], 'required'],
+//            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) {
+//                return !$model->isNewRecord;
+//            }],
+            [['student_id', 'programm_id',  'course', 'plan_year', 'subject_type_id', 'status', 'version'], 'integer'],
             [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
             ['doc_date', 'default', 'value' => date('d.m.Y')],
             [['description'], 'string', 'max' => 1024],
             [['year_time_total', 'cost_month_total', 'cost_year_total'], 'number'],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['programm_id' => 'id']],
+            [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
             [['doc_signer'], 'exist', 'skipOnError' => true, 'targetClass' => Parents::class, 'targetAttribute' => ['doc_signer' => 'id']],
         ];
@@ -111,6 +114,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'student_id' => Yii::t('art/student', 'Student'),
             'programm_id' => Yii::t('art/studyplan', 'Education Programm'),
             'programmName' => Yii::t('art/studyplan', 'Education Programm'),
+            'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
             'course' => Yii::t('art/studyplan', 'Course'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'description' => Yii::t('art', 'Description'),
@@ -147,27 +151,26 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $this->hasOne(EducationProgramm::class, ['id' => 'programm_id']);
     }
 
+    public function getSubjectType()
+    {
+        return $this->hasOne(SubjectType::class, ['id' => 'subject_type_id']);
+    }
 
-//    /**
-//     * Получаем первую категорию дисциплины из спецификации
-//     * @return array
-//     */
-//    public function getTypeScalar()
-//    {
-//        $subject_type_list = EducationSpeciality::find()
-//            ->select(['subject_type_list'])
-//            ->where(['=', 'id', $this->speciality_id])
-//            ->scalar();
-//        $subject_type = explode(',', $subject_type_list);
-//        return $subject_type[0];
-//    }
+    /**
+     * Геттер категория
+     * @return array
+     */
+    public function getType()
+    {
+        return $this->subject_type_id;
+    }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getStudyplanSubject()
     {
-        return $this->hasMany(StudyplanSubject::class, ['studyplan_id' => 'id']);
+        return $this->hasMany(StudyplanSubject::class, ['studyplan_id' => 'id'])->innerJoin('guide_subject_category', 'guide_subject_category.id = studyplan_subject.subject_cat_id')->orderBy('sort_order, subject_vid_id');
     }
 
 
@@ -350,7 +353,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * Расписание занятий индивидуального плана ученика
+     * Расписание занятий плана учащегося
      *
      * @return array
      */
@@ -359,6 +362,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $models = SubjectScheduleStudyplanView::find()
             ->where(['studyplan_id' => $this->id])
             ->andWhere(['not', ['subject_schedule_id' => null]])
+            ->andWhere(['=', 'direction_id', 1000])
             ->all();
 
         $data = [];

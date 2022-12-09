@@ -20,7 +20,7 @@ class StudyplanSearch extends Studyplan
     public function rules()
     {
         return [
-            [['id', 'student_id', 'course', 'plan_year', 'status'], 'integer'],
+            [['id', 'student_id', 'course', 'plan_year', 'status', 'programm_id'], 'integer'],
             [['description', 'programmName'], 'safe'],
         ];
     }
@@ -80,6 +80,7 @@ class StudyplanSearch extends Studyplan
 
         $query->andFilterWhere([
             'id' => $this->id,
+            'programm_id' => $this->programm_id,
             'student_id' => $this->student_id,
             'course' => $this->course,
             'plan_year' => $this->plan_year,

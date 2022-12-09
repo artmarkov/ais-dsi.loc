@@ -33,20 +33,17 @@ use wbraganca\dynamicform\DynamicFormWidget;
     ],
 ]); ?>
 <table class="table table-bordered table-striped">
-    <thead>
+    <thead class="bg-warning">
     <tr>
         <th class="text-center" style="min-width: 100px">Раздел<br>учебных<br>предметов</th>
         <th class="text-center" style="min-width: 100px">Предмет</th>
         <th class="text-center" style="min-width: 100px">Форма<br>занятий</th>
         <th class="text-center">Часов<br>в неделю</th>
         <th class="text-center">Часов<br>в год</th>
-        <?php if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
             <th class="text-center">Стоимость часа</th>
             <th class="text-center">Оплата в месяц</th>
             <th class="text-center">Сумма в рублях за учебный год</th>
-        <?php else: ?>
             <th class="text-center">Консультации<br>часов в год</th>
-        <?php endif; ?>
         <th class="text-center">
             <?php if (!$readonly): ?>
                 <button type="button" class="add-time btn btn-success btn-xs"><span class="fa fa-plus"></span></button>
@@ -55,7 +52,17 @@ use wbraganca\dynamicform\DynamicFormWidget;
     </tr>
     </thead>
     <tbody class="container-time">
+    <?php
+    $sum_week_time = 0;
+    $sum_year_time = 0;
+    $sum_year_time_consult = 0;
+    ?>
     <?php foreach ($modelsEducationProgrammLevelSubject as $indexTime => $modelEducationProgrammLevelSubject): ?>
+    <?php
+        $sum_week_time += $modelEducationProgrammLevelSubject->week_time;
+        $sum_year_time += $modelEducationProgrammLevelSubject->year_time;
+        $sum_year_time_consult += $modelEducationProgrammLevelSubject->year_time_consult;
+    ?>
         <tr class="room-item">
             <?php
             // necessary for update action.
@@ -164,7 +171,6 @@ use wbraganca\dynamicform\DynamicFormWidget;
                 </div>
                 <?= $field->end(); ?>
             </td>
-            <?php if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
                 <td>
                     <?php
                     $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]cost_hour");
@@ -198,7 +204,6 @@ use wbraganca\dynamicform\DynamicFormWidget;
                     </div>
                     <?= $field->end(); ?>
                 </td>
-            <?php else: ?>
                 <td>
                     <?php
                     $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]year_time_consult");
@@ -210,7 +215,6 @@ use wbraganca\dynamicform\DynamicFormWidget;
                     </div>
                     <?= $field->end(); ?>
                 </td>
-            <?php endif; ?>
             <td class="vcenter">
                 <?php if (!$readonly): ?>
                     <button type="button" class="remove-time btn btn-danger btn-xs"><span
@@ -220,6 +224,20 @@ use wbraganca\dynamicform\DynamicFormWidget;
         </tr>
     <?php endforeach; ?>
     </tbody>
+    <tfoot>
+    <tr class="bg-warning">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><?= $sum_week_time;?></td>
+        <td><?= $sum_year_time;?></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><?= $sum_year_time_consult;?></td>
+        <td></td>
+    </tr>
+    </tfoot>
 </table>
 
 <?php DynamicFormWidget::end(); ?>

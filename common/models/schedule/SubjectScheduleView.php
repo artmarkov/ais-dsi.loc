@@ -5,6 +5,7 @@ namespace common\models\schedule;
 use artsoft\helpers\Schedule;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\ArtHelper;
+use artsoft\widgets\Notice;
 use Yii;
 use artsoft\widgets\Tooltip;
 
@@ -93,7 +94,7 @@ class SubjectScheduleView extends SubjectSchedule
 
             if (self::getTeachersOverLapping($model)->exists() === true) {
                 $info = [];
-                foreach (self::getScheduleOverLapping($model)->all() as $itemModel) {
+                foreach (self::getTeachersOverLapping($model)->all() as $itemModel) {
                     $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
                 }
                 $message = 'Преподаватель(концертмейстер) не может работать в одно и тоже время в разных аудиториях! ' . implode(', ', $info);
@@ -103,6 +104,74 @@ class SubjectScheduleView extends SubjectSchedule
             return implode('', $tooltip);
         }
         return null;
+    }
+
+    /**
+     * В одной аудитории накладка по времени!
+     * @param $model
+     * @return \yii\db\ActiveQuery
+     */
+    public static function getScheduleOverLapping($model)
+    {
+        $thereIsAnOverlapping = SubjectScheduleView::find()->where(
+            ['AND',
+                ['!=', 'subject_schedule_id', $model->id],
+                ['auditory_id' => $model->auditory_id],
+                ['direction_id' => $model->directionId],
+                ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->id)],
+                ['OR',
+                    ['AND',
+                        ['<', 'time_in', Schedule::encodeTime($model->time_out)],
+                        ['>=', 'time_in', Schedule::encodeTime($model->time_in)],
+                    ],
+
+                    ['AND',
+                        ['<=', 'time_out', Schedule::encodeTime($model->time_out)],
+                        ['>', 'time_out', Schedule::encodeTime($model->time_in)],
+                    ],
+                ],
+                ['=', 'week_day', $model->week_day]
+            ]);
+        if ($model->getAttribute($model->week_num) !== null) {
+            $thereIsAnOverlapping->andWhere(['=', 'week_num', $model->week_num]);
+        }
+
+        return $thereIsAnOverlapping;
+    }
+
+    /**
+     * Преподаватель не может работать в одно и тоже время в разных аудиториях!
+     * Концертмейстер не может работать в одно и тоже время в разных аудиториях!
+     * @param $model
+     * @return \yii\db\ActiveQuery
+     */
+    public static function getTeachersOverLapping($model)
+    {
+        $thereIsAnOverlapping = SubjectScheduleView::find()->where(
+            ['AND',
+                ['!=', 'subject_schedule_id', $model->id],
+                ['direction_id' => $model->directionId],
+                ['teachers_id' => $model->teachersId],
+                ['!=', 'auditory_id', $model->auditory_id],
+                ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->id)],
+                ['OR',
+                    ['AND',
+                        ['<', 'time_in', Schedule::encodeTime($model->time_out)],
+                        ['>=', 'time_in', Schedule::encodeTime($model->time_in)],
+                    ],
+
+                    ['AND',
+                        ['<=', 'time_out', Schedule::encodeTime($model->time_out)],
+                        ['>', 'time_out', Schedule::encodeTime($model->time_in)],
+                    ],
+                ],
+                ['=', 'week_day', $model->week_day]
+            ]);
+        if ($model->getAttribute($model->week_num) !== null) {
+            $thereIsAnOverlapping->andWhere(['=', 'week_num', $model->week_num]);
+        }
+
+        return $thereIsAnOverlapping;
     }
 
     /**
@@ -147,6 +216,47 @@ class SubjectScheduleView extends SubjectSchedule
         return self::find()->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])->exists();
     }
 
+    public function getScheduleAccompLimit()
+    {
+        $thereIsAnAccompLimit = SubjectScheduleView::find()->where(
+            ['AND',
+                ['subject_sect_studyplan_id' => $this->subject_sect_studyplan_id],
+                ['direction_id' => $this->direction->parent],
+                ['auditory_id' => $this->auditory_id],
+                ['<=', 'time_in', Schedule::encodeTime($this->time_in)],
+                ['>=', 'time_out', Schedule::encodeTime($this->time_out)],
+                ['=', 'week_day', $this->week_day]
+            ]);
+        if ($this->getAttribute($this->week_num) !== null) {
+            $thereIsAnAccompLimit->andWhere(['=', 'week_num', $this->week_num]);
+        }
+        return $thereIsAnAccompLimit;
+    }
+
+    public function getScheduleAccompLimitNotice()
+    {
+        if ($this->direction->parent != null) {
+            if ($this->getScheduleAccompLimit()->exists() === false) {
+                $message = 'Концертмейстер может работать только в рамках расписания преподавателя';
+//                $info = [];
+//                $teachersSchedule = SubjectScheduleView::find()->where(
+//                    ['AND',
+//                        ['subject_sect_studyplan_id' => $this->subject_sect_studyplan_id],
+//                        ['direction_id' => $this->direction->parent]
+//                    ]);
+//                foreach ($teachersSchedule->all() as $itemModel) {
+//                    $string = ' ' . ArtHelper::getWeekValue('short', $itemModel->week_num);
+//                    $string .= ' ' . ArtHelper::getWeekdayValue('short', $itemModel->week_day) . ' ' . $itemModel->time_in . '-' . $itemModel->time_out;
+//                    $string .= ' ' . RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
+//                    $info[] = $string;
+//                }
+                // $this->addError($attribute, $message);
+               // Notice::registerWarning($message . ': ' . implode(', ', $info));
+              return  Tooltip::widget(['type' => 'danger', 'message' => $message]);
+            }
+        }
+    }
+
     /**
      * @return string
      */
@@ -155,6 +265,8 @@ class SubjectScheduleView extends SubjectSchedule
         $string = ' ' . ArtHelper::getWeekValue('short', $this->week_num);
         $string .= ' ' . ArtHelper::getWeekdayValue('short', $this->week_day) . ' ' . $this->time_in . '-' . $this->time_out;
         $string .= ' ' . $this->getTeachersOverLoadNotice();
+        $string .= ' ' . $this->getItemScheduleNotice();
+        $string .= ' ' . $this->getScheduleAccompLimitNotice();
         return $this->time_in ? $string : null;
     }
 

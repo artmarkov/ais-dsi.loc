@@ -41,7 +41,7 @@ $form = ActiveForm::begin([
                                         <?= $form->field($model_date, "programm_id")->widget(\kartik\select2\Select2::class, [
                                             'data' => RefBook::find('education_programm_short_name')->getList(),
                                             'options' => [
-                                                'placeholder' => Yii::t('art/guide', 'Select...'),
+                                                'placeholder' => Yii::t('art', 'Select...'),
                                             ],
                                             'pluginOptions' => [
                                                 'allowClear' => true
@@ -51,7 +51,7 @@ $form = ActiveForm::begin([
                                         <?= $form->field($model_date, "education_cat_id")->widget(\kartik\select2\Select2::class, [
                                             'data' => RefBook::find('education_cat_short')->getList(),
                                             'options' => [
-                                                'placeholder' => Yii::t('art/guide', 'Select...'),
+                                                'placeholder' => Yii::t('art', 'Select...'),
                                             ],
                                             'pluginOptions' => [
                                                 'allowClear' => true
@@ -86,7 +86,7 @@ $form = ActiveForm::begin([
                                         <?= $form->field($model_date, "student_id")->widget(\kartik\select2\Select2::class, [
                                             'data' => RefBook::find('students_fio')->getList(),
                                             'options' => [
-                                                'placeholder' => Yii::t('art/guide', 'Select...'),
+                                                'placeholder' => Yii::t('art', 'Select...'),
                                             ],
                                             'pluginOptions' => [
                                                 'allowClear' => true
@@ -98,7 +98,7 @@ $form = ActiveForm::begin([
                                         <?= $form->field($model_date, "subject_id")->widget(\kartik\select2\Select2::class, [
                                             'data' => \common\models\subject\Subject::getSubjectByCategory(),
                                             'options' => [
-                                                'placeholder' => Yii::t('art/guide', 'Select...'),
+                                                'placeholder' => Yii::t('art', 'Select...'),
                                             ],
                                             'pluginOptions' => [
                                                 'allowClear' => true

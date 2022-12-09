@@ -116,17 +116,17 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
         return $this->educationCat->name;
     }
 
-    public function getCatType()
-    {
-        return $this->educationCat->type_id;
-    }
+//    public function getCatType()
+//    {
+//        return $this->educationCat->type_id;
+//    }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getProgrammLevel()
     {
-        return $this->hasMany(EducationProgrammLevel::class, ['programm_id' => 'id']);
+        return $this->hasMany(EducationProgrammLevel::class, ['programm_id' => 'id'])->orderBy('course');
     }
 
     /**

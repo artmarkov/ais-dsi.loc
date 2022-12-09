@@ -16,6 +16,7 @@ use common\models\students\StudentDependence;
 use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\subject\SubjectType;
 use common\models\user\UserCommon;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
@@ -224,7 +225,7 @@ class DefaultController extends MainController
 
         if ('create' == $mode) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['/students/default/studyplan', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = 'Добавление индивидуального плана';
+            $this->view->params['breadcrumbs'][] = 'Добавление плана учащегося';
             $model = new Studyplan();
             $model->student_id = Yii::$app->request->get('id') ?: null;
 
@@ -324,6 +325,8 @@ class DefaultController extends MainController
                             }
                             foreach ($modelsDependence as $modelDependence) {
                                 $modelDependence->studyplan_id = $model->id;
+                                $modelDependence->subject_type_id = $modelDependence->subject_type_id != null ? $modelDependence->subject_type_id : $model->subject_type_id;
+
                                 if (!($flag = $modelDependence->save(false))) {
                                     $transaction->rollBack();
                                     break;
@@ -340,7 +343,7 @@ class DefaultController extends MainController
                 }
             }
             if (Yii::$app->request->post('submitAction') == 'doc_contract') {
-                if ($model->programm->catType == EducationCat::BASIS_FREE) {
+                if ($model->subject_type_id == SubjectType::BASIS_FREE) {
                     $model->makeDocx(Studyplan::template_csf);
                 } else {
                     $model->makeDocx(Studyplan::template_cs);
@@ -461,7 +464,7 @@ class DefaultController extends MainController
         return [
 //            ['label' => 'Монитор ученика', 'url' => ['/students/default/monitor', 'id' => $id]],
             ['label' => 'Карточка ученика', 'url' => ['/students/default/update', 'id' => $id]],
-            ['label' => 'Индивидуальные планы', 'url' => ['/students/default/studyplan', 'id' => $id]],
+            ['label' => 'Планы учащихся', 'url' => ['/students/default/studyplan', 'id' => $id]],
             ['label' => 'Испытания', 'url' => ['/students/default/examination', 'id' => $id]],
             ['label' => 'История обучения', 'url' => ['/students/default/education-history', 'id' => $id]],
             ['label' => 'Документы', 'url' => ['/students/default/document', 'id' => $id]],

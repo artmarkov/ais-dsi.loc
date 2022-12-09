@@ -266,6 +266,11 @@ JS
                                                         <p class="help-block help-block-error"></p>
                                                     </div>
                                                     <?= $field->end(); ?>
+                                                    <div class="col-sm-12">
+                                                        <span class="pull-right text-lg-right text-danger">
+                                                            Всего: <?= count($modelSubjectSectStudyplan->getSubjectSectStudyplans()); ?>
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         <?php endforeach; ?>

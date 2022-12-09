@@ -13,6 +13,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'student_id' => $this->integer()->notNull(),
             'programm_id' => $this->integer()->notNull(),
+            'subject_type_id' => $this->integer(),
             'course' => $this->integer(),
             'plan_year' => $this->integer(),
             'description' => $this->string(1024),
@@ -33,9 +34,10 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable('studyplan', 'Индивидуальные планы ученика');
+        $this->addCommentOnTable('studyplan', 'Планы учащихся');
         $this->addForeignKey('studyplan_ibfk_1', 'studyplan', 'student_id', 'students', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('studyplan_ibfk_2', 'studyplan', 'programm_id', 'education_programm', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('studyplan_ibfk_3', 'studyplan', 'subject_type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->resetSequence('studyplan', 1000)->execute();
 
@@ -112,7 +114,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable( 'studyplan_subject', 'Предметы индивидуального плана');
+        $this->addCommentOnTable( 'studyplan_subject', 'Предметы плана учащегося');
         $this->db->createCommand()->resetSequence('studyplan_subject', 10000)->execute();
 
         $this->createIndex('studyplan_id', 'studyplan_subject', 'studyplan_id');
