@@ -229,9 +229,10 @@ class ArtHelper
         $year = $year == null ? self::getStudyYearDefault($month_dev) : $year;
 
         $data['timestamp_in'] = mktime(0, 0, 0, $month_dev, 1, $year);
-        $data['timestamp_out'] = mktime(0, 0, 0, $month_dev, 1, $year+1);
+        $data['timestamp_out'] = mktime(0, 0, 0, $month_dev, 1, $year + 1);
         return $data;
     }
+
     /**
      * @param int $min
      * @param int $max

@@ -24,11 +24,12 @@ $columns = [
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',
-        'width' => '310px',
+        'width' => '320px',
         'filterType' => GridView::FILTER_SELECT2,
         'filter' => RefBook::find('sect_name_3')->getList(),
         'value' => function ($model, $key, $index, $widget) {
-            return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' : RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id);
+            return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' :
+                ($model->subject_sect_studyplan_id !== null ? RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice() : null);
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],
@@ -36,6 +37,7 @@ $columns = [
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
+        'format' => 'raw',
 
     ],
     [
@@ -89,7 +91,7 @@ $columns = [
     [
         'attribute' => 'load_time',
         'value' => function ($model) {
-            return $model->load_time . ' ' . $model->getItemLoadNotice();
+            return $model->load_time === null ? $model->load_time : $model->load_time . ' ' . $model->getItemLoadStudyplanNotice();
         },
         'format' => 'raw',
         'pageSummary' => true,
@@ -98,7 +100,7 @@ $columns = [
     [
         'attribute' => 'load_time_consult',
         'value' => function ($model) {
-            return $model->load_time_consult;
+            return $model->load_time_consult . ' ' . $model->getItemLoadStudyplanConsultNotice();
         },
         'format' => 'raw',
         'pageSummary' => true,
@@ -121,7 +123,6 @@ $columns = [
                         ]
                     );
                 } else {
-
                     return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
                         Url::to(['/studyplan/default/load-items', 'id' => $model->studyplan_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id, 'mode' => 'create']), [
                             'title' => Yii::t('art', 'Create'),

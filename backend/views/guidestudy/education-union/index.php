@@ -1,7 +1,6 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
@@ -67,6 +66,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'union_name',
                             'class_index',
+                            [
+                                'attribute' => 'term_mastering',
+                                'filter' => \artsoft\helpers\ArtHelper::getTermList(),
+                                'value' => function (EducationUnion $model) {
+                                    return \artsoft\helpers\ArtHelper::getTermList()[$model->term_mastering];
+                                },
+                            ],
                             [
                                 'attribute' => 'programm_list',
                                 'filter' => RefBook::find('education_programm_short_name', \common\models\education\EducationProgramm::STATUS_ACTIVE)->getList(),

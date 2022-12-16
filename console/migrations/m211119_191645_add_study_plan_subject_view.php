@@ -149,24 +149,19 @@ UNION ALL
         ])->execute();
 
         $this->db->createCommand()->createView('subject_sect_view', '
-         select subject_sect_studyplan.id as id, 
-                subject.id as subject_id,
-                subject_sect.course,
-                subject_sect.subject_cat_id,
-                subject_sect.subject_type_id,
-                subject_sect.subject_vid_id,
-    	        concat(subject.name, \'(\',guide_subject_vid.slug,\') \') as sect_memo_1,
-                concat(subject.name, \'(\',guide_subject_category.slug, \' \',guide_subject_vid.slug,\')\') as sect_memo_2,
-		        concat(education_union.class_index, \' \', subject_sect_studyplan.class_name, \' (\',subject.name, \'-\',guide_subject_category.slug, \') \') as sect_name_1,
-		        concat(education_union.class_index, \' \', subject_sect_studyplan.class_name, \' (\',subject.name, \'-\',guide_subject_category.slug, \') \',\' \',guide_subject_vid.slug,\' \', guide_subject_type.slug) as sect_name_2,
-			    concat(education_union.class_index, \' \', subject_sect_studyplan.class_name, \' (\',guide_subject_type.slug, \') \') as sect_name_3
-         from subject_sect_studyplan
-         inner join subject_sect on subject_sect.id = subject_sect_studyplan.subject_sect_id
-         inner join guide_subject_category on guide_subject_category.id = subject_sect.subject_cat_id
-         inner join subject on subject.id = subject_sect.subject_id
-		 inner join guide_subject_vid on guide_subject_vid.id = subject_sect.subject_vid_id
-		 inner join guide_subject_type on guide_subject_type.id = subject_sect_studyplan.subject_type_id
-         inner join education_union on education_union.id = subject_sect.union_id
+         SELECT subject_sect_studyplan.id,
+            concat(subject_sect_studyplan.course, \'/\', education_union.term_mastering, \'-\', subject_sect_studyplan.group_num) AS sect_memo_1,
+            concat(subject.name, \' (\', subject_sect_studyplan.course, \'/\', education_union.term_mastering, \'-\', subject_sect_studyplan.group_num, \')\') AS sect_memo_2,
+            concat(education_union.class_index, \' \', subject_sect.sect_name, \' (\', subject_sect_studyplan.course, \'/\', education_union.term_mastering, \'-\', subject_sect_studyplan.group_num, \') \') AS sect_name_1,
+            concat(education_union.class_index, \' \', subject_sect.sect_name, \' (\', guide_subject_category.slug, \') \', subject_sect_studyplan.course, \'/\', education_union.term_mastering, \'-\', subject_sect_studyplan.group_num, \' \', guide_subject_vid.slug, \' \', guide_subject_type.slug) AS sect_name_2,
+            concat(education_union.class_index, \' \', subject_sect.sect_name, \' (\', guide_subject_type.slug, \') \') AS sect_name_3
+           FROM subject_sect_studyplan
+             JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
+             JOIN guide_subject_category ON guide_subject_category.id = subject_sect.subject_cat_id
+             JOIN subject ON subject.id = subject_sect.subject_id
+             JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
+             JOIN guide_subject_type ON guide_subject_type.id = subject_sect_studyplan.subject_type_id
+             JOIN education_union ON education_union.id = subject_sect.union_id
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [

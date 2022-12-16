@@ -14,8 +14,10 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property int $id
  * @property int|null $subject_sect_id
+ * @property int|null $plan_year
+ * @property int|null $course
  * @property string|null $studyplan_subject_list
- * @property string $class_name
+ * @property int $group_num
  * @property int $subject_type_id
  * @property int $created_at
  * @property int|null $created_by
@@ -23,6 +25,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $updated_by
  * @property int $version
  *
+ * @property GuideSubjectType $subjectType
  * @property SubjectSect $subjectSect
  */
 class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
@@ -52,12 +55,11 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_id', 'subject_type_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['class_name', 'subject_type_id'], 'required'],
             [['studyplan_subject_list'], 'string'],
-            [['class_name'], 'string', 'max' => 64],
-            [['class_name'], 'trim'],
-            ['class_name', 'unique', 'targetAttribute' => ['class_name', 'subject_sect_id'], 'message' => 'Назавание группы не должно повторяться.'],
+            [['subject_sect_id', 'plan_year', 'course', 'subject_type_id', 'group_num'], 'integer'],
+            [['group_num', 'subject_type_id', 'subject_sect_id', 'plan_year'], 'required'],
+            [['studyplan_subject_list'], 'string'],
+            ['group_num', 'unique', 'targetAttribute' => ['group_num', 'subject_sect_id'], 'message' => 'Номер группы не должен повторяться.'],
             [['subject_sect_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSect::class, 'targetAttribute' => ['subject_sect_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
 
@@ -72,8 +74,10 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art', 'ID'),
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect'),
+            'plan_year' => Yii::t('art/guide', 'Plan_year'),
+            'course' => Yii::t('art/guide', 'Course'),
             'studyplan_subject_list' => Yii::t('art/guide', 'Studyplan List'),
-            'class_name' => Yii::t('art/guide', 'Class Name'),
+            'group_num' => Yii::t('art/guide', 'Group Num'),
             'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),

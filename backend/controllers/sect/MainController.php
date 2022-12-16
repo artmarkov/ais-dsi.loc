@@ -16,6 +16,7 @@ class MainController extends \backend\controllers\DefaultController
     {
         return [
             ['label' => 'Карточка группы', 'url' => ['/sect/default/update', 'id' => $id]],
+            ['label' => 'Распределение по группам', 'url' => ['/sect/default/distribution', 'id' => $id]],
             ['label' => 'Нагрузка', 'url' => ['/sect/default/load-items', 'id' => $id]],
             ['label' => 'Элементы расписания', 'url' => ['/sect/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание группы', 'url' => ['/sect/default/schedule', 'id' => $id]],

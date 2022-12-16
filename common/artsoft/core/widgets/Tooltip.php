@@ -24,11 +24,11 @@ class Tooltip extends Widget
                 break;
             case 'info':
                 $this->color = 'blue';
-                $this->icon = 'info-circle';
+                $this->icon = 'warning';
                 break;
             case 'success':
                 $this->color = 'green';
-                $this->icon = 'check';
+                $this->icon = 'warning';
                 break;
 
         }

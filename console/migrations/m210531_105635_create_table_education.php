@@ -166,6 +166,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'union_name' => $this->string(64),
             'programm_list' => $this->text()->notNull(),
             'class_index' => $this->string(32),
+            'term_mastering' => $this->integer()->notNull(),
             'description' => $this->string(1024)->notNull(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),

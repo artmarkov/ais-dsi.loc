@@ -140,13 +140,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'visible' => User::hasPermission('viewUserEmail'),
                             ],
                             [
-                                'attribute' => 'gridRoleSearch',
+                                'attribute' => 'roles',
                                 'filter' => ArrayHelper::map(Role::getAvailableRoles(true),
-                                    'name', 'description'),
+                                    'description', 'description'),
                                 'value' => function (User $model) {
-                                    return implode(', ',
-                                        ArrayHelper::map($model->roles, 'name',
-                                            'description'));
+                                    return $model->roles;
                                 },
                                 'format' => 'raw',
                                 'visible' => User::hasPermission('viewUserRoles'),

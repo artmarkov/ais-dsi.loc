@@ -1,5 +1,6 @@
 <?php
 
+use common\models\own\Department;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -59,11 +60,17 @@ $this->params['breadcrumbs'][] = $this->title;
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
+                                'value' => function (SubjectSect $model) {
+                                    return sprintf('#%06d', $model->id);
+                                },
+                            ],
+                             [
+                                'attribute' => 'sect_name',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/sect/default',
                                 'options' => ['style' => 'width:350px'],
                                 'title' => function (SubjectSect $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return Html::a($model->sect_name, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                             ],
@@ -112,23 +119,31 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
+                            'sub_group_qty',
                             [
-                                'attribute' => 'course',
+                                'attribute' => 'course_list',
                                 'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
                                 'value' => function (SubjectSect $model) {
-                                    return $model->course ? \artsoft\helpers\ArtHelper::getCourseList()[$model->course] : null;
+                                    $v = [];
+                                    foreach ($model->course_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = \artsoft\helpers\ArtHelper::getCourseList()[$id];
+                                    }
+                                    return implode(', ', $v);
                                 },
                                 'options' => ['style' => 'width:100px'],
                                 'format' => 'raw',
                             ],
                             [
-                                'attribute' => 'plan_year',
-                                'filter' => \artsoft\helpers\ArtHelper::getStudyYearsList(),
-                                'value' => function (SubjectSect $model) {
-                                    return \artsoft\helpers\ArtHelper::getStudyYearsList()[$model->plan_year];
-                                },
-                                'options' => ['style' => 'width:100px'],
-                                'format' => 'raw',
+                                'class' => 'kartik\grid\ActionColumn',
+//                                'urlCreator' => function ($action, $model, $key, $index) {
+//                                    return [$action, 'id' => $key];
+//                                },
+                                'controller' => '/sect/default',
+                                // 'template' => '{view} {update} {delete}',
+//                                'headerOptions' => ['class' => 'kartik-sheet-style'],
                             ],
                         ],
                     ]);

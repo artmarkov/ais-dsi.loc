@@ -36,7 +36,7 @@ trait TeachersLoadTrait
             ->column();
     }
 
-    public function getTeachersFullLoad()
+    public function getTeachersStudyplanFullLoad()
     {
         return TeachersLoadStudyplanView::find()
             ->select(new \yii\db\Expression('SUM(load_time)'))
@@ -46,22 +46,121 @@ trait TeachersLoadTrait
             ->scalar();
     }
 
+    public function getTeachersFullLoad()
+    {
+        return TeachersLoadView::find()
+            ->select(new \yii\db\Expression('SUM(load_time)'))
+            ->where(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
+            ->andWhere(['=', 'studyplan_subject_id', $this->studyplan_subject_id])
+            ->andWhere(['=', 'direction_id', $this->direction_id])
+            ->scalar();
+    }
+
+    public function getTeachersStudyplanFullLoadConsult()
+    {
+        return TeachersLoadStudyplanView::find()
+            ->select(new \yii\db\Expression('SUM(load_time_consult)'))
+            ->where(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
+            ->andWhere(['=', 'studyplan_subject_id', $this->studyplan_subject_id])
+            ->andWhere(['=', 'direction_id', $this->direction_id])
+            ->scalar();
+    }
+
+    public function getTeachersFullLoadConsult()
+    {
+        return TeachersLoadView::find()
+            ->select(new \yii\db\Expression('SUM(load_time_consult)'))
+            ->where(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
+            ->andWhere(['=', 'studyplan_subject_id', $this->studyplan_subject_id])
+            ->andWhere(['=', 'direction_id', $this->direction_id])
+            ->scalar();
+    }
+
+    /**
+     *  Список группы
+     * @return array
+     */
+    public function getSectList()
+    {
+        $data = [];
+        if ($this->subject_sect_studyplan_id !== null) {
+            foreach (explode(',', $this->studyplan_subject_list) as $item => $studyplan_subject_id) {
+                $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
+                $data[] = RefBook::find('students_fio')->getValue($student_id);
+            }
+        }
+        return $data;
+    }
+
+    public function getSectNotice()
+    {
+        $tooltip = [];
+        if ($this->subject_sect_studyplan_id !== null) {
+            if ($this->studyplan_subject_list == '') {
+                $message = 'Группа ' . RefBook::find('sect_name_2')->getValue($this->subject_sect_studyplan_id) . ' не заполнена';
+                //Notice::registerWarning($message);
+                $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
+            } else {
+                $message = ' Группа (' . count($this->getSectList()) . '): ' . implode(', ', $this->getSectList());
+                $tooltip[] = Tooltip::widget(['type' => 'info', 'message' => $message]);
+            }
+            return implode('', $tooltip);
+        }
+    }
+
+    public function getItemLoadStudyplanNotice()
+    {
+        $tooltip = [];
+
+        if ($this->teachers_load_id) {
+            if (!Direction::isDirectionSlave($this->direction_id)) {
+                if ($this->getTeachersStudyplanFullLoad() != $this->week_time) {
+                    $message = 'Суммарное время нагрузки ' . $this->getTeachersStudyplanFullLoad() . ' ак.ч не соответствует планированию - ' . $this->week_time . ' ак.ч';
+                    $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
+                }
+            }
+            return implode('', $tooltip);
+        }
+        return null;
+    }
     public function getItemLoadNotice()
     {
         $tooltip = [];
-        if ($this->studyplan_subject_list == '' && $this->subject_sect_studyplan_id !== null) {
-            $message = 'В группе ' . RefBook::find('sect_name_2')->getValue($this->subject_sect_studyplan_id) . ' не обнаружено ни одного учащегося!';
-            Notice::registerWarning($message);
-        }
+
         if ($this->teachers_load_id) {
             if (!Direction::isDirectionSlave($this->direction_id)) {
                 if ($this->getTeachersFullLoad() != $this->week_time) {
                     $message = 'Суммарное время нагрузки ' . $this->getTeachersFullLoad() . ' ак.ч не соответствует планированию - ' . $this->week_time . ' ак.ч';
                     $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
                 }
-            } else {
-                if ($this->getTeachersFullLoad() > $this->week_time) {
-                    $message = 'Суммарное время нагрузки ' . $this->getTeachersFullLoad() . ' ак.ч не соответствует планированию - ' . $this->week_time . ' ак.ч';
+            }
+            return implode('', $tooltip);
+        }
+        return null;
+    }
+
+    public function getItemLoadStudyplanConsultNotice()
+    {
+        $tooltip = [];
+        if ($this->teachers_load_id) {
+            if (!Direction::isDirectionSlave($this->direction_id)) {
+                if ($this->getTeachersStudyplanFullLoadConsult() != $this->year_time_consult) {
+                    $message = 'Суммарное время консультаций ' . $this->getTeachersStudyplanFullLoadConsult() . ' ак.ч не соответствует планированию - ' . $this->year_time_consult . ' ак.ч';
+                    $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
+                }
+            }
+            return implode('', $tooltip);
+        }
+        return null;
+    }
+
+    public function getItemLoadConsultNotice()
+    {
+        $tooltip = [];
+        if ($this->teachers_load_id) {
+            if (!Direction::isDirectionSlave($this->direction_id)) {
+                if ($this->getTeachersFullLoadConsult() != $this->year_time_consult) {
+                    $message = 'Суммарное время консультаций ' . $this->getTeachersFullLoadConsult() . ' ак.ч не соответствует планированию - ' . $this->year_time_consult . ' ак.ч';
                     $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
                 }
             }

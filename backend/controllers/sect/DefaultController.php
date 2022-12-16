@@ -2,6 +2,7 @@
 
 namespace backend\controllers\sect;
 
+use artsoft\helpers\Schedule;
 use backend\models\Model;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
@@ -38,49 +39,17 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = new $this->modelClass;
-        $modelsSubjectSectStudyplan = [new SubjectSectStudyplan()];
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class);
-            Model::loadMultiple($modelsSubjectSectStudyplan, Yii::$app->request->post());
-
-            // validate all models
-            $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsSubjectSectStudyplan) && $valid;
-            //$valid = true;
-
-            if ($valid) {
-                $transaction = \Yii::$app->db->beginTransaction();
-                try {
-                    if ($flag = $model->save(false)) {
-
-                        foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan) {
-
-                            if ($flag === false) {
-                                break;
-                            }
-                            $modelSubjectSectStudyplan->subject_sect_id = $model->id;
-                            if (!($flag = $modelSubjectSectStudyplan->save(false))) {
-                                break;
-                            }
-                        }
-                    }
-                    if ($flag) {
-                        $transaction->commit();
-                        $this->getSubmitAction($model);
-                    } else {
-                        $transaction->rollBack();
-                    }
-                } catch (Exception $e) {
-                    $transaction->rollBack();
-                }
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($model);
             }
         }
 
         return $this->renderIsAjax($this->createView, [
             'model' => $model,
-            'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan()] : $modelsSubjectSectStudyplan,
             'readonly' => false
         ]);
     }
@@ -101,48 +70,13 @@ class DefaultController extends MainController
             throw new NotFoundHttpException("The SubjectSect was not found.");
         }
 
-        $modelsSubjectSectStudyplan = $model->subjectSectStudyplans;
-
-        if ($model->load(Yii::$app->request->post())) {
-
-            $oldSubjectIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
-            $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
-            Model::loadMultiple($modelsSubjectSectStudyplan, Yii::$app->request->post());
-            $deletedSubjectIDs = array_diff($oldSubjectIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
-
-            $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsSubjectSectStudyplan) && $valid;
-
-            if ($valid) {
-                $transaction = Yii::$app->db->beginTransaction();
-                try {
-                    if ($flag = $model->save(false)) {
-                        if (!empty($deletedSubjectIDs)) {
-                            SubjectSectStudyplan::deleteAll(['id' => $deletedSubjectIDs]);
-                        }
-                        foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan) {
-                            $modelSubjectSectStudyplan->subject_sect_id = $model->id;
-                            if (!($flag = $modelSubjectSectStudyplan->save(false))) {
-                                break;
-                            }
-                        }
-                    }
-
-                    if ($flag) {
-                        $transaction->commit();
-                        return $this->getSubmitAction($model);
-                    } else {
-                        $transaction->rollBack();
-                    }
-                } catch (Exception $e) {
-                    $transaction->rollBack();
-                }
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+            $this->getSubmitAction($model);
         }
 
         return $this->render($this->updateView, [
             'model' => $model,
-            'modelsSubjectSectStudyplan' => (empty($modelsSubjectSectStudyplan)) ? [new SubjectSectStudyplan] : $modelsSubjectSectStudyplan,
             'readonly' => $readonly
         ]);
     }
@@ -171,6 +105,103 @@ class DefaultController extends MainController
         return $this->render('schedule', ['model' => $model,
             'readonly' => $readonly,
         ]);
+    }
+
+    public function actionDistribution($id, $objectId = null, $mode = null)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/view', 'id' => $model->id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+//        echo '<pre>' . print_r(Yii::$app->request->post(), true) . '</pre>'; die();
+        if ('create' == $mode) {
+            if (!Yii::$app->request->get('subject_sect_studyplan_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_sect_studyplan_id.");
+            }
+            $teachersLoadModel = StudyplanSubject::findOne(Yii::$app->request->get('subject_sect_studyplan_id'));
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Distribution'), 'url' => ['sect/default/distribution', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
+            $model = new TeachersLoad();
+            $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id');
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
+                'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
+            ]);
+
+        } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['sect/default/load-items', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['sect/default/load-items', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
+            $model = TeachersLoad::findOne($objectId);
+            $data = new TeachersLoadHistory($objectId);
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $model = TeachersLoad::findOne($objectId);
+            $model->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+
+        } elseif ($objectId) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $model = TeachersLoad::findOne($objectId);
+            $teachersLoadModel = StudyplanSubject::findOne($model->studyplan_subject_id);
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The StudyplanSubject was not found.");
+            }
+
+            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
+                'model' => $model,
+                'teachersLoadModel' => $teachersLoadModel,
+            ]);
+
+        } else {
+            $modelsSubjectSectStudyplan = [];
+                for ($i=1; $i<=$model->sub_group_qty; $i++) {
+                    if($model->course_flag) {
+                    foreach ($model->course_list as $item => $course) {
+                        $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $model->id])
+                                ->andWhere(['=', 'group_num', $i])
+                                ->andWhere(['=', 'plan_year', \artsoft\helpers\ArtHelper::getStudyYearDefault()])
+                                ->andWhere(['=', 'course', $course])->one() ?? new SubjectSectStudyplan();
+                        $m->subject_sect_id = $model->id;
+                        $m->group_num = $i;
+                        $m->plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault();
+                        $m->course = $course;
+                        $m->subject_type_id = $model->subject_type_id;
+                        $m->save(false);
+                        $modelsSubjectSectStudyplan[$i][$item] = $m;
+                    }
+                    }
+                    else {
+                        $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $model->id])
+                                ->andWhere(['=', 'group_num', $i])
+                                ->andWhere(['=', 'plan_year', \artsoft\helpers\ArtHelper::getStudyYearDefault()])->one() ?? new SubjectSectStudyplan();
+                        $m->subject_sect_id = $model->id;
+                        $m->group_num = $i;
+                        $m->plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault();
+                        $m->subject_type_id = $model->subject_type_id;
+                        $m->save(false);
+                        $modelsSubjectSectStudyplan[$i][] = $m;
+                    }
+                }
+
+//            echo '<pre>' . print_r($modelsSubjectSectStudyplan, true) . '</pre>';
+            $readonly = false;
+            return $this->renderIsAjax('distribution', compact('model', 'modelsSubjectSectStudyplan', 'readonly'));
+        }
     }
 
     public function actionLoadItems($id, $objectId = null, $mode = null)
@@ -557,6 +588,7 @@ class DefaultController extends MainController
             return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel'));
         }
     }
+
     /**
      * @return false|string
      */

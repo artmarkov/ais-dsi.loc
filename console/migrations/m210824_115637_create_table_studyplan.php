@@ -41,28 +41,27 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
 
         $this->db->createCommand()->resetSequence('studyplan', 1000)->execute();
 
-
-
         $this->createTableWithHistory('subject_sect', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
-            'plan_year' => $this->integer(),
             'union_id' => $this->integer()->notNull(),
-            'course' => $this->integer(),
             'subject_cat_id' => $this->integer()->notNull(),
-            'subject_id' => $this->integer(),
+            'subject_id' => $this->integer()->notNull(),
+            'subject_vid_id' => $this->integer()->notNull(),
             'subject_type_id' => $this->integer(),
-            'subject_vid_id' => $this->integer(),
+            'sect_name' => $this->string(127)->comment('Название группы'),
+            'course_list' => $this->string(1024)->comment('Список курсов'),
+            'course_flag' => $this->integer()->notNull()->comment('Распределить по курсам(Да/Нет)'),
+            'sub_group_qty' => $this->integer()->notNull()->comment('Кол-во подгрупп в группе'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
             'updated_by' => $this->integer(),
+            'status' => $this->smallInteger()->notNull()->defaultValue(1),
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
         $this->addCommentOnTable('subject_sect', 'Учебные группы');
         $this->db->createCommand()->resetSequence('subject_sect', 10000)->execute();
-        $this->createIndex('plan_year', 'subject_sect', 'plan_year');
-        $this->createIndex('course', 'subject_sect', 'course');
         $this->createIndex('subject_cat_id', 'subject_sect', 'subject_cat_id');
         $this->createIndex('subject_id', 'subject_sect', 'subject_id');
         $this->createIndex('subject_type_id', 'subject_sect', 'subject_type_id');
@@ -74,11 +73,13 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->addForeignKey('subject_sect_ibfk_5', 'subject_sect', 'subject_vid_id', 'guide_subject_vid', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('subject_sect_studyplan', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'id' => $this->primaryKey(),
             'subject_sect_id' => $this->integer(),
-            'studyplan_subject_list' => $this->text(),
-            'class_name' => $this->string(64),
             'subject_type_id' => $this->integer()->notNull(),
+            'plan_year' => $this->integer()->notNull(),
+            'group_num' => $this->integer()->notNull(),
+            'course' => $this->integer(),
+            'studyplan_subject_list' => $this->text(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -86,10 +87,12 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable('subject_sect_studyplan', 'Ученики учебной группы');
-        $this->db->createCommand()->resetSequence('subject_sect_studyplan', 10000)->execute();
+        $this->addCommentOnTable('subject_sect_studyplan', 'Распределение по учебным группам');
 
         $this->createIndex('subject_sect_id', 'subject_sect_studyplan', 'subject_sect_id');
+        $this->createIndex('plan_year', 'subject_sect_studyplan', 'plan_year');
+        $this->createIndex('course', 'subject_sect_studyplan', 'course');
+
         $this->addForeignKey('subject_sect_studyplan_ibfk_1', 'subject_sect_studyplan', 'subject_sect_id', 'subject_sect', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('subject_sect_studyplan_ibfk_2', 'subject_sect_studyplan', 'subject_type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
 

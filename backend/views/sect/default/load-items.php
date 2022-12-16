@@ -115,7 +115,7 @@ $columns = [
      [
         'attribute' => 'load_time_consult',
         'value' => function ($model) {
-            return $model->load_time_consult;
+            return $model->load_time_consult . ' ' . $model->getItemLoadConsultNotice();
         },
         'format' => 'raw',
     ],

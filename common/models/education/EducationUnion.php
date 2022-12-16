@@ -19,6 +19,7 @@ use yii\helpers\StringHelper;
  * @property string|null $union_name
  * @property string|null $description
  * @property string $class_index
+ * @property int $term_mastering
  * @property string $programm_list
  * @property int $status
  * @property int $created_at
@@ -60,9 +61,9 @@ class EducationUnion extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['programm_list', 'union_name'], 'required'],
+            [['programm_list', 'union_name', 'term_mastering'], 'required'],
             [['programm_list'], 'safe'],
-            [['created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'status'], 'integer'],
+            [['created_at', 'created_by', 'term_mastering', 'version', 'status'], 'integer'],
             [['description'], 'string', 'max' => 1024],
             [['union_name'], 'string', 'max' => 64],
             [['class_index'], 'string', 'max' => 32],
@@ -79,6 +80,7 @@ class EducationUnion extends \artsoft\db\ActiveRecord
             'union_name' => Yii::t('art/guide', 'Union Name'),
             'description' => Yii::t('art', 'Description'),
             'class_index' => Yii::t('art/guide', 'Class Index'),
+            'term_mastering' => Yii::t('art/guide', 'Term Mastering'),
             'programm_list' => Yii::t('art/guide', 'Programm List'),
             'status' => Yii::t('art', 'Status'),
             'created_at' => Yii::t('art/guide', 'Created'),

@@ -41,7 +41,20 @@ use artsoft\helpers\Html;
                         ]
                     ])->label(Yii::t('art/studyplan', 'Education Programm'));
                     ?>
-                    <?= $form->field($model, 'class_index')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'class_index')->textInput(['maxlength' => true])->hint('Введите индекс. Например: Группа, Класс и т.д.') ?>
+
+                    <?= $form->field($model, 'term_mastering')->widget(\kartik\select2\Select2::class, [
+                        'data' => \artsoft\helpers\ArtHelper::getTermList(),
+                        'options' => [
+                          //  'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/guide', 'Select...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->hint('Укажите срок обучения')
+                    ?>
 
                     <?= $form->field($model, 'description')->textarea(['rows' => 3, 'maxlength' => true]) ?>
 

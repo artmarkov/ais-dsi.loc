@@ -57,6 +57,7 @@ return [
     'Status' => 'Статус',
     'Measure Unit' => 'Единица измерения',
     'Subjects' => 'Учебные предметы',
+    'Subject' => 'Учебный предмет',
     'Subject Name' => 'Название предмета',
     'Subject Vid' => 'Форма занятий',
     'Subject Type' => 'Тип занятий',
@@ -68,6 +69,7 @@ return [
     'Name Division' => 'Название отделения',
     'Category' => 'Категория',
     'Course' => 'Класс',
+    'Group Num' => 'Номер Группы',
     'Class Index' => 'Индекс класса',
     'Select Course...' => 'Выберите класс',
     'Name purpose' => 'Назначение',
@@ -107,7 +109,6 @@ return [
     'Education Specializations' => 'Специальность',
     'Select Education Specializations...' => 'Выберите специальность...',
     'Cource' => 'Класс',
-    'Class Name' => 'Название группы',
     'Week Time' => 'План нед.',
     'Enter week time...' => 'Введите часы в неделю...',
     'Select week num...' => 'Выберите номер недели...',
@@ -145,7 +146,7 @@ return [
     'Time In' => 'Время начала',
     'Time Out' => 'Время окончания',
     'Schedule Items' => 'Элементы расписания',
-    'Sect Name' => 'Учебная группа',
+    'Sect Name' => 'Название группы',
     'Teachers Load' => 'Нагрузка',
     'Load Time' => 'Факт нед.',
     'Plan Schedule' => 'Время планирования',
@@ -215,6 +216,9 @@ return [
     'Last Experience' => 'Где обучался ранее',
     'Commission' => 'Экзаменационная комиссия',
     'Bonus Vid' => 'Вид надбавки',
+    'Course List' => 'Список курсов',
+    'Course Flag' => 'Распределить по курсам',
+    'Sub Group Qty' => 'Кол-во подгрупп в группе',
 
 ];
 ?>

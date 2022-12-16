@@ -2,7 +2,6 @@
 
 /* @var $this yii\web\View */
 /* @var $model common\models\subjectsect\SubjectSect */
-/* @var $modelsSubjectSectStudyplan */
 /* @var $readonly */
 
 $this->title = Yii::t('art', 'Create');
@@ -13,7 +12,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="subject-sect-create">
     <?= $this->render('_form', [
         'model' => $model,
-        'modelsSubjectSectStudyplan' => $modelsSubjectSectStudyplan,
         'readonly' => $readonly
     ]) ?>
 </div>

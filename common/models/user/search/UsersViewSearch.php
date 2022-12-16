@@ -16,8 +16,8 @@ class UsersViewSearch extends UsersView
     public function rules()
     {
         return [
-            [['id', 'superadmin', 'status', 'created_at', 'updated_at', 'email_confirmed', 'user_common_id'], 'integer'],
-            [['username', 'gridRoleSearch', 'registration_ip', 'email'], 'string'],
+            [['id', 'superadmin', 'status', 'email_confirmed', 'user_common_id'], 'integer'],
+            [['username', 'roles', 'registration_ip', 'email'], 'string'],
             [['user_category_name', 'user_name', 'phone', 'phone_optional', 'user_common_status'], 'string'],
         ];
     }
@@ -31,8 +31,6 @@ class UsersViewSearch extends UsersView
     public function search($params)
     {
         $query = UsersView::find();
-
-        $query->with(['roles']);
 
         if (!Yii::$app->user->isSuperadmin) {
             $query->where(['superadmin' => 0]);
@@ -54,18 +52,12 @@ class UsersViewSearch extends UsersView
             return $dataProvider;
         }
 
-        if ($this->gridRoleSearch) {
-            $query->joinWith(['roles']);
-        }
-
         $query->andFilterWhere([
             'id' => $this->id,
             'superadmin' => $this->superadmin,
             'status' => $this->status,
-            Yii::$app->art->auth_item_table . '.name' => $this->gridRoleSearch,
+            'roles' => $this->roles,
             'registration_ip' => $this->registration_ip,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
             'email_confirmed' => $this->email_confirmed,
             'user_common_id' => $this->user_common_id,
         ]);
