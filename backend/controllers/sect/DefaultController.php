@@ -171,18 +171,18 @@ class DefaultController extends MainController
             $modelsSubjectSectStudyplan = [];
                 for ($i=1; $i<=$model->sub_group_qty; $i++) {
                     if($model->course_flag) {
-                    foreach ($model->course_list as $item => $course) {
+                        for ($ii=1; $ii<=$model->union->term_mastering; $ii++) {
                         $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $model->id])
                                 ->andWhere(['=', 'group_num', $i])
                                 ->andWhere(['=', 'plan_year', \artsoft\helpers\ArtHelper::getStudyYearDefault()])
-                                ->andWhere(['=', 'course', $course])->one() ?? new SubjectSectStudyplan();
+                                ->andWhere(['=', 'course', $ii])->one() ?? new SubjectSectStudyplan();
                         $m->subject_sect_id = $model->id;
                         $m->group_num = $i;
                         $m->plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault();
-                        $m->course = $course;
+                        $m->course = $ii;
                         $m->subject_type_id = $model->subject_type_id;
                         $m->save(false);
-                        $modelsSubjectSectStudyplan[$i][$item] = $m;
+                        $modelsSubjectSectStudyplan[$i][$ii] = $m;
                     }
                     }
                     else {

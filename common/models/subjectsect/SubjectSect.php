@@ -26,7 +26,6 @@ use yii\helpers\ArrayHelper;
  * @property int $subject_vid_id
  * @property int|null $subject_type_id
  * @property string|null $sect_name Название группы
- * @property string|null $course_list Список курсов
  * @property int $course_flag Распределить по курсам(Да/Нет)
  * @property int $sub_group_qty Кол-во подгрупп в группе
  * @property int $created_at
@@ -61,10 +60,6 @@ class SubjectSect extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
-            [
-                'class' => ArrayFieldBehavior::class,
-                'attributes' => ['course_list'],
-            ],
         ];
     }
 
@@ -74,11 +69,10 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['union_id', 'subject_cat_id', 'subject_vid_id', 'course_flag', 'sub_group_qty', 'subject_id', 'sect_name'], 'required'],
+            [['union_id', 'subject_cat_id', 'subject_vid_id', 'course_flag', 'sub_group_qty', 'subject_id', 'sect_name', 'subject_type_id'], 'required'],
             [['union_id', 'subject_cat_id', 'subject_id', 'subject_vid_id', 'subject_type_id', 'course_flag', 'sub_group_qty'], 'default', 'value' => null],
             [['union_id', 'subject_cat_id', 'subject_id', 'subject_vid_id', 'subject_type_id', 'course_flag', 'sub_group_qty'], 'integer'],
             [['sect_name'], 'string', 'max' => 127],
-            [['course_list'], 'safe'],
             [['union_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationUnion::class, 'targetAttribute' => ['union_id' => 'id']],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
@@ -102,7 +96,6 @@ class SubjectSect extends \artsoft\db\ActiveRecord
             'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
             'sect_name' => Yii::t('art/guide', 'Sect Name'),
             'subject_vid_id' => Yii::t('art/guide', 'Subject Vid'),
-            'course_list' =>  Yii::t('art/guide', 'Course List'),
             'course_flag' =>  Yii::t('art/guide', 'Course Flag'),
             'sub_group_qty' =>  Yii::t('art/guide', 'Sub Group Qty'),
             'created_at' => Yii::t('art', 'Created'),

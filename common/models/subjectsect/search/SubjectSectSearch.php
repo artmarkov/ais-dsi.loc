@@ -19,7 +19,6 @@ class SubjectSectSearch extends SubjectSect
     {
         return [
             [['id', 'union_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'course_flag', 'sub_group_qty'], 'integer'],
-            [['course_list'], 'safe'],
             [['sect_name'], 'string'],
         ];
     }
@@ -81,7 +80,6 @@ class SubjectSectSearch extends SubjectSect
         ]);
 
         $query->andFilterWhere(['like', 'sect_name', $this->sect_name]);
-        $query->andFilterWhere(['like', 'course_list', $this->course_list]);
 
         return $dataProvider;
     }

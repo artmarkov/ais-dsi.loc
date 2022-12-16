@@ -121,22 +121,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'sub_group_qty',
                             [
-                                'attribute' => 'course_list',
-                                'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
-                                'value' => function (SubjectSect $model) {
-                                    $v = [];
-                                    foreach ($model->course_list as $id) {
-                                        if (!$id) {
-                                            continue;
-                                        }
-                                        $v[] = \artsoft\helpers\ArtHelper::getCourseList()[$id];
-                                    }
-                                    return implode(', ', $v);
-                                },
-                                'options' => ['style' => 'width:100px'],
-                                'format' => 'raw',
-                            ],
-                            [
                                 'class' => 'kartik\grid\ActionColumn',
 //                                'urlCreator' => function ($action, $model, $key, $index) {
 //                                    return [$action, 'id' => $key];

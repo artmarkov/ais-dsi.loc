@@ -41,14 +41,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             <th rowspan="2" class="text-center" style="vertical-align: middle;min-width: 100px;">
                                 Группа
                             </th>
-                            <th colspan="<?= count($model->course_list) ?>" class="text-center" style="min-width: 100px">
+                            <th colspan="<?= $model->union->term_mastering ?>" class="text-center" style="min-width: 100px">
                                 Годы обучения
                             </th>
                         </tr>
                         <tr>
-                            <?php foreach ($model->course_list as $index => $course): ?>
-                                <th class="text-center" style="min-width: 300px;"><?= $course ?></th>
-                            <?php endforeach; ?>
+                            <?php for ($ii=1; $ii<=$model->union->term_mastering; $ii++): ?>
+                                <th class="text-center" style="min-width: 300px;"><?= $ii ?></th>
+                            <?php endfor; ?>
                         </tr>
                         </thead>
                         <tbody class="container-items">
