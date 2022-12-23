@@ -83,3 +83,11 @@ a.desc:after {
     font-size: 1.1em;
     text-shadow: none;
 }
+/* Настройка виджета kartik-v/yii2-sortable-input */
+.sortable li {
+    border: 1px solid #ddd;
+    list-style: none outside none;
+    margin: 2px;
+    padding: 2px;
+    cursor: normal;
+}

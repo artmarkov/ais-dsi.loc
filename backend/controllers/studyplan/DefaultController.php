@@ -3,7 +3,6 @@
 namespace backend\controllers\studyplan;
 
 use backend\models\Model;
-use common\models\education\EducationCat;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\LessonItems;
@@ -17,9 +16,7 @@ use common\models\history\SubjectScheduleHistory;
 use common\models\history\TeachersLoadHistory;
 use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
-use common\models\schoolplan\SchoolplanProtocol;
 use common\models\schoolplan\SchoolplanProtocolItems;
-use common\models\schoolplan\search\SchoolplanProtocolItemsSearch;
 use common\models\schoolplan\search\SchoolplanProtocolItemsViewSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
@@ -39,9 +36,6 @@ use Yii;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
 
-/**
- * DefaultController implements the CRUD actions for common\models\studyplan\Studyplan model.
- */
 class DefaultController extends MainController
 {
     public $modelClass = 'common\models\studyplan\Studyplan';
@@ -311,7 +305,7 @@ class DefaultController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'model'));
         }
     }
 

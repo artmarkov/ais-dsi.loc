@@ -168,39 +168,54 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $modelsSubjectSectStudyplan = [];
-                for ($i=1; $i<=$model->sub_group_qty; $i++) {
-                    if($model->course_flag) {
-                        for ($ii=1; $ii<=$model->union->term_mastering; $ii++) {
-                        $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $model->id])
-                                ->andWhere(['=', 'group_num', $i])
-                                ->andWhere(['=', 'plan_year', \artsoft\helpers\ArtHelper::getStudyYearDefault()])
-                                ->andWhere(['=', 'course', $ii])->one() ?? new SubjectSectStudyplan();
-                        $m->subject_sect_id = $model->id;
-                        $m->group_num = $i;
-                        $m->plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault();
-                        $m->course = $ii;
-                        $m->subject_type_id = $model->subject_type_id;
-                        $m->save(false);
-                        $modelsSubjectSectStudyplan[$i][$ii] = $m;
-                    }
-                    }
-                    else {
-                        $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $model->id])
-                                ->andWhere(['=', 'group_num', $i])
-                                ->andWhere(['=', 'plan_year', \artsoft\helpers\ArtHelper::getStudyYearDefault()])->one() ?? new SubjectSectStudyplan();
-                        $m->subject_sect_id = $model->id;
-                        $m->group_num = $i;
-                        $m->plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault();
-                        $m->subject_type_id = $model->subject_type_id;
-                        $m->save(false);
-                        $modelsSubjectSectStudyplan[$i][] = $m;
-                    }
-                }
+            $session = Yii::$app->session;
 
-//            echo '<pre>' . print_r($modelsSubjectSectStudyplan, true) . '</pre>';
+            $model_date = new DynamicModel(['plan_year']);
+            $model_date->addRule(['plan_year'], 'required');
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $model_date->plan_year = $session->get('_sect_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            }
+            $session->set('_sect_plan_year', $model_date->plan_year);
+
+            $modelsSubjectSectStudyplan = $model->setSubjectSect($model_date);
+            $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
+
+            if (isset($_POST['SubjectSectStudyplan'])) {
+                $modelsSubjectSectStudyplan = $model->getSubjectSectStudyplans($model_date->plan_year);
+                $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
+                Model::loadMultiple($modelsSubjectSectStudyplan, Yii::$app->request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
+
+                // validate all models
+                $valid = Model::validateMultiple($modelsSubjectSectStudyplan);
+
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        if (!empty($deletedIDs)) {
+                            SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
+                        }
+                        $flag = true;
+                        foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
+                            if (!($flag = $modelSubjectSectStudyplan->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction();
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+//           echo '<pre>' . print_r($modelsSubjectSectStudyplan, true) . '</pre>';
+                }
+            }
+
             $readonly = false;
-            return $this->renderIsAjax('distribution', compact('model', 'modelsSubjectSectStudyplan', 'readonly'));
+            return $this->renderIsAjax('distribution', compact('model', 'modelsSubjectSectStudyplan', 'model_date', 'readonly'));
         }
     }
 
@@ -265,14 +280,24 @@ class DefaultController extends MainController
             ]);
 
         } else {
+            $session = Yii::$app->session;
+
+            $model_date = new DynamicModel(['plan_year']);
+            $model_date->addRule(['plan_year'], 'required');
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $model_date->plan_year = $session->get('_sect_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            }
+            $session->set('_sect_plan_year', $model_date->plan_year);
+
             $searchModel = new TeachersLoadViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();
             $params[$searchName]['subject_sect_id'] = $id;
+            $params[$searchName]['plan_year'] = $model_date->plan_year;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
         }
     }
 

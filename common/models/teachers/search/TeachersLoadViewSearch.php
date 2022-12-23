@@ -6,6 +6,7 @@ use common\models\teachers\TeachersLoadView;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\Expression;
 
 /**
  * TeachersLoadTeachersViewSearch represents the model behind the search form about `common\models\teachers\TeachersLoadView`.
@@ -55,7 +56,7 @@ class TeachersLoadViewSearch extends TeachersLoadView
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => false,
+                'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
             'sort' => [
                 'defaultOrder' => false,
@@ -83,7 +84,9 @@ class TeachersLoadViewSearch extends TeachersLoadView
             'load_time' => $this->load_time,
             'load_time_consult' => $this->load_time_consult,
         ]);
-        $query->andFilterWhere(['like', 'studyplan_subject_list', $this->studyplan_subject_list]);
+        if($this->studyplan_subject_list) {
+            $query->andWhere(new \yii\db\Expression("studyplan_subject_list::text LIKE '%" . $this->studyplan_subject_list . "%'"));
+        }
         return $dataProvider;
     }
 }

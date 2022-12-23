@@ -430,12 +430,21 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $query = TeachersLoadView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)]);
+            $session = Yii::$app->session;
+
+            $model_date = new DynamicModel(['plan_year']);
+            $model_date->addRule(['plan_year'], 'required');
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            }
+            $session->set('_teachers_plan_year', $model_date->plan_year);
+
+            $query = TeachersLoadView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)])->andWhere(['=', 'plan_year', $model_date->plan_year]);
             $searchModel = new TeachersLoadViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
         }
     }
 
@@ -1015,6 +1024,7 @@ class DefaultController extends MainController
 //            ['label' => 'Монитор', 'url' => ['/teachers/default/monitor', 'id' => $id]],
             ['label' => 'Карточка', 'url' => ['/teachers/default/update', 'id' => $id]],
             ['label' => 'Нагрузка', 'url' => ['/teachers/default/load-items', 'id' => $id]],
+            ['label' => 'Табель учета', 'url' => ['/teachers/default/cheet_account', 'id' => $id]],
             ['label' => 'Планирование инд. занятий', 'url' => ['/teachers/default/teachers-plan', 'id' => $id]],
             ['label' => 'Злементы расписания', 'url' => ['/teachers/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/teachers/default/schedule', 'id' => $id]],

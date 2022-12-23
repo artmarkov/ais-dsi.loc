@@ -335,8 +335,8 @@ $js = <<<JS
         $('input[name="UsersCard[timestamp_deny]"]').attr("disabled", true);
     }
     }
-    toggle('input[name="Employees[access_work_flag]"]');
-    $('input[name="Employees[access_work_flag]"]').on('click', function () {
+    toggle('input[name="Teachers[access_work_flag]"]');
+    $('input[name="Teachers[access_work_flag]"]').on('click', function () {
         // console.log(this);
        toggle(this);
      });

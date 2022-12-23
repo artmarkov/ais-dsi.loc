@@ -55,11 +55,11 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['studyplan_subject_list'], 'string'],
-            [['subject_sect_id', 'plan_year', 'course', 'subject_type_id', 'group_num'], 'integer'],
             [['group_num', 'subject_type_id', 'subject_sect_id', 'plan_year'], 'required'],
             [['studyplan_subject_list'], 'string'],
-            ['group_num', 'unique', 'targetAttribute' => ['group_num', 'subject_sect_id'], 'message' => 'Номер группы не должен повторяться.'],
+            [['subject_sect_id', 'plan_year', 'course', 'subject_type_id', 'group_num'], 'integer'],
+            [['studyplan_subject_list'], 'string'],
+            ['group_num', 'unique', 'targetAttribute' => ['group_num', 'subject_sect_id', 'plan_year', 'course'], 'message' => 'Номер группы не должен повторяться.'],
             [['subject_sect_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectSect::class, 'targetAttribute' => ['subject_sect_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
 
@@ -117,14 +117,14 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     /**
      * @return array
      */
-    public function getSubjectSectTeachersLoads()
-    {
-        $data = [];
-        foreach ($this->teachersLoads as $item => $modelTeachersLoad) {
-            $data[$modelTeachersLoad->id] = RefBook::find('teachers_load_display')->getValue($modelTeachersLoad->id);
-        }
-        return $data;
-    }
+//    public function getSubjectSectTeachersLoads()
+//    {
+//        $data = [];
+//        foreach ($this->teachersLoads as $item => $modelTeachersLoad) {
+//            $data[$modelTeachersLoad->id] = RefBook::find('teachers_load_display')->getValue($modelTeachersLoad->id);
+//        }
+//        return $data;
+//    }
 
     /**
      * @return array

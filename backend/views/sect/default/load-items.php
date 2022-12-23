@@ -9,45 +9,41 @@ use artsoft\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\teachers\search\TeachersLoadViewSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $model_date */
 
 $this->title = Yii::t('art/guide', 'Teachers Load');
 $this->params['breadcrumbs'][] = $this->title;
 
+$studyplan_subject_list = \common\models\subjectsect\SubjectSect::getStudentsListForSect($model->id, $model_date->plan_year);
+$sect_list = \common\models\subjectsect\SubjectSect::getSectListForSect($model->id, $model_date->plan_year);
+$teachers_list = \common\models\subjectsect\SubjectSect::getTeachersListForSect($model->id, $model_date->plan_year);
+
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
-    [
-        'attribute' => 'studyplan_subject_id',
-        'value' => function ($model) {
-            return $model->studyplan_subject_id != 0 ? RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id) : RefBook::find('sect_memo_2')->getValue($model->subject_sect_studyplan_id);
-        },
-        'group' => true,
-    ],
     [
         'attribute' => 'subject_sect_studyplan_id',
         'width' => '310px',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('sect_name_3')->getList(),
+        'filter' => $sect_list,
         'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id);
+            return RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id);
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
     ],
     [
         'attribute' => 'studyplan_subject_list',
         'width' => '310px',
-        'filter' => RefBook::find('students_fio')->getList(),
+        'filter' => $studyplan_subject_list,
         'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model, $key, $index, $widget) {
             $data = [];
             if (!empty($model->studyplan_subject_list)) {
                 foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                    $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-                    $data[] = RefBook::find('students_fio')->getValue($student_id);
+                    $data[] = RefBook::find('studyplan_subject-student_fio')->getValue($studyplan_subject_id);
                 }
             }
             return implode(',', $data);
@@ -56,7 +52,7 @@ $columns = [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'group' => true,  // enable grouping
+        'group' => true,
         'subGroupOf' => 1
     ],
     [
@@ -65,7 +61,7 @@ $columns = [
             return $model->week_time;
         },
         'group' => true,
-        'subGroupOf' => 2,
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'year_time_consult',
@@ -73,7 +69,7 @@ $columns = [
             return $model->year_time_consult;
         },
         'group' => true,
-        'subGroupOf' => 2,
+        'subGroupOf' => 1
     ],
 
     [
@@ -87,14 +83,14 @@ $columns = [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+        'group' => true,
+        'subGroupOf' => 1
 
-        'group' => true,  // enable grouping
-        'subGroupOf' => 2
     ],
     [
         'attribute' => 'teachers_id',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('teachers_fio')->getList(),
+        'filter' => $teachers_list,
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
@@ -103,7 +99,7 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 5
     ],
     [
         'attribute' => 'load_time',
@@ -170,10 +166,11 @@ $columns = [
     ],
 ];
 ?>
-<div class="teachers-load-index">
+<div class="sect-load-index">
     <div class="panel">
         <div class="panel-heading">
-            Нагрузка
+            Нагрузка:  <?php echo RefBook::find('sect_name_4')->getValue($model->id);?>
+            <?= $this->render('_search', compact('model_date')) ?>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -188,26 +185,25 @@ $columns = [
                 </div>
 
                 <div class="col-sm-6 text-right">
-                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'teachers-load-grid-pjax']) ?>
+                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'sect-load-grid-pjax']) ?>
                 </div>
             </div>
             <?php
             Pjax::begin([
-                'id' => 'teachers-load-grid-pjax',
+                'id' => 'sect-load-grid-pjax',
             ])
             ?>
 
             <?=
             GridView::widget([
-                'id' => 'teachers-load-grid',
-                'pjax' => false,
+                'id' => 'sect-load-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
+                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
                             ['content' => 'Нагрузка', 'options' => ['colspan' => 5, 'class' => 'text-center info']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export

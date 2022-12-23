@@ -17,21 +17,24 @@ trait TeachersLoadTrait
      */
     public static function getTeachersSubjectAll($teachers_id)
     {
-        $query1 = TeachersLoadStudyplanView::find()
+        $query1 = TeachersLoadView::find()
             ->select('subject_sect_studyplan_id')
             ->distinct()
             ->where(['studyplan_subject_id' => 0])
             ->andWhere(['teachers_id' => $teachers_id])
             ->column();
-        $query2 = TeachersLoadStudyplanView::find()
+        $query2 = TeachersLoadView::find()
             ->select('studyplan_subject_id')
             ->distinct()
             ->where(['subject_sect_studyplan_id' => 0])
             ->andWhere(['teachers_id' => $teachers_id])
             ->column();
 
-        return TeachersLoadStudyplanView::find()
-            ->where(['subject_sect_studyplan_id' => $query1])
+        return TeachersLoadView::find()
+            ->select('teachers_load_id')
+            ->distinct()
+            ->where(['IS NOT','teachers_load_id', null])
+            ->andWhere(['subject_sect_studyplan_id' => $query1])
             ->orWhere(['studyplan_subject_id' => $query2])
             ->column();
     }

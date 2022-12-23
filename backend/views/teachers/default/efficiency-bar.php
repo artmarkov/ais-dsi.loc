@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = 'График';
             График эффективности
         </div>
         <div class="panel-body">
-            <?= $this->render('_plan_year-search', compact('model_date')) ?>
+            <?= $this->render('_search', compact('model_date')) ?>
             <div class="panel">
                 <div class="panel-body">
 

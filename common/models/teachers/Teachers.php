@@ -15,6 +15,7 @@ use common\models\user\UserCommon;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "teachers".
@@ -282,4 +283,21 @@ class Teachers extends ActiveRecord
 //        print_r($data);
         return $data;
     }
+
+    public static function getSectListForTeachers($teachers_id, $plan_year)
+    {
+        $q = Yii::$app->db->createCommand('SELECT distinct subject_sect_studyplan_id
+	FROM teachers_load_view where teachers_id IS NOT NULL AND teachers_id=:teachers_id AND plan_year=:plan_year',
+            ['teachers_id' => $teachers_id,
+                'plan_year' => $plan_year
+            ])->queryColumn();
+        $data = [];
+        foreach ($q as $item => $value) {
+            $data[$value] = $value !== 0 ? RefBook::find('sect_name_1')->getValue($value) : 'Индивидуально';
+        }
+
+        return $data;
+
+    }
+
 }

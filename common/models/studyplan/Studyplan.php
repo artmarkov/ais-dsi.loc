@@ -393,4 +393,40 @@ class Studyplan extends \artsoft\db\ActiveRecord
         }
         return $data;
     }
+
+    /**
+     * backend/views/studyplan/default/load-items.php
+     * @param $studyplan_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getSubjectListForStudyplan($studyplan_id)
+    {
+        return ArrayHelper::map(Yii::$app->db->createCommand('SELECT distinct studyplan_subject_id, memo_1
+                                                    FROM studyplan_subject_view  
+                                                    WHERE studyplan_id=:studyplan_id ORDER BY memo_1',
+            ['studyplan_id' => $studyplan_id,
+            ])->queryAll(), 'studyplan_subject_id', 'memo_1');
+    }
+
+    /**
+     * backend/views/studyplan/default/load-items.php
+     * @param $studyplan_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getSectListForStudyplan($studyplan_id)
+    {
+        $q = Yii::$app->db->createCommand('SELECT distinct subject_sect_studyplan_id
+	FROM teachers_load_studyplan_view where subject_sect_studyplan_id IS NOT NULL AND studyplan_id=:studyplan_id',
+            ['studyplan_id' => $studyplan_id,
+            ])->queryColumn();
+        $data = [];
+        foreach ($q as $item => $value) {
+            $data[$value] = $value !== 0 ? RefBook::find('sect_name_1')->getValue($value) : 'Индивидуально';
+        }
+
+        return $data;
+
+    }
 }

@@ -6,6 +6,7 @@ use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\helpers\RefBook;
 use \common\models\education\EducationUnion;
 use common\models\schedule\SubjectScheduleView;
+use common\models\studyplan\StudyplanSubject;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
@@ -96,8 +97,8 @@ class SubjectSect extends \artsoft\db\ActiveRecord
             'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
             'sect_name' => Yii::t('art/guide', 'Sect Name'),
             'subject_vid_id' => Yii::t('art/guide', 'Subject Vid'),
-            'course_flag' =>  Yii::t('art/guide', 'Course Flag'),
-            'sub_group_qty' =>  Yii::t('art/guide', 'Sub Group Qty'),
+            'course_flag' => Yii::t('art/guide', 'Course Flag'),
+            'sub_group_qty' => Yii::t('art/guide', 'Sub Group Qty'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -176,9 +177,9 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getSubjectSectStudyplans()
+    public function getSubjectSectStudyplans($plan_year)
     {
-        return $this->hasMany(SubjectSectStudyplan::class, ['subject_sect_id' => 'id'])->orderBy('group_num');
+        return $this->hasMany(SubjectSectStudyplan::class, ['subject_sect_id' => 'id'])->where(['=', 'plan_year', $plan_year])->orderBy('group_num, course')->all();
     }
 
 //    /**
@@ -200,10 +201,10 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      * Полный список учеников подгрупп данной группы
      * @return string
      */
-    public function getStudyplanList()
+    public function getStudyplanList($plab_year)
     {
         $data = [];
-        foreach ($this->getSubjectSectStudyplans()->asArray()->all() as $item => $model) {
+        foreach ($this->getSubjectSectStudyplans($plab_year) as $item => $model) {
             $model['studyplan_subject_list'] != '' ? $data[] = $model['studyplan_subject_list'] : null;
         }
         return implode(',', $data);
@@ -214,20 +215,10 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      * @return array
      * @throws \yii\db\Exception
      */
-    public function getStudyplanForUnion($readonly)
+    public function getStudyplanForUnion($plan_year, $course = null, $readonly = false)
     {
-//        $subQuery = EducationUnion::find()
-//            ->select('programm_list')
-//            ->where(['=', 'id', $this->union_id])
-//            ->scalar();
-//      $query =  Studyplan::find()
-//            ->innerJoin('studyplan_subject', 'studyplan.id = studyplan_subject.studyplan_id')
-//            ->select('studyplan_subject.id')
-//            ->where(new \yii\db\Expression( "studyplan.programm_id = any (string_to_array(($subQuery), ',')::int[])"))
-//            ->all();
-
         $this->subject_type_id = $this->subject_type_id == null ? 0 : $this->subject_type_id;
-        $this->course = $this->course == null ? 0 : $this->course;
+        $course = $course == null ? 0 : $course;
 
         $funcSql = <<< SQL
     select studyplan_subject.id as id
@@ -235,13 +226,13 @@ class SubjectSect extends \artsoft\db\ActiveRecord
 	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
 	where studyplan.programm_id = any (string_to_array((
         select programm_list from education_union where id = {$this->union_id}), ',')::int[])
-		and studyplan_subject.id != all(string_to_array('{$this->getStudyplanList()}', ',')::int[])
-		and plan_year = {$this->plan_year}
+		and studyplan_subject.id != all(string_to_array('{$this->getStudyplanList($plan_year)}', ',')::int[])
+		and plan_year = {$plan_year}
         and subject_cat_id = {$this->subject_cat_id}
         and subject_id = {$this->subject_id}
         and subject_vid_id = {$this->subject_vid_id}
         and case when {$this->subject_type_id} != 0 then studyplan_subject.subject_type_id = {$this->subject_type_id} else studyplan_subject.subject_type_id is not null end
-        and case when {$this->course} != 0 then course = {$this->course} else course is not null end
+        and case when {$course} != 0 then course = {$course} else course is null end
 		
 SQL;
         $data = [];
@@ -374,4 +365,106 @@ SQL;
 //        print_r($data);
         return $data;
     }
+
+    /**
+     * @param $model_date
+     * @return array
+     */
+    public function setSubjectSect($model_date)
+    {
+        $modelsSubjectSectStudyplan = [];
+        $sub_group_qty = $this->sub_group_qty;
+        $term_mastering = $this->union->term_mastering;
+        $course = 0;
+        $group = 1;
+
+        if ($this->course_flag) {
+            for ($i = 0; $i < $term_mastering * $sub_group_qty; $i++) {
+                if ($i == $term_mastering * $group) {
+                    $course = 1;
+                    $group++;
+                } else {
+                    $course++;
+                }
+                $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $this->id])
+                        ->andWhere(['=', 'group_num', $group])
+                        ->andWhere(['=', 'plan_year', $model_date->plan_year])
+                        ->andWhere(['=', 'course', $course])->one() ?? new SubjectSectStudyplan();
+                $m->subject_sect_id = $this->id;
+                $m->group_num = $group;
+                $m->plan_year = $model_date->plan_year;
+                $m->course = $course;
+                $m->subject_type_id = $this->subject_type_id;
+                $m->save(false);
+                $modelsSubjectSectStudyplan[] = $m;
+            }
+        } else {
+            for ($i = 0; $i < $sub_group_qty; $i++) {
+                $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $this->id])
+                        ->andWhere(['=', 'group_num', $i])
+                        ->andWhere(['=', 'plan_year', $model_date->plan_year])->one() ?? new SubjectSectStudyplan();
+                $m->subject_sect_id = $this->id;
+                $m->group_num = $group;
+                $m->plan_year = $model_date->plan_year;
+                $m->subject_type_id = $this->subject_type_id;
+                $m->save(false);
+                $modelsSubjectSectStudyplan[] = $m;
+                $group++;
+            }
+        }
+        return $modelsSubjectSectStudyplan;
+    }
+
+    /**
+     * @param $subject_sect_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getStudentsListForSect($subject_sect_id, $plan_year)
+    {
+        return ArrayHelper::map(Yii::$app->db->createCommand('SELECT studyplan_subject_id, student_fio 
+                                                    FROM studyplan_subject_view 
+                                                    WHERE subject_sect_id=:subject_sect_id AND plan_year=:plan_year ORDER BY student_fio',
+            ['subject_sect_id' => $subject_sect_id,
+                'plan_year' => $plan_year
+            ])->queryAll(), 'studyplan_subject_id', 'student_fio');
+    }
+
+    /**
+     * @param $subject_sect_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getSectListForSect($subject_sect_id, $plan_year)
+    {
+        return ArrayHelper::map(Yii::$app->db->createCommand('SELECT id, sect_name_1
+                                                    FROM subject_sect_view  
+                                                    WHERE subject_sect_id=:subject_sect_id AND plan_year=:plan_year ORDER BY sect_name_1',
+            ['subject_sect_id' => $subject_sect_id,
+                'plan_year' => $plan_year
+            ])->queryAll(), 'id', 'sect_name_1');
+    }
+
+    /**
+     * @param $subject_sect_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getTeachersListForSect($subject_sect_id, $plan_year)
+    {
+        $q = Yii::$app->db->createCommand('SELECT distinct teachers_id
+                                                    FROM teachers_load_view 
+                                                    WHERE teachers_load_id IS NOT NULL AND subject_sect_id=:subject_sect_id AND plan_year=:plan_year',
+            ['subject_sect_id' => $subject_sect_id,
+                'plan_year' => $plan_year
+            ])->queryColumn();
+        $data = [];
+        foreach ($q as $item => $value) {
+            $data[$value] = RefBook::find('teachers_fio')->getValue($value);
+        }
+
+        return $data;
+
+    }
+
 }
