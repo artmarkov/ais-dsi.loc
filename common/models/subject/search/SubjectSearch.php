@@ -50,7 +50,7 @@ class SubjectSearch extends Subject
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'id' => SORT_DESC,
+                    'id' => SORT_ASC,
                 ],
             ],
         ]);

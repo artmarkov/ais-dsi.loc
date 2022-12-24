@@ -73,48 +73,48 @@ $this->params['breadcrumbs'][] = $this->title;
                             'slug',
                             [
                                 'attribute' => 'department_list',
-                                'filter' => Department::getDepartmentList(),
+                                'filter' => \artsoft\helpers\RefBook::find('department_name_dev')->getList(),
                                 'value' => function (Subject $model) {
                                     $v = [];
                                     foreach ($model->department_list as $id) {
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = Department::findOne($id)->name;
+                                        $v[] = \artsoft\helpers\RefBook::find('department_name_dev')->getValue($id) ?? '';
                                     }
-                                    return implode('<br/> ', $v);
+                                    return implode(', ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
                             [
                                 'attribute' => 'category_list',
-                                'filter' => SubjectCategory::getCategoryList(),
+                                'filter' => \artsoft\helpers\RefBook::find('subject_category_name_dev')->getList(),
                                 'value' => function (Subject $model) {
                                     $v = [];
                                     foreach ($model->category_list as $id) {
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = SubjectCategory::findOne($id)->name ?? null;
+                                        $v[] = \artsoft\helpers\RefBook::find('subject_category_name_dev')->getValue($id) ?? null;
                                     }
-                                    return implode('<br/> ', $v);
+                                    return implode(', ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
                             [
                                 'attribute' => 'vid_list',
-                                'filter' => SubjectVid::getVidList(),
+                                'filter' => \artsoft\helpers\RefBook::find('subject_vid_name_dev')->getList(),
                                 'value' => function (Subject $model) {
                                     $v = [];
                                     foreach ($model->vid_list as $id) {
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = SubjectVid::findOne($id)->name;
+                                        $v[] = \artsoft\helpers\RefBook::find('subject_vid_name_dev')->getValue($id) ?? '';
                                     }
-                                    return implode('<br/> ', $v);
+                                    return implode(', ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
