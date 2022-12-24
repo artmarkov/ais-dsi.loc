@@ -37,7 +37,7 @@ UNION ALL
                  subject_sect_studyplan.studyplan_subject_list as studyplan_subject_list,
                  subject_sect_studyplan.subject_type_id as subject_type_id,
                  subject_sect.id as subject_sect_id,
-                 subject_sect.plan_year as plan_year,
+                 subject_sect_studyplan.plan_year as plan_year,
                  (select MAX(week_time) 
 					 from studyplan_subject 
 					 where studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])

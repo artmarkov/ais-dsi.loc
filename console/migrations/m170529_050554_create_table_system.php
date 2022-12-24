@@ -19,7 +19,7 @@ class m170529_050554_create_table_system extends Migration
             'object_type'      => $this->string(50),
             'object_id'        => $this->integer()
         ]);
-        $this->addCommentOnTable('mail_queue','Таблица файлов');
+        $this->addCommentOnTable('files','Таблица файлов');
 
         $this->createTable('session', [
             'id'                => $this->char(64)->notNull(),
@@ -66,6 +66,5 @@ class m170529_050554_create_table_system extends Migration
         $this->dropTable('requests');
         $this->dropTable('session');
         $this->dropTable('files');
-        $this->dropTable('mail_queue');
     }
 }

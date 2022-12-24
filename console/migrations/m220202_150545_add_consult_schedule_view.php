@@ -32,7 +32,7 @@ UNION ALL
                      subject_sect_studyplan.studyplan_subject_list as studyplan_subject_list,
                      subject_sect_studyplan.subject_type_id as subject_type_id,
                      subject_sect.id as subject_sect_id,
-                     subject_sect.plan_year as plan_year,
+                     subject_sect_studyplan.plan_year as plan_year,
                      teachers_load.load_time_consult,                     
                      teachers_load.direction_id as direction_id,
                      teachers_load.teachers_id as teachers_id,

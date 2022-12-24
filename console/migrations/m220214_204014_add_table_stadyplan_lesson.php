@@ -161,7 +161,7 @@ UNION ALL
 (select studyplan_subject.id as studyplan_subject_id,
 				subject_sect_studyplan.id as subject_sect_studyplan_id,
  				subject_sect.id as subject_sect_id,
- 				subject_sect.plan_year as plan_year,
+ 				subject_sect_studyplan.plan_year as plan_year,
 			    studyplan.id as studyplan_id,
 			    studyplan.student_id as student_id,
 				array_to_string(ARRAY(select teachers_load.teachers_id from teachers_load where subject_sect_studyplan_id = subject_sect_studyplan.id and studyplan_subject_id = 0), \',\')::text as teachers_list

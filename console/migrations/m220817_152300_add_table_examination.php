@@ -117,7 +117,6 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
             'decision_id' => $this->integer()->comment('Решение комиссии (Рекомендован, Не рекомендован)'),
             'reason' => $this->string(1024)->comment('Причина комиссии'),
             'programm_id' => $this->integer()->comment('Назначена программа'),
-            'speciality_id' => $this->integer()->comment('Назначена специализация'),
             'course' => $this->integer()->comment('Назначен курс'),
             'type_id' => $this->integer()->comment('Назначен вид обучения(бюджет, внебюджет)'),
             'status' => $this->smallInteger()->notNull()->defaultValue(1)->comment('Статус (Активная, Не активная)'),
@@ -136,7 +135,6 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
         $this->addForeignKey('entrant_ibfk_4', 'entrant', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('entrant_ibfk_5', 'entrant', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('entrant_ibfk_6', 'entrant', 'programm_id', 'education_programm', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('entrant_ibfk_7', 'entrant', 'speciality_id', 'education_speciality', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('entrant_members', [
             'id' => $this->primaryKey(),
@@ -185,7 +183,6 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
                 entrant.decision_id,
                 entrant.reason,
                 entrant.programm_id,
-                entrant.speciality_id,
                 entrant.course,
                 entrant.type_id,
                 entrant.status,
