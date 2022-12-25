@@ -115,7 +115,7 @@ $columns = [
     [
         'attribute' => 'auditory_id',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('auditory_memo_1')->getList(),
+        'filter' => RefBook::find('auditory_memo_1', 1, true)->getList(),
         'options' => ['style' => 'width:300px'],
         'value' => function ($model) {
             return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);

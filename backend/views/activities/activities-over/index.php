@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'auditory_id',
                         'options' => ['style' => 'width:200px'],
-                        'filter' => RefBook::find('auditory_memo_1')->getList(),
+                        'filter' => RefBook::find('auditory_memo_1', 1, true)->getList(),
                         'value' => function ($model) {
                             return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
                         },
