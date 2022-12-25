@@ -33,12 +33,12 @@ use common\models\auditory\AuditoryCat;
                     <?= $form->field($model, 'building_id')
                         ->dropDownList(AuditoryBuilding::getAuditoryBuildingList(), [
                             'prompt' => Yii::t('art/guide', 'Select Building...')
-                        ])->label(Yii::t('art/guide', 'Name Building'));
+                        ]);
                     ?>
                     <?= $form->field($model, 'cat_id')
                         ->dropDownList(AuditoryCat::getAuditoryCatList(), [
                             'prompt' => Yii::t('art/guide', 'Select Cat...')
-                        ])->label(Yii::t('art/guide', 'Name Auditory Category'));
+                        ]);
                     ?>
                     <?= $form->field($model, 'floor')->textInput(['maxlength' => true]) ?>
 

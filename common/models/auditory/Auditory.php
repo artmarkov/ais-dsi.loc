@@ -59,7 +59,7 @@ class Auditory extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'num', 'building_id'], 'required'],
+            [['name', 'num', 'building_id', 'cat_id'], 'required'],
             [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sort_order', 'version', 'status'], 'integer'],
             [['area'], 'number'],
             [['name'], 'string', 'max' => 128],
@@ -81,8 +81,8 @@ class Auditory extends ActiveRecord
     {
         return [
             'id' => Yii::t('art/guide', '#'),
-            'building_id' => Yii::t('art/guide', 'Building ID'),
-            'cat_id' => Yii::t('art/guide', 'Cat ID'),
+            'building_id' => Yii::t('art/guide', 'Name Building'),
+            'cat_id' => Yii::t('art/guide', 'Name Auditory Category'),
             'num' => Yii::t('art/guide', 'Num Auditory'),
             'name' => Yii::t('art/guide', 'Name Auditory'),
             'floor' => Yii::t('art/guide', 'Floor'),
