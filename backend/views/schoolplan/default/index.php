@@ -86,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'auditory_id',
                                 'value' => 'auditoryName',
                                 'label' => Yii::t('art/guide', 'Name Auditory'),
-                                'filter' => \common\models\auditory\Auditory::getAuditoryList(),
+                                'filter' => \artsoft\helpers\RefBook::find('auditory_memo_1', 1, true)->getList(),
                             ],
                             [
                                 'attribute' => 'department_list',

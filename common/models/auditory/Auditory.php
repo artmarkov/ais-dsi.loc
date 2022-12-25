@@ -7,6 +7,7 @@ use artsoft\db\ActiveRecord;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "auditory".
@@ -20,6 +21,7 @@ use yii\behaviors\TimestampBehavior;
  * @property double $area
  * @property int $capacity
  * @property string $description
+ * @property int $sort_order
  * @property int $created_at
  * @property int $updated_at
  * @property int $created_by
@@ -125,11 +127,6 @@ class Auditory extends ActiveRecord
     public function getBuildingName()
     {
         return $this->building->name;
-    }
-
-    public static function getAuditoryList()
-    {
-        return Auditory::find()->select(['CONCAT(num,\' - \',name) as name', 'id'])->indexBy('id')->column();
     }
 
 }

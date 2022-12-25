@@ -29,7 +29,7 @@ use artsoft\helpers\Html;
                     ?>
 
                     <?= $form->field($model, 'auditory_id')
-                        ->dropDownList(\common\models\auditory\Auditory::getAuditoryList(), [
+                        ->dropDownList(\artsoft\helpers\RefBook::find('auditory_memo_1', 1, true)->getList(), [
                             'prompt' => Yii::t('art/guide', 'Select Auditory...')
                         ])->label(Yii::t('art/guide', 'Name Auditory'));
                     ?>

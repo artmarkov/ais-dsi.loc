@@ -11,7 +11,7 @@ use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\AuditorySearch */
+/* @var $searchModel common\models\auditory\search\AuditorySearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/guide', 'Auditory');
