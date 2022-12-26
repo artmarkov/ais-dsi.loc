@@ -141,8 +141,8 @@ $columns = [
                                 'beforeHeader' => [
                                     [
                                         'columns' => [
-                                            ['content' => 'Пользователь', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
-                                            ['content' => 'Пропуск', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
+                                            ['content' => 'Пользователь', 'options' => ['colspan' => 7, 'class' => 'text-center warning']],
+                                            ['content' => 'Пропуск', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
                                         ],
                                         'options' => ['class' => 'skip-export'] // remove this row from export
                                     ]
