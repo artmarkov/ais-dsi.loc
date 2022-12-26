@@ -22,7 +22,7 @@ class TeachersSearch extends Teachers
     {
         return [
             [['id', 'year_serv', 'year_serv_spec', 'date_serv', 'date_serv_spec', 'userStatus', 'access_work_flag'], 'integer'],
-            [['position_id', 'level_id', 'tab_num', 'bonus_summ'], 'safe'],
+            [['position_id', 'level_id', 'tab_num', 'bonus_summ', 'bonus_summ_abs'], 'safe'],
             ['fullName', 'string'],
             [['department_list', 'bonus_list'], 'string'],
         ];
@@ -69,6 +69,7 @@ class TeachersSearch extends Teachers
                 'level_id',
                 'tab_num',
                 'bonus_summ',
+                'bonus_summ_abs',
                 'access_work_flag',
                 'userStatus' => [
                     'asc' => ['user_common.status' => SORT_ASC],
@@ -97,6 +98,7 @@ class TeachersSearch extends Teachers
             'year_serv' => $this->year_serv,
             'year_serv_spec' => $this->year_serv_spec,
             'bonus_summ' => $this->bonus_summ,
+            'bonus_summ_abs' => $this->bonus_summ_abs,
             'user_common.status' => $this->userStatus,
             'access_work_flag' => $this->access_work_flag,
         ]);

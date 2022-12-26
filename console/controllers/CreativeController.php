@@ -89,13 +89,14 @@ class CreativeController extends Controller
                         }
 
                         for ($i = 10; $i <= 27; $i = $i + 2) {
-                            if ($v[$i]) {
+                            if ($v[$i] && $teachers_id) {
                                 $effic = new TeachersEfficiency();
                                 $effic->class = 'CreativeWorks';
                                 $effic->item_id = $model->id;
                                 $effic->efficiency_id = $this->getEfficienceId($v[$i + 1]);
                                 $effic->teachers_id = $teachers_id;
                                 $effic->bonus = $v[$i + 1];
+                                $effic->bonus_vid_id =  $v[$i + 1] < 500 ? 1 : 2;
                                 if (is_a($v[$i], 'DateTime')) { // если объект DateTime
                                     $v[$i] = $v[$i]->format('d-m-Y');
                                 }

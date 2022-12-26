@@ -26,7 +26,7 @@ class SigurController extends Controller
     public function actionIndex()
     {
         $reader = ReaderEntityFactory::createXLSXReader();
-        $reader->open('data/sigur/tc-tmp6036769442600652338.xlsx');
+        $reader->open('data/sigur/tc-tmp5884886171455644337.xlsx');
 
         foreach ($reader->getSheetIterator() as $k => $sheet) {
             if (1 != $k) {

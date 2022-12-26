@@ -122,6 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                             ],
                             'bonus_summ',
+                            'bonus_summ_abs',
                             'tab_num',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',

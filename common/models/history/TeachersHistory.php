@@ -34,6 +34,7 @@ class TeachersHistory extends BaseHistory
             'date_serv_spec',
             'bonus_list',
             'bonus_summ',
+            'bonus_summ_abs',
         ];
     }
 

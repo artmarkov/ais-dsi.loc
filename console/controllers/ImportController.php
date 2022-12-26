@@ -97,7 +97,7 @@ class ImportController extends Controller
                             $model->level_id = $this->getLevelId($v[11]);
                             $model->tab_num = $v[13];
                             $model->work_id = $v[14] == 'Основная' ? 1000 : 1001;
-                            $model->access_work_flag = 1;
+                            $model->access_work_flag = $v[20] == 0 ? UserCommon::STATUS_ACTIVE : UserCommon::STATUS_INACTIVE;
                             $dep = [];
                             foreach (explode(';', $v[19]) as $name) {
                                 if ($name != '') {
@@ -111,10 +111,13 @@ class ImportController extends Controller
                             $bonus = [];
                             foreach (explode(';', $v[12]) as $name) {
                                 if ($name != '') {
-                                    $id = $this->getBonusId($name);
-                                    if ($id) {
-                                        $bonus[] = $id;
-                                        $model->bonus_summ += Bonus::findOne(['id' => $id])->value_default;
+                                    if ($m = $this->getBonusId($name)) {
+                                        $bonus[] = $m->id;
+                                        if($m->bonus_vid_id == 1) {
+                                            $model->bonus_summ += Bonus::findOne(['id' => $m->id])->value_default;
+                                        }else {
+                                            $model->bonus_summ_abs += Bonus::findOne(['id' => $m->id])->value_default;
+                                        }
                                     }
                                 }
                             }
@@ -414,7 +417,7 @@ class ImportController extends Controller
     public function getBonusId($name)
     {
         $model = Bonus::findOne(['name' => $name]);
-        return $model ? $model->id : false;
+        return $model ? $model : false;
     }
 
     public function getDepartmentId($name)

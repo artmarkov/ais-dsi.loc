@@ -151,7 +151,7 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['auditory_memo_1', 'auditory_view', 'id', 'auditory_memo_1', null, 'study_flag', 'building_name', 'Аудитории для обучения'],
+            ['auditory_memo_1', 'auditory_view', 'id', 'auditory_memo_1', 'sort_order', 'study_flag', 'building_name', 'Аудитории для обучения'],
         ])->execute();
 
         $this->db->createCommand()->createView('subject_sect_view', '
