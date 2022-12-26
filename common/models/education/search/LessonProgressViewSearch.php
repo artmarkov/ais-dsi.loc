@@ -18,7 +18,7 @@ class LessonProgressViewSearch extends LessonProgressView
     public function rules()
     {
         return [
-            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'speciality_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'subject_sect_studyplan_id', 'lesson_qty', 'current_qty', 'absence_qty'], 'integer'],
+            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'subject_sect_studyplan_id', 'lesson_qty', 'current_qty', 'absence_qty'], 'integer'],
             [['current_avg_mark', 'middle_avg_mark', 'finish_avg_mark'], 'number'],
         ];
     }
@@ -66,7 +66,6 @@ class LessonProgressViewSearch extends LessonProgressView
             'student_id' => $this->student_id,
             'plan_year' => $this->plan_year,
             'programm_id' => $this->programm_id,
-            'speciality_id' => $this->speciality_id,
             'course' => $this->course,
             'status' => $this->status,
             'studyplan_subject_id' => $this->studyplan_subject_id,

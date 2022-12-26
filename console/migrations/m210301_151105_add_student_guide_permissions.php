@@ -23,7 +23,6 @@ class m210301_151105_add_student_guide_permissions extends PermissionsMigration
                     '/admin/guidestudy/*',
                     '/admin/guidestudy/default/*',
                     '/admin/guidestudy/education-cat/*',
-                    '/admin/guidestudy/education-speciality/*',
                     '/admin/guidestudy/education-level/*',
                 ],
                 'viewGuidestudy' => [
@@ -35,9 +34,6 @@ class m210301_151105_add_student_guide_permissions extends PermissionsMigration
                         '/admin/guidestudy/education-cat/index',
                         '/admin/guidestudy/education-cat/view',
                         '/admin/guidestudy/education-cat/grid-page-size',
-                        '/admin/guidestudy/education-speciality/index',
-                        '/admin/guidestudy/education-speciality/view',
-                        '/admin/guidestudy/education-speciality/grid-page-size',
                         '/admin/guidestudy/education-level/index',
                         '/admin/guidestudy/education-level/view',
                         '/admin/guidestudy/education-level/grid-page-size',
@@ -51,7 +47,6 @@ class m210301_151105_add_student_guide_permissions extends PermissionsMigration
                     'links' => [
                         '/admin/guidestudy/default/update',
                         '/admin/guidestudy/education-cat/update',
-                        '/admin/guidestudy/education-speciality/update',
                         '/admin/guidestudy/education-level/update',
                     ],
                     'roles' => [
@@ -66,7 +61,6 @@ class m210301_151105_add_student_guide_permissions extends PermissionsMigration
                     'links' => [
                         '/admin/guidestudy/default/create',
                         '/admin/guidestudy/education-cat/create',
-                        '/admin/guidestudy/education-speciality/create',
                         '/admin/guidestudy/education-level/create',
 
                     ],
@@ -84,8 +78,6 @@ class m210301_151105_add_student_guide_permissions extends PermissionsMigration
                         '/admin/guidestudy/default/bulk-delete',
                         '/admin/guidestudy/education-cat/delete',
                         '/admin/guidestudy/education-cat/bulk-delete',
-                        '/admin/guidestudy/education-speciality/delete',
-                        '/admin/guidestudy/education-speciality/bulk-delete',
                         '/admin/guidestudy/education-level/delete',
                         '/admin/guidestudy/education-level/bulk-delete',
                     ],

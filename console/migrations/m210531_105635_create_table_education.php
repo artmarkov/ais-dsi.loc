@@ -144,14 +144,6 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['education_speciality', 'education_speciality', 'id', 'name', 'id', 'status', null, 'Специализации'],
-        ])->execute();
-
-        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['education_speciality_short', 'education_speciality', 'id', 'short_name', 'id', 'status', null, 'Специализации сокр.'],
-        ])->execute();
-
-        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['education_level', 'guide_education_level', 'id', 'name', 'id', 'status', null, 'Образовательный уровень'],
         ])->execute();
 
@@ -174,8 +166,6 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_programm_name'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_level_short'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_level'])->execute();
-        $this->db->createCommand()->delete('refbooks', ['name' => 'education_speciality_short'])->execute();
-        $this->db->createCommand()->delete('refbooks', ['name' => 'education_speciality'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_cat_short'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'education_cat'])->execute();
         $this->dropForeignKey('education_programm_level_subject_ibfk_1', 'education_programm_level_subject');

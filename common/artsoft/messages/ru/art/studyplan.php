@@ -2,7 +2,6 @@
 return [
     'Course' => 'Класс',
     'Education Programm' => 'Учебная программа',
-    'Speciality Name' => 'Специализация',
     'Individual plans' => 'Планы учащихся',
     'Plan Year' => 'Учебный год',
     'Select Student...' => 'Выберите ученика...',

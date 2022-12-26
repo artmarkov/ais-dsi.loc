@@ -243,18 +243,6 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
                             ]);
                             ?>
 
-                            <?= $form->field($model, "speciality_id")->widget(DepDrop::class, [
-                                'data' => \common\models\education\EducationProgramm::getSpecialityByProgramm($model->programm_id),
-                                'options' => ['prompt' => Yii::t('art/studyplan', 'Select Education Speciality...'),
-                                    'disabled' => $readonly,
-                                ],
-                                'pluginOptions' => [
-                                    'depends' => ['programm_id'],
-                                    'placeholder' => Yii::t('art/guide', 'Select Education Speciality...'),
-                                    'url' => Url::to(['/studyplan/default/speciality'])
-                                ]
-                            ]);
-                            ?>
                             <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
                                 'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                                 'options' => [

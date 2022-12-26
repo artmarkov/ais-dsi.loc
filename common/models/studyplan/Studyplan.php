@@ -212,10 +212,6 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $data = [];
         if ($category_id) {
             $data = Subject::find()->select(['id', 'name']);
-//            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-//                $data->orWhere(['like', 'department_list', $department_id]);
-//
-//            }
             $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
             $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
             $data = $data->asArray()->all();
@@ -233,10 +229,6 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $data = [];
         if ($category_id) {
             $data = Subject::find()->select(['name', 'id']);
-//            foreach ($this->getSpecialityDepartments() as $item => $department_id) {
-//                $data->orWhere(['like', 'department_list', $department_id]);
-//
-//            }
             $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
             $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
             $data = $data->indexBy('id')->column();
@@ -244,20 +236,6 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $data;
     }
 
-    /**
-     * Получаем все отделы из спецификации
-     * @return array
-     */
-//    public function getSpecialityDepartments()
-//    {
-//        $department_list = EducationSpeciality::find()
-//            ->select(['department_list'])
-//            ->where(['=', 'id', $this->speciality_id])
-//            ->scalar();
-//        $data = explode(',', $department_list);
-//        sort($data);
-//        return $data;
-//    }
 
     /**
      * формирование документов: Согласие на обработку пд и Договор об оказании услуг

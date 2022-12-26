@@ -901,26 +901,6 @@ class DefaultController extends MainController
     }
 
     /**
-     *  формируем список дисциплин для widget DepDrop::classname()
-     * @return false|string
-     */
-    public function actionSpeciality()
-    {
-        $out = [];
-        if (isset($_POST['depdrop_parents'])) {
-            $parents = $_POST['depdrop_parents'];
-
-            if (!empty($parents)) {
-                $cat_id = $parents[0];
-                $out = EducationProgramm::getSpecialityByProgrammId($cat_id);
-
-                return json_encode(['output' => $out, 'selected' => '']);
-            }
-        }
-        return json_encode(['output' => '', 'selected' => '']);
-    }
-
-    /**
      * формируем список дисциплин для widget DepDrop::classname()
      * @param $id
      * @return string

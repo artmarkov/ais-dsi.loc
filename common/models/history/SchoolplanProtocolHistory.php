@@ -2,13 +2,8 @@
 
 namespace common\models\history;
 
-use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
-use common\models\education\EducationProgramm;
-use common\models\education\EducationSpeciality;
-use common\models\entrant\Entrant;
 use common\models\schoolplan\SchoolplanProtocol;
-use common\models\subject\SubjectType;
 use common\models\user\UserCommon;
 use common\widgets\history\BaseHistory;
 use yii\helpers\Json;

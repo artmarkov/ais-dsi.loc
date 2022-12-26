@@ -3,7 +3,6 @@
 use artsoft\widgets\ActiveForm;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationCat;
-use common\models\education\EducationSpeciality;
 use artsoft\helpers\RefBook;
 use wbraganca\dynamicform\DynamicFormWidget;
 use artsoft\helpers\Html;

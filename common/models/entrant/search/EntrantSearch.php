@@ -19,7 +19,7 @@ class EntrantSearch extends EntrantView
     public function rules()
     {
         return [
-            [['id', 'student_id', 'comm_id', 'group_id', 'decision_id', 'speciality_id', 'programm_id', 'course', 'type_id', 'status'], 'integer'],
+            [['id', 'student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'course', 'type_id', 'status'], 'integer'],
             [['last_experience', 'reason', 'subject_list'], 'safe'],
             [['mid_mark'], 'safe'],
         ];
@@ -71,7 +71,6 @@ class EntrantSearch extends EntrantView
             'comm_id' => $this->comm_id,
             'group_id' => $this->group_id,
             'decision_id' => $this->decision_id,
-            'speciality_id' => $this->speciality_id,
             'programm_id' => $this->programm_id,
             'course' => $this->course,
             'type_id' => $this->type_id,
