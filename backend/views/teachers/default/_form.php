@@ -259,7 +259,7 @@ EOF;
                                         'id' => 'direction_id'
                                     ])->label(Yii::t('art/teachers', 'Name Direction'));
                                     ?>
-                                    <?= $form->field($modelActivity, "[{$index}]stake_id")->dropDownList(\common\models\guidejob\Stake::getStakeList(), [
+                                    <?= $form->field($modelActivity, "[{$index}]stake_id")->dropDownList(RefBook::find('stake_name', $modelActivity->isNewRecord ? \common\models\guidejob\Stake::STATUS_ACTIVE : '')->getList(), [
                                         'prompt' => Yii::t('art/teachers', 'Select Stake...'),
                                         'id' => 'direction_id'
                                     ])->label(Yii::t('art/teachers', 'Name Stake'));

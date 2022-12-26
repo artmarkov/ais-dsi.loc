@@ -59,6 +59,10 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         ])->execute();
         $this->db->createCommand()->resetSequence('guide_teachers_stake', 1004)->execute();
 
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['stake_name', 'guide_teachers_stake', 'id', 'name', 'name', 'status', null, 'Названия ставок преподавателей'],
+        ])->execute();
+
         $this->createTableWithHistory('teachers_cost', [
             'id' =>  $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'direction_id' => $this->integer()->notNull(),
@@ -308,6 +312,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->dropTable('guide_teachers_direction');
         $this->dropTable('guide_teachers_level');
         $this->dropTable('guide_teachers_position');
+        $this->db->createCommand()->delete('refbooks', ['name' => 'stake_name'])->execute();
         $this->dropTable('guide_teachers_stake');
         $this->dropTable('guide_teachers_work');
         $this->dropTableWithHistory('teachers_cost');
