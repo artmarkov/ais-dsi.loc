@@ -5,15 +5,16 @@ use dosamigos\chartjs\ChartJs;
 /* @var $this yii\web\View */
 /* @var $data */
 /* @var $model_date */
+/* @var $modelTeachers */
 
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['/teachers/default/efficiency', 'id' => $id]];
-$this->params['breadcrumbs'][] = 'График';
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['/teachers/default/efficiency', 'id' => $modelTeachers->id]];
+$this->params['breadcrumbs'][] = 'График эффективности';
 ?>
 
 <div class="teachers-efficiency-summary">
     <div class="panel">
         <div class="panel-heading">
-            График эффективности
+            График эффективности: <?php echo \artsoft\helpers\RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>

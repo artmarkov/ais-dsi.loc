@@ -17,8 +17,10 @@ use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
 use common\models\schoolplan\SchoolplanProtocolItems;
 use common\models\schoolplan\search\SchoolplanProtocolItemsViewSearch;
+use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
+use common\models\studyplan\StudyplanInvoices;
 use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
 use common\models\studyplan\SubjectCharacteristic;
@@ -843,8 +845,8 @@ class DefaultController extends MainController
 
         if ('create' == $mode) {
 
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Studyplan Perform'), 'url' => ['studyplan/default/characteristic-items', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = 'Добавление мероприятия';
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol Items'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление карточки';
             $modelProtocolItems = new SchoolplanProtocolItems();
             if ($modelProtocolItems->load(Yii::$app->request->post()) AND $modelProtocolItems->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
@@ -858,8 +860,8 @@ class DefaultController extends MainController
             ]);
 
         } elseif ('history' == $mode && $objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Characteristic'), 'url' => ['studyplan/default/characteristic-items', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/characteristic-items', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol Item'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/studypkan-perform', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
             $modelProtocolItems = SchoolplanProtocolItems::findOne($objectId);
             $data = new ProtocolItemsHistory($objectId);
             return $this->renderIsAjax('@backend/views/history/index.php', compact(['modelProtocolItems', 'data']));
@@ -873,7 +875,7 @@ class DefaultController extends MainController
 
         } elseif ($objectId) {
 
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Characteristic'), 'url' => ['studyplan/default/characteristic-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol Items'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $modelProtocolItems = SchoolplanProtocolItems::findOne($objectId);
             if (!isset($modelProtocolItems)) {
@@ -902,6 +904,76 @@ class DefaultController extends MainController
             return $this->renderIsAjax('protocol-items', compact('dataProvider', 'searchModel'));
         }
     }
+
+    public function actionStudyplanInvoices($id, $objectId = null, $mode = null)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление карточки';
+            $modelStudyplanInvoices = new StudyplanInvoices();
+            if ($modelStudyplanInvoices->load(Yii::$app->request->post()) AND $modelStudyplanInvoices->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($modelStudyplanInvoices);
+            }
+
+            return $this->renderIsAjax('@backend/views/invoices/default/_form.php', [
+//                'model' => $model,
+                'model' => $modelStudyplanInvoices,
+                'readonly' => false,
+            ]);
+
+        } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/studypkan-perform', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
+            $modelStudyplanInvoices = StudyplanInvoices::findOne($objectId);
+            $data = new StudyplanInvoicesHistory($objectId);
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['modelProtocolItems', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $modelStudyplanInvoices = StudyplanInvoices::findOne($objectId);
+            $modelStudyplanInvoices->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $modelStudyplanInvoices));
+
+        } elseif ($objectId) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $modelStudyplanInvoices = StudyplanInvoices::findOne($objectId);
+            if (!isset($modelProtocolItems)) {
+                throw new NotFoundHttpException("The SchoolplanProtocolItems was not found.");
+            }
+
+            if ($model->load(Yii::$app->request->post()) AND $modelStudyplanInvoices->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($model);
+            }
+
+            return $this->renderIsAjax('@backend/views/invoices/default/_form.php', [
+               // 'model' => $model,
+                'model' => $modelStudyplanInvoices,
+                'readonly' => false,
+            ]);
+
+        } else {
+            $searchModel = new StudyplanInvoicesViewSearch();
+
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['studyplan_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('invoices-items', compact('dataProvider', 'searchModel'));
+        }
+    }
+
 
     /**
      * формируем список дисциплин для widget DepDrop::classname()

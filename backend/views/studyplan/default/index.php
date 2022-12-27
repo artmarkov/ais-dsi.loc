@@ -22,97 +22,93 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
         </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <?= $this->render('_search', compact('model_date')) ?>
-                            <?php
-                            /* Uncomment this to activate GridQuickLinks */
-                           /* echo GridQuickLinks::widget([
-                                'model' => Studyplan::className(),
-                                'searchModel' => $searchModel,
-                            ])*/
-                            ?>
-                        </div>
-                        <div class="col-sm-6 text-right">
-                            <?= GridPageSize::widget(['pjaxId' => 'studyplan-grid-pjax']) ?>
-                        </div>
-                    </div>
+            <?= $this->render('_search', compact('model_date')) ?>
+            <div class="row">
+                <div class="col-sm-6">
                     <?php
-                    Pjax::begin([
-                        'id' => 'studyplan-grid-pjax',
-                    ])
+                    /* Uncomment this to activate GridQuickLinks */
+                    /* echo GridQuickLinks::widget([
+                         'model' => Studyplan::className(),
+                         'searchModel' => $searchModel,
+                     ])*/
                     ?>
-
-                    <?=
-                    GridView::widget([
-                        'id' => 'studyplan-grid',
-                        'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
-                        'bulkActionOptions' => [
-                            'gridId' => 'studyplan-grid',
-                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-                        ],
-                        'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
-                            [
-                                'attribute' => 'id',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/studyplan/default',
-                                'title' => function (Studyplan $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
-                                },
-                                'buttonsTemplate' => '{update} {view} {delete}',
-                            ],
-                            [
-                                'attribute' => 'student_id',
-                                'value' => function (Studyplan $model) {
-                                    return RefBook::find('students_fullname')->getValue($model->student_id);
-                                },
-                                'format' => 'raw'
-                            ],
-                            [
-                                'attribute' => 'programmName',
-                                'value' => function (Studyplan $model) {
-                                    return RefBook::find('education_programm_name')->getValue($model->programm_id);
-                                },
-                                'format' => 'raw'
-                            ],
-                            [
-                                'attribute' => 'course',
-                                'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
-                                'value' => function (Studyplan $model) {
-                                    return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
-                                },
-                                'options' => ['style' => 'width:100px'],
-                                'format' => 'raw',
-                            ],
-                            [
-                                'attribute' => 'plan_year',
-                                'filter' => false,
-                                'value' => function (Studyplan $model) {
-                                    return \artsoft\helpers\ArtHelper::getStudyYearsList()[$model->plan_year];
-                                },
-                                'options' => ['style' => 'width:100px'],
-                                'format' => 'raw',
-                            ],
-                            [
-                                'class' => 'artsoft\grid\columns\StatusColumn',
-                                'attribute' => 'status',
-                                'optionsArray' => [
-                                    [Studyplan::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
-                                    [Studyplan::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
-                                ],
-                                'options' => ['style' => 'width:120px']
-                            ],
-                        ],
-                    ]);
-                    ?>
-
-                    <?php Pjax::end() ?>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <?= GridPageSize::widget(['pjaxId' => 'studyplan-grid-pjax']) ?>
                 </div>
             </div>
+            <?php
+            Pjax::begin([
+                'id' => 'studyplan-grid-pjax',
+            ])
+            ?>
+
+            <?=
+            GridView::widget([
+                'id' => 'studyplan-grid',
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'bulkActionOptions' => [
+                    'gridId' => 'studyplan-grid',
+                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
+                ],
+                'columns' => [
+                    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                    [
+                        'attribute' => 'id',
+                        'class' => 'artsoft\grid\columns\TitleActionColumn',
+                        'controller' => '/studyplan/default',
+                        'title' => function (Studyplan $model) {
+                            return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                        },
+                        'buttonsTemplate' => '{update} {view} {delete}',
+                    ],
+                    [
+                        'attribute' => 'student_id',
+                        'value' => function (Studyplan $model) {
+                            return RefBook::find('students_fullname')->getValue($model->student_id);
+                        },
+                        'format' => 'raw'
+                    ],
+                    [
+                        'attribute' => 'programmName',
+                        'value' => function (Studyplan $model) {
+                            return RefBook::find('education_programm_name')->getValue($model->programm_id);
+                        },
+                        'format' => 'raw'
+                    ],
+                    [
+                        'attribute' => 'course',
+                        'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
+                        'value' => function (Studyplan $model) {
+                            return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
+                        },
+                        'options' => ['style' => 'width:100px'],
+                        'format' => 'raw',
+                    ],
+                    [
+                        'attribute' => 'plan_year',
+                        'filter' => false,
+                        'value' => function (Studyplan $model) {
+                            return \artsoft\helpers\ArtHelper::getStudyYearsList()[$model->plan_year];
+                        },
+                        'options' => ['style' => 'width:100px'],
+                        'format' => 'raw',
+                    ],
+                    [
+                        'class' => 'artsoft\grid\columns\StatusColumn',
+                        'attribute' => 'status',
+                        'optionsArray' => [
+                            [Studyplan::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
+                            [Studyplan::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
+                        ],
+                        'options' => ['style' => 'width:120px']
+                    ],
+                ],
+            ]);
+            ?>
+
+            <?php Pjax::end() ?>
         </div>
     </div>
 </div>

@@ -927,7 +927,7 @@ class DefaultController extends MainController
 
             $data = TeachersEfficiency::getSummaryTeachersData($id, $model_date);
 
-            return $this->renderIsAjax('efficiency-bar', compact(['data', 'model_date', 'id']));
+            return $this->renderIsAjax('efficiency-bar', compact(['data', 'model_date', 'modelTeachers']));
 
         } elseif ('history' == $mode && $objectId) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['teachers/default/efficiency', 'id' => $model->id]];

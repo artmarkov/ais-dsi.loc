@@ -63,29 +63,24 @@ Pjax::begin([
 ?>
 <div class="subject-sect-schedule">
     <div class="panel">
+        <div class="panel-heading">
+            Расписание занятий: <?php echo \artsoft\helpers\RefBook::find('teachers_fio')->getValue($model->id); ?>
+        </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Расписание
-                    занятий: <?php echo \artsoft\helpers\RefBook::find('teachers_fio')->getValue($model->id); ?>
-                </div>
-                <div class="panel-body">
-                    <?= $this->render('_search', compact('model_date')) ?>
-                    <div class="row">
+            <?= $this->render('_search', compact('model_date')) ?>
+            <div class="row">
 
-                        <div class="col-sm-12">
-                            <?= WeeklyScheduler::widget([
-                                'readonly' => $readonly,
-                                'data' => $model->getTeachersSchedule($model_date->plan_year),
-                                'events' => [
-                                    'onChange' => new JsExpression($JSChange),
-                                    'onClick' => new JsExpression($JSEventClick),
-                                    // 'onScheduleClick' => new JsExpression($JSScheduleClick),
-                                ]
-                            ]);
-                            ?>
-                        </div>
-                    </div>
+                <div class="col-sm-12">
+                    <?= WeeklyScheduler::widget([
+                        'readonly' => $readonly,
+                        'data' => $model->getTeachersSchedule($model_date->plan_year),
+                        'events' => [
+                            'onChange' => new JsExpression($JSChange),
+                            'onClick' => new JsExpression($JSEventClick),
+                            // 'onScheduleClick' => new JsExpression($JSScheduleClick),
+                        ]
+                    ]);
+                    ?>
                 </div>
             </div>
         </div>

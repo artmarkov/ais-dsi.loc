@@ -113,7 +113,7 @@ $columns = [
         'attribute' => 'load_time_consult',
         'filter' => false,
         'value' => function ($model) {
-            return $model->load_time_consult. ' ' . $model->getItemLoadConsultNotice();
+            return $model->load_time_consult . ' ' . $model->getItemLoadConsultNotice();
         },
         'format' => 'raw',
     ],
@@ -180,8 +180,6 @@ $columns = [
 ?>
 <div class="subject-load-index">
     <div class="panel">
-        <div class="panel-body">
-            <div class="panel panel-default">
         <div class="panel-heading">
             Нагрузка: <?php echo RefBook::find('teachers_fio')->getValue($model->id); ?>
         </div>

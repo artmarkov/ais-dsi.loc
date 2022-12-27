@@ -121,32 +121,30 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
 ?>
 <div class="teachers-progress-index">
     <div class="panel">
+        <div class="panel-heading">
+            Результаты запроса: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+        </div>
         <div class="panel-body">
             <?= $this->render('@app/views/studyplan/lesson-items/_search', compact('model_date')) ?>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Результаты запроса: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <?php
-                            /* Uncomment this to activate GridQuickLinks */
-                            /* echo GridQuickLinks::widget([
-                                'model' => SubjectSect::className(),
-                                'searchModel' => $searchModel,
-                            ])*/
-                            ?>
-                        </div>
-                        <div class="col-sm-6 text-right">
-                            <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'teachers-progress-grid-pjax']) ?>
-                        </div>
-                    </div>
+            <div class="row">
+                <div class="col-sm-6">
                     <?php
-                    Pjax::begin([
-                        'id' => 'teachers-progress-grid-pjax',
-                    ])
+                    /* Uncomment this to activate GridQuickLinks */
+                    /* echo GridQuickLinks::widget([
+                        'model' => SubjectSect::className(),
+                        'searchModel' => $searchModel,
+                    ])*/
                     ?>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'teachers-progress-grid-pjax']) ?>
+                </div>
+            </div>
+            <?php
+            Pjax::begin([
+                'id' => 'teachers-progress-grid-pjax',
+            ])
+            ?>
             <?php
             echo GridView::widget([
                 'id' => 'teachers-progress-grid',
