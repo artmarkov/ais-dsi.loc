@@ -1,9 +1,6 @@
 <?php
 
-namespace backend\controllers\guidestudy;
-
-use Yii;
-use artsoft\controllers\admin\BaseController;
+namespace backend\controllers\education;
 
 /**
  * EducationCatController implements the CRUD actions for common\models\education\EducationUnion model.
