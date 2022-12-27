@@ -3,7 +3,6 @@
 namespace backend\controllers\studyplan;
 
 use backend\models\Model;
-use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
@@ -378,7 +377,7 @@ class DefaultController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'model'));
         }
     }
 
@@ -453,7 +452,7 @@ class DefaultController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel', 'model'));
         }
     }
 
@@ -526,7 +525,7 @@ class DefaultController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('characteristic-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('characteristic-items', compact('dataProvider', 'searchModel', 'model'));
         }
     }
 
@@ -663,7 +662,7 @@ class DefaultController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('thematic-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('thematic-items', compact('dataProvider', 'searchModel', 'model'));
         }
     }
 
@@ -821,13 +820,17 @@ class DefaultController extends MainController
             $session->set('_progress_date_out', $model_date->date_out);
             $session->set('_progress_hidden_flag', $model_date->hidden_flag);
 
-            $model = LessonProgressView::getDataStudyplan($model_date, $id);
+            $modelLessonProgress = LessonProgressView::getDataStudyplan($model_date, $id);
 
             if (Yii::$app->request->post('submitAction') == 'excel') {
                 // TeachersEfficiency::sendXlsx($data);
             }
 
-            return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date']));
+            return $this->renderIsAjax('studyplan-progress', [
+                'model' => $modelLessonProgress,
+                'model_date' => $model_date,
+                'modelStudent' => $model
+            ]);
         }
     }
 

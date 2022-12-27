@@ -10,9 +10,13 @@ use common\models\subjectsect\SubjectScheduleStudyplanView;
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\subjectsect\search\SubjectScheduleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $model_date */
+/* @var $modelTeachers */
 
 $this->title = Yii::t('art/guide', 'Consult Schedule');
 $this->params['breadcrumbs'][] = $this->title;
+
+$sect_list = \common\models\teachers\Teachers::getSectListForTeachers($modelTeachers->id, $model_date->plan_year);
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
@@ -27,38 +31,27 @@ $columns = [
         'attribute' => 'subject_sect_studyplan_id',
         'width' => '310px',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('sect_name_3')->getList(),
+        'filter' => $sect_list,
         'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id) ?? 'Индивидуально';
+            return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' :
+                ($model->subject_sect_studyplan_id != null ? RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice() : null);
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 1,
+        'format' => 'raw',
     ],
     [
-        'attribute' => 'studyplan_subject_list',
-        'width' => '310px',
-        'filter' => RefBook::find('students_fio')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
-        'value' => function ($model, $key, $index, $widget) {
-            $data = [];
-            if (!empty($model->studyplan_subject_list)) {
-                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                    $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-                    $data[] = RefBook::find('students_fio')->getValue($student_id);
-                }
-            }
-            return implode(',', $data);
+        'attribute' => 'year_time_consult',
+        'value' => function ($model) {
+            return $model->year_time_consult;
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'group' => true,
+        'subGroupOf' => 1,
+        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'attribute' => 'direction_id',
@@ -181,9 +174,10 @@ $columns = [
 <div class="consult-schedule-index">
     <div class="panel">
         <div class="panel-heading">
-            Расписание консультаций
+            Расписание консультаций: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
+            <?= $this->render('_search', compact('model_date')) ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

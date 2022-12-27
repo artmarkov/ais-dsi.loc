@@ -3,6 +3,7 @@
 namespace backend\controllers\teachers;
 
 use artsoft\helpers\ArtHelper;
+use artsoft\helpers\Schedule;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use common\models\education\LessonItems;
@@ -18,6 +19,7 @@ use common\models\history\TeachersLoadHistory;
 use common\models\info\Document;
 use common\models\info\search\DocumentSearch;
 use common\models\schedule\ConsultSchedule;
+use common\models\schedule\ConsultScheduleView;
 use common\models\schedule\search\ConsultScheduleViewSearch;
 use common\models\schedule\search\SubjectScheduleViewSearch;
 use common\models\schedule\SubjectSchedule;
@@ -508,12 +510,20 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $query = SubjectScheduleView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)]);
+            $session = Yii::$app->session;
+
+            $model_date = new DynamicModel(['plan_year']);
+            $model_date->addRule(['plan_year'], 'required');
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            }
+            $session->set('_teachers_plan_year', $model_date->plan_year);
+            $query = SubjectScheduleView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)])->andWhere(['=', 'plan_year', $model_date->plan_year]);
             $searchModel = new SubjectScheduleViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
         }
     }
 
@@ -645,20 +655,27 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $searchModel = new ConsultScheduleViewSearch();
+            $session = Yii::$app->session;
 
-            $searchName = StringHelper::basename($searchModel::className());
+            $model_date = new DynamicModel(['plan_year']);
+            $model_date->addRule(['plan_year'], 'required');
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            }
+            $session->set('_teachers_plan_year', $model_date->plan_year);
+            $query = ConsultScheduleView::find()->where(['=', 'teachers_id', $id])
+                ->andWhere(['=', 'plan_year', $model_date->plan_year]);
+            $searchModel = new ConsultScheduleViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['teachers_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel', 'model_date', 'modelTeachers'));
         }
     }
 
     public function actionStudyplanProgress($id, $objectId = null, $mode = null)
     {
-        $model = $this->findModel($id);
+        $modelTeachers = $this->findModel($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['teachers/default/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
@@ -808,7 +825,7 @@ class DefaultController extends MainController
                 // TeachersEfficiency::sendXlsx($data);
             }
 
-            return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date']));
+            return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date', 'modelTeachers']));
         }
     }
 
@@ -823,7 +840,7 @@ class DefaultController extends MainController
      */
     public function actionEfficiency($id, $objectId = null, $mode = null)
     {
-        $model = $this->findModel($id);
+        $modelTeachers = $this->findModel($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['teachers/default/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
@@ -843,6 +860,7 @@ class DefaultController extends MainController
                             $m = new TeachersEfficiency();
                             $m->teachers_id = $teachers_id;
                             $m->efficiency_id = $model->efficiency_id;
+                            $m->bonus_vid_id = $model->bonus_vid_id;
                             $m->bonus = $model->bonus;
                             $m->date_in = $model->date_in;
                             if (!($flag = $m->save(false))) {
@@ -911,18 +929,24 @@ class DefaultController extends MainController
                 'readonly' => false
             ]);
         } else {
-            $user = \common\models\teachers\Teachers::findOne($id)->getFullName();
-
             $this->view->params['breadcrumbs'][] = Yii::t('art/guide', 'Efficiencies');
-            $this->view->params['breadcrumbs'][] = $user;
+            $session = Yii::$app->session;
 
-            $searchModel = new TeachersEfficiencySearch();
-
-            $searchName = StringHelper::basename($searchModel::className());
+            $model_date = new DynamicModel(['plan_year']);
+            $model_date->addRule(['plan_year'], 'required');
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $model_date->plan_year = $session->get('_efficiency_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            }
+            $data = ArtHelper::getStudyYearParams($model_date->plan_year);
+            $session->set('_efficiency_plan_year', $model_date->plan_year);
+            $query = TeachersEfficiency::find()->where(['=', 'teachers_id', $id])
+                ->andWhere(['and', ['>=', 'date_in', $data['timestamp_in']], ['<=', 'date_in', $data['timestamp_out']]])
+            ;
+            $searchModel = new TeachersEfficiencySearch($query);
             $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['teachers_id'] = $id;
             $dataProvider = $searchModel->search($params);
-            return $this->renderIsAjax('efficiency', compact(['dataProvider', 'searchModel', 'id']));
+
+            return $this->renderIsAjax('efficiency', compact(['dataProvider', 'searchModel', 'modelTeachers', 'model_date']));
         }
     }
 

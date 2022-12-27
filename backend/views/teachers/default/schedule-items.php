@@ -5,21 +5,24 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridView;
-use common\models\subjectsect\SubjectScheduleStudyplanView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\schedule\search\SubjectScheduleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $model_date */
 
 $this->title = Yii::t('art/guide', 'Subject Schedule');
 $this->params['breadcrumbs'][] = $this->title;
+
+$sect_list = \common\models\teachers\Teachers::getSectListForTeachers($model->id, $model_date->plan_year);
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'studyplan_subject_id',
+        'filter' => false,
         'value' => function ($model) {
-            return $model->studyplan_subject_id != 0 ? RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id) : RefBook::find('sect_memo_2')->getValue($model->subject_sect_studyplan_id);
+            return $model->subject_sect_studyplan_id != 0 ? RefBook::find('sect_name_4')->getValue($model->subject_sect_id) : RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
         },
         'group' => true,
     ],
@@ -27,19 +30,22 @@ $columns = [
         'attribute' => 'subject_sect_studyplan_id',
         'width' => '310px',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('sect_name_3')->getList(),
+        'filter' => $sect_list,
         'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id) ?? 'Индивидуально';
+            return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' :
+                ($model->subject_sect_studyplan_id != null ? RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice() : null);
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 1,
+        'format' => 'raw',
     ],
     [
         'attribute' => 'week_time',
+        'filter' => false,
         'value' => function ($model) {
             return $model->week_time;
         },
@@ -48,64 +54,51 @@ $columns = [
     ],
     [
         'attribute' => 'studyplan_subject_list',
-        'width' => '310px',
-        'filter' => RefBook::find('students_fio')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
+        'width' => '210px',
+        'filter' => false,
         'value' => function ($model, $key, $index, $widget) {
             $data = [];
             if (!empty($model->studyplan_subject_list)) {
                 foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                    $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-                    $data[] = RefBook::find('students_fio')->getValue($student_id);
+                    $data[] = RefBook::find('studyplan_subject-student_fio')->getValue($studyplan_subject_id);
                 }
             }
             return implode(',', $data);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
     [
         'attribute' => 'direction_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => \common\models\guidejob\Direction::getDirectionList(),
+        'filter' => false,
         'value' => function ($model, $key, $index, $widget) {
             return $model->direction ? $model->direction->name : null;
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-
         'group' => true,  // enable grouping
         'subGroupOf' => 4
     ],
     [
         'attribute' => 'teachers_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => false /*RefBook::find('teachers_fio')->getList()*/,
+        'filter' => false,
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 5
     ],
     [
         'attribute' => 'load_time',
+        'filter' => false,
         'value' => function ($model) {
             return $model->load_time . ' ' . $model->getItemLoadNotice();
         },
         'format' => 'raw',
+        'group' => true,  // enable grouping
+        'subGroupOf' => 5
     ],
     [
         'attribute' => 'scheduleDisplay',
+        'width' => '310px',
         'value' => function ($model) {
             return $model->getScheduleDisplay();
         },
@@ -177,9 +170,10 @@ $columns = [
 <div class="subject-schedule-index">
     <div class="panel">
         <div class="panel-heading">
-           Элементы расписания
+           Элементы расписания: <?php echo RefBook::find('teachers_fio')->getValue($model->id); ?>
         </div>
         <div class="panel-body">
+            <?= $this->render('_search', compact('model_date')) ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

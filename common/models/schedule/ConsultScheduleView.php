@@ -11,6 +11,7 @@ use Yii;
  * @property int|null $studyplan_subject_id
  * @property int|null $subject_sect_studyplan_id
  * @property int|null $studyplan_subject_list
+ * @property float|null $year_time_consult,
  * @property string|null $subject_type_id
  * @property int|null $subject_sect_id
  * @property int|null $studyplan_id
@@ -46,6 +47,7 @@ class ConsultScheduleView extends ConsultSchedule
         $attr['studyplan_subject_id'] = Yii::t('art/guide', 'Subject Name');
         $attr['subject_sect_studyplan_id'] = Yii::t('art/guide', 'Sect Name');
         $attr['studyplan_subject_list'] = Yii::t('art/guide', 'Studyplan List');
+        $attr['year_time_consult'] = Yii::t('art/guide', 'Year Time Consult');
         $attr['subject_type_id'] = Yii::t('art/guide', 'Subject Type ID');
         $attr['subject_sect_id'] = Yii::t('art/guide', 'Subject Sect ID');
         $attr['studyplan_id'] = Yii::t('art/guide', 'Studyplan');

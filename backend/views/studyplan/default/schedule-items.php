@@ -13,22 +13,32 @@ use artsoft\grid\GridView;
 $this->title = Yii::t('art/guide', 'Subject Schedule');
 $this->params['breadcrumbs'][] = $this->title;
 
+$studyplan_subject_list = \common\models\studyplan\Studyplan::getSubjectListForStudyplan($model->id);
+$subject_sect_studyplan_list = \common\models\studyplan\Studyplan::getSectListForStudyplan($model->id);
+
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'studyplan_subject_id',
+        'filterType' => GridView::FILTER_SELECT2,
+        'filter' => $studyplan_subject_list,
         'value' => function ($model) {
             return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
         },
+        'filterWidgetOptions' => [
+            'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',
-        'width' => '310px',
+        'width' => '320px',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('sect_name_3')->getList(),
-        'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id) ?? 'Индивидуально';
+        'filter' => $subject_sect_studyplan_list,
+        'value' => function ($model) {
+            return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' :
+                ($model->subject_sect_studyplan_id != null ? RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice() : null);
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],
@@ -36,7 +46,7 @@ $columns = [
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
-
+        'format' => 'raw',
     ],
     [
         'attribute' => 'week_time',
@@ -156,7 +166,7 @@ $columns = [
 <div class="subject-schedule-index">
     <div class="panel">
         <div class="panel-heading">
-            Элементы расписания
+            Элементы расписания: <?= RefBook::find('students_fio')->getValue($model->student_id);?>
         </div>
         <div class="panel-body">
             <div class="row">

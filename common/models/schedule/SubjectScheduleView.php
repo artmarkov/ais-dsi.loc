@@ -6,6 +6,7 @@ use artsoft\helpers\Schedule;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\ArtHelper;
 use artsoft\widgets\Notice;
+use common\models\teachers\TeachersPlan;
 use Yii;
 use artsoft\widgets\Tooltip;
 
@@ -101,6 +102,11 @@ class SubjectScheduleView extends SubjectSchedule
                 //   Notice::registerDanger($message);
                 $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
             }
+             if ($this->subject_sect_studyplan_id === 0 && self::getTeachersPlanOverLapping($model)->exists() === false) { // если занятия инд-е
+                $message = 'Заданное расписание не соответствует планированию индивидуальных занятий!';
+                $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
+            }
+
             return implode('', $tooltip);
         }
         return null;
@@ -174,6 +180,27 @@ class SubjectScheduleView extends SubjectSchedule
         return $thereIsAnOverlapping;
     }
 
+    public static function getTeachersPlanOverLapping($model)
+    {
+        $thereIsAnOverlapping = TeachersPlan::find()
+            ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = teachers_plan.direction_id')
+            ->where(
+            ['AND',
+                ['is', 'parent', null],
+                ['auditory_id' => $model->auditory_id],
+                ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->id)],
+                ['AND',
+                    ['<=', 'time_plan_in', Schedule::encodeTime($model->time_in)],
+                    ['>=', 'time_plan_out', Schedule::encodeTime($model->time_out)],
+                ],
+                ['=', 'week_day', $model->week_day]
+            ])->andWhere(new \yii\db\Expression('CASE WHEN week_num IS NOT NULL THEN week_num = :week_num ELSE TRUE END', [':week_num' => $model->week_num]));
+        ;
+
+
+        return $thereIsAnOverlapping;
+    }
+
     /**
      * Проверка на необходимость добавления расписания
      * @return bool
@@ -236,8 +263,9 @@ class SubjectScheduleView extends SubjectSchedule
     public function getScheduleAccompLimitNotice()
     {
         if ($this->direction->parent != null) {
-            if ($this->getScheduleAccompLimit()->exists() === false) {
-                $message = 'Концертмейстер может работать только в рамках расписания преподавателя';
+            if ($this->subject_schedule_id) {
+                if ($this->getScheduleAccompLimit()->exists() === false) {
+                    $message = 'Концертмейстер может работать только в рамках расписания преподавателя';
 //                $info = [];
 //                $teachersSchedule = SubjectScheduleView::find()->where(
 //                    ['AND',
@@ -250,15 +278,17 @@ class SubjectScheduleView extends SubjectSchedule
 //                    $string .= ' ' . RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
 //                    $info[] = $string;
 //                }
-                // $this->addError($attribute, $message);
-               // Notice::registerWarning($message . ': ' . implode(', ', $info));
-              return  Tooltip::widget(['type' => 'danger', 'message' => $message]);
+                    // $this->addError($attribute, $message);
+                    // Notice::registerWarning($message . ': ' . implode(', ', $info));
+                    return Tooltip::widget(['type' => 'danger', 'message' => $message]);
+                }
             }
         }
     }
 
     /**
-     * @return string
+     * @return string|null
+     * @throws \Exception
      */
     public function getScheduleDisplay()
     {

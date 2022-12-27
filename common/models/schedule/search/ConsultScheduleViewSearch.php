@@ -12,6 +12,14 @@ use yii\data\ActiveDataProvider;
  */
 class ConsultScheduleViewSearch extends ConsultScheduleView
 {
+    public $query;
+
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: ConsultScheduleView::find();
+        parent::__construct();
+    }
+
     /**
      * @inheritdoc
      */
@@ -21,7 +29,7 @@ class ConsultScheduleViewSearch extends ConsultScheduleView
             [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'plan_year', 'teachers_load_id', 'direction_id', 'teachers_id', 'consult_schedule_id',  'auditory_id'], 'integer'],
             [['studyplan_subject_list'], 'string'],
             [['description', 'datetime_in', 'datetime_out'], 'safe'],
-            [['load_time_consult'], 'number'],
+            [['load_time_consult', 'year_time_consult'], 'number'],
         ];
     }
 
@@ -43,7 +51,7 @@ class ConsultScheduleViewSearch extends ConsultScheduleView
      */
     public function search($params)
     {
-        $query = ConsultScheduleView::find();
+        $query = $this->query;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -67,6 +75,7 @@ class ConsultScheduleViewSearch extends ConsultScheduleView
             'studyplan_subject_id' => $this->studyplan_subject_id,
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
             'studyplan_subject_list' => $this->studyplan_subject_list,
+            'year_time_consult' => $this->year_time_consult,
             'subject_sect_id' => $this->subject_sect_id,
             'plan_year' => $this->plan_year,
             'load_time_consult' => $this->load_time_consult,

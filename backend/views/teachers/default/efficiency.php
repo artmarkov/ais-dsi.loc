@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\helpers\RefBook;
 use artsoft\widgets\DateRangePicker;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
@@ -12,17 +13,22 @@ use artsoft\grid\GridPageSize;
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\efficiency\search\TeachersEfficiencySearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $modelTeachers */
 
 ?>
     <div class="teachers-efficiency-index">
         <div class="panel">
             <div class="panel-heading">
-                <?= \artsoft\helpers\ButtonHelper::createButton(isset($id) ? ['/teachers/default/efficiency', 'id' => $id,  'mode' => 'create'] : ''); ?>
-                <span class="pull-left"> <?= Html::a('<i class="fa fa-bar-chart" aria-hidden="true"></i> График эффективности ', ['/teachers/default/efficiency', 'id' => $id,  'mode' => 'bar'], ['class' => 'btn btn-sm btn-info']); ?></span>
+                <?= \artsoft\helpers\ButtonHelper::createButton(isset($modelTeachers->id) ? ['/teachers/default/efficiency', 'id' => $modelTeachers->id,  'mode' => 'create'] : ''); ?>
+               <span class="pull-left"> <?= Html::a('<i class="fa fa-bar-chart" aria-hidden="true"></i> График эффективности ', ['/teachers/default/efficiency', 'id' => $modelTeachers->id,  'mode' => 'bar'], ['class' => 'btn btn-sm btn-info']); ?></span>
             </div>
             <div class="panel-body">
                 <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Показатели эффективности:  <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+                    </div>
                     <div class="panel-body">
+                        <?= $this->render('_search', compact('model_date')) ?>
                         <div class="row">
                             <div class="col-sm-6">
                                 <?php
@@ -109,8 +115,15 @@ use artsoft\grid\GridPageSize;
                                 [
                                     'attribute' => 'bonus',
                                     'value' => function (TeachersEfficiency $model) {
-                                        return $model->bonus . '%';
+                                        return $model->bonus;
                                     },
+                                ],
+                                [
+                                    'attribute' => 'bonus_vid_id',
+                                    'value' => function (TeachersEfficiency $model) {
+                                        return \common\models\efficiency\EfficiencyTree::getBobusVidValue('short', $model->bonus_vid_id);
+                                    },
+                                    'filter' => \common\models\efficiency\EfficiencyTree::getBobusVidList('short'),
                                 ],
                                 [
                                     'attribute' => 'date_in',

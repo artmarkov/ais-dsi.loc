@@ -8,9 +8,14 @@ use common\models\schedule\SubjectScheduleStudyplanView;
 use common\models\education\LessonItems;
 use yii\widgets\Pjax;
 
+/* @var $this yii\web\View */
+/* @var $model_date */
+/* @var $modelTeachers */
+
 $this->title = $this->title = Yii::t('art/guide', 'Journal Progress');
 $this->params['breadcrumbs'][] = $this->title;
 //echo '<pre>' . print_r($model, true) . '</pre>'; die();
+
 $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
     if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
@@ -120,7 +125,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             <?= $this->render('@app/views/studyplan/lesson-items/_search', compact('model_date')) ?>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Результаты запроса
+                    Результаты запроса: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
                 </div>
                 <div class="panel-body">
                     <div class="row">

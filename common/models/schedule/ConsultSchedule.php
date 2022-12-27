@@ -4,6 +4,7 @@ namespace common\models\schedule;
 
 use artsoft\behaviors\DateFieldBehavior;
 use common\models\teachers\TeachersLoad;
+use common\models\teachers\TeachersLoadTrait;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -27,6 +28,8 @@ use yii\behaviors\TimestampBehavior;
  */
 class ConsultSchedule extends \yii\db\ActiveRecord
 {
+    use TeachersLoadTrait;
+
     /**
      * {@inheritdoc}
      */

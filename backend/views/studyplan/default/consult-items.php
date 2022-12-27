@@ -12,51 +12,51 @@ use artsoft\grid\GridView;
 
 $this->title = Yii::t('art/guide', 'Consult Schedule');
 $this->params['breadcrumbs'][] = $this->title;
+
+$studyplan_subject_list = \common\models\studyplan\Studyplan::getSubjectListForStudyplan($model->id);
+$subject_sect_studyplan_list = \common\models\studyplan\Studyplan::getSectListForStudyplan($model->id);
+
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'studyplan_subject_id',
+        'filterType' => GridView::FILTER_SELECT2,
+        'filter' => $studyplan_subject_list,
         'value' => function ($model) {
-            return $model->studyplan_subject_id != 0 ? RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id) : RefBook::find('sect_memo_2')->getValue($model->subject_sect_studyplan_id);
+            return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
         },
+        'filterWidgetOptions' => [
+            'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',
-        'width' => '310px',
+        'width' => '320px',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('sect_name_3')->getList(),
-        'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id) ?? 'Индивидуально';
+        'filter' => $subject_sect_studyplan_list,
+        'value' => function ($model) {
+            return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' :
+                ($model->subject_sect_studyplan_id != null ? RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice() : null);
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 1,
+        'format' => 'raw',
     ],
     [
-        'attribute' => 'studyplan_subject_list',
-        'width' => '310px',
-        'filter' => RefBook::find('students_fio')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
-        'value' => function ($model, $key, $index, $widget) {
-            $data = [];
-            if (!empty($model->studyplan_subject_list)) {
-                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                    $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-                    $data[] = RefBook::find('students_fio')->getValue($student_id);
-                }
-            }
-            return implode(',', $data);
+        'attribute' => 'year_time_consult',
+        'value' => function ($model) {
+            return $model->year_time_consult;
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'group' => true,
+        'subGroupOf' => 1,
+        'pageSummary' => true,
+        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'attribute' => 'direction_id',
@@ -85,17 +85,17 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 4
     ],
     [
         'attribute' => 'load_time_consult',
         'value' => function ($model) {
-            return $model->load_time_consult /*. ' ' . $model->getTeachersOverLoadNotice()*/
+            return $model->load_time_consult . ' ' . $model->getItemLoadStudyplanConsultNotice();
                 ;
         },
         'format' => 'raw',
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 4
     ],
     [
         'attribute' => 'datetime_in',
@@ -180,7 +180,7 @@ $columns = [
 <div class="consult-schedule-index">
     <div class="panel">
         <div class="panel-heading">
-            Расписание консультаций
+            Расписание консультаций: <?= RefBook::find('students_fio')->getValue($model->student_id);?>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -213,8 +213,8 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
-                            ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
+                            ['content' => 'Дисциплина', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
                             ['content' => 'Расписание консультаций', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export

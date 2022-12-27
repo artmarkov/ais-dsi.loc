@@ -11,6 +11,7 @@ use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $model */
 /* @var $model_date */
+/* @var $modelStudent */
 
 $this->title = Yii::t('art/guide', 'Studyplan Progress');
 $this->params['breadcrumbs'][] = $this->title;
@@ -115,7 +116,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
         <?= $this->render('@app/views/studyplan/lesson-items/_search', compact('model_date')) ?>
         <div class="panel panel-default">
             <div class="panel-heading">
-                Результаты запроса
+                Результаты запроса: <?= RefBook::find('students_fio')->getValue($modelStudent->student_id);?>
             </div>
             <div class="panel-body">
                 <div class="row">

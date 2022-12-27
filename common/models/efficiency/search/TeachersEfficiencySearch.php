@@ -2,6 +2,7 @@
 
 namespace common\models\efficiency\search;
 
+use common\models\schedule\ConsultScheduleView;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -12,6 +13,14 @@ use common\models\efficiency\TeachersEfficiency;
  */
 class TeachersEfficiencySearch extends TeachersEfficiency
 {
+    public $query;
+
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: ConsultScheduleView::find();
+        parent::__construct();
+    }
+
     /**
      * @inheritdoc
      */
@@ -41,7 +50,7 @@ class TeachersEfficiencySearch extends TeachersEfficiency
      */
     public function search($params)
     {
-        $query = TeachersEfficiency::find();
+        $query = $this->query;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

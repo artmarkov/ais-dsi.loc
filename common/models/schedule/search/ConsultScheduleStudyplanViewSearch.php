@@ -21,7 +21,7 @@ class ConsultScheduleStudyplanViewSearch extends ConsultScheduleStudyplanView
             [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'studyplan_id', 'student_id', 'plan_year', 'status', 'teachers_load_id', 'direction_id', 'teachers_id', 'consult_schedule_id', 'auditory_id'], 'integer'],
             [['studyplan_subject_list'], 'string'],
             [['description', 'datetime_in', 'datetime_out'], 'safe'],
-            [['load_time_consult'], 'number'],
+            [['load_time_consult', 'year_time_consult'], 'number'],
         ];
     }
 
@@ -66,6 +66,7 @@ class ConsultScheduleStudyplanViewSearch extends ConsultScheduleStudyplanView
         $query->andFilterWhere([
             'studyplan_subject_id' => $this->studyplan_subject_id,
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
+            'year_time_consult' => $this->year_time_consult,
             'load_time_consult' => $this->load_time_consult,
             'studyplan_subject_list' => $this->studyplan_subject_list,
             'subject_sect_id' => $this->subject_sect_id,

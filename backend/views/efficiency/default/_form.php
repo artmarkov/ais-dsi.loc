@@ -58,7 +58,7 @@ use common\models\efficiency\EfficiencyTree;
                         'options' => [
                             'disabled' => isset($model->class) ? true : $readonly,
                         ],
-                        'query' => $model->isNewRecord ? EfficiencyTree::find()->where(['=', 'class', ''])->addOrderBy('root, lft') : EfficiencyTree::find()->addOrderBy('root, lft'),
+                        'query' => $model->isNewRecord ? EfficiencyTree::find()->where(['=', 'class', 'TeachersEfficiency'])->addOrderBy('root, lft') : EfficiencyTree::find()->addOrderBy('root, lft'),
                         'dropdownConfig' => [
                             'input' => ['placeholder' => 'Выберите показатель эффективности...'],
                         ],

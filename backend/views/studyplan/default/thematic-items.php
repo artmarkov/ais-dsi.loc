@@ -155,7 +155,7 @@ $columns = [
 <div class="studyplan-thematic-index">
     <div class="panel">
         <div class="panel-heading">
-            Тематические планы
+            Тематические планы: <?= RefBook::find('students_fio')->getValue($model->student_id);?>
         </div>
         <div class="panel-body">
             <div class="row">
