@@ -114,10 +114,6 @@ public static function astr2academ($astr_hour)
         return ((int)(($day + date("w", $timestamp) - 2) / 7)) + 1;
     }
 
-    public static function getPlanYear($mon, $year)
-    {
-        return $mon < 8 ?  $year-1 : $year;
-    }
 
     /**
      * @param bool $timestamp

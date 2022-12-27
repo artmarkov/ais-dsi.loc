@@ -247,11 +247,15 @@ class Teachers extends ActiveRecord
         return \yii\helpers\ArrayHelper::map(self::getTeachersById($direction_id), 'id', 'name');
     }
 
-    public function getTeachersSchedule()
+    /**
+     * @return array
+     */
+    public function getTeachersSchedule($plan_year)
     {
         $models = SubjectScheduleView::find()
             ->where(['teachers_id' => $this->id])
             ->andWhere(['not', ['subject_schedule_id' => null]])
+            ->andWhere(['=', 'plan_year',$plan_year])
             ->all();
 
         $data = [];

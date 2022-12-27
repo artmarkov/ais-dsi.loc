@@ -36,7 +36,7 @@ class TeachersTimesheet
         $this->activity_list = implode(',', $model_date->activity_list);
         $this->mon = date('n', strtotime($this->date_in));
         $this->year = date('Y', strtotime($this->date_in));
-        $this->plan_year = Schedule::getPlanYear($this->mon, $this->year);
+        $this->plan_year = ArtHelper::getStudyYearDefault(null, strtotime($this->date_in));
     }
 
     protected function getTeachersActivities()

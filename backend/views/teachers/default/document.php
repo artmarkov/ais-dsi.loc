@@ -13,17 +13,16 @@ use artsoft\grid\GridPageSize;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $teachers_id */
 
-$this->title = Yii::t('art/guide', 'Documents');
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="document-index">
     <div class="panel">
-        <div class="panel-heading">
-            <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
-        </div>
         <div class="panel-body">
             <div class="panel panel-default">
+                <div class="panel-heading">
+                    Документы: <?php echo \artsoft\helpers\RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+                </div>
                 <div class="panel-body">
+                    <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
                     <div class="row">
                         <div class="col-sm-6">
                             <?php
@@ -68,32 +67,32 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'title',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/teachers/default',
-                                'title' => function ($model) use ($teachers_id) {
-                                    return Html::a($model->title, ['/teachers/default/document', 'id' => $teachers_id, 'objectId' => $model->id, 'mode' => 'view'], ['data-pjax' => 0]);
+                                'title' => function ($model) use ($modelTeachers) {
+                                    return Html::a($model->title, ['/teachers/default/document', 'id' => $modelTeachers->id, 'objectId' => $model->id, 'mode' => 'view'], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
                                 'buttons' => [
-                                    'update' => function ($url, $model, $key) use ($teachers_id) {
+                                    'update' => function ($url, $model, $key) use ($modelTeachers) {
                                         return Html::a(Yii::t('art', 'Edit'),
-                                            Url::to(['/teachers/default/document', 'id' => $teachers_id, 'objectId' => $model->id, 'mode' => 'update']), [
+                                            Url::to(['/teachers/default/document', 'id' => $modelTeachers->id, 'objectId' => $model->id, 'mode' => 'update']), [
                                                 'title' => Yii::t('art', 'Edit'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
                                             ]
                                         );
                                     },
-                                    'view' => function ($url, $model, $key) use ($teachers_id) {
+                                    'view' => function ($url, $model, $key) use ($modelTeachers) {
                                         return Html::a(Yii::t('art', 'View'),
-                                            Url::to(['/teachers/default/document', 'id' => $teachers_id, 'objectId' => $model->id, 'mode' => 'view']), [
+                                            Url::to(['/teachers/default/document', 'id' => $modelTeachers->id, 'objectId' => $model->id, 'mode' => 'view']), [
                                                 'title' => Yii::t('art', 'View'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
                                             ]
                                         );
                                     },
-                                    'delete' => function ($url, $model, $key) use ($teachers_id) {
+                                    'delete' => function ($url, $model, $key) use ($modelTeachers) {
                                         return Html::a(Yii::t('art', 'Delete'),
-                                            Url::to(['/teachers/default/document', 'id' => $teachers_id, 'objectId' => $model->id, 'mode' => 'delete']), [
+                                            Url::to(['/teachers/default/document', 'id' => $modelTeachers->id, 'objectId' => $model->id, 'mode' => 'delete']), [
                                                 'title' => Yii::t('art', 'Delete'),
                                                 'aria-label' => Yii::t('art', 'Delete'),
                                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),

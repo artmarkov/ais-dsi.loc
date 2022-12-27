@@ -224,18 +224,4 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             ->column();
     }
 
-    //
-//    /**
-//     * @return string
-//     */
-//    public function getTeachersScheduleDisplay()
-//    {
-//        $auditory = RefBook::find('auditory_memo_1')->getValue($this->auditory_id);
-//        $teachers = RefBook::find('teachers_fio')->getValue($this->getTeachersId());
-//        $direction = $this->direction->slug;
-//        $string = $this->week_num != 0 ? ' ' . ArtHelper::getWeekList('short')[$this->week_num] : null;
-//        $string .= ' ' . ArtHelper::getWeekdayList('short')[$this->week_day] . ' ' . $this->time_in . '-' . $this->time_out . '->(' . $auditory . ')';
-//        $string .= '->' . $teachers . '(' . $direction . ')';
-//        return $string;
-//    }
 }

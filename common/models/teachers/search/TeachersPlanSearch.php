@@ -12,6 +12,14 @@ use common\models\teachers\TeachersPlan;
  */
 class TeachersPlanSearch extends TeachersPlan
 {
+    public $query;
+
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: TeachersPlan::find();
+        parent::__construct();
+    }
+
     /**
      * @inheritdoc
      */
@@ -41,7 +49,7 @@ class TeachersPlanSearch extends TeachersPlan
      */
     public function search($params)
     {
-        $query = TeachersPlan::find();
+        $query = $this->query;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

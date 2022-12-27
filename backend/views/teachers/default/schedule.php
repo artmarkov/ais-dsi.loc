@@ -61,40 +61,42 @@ Pjax::begin([
     'id' => 'subject-schedule-pjax',
 ])
 ?>
-    <div class="subject-sect-schedule">
-        <div class="panel">
-            <div class="panel-heading">
-                <?= $this->title; ?>
-            </div>
-            <div class="panel-body">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div class="row">
+<div class="subject-sect-schedule">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Расписание
+                    занятий: <?php echo \artsoft\helpers\RefBook::find('teachers_fio')->getValue($model->id); ?>
+                </div>
+                <div class="panel-body">
+                    <?= $this->render('_search', compact('model_date')) ?>
+                    <div class="row">
 
-                            <div class="col-sm-12">
-                                <?= WeeklyScheduler::widget([
-                                    'readonly' => $readonly,
-                                    'data' => $model->getTeachersSchedule(),
-                                    'events' => [
-                                        'onChange' => new JsExpression($JSChange),
-                                        'onClick' => new JsExpression($JSEventClick),
-                                       // 'onScheduleClick' => new JsExpression($JSScheduleClick),
-                                    ]
-                                ]);
-                                ?>
-                            </div>
+                        <div class="col-sm-12">
+                            <?= WeeklyScheduler::widget([
+                                'readonly' => $readonly,
+                                'data' => $model->getTeachersSchedule($model_date->plan_year),
+                                'events' => [
+                                    'onChange' => new JsExpression($JSChange),
+                                    'onClick' => new JsExpression($JSEventClick),
+                                    // 'onScheduleClick' => new JsExpression($JSScheduleClick),
+                                ]
+                            ]);
+                            ?>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 <?php Pjax::end() ?>
 
 <?php \yii\bootstrap\Modal::begin([
-   // 'header' => '<h3 class="lte-hide-title page-title">Расписание</h3>',
+    // 'header' => '<h3 class="lte-hide-title page-title">Расписание</h3>',
     'size' => 'modal-lg',
     'id' => 'schedule-modal',
-]);?>
+]); ?>
 <?php \yii\bootstrap\Modal::end(); ?>
 

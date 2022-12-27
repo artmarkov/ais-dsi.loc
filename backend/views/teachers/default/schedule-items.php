@@ -169,52 +169,56 @@ $columns = [
 ?>
 <div class="subject-schedule-index">
     <div class="panel">
-        <div class="panel-heading">
-           Элементы расписания: <?php echo RefBook::find('teachers_fio')->getValue($model->id); ?>
-        </div>
         <div class="panel-body">
-            <?= $this->render('_search', compact('model_date')) ?>
-            <div class="row">
-                <div class="col-sm-6">
-                    <?php
-                    /* Uncomment this to activate GridQuickLinks */
-                    /* echo GridQuickLinks::widget([
-                        'model' => SubjectSect::className(),
-                        'searchModel' => $searchModel,
-                    ])*/
-                    ?>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Элементы расписания: <?php echo RefBook::find('teachers_fio')->getValue($model->id); ?>
                 </div>
+                <div class="panel-body">
+                    <?= $this->render('_search', compact('model_date')) ?>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <?php
+                            /* Uncomment this to activate GridQuickLinks */
+                            /* echo GridQuickLinks::widget([
+                                'model' => SubjectSect::className(),
+                                'searchModel' => $searchModel,
+                            ])*/
+                            ?>
+                        </div>
 
-                <div class="col-sm-6 text-right">
-                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'subject-schedule-grid-pjax']) ?>
+                        <div class="col-sm-6 text-right">
+                            <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'subject-schedule-grid-pjax']) ?>
+                        </div>
+                    </div>
+
+                    <?php
+                    Pjax::begin([
+                        'id' => 'subject-schedule-grid-pjax',
+                    ])
+                    ?>
+                    <?=
+                    GridView::widget([
+                        'id' => 'subject-schedule-grid',
+                        'pjax' => false,
+                        'dataProvider' => $dataProvider,
+                        'filterModel' => $searchModel,
+                        'columns' => $columns,
+                        'beforeHeader' => [
+                            [
+                                'columns' => [
+                                    ['content' => 'Дисциплина', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                                    ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
+                                    ['content' => 'Расписание занятий', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
+                                ],
+                                'options' => ['class' => 'skip-export'] // remove this row from export
+                            ]
+                        ],
+                    ]);
+                    ?>
+                    <?php Pjax::end() ?>
                 </div>
             </div>
-
-            <?php
-            Pjax::begin([
-                'id' => 'subject-schedule-grid-pjax',
-            ])
-            ?>
-            <?=
-            GridView::widget([
-                'id' => 'subject-schedule-grid',
-                'pjax' => false,
-                'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
-                'columns' => $columns,
-                'beforeHeader' => [
-                    [
-                        'columns' => [
-                            ['content' => 'Дисциплина', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
-                            ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
-                            ['content' => 'Расписание занятий', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
-                        ],
-                        'options' => ['class' => 'skip-export'] // remove this row from export
-                    ]
-                ],
-            ]);
-            ?>
-            <?php Pjax::end() ?>
         </div>
     </div>
 </div>

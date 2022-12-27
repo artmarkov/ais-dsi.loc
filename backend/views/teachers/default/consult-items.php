@@ -85,7 +85,7 @@ $columns = [
     [
         'attribute' => 'load_time_consult',
         'value' => function ($model) {
-            return $model->load_time_consult /*. ' ' . $model->getTeachersOverLoadNotice()*/;
+            return $model->load_time_consult . ' ' . $model->getItemLoadConsultNotice();
         },
         'format' => 'raw',
         'group' => true,  // enable grouping
@@ -173,26 +173,28 @@ $columns = [
 ?>
 <div class="consult-schedule-index">
     <div class="panel">
-        <div class="panel-heading">
-            Расписание консультаций: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
-        </div>
         <div class="panel-body">
-            <?= $this->render('_search', compact('model_date')) ?>
-            <div class="row">
-                <div class="col-sm-6">
-                    <?php
-                    /* Uncomment this to activate GridQuickLinks */
-                    /* echo GridQuickLinks::widget([
-                        'model' => SubjectSect::className(),
-                        'searchModel' => $searchModel,
-                    ])*/
-                    ?>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Расписание консультаций: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
                 </div>
+                <div class="panel-body">
+                    <?= $this->render('_search', compact('model_date')) ?>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <?php
+                            /* Uncomment this to activate GridQuickLinks */
+                            /* echo GridQuickLinks::widget([
+                                'model' => SubjectSect::className(),
+                                'searchModel' => $searchModel,
+                            ])*/
+                            ?>
+                        </div>
 
-                <div class="col-sm-6 text-right">
-                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'consult-schedule-grid-pjax']) ?>
-                </div>
-            </div>
+                        <div class="col-sm-6 text-right">
+                            <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'consult-schedule-grid-pjax']) ?>
+                        </div>
+                    </div>
                     <?php
                     Pjax::begin([
                         'id' => 'consult-schedule-grid-pjax',

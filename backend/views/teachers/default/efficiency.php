@@ -18,19 +18,19 @@ use artsoft\grid\GridPageSize;
 ?>
     <div class="teachers-efficiency-index">
         <div class="panel">
-            <div class="panel-heading">
-                <?= \artsoft\helpers\ButtonHelper::createButton(isset($modelTeachers->id) ? ['/teachers/default/efficiency', 'id' => $modelTeachers->id,  'mode' => 'create'] : ''); ?>
-               <span class="pull-left"> <?= Html::a('<i class="fa fa-bar-chart" aria-hidden="true"></i> График эффективности ', ['/teachers/default/efficiency', 'id' => $modelTeachers->id,  'mode' => 'bar'], ['class' => 'btn btn-sm btn-info']); ?></span>
-            </div>
             <div class="panel-body">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        Показатели эффективности:  <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+                        Показатели
+                        эффективности: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
                     </div>
                     <div class="panel-body">
                         <?= $this->render('_search', compact('model_date')) ?>
+                        <hr>
                         <div class="row">
                             <div class="col-sm-6">
+                                <?= \artsoft\helpers\ButtonHelper::createButton(isset($modelTeachers->id) ? ['/teachers/default/efficiency', 'id' => $modelTeachers->id, 'mode' => 'create'] : ''); ?>
+                                <span class="pull-left"> <?= Html::a('<i class="fa fa-bar-chart" aria-hidden="true"></i> График эффективности ', ['/teachers/default/efficiency', 'id' => $modelTeachers->id, 'mode' => 'bar'], ['class' => 'btn btn-sm btn-info']); ?></span>
                                 <?php
                                 /* Uncomment this to activate GridQuickLinks */
                                 /* echo GridQuickLinks::widget([

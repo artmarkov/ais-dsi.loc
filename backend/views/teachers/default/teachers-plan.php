@@ -18,15 +18,20 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="teachers-plan-index">
     <div class="panel">
-        <div class="panel-heading">
-            <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
-        </div>
         <div class="panel-body">
             <div class="panel panel-default">
+                <div class="panel-heading">
+                    Планирование инд.занятий: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+                </div>
                 <div class="panel-body">
+                    <?= $this->render('_search', compact('model_date')) ?>
+                    <hr>
                     <div class="row">
                         <div class="col-sm-6">
+                            <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
+
                             <?php
+
                             /* Uncomment this to activate GridQuickLinks */
                             /* echo GridQuickLinks::widget([
                                 'model' => TeachersPlan::className(),
@@ -97,7 +102,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
 
                             ],
-                          //  'teachers_id',
+                            //  'teachers_id',
                             [
                                 'attribute' => 'planDisplay',
                                 'value' => function ($model) {

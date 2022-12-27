@@ -348,6 +348,13 @@ class DefaultController extends MainController
             ]
         ]);
     }
+
+    /**
+     * @param $id
+     * @param bool $readonly
+     * @return string
+     * @throws NotFoundHttpException
+     */
     public function actionSchedule($id, $readonly = false)
     {
         $model = $this->findModel($id);
@@ -359,15 +366,30 @@ class DefaultController extends MainController
         if (!isset($model)) {
             throw new NotFoundHttpException("The StudyplanSubject was not found.");
         }
+        $session = Yii::$app->session;
 
-        // $modelsSubject = $model->studyplanSubject;
+        $model_date = new DynamicModel(['plan_year']);
+        $model_date->addRule(['plan_year'], 'required');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+        }
+        $session->set('_teachers_plan_year', $model_date->plan_year);
 
         return $this->render('schedule', [
             'model' => $model,
-            // 'modelsSubject' => (empty($modelsSubject)) ? [new StudyplanSubject()] : $modelsSubject,
+            'model_date' => $model_date,
             'readonly' => $readonly
         ]);
     }
+
+    /**
+     * @param $id
+     * @param null $objectId
+     * @param null $mode
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
+     * @throws \yii\db\StaleObjectException
+     */
     public function actionLoadItems($id, $objectId = null, $mode = null)
     {
         $model = $this->findModel($id);
@@ -580,14 +602,22 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $searchModel = new TeachersPlanSearch();
+            $session = Yii::$app->session;
 
-            $searchName = StringHelper::basename($searchModel::className());
+            $model_date = new DynamicModel(['plan_year']);
+            $model_date->addRule(['plan_year'], 'required');
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            }
+            $session->set('_teachers_plan_year', $model_date->plan_year);
+
+            $query = TeachersPlan::find()->where(['=', 'teachers_id', $modelTeachers->id])->andWhere(['=', 'plan_year', $model_date->plan_year]);
+
+            $searchModel = new TeachersPlanSearch($query);
             $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['teachers_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('teachers-plan', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('teachers-plan', compact('dataProvider', 'searchModel', 'model_date', 'modelTeachers'));
         }
 
     }
@@ -891,9 +921,9 @@ class DefaultController extends MainController
             $model_date->addRule(['plan_year'], 'required')
                 ->addRule(['plan_year'], 'string');
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_efficiency_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
             }
-            $session->set('_efficiency_plan_year', $model_date->plan_year);
+            $session->set('_teachers_plan_year', $model_date->plan_year);
 
             $data = TeachersEfficiency::getSummaryTeachersData($id, $model_date);
 
@@ -935,10 +965,10 @@ class DefaultController extends MainController
             $model_date = new DynamicModel(['plan_year']);
             $model_date->addRule(['plan_year'], 'required');
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_efficiency_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
             }
             $data = ArtHelper::getStudyYearParams($model_date->plan_year);
-            $session->set('_efficiency_plan_year', $model_date->plan_year);
+            $session->set('_teachers_plan_year', $model_date->plan_year);
             $query = TeachersEfficiency::find()->where(['=', 'teachers_id', $id])
                 ->andWhere(['and', ['>=', 'date_in', $data['timestamp_in']], ['<=', 'date_in', $data['timestamp_out']]])
             ;
@@ -1033,7 +1063,7 @@ class DefaultController extends MainController
             return $this->renderIsAjax('document', [
                 'dataProvider' => $dataProvider,
                 'searchModel' => $searchModel,
-                'teachers_id' => $id
+                'modelTeachers' => $model
             ]);
         }
     }

@@ -102,7 +102,7 @@ class SubjectScheduleView extends SubjectSchedule
                 //   Notice::registerDanger($message);
                 $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
             }
-             if ($this->subject_sect_studyplan_id === 0 && self::getTeachersPlanOverLapping($model)->exists() === false) { // если занятия инд-е
+             if ($this->subject_sect_studyplan_id === 0 && self::getTeachersPlanScheduleOverLapping($model)->exists() === false) { // если занятия инд-е
                 $message = 'Заданное расписание не соответствует планированию индивидуальных занятий!';
                 $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
             }
@@ -180,13 +180,19 @@ class SubjectScheduleView extends SubjectSchedule
         return $thereIsAnOverlapping;
     }
 
-    public static function getTeachersPlanOverLapping($model)
+    /**
+     * Заданное расписание не соответствует планированию индивидуальных занятий!
+     * @param $model
+     * @return \yii\db\ActiveQuery
+     */
+    public static function getTeachersPlanScheduleOverLapping($model)
     {
         $thereIsAnOverlapping = TeachersPlan::find()
             ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = teachers_plan.direction_id')
             ->where(
             ['AND',
                 ['is', 'parent', null],
+                ['=', 'teachers_id', $model->teachersId],
                 ['auditory_id' => $model->auditory_id],
                 ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->id)],
                 ['AND',
