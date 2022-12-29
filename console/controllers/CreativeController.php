@@ -69,11 +69,11 @@ class CreativeController extends Controller
                     $model->published_at = \Yii::$app->formatter->asDate($this->getDate($v[8]), 'php:d.m.Y');
 
                     if ($flag = $model->save(false)) {
-                        $filename = "frontend/web/uploads/fileinput/creativeworks/" . $v[0] . ".pdf";
+                        $filename = "frontend/web/uploads/creative/" . $v[0] . ".pdf";
                         if (file_exists($filename)) {
                             $file = new FileManager();
                             $file->orig_name = $v[0] . ".pdf";
-                            $file->name = strtotime($model->published_at) . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '.' . ".pdf";
+                            $file->name = strtotime($model->published_at) . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '.' . "pdf";
                             $file->size = filesize($filename);
                             $file->type = 'pdf';
                             $file->item_id = $model->id;
@@ -81,7 +81,7 @@ class CreativeController extends Controller
                             $file->sort = 0;
 
                             $filename_new = "frontend/web/uploads/fileinput/creativeworks/" . $file->name;
-                            rename($filename, $filename_new);
+                            copy($filename, $filename_new);
                             $file->save(false);
                         } else {
                             $this->stdout('Не найден файл: ' . $filename . " ", Console::FG_RED);

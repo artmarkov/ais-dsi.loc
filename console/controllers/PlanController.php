@@ -5,12 +5,13 @@ namespace console\controllers;
 use artsoft\fileinput\models\FileManager;
 use Box\Spout\Common\Entity\Row;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
-use common\models\creative\CreativeWorks;
+use common\models\activities\ActivitiesOver;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\own\Department;
 use common\models\schoolplan\Schoolplan;
 use Yii;
 use yii\console\Controller;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 
 /**
@@ -32,7 +33,7 @@ class PlanController extends Controller
     /**
      * @throws \Box\Spout\Common\Exception\IOException
      * @throws \Box\Spout\Reader\Exception\ReaderNotOpenedException
-     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\base\Exception
      * @throws \yii\db\Exception
      */
     public function addPlan()
@@ -47,125 +48,171 @@ class PlanController extends Controller
                 if ($i == 1) {
                     continue; // skip header
                 }
-                if ($i > 5) {
-                    continue; // skip header
-                }
+//                if ($i > 15) {
+//                    continue; // skip header
+//                }
                 /* @var $row Row */
                 $v = $row->toArray();
-                print_r($v);
-//                $model = new Schoolplan();
-//
-//                $transaction = \Yii::$app->db->beginTransaction();
-//                try {
-//                    $teachers_id = $this->findByTeachers($v[1], $v[2], $v[3]);
-//                    $model->category_id = $this->getCatId($v[4]);
-//                    $model->name = $v[5];
-//                    $model->description = $v[6];
-//                    $model->department_list = [$this->getDepartmentId($v[7])];
-//                    $model->teachers_list = [$teachers_id];
-//                    $model->status = $v[9] == 1 ? 0 : 1;
-//                    if (is_a($v[8], 'DateTime')) { // если объект DateTime
-//                        $v[8] = $v[8]->format('d-m-Y');
-//                    }
-//                    $model->published_at = \Yii::$app->formatter->asDate($this->getDate($v[8]), 'php:d.m.Y');
-//
-//                    if ($flag = $model->save(false)) {
-//                        $filename = "frontend/web/uploads/fileinput/creativeworks/" . $v[0] . ".pdf";
-//                        if (file_exists($filename)) {
-//                            $file = new FileManager();
-//                            $file->orig_name = $v[0] . ".pdf";
-//                            $file->name = strtotime($model->published_at) . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '.' . ".pdf";
-//                            $file->size = filesize($filename);
-//                            $file->type = 'pdf';
-//                            $file->item_id = $model->id;
-//                            $file->class = 'CreativeWorks';
-//                            $file->sort = 0;
-//
-//                            $filename_new = "frontend/web/uploads/fileinput/creativeworks/" . $file->name;
-//                            rename($filename, $filename_new);
-//                            $file->save(false);
-//                        } else {
-//                            $this->stdout('Не найден файл: ' . $filename . " ", Console::FG_RED);
-//                            $this->stdout("\n");
-//                        }
-//
-//                        for ($i = 10; $i <= 27; $i = $i + 2) {
-//                            if ($v[$i] && $teachers_id) {
-//                                $effic = new TeachersEfficiency();
-//                                $effic->class = 'CreativeWorks';
-//                                $effic->item_id = $model->id;
-//                                $effic->efficiency_id = $this->getEfficienceId($v[$i + 1]);
-//                                $effic->teachers_id = $teachers_id;
-//                                $effic->bonus = $v[$i + 1];
-//                                $effic->bonus_vid_id =  $v[$i + 1] < 500 ? 1 : 2;
-//                                if (is_a($v[$i], 'DateTime')) { // если объект DateTime
-//                                    $v[$i] = $v[$i]->format('d-m-Y');
-//                                }
-//                                $effic->date_in = \Yii::$app->formatter->asDate($this->getDate($v[$i]), 'php:d.m.Y');
-//                                if (!($flag = $effic->save(false))) {
-//                                    $transaction->rollBack();
-//                                    break;
-//                                }
-//                            }
-//                        }
-//                    }
-//                    if ($flag) {
-//                        $transaction->commit();
-//                        $this->stdout('Добавлена работа: ' . $model->id, Console::FG_GREY);
-//                        $this->stdout("\n");
-//                    }
-//                } catch (Exception $e) {
-//                    $transaction->rollBack();
-//                }
+//                 print_r($v);
+                $model = new Schoolplan();
+
+                $transaction = \Yii::$app->db->beginTransaction();
+
+                try {
+                    $model->title = $v[10]; //Название мероприятия
+                    $model->datetime_in = date('d.m.Y H:i', (integer)$v[1]); //Дата и время начала
+                    $model->datetime_out = date('d.m.Y H:i', (integer)$v[2]); //Дата и время окончания
+                    $model->places = $v[3] == 2 ? $v[4] : null; //Место проведения
+                    $model->auditory_id = $v[3] == 1 ? $this->findByAuditoryNum($v[4]) : null; //Аудитория
+                    $model->department_list = [$this->getDepartmentId($v[5])]; //Отделы
+                    $model->executors_list = $this->getExecutors($v[34])[0]; //Ответственные
+                    $model->category_id = $this->getCatId($v[46]); //Категория мероприятия
+
+                    $model->form_partic = $v[24] == 0 ? 1 : 2; //Форма участия
+                    $model->partic_price = $v[24] == 1 ? $v[25] : null; //Стоимость участия
+                    $model->visit_poss = $v[26] == 0 ? 1 : 2; //Возможность посещения
+                    $model->visit_content = $v[26] == 1 ? $v[27] : null; //Комментарий по посещению
+                    $model->important_event = $v[32] == 0 ? 1 : 2; //Значимость мероприятия
+                    $model->format_event = $v[33]; //Формат мероприятия
+                    $model->region_partners = $v[17]; //Зарубежные и региональные партнеры
+                    $model->site_url = $v[18]; //Ссылка на мероприятие (сайт/соцсети)
+                    $model->site_media = $v[19]; //Ссылка на медиаресурс
+                    $model->description = $v[11]; //Описание мероприятия
+                    $model->rider = $v[12]; //Технические требования
+                    $model->result = $v[13]; //Итоги мероприятия
+                    $model->num_users = $v[14]; //Количество участников
+                    $model->num_winners = $v[15]; //Количество победителей
+                    $model->num_visitors = $v[16]; //Количество зрителей
+                    $model->bars_flag = $v[30]; //Отправлено в БАРС
+                    $model->period_over = $v[35]; //Период подготовки перед мероприятием мин.
+                    $model->period_over_flag = $v[35] != '' ? 1 : 0; //
+                    $model->executor_over_id = $this->findByTeachers($v[40]); //Ответственный за подготовку
+                    $model->title_over = $v[42]; //Примечание
+
+                    if ($flag = $model->save(false)) {
+                        $patch = "frontend/web/uploads/fileinput/schoolplan/";
+                        $filenames = [
+                            ["frontend/web/uploads/afisha/big/" . $v[0] . ".pdf", "pdf"],
+                            ["frontend/web/uploads/afisha/big/" . $v[0] . ".jpg", "jpg"],
+                            ["frontend/web/uploads/program/" . $v[0] . ".pdf", "pdf"],
+                            ["frontend/web/uploads/program/" . $v[0] . ".jpg", "jpg"],
+                        ];
+                        foreach ($filenames as $item => $filename) {
+                            if (file_exists($filename[0])) {
+                                $file = new FileManager();
+                                $file->orig_name = $v[0] . '.' . $filename[1];
+                                $file->name = $v[21] . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '.' . $filename[1];
+                                $file->size = filesize($filename[0]);
+                                $file->type = ArrayHelper::getValue(FileManager::TYPE, $filename[1] . '.type') ? ArrayHelper::getValue(FileManager::TYPE, $filename[1] . '.type') : 'image';
+                                $file->filetype = ArrayHelper::getValue(FileManager::TYPE, $filename[1] . '.filetype');
+                                $file->item_id = $model->id;
+                                $file->class = 'Schoolplan';
+                                $file->sort = 0;
+
+                                $filename_new = $patch . $file->name;
+                                copy($filename[0], $filename_new);
+                                $file->save(false);
+                            } else {
+                                $this->stdout('Не найден файл: ' . $filename[0] . " ", Console::FG_RED);
+                                $this->stdout("\n");
+                            }
+                        }
+
+                        if ($v[35] != '') {
+                            $over = new ActivitiesOver();
+                            $over->title = $v[42]; //Название мероприятия
+                            $over->over_category = 2; //Категория мероприятия (подготовка, штатно, замена, отмена и пр.)
+                            $over->datetime_in = date('d.m.Y H:i', (integer)$v[37]); //Дата и время начала
+                            $over->datetime_out = date('d.m.Y H:i', (integer)$v[38]); //Дата и время окончания
+                            $over->auditory_id = $v[43] != '' ? $this->findByAuditoryNum($v[43]) : null; //Аудитория
+                            $over->department_list = [$this->getDepartmentId($v[39])];  //Отделы
+                            $over->executors_list = [$this->findByTeachers($v[40])]; //Ответственные
+                            $over->description = $v[45]; //Описание мероприятия'php:d.m.Y');
+                            if (!($flag = $over->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                            if ($flag) {
+                                $m = Schoolplan::findOne(['id' => $model->id]);
+                                $m->activities_over_id = $over->id; //ИД мероприятия вне плана (подготовка к мероприятию)
+                                if (!($flag = $m->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                            if ($flag) {
+                                $efficArray = $this->getExecutors($v[34])[1];
+                                $dateArray = $this->getExecutors($v[34])[2];
+                                foreach ($efficArray as $id => $bonus) {
+
+                                    if($bonus != null) {
+                                        $m = new TeachersEfficiency();
+                                        $m->teachers_id = $id;
+                                        $m->efficiency_id = 1;
+                                        $m->bonus_vid_id = $bonus < 500 ? 1 : 2;
+                                        $m->bonus = $bonus;
+                                        $m->date_in = isset($dateArray[$id]) ?  date('d.m.Y', (integer)$dateArray[$id]) : 0;
+                                        $m->class = 'Schoolplan';
+                                        $m->item_id = $model->id;
+                                        if (!($flag = $m->save())) {
+                                            $transaction->rollBack();
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                        $this->stdout('Добавлено мероприятие: ' . $model->id, Console::FG_GREY);
+                        $this->stdout("\n");
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                }
             }
         }
+    }
+
+    public function findByAuditoryNum($num)
+    {
+        $auditory = \Yii::$app->db->createCommand('SELECT id 
+                                                    FROM auditory 
+                                                    WHERE num=:num',
+            [
+                'num' => $num
+            ])->queryOne();
+        return $auditory['id'];
+    }
+
+    public function getExecutors($executors)
+    {
+        $ex = $pr = $dd = [];
+        foreach (explode(',', $executors) as $item => $value) {
+            $m = explode('||', $value);
+            $t = $this->findByTeachers($m[0]);
+            if ($t) {
+                $ex[] = $t;
+                $pr[$t] = $m[1] != 0 ? $m[1] : null;
+                $dd[$t] = $m[2] != '' ? $m[2] : null;
+            }
+        }
+        return [$ex, $pr, $dd];
     }
 
     public function findByTeachers($full_name)
     {
         $user = \Yii::$app->db->createCommand('SELECT teachers_id 
                                                     FROM teachers_view 
-                                                    WHERE full_name=:full_name 
+                                                    WHERE fullname=:fullname 
                                                    ',
             [
-                'full_name' => $full_name,
+                'fullname' => $full_name,
             ])->queryOne();
-        return $user['teachers_id'];
+        return $user['teachers_id'] ?? false;
     }
 
-    /**
-     * @param $name
-     * @return bool|int
-     */
-    public function getEfficienceId($name)
-    {
-        $stake_id = null;
-
-        switch ($name) {
-            case '3' :
-            case '4' :
-            case '5' :
-            case '6' :
-                $stake_id = 4;
-                break;
-            case '7' :
-            case '8' :
-            case '9' :
-            case '10' :
-            case '11' :
-                $stake_id = 5;
-                break;
-            case '12' :
-            case '13' :
-            case '14' :
-            case '15' :
-                $stake_id = 6;
-                break;
-            default:
-                $stake_id = 5;
-        }
-        return $stake_id;
-    }
 
     public function getDepartmentId($name)
     {
@@ -173,32 +220,18 @@ class PlanController extends Controller
         return $model ? $model->id : false;
     }
 
-    public function getCatId($name)
+
+    public function getCatId($id)
     {
-        $stake_id = null;
+        $ids = ['1' => '2', '2' => '3', '3' => '4', '4' => '5',
+            '5' => '6', '6' => '7', '7' => '8', '8' => '10',
+            '9' => '18', '10' => '11', '11' => '19', '12' => '12',
+            '13' => '20', '14' => '13', '15' => '21', '17' => '26',
+            '18' => '27', '20' => '21', '21' => '16', '22' => '29', '23' => '30',
+            '24' => '31', '25' => '32', '26' => '14', '27' => '22',
+            '28' => '15', '29' => '23', '30' => '24'];
 
-        switch ($name) {
-            case 'Творческие работы' :
-                $stake_id = 1000;
-                break;
-            case 'Методические работы' :
-                $stake_id = 1001;
-                break;
-            case 'Сертификаты' :
-                $stake_id = 1002;
-                break;
-        }
-        return $stake_id;
+        return $ids[$id] ?? '';
     }
-
-    protected function getDate($date)
-    {
-        if (is_a($date, 'DateTime')) { // если объект DateTime
-            $date = $date->format('d-m-Y');
-            return $date;
-        }
-        return $date;
-    }
-
 
 }

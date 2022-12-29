@@ -99,7 +99,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
 
         $this->createTableWithHistory('schoolplan', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
-            'title' => $this->string(100)->comment('Название мероприятия'),
+            'title' => $this->string(512)->comment('Название мероприятия'),
             'datetime_in' => $this->integer()->notNull()->comment('Дата и время начала'),
             'datetime_out' => $this->integer()->notNull()->comment('Дата и время окончания'),
             'places' => $this->string(512)->comment('Место проведения'),
@@ -117,7 +117,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             'region_partners' => $this->string()->defaultValue(null)->comment('Зарубежные и региональные партнеры'),
             'site_url' => $this->string()->defaultValue(null)->comment('Ссылка на мероприятие (сайт/соцсети)'),
             'site_media' => $this->string()->defaultValue(null)->comment('Ссылка на медиаресурс'),
-            'description' => $this->string(4000)->defaultValue(null)->comment('Описание мероприятия'),
+            'description' => $this->text()->defaultValue(null)->comment('Описание мероприятия'),
             'rider' => $this->text()->defaultValue(null)->comment('Технические требования'),
             'result' => $this->text()->defaultValue(null)->comment('Итоги мероприятия'),
             'num_users' => $this->integer()->comment('Количество участников'),

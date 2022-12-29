@@ -138,7 +138,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['auditory_id', 'category_id', 'activities_over_id', 'form_partic', 'visit_poss', 'important_event', 'format_event', 'num_users', 'num_winners', 'num_visitors'], 'integer'],
             [['visit_content', 'region_partners', 'rider', 'result'], 'string'],
             [['site_url', 'site_media'], 'url', 'defaultScheme' => 'http'],
-            [['title'], 'string', 'max' => 100],
+            [['title'], 'string', 'max' => 512],
             [['places'], 'string', 'max' => 512],
             [['description'], 'default', 'value' => null],
             [['partic_price', 'site_url', 'site_media'], 'string', 'max' => 255],
@@ -243,6 +243,11 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function getAuditory()
     {
         return $this->hasOne(Auditory::class, ['id' => 'auditory_id']);
+    }
+
+    public function getAuditoryName()
+    {
+        return $this->auditory ? $this->auditory->name : null;
     }
 
     /**

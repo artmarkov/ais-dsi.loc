@@ -77,15 +77,18 @@ $this->params['breadcrumbs'][] = $this->title;
                             'datetime_out:datetime',
                             [
                                 'attribute' => 'category_id',
-                                'value' => 'categoryName',
+                                'value' => function ($model) {
+                                    return $model->categoryName;
+                                },
                                 'options' => ['style' => 'width:350px'],
                                 'filter' => \common\models\guidesys\GuidePlanTree::getPlanList(),
                             ],
                             'places',
                             [
                                 'attribute' => 'auditory_id',
-                                'value' => 'auditoryName',
-                                'label' => Yii::t('art/guide', 'Name Auditory'),
+                                'value' => function ($model) {
+                                    return $model->auditoryName;
+                                },
                                 'filter' => \artsoft\helpers\RefBook::find('auditory_memo_1', 1, true)->getList(),
                             ],
                             [
@@ -104,7 +107,23 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-//                    'executors_list',
+                            [
+                                'attribute' => 'executors_list',
+                                'filter' => \artsoft\helpers\RefBook::find('teachers_fio')->getList(),
+                                'value' => function (Schoolplan $model) {
+                                    $v = [];
+                                    foreach ($model->executors_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = \artsoft\helpers\RefBook::find('teachers_fio')->getValue($id);
+                                    }
+                                    return implode(',<br/> ', $v);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
+//                            'bars_flag',
                             // 'form_partic',
                             // 'partic_price',
                             // 'visit_poss',
@@ -113,13 +132,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             // 'region_partners:ntext',
                             // 'site_url:url',
                             // 'site_media',
-                            'description:ntext',
-                            'rider:ntext',
+//                            'description:ntext',
+//                            'rider:ntext',
 //                    'result:ntext',
 //                    'num_users',
 //                    'num_winners',
 //                    'num_visitors',
-
                         ],
                     ]);
                     ?>

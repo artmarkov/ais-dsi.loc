@@ -17,7 +17,7 @@ class TeachersEfficiencySearch extends TeachersEfficiency
 
     public function __construct($query = false)
     {
-        $this->query = $query ?: ConsultScheduleView::find();
+        $this->query = $query ?: TeachersEfficiency::find();
         parent::__construct();
     }
 

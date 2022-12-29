@@ -48,6 +48,10 @@ return [
     ],
     'modules' => [
         'gii' => 'yii\gii\Module',
+        'treemanager' =>  [
+            'class' => '\kartik\tree\Module',
+            // other module settings, refer detailed documentation
+        ],
     ],
     'params' => $params,
 ];

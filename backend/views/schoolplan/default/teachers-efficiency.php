@@ -109,8 +109,15 @@ use artsoft\grid\GridPageSize;
                                 [
                                     'attribute' => 'bonus',
                                     'value' => function (TeachersEfficiency $model) {
-                                        return $model->bonus . '%';
+                                        return $model->bonus;
                                     },
+                                ],
+                                [
+                                    'attribute' => 'bonus_vid_id',
+                                    'value' => function (TeachersEfficiency $model) {
+                                        return \common\models\efficiency\EfficiencyTree::getBobusVidValue('short', $model->bonus_vid_id);
+                                    },
+                                    'filter' => \common\models\efficiency\EfficiencyTree::getBobusVidList('short'),
                                 ],
                                 [
                                     'attribute' => 'date_in',
