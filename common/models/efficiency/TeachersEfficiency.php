@@ -152,7 +152,7 @@ class TeachersEfficiency extends \artsoft\db\ActiveRecord
                             'datetime_out',
                         ],
                         'link' => ['/schoolplan/default/view', 'id' => $this->item_id],
-                        'title' => 'Карточка образовательной программы',
+                        'title' => 'Карточка мероприятия',
                     ];
                 } else {
                     return false;

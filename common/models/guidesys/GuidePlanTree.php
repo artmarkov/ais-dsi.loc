@@ -93,7 +93,7 @@ class GuidePlanTree extends \kartik\tree\models\Tree
      */
     public static function getPlanList()
     {
-        return  self::find()->where(['disabled' => false])->select(['name', 'id'])->indexBy('id')->column();
+        return  self::find()->where(['disabled' => false])->select(['name', 'id'])->indexBy('id')->orderBy('name')->column();
     }
 
     /**
