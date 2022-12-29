@@ -93,7 +93,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             [30, 28, 4, 5, 1, '5.2. Работа с родителями','', 1, 0, false, false, false, true, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
             [31, 28, 6, 7, 1, '5.3. Посещение концертов','', 2, 0, false, false, false, true, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
             [32, 28, 8, 9, 1, '5.4. Посещение выставок','', 2, 0, false, false, false, true, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [33, 1, 16, 17, 1, '1.8 Прослушивания к концертам и конкурсам','', 1, 1, false, false, false, false, false, false, false, false,'', 1, true, false, false, false, false, false, false, false, false, false, false, false, true, time(),1000],
+            [33, 1, 16, 17, 1, '1.8. Прослушивания к концертам и конкурсам','', 1, 1, false, false, false, false, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
 
         ])->execute();
         $this->db->createCommand()->resetSequence(self::TABLE_NAME_TREE, 33)->execute();
