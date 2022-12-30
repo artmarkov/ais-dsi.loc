@@ -3,8 +3,6 @@
 namespace backend\controllers\schoolplan;
 
 use backend\models\Model;
-use common\models\education\LessonItems;
-use common\models\education\LessonProgress;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
@@ -13,7 +11,6 @@ use common\models\history\SchoolplanProtocolHistory;
 use common\models\schoolplan\SchoolplanProtocol;
 use common\models\schoolplan\SchoolplanProtocolItems;
 use common\models\schoolplan\search\SchoolplanProtocolSearch;
-use common\models\studyplan\StudyplanSubject;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
@@ -24,7 +21,7 @@ use yii\helpers\StringHelper;
 class DefaultController extends MainController
 {
     public $modelClass = 'common\models\schoolplan\Schoolplan';
-    public $modelSearchClass = 'common\models\schoolplan\search\SchoolplanSearch';
+    public $modelSearchClass = 'common\models\schoolplan\search\SchoolplanViewSearch';
     public $modelHistoryClass = 'common\models\history\SchoolplanHistory';
 
     /**

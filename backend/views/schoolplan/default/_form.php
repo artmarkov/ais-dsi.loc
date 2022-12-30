@@ -246,11 +246,6 @@ use artsoft\helpers\Html;
 
                                         <?= $form->field($model, 'num_visitors')->textInput() ?>
 
-                                        <?php if ($model->category->bars_flag) : ?>
-
-                                            <?= $form->field($model, 'bars_flag')->checkbox(['disabled' => $readonly]) ?>
-
-                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -283,6 +278,11 @@ use artsoft\helpers\Html;
                                         ?>
                                         <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(Schoolplan::getDocStatusList(), ['disabled' => $readonly]) ?>
 
+                                        <?php if ($model->category->bars_flag) : ?>
+
+                                            <?= $form->field($model, 'bars_flag')->checkbox(['disabled' => $readonly]) ?>
+
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <?php if (!$model->isNewRecord) : ?>

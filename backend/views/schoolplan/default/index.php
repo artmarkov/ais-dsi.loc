@@ -10,7 +10,7 @@ use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\schoolplan\search\SchoolplanSearch */
+/* @var $searchModel common\models\schoolplan\search\SchoolplanViewSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/guide', 'School Plans');
@@ -90,6 +90,37 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return Html::a($model->title, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
+                                'buttons' => [
+                                    'update' => function ($url, $model, $key) {
+                                        return Html::a(Yii::t('art', 'Edit'),
+                                            Url::to(['update', 'id' => $model->id]), [
+                                                'title' => Yii::t('art', 'Edit'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                    'view' => function ($url, $model, $key) {
+                                        return Html::a(Yii::t('art', 'View'),
+                                            Url::to(['view', 'id' => $model->id]), [
+                                                'title' => Yii::t('art', 'View'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                    'delete' => function ($url, $model, $key) {
+                                        return Html::a(Yii::t('art', 'Delete'),
+                                            Url::to(['delete', 'id' => $model->id]), [
+                                                'title' => Yii::t('art', 'Delete'),
+                                                'aria-label' => Yii::t('art', 'Delete'),
+                                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
                             ],
 
                             'datetime_in:datetime',
@@ -102,14 +133,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px', 'class' => 'danger'],
                                 'filter' => \common\models\guidesys\GuidePlanTree::getPlanList(),
                             ],
-                            'places',
-                            [
-                                'attribute' => 'auditory_id',
-                                'value' => function ($model) {
-                                    return $model->auditoryName;
-                                },
-                                'filter' => \artsoft\helpers\RefBook::find('auditory_memo_1', 1, true)->getList(),
-                            ],
+                            'auditory_places',
+
                             [
                                 'attribute' => 'department_list',
                                 'filter' => Department::getDepartmentList(),
@@ -121,7 +146,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         }
                                         $v[] = Department::findOne($id)->name;
                                     }
-                                    return implode('<br/> ', $v);
+                                    return implode(',<br/> ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
