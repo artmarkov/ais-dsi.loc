@@ -166,4 +166,8 @@ return [
     'Send a link to reset your password' => 'Отправить ссылку для сброса пароля',
     'Are you sure?' => 'Вы уверены?',
     'Previous successful login' => 'Предыдущий успешный вход',
+    'Draft' => 'Черновик',
+    'Agreed' => 'Согласовано',
+    'Wait' => 'На согласовании',
+    'Canceled' => 'Отменено',
 ];

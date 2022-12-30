@@ -25,6 +25,7 @@ class SchoolplanHistory extends BaseHistory
     {
         return [
             'title',
+            'author_id',
             'datetime_in',
             'datetime_out',
             'places',
@@ -48,6 +49,7 @@ class SchoolplanHistory extends BaseHistory
             'num_winners',
             'num_visitors',
             'bars_flag',
+            'doc_status',
         ];
     }
 
@@ -79,6 +81,9 @@ class SchoolplanHistory extends BaseHistory
                     return implode(', ', $v);
                 }
                 break;
+            case 'author_id':
+                return isset($model->author_id) ? UserCommon::findOne($model->author_id)->getFullName() : $value;
+                break;
             case 'auditory_id':
                 return isset($model->auditory_id) ? RefBook::find('auditory_memo_1')->getValue($model->auditory_id) : $value;
                 break;
@@ -100,6 +105,9 @@ class SchoolplanHistory extends BaseHistory
             case 'bars_flag':
                 return isset($model->bars_flag) ? ($model->bars_flag ? 'Да' : 'Нет') : $value;
                 break;
+            case 'doc_status':
+                return isset($model->doc_status) ? Schoolplan::getDocStatusValue($value) : $value;
+                break;
 
         }
         return parent::getDisplayValue($model, $name, $value);
@@ -113,7 +121,7 @@ class SchoolplanHistory extends BaseHistory
         $selfHistory = parent::getHistory();
 
         $modelDependency = $this->getModelName()::findOne($this->objId)->activitiesOver;
-        if($modelDependency) {
+        if ($modelDependency) {
             $id = $modelDependency->id;
             $vf = new ActivitiesOverHistory($id);
             $selfHistory = array_merge($selfHistory, $vf->getHistory());

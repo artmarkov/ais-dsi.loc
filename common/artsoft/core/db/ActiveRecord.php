@@ -16,6 +16,11 @@ class ActiveRecord extends \yii\db\ActiveRecord
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
 
+    const DOC_STATUS_DRAFT = 0; //Черновик (внесены изменения) - серый
+    const DOC_STATUS_AGREED = 1; //Согласовано - зеленый
+    const DOC_STATUS_WAIT = 2; //На согласовании - желтый
+    const DOC_STATUS_CANCEL = 3; //Отменено - красный
+
     /**
      * Returns TRUE if model support multilingual behavior.
      *
@@ -56,6 +61,20 @@ class ActiveRecord extends \yii\db\ActiveRecord
     }
 
     /**
+     * getDocStatusList
+     * @return array
+     */
+    public static function getDocStatusList()
+    {
+        return array(
+            self::DOC_STATUS_DRAFT => Yii::t('art', 'Draft'),
+            self::DOC_STATUS_AGREED => Yii::t('art', 'Agreed'),
+            self::DOC_STATUS_WAIT => Yii::t('art', 'Wait'),
+            self::DOC_STATUS_CANCEL => Yii::t('art', 'Canceled'),
+        );
+    }
+
+    /**
      * getStatusValue
      * @param string $val
      * @return string
@@ -63,6 +82,17 @@ class ActiveRecord extends \yii\db\ActiveRecord
     public static function getStatusValue($val)
     {
         $ar = self::getStatusList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    /**
+     * getDocStatusValue
+     * @param $val
+     * @return mixed
+     */
+    public static function getDocStatusValue($val)
+    {
+        $ar = self::getDocStatusList();
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
 }

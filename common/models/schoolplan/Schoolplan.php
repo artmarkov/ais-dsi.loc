@@ -9,6 +9,7 @@ use common\models\activities\ActivitiesOver;
 use common\models\auditory\Auditory;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
+use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -18,6 +19,7 @@ use yii\helpers\StringHelper;
  * This is the model class for table "schoolplan".
  *
  * @property int $id
+ * @property int $author_id Автор записи
  * @property string|null $title Название мероприятия
  * @property int $datetime_in Дата и время начала
  * @property int $datetime_out Дата и время окончания
@@ -48,6 +50,7 @@ use yii\helpers\StringHelper;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
+ * @property int $doc_status
  *
  * @property int $period_over Период подготовки перед мероприятием мин.
  * @property int $period_over_flag
@@ -55,6 +58,7 @@ use yii\helpers\StringHelper;
  * @property string $title_over Примечание
  *
  * @property Auditory $auditory
+ * @property Author $author
  * @property GuidePlanTree $category
  * @property ActivitiesOver $activitiesOver
  * @property TeachersEfficiency $teachersEfficiency
@@ -129,18 +133,19 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'datetime_in', 'datetime_out', 'category_id'], 'required'],
+            [['title', 'datetime_in', 'datetime_out', 'category_id', 'author_id', 'doc_status'], 'required'],
             [['department_list', 'executors_list'], 'required'],
             [['partic_price'], 'required', 'when' => function ($model) {
                 return $model->form_partic == '2';
             }, 'enableClientValidation' => false],
             [['department_list', 'executors_list', 'datetime_in', 'datetime_out'], 'safe'],
-            [['auditory_id', 'category_id', 'activities_over_id', 'form_partic', 'visit_poss', 'important_event', 'format_event', 'num_users', 'num_winners', 'num_visitors'], 'integer'],
+            [['auditory_id', 'category_id', 'activities_over_id', 'form_partic', 'visit_poss', 'important_event', 'format_event', 'num_users', 'num_winners', 'num_visitors', 'author_id'], 'integer'],
             [['visit_content', 'region_partners', 'rider', 'result'], 'string'],
             [['site_url', 'site_media'], 'url', 'defaultScheme' => 'http'],
             [['title'], 'string', 'max' => 512],
             [['places'], 'string', 'max' => 512],
             [['description'], 'default', 'value' => null],
+            [['doc_status'], 'default', 'value' => 0],
             [['partic_price', 'site_url', 'site_media'], 'string', 'max' => 255],
             ['description', 'string', 'max' => 4000, 'min' => 1000, 'when' => function ($model) {
                 return $model->category->description_flag && !$model->isNewRecord;
@@ -164,8 +169,11 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['places', 'auditory_id'], 'required', 'when' => function ($model) {
                 return empty($model->places) && empty($model->auditory_id);
             }, 'enableClientValidation' => false],
+            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['author_id' => 'id']],
+
         ];
     }
+
 
     public function compareTimestamp($attribute, $params, $validator)
     {
@@ -193,6 +201,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'author_id' => 'Автор мероприятия',
             'title' => 'Название мероприятия',
             'datetime_in' => 'Дата и время начала',
             'datetime_out' => 'Дата и время окончания',
@@ -223,6 +232,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'doc_status' => 'Статус мероприятия',
             'title_over' => 'Комментарий',
             'period_over' => 'Время подготовки к мероприятию',
             'period_over_flag' => 'Добавить подготовку к мероприятию',
@@ -267,7 +277,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 
     public function getCategorySell()
     {
-        return $this->category->category_sell;
+        return isset($this->category) ? $this->category->category_sell : null;
     }
 
     /**
@@ -286,6 +296,14 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function getTeachersEfficiency()
     {
         return $this->hasMany(TeachersEfficiency::class, ['item_id' => 'id'])->andWhere(['class' => StringHelper::basename(get_class($this))]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAuthor()
+    {
+        return $this->hasOne(UserCommon::class, ['id' => 'author_id']);
     }
 
     /**

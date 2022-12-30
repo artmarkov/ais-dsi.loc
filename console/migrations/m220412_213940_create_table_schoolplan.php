@@ -69,31 +69,31 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             [6, 1, 10, 11, 1, '1.5. Выпускные экзамены','', 1, 1, false, false, false, false, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
             [7, 1, 12, 13, 1, '1.6. Вступительные экзамены','', 1, 2, false, false, false, false, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
             [8, 1, 14, 15, 1, '1.7. Просмотр работ ИЗО отделения','', 1, 1, false, false, false, false, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [9, 9, 1, 16, 0, '2. Участие учащихся в творческих мероприятиях','', 0, 0, false, false, false, false, false, false, false, false,'', 1, true, false, true, false, true, true, false, false, false, false, false, false, true, time(),1000],
-            [10,9,2,3,1, '2.1. Международные мероприятия','',2,0,false,false,false,true,true,false,false,false,'',1,true,false,false,false,true,false,false,false,false,false,false,false,true,time(),1000],
-            [11, 9, 4, 5, 1, '2.2. Межрегиональные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [12, 9, 6, 7, 1, '2.3. Городские мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [13, 9, 8, 9, 1, '2.4. Окружные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [14, 9, 10, 11, 1, '2.5. Районные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [15, 9, 12, 13, 1, '2.6. Школьные мероприятия(с описанием)','', 1, 0, true, true, true, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [16, 9, 14, 15, 1, '2.7. Школьные мероприятия(без описания)','', 1, 0, true, false, true, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [17, 17, 1, 16, 0, '3. Участие преподавателей в творческих мероприятиях','', 0, 0, false, false, false, false, false, false, false, false,'', 1, true, false, true, false, true, true, false, false, false, false, false, false, true, time(),1000],
-            [18, 17, 2, 3, 1, '3.1. Международные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [19, 17, 4, 5, 1, '3.2. Межрегиональные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [20, 17, 6, 7, 1, '3.3. Городские мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [21, 17, 8, 9, 1, '3.4. Окружные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [22, 17, 10, 11, 1, '3.5. Районные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [23, 17, 12, 13, 1, '3.6. Школьные мероприятия(с описанием)','', 1, 0, true, true, true, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [24, 17, 14, 15, 1, '3.7. Школьные мероприятия(без описания)','', 1, 0, true, false, true, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [25, 25, 1, 6, 0, '4. Методическая работа','', 0, 0, false, false, false, false, false, false, false, false,'', 1, true, false, true, false, true, true, false, false, false, false, false, false, true, time(),1000],
-            [26, 25, 2, 3, 1, '4.1. Открытые уроки','', 1, 0, false, false, false, false, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [27, 25, 4, 5, 1, '4.2. Курсы\, семинары\, конференции\, консультации\, мастер-классы и др.','', 1, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [28, 28, 1, 10, 0, '5. Внеклассная работа','', 1, 0, false, false, false, false, false, false, false, false,'', 1, true, false, true, false, true, true, false, false, false, false, false, false, true, time(),1000],
-            [29, 28, 2, 3, 1, '5.1. Внеклассная работа с учащимися','', 1, 0, false, false, false, true, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [30, 28, 4, 5, 1, '5.2. Работа с родителями','', 1, 0, false, false, false, true, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [31, 28, 6, 7, 1, '5.3. Посещение концертов','', 2, 0, false, false, false, true, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [32, 28, 8, 9, 1, '5.4. Посещение выставок','', 2, 0, false, false, false, true, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
-            [33, 1, 16, 17, 1, '1.8. Прослушивания к концертам и конкурсам','', 1, 1, false, false, false, false, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [9, 1, 16, 17, 1, '1.8. Прослушивания к концертам и конкурсам','', 1, 1, false, false, false, false, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [10, 9, 1, 16, 0, '2. Участие учащихся в творческих мероприятиях','', 0, 0, false, false, false, false, false, false, false, false,'', 1, true, false, true, false, true, true, false, false, false, false, false, false, true, time(),1000],
+            [11,9,2,3,1, '2.1. Международные мероприятия','',2,0,false,false,false,true,true,false,false,false,'',1,true,false,false,false,true,false,false,false,false,false,false,false,true,time(),1000],
+            [12, 9, 4, 5, 1, '2.2. Межрегиональные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [13, 9, 6, 7, 1, '2.3. Городские мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [14, 9, 8, 9, 1, '2.4. Окружные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [15, 9, 10, 11, 1, '2.5. Районные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [16, 9, 12, 13, 1, '2.6. Школьные мероприятия(с описанием)','', 1, 0, true, true, true, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [17, 9, 14, 15, 1, '2.7. Школьные мероприятия(без описания)','', 1, 0, true, false, true, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [18, 17, 1, 16, 0, '3. Участие преподавателей в творческих мероприятиях','', 0, 0, false, false, false, false, false, false, false, false,'', 1, true, false, true, false, true, true, false, false, false, false, false, false, true, time(),1000],
+            [19, 17, 2, 3, 1, '3.1. Международные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [20, 17, 4, 5, 1, '3.2. Межрегиональные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [21, 17, 6, 7, 1, '3.3. Городские мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [22, 17, 8, 9, 1, '3.4. Окружные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [23, 17, 10, 11, 1, '3.5. Районные мероприятия','', 2, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [24, 17, 12, 13, 1, '3.6. Школьные мероприятия(с описанием)','', 1, 0, true, true, true, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [25, 17, 14, 15, 1, '3.7. Школьные мероприятия(без описания)','', 1, 0, true, false, true, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [26, 25, 1, 6, 0, '4. Методическая работа','', 0, 0, false, false, false, false, false, false, false, false,'', 1, true, false, true, false, true, true, false, false, false, false, false, false, true, time(),1000],
+            [27, 25, 2, 3, 1, '4.1. Открытые уроки','', 1, 0, false, false, false, false, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [28, 25, 4, 5, 1, '4.2. Курсы\, семинары\, конференции\, консультации\, мастер-классы и др.','', 1, 0, false, false, false, true, true, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [29, 28, 1, 10, 0, '5. Внеклассная работа','', 1, 0, false, false, false, false, false, false, false, false,'', 1, true, false, true, false, true, true, false, false, false, false, false, false, true, time(),1000],
+            [30, 28, 2, 3, 1, '5.1. Внеклассная работа с учащимися','', 1, 0, false, false, false, true, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [31, 28, 4, 5, 1, '5.2. Работа с родителями','', 1, 0, false, false, false, true, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [32, 28, 6, 7, 1, '5.3. Посещение концертов','', 2, 0, false, false, false, true, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
+            [33, 28, 8, 9, 1, '5.4. Посещение выставок','', 2, 0, false, false, false, true, false, false, false, false,'', 1, true, false, false, false, true, false, false, false, false, false, false, false, true, time(),1000],
 
         ])->execute();
         $this->db->createCommand()->resetSequence(self::TABLE_NAME_TREE, 33)->execute();
@@ -101,6 +101,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
 
         $this->createTableWithHistory('schoolplan', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'author_id' => $this->integer()->notNull()->comment('Автор записи'),
             'title' => $this->string(512)->comment('Название мероприятия'),
             'datetime_in' => $this->integer()->notNull()->comment('Дата и время начала'),
             'datetime_out' => $this->integer()->notNull()->comment('Дата и время окончания'),
@@ -131,6 +132,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             'updated_at' => $this->integer()->notNull(),
             'updated_by' => $this->integer(),
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
+            'doc_status' => $this->smallInteger()->notNull()->defaultValue(0)->comment('Ствтус мероприятия'),
         ], $tableOptions);
 
         $this->addCommentOnTable('schoolplan', 'План мероприятий');
@@ -140,6 +142,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
         $this->addForeignKey('schoolplan_ibfk_2', 'schoolplan', 'auditory_id', 'auditory', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('schoolplan_ibfk_3', 'schoolplan', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('schoolplan_ibfk_4', 'schoolplan', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('schoolplan_ibfk_5', 'schoolplan', 'author_id', 'user_common', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('activities_over', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',

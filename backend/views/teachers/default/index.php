@@ -116,7 +116,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         }
                                         $v[] = Bonus::findOne($id)->name;
                                     }
-                                    return implode('<br/> ', $v);
+                                    return implode(',<br/> ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',

@@ -18,7 +18,7 @@ class SchoolplanSearch extends Schoolplan
     public function rules()
     {
         return [
-            [['id', 'datetime_in', 'datetime_out', 'auditory_id', 'category_id', 'form_partic', 'visit_poss', 'important_event', 'num_users', 'num_winners', 'num_visitors', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['id', 'datetime_in', 'datetime_out', 'auditory_id', 'category_id', 'form_partic', 'visit_poss', 'important_event', 'num_users', 'num_winners', 'num_visitors', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'author_id', 'doc_status'], 'integer'],
             [['title', 'places', 'department_list', 'executors_list', 'partic_price', 'visit_content', 'region_partners', 'site_url', 'site_media', 'description', 'rider', 'result'], 'safe'],
         ];
     }
@@ -65,6 +65,7 @@ class SchoolplanSearch extends Schoolplan
 
         $query->andFilterWhere([
             'id' => $this->id,
+            'author_id' => $this->author_id,
             'datetime_in' => $this->datetime_in,
             'datetime_out' => $this->datetime_out,
             'auditory_id' => $this->auditory_id,
@@ -80,6 +81,7 @@ class SchoolplanSearch extends Schoolplan
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
             'version' => $this->version,
+            'doc_status' => $this->doc_status,
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title])

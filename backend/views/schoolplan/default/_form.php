@@ -38,6 +38,7 @@ use artsoft\helpers\Html;
 
                     <div class="row">
                         <div class="col-sm-12">
+
                             <?= $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Выберите запланированную дату и укажите время проведения мероприятия. Если на момент введения Вы не обладаете информацией о точном времени проведения мероприятия, указывается приблизительное время.'); ?>
 
                             <?= $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]) ?>
@@ -72,6 +73,7 @@ use artsoft\helpers\Html;
 
                             ]);
                             ?>
+
 
                             <?= $form->field($model, 'category_id')->widget(\kartik\tree\TreeViewInput::class, [
                                 'id' => "schoolplan_category_tree",
@@ -140,7 +142,7 @@ use artsoft\helpers\Html;
                                             ],
                                             'pluginOptions' => [
                                                 'allowClear' => false,
-                                                'minimumInputLength' => 3,
+                                               // 'minimumInputLength' => 3,
                                             ],
 
                                         ]); ?>
@@ -264,6 +266,22 @@ use artsoft\helpers\Html;
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-sm-12">
+                                        <?= $form->field($model->loadDefaultValues(), 'author_id')->widget(\kartik\select2\Select2::class, [
+                                            'data' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees']),
+                                            'showToggleAll' => false,
+                                            'options' => [
+                                                'disabled' => $readonly,
+                                                'placeholder' => Yii::t('art', 'Select...'),
+                                                'multiple' => false,
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => false,
+                                                //'minimumInputLength' => 3,
+                                            ],
+
+                                        ]);
+                                        ?>
+                                        <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(Schoolplan::getDocStatusList(),['disabled' => $readonly]) ?>
 
                                     </div>
                                 </div>

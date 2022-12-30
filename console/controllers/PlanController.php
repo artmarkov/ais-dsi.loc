@@ -59,35 +59,35 @@ class PlanController extends Controller
                 $transaction = \Yii::$app->db->beginTransaction();
 
                 try {
-                    $model->title = $v[10]; //Название мероприятия
+                    $model->title = $v[7]; //Название мероприятия
                     $model->datetime_in = date('d.m.Y H:i', (integer)$v[1]); //Дата и время начала
                     $model->datetime_out = date('d.m.Y H:i', (integer)$v[2]); //Дата и время окончания
                     $model->places = $v[3] == 2 ? $v[4] : null; //Место проведения
                     $model->auditory_id = $v[3] == 1 ? $this->findByAuditoryNum($v[4]) : null; //Аудитория
                     $model->department_list = [$this->getDepartmentId($v[5])]; //Отделы
-                    $model->executors_list = $this->getExecutors($v[34])[0]; //Ответственные
-                    $model->category_id = $this->getCatId($v[46]); //Категория мероприятия
+                    $model->executors_list = $this->getExecutors($v[31]); //Ответственные
+                    $model->category_id = $this->getCatId($v[6]); //Категория мероприятия
 
-                    $model->form_partic = $v[24] == 0 ? 1 : 2; //Форма участия
-                    $model->partic_price = $v[24] == 1 ? $v[25] : null; //Стоимость участия
-                    $model->visit_poss = $v[26] == 0 ? 1 : 2; //Возможность посещения
-                    $model->visit_content = $v[26] == 1 ? $v[27] : null; //Комментарий по посещению
-                    $model->important_event = $v[32] == 0 ? 1 : 2; //Значимость мероприятия
-                    $model->format_event = $v[33]; //Формат мероприятия
-                    $model->region_partners = $v[17]; //Зарубежные и региональные партнеры
-                    $model->site_url = $v[18]; //Ссылка на мероприятие (сайт/соцсети)
-                    $model->site_media = $v[19]; //Ссылка на медиаресурс
-                    $model->description = $v[11]; //Описание мероприятия
-                    $model->rider = $v[12]; //Технические требования
-                    $model->result = $v[13]; //Итоги мероприятия
-                    $model->num_users = $v[14]; //Количество участников
-                    $model->num_winners = $v[15]; //Количество победителей
-                    $model->num_visitors = $v[16]; //Количество зрителей
-                    $model->bars_flag = $v[30]; //Отправлено в БАРС
-                    $model->period_over = $v[35]; //Период подготовки перед мероприятием мин.
-                    $model->period_over_flag = $v[35] != '' ? 1 : 0; //
-                    $model->executor_over_id = $this->findByTeachers($v[40]); //Ответственный за подготовку
-                    $model->title_over = $v[42]; //Примечание
+                    $model->form_partic = $v[21] == 0 ? 1 : 2; //Форма участия
+                    $model->partic_price = $v[21] == 1 ? $v[22] : null; //Стоимость участия
+                    $model->visit_poss = $v[23] == 0 ? 1 : 2; //Возможность посещения
+                    $model->visit_content = $v[23] == 1 ? $v[24] : null; //Комментарий по посещению
+                    $model->important_event = $v[29] == 0 ? 1 : 2; //Значимость мероприятия
+                    $model->format_event = $v[30]; //Формат мероприятия
+                    $model->region_partners = $v[14]; //Зарубежные и региональные партнеры
+                    $model->site_url = $v[15]; //Ссылка на мероприятие (сайт/соцсети)
+                    $model->site_media = $v[16]; //Ссылка на медиаресурс
+                    $model->description = $v[8]; //Описание мероприятия
+                    $model->rider = $v[9]; //Технические требования
+                    $model->result = $v[10]; //Итоги мероприятия
+                    $model->num_users = $v[11]; //Количество участников
+                    $model->num_winners = $v[12]; //Количество победителей
+                    $model->num_visitors = $v[13]; //Количество зрителей
+                    $model->bars_flag = $v[27]; //Отправлено в БАРС
+                    $model->period_over = $v[33]; //Период подготовки перед мероприятием мин.
+                    $model->period_over_flag = $v[33] != '' ? 1 : 0; //
+                    $model->executor_over_id = $this->findByTeachers($v[38]); //Ответственный за подготовку
+                    $model->title_over = $v[32] != '' ? $v[42] : ''; //Примечание
 
                     if ($flag = $model->save(false)) {
                         $patch = "frontend/web/uploads/fileinput/schoolplan/";
@@ -101,7 +101,7 @@ class PlanController extends Controller
                             if (file_exists($filename[0])) {
                                 $file = new FileManager();
                                 $file->orig_name = $v[0] . '.' . $filename[1];
-                                $file->name = $v[21] . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '.' . $filename[1];
+                                $file->name = $v[18] . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '.' . $filename[1];
                                 $file->size = filesize($filename[0]);
                                 $file->type = ArrayHelper::getValue(FileManager::TYPE, $filename[1] . '.type') ? ArrayHelper::getValue(FileManager::TYPE, $filename[1] . '.type') : 'image';
                                 $file->filetype = ArrayHelper::getValue(FileManager::TYPE, $filename[1] . '.filetype');
@@ -113,8 +113,8 @@ class PlanController extends Controller
                                 copy($filename[0], $filename_new);
                                 $file->save(false);
                             } else {
-                                $this->stdout('Не найден файл: ' . $filename[0] . " ", Console::FG_RED);
-                                $this->stdout("\n");
+//                                $this->stdout('Не найден файл: ' . $filename[0] . " ", Console::FG_RED);
+//                                $this->stdout("\n");
                             }
                         }
 
@@ -122,12 +122,12 @@ class PlanController extends Controller
                             $over = new ActivitiesOver();
                             $over->title = $v[42]; //Название мероприятия
                             $over->over_category = 2; //Категория мероприятия (подготовка, штатно, замена, отмена и пр.)
-                            $over->datetime_in = date('d.m.Y H:i', (integer)$v[37]); //Дата и время начала
-                            $over->datetime_out = date('d.m.Y H:i', (integer)$v[38]); //Дата и время окончания
-                            $over->auditory_id = $v[43] != '' ? $this->findByAuditoryNum($v[43]) : null; //Аудитория
-                            $over->department_list = [$this->getDepartmentId($v[39])];  //Отделы
-                            $over->executors_list = [$this->findByTeachers($v[40])]; //Ответственные
-                            $over->description = $v[45]; //Описание мероприятия'php:d.m.Y');
+                            $over->datetime_in = date('d.m.Y H:i', (integer)$v[35]); //Дата и время начала
+                            $over->datetime_out = date('d.m.Y H:i', (integer)$v[36]); //Дата и время окончания
+                            $over->auditory_id = $v[41] != '' ? $this->findByAuditoryNum($v[41]) : null; //Аудитория
+                            $over->department_list = [$this->getDepartmentId($v[37])];  //Отделы
+                            $over->executors_list = [$this->findByTeachers($v[38])]; //Ответственные
+                            $over->description = $v[43]; //Описание мероприятия'php:d.m.Y');
                             if (!($flag = $over->save(false))) {
                                 $transaction->rollBack();
                                 break;
@@ -141,11 +141,11 @@ class PlanController extends Controller
                                 }
                             }
                             if ($flag) {
-                                $efficArray = $this->getExecutors($v[34])[1];
-                                $dateArray = $this->getExecutors($v[34])[2];
+                                $efficArray = $this->getExecutors2($v[31])[0];
+                                $dateArray = $this->getExecutors2($v[31])[1];
                                 foreach ($efficArray as $id => $bonus) {
 
-                                    if($bonus != null) {
+                                    if($bonus != 0) {
                                         $m = new TeachersEfficiency();
                                         $m->teachers_id = $id;
                                         $m->efficiency_id = 1;
@@ -188,20 +188,44 @@ class PlanController extends Controller
 
     public function getExecutors($executors)
     {
-        $ex = $pr = $dd = [];
+        $ex =  [];
         foreach (explode(',', $executors) as $item => $value) {
             $m = explode('||', $value);
             $t = $this->findByTeachers($m[0]);
             if ($t) {
                 $ex[] = $t;
-                $pr[$t] = $m[1] != 0 ? $m[1] : null;
+            }
+        }
+        return $ex;
+    }
+
+    public function getExecutors2($executors)
+    {
+       $pr = $dd = [];
+        foreach (explode(',', $executors) as $item => $value) {
+            $m = explode('||', $value);
+            $t = $this->findByTeachers2($m[0]);
+            if ($t) {
+                $pr[$t] = $m[1];
                 $dd[$t] = $m[2] != '' ? $m[2] : null;
             }
         }
-        return [$ex, $pr, $dd];
+        return [$pr, $dd];
     }
 
     public function findByTeachers($full_name)
+    {
+        $user = \Yii::$app->db->createCommand('SELECT user_common_id 
+                                                    FROM teachers_view 
+                                                    WHERE fullname=:fullname 
+                                                   ',
+            [
+                'fullname' => $full_name,
+            ])->queryOne();
+        return $user['user_common_id'] ?? false;
+    }
+
+    public function findByTeachers2($full_name)
     {
         $user = \Yii::$app->db->createCommand('SELECT teachers_id 
                                                     FROM teachers_view 
@@ -223,15 +247,15 @@ class PlanController extends Controller
 
     public function getCatId($id)
     {
-        $ids = ['1' => '2', '2' => '3', '3' => '4', '4' => '5',
-            '5' => '6', '6' => '7', '7' => '8', '8' => '10',
-            '9' => '18', '10' => '11', '11' => '19', '12' => '12',
-            '13' => '20', '14' => '13', '15' => '21', '17' => '26',
-            '18' => '27', '20' => '33', '21' => '16', '22' => '29', '23' => '30',
-            '24' => '31', '25' => '32', '26' => '14', '27' => '22',
-            '28' => '15', '29' => '23', '30' => '24'];
+        $ids = [1 => 2, 2 => 3, 3 => 4, 4 => 5,
+            5 => 6, 6 => 7, 7 => 8, 8 => 11,
+            9 => 18, 10 => 12, 11 => 20, 12 => 13,
+            13 => 21, 14 => 14, 15 => 22, 17 => 27,
+            18 => 28, 20 => 9, 21 => 17, 22 => 30, 23 => 31,
+            24 => 32, 25 => 33, 26 => 15, 27 => 23,
+            28 => 16, 29 => 24, 30 => 25];
 
-        return $ids[$id] ?? '';
+        return $ids[$id] ?? null;
     }
 
 }
