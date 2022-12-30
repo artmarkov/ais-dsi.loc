@@ -17,7 +17,7 @@ use yii\helpers\Console;
 /**
  * Description of ObjectController
  *
- * run  console command:  php yii plan
+ * run console command:  php yii plan
  *
  * @author markov-av
  */
@@ -88,6 +88,7 @@ class PlanController extends Controller
                     $model->period_over_flag = $v[33] != '' ? 1 : 0; //
                     $model->executor_over_id = $this->findByTeachers($v[38]); //Ответственный за подготовку
                     $model->title_over = $v[32] != '' ? $v[42] : ''; //Примечание
+                    $model->author_id = $this->findByTeachers($v[38]); //Автор записи
 
                     if ($flag = $model->save(false)) {
                         $patch = "frontend/web/uploads/fileinput/schoolplan/";

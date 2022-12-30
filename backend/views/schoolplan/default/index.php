@@ -55,8 +55,27 @@ $this->params['breadcrumbs'][] = $this->title;
                             'gridId' => 'schoolplan-plan-grid',
                             'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
+//                        'rowOptions' => function(Schoolplan $model) {
+//                            if($model->doc_status == Schoolplan::DOC_STATUS_CANCEL) {
+//                                return ['class' => 'danger'];
+//                            }
+//                            return [];
+//                        },
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'],
+                                'contentOptions' => function (Schoolplan $model) {
+                                    switch ($model->doc_status) {
+                                        case Schoolplan::DOC_STATUS_DRAFT:
+                                            return ['class' => 'default'];
+                                        case Schoolplan::DOC_STATUS_AGREED:
+                                            return ['class' => 'success'];
+                                        case Schoolplan::DOC_STATUS_WAIT:
+                                            return ['class' => 'warning'];
+                                        case Schoolplan::DOC_STATUS_CANCEL:
+                                            return ['class' => 'danger'];
+                                    }
+                                },
+                            ],
                             [
                                 'attribute' => 'id',
                                 'value' => function (Schoolplan $model) {
@@ -80,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function ($model) {
                                     return $model->categoryName;
                                 },
-                                'options' => ['style' => 'width:350px'],
+                                'options' => ['style' => 'width:350px', 'class' => 'danger'],
                                 'filter' => \common\models\guidesys\GuidePlanTree::getPlanList(),
                             ],
                             'places',

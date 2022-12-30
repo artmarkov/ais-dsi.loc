@@ -70,6 +70,9 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public $executor_over_id;
     public $title_over;
 
+    public $admin_message;
+    public $admin_flag;
+
     const FORM_PARTIC = [
         1 => 'Беcплатное',
         2 => 'Платное',
@@ -159,12 +162,15 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['datetime_out'], 'compareTimestamp', 'skipOnEmpty' => false],
             ['bars_flag', 'boolean'],
-            ['title_over', 'string'],
+            [['title_over', 'admin_message'], 'string'],
             ['period_over', 'integer'],
-            ['period_over_flag', 'boolean'],
+            [['period_over_flag', 'admin_flag'], 'boolean'],
             ['executor_over_id', 'safe'],
             [['period_over', 'title_over', 'executor_over_id'], 'required', 'when' => function ($model) {
                 return $model->period_over_flag;
+            }, 'enableClientValidation' => false],
+            [['admin_message'], 'required', 'when' => function ($model) {
+                return $model->admin_flag;
             }, 'enableClientValidation' => false],
             [['places', 'auditory_id'], 'required', 'when' => function ($model) {
                 return empty($model->places) && empty($model->auditory_id);
@@ -194,6 +200,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $this->addError($attribute, 'Формат ввода даты и времени не верен.');
         }
     }
+
     /**
      * {@inheritdoc}
      */
@@ -237,6 +244,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'period_over' => 'Время подготовки к мероприятию',
             'period_over_flag' => 'Добавить подготовку к мероприятию',
             'executor_over_id' => 'Ответственный за подготовку',
+            'admin_message' => 'Сообщение админа',
         ];
     }
 
@@ -453,7 +461,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             return false;
         } else {
             $this->deleteActivitiesOver();
-           return $this->save(false);
+            return $this->save(false);
         }
     }
 
@@ -477,7 +485,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function beforeDelete()
     {
         if (parent::beforeDelete()) {
-           $this->deleteActivitiesOver();
+            $this->deleteActivitiesOver();
             if ($this->teachersEfficiency) {
                 foreach ($this->teachersEfficiency as $model) {
                     $model->delete();
@@ -504,5 +512,29 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $this->auditory_id = null;
         }
         return parent::beforeSave($insert);
+    }
+
+    public function sendAdminMessage($post)
+    {
+        if ($post) {
+            $textBody = 'Сообщение модуля "План работы" ' . PHP_EOL;
+            $htmlBody = '<p><b>Сообщение модуля "План работы"</b></p>';
+
+            $textBody .= 'Прошу Вас внести уточнения в мероприятие: ' . strip_tags($post['title']) . ' от ' . strip_tags($post['datetime_in']) . PHP_EOL;
+            $htmlBody .= '<p>Прошу Вас внести уточнения в мероприятие:' . strip_tags($post['title']) . ' от ' . strip_tags($post['datetime_in']) . '</p>';
+
+            $textBody .= '--------------------------' . PHP_EOL;
+            $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
+            $htmlBody .= '<hr>';
+            $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
+
+            return Yii::$app->mailqueue->compose()
+                ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
+                ->setTo(Yii::$app->params['adminEmail'])
+                ->setSubject('Сообщение с сайта ' . Yii::$app->name)
+                ->setTextBody($textBody)
+                ->setHtmlBody($htmlBody)
+                ->queue();
+        }
     }
 }

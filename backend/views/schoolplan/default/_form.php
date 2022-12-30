@@ -142,7 +142,7 @@ use artsoft\helpers\Html;
                                             ],
                                             'pluginOptions' => [
                                                 'allowClear' => false,
-                                               // 'minimumInputLength' => 3,
+                                                // 'minimumInputLength' => 3,
                                             ],
 
                                         ]); ?>
@@ -281,10 +281,23 @@ use artsoft\helpers\Html;
 
                                         ]);
                                         ?>
-                                        <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(Schoolplan::getDocStatusList(),['disabled' => $readonly]) ?>
+                                        <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(Schoolplan::getDocStatusList(), ['disabled' => $readonly]) ?>
 
                                     </div>
                                 </div>
+                                <?php if (!$model->isNewRecord) : ?>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <?= $form->field($model, 'admin_flag')->checkbox(['disabled' => $readonly])->label('Отправить сообщение автору') ?>
+
+                                            <div id="send_admin_message">
+                                                <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора мароприятия и нажмите "Отправить сообщение"') ?>
+
+                                                <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить сообщение', ['class' => 'btn btn-sm btn-default pull-right', 'name' => 'submitAction', 'value' => 'send_admin_message']); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -321,6 +334,11 @@ let field =  $('.field-schoolplan-partic_price');
     $('input[type=checkbox][name="Schoolplan[period_over_flag]"]').prop('checked') ? $('#activitiesOver').show() : $('#activitiesOver').hide();
     $('input[type=checkbox][name="Schoolplan[period_over_flag]"]').click(function() {
        $(this).prop('checked') ? $('#activitiesOver').show() : $('#activitiesOver').hide();
+     });
+     // Показ модуля админа
+    $('input[type=checkbox][name="Schoolplan[admin_flag]"]').prop('checked') ? $('#send_admin_message').show() : $('#send_admin_message').hide();
+    $('input[type=checkbox][name="Schoolplan[admin_flag]"]').click(function() {
+       $(this).prop('checked') ? $('#send_admin_message').show() : $('#send_admin_message').hide();
      });
     // Подсчет символов
 if(document.getElementById('schoolplan-description')) {

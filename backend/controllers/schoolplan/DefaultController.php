@@ -75,6 +75,13 @@ class DefaultController extends MainController
                 }
             }
         }
+        if (Yii::$app->request->post('submitAction') == 'send_admin_message') {
+            if ($model->sendAdminMessage($_POST['Schoolplan'])) {
+           // print_r($_POST['Schoolplan']);
+                Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                $this->getSubmitAction($model);
+            }
+        }
         return $this->render('update', [
             'model' => $model,
             'readonly' => $readonly

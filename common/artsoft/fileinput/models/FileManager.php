@@ -57,12 +57,12 @@ class FileManager extends ActiveRecord implements OwnerAccess {
     {
         return [         
             'timestamp' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'created_at',
                 'updatedAtAttribute' => NULL,
             ], 
             'blameable' => [
-                'class' => BlameableBehavior::className(),
+                'class' => BlameableBehavior::class,
                 'createdByAttribute' => 'created_by',
                 'updatedByAttribute' => NULL,
             ],

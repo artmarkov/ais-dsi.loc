@@ -167,13 +167,13 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
         $this->addForeignKey('activities_over_ibfk_1', 'activities_over', 'auditory_id', 'auditory', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('activities_over_ibfk_2', 'activities_over', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('activities_over_ibfk_3', 'activities_over', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('schoolplan_ibfk_5', 'schoolplan', 'activities_over_id', 'activities_over', 'id', 'SET DEFAULT', 'NO ACTION');
+        $this->addForeignKey('schoolplan_ibfk_6', 'schoolplan', 'activities_over_id', 'activities_over', 'id', 'SET DEFAULT', 'NO ACTION');
 
     }
 
     public function down()
     {
-        $this->dropForeignKey('schoolplan_ibfk_5', 'schoolplan');
+        $this->dropForeignKey('schoolplan_ibfk_6', 'schoolplan');
         $this->dropTableWithHistory('activities_over');
         $this->dropTableWithHistory('schoolplan');
         $this->dropTable(self::TABLE_NAME_TREE);
