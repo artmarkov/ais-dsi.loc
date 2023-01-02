@@ -83,9 +83,9 @@ class ImportController extends Controller
                         $userCommon->user_id = $user->id;
                         $userCommon->user_category = UserCommon::USER_CATEGORY_TEACHERS;
                         $userCommon->status = $v[20] == 0 ? UserCommon::STATUS_ACTIVE : UserCommon::STATUS_INACTIVE;
-                        $userCommon->last_name = $v[1];
-                        $userCommon->first_name = $v[2];
-                        $userCommon->middle_name = $v[3];
+                        $userCommon->last_name = $this->lat2cyr($v[1]);
+                        $userCommon->first_name = $this->lat2cyr($v[2]);
+                        $userCommon->middle_name = $this->lat2cyr($v[3]);
                         $userCommon->gender = $this->getGender($v[4]);
                         $userCommon->birth_date = \Yii::$app->formatter->asDate($this->getDate($v[5]), 'php:d.m.Y');
                         $userCommon->phone = str_replace('-', ' ', $v[6]);
@@ -198,9 +198,9 @@ class ImportController extends Controller
                         $userCommon->user_id = $user->id;
                         $userCommon->user_category = UserCommon::USER_CATEGORY_EMPLOYEES;
                         $userCommon->status = UserCommon::STATUS_ACTIVE;
-                        $userCommon->last_name = $v[1];
-                        $userCommon->first_name = $v[2];
-                        $userCommon->middle_name = $v[3];
+                        $userCommon->last_name = $this->lat2cyr($v[1]);
+                        $userCommon->first_name = $this->lat2cyr($v[2]);
+                        $userCommon->middle_name = $this->lat2cyr($v[3]);
                         $userCommon->gender = $this->getGender($v[4]);
                         $userCommon->birth_date = \Yii::$app->formatter->asDate($this->getDate($v[5]), 'php:d.m.Y');
                         $userCommon->phone = str_replace('-', ' ', $v[6]);
@@ -265,9 +265,9 @@ class ImportController extends Controller
                             $userCommon->user_id = $user->id;
                             $userCommon->user_category = UserCommon::USER_CATEGORY_STUDENTS;
                             $userCommon->status = ($v[18] == 'Абитуриенты' || $v[18] == 'Ученики школы') ? UserCommon::STATUS_ACTIVE : UserCommon::STATUS_INACTIVE;
-                            $userCommon->last_name = $v[1];
-                            $userCommon->first_name = $v[2];
-                            $userCommon->middle_name = $v[3];
+                            $userCommon->last_name = $this->lat2cyr($v[1]);
+                            $userCommon->first_name = $this->lat2cyr($v[2]);
+                            $userCommon->middle_name = $this->lat2cyr($v[3]);
                             $userCommon->gender = $this->getGender($v[4]);
                             if (is_a($v[5], 'DateTime')) { // если объект DateTime
                                 $v[5] = $v[5]->format('d-m-Y');
@@ -350,9 +350,9 @@ class ImportController extends Controller
                                 $userCommon->user_id = $user->id;
                                 $userCommon->user_category = UserCommon::USER_CATEGORY_PARENTS;
                                 $userCommon->status = UserCommon::STATUS_ACTIVE;
-                                $userCommon->last_name = trim($v[1]);
-                                $userCommon->first_name = trim($v[2]);
-                                $userCommon->middle_name = trim($v[3]);
+                                $userCommon->last_name = $this->lat2cyr(trim($v[1]));
+                                $userCommon->first_name = $this->lat2cyr(trim($v[2]));
+                                $userCommon->middle_name = $this->lat2cyr(trim($v[3]));
                                 $userCommon->gender = $this->getGender($v[8]);
                                 if (is_a($v[9], 'DateTime')) { // если объект DateTime
                                     $v[9] = $v[9]->format('d-m-Y');
@@ -637,5 +637,31 @@ class ImportController extends Controller
     public function getGender($name)
     {
         return $name == 'М' ? 1 : ($name == 'Ж' ? 2 : 0);
+    }
+    
+    protected function lat2cyr($text) {
+        $arr = array(
+            'A' => 'А',
+            'a' => 'а',
+            'B' => 'В',
+            'C' => 'С',
+            'cc' => 'с',
+            'E' => 'Е',
+            'e' => 'е',
+            'H' => 'Н',
+            'K' => 'К',
+            'k' => 'к',
+            'M' => 'М',
+            'm' => 'м',
+            'n' => 'п',
+            'O' => 'О',
+            'o' => 'о',
+            'P' => 'Р',
+            'p' => 'р',
+            'T' => 'Т',
+            'X' => 'Х',
+            'x' =>'х'
+        );
+        return strtr($text, $arr);
     }
 }
