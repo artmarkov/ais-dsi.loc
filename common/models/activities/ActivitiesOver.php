@@ -76,7 +76,7 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
             [['over_category'], 'default', 'value' => 0],
             [['datetime_in', 'datetime_out'], 'safe'],
             [['department_list', 'executors_list'], 'safe'],
-            [['title'], 'string', 'max' => 100],
+            [['title'], 'string', 'max' => 512],
             [['description'], 'string'],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
             [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],

@@ -170,11 +170,11 @@ JS
                                     <?= $form->field($modelDependence, "[{$index}]parent_id")->widget(\kartik\select2\Select2::class, [
                                         'data' => ['0' => '--Новая запись--'] + RefBook::find('parents_fullname', $model->isNewRecord ? \common\models\user\UserCommon::STATUS_ACTIVE : '')->getList(),
                                         'options' => [
-                                            'disabled' => $readonly,
                                             'placeholder' => Yii::t('art/parents', 'Select Parents...'),
                                             'multiple' => false,
                                         ],
                                         'pluginOptions' => [
+                                            'disabled' => $readonly,
                                             'allowClear' => true
                                         ],
                                         'pluginEvents' => [

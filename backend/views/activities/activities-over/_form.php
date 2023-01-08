@@ -35,10 +35,10 @@ use common\models\own\Department;
                     <?= $form->field($model, 'over_category')->widget(\kartik\select2\Select2::class, [
                         'data' => $model->getOverCategoryList(),
                         'options' => [
-                            'disabled' => true,
                             'multiple' => false,
                         ],
                         'pluginOptions' => [
+                            'disabled' => true,
                             'allowClear' => true
                         ],
                     ]);
@@ -80,7 +80,7 @@ use common\models\own\Department;
                     ]);
                     ?>
                     <?= $form->field($model, "auditory_id")->dropDownList(RefBook::find('auditory_memo_1')->getList(), [
-                        'prompt' => Yii::t('art/guide', 'Select auditory...'), ['disabled' => $readonly]
+                        'prompt' => Yii::t('art/guide', 'Select auditory...'), 'disabled' => $readonly
                     ])
                     ?>
 

@@ -31,11 +31,10 @@ $form = ActiveForm::begin([
                         'data' => \artsoft\helpers\RefBook::find('union_name', $model->isNewRecord ? \common\models\education\EducationUnion::STATUS_ACTIVE : '')->getList(),
                         'options' => [
                             'id' => 'union_id',
-
-                            'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [
+                            'disabled' => $readonly,
                             'allowClear' => true
                         ],
 
