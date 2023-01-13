@@ -8,10 +8,13 @@ use common\models\auditory\Auditory;
 use artsoft\behaviors\DateFieldBehavior;
 
 /**
- * This is the model class for table "activities".
+ * This is the model class for table "activities_view".
  *search
+ * @property string $resource
  * @property int $id
  * @property int $all_day
+ * @property int $category_id
+ * @property int $auditory_id
  * @property string $title
  * @property string $description
  * @property string $start_time
@@ -26,12 +29,14 @@ use artsoft\behaviors\DateFieldBehavior;
 class Activities extends ActiveRecord
 {
 
+    public $all_day;
+
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'activities';
+        return 'activities_view';
     }
 
     /**
@@ -56,9 +61,10 @@ class Activities extends ActiveRecord
         return [
             [['title', 'start_time', 'end_time'], 'required'],
             [['category_id', 'auditory_id'], 'required'],
-            [['start_time', 'end_time', 'all_day'], 'safe'],
+            [['resource', 'start_time', 'end_time', 'all_day'], 'safe'],
             ['start_time', 'compareTime'],
             [['description'], 'string'],
+            [['all_day'], 'default', 'value' => 0],
             ['title', 'string', 'max' => 100],
             [['category_id', 'auditory_id', 'all_day'], 'integer'],
         ];
@@ -84,6 +90,7 @@ class Activities extends ActiveRecord
     {
         return [
             'id' => Yii::t('art/calendar', 'ID'),
+            'resource' => Yii::t('art', 'Resource'),
             'title' => Yii::t('art', 'Title'),
             'description' => Yii::t('art', 'Description'),
             'start_time' => Yii::t('art/calendar', 'Start Date'),
@@ -115,7 +122,6 @@ class Activities extends ActiveRecord
         if(isset($eventData['resourceId'])) {
             $this->auditory_id = $eventData['resourceId'];
         }
-        return $this;
     }
 
     /**
@@ -124,6 +130,14 @@ class Activities extends ActiveRecord
     public function getAuditory()
     {
         return $this->hasOne(Auditory::class, ['id' => 'auditory_id']);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getAllDay()
+    {
+        return $this->all_day == 0 ? false : true;
     }
 
     /* Геттер для названия аудитории */

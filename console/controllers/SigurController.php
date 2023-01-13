@@ -6,6 +6,7 @@ use Box\Spout\Common\Entity\Row;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Yii;
 use yii\console\Controller;
+use yii\helpers\Console;
 
 /**
  * Description of ObjectController
@@ -57,6 +58,9 @@ class SigurController extends Controller
                             'updated_at' => \Yii::$app->formatter->asTimestamp($v[7]),
                             'updated_by' => 1000,
                         ])->execute();
+
+                    $this->stdout('Добавлен пропуск для записи user_common_id: ' . $model['id'], Console::FG_GREY);
+                    $this->stdout("\n");
                 }
             }
         }
@@ -75,10 +79,36 @@ class SigurController extends Controller
                                                     AND first_name=:first_name 
                                                     AND middle_name=:middle_name',
             [
-                'last_name' => $last_name,
-                'first_name' => $first_name,
-                'middle_name' => $middle_name
+                'last_name' => $this->lat2cyr($last_name),
+                'first_name' => $this->lat2cyr($first_name),
+                'middle_name' => $this->lat2cyr($middle_name)
             ])->queryOne();
         return $user ?: false;
+    }
+
+    protected function lat2cyr($text) {
+        $arr = array(
+            'A' => 'А',
+            'a' => 'а',
+            'B' => 'В',
+            'C' => 'С',
+            'cc' => 'с',
+            'E' => 'Е',
+            'e' => 'е',
+            'H' => 'Н',
+            'K' => 'К',
+            'k' => 'к',
+            'M' => 'М',
+            'm' => 'м',
+            'n' => 'п',
+            'O' => 'О',
+            'o' => 'о',
+            'P' => 'Р',
+            'p' => 'р',
+            'T' => 'Т',
+            'X' => 'Х',
+            'x' =>'х'
+        );
+        return strtr($text, $arr);
     }
 }

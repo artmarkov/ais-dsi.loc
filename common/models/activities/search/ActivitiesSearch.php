@@ -22,7 +22,7 @@ class ActivitiesSearch extends Activities
     {
         return [
             [['id', 'category_id', 'auditory_id'], 'integer'],
-            [['title', 'description', 'all_day'], 'safe'],
+            [['resource', 'title', 'description', 'all_day'], 'safe'],
             [['start_time'], 'safe'],
            // [['start_time_operand'], 'string'],
            // [['end_time_operand'], 'string'],

@@ -128,9 +128,9 @@ class CreativeController extends Controller
                                                     AND first_name=:first_name 
                                                     AND middle_name=:middle_name',
             [
-                'last_name' => $last_name,
-                'first_name' => $first_name,
-                'middle_name' => $middle_name
+                'last_name' => $this->lat2cyr($last_name),
+                'first_name' => $this->lat2cyr($first_name),
+                'middle_name' => $this->lat2cyr($middle_name)
             ])->queryOne();
         return $user['teachers_id'];
     }
@@ -202,5 +202,30 @@ class CreativeController extends Controller
         return $date;
     }
 
+    protected function lat2cyr($text) {
+        $arr = array(
+            'A' => 'А',
+            'a' => 'а',
+            'B' => 'В',
+            'C' => 'С',
+            'cc' => 'с',
+            'E' => 'Е',
+            'e' => 'е',
+            'H' => 'Н',
+            'K' => 'К',
+            'k' => 'к',
+            'M' => 'М',
+            'm' => 'м',
+            'n' => 'п',
+            'O' => 'О',
+            'o' => 'о',
+            'P' => 'Р',
+            'p' => 'р',
+            'T' => 'Т',
+            'X' => 'Х',
+            'x' =>'х'
+        );
+        return strtr($text, $arr);
+    }
 
 }

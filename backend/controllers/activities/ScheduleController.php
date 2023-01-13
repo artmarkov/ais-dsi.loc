@@ -2,11 +2,7 @@
 
 namespace backend\controllers\activities;
 
-use common\models\activities\ActivitiesCat;
-use common\models\auditory\AuditoryCat;
 use common\widgets\fullcalendarscheduler\src\models\Resource;
-use artsoft\widgets\ActiveForm;
-use common\models\activities\Activities;
 use common\widgets\fullcalendarscheduler\src\models\Event as BaseEvent;
 use common\models\auditory\Auditory;
 use yii\helpers\Url;
@@ -37,7 +33,6 @@ class ScheduleController extends MainController
 
         $start = Yii::$app->request->get('start');
         $end = Yii::$app->request->get('end');
-
         $start_time = Yii::$app->formatter->asTimestamp($start);
         $end_time = Yii::$app->formatter->asTimestamp($end);
 
@@ -66,7 +61,7 @@ class ScheduleController extends MainController
             $event->display = $item->rendering != 0 ? BaseEvent::RENDERING_BACKGROUND : null; // для фоновых событий
 
             //$event->url = Url::to(['/activities/default/view/', 'id' => $item->id]); // ссылка для просмотра события - перебивает событие по клику!!!
-            $item->all_day == 1 ? $event->allDay = true : $event->allDay = false;
+            $event->allDay = $item->allDay;
             $event->resourceId = $item->auditory_id;
             $tasks[] = $event;
         }

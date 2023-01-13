@@ -3,6 +3,7 @@
 namespace console\controllers;
 
 use artsoft\fileinput\models\FileManager;
+use artsoft\helpers\Schedule;
 use Box\Spout\Common\Entity\Row;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use common\models\activities\ActivitiesOver;
@@ -26,7 +27,32 @@ class PlanController extends Controller
     public function actionIndex()
     {
         $this->stdout("\n");
-        $this->addPlan();
+       // $this->addPlan();
+//        $begin = new \DateTime('2023-01-01');
+//        $end = new \DateTime('2023-12-31');
+//        $interval = \DateInterval::createFromDateString('1 day');
+//        $period = new \DatePeriod($begin, $interval, $end);
+//        foreach ($period as $dt) {
+//            echo $dt->format("Y-m-d w j ");
+//            echo  Schedule::getWeekNum($dt->format("d"), $dt->format("m"), $dt->format("Y")) . "\n";
+//        }
+        $start = '2010-07-06';
+        $end = '2010-07-09';
+        $events1 = Yii::$app->db->createCommand('select * from (select dt::date as date, 
+	extract(epoch from dt::date) AS timestamp,
+	DATE_PART(\'year\' , dt::date) AS year,
+	DATE_PART(\'month\', dt::date) AS month,
+	DATE_PART(\'day\'  , dt::date) AS day,
+	(CASE WHEN DATE_PART(\'dow\'  , dt::date) = 0 THEN 7 ELSE DATE_PART(\'dow\'  , dt::date) END) AS week_day,
+	(((DATE_PART(\'day\'  , dt::date ) + DATE_PART(\'dow\', format(\'%s-%s-%s\',DATE_PART( \'year\', dt::date ), DATE_PART(\'month\', dt::date ),1)::DATE) - 5) / 7) + 1)::integer as week_num
+from generate_series(:start_time, :end_time, \'1 day\'::interval) dt) as _dt
+order by timestamp;
+', [
+                ":start_time" => $start,
+                ":end_time" => $end
+            ]
+        )->queryAll();
+        print_r($events1); die();
 
     }
 
@@ -169,7 +195,7 @@ class PlanController extends Controller
                         $this->stdout('Добавлено мероприятие: ' . $model->id, Console::FG_GREY);
                         $this->stdout("\n");
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $transaction->rollBack();
                 }
             }

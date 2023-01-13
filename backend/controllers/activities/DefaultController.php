@@ -2,8 +2,6 @@
 
 namespace backend\controllers\activities;
 
-use artsoft\widgets\ActiveForm;
-use common\models\activities\Activities;
 use common\widgets\fullcalendar\src\models\Event as BaseEvent;
 use yii\helpers\Url;
 use yii\web\Response;
@@ -69,7 +67,7 @@ class DefaultController extends MainController
             $event->display = $item->rendering != 0 ? BaseEvent::RENDERING_BACKGROUND : null; // для фоновых событий
 
             //$event->url = Url::to(['/activities/default/view/', 'id' => $item->id]); // ссылка для просмотра события - перебивает событие по клику!!!
-            $item->all_day == 1 ? $event->allDay = true : $event->allDay = false;
+            $event->allDay = $item->allDay;
 
             $tasks[] = $event;
         }
