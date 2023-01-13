@@ -3,7 +3,6 @@
 namespace console\controllers;
 
 use artsoft\fileinput\models\FileManager;
-use artsoft\helpers\Schedule;
 use Box\Spout\Common\Entity\Row;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use common\models\activities\ActivitiesOver;
@@ -27,33 +26,7 @@ class PlanController extends Controller
     public function actionIndex()
     {
         $this->stdout("\n");
-       // $this->addPlan();
-//        $begin = new \DateTime('2023-01-01');
-//        $end = new \DateTime('2023-12-31');
-//        $interval = \DateInterval::createFromDateString('1 day');
-//        $period = new \DatePeriod($begin, $interval, $end);
-//        foreach ($period as $dt) {
-//            echo $dt->format("Y-m-d w j ");
-//            echo  Schedule::getWeekNum($dt->format("d"), $dt->format("m"), $dt->format("Y")) . "\n";
-//        }
-        $start = '2010-07-06';
-        $end = '2010-07-09';
-        $events1 = Yii::$app->db->createCommand('select * from (select dt::date as date, 
-	extract(epoch from dt::date) AS timestamp,
-	DATE_PART(\'year\' , dt::date) AS year,
-	DATE_PART(\'month\', dt::date) AS month,
-	DATE_PART(\'day\'  , dt::date) AS day,
-	(CASE WHEN DATE_PART(\'dow\'  , dt::date) = 0 THEN 7 ELSE DATE_PART(\'dow\'  , dt::date) END) AS week_day,
-	(((DATE_PART(\'day\'  , dt::date ) + DATE_PART(\'dow\', format(\'%s-%s-%s\',DATE_PART( \'year\', dt::date ), DATE_PART(\'month\', dt::date ),1)::DATE) - 5) / 7) + 1)::integer as week_num
-from generate_series(:start_time, :end_time, \'1 day\'::interval) dt) as _dt
-order by timestamp;
-', [
-                ":start_time" => $start,
-                ":end_time" => $end
-            ]
-        )->queryAll();
-        print_r($events1); die();
-
+        $this->addPlan();
     }
 
     /**
@@ -112,7 +85,7 @@ order by timestamp;
                     $model->bars_flag = $v[27]; //Отправлено в БАРС
                     $model->period_over = $v[33]; //Период подготовки перед мероприятием мин.
                     $model->period_over_flag = $v[33] != '' ? 1 : 0; //
-                    $model->executor_over_id = $this->findByTeachers($v[38]); //Ответственный за подготовку
+                    $model->executor_over_id = $this->findByTeachers2($v[38]); //Ответственный за подготовку
                     $model->title_over = $v[32] != '' ? $v[42] : ''; //Примечание
                     $model->author_id = $this->findByTeachers($v[38]); //Автор записи
 
@@ -153,7 +126,7 @@ order by timestamp;
                             $over->datetime_out = date('d.m.Y H:i', (integer)$v[36]); //Дата и время окончания
                             $over->auditory_id = $v[41] != '' ? $this->findByAuditoryNum($v[41]) : null; //Аудитория
                             $over->department_list = [$this->getDepartmentId($v[37])];  //Отделы
-                            $over->executors_list = [$this->findByTeachers($v[38])]; //Ответственные
+                            $over->executors_list = [$this->findByTeachers2($v[38])]; //Ответственные
                             $over->description = $v[43]; //Описание мероприятия'php:d.m.Y');
                             if (!($flag = $over->save(false))) {
                                 $transaction->rollBack();
@@ -172,13 +145,13 @@ order by timestamp;
                                 $dateArray = $this->getExecutors2($v[31])[1];
                                 foreach ($efficArray as $id => $bonus) {
 
-                                    if($bonus != 0) {
+                                    if ($bonus != 0) {
                                         $m = new TeachersEfficiency();
                                         $m->teachers_id = $id;
                                         $m->efficiency_id = 1;
                                         $m->bonus_vid_id = $bonus < 500 ? 1 : 2;
                                         $m->bonus = $bonus;
-                                        $m->date_in = isset($dateArray[$id]) ?  date('d.m.Y', (integer)$dateArray[$id]) : 0;
+                                        $m->date_in = isset($dateArray[$id]) ? date('d.m.Y', (integer)$dateArray[$id]) : 0;
                                         $m->class = 'Schoolplan';
                                         $m->item_id = $model->id;
                                         if (!($flag = $m->save())) {
@@ -215,10 +188,10 @@ order by timestamp;
 
     public function getExecutors($executors)
     {
-        $ex =  [];
+        $ex = [];
         foreach (explode(',', $executors) as $item => $value) {
             $m = explode('||', $value);
-            $t = $this->findByTeachers($m[0]);
+            $t = $this->findByTeachers2($m[0]);
             if ($t) {
                 $ex[] = $t;
             }
@@ -228,7 +201,7 @@ order by timestamp;
 
     public function getExecutors2($executors)
     {
-       $pr = $dd = [];
+        $pr = $dd = [];
         foreach (explode(',', $executors) as $item => $value) {
             $m = explode('||', $value);
             $t = $this->findByTeachers2($m[0]);
@@ -264,13 +237,11 @@ order by timestamp;
         return $user['teachers_id'] ?? false;
     }
 
-
     public function getDepartmentId($name)
     {
         $model = Department::findOne(['name' => $name]);
         return $model ? $model->id : false;
     }
-
 
     public function getCatId($id)
     {

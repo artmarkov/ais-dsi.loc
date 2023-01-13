@@ -71,4 +71,11 @@ class ActivitiesCat extends \artsoft\db\ActiveRecord
     {
         return  self::find()->select(['name', 'id'])->indexBy('id')->column();
     }
+
+    public static function getCatValue($val)
+    {
+        $ar = self::getCatList();
+
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
 }

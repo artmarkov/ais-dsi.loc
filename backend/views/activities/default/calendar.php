@@ -172,6 +172,7 @@ EOF;
                     'nowIndicator' => true, //Отображение маркера, указывающего Текущее время
                     'slotMinTime' => '07:00',
                     'slotMaxTime' => '22:00',
+                    'slotDuration' => '00:15:00', // Частота отображения временных интервалов.
                     'eventDurationEditable' => true, // разрешить изменение размера
                     'eventOverlap' => true, // разрешить перекрытие событий
                     'eventClick' => new JsExpression($JSEventClick),

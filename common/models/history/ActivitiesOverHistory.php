@@ -57,7 +57,7 @@ class ActivitiesOverHistory extends BaseHistory
                 if (isset($model->executors_list)) {
                     $v = [];
                     foreach (Json::decode($model->executors_list) as $id) {
-                        $v[] = $id != null ? UserCommon::findOne($id)->getFullName() : null;
+                        $v[] = $id != null ? RefBook::find('teachers_fio')->getValue($id) : null;
                     }
                     return implode(', ', $v);
                 }

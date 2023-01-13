@@ -68,6 +68,7 @@ SELECT data.subject_schedule_id,
     schoolplan.datetime_in AS start_time,
     schoolplan.datetime_out AS end_time
    FROM schoolplan
+   WHERE schoolplan.auditory_id IS NOT NULL
 UNION ALL
  SELECT \'consult_schedule\'::text AS resource,
     consult_schedule.id,

@@ -38,7 +38,9 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
-                    <?= $form->field($model, 'all_day')->checkbox() ?>
+                    <?php
+                   /* = $form->field($model, 'all_day')->checkbox() */
+                    ?>
 
                     <?= $form->field($model, 'start_time')->widget(kartik\datetime\DateTimePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(); ?>
 

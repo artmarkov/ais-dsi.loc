@@ -97,7 +97,7 @@ class Activities extends ActiveRecord
             'end_time' => Yii::t('art/calendar', 'End Date'),
             'all_day' => Yii::t('art/calendar', 'All Day'),
             'category_id' => Yii::t('art/calendar', 'Category Name'),
-            'auditory_id' => Yii::t('art/guide', 'Auditory Name'),
+            'auditory_id' => Yii::t('art/guide', 'Auditory'),
         ];
     }
 

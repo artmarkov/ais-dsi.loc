@@ -1,6 +1,9 @@
 <?php
 
+use artsoft\helpers\RefBook;
+use common\models\activities\ActivitiesOver;
 use common\models\own\Department;
+use common\models\user\UserCommon;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -151,22 +154,22 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-//                            [
-//                                'attribute' => 'executors_list',
-//                                'filter' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees']),
-//                                'value' => function (Schoolplan $model) {
-//                                    $v = [];
-//                                    foreach ($model->executors_list as $id) {
-//                                        if (!$id) {
-//                                            continue;
-//                                        }
-//                                        $v[] =
-//                                    }
-//                                    return implode(',<br/> ', $v);
-//                                },
-//                                'options' => ['style' => 'width:350px'],
-//                                'format' => 'raw',
-//                            ],
+                            [
+                                'attribute' => 'executors_list',
+                                'filter' => RefBook::find('teachers_fio', UserCommon::STATUS_ACTIVE)->getList(),
+                                'value' => function (Schoolplan $model) {
+                                    $v = [];
+                                    foreach ($model->executors_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = RefBook::find('teachers_fio')->getValue($id);
+                                    }
+                                    return implode(',<br/> ', $v);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
 //                            'bars_flag',
                             // 'form_partic',
                             // 'partic_price',

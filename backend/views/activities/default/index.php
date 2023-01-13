@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-6">
-                            <?php 
+                            <?php
                             /* Uncomment this to activate GridQuickLinks */
                             /* echo GridQuickLinks::widget([
                                 'model' => Activities::className(),
@@ -35,41 +35,54 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?=  GridPageSize::widget(['pjaxId' => 'activities-grid-pjax']) ?>
+                            <?= GridPageSize::widget(['pjaxId' => 'activities-grid-pjax']) ?>
                         </div>
                     </div>
 
-                    <?php 
+                    <?php
                     Pjax::begin([
                         'id' => 'activities-grid-pjax',
                     ])
                     ?>
 
-                    <?= 
+                    <?=
                     GridView::widget([
                         'id' => 'activities-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                        'bulkActionOptions' => [
-                            'gridId' => 'activities-grid',
-                            'actions' => [ Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
-                        ],
+                        /* 'bulkActionOptions' => [
+                             'gridId' => 'activities-grid',
+                             'actions' => [ Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
+                         ],*/
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                            ['class' => 'yii\grid\SerialColumn', 'options' => ['style' => 'width:20px']],
                             [
                                 'attribute' => 'title',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/activities/default',
-                                'title' => function(Activities $model) {
-                                    return Html::a($model->title, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'title' => function (Activities $model) {
+                                    return Html::a($model->title, ['view', 'id' => $model->id, 'resource' => $model->resource], ['data-pjax' => 0]);
                                 },
-                                'buttonsTemplate' => '{update} {view} {delete}',
+                                'options' => ['style' => 'width:350px'],
+                                'buttonsTemplate' => '{view}',
+                                'buttons' => [
+                                    'view' => function ($url, $model, $key) {
+                                        return  Html::a(Yii::t('art', 'View'),
+                                            Url::to(['/activities/default/view', 'id' => $model->id, 'resource' => $model->resource]), [
+                                                'title' => Yii::t('art', 'View'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
                             ],
                             [
                                 'attribute' => 'category_id',
                                 'value' => 'catName',
                                 'label' => Yii::t('art/guide', 'Category'),
                                 'filter' => \common\models\activities\ActivitiesCat::getCatList(),
+                                'options' => ['style' => 'width:150px'],
                             ],
                             [
                                 'attribute' => 'auditory_id',
@@ -77,25 +90,21 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label' => Yii::t('art/guide', 'Name Auditory'),
                                 'filter' => \artsoft\helpers\RefBook::find('auditory_memo_1', 1, true)->getList(),
                             ],
-                            'description:ntext',
+//                            'description:ntext',
                             [
                                 'attribute' => 'start_time',
                                 'filterInputOptions' => ['class' => 'form-control', 'id' => null, 'autocomplete' => 'off'],
-                                'value' => function ($model)  {
-                                        return $model->start_time;
+                                'value' => function ($model) {
+                                    return $model->start_time;
                                 },
                                 'options' => ['style' => 'width:270px'],
                                 'format' => 'raw',
                             ],
                             'end_time',
-                            [
-                                'class' => 'artsoft\grid\columns\StatusColumn',
-                                'attribute' => 'all_day',
-                                'options' => ['style' => 'width:60px']
-                            ],
-                ],
-            ]);
-            ?>
+
+                        ],
+                    ]);
+                    ?>
 
                     <?php Pjax::end() ?>
                 </div>

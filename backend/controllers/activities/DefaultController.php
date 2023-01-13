@@ -2,6 +2,7 @@
 
 namespace backend\controllers\activities;
 
+use common\models\activities\Activities;
 use common\widgets\fullcalendar\src\models\Event as BaseEvent;
 use yii\helpers\Url;
 use yii\web\Response;
@@ -11,6 +12,15 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\activities\Activities';
     public $modelSearchClass = 'common\models\activities\search\ActivitiesSearch';
+
+    public function actionView($id)
+    {
+        $resource = Yii::$app->request->get('resource');
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        return $this->renderIsAjax($this->viewView, [
+            'model' => Activities::find()->where(['id' => $id])->andWhere(['resource' => $resource])->one(),
+        ]);
+    }
 
     /**
      * @return string|\yii\web\Response

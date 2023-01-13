@@ -76,13 +76,13 @@ class SchoolplanHistory extends BaseHistory
                 if (isset($model->executors_list)) {
                     $v = [];
                     foreach (Json::decode($model->executors_list) as $id) {
-                        $v[] = $id != null ? UserCommon::findOne($id)->getFullName() : null;
+                        $v[] = $id != null ? RefBook::find('teachers_fio')->getValue($id) : null;
                     }
                     return implode(', ', $v);
                 }
                 break;
             case 'author_id':
-                return isset($model->author_id) ? UserCommon::findOne($model->author_id)->getFullName() : $value;
+                return isset($model->author_id) ? RefBook::find('teachers_fio')->getValue($model->author_id) : $value;
                 break;
             case 'auditory_id':
                 return isset($model->auditory_id) ? RefBook::find('auditory_memo_1')->getValue($model->auditory_id) : $value;

@@ -5,6 +5,7 @@ use artsoft\widgets\ActiveForm;
 use common\models\own\Department;
 use common\models\schoolplan\Schoolplan;
 use artsoft\helpers\Html;
+use common\models\user\UserCommon;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\schoolplan\Schoolplan */
@@ -59,7 +60,7 @@ use artsoft\helpers\Html;
                             ?>
 
                             <?= $form->field($model->loadDefaultValues(), 'executors_list')->widget(\kartik\select2\Select2::class, [
-                                'data' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees']),
+                                'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
                                 'showToggleAll' => false,
                                 'options' => [
                                     'disabled' => $readonly,
@@ -133,7 +134,7 @@ use artsoft\helpers\Html;
                                         <?= $form->field($model, 'period_over')->dropDownList(Schoolplan::getPeriodOverList()) ?>
 
                                         <?= $form->field($model, 'executor_over_id')->widget(\kartik\select2\Select2::class, [
-                                            'data' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees']),
+                                            'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
                                             'showToggleAll' => false,
                                             'options' => [
                                                 'disabled' => $readonly,

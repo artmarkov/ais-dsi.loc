@@ -2,6 +2,7 @@
 
 use artsoft\helpers\RefBook;
 use common\models\own\Department;
+use common\models\user\UserCommon;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -106,16 +107,16 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'attribute' => 'executors_list',
-                        'filter' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees', 'students']),
+                        'filter' => RefBook::find('teachers_fio',  UserCommon::STATUS_ACTIVE)->getList(),
                         'value' => function (ActivitiesOver $model) {
                             $v = [];
                             foreach ($model->executors_list as $id) {
                                 if (!$id) {
                                     continue;
                                 }
-                                $v[] = \common\models\user\UserCommon::findOne($id)->getFullName();
+                                $v[] = RefBook::find('teachers_fio')->getValue($id);
                             }
-                            return implode('<br/> ', $v);
+                            return implode(',<br/> ', $v);
                         },
                         'options' => ['style' => 'width:350px'],
                         'format' => 'raw',
