@@ -92,7 +92,7 @@ class SigurController extends Controller
             'a' => 'а',
             'B' => 'В',
             'C' => 'С',
-            'cc' => 'с',
+            'c' => 'с',
             'E' => 'Е',
             'e' => 'е',
             'H' => 'Н',

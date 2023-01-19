@@ -54,11 +54,8 @@ class ActivitiesSearch extends Activities
             'pagination' => [
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
-            'sort' => [
-                'defaultOrder' => [
-                    'id' => SORT_DESC,
-                ],
-            ],
+            'sort' => false,
+            
         ]);
 
         $this->load($params);
