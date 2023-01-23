@@ -11,10 +11,12 @@ use common\models\education\EducationProgrammLevel;
 use common\models\education\EducationProgrammLevelSubject;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\own\Department;
+use common\models\schedule\SubjectSchedule;
 use common\models\schoolplan\Schoolplan;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subject\Subject;
+use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\ArrayHelper;
@@ -29,11 +31,14 @@ use yii\helpers\Console;
  */
 class ProgrammController extends Controller
 {
+    public $err = [];
+
     public function actionIndex()
     {
         $this->stdout("\n");
 //        $this->addProgramm();
         $this->addStudyplan();
+       // print_r(array_unique($this->err));
     }
 
     public function addStudyplan()
@@ -87,16 +92,19 @@ class ProgrammController extends Controller
         // ini_set('memory_limit', '2024M');
         $f = file_get_contents('data/studyplan.txt');
         $data = json_decode($f, true);
-        print_r($data);
+        //  print_r($data);
         foreach ($data as $i => $d) {
             if ($d['plan_year'] != '2022') {
+                continue;
+            }
+            if (!$this->findByStudent($d['student_fio'])) {
                 continue;
             }
             // print_r($d);
             $model_programm = EducationProgramm::findOne($this->getProgrammId($d['plan_id']));
             if ($model_programm) {
                 try {
-                    $transaction = \Yii::$app->db->beginTransaction();
+                    //  $transaction = \Yii::$app->db->beginTransaction();
                     $model_studyplan = Studyplan::find()->where(['=', 'programm_id', $model_programm->id])->andWhere(['=', 'plan_year', $d['plan_year']])->andWhere(['=', 'course', $d['course']])->andWhere(['=', 'student_id', $this->findByStudent($d['student_fio'])])->one() ?? new Studyplan();
                     $model_studyplan->programm_id = $model_programm->id;
                     $model_studyplan->plan_year = $d['plan_year'];
@@ -104,28 +112,33 @@ class ProgrammController extends Controller
                     $model_studyplan->course = $d['course'];
                     $model_studyplan->subject_type_id = $this->getSubjectType($d['type_training_const']);
                     if (!($flag = $model_studyplan->save(false))) {
-                        $transaction->rollBack();
+                        //  $transaction->rollBack();
                         break;
                     }
                     foreach ($d['pupils_sub'] as $ii => $dd) {
+                        // print_r($dd);
                         $model_subject = StudyplanSubject::find()->where(['=', 'studyplan_id', $model_studyplan->id])->andWhere(['=', 'subject_cat_id', $this->getSubjectCat($dd['cat_name'], $dd['sub_name'])])->andWhere(['=', 'subject_id', $this->getSubject($dd['sub_name'])])->one() ?? new StudyplanSubject();
                         $model_subject->studyplan_id = $model_studyplan->id;
                         $model_subject->subject_cat_id = $this->getSubjectCat($dd['cat_name'], $dd['sub_name']);
-                        $model_subject->subject_id = $this->getSubjectVid($dd['sub_name']);
-                        $model_subject->subject_type_id = $this->getSubjectType($d['type_training']);
+                        $model_subject->subject_id = $this->getSubject($dd['sub_name']);
+                        $model_subject->subject_type_id = $this->getSubjectType($dd['type_training']);
                         $model_subject->subject_vid_id = $this->getSubjectVid2($dd['vid_id']);
-                        $model_subject->week_time = $d['week_time'];
-                        $model_subject->year_time_consult = $d['year_time'];
+                        $model_subject->week_time = $dd['week_time'];
+                        $model_subject->year_time_consult = $dd['year_time'];
 
                         if (!($flag = $model_subject->save(false))) {
-                            $transaction->rollBack();
+                            // $transaction->rollBack();
                             break;
                         }
+
+//                        $model_load = TeachersLoad::find()->where(['=', 'subject_sect_studyplan_id', $model_studyplan->id])->andWhere
+//                        $model_schedule = SubjectSchedule::find()->where(['=', 'studyplan_id', $model_studyplan->id])->andWhere
                     }
                 } catch (\Exception $e) {
-                    $transaction->rollBack();
-                    $this->stdout('Error ' . $i . "-" . $ii . "-" . $iii . " ", Console::FG_RED);
+                    // $transaction->rollBack();
+                    $this->stdout('Error ' . $i . "-" . $ii . " ", Console::FG_RED);
                     $this->stdout("\n");
+                    //  print_r($d);
                 }
             } else {
                 $this->stdout('Не найдена программа: ' . $d['plan_id'] . " ", Console::FG_RED);
@@ -169,7 +182,7 @@ class ProgrammController extends Controller
                             $model_subject->subject_vid_id = $this->getSubjectVid($dd['sub_name']);
                             $model_subject->subject_id = $this->getSubject($dd['sub_name']);
                             $model_subject->week_time = $ddd['week_time'];
-                            $model_subject->year_time = $ddd['year_time'];
+                            $model_subject->year_time_consult = $ddd['year_time'];
 
                             if (!($flag = $model_subject->save(false))) {
                                 $transaction->rollBack();
@@ -230,10 +243,58 @@ class ProgrammController extends Controller
                                                     FROM subject 
                                                     WHERE name=:name',
             [
-                'name' => $name
+                'name' => $this->getSubjectName($name)
             ])->queryOne();
 
         return $subject['id'] ?? null;
+    }
+
+    public function getSubjectName($name)
+    {
+        switch ($name) {
+            case 'Основы изобразительной грамоты' :
+                $name = 'Основы изобразительного искусства';
+                break;
+            case 'Основы мультипликации' :
+                $name = 'Основы мультипликации и режиссуры анимационного кино';
+                break;
+            case 'Арт - практика' :
+                $name = 'Арт-практика';
+                break;
+            case 'Основы изобрвзительной деятельности и дизайн костюма' :
+                $name = 'Основы изобразительной деятельности и дизайна одежды';
+                break;
+            case 'Балетная гимнастика' :
+                $name = 'Баллетная гимнастика';
+                break;
+            case 'Современная хореография' :
+                $name = 'Современный танец';
+                break;
+            case 'Музыкальный инструмент - Фортепиано' :
+                $name = 'Фортепиано';
+                break;
+            case 'Композиция (станковая, прикладная)' :
+                $name = 'Композиция станковая';
+                break;
+            case 'Body Ballet' :
+                $name = 'Боди-балет';
+                break;
+            case 'Слушание музыки' :
+                $name = 'Слушание музыки';
+                break;
+            case 'Эстрадно-джазовый оркестр' :
+            case 'Оркестр гитаристов' :
+            case 'Народный оркестр' :
+            case 'Оркестр духовых инструментов' :
+                $name = 'Оркестровый класс';
+                break;
+            case 'Ансамбль народных инструментов' :
+            case 'Струнный ансамбль' :
+                $name = 'Ансамбль';
+                break;
+        }
+
+        return $name;
     }
 
     public function getSubjectVid($name)
@@ -242,7 +303,7 @@ class ProgrammController extends Controller
                                                     FROM subject 
                                                     WHERE name=:name',
             [
-                'name' => $name
+                'name' =>  $this->getSubjectName($name)
             ])->queryOne();
         $sub = explode(',', $subject['vid_list']);
         return $sub[0] ?? null;
@@ -251,7 +312,7 @@ class ProgrammController extends Controller
     public function getSubjectCat($name, $sub_name)
     {
         $cat_id = null;
-
+        $sub_name = $this->getSubjectName($sub_name);
         switch ($name) {
             case 'Дисциплины отдела' :
             case 'Общие дисциплины школы' :
@@ -296,7 +357,7 @@ class ProgrammController extends Controller
             [
                 'fullname' => $this->lat2cyr($full_name)
             ])->queryOne();
-        return $user['students_id'];
+        return $user['students_id'] ?? false;
     }
 
     protected function lat2cyr($text)
