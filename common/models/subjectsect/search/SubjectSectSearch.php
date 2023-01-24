@@ -18,7 +18,7 @@ class SubjectSectSearch extends SubjectSect
     public function rules()
     {
         return [
-            [['id', 'union_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'course_flag', 'sub_group_qty'], 'integer'],
+            [['id', 'programm_list','term_mastering','class_index','description', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'course_flag', 'sub_group_qty'], 'integer'],
             [['sect_name'], 'string'],
         ];
     }
@@ -65,7 +65,8 @@ class SubjectSectSearch extends SubjectSect
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'union_id' => $this->union_id,
+            'term_mastering' => $this->term_mastering,
+            'class_index' => $this->class_index,
             'course_flag' => $this->course_flag,
             'sub_group_qty' => $this->sub_group_qty,
             'subject_cat_id' => $this->subject_cat_id,
@@ -80,6 +81,8 @@ class SubjectSectSearch extends SubjectSect
         ]);
 
         $query->andFilterWhere(['like', 'sect_name', $this->sect_name]);
+        $query->andFilterWhere(['like', 'programm_list', $this->programm_list]);
+        $query->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;
     }

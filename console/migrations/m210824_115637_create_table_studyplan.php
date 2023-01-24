@@ -42,15 +42,18 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->db->createCommand()->resetSequence('studyplan', 1000)->execute();
 
         $this->createTableWithHistory('subject_sect', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
-            'union_id' => $this->integer()->notNull(),
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'programm_list' => $this->text()->comment('Учебные рограммы'),
+            'term_mastering' => $this->integer()->notNull()->comment('Период обучения'),
             'subject_cat_id' => $this->integer()->notNull(),
             'subject_id' => $this->integer()->notNull(),
             'subject_vid_id' => $this->integer()->notNull(),
             'subject_type_id' => $this->integer()->notNull(),
-            'sect_name' => $this->string(127)->comment('Название группы'),
+            'sect_name' => $this->string(127)->notNull()->comment('Название группы'),
             'course_flag' => $this->integer()->notNull()->comment('Распределить по курсам(Да/Нет)'),
-            'sub_group_qty' => $this->integer()->notNull()->comment('Кол-во подгрупп в группе'),
+            'class_index' => $this->string(32)->comment('Индекс курса'),
+            'description' => $this->string(1024)->comment('Описание группы'),
+            'sub_group_qty' => $this->integer()->notNull()->comment('Кол-во подгрупп'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -60,16 +63,16 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('subject_sect', 'Учебные группы');
-        $this->db->createCommand()->resetSequence('subject_sect', 10000)->execute();
+        $this->db->createCommand()->resetSequence('subject_sect', 1000)->execute();
+
         $this->createIndex('subject_cat_id', 'subject_sect', 'subject_cat_id');
         $this->createIndex('subject_id', 'subject_sect', 'subject_id');
         $this->createIndex('subject_type_id', 'subject_sect', 'subject_type_id');
         $this->createIndex('subject_vid_id', 'subject_sect', 'subject_vid_id');
-        $this->addForeignKey('subject_sect_ibfk_1', 'subject_sect', 'union_id', 'education_union', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('subject_sect_ibfk_2', 'subject_sect', 'subject_cat_id', 'guide_subject_category', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('subject_sect_ibfk_3', 'subject_sect', 'subject_id', 'subject', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('subject_sect_ibfk_4', 'subject_sect', 'subject_type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('subject_sect_ibfk_5', 'subject_sect', 'subject_vid_id', 'guide_subject_vid', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('subject_sect_ibfk_1', 'subject_sect', 'subject_cat_id', 'guide_subject_category', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('subject_sect_ibfk_2', 'subject_sect', 'subject_id', 'subject', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('subject_sect_ibfk_3', 'subject_sect', 'subject_type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('subject_sect_ibfk_4', 'subject_sect', 'subject_vid_id', 'guide_subject_vid', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('subject_sect_studyplan', [
             'id' => $this->primaryKey(),
@@ -142,7 +145,6 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->dropForeignKey('subject_sect_ibfk_2', 'subject_sect');
         $this->dropForeignKey('subject_sect_ibfk_3', 'subject_sect');
         $this->dropForeignKey('subject_sect_ibfk_4', 'subject_sect');
-        $this->dropForeignKey('subject_sect_ibfk_5', 'subject_sect');
         $this->dropForeignKey('studyplan_ibfk_1', 'studyplan');
         $this->dropForeignKey('studyplan_ibfk_2', 'studyplan');
         $this->dropForeignKey('studyplan_ibfk_3', 'studyplan');

@@ -95,8 +95,8 @@ return [
     'Date Bonus In' => 'Дата начисления',
     'Period Study' => 'Период обучения',
     'Education Programms' => 'Список программ',
-    'Education Unions' => 'Группы планов',
-    'Education Union' => 'Группа планов',
+    'Education Unions' => 'Группы образовательных программ',
+    'Education Union' => 'Группа образовательных программ',
     'Programm List' => 'Список программ',
     'Subject Sects' => 'Учебные группы',
     'Subject Schedule' => 'Расписание занятий',
@@ -219,7 +219,7 @@ return [
     'Bonus Vid' => 'Вид надбавки',
     'Course List' => 'Список курсов',
     'Course Flag' => 'Распределить по курсам',
-    'Sub Group Qty' => 'Кол-во подгрупп в группе',
+    'Sub Group Qty' => 'Кол-во подгрупп',
 
 ];
 ?>

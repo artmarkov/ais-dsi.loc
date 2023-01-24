@@ -4,14 +4,11 @@ namespace common\models\subjectsect;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\helpers\RefBook;
-use \common\models\education\EducationUnion;
 use common\models\schedule\SubjectScheduleView;
-use common\models\studyplan\StudyplanSubject;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
 use common\models\subject\SubjectVid;
-use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -21,14 +18,17 @@ use yii\helpers\ArrayHelper;
  * This is the model class for table "subject_sect".
  *
  * @property int $id
- * @property int $union_id
+ * @property string|null $programm_list Учебные рограммы
+ * @property int $term_mastering Период обучения
  * @property int $subject_cat_id
- * @property int|null $subject_id
+ * @property int $subject_id
  * @property int $subject_vid_id
- * @property int|null $subject_type_id
+ * @property int $subject_type_id
  * @property string|null $sect_name Название группы
  * @property int $course_flag Распределить по курсам(Да/Нет)
- * @property int $sub_group_qty Кол-во подгрупп в группе
+ * @property string|null $class_index Индекс курса
+ * @property string|null $description Описание группы
+ * @property int $sub_group_qty Кол-во подгрупп
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -36,7 +36,6 @@ use yii\helpers\ArrayHelper;
  * @property int $status
  * @property int $version
  *
- * @property EducationUnion $union
  * @property GuideSubjectCategory $subjectCat
  * @property GuideSubjectType $subjectType
  * @property GuideSubjectVid $subjectVid
@@ -61,6 +60,10 @@ class SubjectSect extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
+            [
+                'class' => ArrayFieldBehavior::class,
+                'attributes' => ['programm_list'],
+            ],
         ];
     }
 
@@ -70,11 +73,20 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['union_id', 'subject_cat_id', 'subject_vid_id', 'course_flag', 'sub_group_qty', 'subject_id', 'sect_name', 'subject_type_id'], 'required'],
-            [['union_id', 'subject_cat_id', 'subject_id', 'subject_vid_id', 'subject_type_id', 'course_flag', 'sub_group_qty'], 'default', 'value' => null],
-            [['union_id', 'subject_cat_id', 'subject_id', 'subject_vid_id', 'subject_type_id', 'course_flag', 'sub_group_qty'], 'integer'],
+            [['subject_cat_id', 'subject_id', 'subject_vid_id', 'subject_type_id', 'course_flag', 'sub_group_qty'], 'required'],
+            [['programm_list'], 'required'],
+            [['term_mastering'], 'required', 'when' => function (SubjectSect $model) {
+                return $model->course_flag == 1;
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[id=\"subjectsect-course_flag\"]').prop('checked');
+                            }"],
+            [['term_mastering', 'subject_cat_id', 'subject_id', 'subject_vid_id', 'subject_type_id', 'course_flag', 'sub_group_qty'], 'default', 'value' => null],
+            [['term_mastering', 'subject_cat_id', 'subject_id', 'subject_vid_id', 'subject_type_id', 'course_flag', 'sub_group_qty', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
+            [['programm_list'], 'safe'],
             [['sect_name'], 'string', 'max' => 127],
-            [['union_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationUnion::class, 'targetAttribute' => ['union_id' => 'id']],
+            [['class_index'], 'string', 'max' => 32],
+            [['description'], 'string', 'max' => 1024],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
             [['subject_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectVid::class, 'targetAttribute' => ['subject_vid_id' => 'id']],
@@ -90,7 +102,10 @@ class SubjectSect extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art', 'ID'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
-            'union_id' => Yii::t('art/guide', 'Education Union'),
+            'description' => Yii::t('art', 'Description'),
+            'class_index' => Yii::t('art/guide', 'Class Index'),
+            'term_mastering' => Yii::t('art/guide', 'Term Mastering'),
+            'programm_list' => Yii::t('art/guide', 'Programm List'),
             'course' => Yii::t('art/studyplan', 'Course'),
             'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
             'subject_id' => Yii::t('art/guide', 'Subject'),
@@ -111,16 +126,6 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     public function optimisticLock()
     {
         return 'version';
-    }
-
-    /**
-     * Gets query for [[Programm]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUnion()
-    {
-        return $this->hasOne(EducationUnion::class, ['id' => 'union_id']);
     }
 
     /**
@@ -169,7 +174,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      */
     public function getClassIndex()
     {
-        return isset($this->union) ? $this->union->class_index : 'Класс';
+        return $this->class_index;
     }
 
     /**
@@ -219,13 +224,12 @@ class SubjectSect extends \artsoft\db\ActiveRecord
     {
         $this->subject_type_id = $this->subject_type_id == null ? 0 : $this->subject_type_id;
         $course = $course == null ? 0 : $course;
-
+        $programm_list = implode(',', $this->programm_list);
         $funcSql = <<< SQL
     select studyplan_subject.id as id
 	from studyplan
 	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
-	where studyplan.programm_id = any (string_to_array((
-        select programm_list from education_union where id = {$this->union_id}), ',')::int[])
+	where studyplan.programm_id = any (string_to_array('{$programm_list}', ',')::int[])
 		and studyplan_subject.id != all(string_to_array('{$this->getStudyplanList($plan_year)}', ',')::int[])
 		and plan_year = {$plan_year}
         and subject_cat_id = {$this->subject_cat_id}
@@ -247,65 +251,23 @@ SQL;
     }
 
     /**
-     * список категорий дисциплин заданной группы планов (кроме индивидуальных qty_max > 1)
-     * @param $union_id
-     * @return array
-     * @throws \yii\db\Exception
-     */
-    protected static function getQuerySub($union_id)
-    {
-        return <<< SQL
-    select distinct subject_cat_id as id, guide_subject_category.name as name
-	from studyplan
-	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
-	inner join guide_subject_category on guide_subject_category.id = studyplan_subject.subject_cat_id
-	inner join subject on subject.id = studyplan_subject.subject_id
-	inner join guide_subject_vid on guide_subject_vid.id = studyplan_subject.subject_vid_id
-	where studyplan.programm_id = any (string_to_array((
-        select programm_list from education_union where id = {$union_id}), ',')::int[])
-        and subject_id is not null
-        and guide_subject_vid.qty_max > 1
-SQL;
-    }
-
-    /**
-     * @param $union_id
-     * @return array
-     * @throws \yii\db\Exception
-     */
-    public static function getSubjectCategoryForUnion($union_id)
-    {
-        return $union_id ? ArrayHelper::map(Yii::$app->db->createCommand(self::getQuerySub($union_id))->queryAll(), 'id', 'name') : [];
-    }
-
-    /**
-     * @param $union_id
-     * @return array
-     * @throws \yii\db\Exception
-     */
-    public static function getSubjectCategoryForUnionToId($union_id)
-    {
-        return $union_id ? Yii::$app->db->createCommand(self::getQuerySub($union_id))->queryAll() : [];
-    }
-
-    /**
      * @param $cat_id
      * @return string
      */
-    protected static function getQuery($union_id, $cat_id)
+    protected static function getQuery($programm_list, $cat_id)
     {
+        $programm_list = implode(',', $programm_list);
         return <<< SQL
-    select distinct subject_id as id, subject.name as name
-	from studyplan
-	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
-	inner join guide_subject_category on guide_subject_category.id = studyplan_subject.subject_cat_id
-	inner join subject on subject.id = studyplan_subject.subject_id
-	inner join guide_subject_vid on guide_subject_vid.id = studyplan_subject.subject_vid_id
-	where studyplan.programm_id = any (string_to_array((
-        select programm_list from education_union where id = {$union_id}), ',')::int[])
-        and subject_id is not null
-        and guide_subject_vid.qty_max > 1
-        and studyplan_subject.subject_cat_id = {$cat_id}
+            select distinct subject_id as id, subject.name as name
+                from education_programm
+                inner join education_programm_level on education_programm_level.programm_id = education_programm.id
+                inner join education_programm_level_subject on education_programm_level_subject.programm_level_id = education_programm_level.id
+                inner join guide_subject_category on guide_subject_category.id = education_programm_level_subject.subject_cat_id
+                inner join subject on subject.id = education_programm_level_subject.subject_id
+                inner join guide_subject_vid on guide_subject_vid.id = education_programm_level_subject.subject_vid_id
+                where education_programm.id = any (string_to_array('{$programm_list}', ',')::int[])
+                    and subject_id is not null
+                    and education_programm_level_subject.subject_cat_id = {$cat_id}
 SQL;
     }
 
@@ -314,9 +276,9 @@ SQL;
      * @return array
      * @throws \yii\db\Exception
      */
-    public static function getSubjectForUnionAndCat($union_id, $cat_id)
+    public static function getSubjectForUnionAndCat($programm_list, $cat_id)
     {
-        return $cat_id ? ArrayHelper::map(Yii::$app->db->createCommand(self::getQuery($union_id, $cat_id))->queryAll(), 'id', 'name') : [];
+        return $cat_id ? ArrayHelper::map(Yii::$app->db->createCommand(self::getQuery($programm_list, $cat_id))->queryAll(), 'id', 'name') : [];
     }
 
     /**
@@ -324,9 +286,9 @@ SQL;
      * @return array
      * @throws \yii\db\Exception
      */
-    public static function getSubjectForUnionAndCatToId($union_id, $cat_id)
+    public static function getSubjectForUnionAndCatToId($programm_list, $cat_id)
     {
-        return $cat_id ? Yii::$app->db->createCommand(self::getQuery($union_id, $cat_id))->queryAll() : [];
+        return $cat_id ? Yii::$app->db->createCommand(self::getQuery($programm_list, $cat_id))->queryAll() : [];
     }
 
     public function getSubjectSchedule()
@@ -374,7 +336,7 @@ SQL;
     {
         $modelsSubjectSectStudyplan = [];
         $sub_group_qty = $this->sub_group_qty;
-        $term_mastering = $this->union->term_mastering;
+        $term_mastering = $this->term_mastering;
         $course = 0;
         $group = 1;
 
@@ -467,4 +429,27 @@ SQL;
 
     }
 
+    /**
+     * @param bool $insert
+     * @return bool
+     * @throws \yii\db\StaleObjectException
+     */
+    public function beforeSave($insert)
+    {
+        if ($this->course_flag == 0) {
+            $this->term_mastering = null;
+
+            $models = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $this->id])->andWhere(['not', ['course' => null]])->all();
+            foreach ($models as $model) {
+                $model->delete();
+            }
+        } else {
+            $models = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $this->id])->andWhere(['is', 'course', new \yii\db\Expression('null')])->all();
+            foreach ($models as $model) {
+                $model->delete();
+            }
+        }
+
+        return parent::beforeSave($insert);
+    }
 }

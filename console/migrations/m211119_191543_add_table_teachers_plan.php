@@ -122,10 +122,10 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->createView('teachers_load_view', '
-       SELECT studyplan_subject.id as studyplan_subject_id,
-    0::integer AS subject_sect_studyplan_id,
+      SELECT studyplan_subject.id AS studyplan_subject_id,
+    0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
-    0::integer AS subject_sect_id,
+    0 AS subject_sect_id,
     studyplan.plan_year,
     studyplan_subject.week_time,
     studyplan_subject.year_time_consult,
@@ -138,17 +138,26 @@ UNION ALL
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
      LEFT JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
 UNION ALL
- SELECT 0::integer AS studyplan_subject_id,
+ SELECT 0 AS studyplan_subject_id,
     subject_sect_studyplan.id AS subject_sect_studyplan_id,
-    CASE WHEN subject_sect_studyplan.studyplan_subject_list = \'\' THEN null::text ELSE subject_sect_studyplan.studyplan_subject_list END,
+        CASE
+            WHEN subject_sect_studyplan.studyplan_subject_list = \'\'::text THEN NULL::text
+            ELSE subject_sect_studyplan.studyplan_subject_list
+        END AS studyplan_subject_list,
     subject_sect.id AS subject_sect_id,
     subject_sect_studyplan.plan_year,
-    ( SELECT max(studyplan_subject.week_time) AS max
-           FROM studyplan_subject
-          WHERE studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])) AS week_time,
-    ( SELECT max(studyplan_subject.year_time_consult) AS max
-           FROM studyplan_subject
-          WHERE studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])) AS year_time_consult,
+    ( SELECT max(education_programm_level_subject.week_time) AS max
+           from education_programm
+                inner join education_programm_level on education_programm_level.programm_id = education_programm.id
+                inner join education_programm_level_subject on education_programm_level_subject.programm_level_id = education_programm_level.id
+                where education_programm.id = any (string_to_array(subject_sect.programm_list, \',\')::int[]) and education_programm_level_subject.subject_id = subject_sect.subject_id and education_programm_level_subject.subject_cat_id = subject_sect.subject_cat_id 
+                    ) AS week_time,
+    ( SELECT max(education_programm_level_subject.year_time_consult) AS max
+           from education_programm
+                inner join education_programm_level on education_programm_level.programm_id = education_programm.id
+                inner join education_programm_level_subject on education_programm_level_subject.programm_level_id = education_programm_level.id
+                where education_programm.id = any (string_to_array(subject_sect.programm_list, \',\')::int[]) and education_programm_level_subject.subject_id = subject_sect.subject_id and education_programm_level_subject.subject_cat_id = subject_sect.subject_cat_id 
+                    ) AS year_time_consult,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
     teachers_load.teachers_id,

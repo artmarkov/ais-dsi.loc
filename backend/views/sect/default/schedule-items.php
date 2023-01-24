@@ -18,7 +18,7 @@ $columns = [
     [
         'attribute' => 'studyplan_subject_id',
         'value' => function ($model) {
-            return $model->studyplan_subject_id != 0 ? RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id) : RefBook::find('sect_memo_2')->getValue($model->subject_sect_studyplan_id);
+            return $model->studyplan_subject_id != 0 ? RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id) : RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id);
         },
         'group' => true,
     ],
@@ -26,9 +26,9 @@ $columns = [
         'attribute' => 'subject_sect_studyplan_id',
         'width' => '310px',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('sect_name_3')->getList(),
+        'filter' => RefBook::find('sect_memo_2')->getList(),
         'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id);
+            return RefBook::find('sect_memo_2')->getValue($model->subject_sect_studyplan_id);
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],

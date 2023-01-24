@@ -1,5 +1,6 @@
 <?php
 
+use common\models\education\EducationUnion;
 use common\models\own\Department;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
@@ -52,19 +53,31 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'subject-sect-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                        'bulkActionOptions' => [
+                        'rowOptions' => function (SubjectSect $model) {
+                            if ($model->course_flag == 1) {
+                                return ['class' => 'success'];
+                            }
+                            return ['class' => 'info'];
+                        },
+                       /* 'bulkActionOptions' => [
                             'gridId' => 'subject-sect-grid',
                             'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
-                        ],
+                        ],*/
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+//                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
                                 'value' => function (SubjectSect $model) {
                                     return sprintf('#%06d', $model->id);
                                 },
                             ],
-                             [
+                            [
+                                'attribute' => 'sect_name',
+                                'value' => function (SubjectSect $model) {
+                                    return $model->sect_name;
+                                },
+                            ],
+                             /*[
                                 'attribute' => 'sect_name',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/sect/default',
@@ -73,14 +86,20 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return Html::a($model->sect_name, ['view', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {view} {delete}',
-                            ],
+                            ],*/
                             [
-                                'attribute' => 'union_id',
-                                'filter' => RefBook::find('union_name')->getList(),
+                                'attribute' => 'programm_list',
+                                'filter' => RefBook::find('education_programm_short_name', \common\models\education\EducationProgramm::STATUS_ACTIVE)->getList(),
                                 'value' => function (SubjectSect $model) {
-                                    return RefBook::find('union_name')->getValue($model->union_id);
+                                    $v = [];
+                                    foreach ($model->programm_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = RefBook::find('education_programm_short_name', \common\models\education\EducationProgramm::STATUS_ACTIVE)->getValue($id);
+                                    }
+                                    return implode('<br/> ', $v);
                                 },
-                                'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
                             [
@@ -89,7 +108,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function (SubjectSect $model) {
                                     return RefBook::find('subject_category_name')->getValue($model->subject_cat_id);
                                 },
-                                'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
                             [
@@ -110,15 +128,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-                            [
-                                'attribute' => 'subject_vid_id',
-                                'filter' => \common\models\subject\SubjectVid::getVidListGroup(),
-                                'value' => function (SubjectSect $model) {
-                                    return RefBook::find('subject_vid_name')->getValue($model->subject_vid_id);
-                                },
-                                'options' => ['style' => 'width:350px'],
-                                'format' => 'raw',
-                            ],
+//                            [
+//                                'attribute' => 'subject_vid_id',
+//                                'filter' => \common\models\subject\SubjectVid::getVidListGroup(),
+//                                'value' => function (SubjectSect $model) {
+//                                    return RefBook::find('subject_vid_name')->getValue($model->subject_vid_id);
+//                                },
+//                                'options' => ['style' => 'width:350px'],
+//                                'format' => 'raw',
+//                            ],
                             'sub_group_qty',
                             [
                                 'class' => 'kartik\grid\ActionColumn',

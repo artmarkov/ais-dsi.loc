@@ -76,7 +76,7 @@ class SubjectVid extends \artsoft\db\ActiveRecord
     {
         return ArrayHelper::map(self::find()
             ->select('id, name')
-            ->andWhere(['status' => self::STATUS_ACTIVE])
+            ->where(['status' => self::STATUS_ACTIVE])
             ->andWhere(['>','qty_min', '1'])
             ->andWhere(['>','qty_max', '1'])
             ->orderBy('id')

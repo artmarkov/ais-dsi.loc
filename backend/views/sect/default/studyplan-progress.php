@@ -62,7 +62,7 @@ $columns = [
         'attribute' => 'subject_sect_studyplan_id',
         'label' => $model['attributes']['subject_sect_studyplan_id'],
         'value' => function ($model) {
-            return RefBook::find('sect_name_2')->getValue($model['subject_sect_studyplan_id'] ?? null);
+            return RefBook::find('sect_memo_2')->getValue($model['subject_sect_studyplan_id'] ?? null);
         },
         'format' => 'raw',
         'group' => true,

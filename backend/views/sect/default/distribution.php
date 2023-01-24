@@ -35,7 +35,9 @@ $this->params['breadcrumbs'][] = $this->title;
         ]);
 
         $sub_group_qty = $model->sub_group_qty;
-        $term_mastering = $model->union->term_mastering;
+        $term_mastering = $model->term_mastering;
+        $class_index = $model->class_index;
+
         $group = 0;
         ?>
         <div class="panel-body">
@@ -62,11 +64,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php
                             if ($index == $term_mastering * $group) {
                                 $group++;
+                                $class_name = $class_index != '' ? sprintf('%s %s-%02d', $model->sect_name, $class_index, $group) : sprintf('%s %02d', $model->sect_name, $group);
                                 echo '<tr>
-                                <td class="text-center" style="vertical-align: middle;">' . sprintf('%02d', $group) . '</td>';
+                                <td class="text-center" style="vertical-align: middle;">' . $class_name . '</td>';
                             }
                             echo '<td>';
-                            echo RefBook::find('sect_memo_1')->getValue($modelSubjectSectStudyplan->id);
+                            echo RefBook::find('sect_memo_2')->getValue($modelSubjectSectStudyplan->id);
 
                             // necessary for update action.
                             if (!$modelSubjectSectStudyplan->isNewRecord) {

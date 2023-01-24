@@ -26,7 +26,7 @@ $columns = [
         'filterType' => GridView::FILTER_SELECT2,
         'filter' => $sect_list,
         'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id);
+            return RefBook::find('sect_memo_2')->getValue($model->subject_sect_studyplan_id);
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],

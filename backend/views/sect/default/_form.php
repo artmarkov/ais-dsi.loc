@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -27,10 +28,24 @@ $form = ActiveForm::begin([
             <div class="row">
                 <div class="col-sm-12">
 
-                    <?= $form->field($model, 'union_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \artsoft\helpers\RefBook::find('union_name', $model->isNewRecord ? \common\models\education\EducationUnion::STATUS_ACTIVE : '')->getList(),
+                    <?= $form->field($model, 'programm_list')->widget(\kartik\select2\Select2::className(), [
+                        'data' => RefBook::find('education_programm_short_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
                         'options' => [
-                            'id' => 'union_id',
+                            'id' => 'programm_list',
+                            'multiple' => true,
+                            'placeholder' =>  Yii::t('art/studyplan', 'Select Education Programm...'),
+                        ],
+                        'pluginOptions' => [
+                            'disabled' => $readonly,
+                            'allowClear' => true
+                        ]
+                    ])->label(Yii::t('art/studyplan', 'Education Programm'));
+                    ?>
+
+                    <?= $form->field($model, 'subject_cat_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => \artsoft\helpers\RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\education\EducationUnion::STATUS_ACTIVE : '')->getList(),
+                        'options' => [
+                            'id' => 'subject_cat_id',
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [
@@ -40,33 +55,19 @@ $form = ActiveForm::begin([
 
                     ]); ?>
 
-                    <?= $form->field($model, 'subject_cat_id')->widget(\kartik\depdrop\DepDrop::class, [
-                        'data' => $model::getSubjectCategoryForUnion($model->union_id),
-                        'options' => [
-                            'id' => 'subject_cat_id',
-                            'disabled' => $readonly,
-                            'placeholder' => Yii::t('art', 'Select...'),
-                        ],
-                        'pluginOptions' => [
-                            'depends' => ['union_id'],
-                            'placeholder' => Yii::t('art', 'Select...'),
-                            'url' => \yii\helpers\Url::to(['/sect/default/subject-cat'])
-                        ],
-
-                    ]); ?>
-
                     <?= $form->field($model, 'subject_id')->widget(\kartik\depdrop\DepDrop::class, [
-                        'data' => $model::getSubjectForUnionAndCat($model->union_id, $model->subject_cat_id),
+                        'data' => $model::getSubjectForUnionAndCat($model->programm_list, $model->subject_cat_id),
                         'options' => [
                             'prompt' => Yii::t('art', 'Select...'),
                             'disabled' => $readonly,
                         ],
                         'pluginOptions' => [
-                            'depends' => ['union_id', 'subject_cat_id'],
+                            'depends' => ['programm_list', 'subject_cat_id'],
                             'placeholder' => Yii::t('art', 'Select...'),
                             'url' => \yii\helpers\Url::to(['/sect/default/subject'])
                         ]
                     ]); ?>
+
                     <?= $form->field($model, 'sect_name')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'subject_vid_id')->widget(\kartik\select2\Select2::class, [
@@ -100,11 +101,31 @@ $form = ActiveForm::begin([
                             'max' => 15,
                         ]]);
                     ?>
+                    <?= $form->field($model, 'description')->textarea(['rows' => 3, 'maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'course_flag')->checkbox(['disabled' => $readonly]) ?>
                     <?php
-//                    $options = ['options' => ['style' => ($model->course_flag == 1) ? 'display:block' : 'display:none']];
+                    $options = ['options' => ['style' => ($model->course_flag == 1) ? 'display:block' : 'display:none']];
                     ?>
+                    <?= $form->field($model, 'course_flag')->checkbox(['disabled' => $readonly]) ?>
+
+                    <?= $form->field($model, 'term_mastering', $options)->widget(\kartik\select2\Select2::class, [
+                        'data' => \artsoft\helpers\ArtHelper::getTermList(),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])
+                    ?>
+
+                    <?= $form->field($model, 'class_index', $options)->textInput(['maxlength' => true]) ?>
+
+                    <?= $form->field($model, 'status')->dropDownList(\common\models\subjectsect\SubjectSect::getStatusList(), [
+                        'disabled' => $readonly
+                    ]) ?>
 
                 </div>
             </div>
@@ -120,19 +141,21 @@ $form = ActiveForm::begin([
 
     </div>
 <?php
-//$js = <<<JS
-//    function toggle(field) {
-//       if ($(field).is(':checked') ) {
-//        $(".field-subjectsect-course_list").show();
-//        } else {
-//            $(".field-subjectsect-course_list").hide();
-//        }
-//    }
-//    $('input[name="SubjectSect[course_flag]"]').on('click', function () {
-//         // console.log(this);
-//       toggle(this);
-//     });
-//JS;
-//
-//$this->registerJs($js, \yii\web\View::POS_LOAD);
+$js = <<<JS
+    function toggle(field) {
+       if ($(field).is(':checked') ) {
+        $(".field-subjectsect-class_index").show();
+        $(".field-subjectsect-term_mastering").show();
+        } else {
+            $(".field-subjectsect-class_index").hide();
+            $(".field-subjectsect-term_mastering").hide();
+        }
+    }
+    $('input[name="SubjectSect[course_flag]"]').on('click', function () {
+         // console.log(this);
+       toggle(this);
+     });
+JS;
+
+$this->registerJs($js, \yii\web\View::POS_LOAD);
 ?>
