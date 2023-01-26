@@ -19,13 +19,14 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property string|null $programm_list Учебные рограммы
+ * @property int $course_list Список курсов
  * @property int $term_mastering Период обучения
  * @property int $subject_cat_id
  * @property int $subject_id
  * @property int $subject_vid_id
  * @property int $subject_type_id
  * @property string|null $sect_name Название группы
- * @property int $course_flag Распределить по курсам(Да/Нет)
+ * @property int $course_flag Распределить по годам обучения(Да/Нет)
  * @property string|null $class_index Индекс курса
  * @property string|null $description Описание группы
  * @property int $sub_group_qty Кол-во подгрупп
@@ -62,7 +63,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
             TimestampBehavior::class,
             [
                 'class' => ArrayFieldBehavior::class,
-                'attributes' => ['programm_list'],
+                'attributes' => ['programm_list', 'course_list'],
             ],
         ];
     }
@@ -81,9 +82,9 @@ class SubjectSect extends \artsoft\db\ActiveRecord
                 'whenClient' => "function (attribute, value) {
                                 return $('input[id=\"subjectsect-course_flag\"]').prop('checked');
                             }"],
-            [['term_mastering', 'subject_cat_id', 'subject_id', 'subject_vid_id', 'subject_type_id', 'course_flag', 'sub_group_qty'], 'default', 'value' => null],
+            [['course_list', 'term_mastering', 'subject_cat_id', 'subject_id', 'subject_vid_id', 'subject_type_id', 'course_flag', 'sub_group_qty'], 'default', 'value' => null],
             [['term_mastering', 'subject_cat_id', 'subject_id', 'subject_vid_id', 'subject_type_id', 'course_flag', 'sub_group_qty', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],
-            [['programm_list'], 'safe'],
+            [['programm_list', 'course_list'], 'safe'],
             [['sect_name'], 'string', 'max' => 127],
             [['class_index'], 'string', 'max' => 32],
             [['description'], 'string', 'max' => 1024],
@@ -105,6 +106,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
             'description' => Yii::t('art', 'Description'),
             'class_index' => Yii::t('art/guide', 'Class Index'),
             'term_mastering' => Yii::t('art/guide', 'Term Mastering'),
+            'course_list' => 'Ограничения по курсам',
             'programm_list' => Yii::t('art/guide', 'Programm List'),
             'course' => Yii::t('art/studyplan', 'Course'),
             'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),
@@ -220,7 +222,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      * @return array
      * @throws \yii\db\Exception
      */
-    public function getStudyplanForUnion($plan_year, $course = null, $readonly = false)
+    public function getStudyplanForProgramms($plan_year, $course = null, $readonly = false)
     {
         $this->subject_type_id = $this->subject_type_id == null ? 0 : $this->subject_type_id;
         $course = $course == null ? 0 : $course;
@@ -336,34 +338,28 @@ SQL;
     {
         $modelsSubjectSectStudyplan = [];
         $sub_group_qty = $this->sub_group_qty;
-        $term_mastering = $this->term_mastering;
-        $course = 0;
-        $group = 1;
+        $course_list = $this->course_list;
 
         if ($this->course_flag) {
-            for ($i = 0; $i < $term_mastering * $sub_group_qty; $i++) {
-                if ($i == $term_mastering * $group) {
-                    $course = 1;
-                    $group++;
-                } else {
-                    $course++;
+            for ($group = 1; $group <= $sub_group_qty; $group++) {
+                foreach ($course_list as $item => $course) {
+                    $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $this->id])
+                            ->andWhere(['=', 'group_num', $group])
+                            ->andWhere(['=', 'plan_year', $model_date->plan_year])
+                            ->andWhere(['=', 'course', $course])->one() ?? new SubjectSectStudyplan();
+                    $m->subject_sect_id = $this->id;
+                    $m->group_num = $group;
+                    $m->plan_year = $model_date->plan_year;
+                    $m->course = $course;
+                    $m->subject_type_id = $this->subject_type_id;
+                    $m->save(false);
+                    $modelsSubjectSectStudyplan[] = $m;
                 }
-                $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $this->id])
-                        ->andWhere(['=', 'group_num', $group])
-                        ->andWhere(['=', 'plan_year', $model_date->plan_year])
-                        ->andWhere(['=', 'course', $course])->one() ?? new SubjectSectStudyplan();
-                $m->subject_sect_id = $this->id;
-                $m->group_num = $group;
-                $m->plan_year = $model_date->plan_year;
-                $m->course = $course;
-                $m->subject_type_id = $this->subject_type_id;
-                $m->save(false);
-                $modelsSubjectSectStudyplan[] = $m;
             }
         } else {
-            for ($i = 0; $i < $sub_group_qty; $i++) {
+            for ($group = 1; $group <= $sub_group_qty; $group++) {
                 $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $this->id])
-                        ->andWhere(['=', 'group_num', $i])
+                        ->andWhere(['=', 'group_num', $group])
                         ->andWhere(['=', 'plan_year', $model_date->plan_year])->one() ?? new SubjectSectStudyplan();
                 $m->subject_sect_id = $this->id;
                 $m->group_num = $group;
@@ -371,7 +367,6 @@ SQL;
                 $m->subject_type_id = $this->subject_type_id;
                 $m->save(false);
                 $modelsSubjectSectStudyplan[] = $m;
-                $group++;
             }
         }
         return $modelsSubjectSectStudyplan;

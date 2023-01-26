@@ -178,13 +178,11 @@ class DefaultController extends MainController
             $session->set('_sect_plan_year', $model_date->plan_year);
 
             $modelsSubjectSectStudyplan = $model->setSubjectSect($model_date);
-            $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
 
             if (isset($_POST['SubjectSectStudyplan'])) {
                 $modelsSubjectSectStudyplan = $model->getSubjectSectStudyplans($model_date->plan_year);
                 $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
                 Model::loadMultiple($modelsSubjectSectStudyplan, Yii::$app->request->post());
-                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
 
                 // validate all models
                 $valid = Model::validateMultiple($modelsSubjectSectStudyplan);
@@ -192,9 +190,6 @@ class DefaultController extends MainController
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
-                        if (!empty($deletedIDs)) {
-                            SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
-                        }
                         $flag = true;
                         foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
                             if (!($flag = $modelSubjectSectStudyplan->save(false))) {

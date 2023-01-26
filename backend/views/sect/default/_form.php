@@ -43,7 +43,7 @@ $form = ActiveForm::begin([
                     ?>
 
                     <?= $form->field($model, 'subject_cat_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \artsoft\helpers\RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\education\EducationUnion::STATUS_ACTIVE : '')->getList(),
+                        'data' => \artsoft\helpers\RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subjectsect\SubjectSect::STATUS_ACTIVE : '')->getList(),
                         'options' => [
                             'id' => 'subject_cat_id',
                             'placeholder' => Yii::t('art', 'Select...'),
@@ -101,6 +101,18 @@ $form = ActiveForm::begin([
                             'max' => 15,
                         ]]);
                     ?>
+                    <?= $form->field($model, 'course_list')->widget(\kartik\select2\Select2::className(), [
+                        'data' => \artsoft\helpers\ArtHelper::getCourseList(),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ]);
+                    ?>
                     <?= $form->field($model, 'description')->textarea(['rows' => 3, 'maxlength' => true]) ?>
 
                     <?php
@@ -120,7 +132,6 @@ $form = ActiveForm::begin([
                         ],
                     ])
                     ?>
-
                     <?= $form->field($model, 'class_index', $options)->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'status')->dropDownList(\common\models\subjectsect\SubjectSect::getStatusList(), [

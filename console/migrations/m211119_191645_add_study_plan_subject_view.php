@@ -151,24 +151,45 @@ UNION ALL
         ])->execute();
 
         $this->db->createCommand()->createView('subject_sect_view', '
-          SELECT subject_sect_studyplan.id,
+            SELECT sect.id,
+    sect.subject_sect_id,
+    sect.term_mastering,
+    sect.plan_year,
+    sect.course,
+    sect.group_num,
+    sect.subject_type_id,
+    sect.studyplan_subject_list,
+    concat(sect.course_text, sect.class_text, to_char(sect.group_num, \'fm00\'::text)) AS sect_memo_1,
+    concat(sect.subject_name, \' (\', sect.course_text, sect.class_text, to_char(sect.group_num, \'fm00\'::text), \')\') AS sect_memo_2,
+    concat(sect.group_name,   \' (\', sect.course_text, to_char(sect.group_num, \'fm00\'::text), \') \') AS sect_name_1,
+    concat(sect.group_name,   \' (\', sect.course_text, sect.class_text, to_char(sect.group_num, \'fm00\'::text), \') \', \' \', sect.vid_slug, \' \', sect.type_slug) AS sect_name_2,
+    concat(sect.subject_name, \' (\', sect.vid_slug, \' \', sect.type_slug, \')\') AS sect_name_3
+   FROM ( SELECT subject_sect_studyplan.id,
             subject_sect.id AS subject_sect_id,
+            subject_sect.term_mastering,
             subject_sect_studyplan.plan_year,
             subject_sect_studyplan.course,
             subject_sect_studyplan.group_num,
             subject_sect_studyplan.subject_type_id,
             subject_sect_studyplan.studyplan_subject_list,
-            concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\', CASE WHEN (subject_sect.class_index != \'\') THEN concat(subject_sect.class_index,\'-\') ELSE \'\' END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text)) AS sect_memo_1,
-            concat(subject.name, \' (\', subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\', CASE WHEN (subject_sect.class_index != \'\') THEN concat(subject_sect.class_index,\'-\') ELSE \'\' END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \')\') AS sect_memo_2,
-            concat(subject_sect.sect_name, \' (\', subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\', to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name_1,
-            concat(subject_sect.sect_name, \' (\', guide_subject_category.slug, \') \', subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\', CASE WHEN (subject_sect.class_index != \'\') THEN concat(subject_sect.class_index,\'-\') ELSE \'\' END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \' \', guide_subject_vid.slug, \' \', guide_subject_type.slug) AS sect_name_2,
-            concat(subject.name, \' (\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \')\') AS sect_name_3
+            guide_subject_vid.slug AS vid_slug,
+            guide_subject_type.slug AS type_slug,
+            subject_sect.sect_name AS group_name,
+            subject.name AS subject_name,
+                CASE
+                    WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
+                    ELSE \'\'::text
+                END AS course_text,
+                CASE
+                    WHEN subject_sect.class_index::text <> \'\'::text THEN concat(subject_sect.class_index, \'-\')
+                    ELSE \'\'::text
+                END AS class_text
            FROM subject_sect_studyplan
              JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
              JOIN guide_subject_category ON guide_subject_category.id = subject_sect.subject_cat_id
              JOIN subject ON subject.id = subject_sect.subject_id
              JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
-             JOIN guide_subject_type ON guide_subject_type.id = subject_sect_studyplan.subject_type_id;
+             JOIN guide_subject_type ON guide_subject_type.id = subject_sect_studyplan.subject_type_id) sect;
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [

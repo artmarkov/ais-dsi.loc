@@ -16,6 +16,7 @@ use common\models\schoolplan\Schoolplan;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subject\Subject;
+use common\models\subjectsect\SubjectSect;
 use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\console\Controller;
@@ -37,7 +38,8 @@ class ProgrammController extends Controller
     {
         $this->stdout("\n");
 //        $this->addProgramm();
-        $this->addStudyplan();
+//        $this->addStudyplan();
+        $this->generateGroup();
        // print_r(array_unique($this->err));
     }
 
@@ -167,6 +169,9 @@ class ProgrammController extends Controller
             if ($model_programm) {
                 foreach ($d['study_sub'] as $ii => $dd) {
                     foreach ($dd['time'] as $iii => $ddd) {
+                        if ($ddd['week_time'] == 0) {
+                            continue;
+                        }
                         try {
                             $transaction = \Yii::$app->db->beginTransaction();
                             $model_level = EducationProgrammLevel::find()->where(['=', 'programm_id', $model_programm->id])->andWhere(['=', 'course', $ddd['course']])->one() ?? new EducationProgrammLevel();
@@ -179,7 +184,7 @@ class ProgrammController extends Controller
                             $model_subject = EducationProgrammLevelSubject::find()->where(['=', 'programm_level_id', $model_level->id])->andWhere(['=', 'subject_cat_id', $this->getSubjectCat($dd['cat_name'], $dd['sub_name'])])->andWhere(['=', 'subject_id', $this->getSubject($dd['sub_name'])])->one() ?? new EducationProgrammLevelSubject();
                             $model_subject->programm_level_id = $model_level->id;
                             $model_subject->subject_cat_id = $this->getSubjectCat($dd['cat_name'], $dd['sub_name']);
-                            $model_subject->subject_vid_id = $this->getSubjectVid($dd['sub_name']);
+                            $model_subject->subject_vid_id = $this->getSubjectVid2($dd['vid_id']);
                             $model_subject->subject_id = $this->getSubject($dd['sub_name']);
                             $model_subject->week_time = $ddd['week_time'];
                             $model_subject->year_time_consult = $ddd['year_time'];
@@ -202,6 +207,34 @@ class ProgrammController extends Controller
                 $this->stdout("\n");
             }
         }
+    }
+
+    public function generateGroup(){
+        $models =  \Yii::$app->db->createCommand('SELECT *
+                                                    FROM generator_course_view 
+                                                    ',
+            )->queryAll();
+
+        if($models) {
+            foreach ($models as $item => $model) {
+                $group = new SubjectSect();
+                $group->programm_list = explode(',', $model['programm_list']);
+                $group->course_list = explode(',', $model['course_list']);
+                $group->term_mastering = $model['term_mastering'];
+                $group->subject_cat_id = $model['subject_cat_id'];
+                $group->subject_id = $model['subject_id'];
+                $group->subject_vid_id = $model['subject_vid_id'];
+                $group->subject_type_id = 1001;
+                $group->sub_group_qty = 1;
+                $group->sect_name = $model['sect_name'];
+                $group->course_flag = $model['course_flag'];
+                $group->save(false);
+            }
+            return true;
+        }
+        $this->stdout('Не загружены программы: ', Console::FG_RED);
+        $this->stdout("\n");
+            return false;
     }
 
     public function getSubjectType($name)

@@ -72,6 +72,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                             ],
                             [
+                                'attribute' => 'subject_id',
+                                'filter' => RefBook::find('subject_name')->getList(),
+                                'value' => function (SubjectSect $model) {
+                                    return RefBook::find('subject_name')->getValue($model->subject_id);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
+                            [
                                 'attribute' => 'sect_name',
                                 'value' => function (SubjectSect $model) {
                                     return $model->sect_name;
@@ -100,25 +109,19 @@ $this->params['breadcrumbs'][] = $this->title;
                                     }
                                     return implode('<br/> ', $v);
                                 },
+                                'options' => ['style' => 'width:250px'],
                                 'format' => 'raw',
                             ],
                             [
                                 'attribute' => 'subject_cat_id',
-                                'filter' => RefBook::find('subject_category_name')->getList(),
+                                'filter' => RefBook::find('subject_category_name_dev')->getList(),
                                 'value' => function (SubjectSect $model) {
-                                    return RefBook::find('subject_category_name')->getValue($model->subject_cat_id);
+                                    return RefBook::find('subject_category_name_dev')->getValue($model->subject_cat_id);
                                 },
                                 'format' => 'raw',
+                                'label' => 'Раздел'
                             ],
-                            [
-                                'attribute' => 'subject_id',
-                                'filter' => RefBook::find('subject_name')->getList(),
-                                'value' => function (SubjectSect $model) {
-                                    return RefBook::find('subject_name')->getValue($model->subject_id);
-                                },
-                                'options' => ['style' => 'width:350px'],
-                                'format' => 'raw',
-                            ],
+
                             [
                                 'attribute' => 'subject_type_id',
                                 'filter' => RefBook::find('subject_type_name')->getList(),

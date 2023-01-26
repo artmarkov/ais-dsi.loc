@@ -20,6 +20,42 @@ class m230109_123114_add_activities_view extends BaseMigration
    FROM generate_series(to_char(( SELECT CURRENT_TIMESTAMP - \'1 year\'::interval), \'YYYY-MM-DD\'::text)::date::timestamp with time zone, to_char(( SELECT CURRENT_TIMESTAMP + \'1 year\'::interval), \'YYYY-MM-DD\'::text)::date::timestamp with time zone, \'1 day\'::interval) dt(dt);
         ')->execute();
 
+        $this->db->createCommand()->createView('generator_course_view', '
+     SELECT p.term_mastering,
+    p.subject_cat_id,
+    p.subject_vid_id,
+    p.subject_id,
+    p.sect_name,
+    array_to_string(ARRAY( SELECT DISTINCT education_programm.id
+           FROM education_programm
+             JOIN education_programm_level ON education_programm_level.programm_id = education_programm.id
+             JOIN education_programm_level_subject ON education_programm_level_subject.programm_level_id = education_programm_level.id
+          WHERE education_programm.term_mastering = p.term_mastering AND education_programm_level_subject.subject_cat_id = p.subject_cat_id AND education_programm_level_subject.subject_vid_id = p.subject_vid_id AND education_programm_level_subject.subject_id = p.subject_id
+          ORDER BY education_programm.id), \',\'::text) AS programm_list,
+    array_to_string(ARRAY( SELECT DISTINCT education_programm_level.course
+           FROM education_programm
+             JOIN education_programm_level ON education_programm_level.programm_id = education_programm.id
+             JOIN education_programm_level_subject ON education_programm_level_subject.programm_level_id = education_programm_level.id
+          WHERE education_programm.term_mastering = p.term_mastering AND education_programm_level_subject.subject_cat_id = p.subject_cat_id AND education_programm_level_subject.subject_vid_id = p.subject_vid_id AND education_programm_level_subject.subject_id = p.subject_id
+          ORDER BY education_programm_level.course), \',\'::text) AS course_list,
+        CASE
+            WHEN p.subject_vid_id = 1001 THEN 1
+            ELSE 0
+        END AS course_flag
+   FROM ( SELECT education_programm.term_mastering,
+            education_programm_level_subject.subject_cat_id,
+            education_programm_level_subject.subject_vid_id,
+            education_programm_level_subject.subject_id,
+            subject.name AS sect_name
+           FROM education_programm
+             JOIN education_programm_level ON education_programm_level.programm_id = education_programm.id
+             JOIN education_programm_level_subject ON education_programm_level_subject.programm_level_id = education_programm_level.id
+             JOIN subject ON subject.id = education_programm_level_subject.subject_id
+          WHERE education_programm_level_subject.subject_id IS NOT NULL AND education_programm_level_subject.subject_vid_id <> 1000
+          GROUP BY education_programm.term_mastering, education_programm_level_subject.subject_cat_id, education_programm_level_subject.subject_vid_id, education_programm_level_subject.subject_id, subject.name
+          ORDER BY subject.name) p;
+        ')->execute();
+
         $this->db->createCommand()->createView('activities_schedule_view', '
 SELECT data.subject_schedule_id,
 	data.direction_id,
@@ -117,39 +153,13 @@ UNION ALL
   ORDER BY 8;
         ')->execute();
 
-
-//        WITH _dt (dt, i ) AS (SELECT *
-//        FROM  ( SELECT '2023-01-01'::DATE + i AS dt , i FROM  (SELECT generate_series( 0, 365, 1 ) i ) i ( i) ) dt
-//)
-//SELECT
-//*
-///**,        ROUND(((((dom) - dow) / 7)+1)::NUMERIC, 2 )  - is_1st_week_7 AS raw_wom  raw week of month **/
-//,CEILING(ROUND((((dom) - dow) / 7)::NUMERIC, 2 )) - is_1st_week_7 AS wom /** week of month **/
-//,(((dom + DATE_PART( 'dow'  , format('%s-%s-%s',yr,mo,1)::DATE ) - 5) / 7) + 1)::integer as wom2
-//FROM
-//(
-//    SELECT DISTINCT
-//    -- full first weeks start the month off with 1 instead of 0, so need to decrement by 1 (above)
-//    (DATE_PART( 'dow'  , (dt.dt - ((DATE_PART( 'day', dt.dt )::INT)-1)))=0)::INT AS is_1st_week_7
-//,dt.dt                               /* the date    */
-//	,extract(epoch from dt.dt) as timestamp
-//,DATE_PART( 'month', dt )    AS mo   /* month       */
-//,DATE_PART( 'day'  , dt.dt ) AS dom  /* day of month*/
-//,DATE_PART( 'dow'  , dt )    AS dow  /* day of week */
-//,DATE_PART( 'year' , dt )    AS yr   /* year        */
-//FROM _dt dt
-//) dt
-//ORDER BY dt
-//    ;
-//
-
-
     }
 
     public function down()
     {
         $this->db->createCommand()->dropView('activities_view')->execute();
         $this->db->createCommand()->dropView('activities_schedule_view')->execute();
+        $this->db->createCommand()->dropView('generator_course_view')->execute();
         $this->db->createCommand()->dropView('generator_date_view')->execute();
     }
 }
