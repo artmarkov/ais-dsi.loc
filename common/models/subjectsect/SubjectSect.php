@@ -106,7 +106,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
             'description' => Yii::t('art', 'Description'),
             'class_index' => Yii::t('art/guide', 'Class Index'),
             'term_mastering' => Yii::t('art/guide', 'Term Mastering'),
-            'course_list' => 'Ограничения по курсам',
+            'course_list' => 'Ограничения по классам',
             'programm_list' => Yii::t('art/guide', 'Programm List'),
             'course' => Yii::t('art/studyplan', 'Course'),
             'subject_cat_id' => Yii::t('art/guide', 'Subject Category'),

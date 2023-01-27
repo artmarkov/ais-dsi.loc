@@ -73,7 +73,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'subject_id',
-                                'filter' => RefBook::find('subject_name')->getList(),
+                                'filter' => \common\models\subject\Subject::getSubjectListGroup(),
                                 'value' => function (SubjectSect $model) {
                                     return RefBook::find('subject_name')->getValue($model->subject_id);
                                 },
@@ -131,15 +131,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-//                            [
-//                                'attribute' => 'subject_vid_id',
-//                                'filter' => \common\models\subject\SubjectVid::getVidListGroup(),
-//                                'value' => function (SubjectSect $model) {
-//                                    return RefBook::find('subject_vid_name')->getValue($model->subject_vid_id);
-//                                },
-//                                'options' => ['style' => 'width:350px'],
-//                                'format' => 'raw',
-//                            ],
+                            [
+                                'attribute' => 'subject_vid_id',
+                                'filter' => \common\models\subject\SubjectVid::getVidListGroup(),
+                                'value' => function (SubjectSect $model) {
+                                    return RefBook::find('subject_vid_name')->getValue($model->subject_vid_id);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
                             'sub_group_qty',
                             [
                                 'class' => 'kartik\grid\ActionColumn',

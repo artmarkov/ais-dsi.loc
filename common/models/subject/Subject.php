@@ -25,9 +25,6 @@ use yii\helpers\ArrayHelper;
  * @property int $version
  * @property int $status
  *
- * @property SubjectCategory[] $subjectCategories
- * @property SubjectDepartment[] $subjectDepartments
- * @property SubjectVid[] $subjectVids
  */
 class Subject extends ActiveRecord
 {
@@ -123,6 +120,47 @@ class Subject extends ActiveRecord
         $data = $data->indexBy('id')->column();
 
         return $data;
+    }
+
+    /**
+     * только групповые предметы С группировкой по виду
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getSubjectListGroupForVid()
+    {
+        $funcSql = <<< SQL
+           SELECT subject.id AS id,
+                  subject.name AS name,
+                  guide_subject_vid.name as vid_name
+            FROM guide_subject_vid, subject 
+            WHERE guide_subject_vid.id = ANY(string_to_array(subject.vid_list, ',')::int[]) 
+            AND guide_subject_vid.qty_min <> 1 
+            AND guide_subject_vid.qty_max <> 1
+            ORDER BY guide_subject_vid.id, subject.name;
+		
+SQL;
+        return ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'id', 'name', 'vid_name');
+    }
+
+    /**
+     * только групповые предметы Без группировки по виду
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getSubjectListGroup()
+    {
+        $funcSql = <<< SQL
+           SELECT DISTINCT subject.id AS id,
+                  subject.name AS name
+            FROM guide_subject_vid, subject 
+            WHERE guide_subject_vid.id = ANY(string_to_array(subject.vid_list, ',')::int[]) 
+            AND guide_subject_vid.qty_min <> 1 
+            AND guide_subject_vid.qty_max <> 1
+            ORDER BY subject.name;
+		
+SQL;
+        return ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'id', 'name');
     }
 
 }

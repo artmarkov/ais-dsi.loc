@@ -45,7 +45,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'programm_list' => $this->text()->comment('Учебные рограммы'),
             'term_mastering' => $this->integer()->comment('Период обучения'),
-            'course_list' => $this->text()->comment('Ограничения по курсам'),
+            'course_list' => $this->text()->comment('Ограничения по классам'),
             'subject_cat_id' => $this->integer()->notNull(),
             'subject_id' => $this->integer()->notNull(),
             'subject_vid_id' => $this->integer()->notNull(),
