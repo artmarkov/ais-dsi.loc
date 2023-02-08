@@ -1,8 +1,5 @@
 <?php
 
-use common\models\education\EducationUnion;
-use common\models\own\Department;
-use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
@@ -53,12 +50,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'subject-sect-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                        'rowOptions' => function (SubjectSect $model) {
-                            if ($model->course_flag == 1) {
-                                return ['class' => 'success'];
-                            }
-                            return ['class' => 'info'];
-                        },
                        /* 'bulkActionOptions' => [
                             'gridId' => 'subject-sect-grid',
                             'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
@@ -69,6 +60,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'id',
                                 'value' => function (SubjectSect $model) {
                                     return sprintf('#%06d', $model->id);
+                                },
+                                'contentOptions' => function (SubjectSect $model) {
+                                    if ($model->course_flag == 1) {
+                                        return ['class' => 'success'];
+                                    }
+                                    return ['class' => 'info'];
                                 },
                             ],
                             [

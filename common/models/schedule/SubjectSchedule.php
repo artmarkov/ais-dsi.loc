@@ -77,9 +77,9 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             [['teachers_load_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeachersLoad::class, 'targetAttribute' => ['teachers_load_id' => 'id']],
             [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
-//            [['auditory_id', 'time_in'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
+            //  [['auditory_id', 'time_in'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
             //  [['auditory_id'], 'checkScheduleOverLapping', 'skipOnEmpty' => false],
-           // [['auditory_id'], 'checkScheduleAccompLimit', 'skipOnEmpty' => false],
+            //  [['auditory_id'], 'checkScheduleAccompLimit', 'skipOnEmpty' => false],
         ];
     }
 

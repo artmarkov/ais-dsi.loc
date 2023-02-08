@@ -58,12 +58,11 @@ $form = ActiveForm::begin([
                     <?= $form->field($model, 'subject_id')->widget(\kartik\depdrop\DepDrop::class, [
                         'data' => $model::getSubjectForUnionAndCat($model->programm_list, $model->subject_cat_id),
                         'options' => [
-                            'prompt' => Yii::t('art', 'Select...'),
+                            'placeholder' => Yii::t('art', 'Select...'),
                             'disabled' => $readonly,
                         ],
                         'pluginOptions' => [
                             'depends' => ['programm_list', 'subject_cat_id'],
-                            'placeholder' => Yii::t('art', 'Select...'),
                             'url' => \yii\helpers\Url::to(['/sect/default/subject'])
                         ]
                     ]); ?>
@@ -104,8 +103,8 @@ $form = ActiveForm::begin([
                     <?= $form->field($model, 'course_list')->widget(\kartik\select2\Select2::className(), [
                         'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                         'options' => [
-                            'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
+                            'disabled' => $readonly,
                             'multiple' => true,
                         ],
                         'pluginOptions' => [
@@ -123,8 +122,8 @@ $form = ActiveForm::begin([
                     <?= $form->field($model, 'term_mastering', $options)->widget(\kartik\select2\Select2::class, [
                         'data' => \artsoft\helpers\ArtHelper::getTermList(),
                         'options' => [
-                            'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
+                            'disabled' => $readonly,
                             'multiple' => false,
                         ],
                         'pluginOptions' => [

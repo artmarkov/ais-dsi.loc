@@ -57,8 +57,8 @@ class m230109_123114_add_activities_view extends BaseMigration
         ')->execute();
 
         $this->db->createCommand()->createView('activities_schedule_view', '
-SELECT data.subject_schedule_id,
-	data.direction_id,
+ SELECT data.subject_schedule_id,
+    data.direction_id,
     data.teachers_id,
     data.title,
     data.auditory_id,
@@ -72,16 +72,16 @@ SELECT data.subject_schedule_id,
             subject_schedule_view.auditory_id,
             subject_schedule_view.description,
             subject_schedule_view.direction_id,
-		    subject_schedule_view.teachers_id,
+            subject_schedule_view.teachers_id,
             subject_schedule_view.plan_year,
             concat(\'Занятие: \',
                 CASE
                     WHEN subject_schedule_view.studyplan_subject_id = 0 AND subject_schedule_view.subject_sect_studyplan_id <> 0 THEN ( SELECT studyplan_subject_view.memo_4
                        FROM studyplan_subject_view
-                      WHERE studyplan_subject_view.subject_sect_studyplan_id = subject_schedule_view.subject_sect_studyplan_id)
+                      WHERE studyplan_subject_view.subject_sect_studyplan_id = subject_schedule_view.subject_sect_studyplan_id LIMIt 1)
                     WHEN subject_schedule_view.studyplan_subject_id <> 0 AND subject_schedule_view.subject_sect_studyplan_id = 0 THEN ( SELECT studyplan_subject_view.memo_4
                        FROM studyplan_subject_view
-                      WHERE studyplan_subject_view.studyplan_subject_id = subject_schedule_view.studyplan_subject_id)
+                      WHERE studyplan_subject_view.studyplan_subject_id = subject_schedule_view.studyplan_subject_id LIMIt 1)
                     ELSE NULL::text
                 END) AS title
            FROM generator_date_view gen
@@ -90,7 +90,8 @@ SELECT data.subject_schedule_id,
                     WHEN subject_schedule_view.week_num IS NOT NULL THEN subject_schedule_view.week_num = gen.week_num
                     ELSE true
                 END) data
-  WHERE data."timestamp" >= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year, 9, 1)::date) AND data."timestamp" <= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year + 1, 5, 31)::date);       ')->execute();
+  WHERE data."timestamp" >= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year, 9, 1)::date) AND data."timestamp" <= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year + 1, 5, 31)::date);       
+  ')->execute();
 
 
         $this->db->createCommand()->createView('activities_view', '

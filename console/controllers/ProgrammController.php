@@ -17,6 +17,7 @@ use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subject\Subject;
 use common\models\subjectsect\SubjectSect;
+use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\console\Controller;
@@ -38,9 +39,9 @@ class ProgrammController extends Controller
     {
         $this->stdout("\n");
 //        $this->addProgramm();
-//        $this->addStudyplan();
-        $this->generateGroup();
-       // print_r(array_unique($this->err));
+        $this->addStudyplan();
+//        $this->generateGroup();
+        // print_r(array_unique($this->err));
     }
 
     public function addStudyplan()
@@ -100,6 +101,8 @@ class ProgrammController extends Controller
                 continue;
             }
             if (!$this->findByStudent($d['student_fio'])) {
+                $this->stdout('Не найден ученик: ' . $d['student_fio'] . " ", Console::FG_RED);
+                $this->stdout("\n");
                 continue;
             }
             // print_r($d);
@@ -125,28 +128,144 @@ class ProgrammController extends Controller
                         $model_subject->subject_id = $this->getSubject($dd['sub_name']);
                         $model_subject->subject_type_id = $this->getSubjectType($dd['type_training']);
                         $model_subject->subject_vid_id = $this->getSubjectVid2($dd['vid_id']);
-                        $model_subject->week_time = $dd['week_time'];
+                        $model_subject->week_time = $dd['week_time_teach'];
                         $model_subject->year_time_consult = $dd['year_time'];
 
                         if (!($flag = $model_subject->save(false))) {
                             // $transaction->rollBack();
                             break;
                         }
-
-//                        $model_load = TeachersLoad::find()->where(['=', 'subject_sect_studyplan_id', $model_studyplan->id])->andWhere
-//                        $model_schedule = SubjectSchedule::find()->where(['=', 'studyplan_id', $model_studyplan->id])->andWhere
+                        if ($dd['vid_id'] == 0) {
+                            $subject_sect_studyplan_id = 0;
+                            $studyplan_subject_id = $model_subject->id;
+                        } else {
+                            $subject_sect_studyplan_id = $this->setSubjectSectStaudyplan($model_programm, $model_subject, $dd);
+                            $studyplan_subject_id = 0;
+                        }
+                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
                     }
                 } catch (\Exception $e) {
                     // $transaction->rollBack();
                     $this->stdout('Error ' . $i . "-" . $ii . " ", Console::FG_RED);
                     $this->stdout("\n");
-                    //  print_r($d);
+                    // print_r($d);
                 }
             } else {
                 $this->stdout('Не найдена программа: ' . $d['plan_id'] . " ", Console::FG_RED);
                 $this->stdout("\n");
             }
         }
+    }
+
+    protected function setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd)
+    {
+        foreach ([1000, 1001] as $direction_id) {
+            if ($direction_id == 1000) {
+                $teachers_id = $this->findByTeachers2($dd['teach']);
+                $load_time = $dd['week_time'];
+                $load_time_consult = $dd['year_time'];
+            } else {
+                $teachers_id = $this->findByTeachers2($dd['accomp']);
+                $load_time = $dd['week_time_accomp'];
+                $load_time_consult = null;
+            }
+            if (!$teachers_id) {
+                continue;
+            }
+            $model_load = TeachersLoad::find()
+                    ->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])
+                    ->andWhere(['=', 'studyplan_subject_id', $studyplan_subject_id])
+                    ->andWhere(['=', 'direction_id', $direction_id])
+                    ->andWhere(['=', 'teachers_id', $teachers_id])
+                    ->one() ?? new TeachersLoad();
+
+            $model_load->subject_sect_studyplan_id = $subject_sect_studyplan_id;
+            $model_load->studyplan_subject_id = $studyplan_subject_id;
+            $model_load->direction_id = $direction_id;
+            $model_load->teachers_id = $teachers_id;
+            $model_load->load_time = $load_time;
+            $model_load->load_time_consult = $load_time_consult;
+            if (!$model_load->save(false)) {
+                return false;
+            }
+
+            foreach ($dd['schedule'] as $iii => $ddd) {
+                // print_r( $ddd);
+                if (($ddd['accomp_flag'] == 1 && $direction_id == 1001) || $direction_id == 1000) {
+                    $model_schedule = SubjectSchedule::find()->where(['=', 'teachers_load_id', $model_load->id])
+                        ->andWhere(['=', 'week_day', $ddd['week_day']])
+                        ->andWhere(['=', 'time_in', Yii::$app->formatter->asTimestamp($ddd['time_in'])])
+                        ->andWhere(['=', 'time_out', Yii::$app->formatter->asTimestamp($ddd['time_out'])])
+                        ->andWhere(['=', 'auditory_id', $this->findByAuditoryNum($ddd['auditory_number'])]);
+                    if ($ddd['week_num'] != 0) {
+                        $model_schedule->andWhere(['=', 'week_num', $ddd['week_num']]);
+                    }
+                    $model_schedule = $model_schedule->one() ?? new SubjectSchedule();
+
+                    $model_schedule->teachers_load_id = $model_load->id;
+                    $model_schedule->week_num = $ddd['week_num'];
+                    $model_schedule->week_day = $ddd['week_day'];
+                    $model_schedule->time_in = $ddd['time_in'];
+                    $model_schedule->time_out = $ddd['time_out'];
+                    $model_schedule->auditory_id = $this->findByAuditoryNum($ddd['auditory_number']);
+                    $model_schedule->save(false);
+                }
+            }
+        }
+        return true;
+    }
+
+    protected function setSubjectSectStaudyplan($model_programm, $model_subject, $dd)
+    {
+        $d = explode('||', $dd['group_name']);
+        if ($dd['vid_id'] == 1) { // $group['group_name'] . '||'. $group['group_name_dev'] . '||' . $group_num;
+            // $group_name = $d[0];
+            $group_num = preg_match("/\d+/", $d[2]) ?? null;
+            //  $group_name_dev = $d[1];
+            $term_mastering = null;
+            $course = null;
+
+        } elseif ($dd['vid_id'] == 2) {// $course_sect . "||" . $period_study_sect.  "||" . $group['letter'];
+            $course = $d[0] ?? null;
+            $group_num = preg_match("/\d+/", $d[2]) ?? null;
+            $term_mastering = $d[1] ?? null;
+
+        } else {
+            return false;
+        }
+
+        $sect = SubjectSect::find()->where(new \yii\db\Expression("{$model_programm->id} = any (string_to_array(programm_list, ',')::int[])"))
+            ->andWhere(['=', 'subject_cat_id', $model_subject->subject_cat_id])
+            ->andWhere(['=', 'subject_id', $model_subject->subject_id])
+            ->andWhere(['=', 'subject_vid_id', $model_subject->subject_vid_id]);
+        if ($term_mastering != null) {
+            $sect = $sect->andWhere(['=', 'term_mastering', $term_mastering]);
+        }
+        $sect = $sect->one();
+
+        if (!$sect) {
+            $this->stdout('Не найдена группа для программы: ' . $model_programm->id . " ", Console::FG_RED);
+            $this->stdout("\n");
+            return false;
+        }
+        $subject_sect_studyplan = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $sect->id])
+                ->andWhere(['=', 'plan_year', 2022])
+                ->andWhere(['=', 'group_num', $group_num]);
+                if ($course != null) {
+                    $subject_sect_studyplan = $subject_sect_studyplan->andWhere(['=', 'course', $course]);
+                }
+
+        $subject_sect_studyplan = $subject_sect_studyplan->one() ?? new SubjectSectStudyplan();
+
+
+        $subject_sect_studyplan->subject_sect_id = $sect->id;
+        $subject_sect_studyplan->plan_year = 2022;
+        $subject_sect_studyplan->group_num = $group_num;
+        $subject_sect_studyplan->course = $course;
+        $subject_sect_studyplan->subject_type_id = $this->getSubjectType($dd['type_training']);
+        $subject_sect_studyplan->studyplan_subject_list = $subject_sect_studyplan->studyplan_subject_list != '' ? implode(',', [$subject_sect_studyplan->studyplan_subject_list, $model_subject->id]) : $model_subject->id;
+        $subject_sect_studyplan->save(false);
+        return $subject_sect_studyplan->id;
     }
 
     /**
@@ -209,13 +328,14 @@ class ProgrammController extends Controller
         }
     }
 
-    public function generateGroup(){
-        $models =  \Yii::$app->db->createCommand('SELECT *
+    public function generateGroup()
+    {
+        $models = \Yii::$app->db->createCommand('SELECT *
                                                     FROM generator_course_view 
                                                     ',
             )->queryAll();
 
-        if($models) {
+        if ($models) {
             foreach ($models as $item => $model) {
                 $group = new SubjectSect();
                 $group->programm_list = explode(',', $model['programm_list']);
@@ -234,7 +354,7 @@ class ProgrammController extends Controller
         }
         $this->stdout('Не загружены программы: ', Console::FG_RED);
         $this->stdout("\n");
-            return false;
+        return false;
     }
 
     public function getSubjectType($name)
@@ -336,7 +456,7 @@ class ProgrammController extends Controller
                                                     FROM subject 
                                                     WHERE name=:name',
             [
-                'name' =>  $this->getSubjectName($name)
+                'name' => $this->getSubjectName($name)
             ])->queryOne();
         $sub = explode(',', $subject['vid_list']);
         return $sub[0] ?? null;
@@ -418,5 +538,28 @@ class ProgrammController extends Controller
             'x' => 'х'
         );
         return strtr($text, $arr);
+    }
+
+    public function findByTeachers2($full_name)
+    {
+        $user = \Yii::$app->db->createCommand('SELECT teachers_id 
+                                                    FROM teachers_view 
+                                                    WHERE fullname=:fullname 
+                                                   ',
+            [
+                'fullname' => $this->lat2cyr($full_name)
+            ])->queryOne();
+        return $user['teachers_id'] ?? false;
+    }
+
+    public function findByAuditoryNum($num)
+    {
+        $auditory = \Yii::$app->db->createCommand('SELECT id 
+                                                    FROM auditory 
+                                                    WHERE num=:num',
+            [
+                'num' => $num
+            ])->queryOne();
+        return $auditory['id'];
     }
 }

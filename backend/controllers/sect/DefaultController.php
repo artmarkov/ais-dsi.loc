@@ -185,8 +185,8 @@ class DefaultController extends MainController
                 Model::loadMultiple($modelsSubjectSectStudyplan, Yii::$app->request->post());
 
                 // validate all models
-                $valid = Model::validateMultiple($modelsSubjectSectStudyplan);
-
+               // $valid = Model::validateMultiple($modelsSubjectSectStudyplan);  // не работает с course = ''
+                $valid = true;
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {

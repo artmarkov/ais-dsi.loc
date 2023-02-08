@@ -48,16 +48,16 @@ $columns = [
     [
         'attribute' => 'studyplan_subject_list',
         'width' => '310px',
-        'filter' => RefBook::find('students_fio')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('students_fio')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model, $key, $index, $widget) {
             $data = [];
-            if (!empty($model->studyplan_subject_list)) {
-                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                    $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-                    $data[] = RefBook::find('students_fio')->getValue($student_id);
-                }
-            }
+//            if (!empty($model->studyplan_subject_list)) {
+//                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
+//                    $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
+//                    $data[] = RefBook::find('students_fio')->getValue($student_id);
+//                }
+//            }
             return implode(',', $data);
         },
         'filterWidgetOptions' => [
@@ -69,30 +69,30 @@ $columns = [
     ],
     [
         'attribute' => 'direction_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => \common\models\guidejob\Direction::getDirectionList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => \common\models\guidejob\Direction::getDirectionList(),
         'value' => function ($model, $key, $index, $widget) {
             return $model->direction ? $model->direction->name : null;
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
 
         'group' => true,  // enable grouping
         'subGroupOf' => 1
     ],
     [
         'attribute' => 'teachers_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('teachers_fio')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('teachers_fio')->getList(),
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
@@ -114,16 +114,16 @@ $columns = [
     ],
     [
         'attribute' => 'auditory_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('auditory_memo_1', 1, true)->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('auditory_memo_1', 1, true)->getList(),
         'options' => ['style' => 'width:300px'],
         'value' => function ($model) {
             return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
