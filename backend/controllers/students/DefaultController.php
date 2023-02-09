@@ -224,7 +224,7 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['students/default/view', 'id' => $id]];
 
         if ('create' == $mode) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['/students/default/studyplan', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual student plans'), 'url' => ['/students/default/studyplan', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = 'Добавление плана учащегося';
             $model = new Studyplan();
             $model->student_id = Yii::$app->request->get('id') ?: null;
@@ -278,7 +278,7 @@ class DefaultController extends MainController
 
         } elseif ('history' == $mode && $objectId) {
             $model = Studyplan::findOne($objectId);
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['/students/default/studyplan', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual student plans'), 'url' => ['/students/default/studyplan', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['/students/default/studyplan', 'id' => $id, 'objectId' => $objectId, 'mode' => 'view']];
             $data = new StudyplanHistory($objectId);
             return $this->renderIsAjax('/studyplan/default/history', compact(['model', 'data']));
@@ -295,7 +295,7 @@ class DefaultController extends MainController
             if ('view' == $mode) {
                 $readonly = true;
             }
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['/students/default/studyplan', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual student plans'), 'url' => ['/students/default/studyplan', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $model = Studyplan::findOne($objectId);
 
@@ -358,7 +358,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $this->view->params['breadcrumbs'][] = Yii::t('art/studyplan', 'Individual plans');
+            $this->view->params['breadcrumbs'][] = Yii::t('art/studyplan', 'Individual student plans');
             $modelClass = 'common\models\studyplan\Studyplan';
             $searchModel = new StudyplanSearch();
 
@@ -464,7 +464,7 @@ class DefaultController extends MainController
         return [
 //            ['label' => 'Монитор ученика', 'url' => ['/students/default/monitor', 'id' => $id]],
             ['label' => 'Карточка ученика', 'url' => ['/students/default/update', 'id' => $id]],
-            ['label' => 'Планы учащихся', 'url' => ['/students/default/studyplan', 'id' => $id]],
+            ['label' => 'Планы учащегося', 'url' => ['/students/default/studyplan', 'id' => $id]],
             ['label' => 'Испытания', 'url' => ['/students/default/examination', 'id' => $id]],
             ['label' => 'История обучения', 'url' => ['/students/default/education-history', 'id' => $id]],
             ['label' => 'Документы', 'url' => ['/students/default/document', 'id' => $id]],

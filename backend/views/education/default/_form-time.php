@@ -81,7 +81,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
                             'model' => $modelEducationProgrammLevelSubject,
                             'attribute' => "[{$index}][{$indexTime}]subject_cat_id",
                             'id' => 'educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_cat_id',
-                            'data' => \artsoft\helpers\RefBook::find('subject_category_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                            'data' => $subject_category_name_list,
                             'options' => [
 
                                 'disabled' => $readonly,
@@ -133,7 +133,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
                         [
                             'model' => $modelEducationProgrammLevelSubject,
                             'attribute' => "[{$index}][{$indexTime}]subject_vid_id",
-                            'data' => \artsoft\helpers\RefBook::find('subject_vid_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                            'data' => $subject_vid_name_list,
                             'options' => [
 
                                 'disabled' => $readonly,

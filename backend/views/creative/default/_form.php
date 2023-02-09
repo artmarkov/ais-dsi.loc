@@ -86,6 +86,7 @@ JS
         'enableClientScript' => true, // default
     ])
     ?>
+    <?php $teachers_fio_list = RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(); ?>
 
     <div class="panel">
         <div class="panel-heading">
@@ -115,7 +116,7 @@ JS
                     ])->label(Yii::t('art/guide', 'Department'));
                     ?>
                     <?= $form->field($model, 'teachers_list')->widget(\kartik\select2\Select2::class, [
-                        'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
+                        'data' => $teachers_fio_list,
                         'options' => [
                             'disabled' => $readonly,
                             'placeholder' => Yii::t('art/creative', 'Select performers...'),
@@ -137,6 +138,7 @@ JS
             </div>
 
             <?php if (!$model->isNewRecord) : ?>
+
             <div class="panel panel-info">
                 <div class="panel-heading">
                     Загруженные материалы
@@ -219,7 +221,7 @@ JS
                                     ]);
                                     ?>
                                     <?= $form->field($modelEfficiency, "[{$index}]teachers_id")->widget(\kartik\select2\Select2::class, [
-                                        'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
+                                        'data' => $teachers_fio_list,
                                         'options' => [
                                             'disabled' => $readonly,
                                             'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),

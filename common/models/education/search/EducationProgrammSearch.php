@@ -66,12 +66,12 @@ class EducationProgrammSearch extends EducationProgramm
         $query->andFilterWhere([
             'id' => $this->id,
             'education_cat_id' => $this->education_cat_id,
+            'term_mastering' => $this->term_mastering,
             'status' => $this->status
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'short_name', $this->short_name])
-            ->andFilterWhere(['like', 'term_mastering', $this->term_mastering])
             ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;

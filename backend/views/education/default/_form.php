@@ -91,6 +91,11 @@ $this->registerJs($js);
                 </div>
             </div>
             <?php if (!$model->isNewRecord): ?>
+            <?php
+                $education_level_list = RefBook::find('education_level')->getList();
+                $subject_category_name_list = RefBook::find('subject_category_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList();
+                $subject_vid_name_list = RefBook::find('subject_vid_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList();
+            ?>
                 <?php DynamicFormWidget::begin([
                     'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                     'widgetBody' => '.container-items', // required: css class selector
@@ -137,7 +142,7 @@ $this->registerJs($js);
                                         //                                        if ($model->catType != \common\models\education\EducationCat::BASIS_FREE): ?>
                                         <?php
                                         echo $form->field($modelEducationProgrammLevel, "[{$index}]level_id")->widget(\kartik\select2\Select2::class, [
-                                            'data' => RefBook::find('education_level')->getList(),
+                                            'data' => $education_level_list,
                                             'options' => [
                                                 'disabled' => $readonly,
                                                 'placeholder' => Yii::t('art/guide', 'Select Education Level...'),
@@ -169,6 +174,9 @@ $this->registerJs($js);
                                                 'model' => $model,
                                                 'modelsEducationProgrammLevelSubject' => $modelsEducationProgrammLevelSubject[$index],
                                                 'readonly' => $readonly,
+                                                'subject_category_name_list' => $subject_category_name_list ,
+                                                'subject_vid_name_list' => $subject_vid_name_list ,
+
                                             ]) ?>
                                         </div>
                                         <div class="col-sm-12">

@@ -38,9 +38,9 @@ class ProgrammController extends Controller
     public function actionIndex()
     {
         $this->stdout("\n");
-       $this->addProgramm();
-//        $this->generateGroup();
-//        $this->addStudyplan();
+//       $this->addProgramm();
+        $this->generateGroup();
+        $this->addStudyplan();
         // print_r(array_unique($this->err));
     }
 
@@ -135,14 +135,14 @@ class ProgrammController extends Controller
                             // $transaction->rollBack();
                             break;
                         }
-                        if ($dd['vid_id'] == 0) {
-                            $subject_sect_studyplan_id = 0;
-                            $studyplan_subject_id = $model_subject->id;
-                        } else {
-                            $subject_sect_studyplan_id = $this->setSubjectSectStaudyplan($model_programm, $model_subject, $dd);
-                            $studyplan_subject_id = 0;
-                        }
-                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+//                        if ($dd['vid_id'] == 0) {
+//                            $subject_sect_studyplan_id = 0;
+//                            $studyplan_subject_id = $model_subject->id;
+//                        } else {
+//                            $subject_sect_studyplan_id = $this->setSubjectSectStaudyplan($model_programm, $model_subject, $dd);
+//                            $studyplan_subject_id = 0;
+//                        }
+//                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
                     }
                 } catch (\Exception $e) {
                     // $transaction->rollBack();
@@ -332,8 +332,7 @@ class ProgrammController extends Controller
     {
         $models = \Yii::$app->db->createCommand('SELECT *
                                                     FROM generator_course_view 
-                                                    ',
-            )->queryAll();
+                                                    ')->queryAll();
 
         if ($models) {
             foreach ($models as $item => $model) {

@@ -52,7 +52,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'education-programm-grid',
-                            'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
+                            'actions' => [
+                                Url::to(['bulk-activate']) => Yii::t('art', 'Activate'),
+                                Url::to(['bulk-deactivate']) => Yii::t('art', 'Deactivate'),
+                                Url::to(['bulk-delete']) => Yii::t('art', 'Delete'),
+                            ] //Configure here you bulk actions
                         ],
                         'rowOptions' => function(EducationProgramm $model) {
                             if(count($model->programmLevel) != $model->term_mastering) {
@@ -89,15 +93,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             'name',
                             'short_name',
 //                            'description',
-//                            [
-//                                'class' => 'artsoft\grid\columns\StatusColumn',
-//                                'attribute' => 'status',
-//                                'optionsArray' => [
-//                                    [EducationProgramm::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
-//                                    [EducationProgramm::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
-//                                ],
-//                                'options' => ['style' => 'width:150px']
-//                            ],
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'status',
+                                'optionsArray' => [
+                                    [EducationProgramm::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
+                                    [EducationProgramm::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                ],
+                                'options' => ['style' => 'width:150px']
+                            ],
                         ],
                     ]);
                     ?>

@@ -5,12 +5,12 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanView;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\studyplan\search\StudyplanSearch */
+/* @var $searchModel common\models\studyplan\search\StudyplanViewSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/studyplan', 'Individual plans');
@@ -58,29 +58,39 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'id',
                         'class' => 'artsoft\grid\columns\TitleActionColumn',
                         'controller' => '/studyplan/default',
-                        'title' => function (Studyplan $model) {
+                        'title' => function (StudyplanView $model) {
                             return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
                         },
                         'buttonsTemplate' => '{update} {view} {delete}',
                     ],
                     [
-                        'attribute' => 'student_id',
-                        'value' => function (Studyplan $model) {
-                            return RefBook::find('students_fullname')->getValue($model->student_id);
+                        'attribute' => 'student_fio',
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filter' => RefBook::find('students_fullname')->getList(),
+                        'value' => function (StudyplanView $model) {
+                            return $model->student_fio;
                         },
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => [
+                                    'allowClear' => true,
+                                'minimumInputLength' => 3
+                            ],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+
                         'format' => 'raw'
                     ],
                     [
-                        'attribute' => 'programmName',
-                        'value' => function (Studyplan $model) {
-                            return RefBook::find('education_programm_name')->getValue($model->programm_id);
+                        'attribute' => 'education_programm_name',
+                        'value' => function (StudyplanView $model) {
+                            return $model->education_programm_name;
                         },
                         'format' => 'raw'
                     ],
                     [
                         'attribute' => 'course',
                         'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
-                        'value' => function (Studyplan $model) {
+                        'value' => function (StudyplanView $model) {
                             return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
                         },
                         'options' => ['style' => 'width:100px'],
@@ -89,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'plan_year',
                         'filter' => false,
-                        'value' => function (Studyplan $model) {
+                        'value' => function (StudyplanView $model) {
                             return \artsoft\helpers\ArtHelper::getStudyYearsList()[$model->plan_year];
                         },
                         'options' => ['style' => 'width:100px'],
@@ -99,8 +109,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'artsoft\grid\columns\StatusColumn',
                         'attribute' => 'status',
                         'optionsArray' => [
-                            [Studyplan::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
-                            [Studyplan::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
+                            [StudyplanView::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
+                            [StudyplanView::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
                         ],
                         'options' => ['style' => 'width:120px']
                     ],

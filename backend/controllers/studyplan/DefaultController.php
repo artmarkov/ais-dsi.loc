@@ -44,6 +44,7 @@ class DefaultController extends MainController
 
     public function actionIndex()
     {
+        $modelSearchClass = 'common\models\studyplan\search\StudyplanViewSearch';
         $session = Yii::$app->session;
 
         $model_date = new DynamicModel(['plan_year']);
@@ -53,8 +54,8 @@ class DefaultController extends MainController
         }
         $session->set('_studyplan_plan_year', $model_date->plan_year);
 
-        $searchName = StringHelper::basename($this->modelSearchClass::className());
-        $searchModel = new $this->modelSearchClass;
+        $searchName = StringHelper::basename($modelSearchClass::className());
+        $searchModel = new $modelSearchClass;
         $params = ArrayHelper::merge(Yii::$app->request->getQueryParams(), [
             $searchName => [
                 'plan_year' => $model_date->plan_year,

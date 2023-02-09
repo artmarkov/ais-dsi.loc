@@ -43,6 +43,36 @@ class m230127_092207_add_subject_view extends Migration
   ORDER BY guide_subject_category.id, guide_subject_vid.id, subject.name;
         ')->execute();
 
+        $this->db->createCommand()->createView('studyplan_view', '
+   SELECT studyplan.id,
+    studyplan.student_id,
+    studyplan.programm_id,
+    studyplan.subject_type_id,
+    studyplan.course,
+    studyplan.plan_year,
+    studyplan.description,
+    studyplan.year_time_total,
+    studyplan.cost_month_total,
+    studyplan.cost_year_total,
+    studyplan.doc_date,
+    studyplan.doc_contract_start,
+    studyplan.doc_contract_end,
+    studyplan.doc_signer,
+    studyplan.doc_received_flag,
+    studyplan.doc_sent_flag,
+    studyplan.status AS status,
+    education_programm.name AS education_programm_name,
+    education_programm.short_name AS education_programm_short_name,
+    guide_education_cat.name AS education_cat_name,
+    guide_education_cat.short_name AS education_cat_short_name,
+    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio
+   FROM studyplan
+     JOIN students ON students.id = studyplan.student_id
+     JOIN user_common ON user_common.id = students.user_common_id
+     JOIN education_programm ON education_programm.id = studyplan.programm_id
+     JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id;
+        ')->execute();
+
     }
 
     /**
@@ -50,6 +80,7 @@ class m230127_092207_add_subject_view extends Migration
      */
     public function safeDown()
     {
+        $this->db->createCommand()->dropView('studyplan_view')->execute();
         $this->db->createCommand()->dropView('subject_view')->execute();
     }
 

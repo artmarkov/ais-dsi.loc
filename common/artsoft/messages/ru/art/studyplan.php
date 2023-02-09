@@ -3,6 +3,7 @@ return [
     'Course' => 'Класс',
     'Education Programm' => 'Список программ',
     'Individual plans' => 'Планы учащихся',
+    'Individual student plans' => 'Планы учащегося',
     'Plan Year' => 'Учебный год',
     'Select Student...' => 'Выберите ученика...',
     'Select Education Programm...' => 'Выберите учебную программу...',
