@@ -191,7 +191,7 @@ class ImportController extends Controller
                     $user->email = $v[11];
                     $user->email_confirmed = $v[11] ? 1 : 0;
                     $user->generateAuthKey();
-                    $user->status = User::STATUS_ACTIVE;
+                    $user->status = $v[10] != '' ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
                     if ($flag = $user->save(false)) {
                         $user->assignRoles(['employees']);
 
@@ -258,7 +258,7 @@ class ImportController extends Controller
                         $user->email = $v[21];
                         $user->email_confirmed = $v[21] ? 1 : 0;
                         $user->generateAuthKey();
-                        $user->status = ($v[18] == 'Абитуриенты' || $v[18] == 'Ученики школы') ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
+                        $user->status = $v[20] != '' ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
                         if ($flag = $user->save(false)) {
                             $user->assignRoles(['student']);
 
@@ -269,9 +269,6 @@ class ImportController extends Controller
                             $userCommon->first_name = $this->lat2cyr($v[2]);
                             $userCommon->middle_name = $this->lat2cyr($v[3]);
                             $userCommon->gender = $this->getGender($v[4]);
-                            if (is_a($v[5], 'DateTime')) { // если объект DateTime
-                                $v[5] = $v[5]->format('d-m-Y');
-                            }
                             $userCommon->birth_date = \Yii::$app->formatter->asDate($this->getDate($v[5]), 'php:d.m.Y');
                             $userCommon->phone = str_replace('-', ' ', $v[6]);
                             $userCommon->phone_optional = str_replace('-', ' ', $v[7]);
@@ -285,9 +282,6 @@ class ImportController extends Controller
                                 $model->sert_num = $v[12];
                                 $model->sert_organ = $v[13];
                                 if ($v[14]) {
-                                    if (is_a($v[14], 'DateTime')) { // если объект DateTime
-                                        $v[14] = $v[14]->format('d-m-Y');
-                                    }
                                     $model->sert_date = \Yii::$app->formatter->asDate($this->getDate($v[14]), 'php:d.m.Y');
                                 }
                                 if (!($flag = $model->save(false))) {
@@ -331,19 +325,18 @@ class ImportController extends Controller
                 $userCommon = new UserCommon();
                 $model = new Parents();
 
-                $student_id = $this->findByStudent($v[5], $v[6], $v[7]);
-                $parent_id = $this->findByParent($v[1], $v[2], $v[3]);
+                $student_id = $this->findByStudent($this->lat2cyr(trim($v[5])), $this->lat2cyr(trim($v[6])), $this->lat2cyr(trim($v[7])));
+                $parent_id = $this->findByParent($this->lat2cyr(trim($v[1])), $this->lat2cyr(trim($v[2])), $this->lat2cyr(trim($v[3])));
                 if (!$parent_id) {
                     if ($student_id) {
                         $transaction = \Yii::$app->db->beginTransaction();
                         try {
-
                             $user->username = $this->generateUsername($v[15], $v[1], $v[2], $v[3]);
                             $user->password = $v[16];
                             $user->email = $v[17];
                             $user->email_confirmed = $v[17] ? 1 : 0;
                             $user->generateAuthKey();
-                            $user->status = $v[15] ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
+                            $user->status = $v[16] ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
                             if ($flag = $user->save(false)) {
                                 $user->assignRoles(['parents']);
 
@@ -354,9 +347,7 @@ class ImportController extends Controller
                                 $userCommon->first_name = $this->lat2cyr(trim($v[2]));
                                 $userCommon->middle_name = $this->lat2cyr(trim($v[3]));
                                 $userCommon->gender = $this->getGender($v[8]);
-                                if (is_a($v[9], 'DateTime')) { // если объект DateTime
-                                    $v[9] = $v[9]->format('d-m-Y');
-                                }
+
                                 $userCommon->birth_date = \Yii::$app->formatter->asDate($this->getDate($v[9]), 'php:d.m.Y');
                                 $userCommon->phone = str_replace('-', ' ', $v[12]);
                                 $userCommon->phone_optional = $v[10] ? str_replace('-', ' ', $v[10]) : str_replace('-', ' ', $v[11]);

@@ -26,7 +26,12 @@ class PlanController extends Controller
     public function actionIndex()
     {
         $this->stdout("\n");
-        $this->addPlan();
+        $this->clear_dir('frontend/web/uploads/fileinput/schoolplan/*');
+        if (!file_exists('frontend/web/uploads/fileinput/schoolplan/')) {
+            mkdir('frontend/web/uploads/fileinput/schoolplan/', 0777, true);
+        }
+
+         $this->addPlan();
     }
 
     /**
@@ -113,8 +118,8 @@ class PlanController extends Controller
                                 copy($filename[0], $filename_new);
                                 $file->save(false);
                             } else {
-//                                $this->stdout('Не найден файл: ' . $filename[0] . " ", Console::FG_RED);
-//                                $this->stdout("\n");
+                                $this->stdout('Не найден файл: ' . $filename[0] . " ", Console::FG_RED);
+                                $this->stdout("\n");
                             }
                         }
 
@@ -127,7 +132,7 @@ class PlanController extends Controller
                             $over->auditory_id = $v[41] != '' ? $this->findByAuditoryNum($v[41]) : null; //Аудитория
                             $over->department_list = [$this->getDepartmentId($v[37])];  //Отделы
                             $over->executors_list = [$this->findByTeachers2($v[38])]; //Ответственные
-                            $over->description = $v[43]; //Описание мероприятия'php:d.m.Y');
+                            $over->description = $v[43] ?? ''; //Описание мероприятия'php:d.m.Y');
                             if (!($flag = $over->save(false))) {
                                 $transaction->rollBack();
                                 break;
@@ -170,6 +175,8 @@ class PlanController extends Controller
                     }
                 } catch (\Exception $e) {
                     $transaction->rollBack();
+                    $this->stdout('Ошибка: ' . $v[7], Console::FG_PURPLE);
+                    $this->stdout("\n");
                 }
             }
         }
@@ -256,4 +263,14 @@ class PlanController extends Controller
         return $ids[$id] ?? null;
     }
 
+// очистка директории
+    protected function clear_dir($dir)
+    {
+        $files = glob($dir); // get all file names
+        foreach ($files as $file) { // iterate files
+            if (is_file($file)) {
+                unlink($file); // delete file
+            }
+        }
+    }
 }

@@ -24,6 +24,10 @@ class CreativeController extends Controller
     public function actionIndex()
     {
         $this->stdout("\n");
+        $this->clear_dir('frontend/web/uploads/fileinput/creativeworks/*');
+        if (!file_exists('frontend/web/uploads/fileinput/creativeworks/')) {
+            mkdir('frontend/web/uploads/fileinput/creativeworks/', 0777, true);
+        }
         $this->addCreative();
 
     }
@@ -63,9 +67,7 @@ class CreativeController extends Controller
                     $model->department_list = [$this->getDepartmentId($v[7])];
                     $model->teachers_list = [$teachers_id];
                     $model->status = $v[9] == 1 ? 0 : 1;
-                    if (is_a($v[8], 'DateTime')) { // если объект DateTime
-                        $v[8] = $v[8]->format('d-m-Y');
-                    }
+
                     $model->published_at = \Yii::$app->formatter->asDate($this->getDate($v[8]), 'php:d.m.Y');
 
                     if ($flag = $model->save(false)) {
@@ -89,17 +91,15 @@ class CreativeController extends Controller
                         }
 
                         for ($i = 10; $i <= 27; $i = $i + 2) {
-                            if ($v[$i] && $teachers_id) {
+                            if (isset($v[$i]) && $v[$i] != '' && $teachers_id) {
                                 $effic = new TeachersEfficiency();
                                 $effic->class = 'CreativeWorks';
                                 $effic->item_id = $model->id;
                                 $effic->efficiency_id = $this->getEfficienceId($v[$i + 1]);
                                 $effic->teachers_id = $teachers_id;
                                 $effic->bonus = $v[$i + 1];
-                                $effic->bonus_vid_id =  $v[$i + 1] < 500 ? 1 : 2;
-                                if (is_a($v[$i], 'DateTime')) { // если объект DateTime
-                                    $v[$i] = $v[$i]->format('d-m-Y');
-                                }
+                                $effic->bonus_vid_id = $v[$i + 1] < 500 ? 1 : 2;
+
                                 $effic->date_in = \Yii::$app->formatter->asDate($this->getDate($v[$i]), 'php:d.m.Y');
                                 if (!($flag = $effic->save(false))) {
                                     $transaction->rollBack();
@@ -202,7 +202,8 @@ class CreativeController extends Controller
         return $date;
     }
 
-    protected function lat2cyr($text) {
+    protected function lat2cyr($text)
+    {
         $arr = array(
             'A' => 'А',
             'a' => 'а',
@@ -223,9 +224,18 @@ class CreativeController extends Controller
             'p' => 'р',
             'T' => 'Т',
             'X' => 'Х',
-            'x' =>'х'
+            'x' => 'х'
         );
         return strtr($text, $arr);
     }
-
+    // очистка директории
+    protected function clear_dir($dir)
+    {
+        $files = glob($dir); // get all file names
+        foreach($files as $file){ // iterate files
+            if(is_file($file)) {
+                unlink($file); // delete file
+            }
+        }
+    }
 }

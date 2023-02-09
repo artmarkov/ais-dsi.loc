@@ -336,12 +336,13 @@ class UserCommon extends ActiveRecord
             ])
             ->where(['in', 'user_category', $category])
             ->andWhere(['=', 'status', self::STATUS_ACTIVE])
-            ->andWhere(new \yii\db\Expression( "date_part('day', to_timestamp(birth_date)) = date_part('day', to_timestamp(:timestamp))"), [':timestamp' => $timestamp])
-            ->andWhere(new \yii\db\Expression( "date_part('month', to_timestamp(birth_date)) = date_part('month', to_timestamp(:timestamp))"), [':timestamp' => $timestamp])
+            ->andWhere(new \yii\db\Expression("date_part('day', to_timestamp(birth_date)) = date_part('day', to_timestamp(:timestamp))"), [':timestamp' => $timestamp])
+            ->andWhere(new \yii\db\Expression("date_part('month', to_timestamp(birth_date)) = date_part('month', to_timestamp(:timestamp))"), [':timestamp' => $timestamp])
             ->orderBy('category_name')
             ->asArray()
             ->all();
     }
+
     /**
      * Gets query for [[User]].
      *
@@ -391,8 +392,10 @@ class UserCommon extends ActiveRecord
     public function beforeDelete()
     {
         $model = User::findOne($this->user_id);
-        if (!$model->delete()) {
-            return false;
+        if ($model) {
+            if (!$model->delete()) {
+                return false;
+            }
         }
         return parent::beforeDelete();
     }

@@ -54,6 +54,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             'gridId' => 'education-programm-grid',
                             'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
                         ],
+                        'rowOptions' => function(EducationProgramm $model) {
+                            if(count($model->programmLevel) != $model->term_mastering) {
+                                return ['class' => 'warning'];
+                            }
+                            return [];
+                        },
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
