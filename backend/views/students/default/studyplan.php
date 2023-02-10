@@ -4,7 +4,6 @@ use artsoft\helpers\RefBook;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
-use artsoft\grid\GridQuickLinks;
 use common\models\studyplan\StudyplanView;
 use artsoft\grid\GridPageSize;
 use artsoft\helpers\Html;
@@ -24,13 +23,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-6">
-                    <?php
-                    /* Uncomment this to activate GridQuickLinks */
-                    echo GridQuickLinks::widget([
-                        'model' => StudyplanView::className(),
-                        'searchModel' => $searchModel,
-                    ])
-                    ?>
                 </div>
                 <div class="col-sm-6 text-right">
                     <?= GridPageSize::widget(['pjaxId' => 'studyplan-grid-pjax']) ?>
@@ -47,17 +39,20 @@ $this->params['breadcrumbs'][] = $this->title;
                 'id' => 'studyplan-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
-                'bulkActionOptions' => [
-                    'gridId' => 'studyplan-grid',
-                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-                ],
                 'columns' => [
-                    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
                         'attribute' => 'id',
                         'value' => function (StudyplanView $model) {
-                            return sprintf('#%06d', $model->id);
+                            return Html::a(sprintf('#%06d', $model->id),
+                                Url::to(['/studyplan/default/update', 'id' => $model->id]), [
+                                    'title' => 'Перейти в карточку плана',
+                                    'data-method' => 'post',
+                                    'data-pjax' => '0',
+                                    'target' => 'blank'
+                                ]
+                            );
                         },
+                        'format' => 'raw',
                         'contentOptions' => function (StudyplanView $model) {
                             return [];
                         },
