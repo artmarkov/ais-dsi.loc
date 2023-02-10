@@ -6,7 +6,6 @@ use artsoft\helpers\ArtHelper;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use backend\models\Model;
-use common\models\education\EducationCat;
 use common\models\education\EducationProgrammLevel;
 use common\models\history\StudyplanHistory;
 use common\models\info\Document;
@@ -14,6 +13,7 @@ use common\models\info\search\DocumentSearch;
 use common\models\service\UsersCard;
 use common\models\students\StudentDependence;
 use common\models\studyplan\search\StudyplanSearch;
+use common\models\studyplan\search\StudyplanViewSearch;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subject\SubjectType;
@@ -360,7 +360,7 @@ class DefaultController extends MainController
         } else {
             $this->view->params['breadcrumbs'][] = Yii::t('art/studyplan', 'Individual student plans');
             $modelClass = 'common\models\studyplan\Studyplan';
-            $searchModel = new StudyplanSearch();
+            $searchModel = new StudyplanViewSearch();
 
             $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
                 && !User::hasPermission($modelClass::getFullAccessPermission()));

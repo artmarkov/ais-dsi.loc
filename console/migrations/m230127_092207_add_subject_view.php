@@ -65,12 +65,14 @@ class m230127_092207_add_subject_view extends Migration
     education_programm.short_name AS education_programm_short_name,
     guide_education_cat.name AS education_cat_name,
     guide_education_cat.short_name AS education_cat_short_name,
-    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio
+    concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name, \' \') AS student_fio,
+	guide_subject_type.name as subject_type_name
    FROM studyplan
      JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id
      JOIN education_programm ON education_programm.id = studyplan.programm_id
-     JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id;
+     JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id
+	 JOIN guide_subject_type ON guide_subject_type.id = studyplan.subject_type_id;
         ')->execute();
 
     }

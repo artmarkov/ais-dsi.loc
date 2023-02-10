@@ -6,7 +6,6 @@ use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
 use common\models\studyplan\StudyplanView;
-use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
@@ -27,10 +26,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-sm-6">
                     <?php
                     /* Uncomment this to activate GridQuickLinks */
-                    /* echo GridQuickLinks::widget([
-                         'model' => Studyplan::className(),
+                     echo GridQuickLinks::widget([
+                         'model' => StudyplanView::className(),
                          'searchModel' => $searchModel,
-                     ])*/
+                     ])
                     ?>
                 </div>
                 <div class="col-sm-6 text-right">
@@ -56,36 +55,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
                         'attribute' => 'id',
-                        'class' => 'artsoft\grid\columns\TitleActionColumn',
-                        'controller' => '/studyplan/default',
-                        'title' => function (StudyplanView $model) {
-                            return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
-                        },
-                        'buttonsTemplate' => '{update} {view} {delete}',
-                    ],
-                    [
-                        'attribute' => 'student_fio',
-                        'filterType' => GridView::FILTER_SELECT2,
-                        'filter' => RefBook::find('students_fullname')->getList(),
                         'value' => function (StudyplanView $model) {
-                            return $model->student_fio;
+                            return sprintf('#%06d', $model->id);
                         },
-                        'filterWidgetOptions' => [
-                            'pluginOptions' => [
-                                    'allowClear' => true,
-                                'minimumInputLength' => 3
-                            ],
-                        ],
-                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-
-                        'format' => 'raw'
+                        'contentOptions' => function (StudyplanView $model) {
+                            return [];
+                        },
                     ],
+                    'student_fio',
+                    'education_programm_name',
                     [
-                        'attribute' => 'education_programm_name',
+                        'attribute' => 'subject_type_id',
+                        'filter' => RefBook::find('subject_type_name')->getList(),
                         'value' => function (StudyplanView $model) {
-                            return $model->education_programm_name;
+                            return $model->subject_type_name;
                         },
-                        'format' => 'raw'
+                        'options' => ['style' => 'width:100px'],
+                        'format' => 'raw',
                     ],
                     [
                         'attribute' => 'course',
@@ -113,6 +99,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             [StudyplanView::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
                         ],
                         'options' => ['style' => 'width:120px']
+                    ],
+                    [
+                        'class' => 'kartik\grid\ActionColumn',
+                        'urlCreator' => function ($action, $model, $key, $index) {
+                            return [$action, 'id' => $model->id];
+                        },
+                        'controller' => '/studyplan/default',
+                        'template' => '{view} {update} {delete}',
+                        'headerOptions' => ['class' => 'kartik-sheet-style'],
                     ],
                 ],
             ]);
