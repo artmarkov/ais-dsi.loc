@@ -13,37 +13,37 @@ use artsoft\grid\GridView;
 $this->title = Yii::t('art/guide', 'Subject Schedule');
 $this->params['breadcrumbs'][] = $this->title;
 
-$studyplan_subject_list = \common\models\studyplan\Studyplan::getSubjectListForStudyplan($model->id);
-$subject_sect_studyplan_list = \common\models\studyplan\Studyplan::getSectListForStudyplan($model->id);
+//$studyplan_subject_list = \common\models\studyplan\Studyplan::getSubjectListForStudyplan($model->id);
+//$subject_sect_studyplan_list = \common\models\studyplan\Studyplan::getSectListForStudyplan($model->id);
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'studyplan_subject_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => $studyplan_subject_list,
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => $studyplan_subject_list,
         'value' => function ($model) {
             return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',
         'width' => '320px',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => $subject_sect_studyplan_list,
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => $subject_sect_studyplan_list,
         'value' => function ($model) {
             return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' :
                 ($model->subject_sect_studyplan_id != null ? RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice() : null);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
         'format' => 'raw',
@@ -58,29 +58,29 @@ $columns = [
     ],
     [
         'attribute' => 'direction_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => \common\models\guidejob\Direction::getDirectionList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => \common\models\guidejob\Direction::getDirectionList(),
         'value' => function ($model, $key, $index, $widget) {
             return $model->direction ? $model->direction->name : null;
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 3
     ],
     [
         'attribute' => 'teachers_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('teachers_fio')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('teachers_fio')->getList(),
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 4
     ],
@@ -102,15 +102,15 @@ $columns = [
     ],
     [
         'attribute' => 'auditory_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('auditory_memo_1', 1, true)->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('auditory_memo_1', 1, true)->getList(),
         'value' => function ($model) {
             return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -192,7 +192,7 @@ $columns = [
                 'id' => 'subject-schedule-grid',
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
+//                'filterModel' => $searchModel,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

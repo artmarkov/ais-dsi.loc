@@ -13,37 +13,37 @@ use artsoft\grid\GridView;
 $this->title = Yii::t('art/guide', 'Consult Schedule');
 $this->params['breadcrumbs'][] = $this->title;
 
-$studyplan_subject_list = \common\models\studyplan\Studyplan::getSubjectListForStudyplan($model->id);
-$subject_sect_studyplan_list = \common\models\studyplan\Studyplan::getSectListForStudyplan($model->id);
+//$studyplan_subject_list = \common\models\studyplan\Studyplan::getSubjectListForStudyplan($model->id);
+//$subject_sect_studyplan_list = \common\models\studyplan\Studyplan::getSectListForStudyplan($model->id);
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'studyplan_subject_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => $studyplan_subject_list,
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => $studyplan_subject_list,
         'value' => function ($model) {
             return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',
         'width' => '320px',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => $subject_sect_studyplan_list,
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => $subject_sect_studyplan_list,
         'value' => function ($model) {
             return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' :
                 ($model->subject_sect_studyplan_id != null ? RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice() : null);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
         'format' => 'raw',
@@ -60,30 +60,30 @@ $columns = [
     ],
     [
         'attribute' => 'direction_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => \common\models\guidejob\Direction::getDirectionList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => \common\models\guidejob\Direction::getDirectionList(),
         'value' => function ($model, $key, $index, $widget) {
             return $model->direction ? $model->direction->name : null;
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
 
         'group' => true,  // enable grouping
         'subGroupOf' => 1
     ],
     [
         'attribute' => 'teachers_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => false /*RefBook::find('teachers_fio')->getList()*/,
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => false /*RefBook::find('teachers_fio')->getList()*/,
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 4
     ],
@@ -116,15 +116,15 @@ $columns = [
     [
         'attribute' => 'auditory_id',
         'width' => '300px',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('auditory_memo_1', 1, true)->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('auditory_memo_1', 1, true)->getList(),
         'value' => function ($model) {
             return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -133,7 +133,7 @@ $columns = [
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
-                return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                     Url::to(['/studyplan/default/consult-items', 'id' => $model->studyplan_id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']), [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
@@ -143,7 +143,7 @@ $columns = [
                 );
             },
             'update' => function ($key, $model) {
-                return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                     Url::to(['/studyplan/default/consult-items', 'id' => $model->studyplan_id, 'objectId' => $model->consult_schedule_id, 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
@@ -152,7 +152,7 @@ $columns = [
                 );
             },
             'delete' => function ($key, $model) {
-                return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     Url::to(['/studyplan/default/consult-items', 'id' => $model->studyplan_id, 'objectId' => $model->consult_schedule_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
@@ -208,7 +208,7 @@ $columns = [
                 'id' => 'consult-schedule-grid',
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
+//                'filterModel' => $searchModel,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

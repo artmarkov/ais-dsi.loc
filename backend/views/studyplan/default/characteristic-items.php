@@ -17,72 +17,72 @@ $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'subject_cat_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('subject_category_name')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('subject_category_name')->getList(),
         'value' => function ($model) {
             return RefBook::find('subject_category_name')->getValue($model->subject_cat_id ?? null);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'format' => 'raw',
         'group' => true,
     ],
     [
         'attribute' => 'subject_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('subject_name')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('subject_name')->getList(),
         'value' => function ($model) {
             return RefBook::find('subject_name')->getValue($model->subject_id ?? null);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'format' => 'raw',
         'group' => true,
     ],
     [
         'attribute' => 'subject_type_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('subject_type_name')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('subject_type_name')->getList(),
         'value' => function ($model) {
             return RefBook::find('subject_type_name')->getValue($model->subject_type_id ?? null);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'format' => 'raw',
         'group' => true,
     ],
     [
         'attribute' => 'subject_vid_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('subject_vid_name')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('subject_vid_name')->getList(),
         'value' => function ($model) {
             return RefBook::find('subject_vid_name_dev')->getValue($model->subject_vid_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'format' => 'raw',
         'group' => true,
         'subGroupOf' => 1
     ],
     [
         'attribute' => 'teachers_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('teachers_fio')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('teachers_fio')->getList(),
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
     ],
     'description:text',
     [
@@ -92,7 +92,7 @@ $columns = [
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
-                return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                     Url::to(['/studyplan/default/characteristic-items', 'id' => $model->studyplan_id, 'studyplan_subject_id' => $model->studyplan_subject_id, 'mode' => 'create']), [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
@@ -102,7 +102,7 @@ $columns = [
                 );
             },
             'update' => function ($key, $model) {
-                return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                     Url::to(['/studyplan/default/characteristic-items', 'id' => $model->studyplan_id, 'objectId' => $model->subject_characteristic_id, 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
@@ -111,7 +111,7 @@ $columns = [
                 );
             },
             'delete' => function ($key, $model) {
-                return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     Url::to(['/studyplan/default/characteristic-items', 'id' => $model->studyplan_id, 'objectId' => $model->subject_characteristic_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
@@ -165,7 +165,7 @@ $columns = [
             GridView::widget([
                 'id' => 'subject-characteristic-grid',
                 'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
+//                'filterModel' => $searchModel,
                 'tableOptions' => ['class' => 'table-condensed'],
                 'columns' => $columns,
                 'beforeHeader' => [

@@ -25,15 +25,15 @@ $columns = [
     [
         'attribute' => 'subject_sect_studyplan_id',
         'width' => '310px',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('sect_memo_2')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('sect_memo_2')->getList(),
         'value' => function ($model, $key, $index, $widget) {
             return RefBook::find('sect_memo_2')->getValue($model->subject_sect_studyplan_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1
     ],
@@ -52,18 +52,18 @@ $columns = [
 //        'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model, $key, $index, $widget) {
             $data = [];
-//            if (!empty($model->studyplan_subject_list)) {
-//                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
-//                    $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-//                    $data[] = RefBook::find('students_fio')->getValue($student_id);
-//                }
-//            }
+            if (!empty($model->studyplan_subject_list)) {
+                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
+                    $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
+                    $data[] = RefBook::find('students_fio')->getValue($student_id);
+                }
+            }
             return implode(',', $data);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1
     ],
@@ -132,7 +132,7 @@ $columns = [
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
-                return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                     Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']), [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
@@ -142,7 +142,7 @@ $columns = [
                 );
             },
             'update' => function ($key, $model) {
-                return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                     Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id, 'objectId' => $model->subject_schedule_id, 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
@@ -151,7 +151,7 @@ $columns = [
                 );
             },
             'delete' => function ($key, $model) {
-                return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     Url::to(['/sect/default/schedule-items', 'id' => $model->subject_sect_id, 'objectId' => $model->subject_schedule_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
@@ -207,7 +207,7 @@ $columns = [
                 'id' => 'subject-schedule-grid',
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
+//                'filterModel' => $searchModel,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

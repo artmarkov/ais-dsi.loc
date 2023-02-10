@@ -20,7 +20,7 @@ $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
     if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
         if ($model['subject_sect_studyplan_id'] != 0) {
-            $content += [2 => \yii\helpers\Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+            $content += [2 => \yii\helpers\Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                 Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']),
                 [
                     'title' => 'Добавить занятие',
@@ -31,7 +31,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                 ]
             )];
         } else {
-            $content += [2 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+            $content += [2 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                 Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'studyplan_subject_id' => $model['studyplan_subject_id'], 'mode' => 'create']),
                 [
                     'title' => 'Добавить занятие',
@@ -45,14 +45,14 @@ $editMarks = function ($model, $key, $index, $widget) {
     }
     foreach ($model['lesson_timestamp'] as $id => $item) {
         if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
-            $content += [$id + 3 => Html::a('<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
+            $content += [$id + 3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                     Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'objectId' => $lesson_items_id, 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
                         'class' => 'btn btn-xs btn-link',
                     ])
-                . Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
+                . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xs btn-link',
