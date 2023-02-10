@@ -159,6 +159,8 @@ JS
                                         <!--                    --><?php //else: ?>
                                         <th class="text-center">Консультации</br>часов в год</th>
                                         <!--                    --><?php //endif; ?>
+                                        <th class="text-center">Промежуточная</br>аттестация</th>
+                                        <th class="text-center">Итоговая</br>аттестация</th>
                                         <th class="text-center">
                                             <?php if (!$readonly): ?>
                                                 <button type="button" class="add-item btn btn-success btn-xs"><span
@@ -354,6 +356,28 @@ JS
                                                 </div>
                                                 <?= $field->end(); ?>
                                             </td>
+                                            <td>
+                                                <?php
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]med_cert");
+                                                echo $field->begin();
+                                                ?>
+                                                <div class="col-sm-12">
+                                                    <?= \yii\helpers\Html::activeCheckbox($modelStudyplanSubject, "[{$index}]med_cert", ['class' => 'checkbox', 'disabled' => $readonly, 'label' => false]); ?>
+                                                    <p class="help-block help-block-error"></p>
+                                                </div>
+                                                <?= $field->end(); ?>
+                                            </td>
+                                            <td>
+                                                <?php
+                                                $field = $form->field($modelStudyplanSubject, "[{$index}]fin_cert");
+                                                echo $field->begin();
+                                                ?>
+                                                <div class="col-sm-12">
+                                                    <?= \yii\helpers\Html::activeCheckbox($modelStudyplanSubject, "[{$index}]fin_cert", ['class' => 'checkbox', 'disabled' => $readonly, 'label' => false]); ?>
+                                                    <p class="help-block help-block-error"></p>
+                                                </div>
+                                                <?= $field->end(); ?>
+                                            </td>
                                             <td class="vcenter">
                                                 <?php if (!$readonly): ?>
                                                     <button type="button"
@@ -377,6 +401,8 @@ JS
                                         <td></td>
                                         <td><?= $sum_year_time_consult;?></td>
                                         <td></td>
+                                        <td></td>
+                                        <td></td>
                                     </tr>
                                     </tfoot>
                                 </table>
@@ -384,6 +410,7 @@ JS
                             </div>
                         </div>
                         <div class="row">
+
                             <?= $form->field($model, "[{$index}]year_time_total")->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
 
                             <?= $form->field($model, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>

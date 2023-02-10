@@ -135,14 +135,14 @@ class ProgrammController extends Controller
                             // $transaction->rollBack();
                             break;
                         }
-//                        if ($dd['vid_id'] == 0) {
-//                            $subject_sect_studyplan_id = 0;
-//                            $studyplan_subject_id = $model_subject->id;
-//                        } else {
-//                            $subject_sect_studyplan_id = $this->setSubjectSectStaudyplan($model_programm, $model_subject, $dd);
-//                            $studyplan_subject_id = 0;
-//                        }
-//                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+                        if ($dd['vid_id'] == 0) {
+                            $subject_sect_studyplan_id = 0;
+                            $studyplan_subject_id = $model_subject->id;
+                        } else {
+                            $subject_sect_studyplan_id = $this->setSubjectSectStaudyplan($model_programm, $model_subject, $dd);
+                            $studyplan_subject_id = 0;
+                        }
+                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
                     }
                 } catch (\Exception $e) {
                     // $transaction->rollBack();

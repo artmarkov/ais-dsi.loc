@@ -109,6 +109,9 @@ $this->registerJs($js);
                     'formFields' => [
                         'level_id',
                         'course',
+                        'year_time_total',
+                        'cost_month_total',
+                        'cost_year_total',
                     ],
                 ]); ?>
 

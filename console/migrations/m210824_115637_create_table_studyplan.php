@@ -112,6 +112,8 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'cost_month_summ' => $this->float(),
             'cost_year_summ' => $this->float(),
             'year_time_consult' => $this->float(),
+            'med_cert' => $this->boolean()->comment('Флаг промежуточной аттестации'),
+            'fin_cert' => $this->boolean()->comment('Флаг итоговой аттестации'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

@@ -103,6 +103,8 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'cost_month_summ' => $this->float()->defaultValue(0),
             'cost_year_summ' => $this->float()->defaultValue(0),
             'year_time_consult' => $this->float()->defaultValue(0),
+            'med_cert' => $this->boolean()->comment('Флаг промежуточной аттестации'),
+            'fin_cert' => $this->boolean()->comment('Флаг итоговой аттестации'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

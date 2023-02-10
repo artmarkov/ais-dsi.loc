@@ -32,6 +32,8 @@ use yii\helpers\ArrayHelper;
  * @property float|null $cost_month_summ
  * @property float|null $cost_year_summ
  * @property float|null $year_time_consult
+ * @property bool $med_cert
+ * @property bool $fin_cert
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -75,6 +77,7 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
             [['subject_cat_id', 'subject_id', /*'subject_type_id',*/ 'subject_vid_id', 'week_time', 'year_time'], 'required'],
             [['studyplan_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'status', 'version'], 'integer'],
             [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'number'],
+            [['med_cert', 'fin_cert'], 'boolean'],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
             [['subject_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectVid::class, 'targetAttribute' => ['subject_vid_id' => 'id']],
@@ -100,6 +103,8 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
             'cost_month_summ' => Yii::t('art/guide', 'Month Summ'),
             'cost_year_summ' => Yii::t('art/guide', 'Year Summ'),
             'year_time_consult' => Yii::t('art/guide', 'Year Time Consult'),
+            'med_cert' => Yii::t('art/guide', 'Med Cert'),
+            'fin_cert' => Yii::t('art/guide', 'Fin Cert'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
