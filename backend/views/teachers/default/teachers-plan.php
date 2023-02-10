@@ -53,7 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
             GridView::widget([
                 'id' => 'teachers-plan-grid',
                 'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
+//                'filterModel' => $searchModel,
                 'bulkActionOptions' => [
                     'gridId' => 'teachers-plan-grid',
                     'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
@@ -62,34 +62,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
                         'attribute' => 'id',
-                        'class' => 'artsoft\grid\columns\TitleActionColumn',
-                        'controller' => '/teachers/teachers-plan',
-                        'title' => function (TeachersPlan $model) {
-                            return Html::a(sprintf('#%06d', $model->id), ['/teachers/default/teachers-plan', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update'], ['data-pjax' => 0]);
+                        'value' => function (TeachersPlan $model) {
+                            return sprintf('#%06d', $model->id);
                         },
-                        'buttonsTemplate' => '{update} {delete}',
-                        'buttons' => [
-                            'update' => function ($key, $model) {
-                                return Html::a(Yii::t('art', 'Update'),
-                                    Url::to(['/teachers/default/teachers-plan', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update']), [
-                                        'title' => Yii::t('art', 'Edit'),
-                                        'data-method' => 'post',
-                                        'data-pjax' => '0',
-                                    ]
-                                );
-                            },
-                            'delete' => function ($key, $model) {
-                                return Html::a(Yii::t('art', 'Delete'),
-                                    Url::to(['/teachers/default/teachers-plan', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'delete']), [
-                                        'title' => Yii::t('art', 'Delete'),
-                                        'aria-label' => Yii::t('art', 'Delete'),
-                                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                        'data-method' => 'post',
-                                        'data-pjax' => '0',
-                                    ]
-                                );
-                            },
-                        ],
                     ],
 
                     [
@@ -114,6 +89,34 @@ $this->params['breadcrumbs'][] = $this->title;
                         'value' => function ($model) {
                             return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
                         },
+                    ],
+                    [
+                        'class' => 'kartik\grid\ActionColumn',
+                        'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+                        'controller' => '/teachers/teachers-plan',
+                        'template' => '{update} {delete}',
+                        'buttons' => [
+                            'update' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                                    Url::to(['/teachers/default/teachers-plan', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update']), [
+                                        'title' => Yii::t('art', 'Edit'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                            'delete' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                                    Url::to(['/teachers/default/teachers-plan', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'delete']), [
+                                        'title' => Yii::t('art', 'Delete'),
+                                        'aria-label' => Yii::t('art', 'Delete'),
+                                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                        ],
                     ],
                 ],
             ]);

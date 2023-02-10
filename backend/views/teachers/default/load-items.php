@@ -14,7 +14,7 @@ use artsoft\grid\GridView;
 $this->title = Yii::t('art/guide', 'Teachers Load');
 $this->params['breadcrumbs'][] = $this->title;
 
-$sect_list = \common\models\teachers\Teachers::getSectListForTeachers($model->id, $model_date->plan_year);
+//$sect_list = \common\models\teachers\Teachers::getSectListForTeachers($model->id, $model_date->plan_year);
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
@@ -29,16 +29,16 @@ $columns = [
     [
         'attribute' => 'subject_sect_studyplan_id',
         'width' => '310px',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => $sect_list,
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => $sect_list,
         'value' => function ($model, $key, $index, $widget) {
             return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' :
                 ($model->subject_sect_studyplan_id != null ? RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice() : null);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
         'format' => 'raw',
@@ -89,15 +89,15 @@ $columns = [
     ],
     [
         'attribute' => 'teachers_id',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => false /*RefBook::find('teachers_fio')->getList()*/,
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => false /*RefBook::find('teachers_fio')->getList()*/,
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 5
     ],
@@ -125,7 +125,7 @@ $columns = [
         'buttons' => [
             'create' => function ($key, $model) {
                 if ($model->subject_sect_studyplan_id == 0) {
-                    return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                    return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                         Url::to(['/teachers/default/load-items', 'id' => $model->teachers_id, 'studyplan_subject_id' => $model->studyplan_subject_id, 'mode' => 'create']), [
                             'title' => Yii::t('art', 'Create'),
                             'data-method' => 'post',
@@ -133,7 +133,7 @@ $columns = [
                         ]
                     );
                 } else {
-                    return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                    return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                         Url::to(['/teachers/default/load-items', 'id' => $model->teachers_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id, 'mode' => 'create']), [
                             'title' => Yii::t('art', 'Create'),
                             'data-method' => 'post',
@@ -144,7 +144,7 @@ $columns = [
                 }
             },
             'update' => function ($key, $model) {
-                return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                     Url::to(['/teachers/default/load-items', 'id' => $model->teachers_id, 'objectId' => $model->teachers_load_id, 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
@@ -153,7 +153,7 @@ $columns = [
                 );
             },
             'delete' => function ($key, $model) {
-                return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     Url::to(['/teachers/default/load-items', 'id' => $model->teachers_id, 'objectId' => $model->teachers_load_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
@@ -210,7 +210,7 @@ $columns = [
                 'id' => 'subject-load-grid',
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
+//                'filterModel' => $searchModel,
                 'showPageSummary' => false,
                 'columns' => $columns,
                 'beforeHeader' => [
