@@ -357,26 +357,10 @@ JS
                                                 <?= $field->end(); ?>
                                             </td>
                                             <td>
-                                                <?php
-                                                $field = $form->field($modelStudyplanSubject, "[{$index}]med_cert");
-                                                echo $field->begin();
-                                                ?>
-                                                <div class="col-sm-12">
-                                                    <?= \yii\helpers\Html::activeCheckbox($modelStudyplanSubject, "[{$index}]med_cert", ['class' => 'checkbox', 'disabled' => $readonly, 'label' => false]); ?>
-                                                    <p class="help-block help-block-error"></p>
-                                                </div>
-                                                <?= $field->end(); ?>
+                                                <?= $form->field($modelStudyplanSubject, "[{$index}]med_cert")->checkbox(['disabled' => $readonly, 'label' => 'Да']) ?>
                                             </td>
                                             <td>
-                                                <?php
-                                                $field = $form->field($modelStudyplanSubject, "[{$index}]fin_cert");
-                                                echo $field->begin();
-                                                ?>
-                                                <div class="col-sm-12">
-                                                    <?= \yii\helpers\Html::activeCheckbox($modelStudyplanSubject, "[{$index}]fin_cert", ['class' => 'checkbox', 'disabled' => $readonly, 'label' => false]); ?>
-                                                    <p class="help-block help-block-error"></p>
-                                                </div>
-                                                <?= $field->end(); ?>
+                                                <?= $form->field($modelStudyplanSubject, "[{$index}]fin_cert")->checkbox(['disabled' => $readonly, 'label' => 'Да']) ?>
                                             </td>
                                             <td class="vcenter">
                                                 <?php if (!$readonly): ?>

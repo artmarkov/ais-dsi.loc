@@ -29,6 +29,8 @@ class StudyplanSubjectHistory extends BaseHistory
             'cost_month_summ',
             'cost_year_summ',
             'year_time_consult',
+            'med_cert',
+            'fin_cert',
         ];
     }
 
@@ -47,6 +49,10 @@ class StudyplanSubjectHistory extends BaseHistory
                 return isset($model->subject_id) ? $model->subject->name : $value;
             case 'subject_type_id':
                 return isset($model->subject_type_id) ? $model->subjectType->name : $value;
+            case 'med_cert':
+                return isset($model->med_cert) ? ($model->med_cert ? 'Yes' : 'No') : $value;
+            case 'fin_cert':
+                return isset($model->fin_cert) ? ($model->fin_cert ? 'Yes' : 'No') : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }

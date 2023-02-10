@@ -220,26 +220,10 @@ use wbraganca\dynamicform\DynamicFormWidget;
                 <?= $field->end(); ?>
             </td>
             <td>
-                <?php
-                $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]med_cert");
-                echo $field->begin();
-                ?>
-                <div class="col-sm-12">
-                    <?= \yii\helpers\Html::activeCheckbox($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]med_cert", ['class' => 'checkbox', 'disabled' => $readonly, 'label' => false]); ?>
-                    <p class="help-block help-block-error"></p>
-                </div>
-                <?= $field->end(); ?>
+                <?= $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]med_cert")->checkbox(['disabled' => $readonly, 'label' => 'Да']) ?>
             </td>
             <td>
-                <?php
-                $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]fin_cert");
-                echo $field->begin();
-                ?>
-                <div class="col-sm-12">
-                    <?= \yii\helpers\Html::activeCheckbox($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]fin_cert", ['class' => 'checkbox', 'disabled' => $readonly, 'label' => false]); ?>
-                    <p class="help-block help-block-error"></p>
-                </div>
-                <?= $field->end(); ?>
+                <?= $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]fin_cert")->checkbox(['disabled' => $readonly, 'label' => 'Да']) ?>
             </td>
             <td class="vcenter">
                 <?php if (!$readonly): ?>

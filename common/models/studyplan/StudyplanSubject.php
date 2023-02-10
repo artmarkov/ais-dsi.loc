@@ -323,6 +323,8 @@ SQL;
         $this->cost_month_summ = $modelSubTime->cost_month_summ;
         $this->cost_year_summ = $modelSubTime->cost_year_summ;
         $this->year_time_consult = $modelSubTime->year_time_consult;
+        $this->med_cert = $modelSubTime->med_cert;
+        $this->fin_cert = $modelSubTime->fin_cert;
     }
 
 }
