@@ -206,11 +206,13 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 ->andWhere(new \yii\db\Expression("lesson_progress.studyplan_subject_id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, ',')::int[])"))
                 ->all();
             // список учеников с оценками
-            $list = LessonProgress::find()->select('studyplan_subject_id')->where(['=', 'lesson_items_id', $this->id])->column();
+            $list = LessonProgress::find()->select('studyplan_subject_id')->where(['=', 'lesson_items_id', $this->id])->distinct()->column();
             // список всех учеников группы
             $studyplanSubjectList = SubjectSectStudyplan::findOne($this->subject_sect_studyplan_id)->studyplan_subject_list;
             // добавляем новые модели вновь принятых учеников
-            foreach (array_diff(explode(',', $studyplanSubjectList), $list) as $item => $studyplan_subject_id) {
+            $list_new = array_unique(explode(',', $studyplanSubjectList));
+
+            foreach (array_diff($list_new, $list) as $item => $studyplan_subject_id) {
                 $m = new LessonProgress();
                 $m->studyplan_subject_id = $studyplan_subject_id;
                 $modelsItems[] = $m;

@@ -24,90 +24,129 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ])->execute();
 
         $this->db->createCommand()->createView('studyplan_subject_view', '
-            SELECT DISTINCT * FROM (SELECT studyplan_subject.id AS studyplan_subject_id,
-    NULL::integer AS subject_sect_studyplan_id,
-	NULL::integer AS subject_sect_id,
-    studyplan_subject.studyplan_id,
-    studyplan_subject.week_time,
-    studyplan_subject.year_time,
-    studyplan_subject.cost_month_summ,
-    studyplan.student_id,
-    studyplan.course,
-    studyplan.plan_year,
-    guide_subject_category.name AS subject_category_name,
-    guide_subject_category.slug AS subject_category_slug,
-    subject.id AS subject_id,
-    subject.name AS subject_name,
-    subject.slug AS subject_slug,
-    guide_subject_vid.name AS subject_vid_name,
-    guide_subject_vid.slug AS subject_vid_slug,
-    guide_subject_type.name AS subject_type_name,
-    guide_subject_type.slug AS subject_type_slug,
-    education_programm.name AS education_programm_name,
-    education_programm.short_name AS education_programm_short_name,
-    guide_education_cat.name AS education_cat_name,
-    guide_education_cat.short_name AS education_cat_short_name,
-    user_common.status,
-    students.position_id,
-    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_1,
-    concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \')\') AS memo_2,
-    concat(subject.name, \'(\', guide_subject_category.slug, \'&nbsp;\', guide_subject_type.slug, \')&nbsp;-&nbsp;\', guide_subject_vid.slug, \'&nbsp;\', studyplan_subject.week_time * 4::double precision, \'&nbsp;час/мес\') AS memo_3,
-    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'. - \', subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_4
-   FROM studyplan_subject
-     JOIN studyplan ON studyplan_subject.studyplan_id = studyplan.id
-     JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
-     JOIN students ON students.id = studyplan.student_id
-     JOIN user_common ON user_common.id = students.user_common_id
-     JOIN education_programm ON education_programm.id = studyplan.programm_id
-     JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id
-     JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
-     JOIN subject ON subject.id = studyplan_subject.subject_id
-     JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
-UNION ALL
- SELECT studyplan_subject.id AS studyplan_subject_id,
-    subject_sect_studyplan.id AS subject_sect_studyplan_id,
-	subject_sect_studyplan.subject_sect_id AS subject_sect_id,
-    studyplan_subject.studyplan_id,
-    studyplan_subject.week_time,
-    studyplan_subject.year_time,
-    studyplan_subject.cost_month_summ,
-    studyplan.student_id,
-    studyplan.course,
-    studyplan.plan_year,
-    guide_subject_category.name AS subject_category_name,
-    guide_subject_category.slug AS subject_category_slug,
-    subject.id AS subject_id,
-    subject.name AS subject_name,
-    subject.slug AS subject_slug,
-    guide_subject_vid.name AS subject_vid_name,
-    guide_subject_vid.slug AS subject_vid_slug,
-    guide_subject_type.name AS subject_type_name,
-    guide_subject_type.slug AS subject_type_slug,
-    education_programm.name AS education_programm_name,
-    education_programm.short_name AS education_programm_short_name,
-    guide_education_cat.name AS education_cat_name,
-    guide_education_cat.short_name AS education_cat_short_name,
-    user_common.status,
-    students.position_id,
-    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_1,
-    concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \')\') AS memo_2,
-    concat(subject.name, \'(\', guide_subject_category.slug, \'&nbsp;\', guide_subject_type.slug, \')&nbsp;-&nbsp;\', guide_subject_vid.slug, \'&nbsp;\', studyplan_subject.week_time * 4::double precision, \'&nbsp;час/мес\') AS memo_3,
-    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'. - \', subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_4
-   FROM studyplan_subject
-     JOIN studyplan ON studyplan_subject.studyplan_id = studyplan.id
-     LEFT JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
-     LEFT JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
-     JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id
-     JOIN students ON students.id = studyplan.student_id
-     JOIN user_common ON user_common.id = students.user_common_id
-     JOIN education_programm ON education_programm.id = studyplan.programm_id
-     JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id
-     JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
-     JOIN subject ON subject.id = studyplan_subject.subject_id
-     JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
-  ) AS tmp_table ORDER BY 1;
+             SELECT DISTINCT tmp_table.studyplan_subject_id,
+    tmp_table.subject_sect_studyplan_id,
+    tmp_table.subject_sect_id,
+    tmp_table.studyplan_id,
+    tmp_table.week_time,
+    tmp_table.year_time,
+    tmp_table.cost_month_summ,
+    tmp_table.student_id,
+    tmp_table.course,
+    tmp_table.plan_year,
+    tmp_table.subject_category_id,
+    tmp_table.subject_category_name,
+    tmp_table.subject_category_slug,
+    tmp_table.subject_id,
+    tmp_table.subject_name,
+    tmp_table.subject_slug,
+    tmp_table.subject_vid_id,
+    tmp_table.subject_vid_name,
+    tmp_table.subject_vid_slug,
+    tmp_table.subject_type_name,
+    tmp_table.subject_type_slug,
+    tmp_table.education_programm_id,
+    tmp_table.education_programm_name,
+    tmp_table.education_programm_short_name,
+    tmp_table.education_cat_name,
+    tmp_table.education_cat_short_name,
+    tmp_table.status,
+    tmp_table.position_id,
+    tmp_table.student_fio,
+    tmp_table.memo_1,
+    tmp_table.memo_2,
+    tmp_table.memo_3,
+    tmp_table.memo_4
+   FROM ( SELECT studyplan_subject.id AS studyplan_subject_id,
+            NULL::integer AS subject_sect_studyplan_id,
+            NULL::integer AS subject_sect_id,
+            studyplan_subject.studyplan_id,
+            studyplan_subject.week_time,
+            studyplan_subject.year_time,
+            studyplan_subject.cost_month_summ,
+            studyplan.student_id,
+            studyplan.course,
+            studyplan.plan_year,
+            guide_subject_category.id AS subject_category_id,
+            guide_subject_category.name AS subject_category_name,
+            guide_subject_category.slug AS subject_category_slug,
+            subject.id AS subject_id,
+            subject.name AS subject_name,
+            subject.slug AS subject_slug,
+            guide_subject_vid.id AS subject_vid_id,
+            guide_subject_vid.name AS subject_vid_name,
+            guide_subject_vid.slug AS subject_vid_slug,
+            guide_subject_type.name AS subject_type_name,
+            guide_subject_type.slug AS subject_type_slug,
+            education_programm.id AS education_programm_id,
+            education_programm.name AS education_programm_name,
+            education_programm.short_name AS education_programm_short_name,
+            guide_education_cat.name AS education_cat_name,
+            guide_education_cat.short_name AS education_cat_short_name,
+            user_common.status,
+            students.position_id,
+            concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
+            concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_1,
+            concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \')\') AS memo_2,
+            concat(subject.name, \'(\', guide_subject_category.slug, \'&nbsp;\', guide_subject_type.slug, \')&nbsp;-&nbsp;\', guide_subject_vid.slug, \'&nbsp;\', studyplan_subject.week_time * 4::double precision, \'&nbsp;час/мес\') AS memo_3,
+            concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'. - \', subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_4
+           FROM studyplan_subject
+             JOIN studyplan ON studyplan_subject.studyplan_id = studyplan.id
+             JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
+             JOIN students ON students.id = studyplan.student_id
+             JOIN user_common ON user_common.id = students.user_common_id
+             JOIN education_programm ON education_programm.id = studyplan.programm_id
+             JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id
+             JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
+             JOIN subject ON subject.id = studyplan_subject.subject_id
+             JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
+        UNION ALL
+         SELECT studyplan_subject.id AS studyplan_subject_id,
+            subject_sect_studyplan.id AS subject_sect_studyplan_id,
+            subject_sect_studyplan.subject_sect_id,
+            studyplan_subject.studyplan_id,
+            studyplan_subject.week_time,
+            studyplan_subject.year_time,
+            studyplan_subject.cost_month_summ,
+            studyplan.student_id,
+            studyplan.course,
+            studyplan.plan_year,
+            guide_subject_category.id AS subject_category_id,
+            guide_subject_category.name AS subject_category_name,
+            guide_subject_category.slug AS subject_category_slug,
+            subject.id AS subject_id,
+            subject.name AS subject_name,
+            subject.slug AS subject_slug,
+            guide_subject_vid.id AS subject_vid_id,
+            guide_subject_vid.name AS subject_vid_name,
+            guide_subject_vid.slug AS subject_vid_slug,
+            guide_subject_type.name AS subject_type_name,
+            guide_subject_type.slug AS subject_type_slug,
+            education_programm.id AS education_programm_id,
+            education_programm.name AS education_programm_name,
+            education_programm.short_name AS education_programm_short_name,
+            guide_education_cat.name AS education_cat_name,
+            guide_education_cat.short_name AS education_cat_short_name,
+            user_common.status,
+            students.position_id,
+            concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
+            concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_1,
+            concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \')\') AS memo_2,
+            concat(subject.name, \'(\', guide_subject_category.slug, \'&nbsp;\', guide_subject_type.slug, \')&nbsp;-&nbsp;\', guide_subject_vid.slug, \'&nbsp;\', studyplan_subject.week_time * 4::double precision, \'&nbsp;час/мес\') AS memo_3,
+            concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'. - \', subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_4
+           FROM studyplan_subject
+             JOIN studyplan ON studyplan_subject.studyplan_id = studyplan.id
+             LEFT JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
+             LEFT JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
+             JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id
+             JOIN students ON students.id = studyplan.student_id
+             JOIN user_common ON user_common.id = students.user_common_id
+             JOIN education_programm ON education_programm.id = studyplan.programm_id
+             JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id
+             JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
+             JOIN subject ON subject.id = studyplan_subject.subject_id
+             JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id) tmp_table
+  ORDER BY tmp_table.studyplan_subject_id;
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [

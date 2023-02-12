@@ -26,6 +26,7 @@ use Yii;
  * @property int|null $datetime_out
  * @property string|null $auditory_id
  * @property string|null $description
+ * @property string|null $sect_name
  */
 
 class ConsultScheduleView extends ConsultSchedule
@@ -58,6 +59,7 @@ class ConsultScheduleView extends ConsultSchedule
         $attr['teachers_id'] = Yii::t('art/teachers', 'Teachers');
         $attr['load_time_consult'] = Yii::t('art/guide', 'Load Time Consult');
         $attr['consult_schedule_id'] = Yii::t('art/guide', 'Consult Schedule ID');
+        $attr['sect_name'] = Yii::t('art/guide', 'Sect Name');
 
         return $attr;
     }

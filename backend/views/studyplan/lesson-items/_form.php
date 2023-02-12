@@ -7,6 +7,7 @@ use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
 
+
 /* @var $this yii\web\View */
 /* @var $model common\models\education\LessonItems */
 /* @var $form artsoft\widgets\ActiveForm */
@@ -15,7 +16,14 @@ use yii\widgets\MaskedInput;
 /* @var $subject_sect_studyplan_id */
 
 $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($model->subject_sect_studyplan_id, $model->studyplan_subject_id);
+$mark_list = RefBook::find('lesson_mark')->getList();
+$studyplanSubjectList = \common\models\subjectsect\SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id)->studyplan_subject_list;
 
+$modelsStudent = (new \yii\db\Query())->select('studyplan_subject_id,student_fio')->from('studyplan_subject_view')
+    ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$studyplanSubjectList}', ',')::int[])"))
+    ->all();
+$modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent,'studyplan_subject_id');
+//print_r($modelsStudent);
 ?>
 <div class="lesson-items-form">
     <?php
@@ -48,8 +56,7 @@ $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($model->subje
                 </tr>
                 </thead>
                 <tbody class="container-items">
-                <?php foreach ($models_sch as $index => $id): ?>
-                    <?php $m = \common\models\schedule\SubjectSchedule::findOne($id); ?>
+                <?php foreach ($models_sch as $index => $m): ?>
                     <?php
                     $string = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
                     $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out;
@@ -123,7 +130,7 @@ $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($model->subje
                                     </td>
                                     <td>
                                         <?= Html::activeHiddenInput($modelItems, "[{$index}]studyplan_subject_id"); ?>
-                                        <?= LessonProgress::getStudentName($modelItems->studyplan_subject_id); ?>
+                                        <?= $modelsStudent[$modelItems->studyplan_subject_id]['student_fio']; ?>
                                     </td>
                                     <td>
                                         <?php
@@ -135,7 +142,7 @@ $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($model->subje
                                                 [
                                                     'model' => $modelItems,
                                                     'attribute' => "[{$index}]lesson_mark_id",
-                                                    'data' => RefBook::find('lesson_mark')->getList(),
+                                                    'data' => $mark_list,
                                                     'options' => [
 
 //                                                                'disabled' => $readonly,

@@ -100,9 +100,18 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = 'Расписание занятий';
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
+        $session = Yii::$app->session;
+
+        $model_date = new DynamicModel(['plan_year']);
+        $model_date->addRule(['plan_year'], 'required');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->plan_year = $session->get('_sect_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+        }
+        $session->set('_sect_plan_year', $model_date->plan_year);
+
         $model = $this->modelClass::findOne($id);
         $readonly = false;
-        return $this->render('schedule', ['model' => $model,
+        return $this->render('schedule', ['model' => $model, 'model_date' => $model_date,
             'readonly' => $readonly,
         ]);
     }
@@ -134,7 +143,7 @@ class DefaultController extends MainController
             ]);
 
         } elseif ('history' == $mode && $objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['sect/default/load-items', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/load-items', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['sect/default/load-items', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
             $model = TeachersLoad::findOne($objectId);
             $data = new TeachersLoadHistory($objectId);
@@ -149,7 +158,7 @@ class DefaultController extends MainController
 
         } elseif ($objectId) {
 
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Load'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $model = TeachersLoad::findOne($objectId);
             $teachersLoadModel = StudyplanSubject::findOne($model->studyplan_subject_id);
@@ -365,14 +374,24 @@ class DefaultController extends MainController
             ]);
 
         } else {
+            $session = Yii::$app->session;
+
+            $model_date = new DynamicModel(['plan_year']);
+            $model_date->addRule(['plan_year'], 'required');
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $model_date->plan_year = $session->get('_sect_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            }
+            $session->set('_sect_plan_year', $model_date->plan_year);
+
             $searchModel = new SubjectScheduleViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();
             $params[$searchName]['subject_sect_id'] = $id;
+            $params[$searchName]['plan_year'] = $model_date->plan_year;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
         }
     }
 
@@ -519,11 +538,9 @@ class DefaultController extends MainController
 
                 $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:d.m.Y');
                 $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
-                $model_date->hidden_flag = $session->get('_progress_hidden_flag') ?? 0;
             }
             $session->set('_progress_date_in', $model_date->date_in);
             $session->set('_progress_date_out', $model_date->date_out);
-            $session->set('_progress_hidden_flag', $model_date->hidden_flag);
 
             $model = LessonProgressView::getDataSect($model_date, $id);
 
@@ -598,14 +615,24 @@ class DefaultController extends MainController
             ]);
 
         } else {
+            $session = Yii::$app->session;
+
+            $model_date = new DynamicModel(['plan_year']);
+            $model_date->addRule(['plan_year'], 'required');
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $model_date->plan_year = $session->get('_sect_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            }
+            $session->set('_sect_plan_year', $model_date->plan_year);
+
             $searchModel = new ConsultScheduleViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['studyplan_id'] = $id;
+            $params[$searchName]['subject_sect_id'] = $id;
+            $params[$searchName]['plan_year'] = $model_date->plan_year;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
         }
     }
 

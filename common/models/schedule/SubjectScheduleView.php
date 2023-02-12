@@ -31,6 +31,7 @@ use artsoft\widgets\Tooltip;
  * @property int|null time_out
  * @property int|null auditory_id
  * @property string|null description
+ * @property string|null sect_name
  */
 class SubjectScheduleView extends SubjectSchedule
 {
@@ -63,6 +64,7 @@ class SubjectScheduleView extends SubjectSchedule
         $attr['load_time'] = Yii::t('art/guide', 'Load Time');
         $attr['subject_schedule_id'] = Yii::t('art/guide', 'Subject Schedule');
         $attr['scheduleDisplay'] = Yii::t('art/guide', 'Subject Schedule');
+        $attr['sect_name'] = Yii::t('art/guide', 'Sect Name');
 
         return $attr;
     }

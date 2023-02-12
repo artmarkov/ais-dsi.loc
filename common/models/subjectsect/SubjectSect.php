@@ -224,27 +224,26 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      */
     public function getStudyplanForProgramms($plan_year, $course = null, $readonly = false)
     {
-        $this->subject_type_id = $this->subject_type_id == null ? 0 : $this->subject_type_id;
+       // $this->subject_type_id = $this->subject_type_id == null ? 0 : $this->subject_type_id;
         $course = $course == null ? 0 : $course;
         $programm_list = implode(',', $this->programm_list);
         $funcSql = <<< SQL
-    select studyplan_subject.id as id
-	from studyplan
-	inner join studyplan_subject on studyplan.id = studyplan_subject.studyplan_id
-	where studyplan.programm_id = any (string_to_array('{$programm_list}', ',')::int[])
-		and studyplan_subject.id != all(string_to_array('{$this->getStudyplanList($plan_year)}', ',')::int[])
-		and plan_year = {$plan_year}
-        and subject_cat_id = {$this->subject_cat_id}
-        and subject_id = {$this->subject_id}
-        and subject_vid_id = {$this->subject_vid_id}
-        and case when {$course} != 0 then course = {$course} else true end
+            select *
+            from studyplan_subject_view
+            where education_programm_id = any (string_to_array('{$programm_list}', ',')::int[])
+                and studyplan_subject_id != all(string_to_array('{$this->getStudyplanList($plan_year)}', ',')::int[])
+                and plan_year = {$plan_year}
+                and subject_category_id = {$this->subject_cat_id}
+                and subject_id = {$this->subject_id}
+                and subject_vid_id = {$this->subject_vid_id}
+                and case when {$course} != 0 then course = {$course} else true end
 		
 SQL;
         $data = [];
-        $query = Yii::$app->db->createCommand($funcSql)->queryAll();
-        foreach ($query as $item => $value) {
-            $data[$value['id']] = [
-                'content' => SubjectSectStudyplan::getSubjectSectStudyplanContent($value['id']),
+        $nodels = Yii::$app->db->createCommand($funcSql)->queryAll();
+        foreach ($nodels as $item => $nodel) {
+            $data[$nodel['studyplan_subject_id']] = [
+                'content' => SubjectSectStudyplan::getSubjectSectStudyplanContent($nodel),
                 'disabled' => $readonly
             ];
         }
@@ -292,11 +291,12 @@ SQL;
         return $cat_id ? Yii::$app->db->createCommand(self::getQuery($programm_list, $cat_id))->queryAll() : [];
     }
 
-    public function getSubjectSchedule()
+    public function getSubjectSchedule($model_date)
     {
         $models = SubjectScheduleView::find()
             ->where(['subject_sect_id' => $this->id])
             ->andWhere(['not', ['subject_schedule_id' => null]])
+            ->andWhere(['=', 'plan_year', $model_date->plan_year])
             ->all();
 
         $data = [];

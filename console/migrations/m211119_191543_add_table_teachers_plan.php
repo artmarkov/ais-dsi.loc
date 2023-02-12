@@ -122,7 +122,7 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->createView('teachers_load_view', '
-      SELECT studyplan_subject.id AS studyplan_subject_id,
+       SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
     0 AS subject_sect_id,
@@ -133,7 +133,8 @@ UNION ALL
     teachers_load.direction_id,
     teachers_load.teachers_id,
     teachers_load.load_time,
-    teachers_load.load_time_consult
+    teachers_load.load_time_consult,
+	\'Индивидуально\' as sect_name
    FROM studyplan_subject
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
      LEFT JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
@@ -147,26 +148,28 @@ UNION ALL
     subject_sect.id AS subject_sect_id,
     subject_sect_studyplan.plan_year,
     ( SELECT max(education_programm_level_subject.week_time) AS max
-           from education_programm
-                inner join education_programm_level on education_programm_level.programm_id = education_programm.id
-                inner join education_programm_level_subject on education_programm_level_subject.programm_level_id = education_programm_level.id
-                where education_programm.id = any (string_to_array(subject_sect.programm_list, \',\')::int[]) and education_programm_level_subject.subject_id = subject_sect.subject_id and education_programm_level_subject.subject_cat_id = subject_sect.subject_cat_id 
-                    ) AS week_time,
+           FROM education_programm
+             JOIN education_programm_level ON education_programm_level.programm_id = education_programm.id
+             JOIN education_programm_level_subject ON education_programm_level_subject.programm_level_id = education_programm_level.id
+          WHERE (education_programm.id = ANY (string_to_array(subject_sect.programm_list, \',\'::text)::integer[])) AND education_programm_level_subject.subject_id = subject_sect.subject_id AND education_programm_level_subject.subject_cat_id = subject_sect.subject_cat_id) AS week_time,
     ( SELECT max(education_programm_level_subject.year_time_consult) AS max
-           from education_programm
-                inner join education_programm_level on education_programm_level.programm_id = education_programm.id
-                inner join education_programm_level_subject on education_programm_level_subject.programm_level_id = education_programm_level.id
-                where education_programm.id = any (string_to_array(subject_sect.programm_list, \',\')::int[]) and education_programm_level_subject.subject_id = subject_sect.subject_id and education_programm_level_subject.subject_cat_id = subject_sect.subject_cat_id 
-                    ) AS year_time_consult,
+           FROM education_programm
+             JOIN education_programm_level ON education_programm_level.programm_id = education_programm.id
+             JOIN education_programm_level_subject ON education_programm_level_subject.programm_level_id = education_programm_level.id
+          WHERE (education_programm.id = ANY (string_to_array(subject_sect.programm_list, \',\'::text)::integer[])) AND education_programm_level_subject.subject_id = subject_sect.subject_id AND education_programm_level_subject.subject_cat_id = subject_sect.subject_cat_id) AS year_time_consult,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
     teachers_load.teachers_id,
     teachers_load.load_time,
-    teachers_load.load_time_consult
+    teachers_load.load_time_consult,
+	concat(subject_sect.sect_name, \' (\', CASE
+                    WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
+                    ELSE \'\'::text
+					END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name    
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      LEFT JOIN teachers_load ON subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0
-  ORDER BY 2, 1, 9, 10;
+  ;
         ')->execute();
 
         $this->createTableWithHistory('subject_schedule', [

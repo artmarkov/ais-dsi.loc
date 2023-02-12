@@ -4,6 +4,8 @@ use yii\web\JsExpression;
 use common\widgets\weeklyscheduler\WeeklyScheduler;
 use yii\widgets\Pjax;
 
+$this->title = 'Расписание группы';
+
 $JSChange = <<<EOF
         function(node, data) {
          eventData = {   
@@ -99,7 +101,8 @@ Pjax::begin([
     <div class="subject-sect-schedule">
         <div class="panel">
             <div class="panel-heading">
-                <?= $this->title; ?>
+                <?= $this->title; ?>: <?php echo \artsoft\helpers\RefBook::find('sect_name_4')->getValue($model->id);?>
+                <?= $this->render('_search', compact('model_date')) ?>
             </div>
             <div class="panel-body">
                 <div class="panel panel-default">
@@ -109,10 +112,10 @@ Pjax::begin([
                             <div class="col-sm-12">
                                 <?= WeeklyScheduler::widget([
                                     'readonly' => $readonly,
-                                    'data' => $model->getSubjectSchedule(),
+                                    'data' => $model->getSubjectSchedule($model_date),
                                     'events' => [
-                                        'onChange' => new JsExpression($JSChange),
-                                        'onClick' => new JsExpression($JSEventClick),
+//                                        'onChange' => new JsExpression($JSChange),
+//                                        'onClick' => new JsExpression($JSEventClick),
                                        // 'onScheduleClick' => new JsExpression($JSScheduleClick),
                                     ]
                                 ]);

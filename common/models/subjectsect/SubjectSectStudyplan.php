@@ -3,11 +3,13 @@
 namespace common\models\subjectsect;
 
 use artsoft\helpers\RefBook;
+use common\models\studyplan\StudyplanSubject;
 use common\models\subject\SubjectType;
 use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Query;
 
 /**
  * This is the model class for table "subject_sect_studyplan".
@@ -133,9 +135,12 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     {
         $data = [];
         if (!empty($this->studyplan_subject_list)) {
-            foreach (explode(',', $this->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                $data[$studyplan_subject_id] = [
-                    'content' => $this->getSubjectSectStudyplanContent($studyplan_subject_id),
+            $modelsItems = (new Query())->from('studyplan_subject_view')
+                ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$this->studyplan_subject_list}', ',')::int[])"))
+                ->all();
+            foreach ($modelsItems as $item => $model) {
+                $data[$model['studyplan_subject_id']] = [
+                    'content' => $this->getSubjectSectStudyplanContent($model),
                     'disabled' => $readonly
                 ];
             }
@@ -147,12 +152,15 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
      * @param $studyplan_subject_id
      * @return string
      */
-    public static function getSubjectSectStudyplanContent($studyplan_subject_id)
+    public static function getSubjectSectStudyplanContent($model)
     {
-        $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-        return '<div style="overflow: hidden;">
-                <div class="pull-left">' . RefBook::find('students_fio')->getValue($student_id) . '</div>' .
-               '<div class="fa-pull-right">' . RefBook::find('subject_memo_1')->getValue($studyplan_subject_id) . '</div></div>';
+        //$student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
+//        return '<div style="overflow: hidden;">
+//                <div class="pull-left">' . RefBook::find('students_fio')->getValue($student_id) . '</div>' .
+//               '<div class="fa-pull-right">' . RefBook::find('subject_memo_1')->getValue($studyplan_subject_id) . '</div></div>';
+     return '<div style="overflow: hidden;">
+                <div class="pull-left">' . $model['student_fio'] . '</div>' .
+               '<div class="fa-pull-right">' . $model['memo_1'] . '</div></div>';
     }
 
     /**

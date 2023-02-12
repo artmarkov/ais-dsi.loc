@@ -7,59 +7,58 @@ class m211201_191645_add_subject_schedule_view extends \artsoft\db\BaseMigration
     public function up()
     {
         $this->db->createCommand()->createView('subject_schedule_view', '
-        (select studyplan_subject.id as studyplan_subject_id,
-                 0 as subject_sect_studyplan_id,
-                 studyplan_subject.id::text as studyplan_subject_list,
-                 studyplan_subject.subject_type_id as subject_type_id,
-                 0 as subject_sect_id,
-                 studyplan.plan_year as plan_year,
-                 studyplan_subject.week_time as week_time,
-                 teachers_load.id as teachers_load_id,                         
-                 teachers_load.direction_id as direction_id,
-                 teachers_load.teachers_id as teachers_id,
-                 teachers_load.load_time as load_time,
-                 subject_schedule.id as subject_schedule_id,
-                 subject_schedule.week_num as week_num,
-                 subject_schedule.week_day as week_day,
-                 subject_schedule.time_in as time_in,
-                 subject_schedule.time_out as time_out,
-                 subject_schedule.auditory_id as auditory_id,
-                 subject_schedule.description as description
-             from studyplan_subject
-			 inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
-			 inner join teachers_load on (teachers_load.studyplan_subject_id = studyplan_subject.id 
-			 and teachers_load.subject_sect_studyplan_id = 0)
-			 left join subject_schedule  on (subject_schedule.teachers_load_id = teachers_load.id)
-           )
+         SELECT studyplan_subject.id AS studyplan_subject_id,
+    0 AS subject_sect_studyplan_id,
+    studyplan_subject.id::text AS studyplan_subject_list,
+    studyplan_subject.subject_type_id,
+    0 AS subject_sect_id,
+    studyplan.plan_year,
+    studyplan_subject.week_time,
+    teachers_load.id AS teachers_load_id,
+    teachers_load.direction_id,
+    teachers_load.teachers_id,
+    teachers_load.load_time,
+    subject_schedule.id AS subject_schedule_id,
+    subject_schedule.week_num,
+    subject_schedule.week_day,
+    subject_schedule.time_in,
+    subject_schedule.time_out,
+    subject_schedule.auditory_id,
+    subject_schedule.description,
+	\'Индивидуально\' as sect_name
+   FROM studyplan_subject
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+     JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
+     LEFT JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
 UNION ALL
-         (select 0 as studyplan_subject_id,
-                 subject_sect_studyplan.id as subject_sect_studyplan_id,
-                 subject_sect_studyplan.studyplan_subject_list as studyplan_subject_list,
-                 subject_sect_studyplan.subject_type_id as subject_type_id,
-                 subject_sect.id as subject_sect_id,
-                 subject_sect_studyplan.plan_year as plan_year,
-                 (select MAX(week_time) 
-					 from studyplan_subject 
-					 where studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])
-				 ) as week_time,
-                 teachers_load.id as teachers_load_id,                         
-                 teachers_load.direction_id as direction_id,
-                 teachers_load.teachers_id as teachers_id,
-                 teachers_load.load_time as load_time,
-                 subject_schedule.id as subject_schedule_id,
-                 subject_schedule.week_num as week_num,
-                 subject_schedule.week_day as week_day,
-                 subject_schedule.time_in as time_in,
-                 subject_schedule.time_out as time_out,
-                 subject_schedule.auditory_id as auditory_id,
-                 subject_schedule.description as description
-             from subject_sect_studyplan
-			 inner join subject_sect on (subject_sect.id = subject_sect_studyplan.subject_sect_id)
-			 inner join teachers_load on (subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id 
-			  and teachers_load.studyplan_subject_id = 0)
-			 left join subject_schedule  on (subject_schedule.teachers_load_id = teachers_load.id)
-			  )
-ORDER BY  subject_sect_studyplan_id, studyplan_subject_id, direction_id, teachers_id, week_day, time_in
+ SELECT 0 AS studyplan_subject_id,
+    subject_sect_studyplan.id AS subject_sect_studyplan_id,
+    subject_sect_studyplan.studyplan_subject_list,
+    subject_sect_studyplan.subject_type_id,
+    subject_sect.id AS subject_sect_id,
+    subject_sect_studyplan.plan_year,
+    ( SELECT max(studyplan_subject.week_time) AS max
+           FROM studyplan_subject
+          WHERE studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])) AS week_time,
+    teachers_load.id AS teachers_load_id,
+    teachers_load.direction_id,
+    teachers_load.teachers_id,
+    teachers_load.load_time,
+    subject_schedule.id AS subject_schedule_id,
+    subject_schedule.week_num,
+    subject_schedule.week_day,
+    subject_schedule.time_in,
+    subject_schedule.time_out,
+    subject_schedule.auditory_id,
+    subject_schedule.description,
+	concat(subject_sect.sect_name, \' (\', CASE
+                    WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
+                    ELSE \'\'::text
+					END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name
+   FROM subject_sect_studyplan
+     JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
+     JOIN teachers_load ON subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0
+     LEFT JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id;
         ')->execute();
 
 

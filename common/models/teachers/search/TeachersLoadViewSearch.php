@@ -29,7 +29,7 @@ class TeachersLoadViewSearch extends TeachersLoadView
         return [
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'subject_sect_id', 'plan_year', 'teachers_load_id', 'direction_id', 'teachers_id'], 'integer'],
             [['load_time', 'load_time_consult', 'week_time', 'year_time_consult'], 'number'],
-            [['studyplan_subject_list'], 'string'],
+            [['studyplan_subject_list', 'sect_name'], 'string'],
         ];
     }
 
@@ -59,7 +59,7 @@ class TeachersLoadViewSearch extends TeachersLoadView
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
             'sort' => [
-                'defaultOrder' => false,
+                'defaultOrder' => ['sect_name' => SORT_ASC],
             ],
         ]);
 

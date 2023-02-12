@@ -16,48 +16,20 @@ $this->params['breadcrumbs'][] = $this->title;
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
-        'attribute' => 'studyplan_subject_id',
+        'attribute' => 'sect_name',
+        'width' => '320px',
+//        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => $subject_sect_studyplan_list,
         'value' => function ($model) {
-            return $model->studyplan_subject_id != 0 ? RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id) : RefBook::find('sect_memo_2')->getValue($model->subject_sect_studyplan_id);
-        },
-        'group' => true,
-    ],
-    [
-        'attribute' => 'subject_sect_studyplan_id',
-        'width' => '310px',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => RefBook::find('sect_name_3')->getList(),
-        'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_name_3')->getValue($model->subject_sect_studyplan_id) ?? 'Индивидуально';
+            return $model->sect_name != 'Индивидуально' ? $model->sect_name . $model->getSectNotice() : $model->sect_name;
         },
 //        'filterWidgetOptions' => [
 //            'pluginOptions' => ['allowClear' => true],
 //        ],
 //        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
-    ],
-    [
-        'attribute' => 'studyplan_subject_list',
-        'width' => '310px',
-//        'filter' => RefBook::find('students_fio')->getList(),
-//        'filterType' => GridView::FILTER_SELECT2,
-        'value' => function ($model, $key, $index, $widget) {
-            $data = [];
-            if (!empty($model->studyplan_subject_list)) {
-                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                    $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-                    $data[] = RefBook::find('students_fio')->getValue($student_id);
-                }
-            }
-            return implode(',', $data);
-        },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'format' => 'raw',
+
     ],
     [
         'attribute' => 'direction_id',
@@ -135,7 +107,7 @@ $columns = [
         'buttons' => [
             'create' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                    Url::to(['/teachers/default/consult-items', 'id' => $model->teachers_id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']), [
+                    Url::to(['/sect/default/consult-items', 'id' => $model->subject_sect_id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']), [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -145,7 +117,7 @@ $columns = [
             },
             'update' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                    Url::to(['/teachers/default/consult-items', 'id' => $model->teachers_id, 'objectId' => $model->consult_schedule_id, 'mode' => 'update']), [
+                    Url::to(['/sect/default/consult-items', 'id' => $model->subject_sect_id, 'objectId' => $model->consult_schedule_id, 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -154,7 +126,7 @@ $columns = [
             },
             'delete' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                    Url::to(['/teachers/default/consult-items', 'id' => $model->teachers_id, 'objectId' => $model->consult_schedule_id, 'mode' => 'delete']), [
+                    Url::to(['/sect/default/consult-items', 'id' => $model->subject_sect_id, 'objectId' => $model->consult_schedule_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -181,7 +153,8 @@ $columns = [
 <div class="consult-schedule-index">
     <div class="panel">
         <div class="panel-heading">
-            Расписание консультаций
+            Расписание консультаций: <?php echo RefBook::find('sect_name_4')->getValue($model->id);?>
+            <?= $this->render('_search', compact('model_date')) ?>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -213,7 +186,7 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
+                            ['content' => 'Дисциплина', 'options' => ['colspan' => 2, 'class' => 'text-center warning']],
                             ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
                             ['content' => 'Расписание консультаций', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
                         ],

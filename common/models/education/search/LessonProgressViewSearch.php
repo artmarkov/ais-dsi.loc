@@ -20,6 +20,7 @@ class LessonProgressViewSearch extends LessonProgressView
         return [
             [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'subject_sect_studyplan_id', 'lesson_qty', 'current_qty', 'absence_qty'], 'integer'],
             [['current_avg_mark', 'middle_avg_mark', 'finish_avg_mark'], 'number'],
+            [['sect_name'], 'string'],
         ];
     }
 
@@ -46,10 +47,10 @@ class LessonProgressViewSearch extends LessonProgressView
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => false,
+                'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
             'sort' => [
-                'defaultOrder' => false,
+                'defaultOrder' => ['sect_name' => SORT_ASC],
             ],
         ]);
 

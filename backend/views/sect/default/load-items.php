@@ -26,34 +26,14 @@ $columns = [
 //        'filterType' => GridView::FILTER_SELECT2,
 //        'filter' => $sect_list,
         'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_memo_2')->getValue($model->subject_sect_studyplan_id);
+            return RefBook::find('sect_memo_2')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice();
         },
 //        'filterWidgetOptions' => [
 //            'pluginOptions' => ['allowClear' => true],
 //        ],
 //        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+        'format' => 'raw',
         'group' => true,  // enable grouping
-    ],
-    [
-        'attribute' => 'studyplan_subject_list',
-        'width' => '310px',
-//        'filter' => $studyplan_subject_list,
-//        'filterType' => GridView::FILTER_SELECT2,
-        'value' => function ($model, $key, $index, $widget) {
-            $data = [];
-            if (!empty($model->studyplan_subject_list)) {
-                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                    $data[] = RefBook::find('studyplan_subject-student_fio')->getValue($studyplan_subject_id);
-                }
-            }
-            return implode(',', $data);
-        },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'group' => true,
-        'subGroupOf' => 1
     ],
     [
         'attribute' => 'week_time',
@@ -99,7 +79,7 @@ $columns = [
 //        ],
 //        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 5
+        'subGroupOf' => 4
     ],
     [
         'attribute' => 'load_time',
@@ -114,6 +94,7 @@ $columns = [
             return $model->load_time_consult . ' ' . $model->getItemLoadConsultNotice();
         },
         'format' => 'raw',
+         'subGroupOf' => 4
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -203,7 +184,7 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
                             ['content' => 'Нагрузка', 'options' => ['colspan' => 5, 'class' => 'text-center info']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export

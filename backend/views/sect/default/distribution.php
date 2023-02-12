@@ -10,7 +10,7 @@ use artsoft\helpers\Html;
 /* @var $model_date */
 /* @var $modelsSubjectSectStudyplan \common\models\subjectsect\SubjectSectStudyplan */
 
-$this->title = Yii::t('art/guide', 'Teachers Load');
+$this->title = Yii::t('art/guide', 'Distribution');
 $this->params['breadcrumbs'][] = $this->title;
 
 $sub_group_qty = $model->sub_group_qty;

@@ -85,26 +85,28 @@ trait TeachersLoadTrait
      */
     public function getSectList()
     {
-        $data = [];
+        $studentsFio = [];
+
         if ($this->subject_sect_studyplan_id !== null) {
-            foreach (explode(',', $this->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
-                $data[] = RefBook::find('students_fio')->getValue($student_id);
-            }
+            $studentsFio = (new \yii\db\Query())->select('student_fio')->from('studyplan_subject_view')
+                ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$this->studyplan_subject_list}', ',')::int[])"))
+                ->column();
         }
-        return $data;
+        return $studentsFio;
     }
 
     public function getSectNotice()
     {
         $tooltip = [];
+        $studentsFio = $this->getSectList();
         if ($this->subject_sect_studyplan_id !== null) {
             if ($this->studyplan_subject_list == '') {
-                $message = 'Группа ' . RefBook::find('sect_name_2')->getValue($this->subject_sect_studyplan_id) . ' не заполнена';
+//                $message = 'Группа ' . RefBook::find('sect_name_2')->getValue($this->subject_sect_studyplan_id) . ' не заполнена';
+                $message = 'Группа не заполнена';
                 //Notice::registerWarning($message);
                 $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
             } else {
-                $message = ' Группа (' . count($this->getSectList()) . '): ' . implode(', ', $this->getSectList());
+                $message = ' Группа (' . count($studentsFio) . '): ' . implode(', ', $studentsFio);
                 $tooltip[] = Tooltip::widget(['type' => 'info', 'message' => $message]);
             }
             return implode('', $tooltip);

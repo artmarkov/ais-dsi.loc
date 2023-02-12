@@ -6,7 +6,7 @@ class m220202_150545_add_consult_schedule_view extends \artsoft\db\BaseMigration
     public function up()
     {
         $this->db->createCommand()->createView('consult_schedule_view', '
- SELECT studyplan_subject.id AS studyplan_subject_id,
+  SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
     studyplan_subject.subject_type_id,
@@ -21,7 +21,8 @@ class m220202_150545_add_consult_schedule_view extends \artsoft\db\BaseMigration
     consult_schedule.datetime_in,
     consult_schedule.datetime_out,
     consult_schedule.auditory_id,
-    consult_schedule.description
+    consult_schedule.description,
+	\'Индивидуально\' as sect_name
    FROM studyplan_subject
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
      JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0 AND teachers_load.load_time_consult > 0::double precision
@@ -44,12 +45,16 @@ UNION ALL
     consult_schedule.datetime_in,
     consult_schedule.datetime_out,
     consult_schedule.auditory_id,
-    consult_schedule.description
+    consult_schedule.description,
+	concat(subject_sect.sect_name, \' (\', CASE
+                    WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
+                    ELSE \'\'::text
+					END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      JOIN teachers_load ON subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0 AND teachers_load.load_time_consult > 0::double precision
      LEFT JOIN consult_schedule ON consult_schedule.teachers_load_id = teachers_load.id
-  ORDER BY 2, 1, 8, 9, 12;
+  ;;
         ')->execute();
 
         $this->db->createCommand()->createView('consult_schedule_studyplan_view', ' SELECT studyplan_subject.id AS studyplan_subject_id,

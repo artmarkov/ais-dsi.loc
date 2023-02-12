@@ -33,6 +33,7 @@ class TeachersLoadView extends TeachersLoad
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
             'load_time' => Yii::t('art/guide', 'Load Time'),
             'load_time_consult' => Yii::t('art/guide', 'Load Time Consult'),
+            'sect_name' => Yii::t('art/guide', 'Sect Name'),
         ];
     }
 

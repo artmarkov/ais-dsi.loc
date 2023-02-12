@@ -27,7 +27,7 @@ class ConsultScheduleViewSearch extends ConsultScheduleView
     {
         return [
             [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'plan_year', 'teachers_load_id', 'direction_id', 'teachers_id', 'consult_schedule_id',  'auditory_id'], 'integer'],
-            [['studyplan_subject_list'], 'string'],
+            [['studyplan_subject_list', 'sect_name'], 'string'],
             [['description', 'datetime_in', 'datetime_out'], 'safe'],
             [['load_time_consult', 'year_time_consult'], 'number'],
         ];
@@ -56,10 +56,10 @@ class ConsultScheduleViewSearch extends ConsultScheduleView
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => false,
+                'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
             'sort' => [
-                'defaultOrder' => false,
+                'defaultOrder' => ['sect_name' => SORT_ASC],
             ],
         ]);
 

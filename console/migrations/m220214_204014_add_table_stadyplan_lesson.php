@@ -146,31 +146,37 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
 
 
         $this->db->createCommand()->createView('lesson_progress_view', '
-(select studyplan_subject.id as studyplan_subject_id,
-				0 as subject_sect_studyplan_id,
- 				0 as subject_sect_id,
- 				studyplan.plan_year as plan_year,				
-       			studyplan.id as studyplan_id,
-       			studyplan.student_id as student_id,
-				array_to_string(ARRAY(select teachers_id from teachers_load where studyplan_subject_id = studyplan_subject.id and subject_sect_studyplan_id = 0), \',\')::text as teachers_list
-             from studyplan_subject 
-			 inner join guide_subject_vid on (guide_subject_vid.id = studyplan_subject.subject_vid_id and guide_subject_vid.qty_min = 1 and guide_subject_vid.qty_max = 1)
-             inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)
-				 )
-UNION ALL 
-(select studyplan_subject.id as studyplan_subject_id,
-				subject_sect_studyplan.id as subject_sect_studyplan_id,
- 				subject_sect.id as subject_sect_id,
- 				subject_sect_studyplan.plan_year as plan_year,
-			    studyplan.id as studyplan_id,
-			    studyplan.student_id as student_id,
-				array_to_string(ARRAY(select teachers_load.teachers_id from teachers_load where subject_sect_studyplan_id = subject_sect_studyplan.id and studyplan_subject_id = 0), \',\')::text as teachers_list
-             from subject_sect_studyplan
-             inner join subject_sect on (subject_sect.id = subject_sect_studyplan.subject_sect_id)
-             inner join studyplan_subject on (studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 				   
-             inner join studyplan on (studyplan.id = studyplan_subject.studyplan_id)			
-				 )
-ORDER BY subject_sect_studyplan_id, studyplan_subject_id
+ SELECT studyplan_subject.id AS studyplan_subject_id,
+    0 AS subject_sect_studyplan_id,
+    0 AS subject_sect_id,
+    studyplan.plan_year,
+    studyplan.id AS studyplan_id,
+    studyplan.student_id,
+    array_to_string(ARRAY( SELECT teachers_load.teachers_id
+           FROM teachers_load
+          WHERE teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0), \',\'::text) AS teachers_list,
+   \'Индивидуально\' as sect_name
+   FROM studyplan_subject
+     JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+UNION ALL
+ SELECT studyplan_subject.id AS studyplan_subject_id,
+    subject_sect_studyplan.id AS subject_sect_studyplan_id,
+    subject_sect.id AS subject_sect_id,
+    subject_sect_studyplan.plan_year,
+    studyplan.id AS studyplan_id,
+    studyplan.student_id,
+    array_to_string(ARRAY( SELECT teachers_load.teachers_id
+           FROM teachers_load
+          WHERE teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0), \',\'::text) AS teachers_list,
+	concat(subject_sect.sect_name, \' (\', CASE
+                    WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
+                    ELSE \'\'::text
+					END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name
+   FROM subject_sect_studyplan
+     JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
+     JOIN studyplan_subject ON studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id;
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_view', '

@@ -221,7 +221,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
                 ['=', 'studyplan_subject_id', $studyplan_subject_id],
             ])
             ->andWhere(['is', 'guide_teachers_direction.parent', null])
-            ->column();
+            ->all();
     }
 
 }
