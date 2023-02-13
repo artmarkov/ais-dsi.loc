@@ -45,7 +45,7 @@ $editMarks = function ($model, $key, $index, $widget) {
     }
     foreach ($model['lesson_timestamp'] as $id => $item) {
         if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
-            $content += [$id + 3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
+            $content += [$id + 3 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                     Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'objectId' => $lesson_items_id, 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
@@ -89,7 +89,7 @@ $columns = [
         'attribute' => 'subject_sect_studyplan_id',
         'label' => $model['attributes']['subject_sect_studyplan_id'],
         'value' => function ($model) {
-            return RefBook::find('sect_name_3')->getValue($model['subject_sect_studyplan_id'] ?? null);
+            return $model['sect_name'];
         },
         'format' => 'raw',
         'group' => true,

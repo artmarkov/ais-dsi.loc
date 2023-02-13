@@ -45,7 +45,7 @@ class ConsultScheduleStudyplanView extends ConsultScheduleView
         $attr = parent::attributeLabels();
         $attr['studyplan_id'] = Yii::t('art/guide', 'Studyplan');
         $attr['student_id'] = Yii::t('art/student', 'Student');
-
+        $attr['student_fio'] = Yii::t('art/student', 'Student');
         return $attr;
     }
 

@@ -16,61 +16,12 @@ $this->params['breadcrumbs'][] = $this->title;
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
-        'attribute' => 'subject_cat_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => RefBook::find('subject_category_name')->getList(),
+        'attribute' => 'studyplan_subject_id',
+        'width' => '320px',
         'value' => function ($model) {
-            return RefBook::find('subject_category_name')->getValue($model->subject_cat_id ?? null);
+            return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'format' => 'raw',
         'group' => true,
-    ],
-    [
-        'attribute' => 'subject_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => RefBook::find('subject_name')->getList(),
-        'value' => function ($model) {
-            return RefBook::find('subject_name')->getValue($model->subject_id ?? null);
-        },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'format' => 'raw',
-        'group' => true,
-    ],
-    [
-        'attribute' => 'subject_type_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => RefBook::find('subject_type_name')->getList(),
-        'value' => function ($model) {
-            return RefBook::find('subject_type_name')->getValue($model->subject_type_id ?? null);
-        },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'format' => 'raw',
-        'group' => true,
-    ],
-    [
-        'attribute' => 'subject_vid_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => RefBook::find('subject_vid_name')->getList(),
-        'value' => function ($model) {
-            return RefBook::find('subject_vid_name_dev')->getValue($model->subject_vid_id);
-        },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'format' => 'raw',
-        'group' => true,
-        'subGroupOf' => 1
     ],
     [
         'attribute' => 'thematic_category',
@@ -186,7 +137,7 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                            ['content' => 'Дисциплина', 'options' => ['colspan' => 2, 'class' => 'text-center warning']],
                             ['content' => 'План', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export

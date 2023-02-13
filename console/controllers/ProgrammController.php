@@ -40,8 +40,8 @@ class ProgrammController extends Controller
     public function actionIndex()
     {
         $this->stdout("\n");
-//        $this->addProgramm();
-//        $this->generateGroup();
+        $this->addProgramm();
+        $this->generateGroup();
         $this->addStudyplan();
         // print_r(array_unique($this->err));
     }

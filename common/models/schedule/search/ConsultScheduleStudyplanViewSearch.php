@@ -22,6 +22,7 @@ class ConsultScheduleStudyplanViewSearch extends ConsultScheduleStudyplanView
             [['studyplan_subject_list'], 'string'],
             [['description', 'datetime_in', 'datetime_out'], 'safe'],
             [['load_time_consult', 'year_time_consult'], 'number'],
+            [['sect_name', 'student_fio'], 'number'],
         ];
     }
 

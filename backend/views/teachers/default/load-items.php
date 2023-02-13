@@ -27,13 +27,12 @@ $columns = [
         'group' => true,
     ],
     [
-        'attribute' => 'subject_sect_studyplan_id',
+        'attribute' => 'sect_name',
         'width' => '310px',
 //        'filterType' => GridView::FILTER_SELECT2,
 //        'filter' => $sect_list,
         'value' => function ($model, $key, $index, $widget) {
-            return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' :
-                ($model->subject_sect_studyplan_id != null ? RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice() : null);
+            return $model->sect_name != 'Индивидуально' ? $model->sect_name . $model->getSectNotice() : $model->sect_name;
         },
 //        'filterWidgetOptions' => [
 //            'pluginOptions' => ['allowClear' => true],
@@ -43,22 +42,22 @@ $columns = [
         'subGroupOf' => 1,
         'format' => 'raw',
     ],
-    [
-        'attribute' => 'studyplan_subject_list',
-        'width' => '310px',
-        'filter' => false,
-        'value' => function ($model, $key, $index, $widget) {
-            $data = [];
-            if (!empty($model->studyplan_subject_list)) {
-                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                    $data[] = RefBook::find('studyplan_subject-student_fio')->getValue($studyplan_subject_id);
-                }
-            }
-            return implode(',', $data);
-        },
-        'group' => true,  // enable grouping
-        'subGroupOf' => 1
-    ],
+//    [
+//        'attribute' => 'studyplan_subject_list',
+//        'width' => '310px',
+//        'filter' => false,
+//        'value' => function ($model, $key, $index, $widget) {
+//            $data = [];
+//            if (!empty($model->studyplan_subject_list)) {
+//                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
+//                    $data[] = RefBook::find('studyplan_subject-student_fio')->getValue($studyplan_subject_id);
+//                }
+//            }
+//            return implode(',', $data);
+//        },
+//        'group' => true,  // enable grouping
+//        'subGroupOf' => 1
+//    ],
     [
         'attribute' => 'week_time',
         'filter' => false,
@@ -85,7 +84,7 @@ $columns = [
         },
 
         'group' => true,  // enable grouping
-        'subGroupOf' => 4
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'teachers_id',
@@ -99,7 +98,7 @@ $columns = [
 //        ],
 //        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 5
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'load_time',

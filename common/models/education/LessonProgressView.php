@@ -81,9 +81,11 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $data[$item]['lesson_timestamp'] = $lessonDates;
             $data[$item]['subject_sect_id'] = $modelProgress->subject_sect_id;
             $data[$item]['subject_sect_studyplan_id'] = $modelProgress->subject_sect_studyplan_id;
+            $data[$item]['sect_name'] = $modelProgress->sect_name;
             $data[$item]['studyplan_subject_id'] = $modelProgress->studyplan_subject_id;
             $data[$item]['studyplan_id'] = $modelProgress->studyplan_id;
             $data[$item]['student_id'] = $modelProgress->student_id;
+            $data[$item]['student_fio'] = $modelProgress->student_fio;
 
             if (isset($modelsMarks[$modelProgress->studyplan_subject_id])) {
                 foreach ($modelsMarks[$modelProgress->studyplan_subject_id] as $id => $mark) {
@@ -110,6 +112,11 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
         $modelsProgress = self::findAll(['studyplan_id' => $studyplan_id]);
 
+        $modelsMarks = ArrayHelper::index(LessonItemsProgressView::find()
+            ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
+            ->andWhere(['studyplan_id' => $studyplan_id])
+            ->all(), null, 'studyplan_subject_id');
+
         $attributes = ['studyplan_subject_id' => Yii::t('art/guide', 'Subject Name')];
         $attributes += ['subject_vid_id' => Yii::t('art/guide', 'Subject Vid')];
         $attributes += ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
@@ -127,15 +134,18 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $data[$item]['studyplan_id'] = $modelProgress->studyplan_id;
             $data[$item]['studyplan_subject_id'] = $modelProgress->studyplan_subject_id;
             $data[$item]['subject_sect_studyplan_id'] = $modelProgress->subject_sect_studyplan_id;
+            $data[$item]['sect_name'] = $modelProgress->sect_name;
 
             $marks = LessonItemsProgressView::find()
                 ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
                 ->andWhere(['=', 'studyplan_subject_id', $modelProgress->studyplan_subject_id])
                 ->all();
 
-            foreach ($marks as $id => $mark) {
-                $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
-                $data[$item][$date_label] = self::getEditableForm($date_label, $mark);
+            if (isset($modelsMarks[$modelProgress->studyplan_subject_id])) {
+                foreach ($modelsMarks[$modelProgress->studyplan_subject_id] as $id => $mark) {
+                    $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
+                    $data[$item][$date_label] = self::getEditableForm($date_label, $mark);
+                }
             }
         }
 

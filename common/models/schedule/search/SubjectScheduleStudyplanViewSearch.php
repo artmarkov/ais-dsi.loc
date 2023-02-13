@@ -21,6 +21,7 @@ class SubjectScheduleStudyplanViewSearch extends SubjectScheduleStudyplanView
             [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'studyplan_id', 'student_id', 'plan_year','status','teachers_load_id', 'direction_id', 'teachers_id', 'subject_schedule_id', 'week_num', 'week_day', 'time_in', 'time_out', 'auditory_id'], 'integer'],
             [['load_time', 'week_time'], 'number'],
             [['description', 'studyplan_subject_list'], 'string'],
+            [['sect_name', 'student_fio'], 'number'],
         ];
     }
 

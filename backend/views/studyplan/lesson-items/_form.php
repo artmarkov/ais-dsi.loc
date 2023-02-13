@@ -17,12 +17,15 @@ use yii\widgets\MaskedInput;
 
 $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($model->subject_sect_studyplan_id, $model->studyplan_subject_id);
 $mark_list = RefBook::find('lesson_mark')->getList();
-$studyplanSubjectList = \common\models\subjectsect\SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id)->studyplan_subject_list;
-
+if ($model->subject_sect_studyplan_id != 0) {
+    $studyplanSubjectList = \common\models\subjectsect\SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id)->studyplan_subject_list;
+} else {
+    $studyplanSubjectList = $model->studyplan_subject_id;
+}
 $modelsStudent = (new \yii\db\Query())->select('studyplan_subject_id,student_fio')->from('studyplan_subject_view')
     ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$studyplanSubjectList}', ',')::int[])"))
     ->all();
-$modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent,'studyplan_subject_id');
+$modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subject_id');
 //print_r($modelsStudent);
 ?>
 <div class="lesson-items-form">

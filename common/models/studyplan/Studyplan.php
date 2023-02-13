@@ -349,7 +349,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
                     'week_day' => $modelSchedule->week_day,
                     'time_in' => $modelSchedule->time_in,
                     'time_out' => $modelSchedule->time_out,
-                    'title' => RefBook::find('subject_memo_1')->getValue($modelSchedule->studyplan_subject_id),
+                    'title' => $modelSchedule->sect_name,
                     'data' => [
                         'studyplan_id' => $this->id,
                         'schedule_id' => $modelSchedule->subject_schedule_id,

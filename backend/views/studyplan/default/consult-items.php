@@ -32,13 +32,12 @@ $columns = [
         'group' => true,
     ],
     [
-        'attribute' => 'subject_sect_studyplan_id',
+        'attribute' => 'sect_name',
         'width' => '320px',
 //        'filterType' => GridView::FILTER_SELECT2,
 //        'filter' => $subject_sect_studyplan_list,
         'value' => function ($model) {
-            return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' :
-                ($model->subject_sect_studyplan_id != null ? RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice() : null);
+            return $model->sect_name != 'Индивидуально' ? $model->sect_name . $model->getSectNotice() : $model->sect_name;
         },
 //        'filterWidgetOptions' => [
 //            'pluginOptions' => ['allowClear' => true],
@@ -91,7 +90,6 @@ $columns = [
         'attribute' => 'load_time_consult',
         'value' => function ($model) {
             return $model->load_time_consult . ' ' . $model->getItemLoadStudyplanConsultNotice();
-                ;
         },
         'format' => 'raw',
         'group' => true,  // enable grouping

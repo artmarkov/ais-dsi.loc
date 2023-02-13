@@ -80,7 +80,7 @@ $columns = [
 //        ],
 //        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 3
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'teachers_id',
@@ -94,7 +94,7 @@ $columns = [
 //        ],
 //        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 4
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'load_time',

@@ -67,65 +67,73 @@ UNION ALL
         ])->execute();
 
         $this->db->createCommand()->createView('subject_schedule_studyplan_view', '
-           (select studyplan_subject.id AS studyplan_subject_id,
-                    studyplan_subject.week_time,
-                    0 AS subject_sect_studyplan_id,
-                    studyplan_subject.id::text AS studyplan_subject_list,
-                    studyplan_subject.subject_type_id as subject_type_id,
-                    0 AS subject_sect_id,
-                    studyplan.id AS studyplan_id,
-                    studyplan.student_id,
-                    studyplan.plan_year,
-                    studyplan.status,
-                    teachers_load.id AS teachers_load_id,
-                    teachers_load.direction_id,
-                    teachers_load.teachers_id,
-                    teachers_load.load_time,
-                    subject_schedule.id AS subject_schedule_id,
-                    subject_schedule.week_num,
-                    subject_schedule.week_day,
-                    subject_schedule.time_in,
-                    subject_schedule.time_out,
-                    subject_schedule.auditory_id,
-                    subject_schedule.description
-                 from studyplan_subject
-                 inner join studyplan ON studyplan_subject.studyplan_id = studyplan.id
-                 inner join guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
-                 inner join teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
-                 left join subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+            SELECT studyplan_subject.id AS studyplan_subject_id,
+    studyplan_subject.week_time,
+    0 AS subject_sect_studyplan_id,
+    studyplan_subject.id::text AS studyplan_subject_list,
+    studyplan_subject.subject_type_id,
+    0 AS subject_sect_id,
+    studyplan.id AS studyplan_id,
+    studyplan.student_id,
+	concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
+    studyplan.plan_year,
+    studyplan.status,
+    teachers_load.id AS teachers_load_id,
+    teachers_load.direction_id,
+    teachers_load.teachers_id,
+    teachers_load.load_time,
+    subject_schedule.id AS subject_schedule_id,
+    subject_schedule.week_num,
+    subject_schedule.week_day,
+    subject_schedule.time_in,
+    subject_schedule.time_out,
+    subject_schedule.auditory_id,
+    subject_schedule.description,
+    \'Индивидуально\'::text AS sect_name
+   FROM studyplan_subject
+     JOIN studyplan ON studyplan_subject.studyplan_id = studyplan.id
+     JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
+     JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
+     LEFT JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+	 JOIN students ON students.id = studyplan.student_id
+     JOIN user_common ON user_common.id = students.user_common_id
 
-           )
 UNION ALL
-           (select studyplan_subject.id AS studyplan_subject_id,
-                    studyplan_subject.week_time,
-                    subject_sect_studyplan.id AS subject_sect_studyplan_id,
-                    subject_sect_studyplan.studyplan_subject_list,
-                    studyplan_subject.subject_type_id as subject_type_id,
-                    subject_sect.id AS subject_sect_id,
-                    studyplan.id AS studyplan_id,
-                    studyplan.student_id,
-                    studyplan.plan_year,
-                    studyplan.status,
-                    teachers_load.id AS teachers_load_id,
-                    teachers_load.direction_id,
-                    teachers_load.teachers_id,
-                    teachers_load.load_time,
-                    subject_schedule.id AS subject_schedule_id,
-                    subject_schedule.week_num,
-                    subject_schedule.week_day,
-                    subject_schedule.time_in,
-                    subject_schedule.time_out,
-                    subject_schedule.auditory_id,
-                    subject_schedule.description
-                 from studyplan_subject
-                 inner join studyplan ON studyplan.id = studyplan_subject.studyplan_id
-                 left join subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
-                 inner join subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
-                 inner join teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
-                 left join subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-   )
-ORDER BY subject_sect_studyplan_id, studyplan_subject_id, direction_id, teachers_id, week_day, time_in
-  		   
+ SELECT studyplan_subject.id AS studyplan_subject_id,
+    studyplan_subject.week_time,
+    subject_sect_studyplan.id AS subject_sect_studyplan_id,
+    subject_sect_studyplan.studyplan_subject_list,
+    studyplan_subject.subject_type_id,
+    subject_sect.id AS subject_sect_id,
+    studyplan.id AS studyplan_id,
+    studyplan.student_id,
+	concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
+    studyplan.plan_year,
+    studyplan.status,
+    teachers_load.id AS teachers_load_id,
+    teachers_load.direction_id,
+    teachers_load.teachers_id,
+    teachers_load.load_time,
+    subject_schedule.id AS subject_schedule_id,
+    subject_schedule.week_num,
+    subject_schedule.week_day,
+    subject_schedule.time_in,
+    subject_schedule.time_out,
+    subject_schedule.auditory_id,
+    subject_schedule.description,
+    concat(subject_sect.sect_name, \' (\',
+        CASE
+            WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
+            ELSE \'\'::text
+        END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name
+   FROM studyplan_subject
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+     LEFT JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
+     JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
+     JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
+     LEFT JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+	 JOIN students ON students.id = studyplan.student_id
+     JOIN user_common ON user_common.id = students.user_common_id;
         ')->execute();
     }
 

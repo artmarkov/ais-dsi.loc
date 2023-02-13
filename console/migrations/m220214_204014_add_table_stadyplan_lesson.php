@@ -152,13 +152,16 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
     studyplan.plan_year,
     studyplan.id AS studyplan_id,
     studyplan.student_id,
+	concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,        
     array_to_string(ARRAY( SELECT teachers_load.teachers_id
            FROM teachers_load
           WHERE teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0), \',\'::text) AS teachers_list,
-   \'Индивидуально\' as sect_name
+    \'Индивидуально\'::text AS sect_name
    FROM studyplan_subject
      JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+	 JOIN students ON students.id = studyplan.student_id
+     JOIN user_common ON user_common.id = students.user_common_id
 UNION ALL
  SELECT studyplan_subject.id AS studyplan_subject_id,
     subject_sect_studyplan.id AS subject_sect_studyplan_id,
@@ -166,17 +169,21 @@ UNION ALL
     subject_sect_studyplan.plan_year,
     studyplan.id AS studyplan_id,
     studyplan.student_id,
+	concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
     array_to_string(ARRAY( SELECT teachers_load.teachers_id
            FROM teachers_load
           WHERE teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0), \',\'::text) AS teachers_list,
-	concat(subject_sect.sect_name, \' (\', CASE
-                    WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
-                    ELSE \'\'::text
-					END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name
+    concat(subject_sect.sect_name, \' (\',
+        CASE
+            WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
+            ELSE \'\'::text
+        END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      JOIN studyplan_subject ON studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])
-     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id;
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+	 JOIN students ON students.id = studyplan.student_id
+     JOIN user_common ON user_common.id = students.user_common_id;
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_view', '

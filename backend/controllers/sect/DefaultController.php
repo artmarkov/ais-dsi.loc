@@ -2,7 +2,6 @@
 
 namespace backend\controllers\sect;
 
-use artsoft\helpers\Schedule;
 use backend\models\Model;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
@@ -11,7 +10,6 @@ use common\models\history\LessonItemsHistory;
 use common\models\history\SubjectScheduleHistory;
 use common\models\history\TeachersLoadHistory;
 use common\models\schedule\ConsultSchedule;
-use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
 use common\models\schedule\search\ConsultScheduleViewSearch;
 use common\models\schedule\search\SubjectScheduleViewSearch;
 use common\models\schedule\SubjectSchedule;
