@@ -542,13 +542,13 @@ class DefaultController extends MainController
             $session->set('_progress_date_in', $model_date->date_in);
             $session->set('_progress_date_out', $model_date->date_out);
 
-            $model = LessonProgressView::getDataSect($model_date, $id);
+            $models = LessonProgressView::getDataSect($model_date, $id);
 
             if (Yii::$app->request->post('submitAction') == 'excel') {
                 // TeachersEfficiency::sendXlsx($data);
             }
 
-            return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date']));
+            return $this->renderIsAjax('studyplan-progress', compact(['model', 'models', 'model_date']));
         }
     }
 

@@ -208,10 +208,10 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      * Полный список учеников подгрупп данной группы
      * @return string
      */
-    public function getStudyplanList($plab_year)
+    public function getStudyplanList($plan_year)
     {
         $data = [];
-        foreach ($this->getSubjectSectStudyplans($plab_year) as $item => $model) {
+        foreach ($this->getSubjectSectStudyplans($plan_year) as $item => $model) {
             $model['studyplan_subject_list'] != '' ? $data[] = $model['studyplan_subject_list'] : null;
         }
         return implode(',', $data);

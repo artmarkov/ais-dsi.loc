@@ -10,12 +10,16 @@ use yii\widgets\Pjax;
 
 $this->title = Yii::t('art/guide', 'Group Progress');
 $this->params['breadcrumbs'][] = $this->title;
-//echo '<pre>' . print_r($model, true) . '</pre>'; die();
-$editMarks = function ($model, $key, $index, $widget) {
+//$modelsStudent = (new \yii\db\Query())->select('student_id, student_fio')->from('studyplan_subject_view')
+//    ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$model->getStudyplanList($models['plan_year'])}', ',')::int[])"))
+//    ->all();
+////$modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent,'student_id');
+//echo '<pre>' . print_r($modelsStudent, true) . '</pre>'; die();
+$editMarks = function ($models, $key, $index, $widget) {
     $content = [];
-    if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
+    if (SubjectScheduleStudyplanView::getScheduleIsExist($models['subject_sect_studyplan_id'], $models['studyplan_subject_id'])) {
         $content += [2 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-            Url::to(['/sect/default/studyplan-progress', 'id' => $model['subject_sect_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']),
+            Url::to(['/sect/default/studyplan-progress', 'id' => $models['subject_sect_id'], 'subject_sect_studyplan_id' => $models['subject_sect_studyplan_id'], 'mode' => 'create']),
             [
                 'title' => 'Добавить занятие',
                 'data-method' => 'post',
@@ -25,17 +29,17 @@ $editMarks = function ($model, $key, $index, $widget) {
             ]
         )];
     }
-    foreach ($model['lesson_timestamp'] as $id => $item) {
-        if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], 0, $item['lesson_date'])) {
+    foreach ($models['lesson_timestamp'] as $id => $item) {
+        if ($lesson_items_id = LessonItems::isLessonExist($models['subject_sect_studyplan_id'], 0, $item['lesson_date'])) {
             $content += [$id + 3 => Html::a('<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
-                    Url::to(['/sect/default/studyplan-progress', 'id' => $model['subject_sect_id'], 'objectId' => $lesson_items_id, 'mode' => 'update']), [
+                    Url::to(['/sect/default/studyplan-progress', 'id' => $models['subject_sect_id'], 'objectId' => $lesson_items_id, 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
                         'class' => 'btn btn-xs btn-link',
                     ])
                 . Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                    Url::to(['/sect/default/studyplan-progress', 'id' => $model['subject_sect_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete']), [
+                    Url::to(['/sect/default/studyplan-progress', 'id' => $models['subject_sect_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xs btn-link',
                         'data' => [
@@ -60,9 +64,9 @@ $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'subject_sect_studyplan_id',
-        'label' => $model['attributes']['subject_sect_studyplan_id'],
-        'value' => function ($model) {
-            return RefBook::find('sect_memo_2')->getValue($model['subject_sect_studyplan_id'] ?? null);
+        'label' => $models['attributes']['subject_sect_studyplan_id'],
+        'value' => function ($models) {
+            return RefBook::find('sect_memo_2')->getValue($models['subject_sect_studyplan_id'] ?? null);
         },
         'format' => 'raw',
         'group' => true,
@@ -70,17 +74,17 @@ $columns = [
     ],
     [
         'attribute' => 'student_id',
-        'label' => $model['attributes']['student_id'],
-        'value' => function ($model) {
-            return RefBook::find('students_fio')->getValue($model['student_id'] ?? null);
+        'label' => $models['attributes']['student_id'],
+        'value' => function ($models) {
+            return RefBook::find('students_fio')->getValue($models['student_id'] ?? null);
         },
         'format' => 'raw',
     ],
 ];
-foreach ($model['lessonDates'] as $id => $name) {
+foreach ($models['lessonDates'] as $id => $name) {
     $columns[] = [
         'attribute' => $name,
-        'label' => $model['attributes'][$name],
+        'label' => $models['attributes'][$name],
         'format' => 'raw',
     ];
 }
@@ -123,7 +127,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                         'id' => 'studyplan-progress-grid',
                         'pjax' => false,
                         'dataProvider' => new \yii\data\ArrayDataProvider([
-                            'allModels' => $model['data'],
+                            'allModels' => $models['data'],
                             'sort' => false,
                             'pagination' => false,
                         ]),
@@ -138,7 +142,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                             [
                                 'columns' => [
                                     ['content' => 'Группа/Ученик', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-                                    ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
+                                    ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($models['lessonDates']), 'class' => 'text-center danger']],
                                 ],
                                 'options' => ['class' => 'skip-export'] // remove this row from export
                             ]
