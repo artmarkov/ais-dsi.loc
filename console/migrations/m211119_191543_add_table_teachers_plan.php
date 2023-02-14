@@ -35,7 +35,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
 
 
         $this->db->createCommand()->createView('teachers_load_studyplan_view', '
-     SELECT studyplan_subject.id AS studyplan_subject_id,
+      SELECT studyplan_subject.id AS studyplan_subject_id,
     studyplan_subject.week_time,
     studyplan_subject.year_time_consult,
     0 AS subject_sect_studyplan_id,
@@ -101,9 +101,9 @@ UNION ALL
      LEFT JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
      JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id
-     JOIN subject ON subject.id = subject_sect.subject_id
-     LEFT JOIN guide_subject_type ON guide_subject_type.id = subject_sect.subject_type_id
-     JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
+     JOIN subject ON subject.id = studyplan_subject.subject_id
+     LEFT JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
+     JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id
 UNION ALL
  SELECT studyplan_subject.id AS studyplan_subject_id,
     studyplan_subject.week_time,
@@ -125,14 +125,17 @@ UNION ALL
     studyplan_subject.subject_vid_id,
     studyplan_subject.subject_id,
     NULL::text AS sect_name,
-    NULL::text AS subject
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
    FROM studyplan_subject
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+     JOIN subject ON subject.id = studyplan_subject.subject_id
+     LEFT JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
+     JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id
   WHERE NOT (studyplan_subject.id IN ( SELECT studyplan_subject_1.id
            FROM studyplan studyplan_1
              JOIN studyplan_subject studyplan_subject_1 ON studyplan_subject_1.studyplan_id = studyplan_1.id
-             JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject_1.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
+             JOIN guide_subject_vid guide_subject_vid_1 ON guide_subject_vid_1.id = studyplan_subject_1.subject_vid_id AND guide_subject_vid_1.qty_min = 1 AND guide_subject_vid_1.qty_max = 1
              LEFT JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject_1.id AND teachers_load.subject_sect_studyplan_id = 0
         UNION ALL
          SELECT studyplan_subject_1.id

@@ -26,7 +26,7 @@ $columns = [
         'attribute' => 'sect_name',
         'width' => '320px',
         'value' => function ($model) {
-            return $model->sect_name != 'Индивидуально' ? $model->sect_name . $model->getSectNotice() : $model->sect_name;
+            return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
@@ -40,8 +40,6 @@ $columns = [
         },
         'group' => true,
         'subGroupOf' => 1,
-        'pageSummary' => true,
-        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'attribute' => 'year_time_consult',
@@ -50,8 +48,6 @@ $columns = [
         },
         'group' => true,
         'subGroupOf' => 1,
-        'pageSummary' => true,
-        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'attribute' => 'direction_id',
@@ -75,8 +71,6 @@ $columns = [
             return $model->load_time === null ? $model->load_time : $model->load_time . ' ' . $model->getItemLoadStudyplanNotice();
         },
         'format' => 'raw',
-        'pageSummary' => true,
-        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'attribute' => 'load_time_consult',
@@ -84,8 +78,6 @@ $columns = [
             return $model->load_time_consult . ' ' . $model->getItemLoadStudyplanConsultNotice();
         },
         'format' => 'raw',
-        'pageSummary' => true,
-        'pageSummaryFunc' => GridView::F_SUM
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -179,7 +171,7 @@ $columns = [
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
                // 'filterModel' => $searchModel,
-                'showPageSummary' => true,
+                'showPageSummary' => false,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

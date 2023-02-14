@@ -26,7 +26,7 @@ $columns = [
         'attribute' => 'sect_name',
         'width' => '320px',
         'value' => function ($model) {
-            return $model->sect_name != 'Индивидуально' ? $model->sect_name . $model->getSectNotice() : $model->sect_name;
+            return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 1,

@@ -21,7 +21,7 @@ $columns = [
 //        'filterType' => GridView::FILTER_SELECT2,
 //        'filter' => $subject_sect_studyplan_list,
         'value' => function ($model) {
-            return $model->sect_name != 'Индивидуально' ? $model->sect_name . $model->getSectNotice() : $model->sect_name;
+            return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
         },
 //        'filterWidgetOptions' => [
 //            'pluginOptions' => ['allowClear' => true],

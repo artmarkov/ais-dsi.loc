@@ -33,7 +33,7 @@ trait TeachersLoadTrait
         return TeachersLoadView::find()
             ->select('teachers_load_id')
             ->distinct()
-            ->where(['IS NOT','teachers_load_id', null])
+            ->where(['IS NOT', 'teachers_load_id', null])
             ->andWhere(['subject_sect_studyplan_id' => $query1])
             ->orWhere(['studyplan_subject_id' => $query2])
             ->column();
@@ -99,7 +99,7 @@ trait TeachersLoadTrait
     {
         $tooltip = [];
         $studentsFio = $this->getSectList();
-        if ($this->subject_sect_studyplan_id !== null) {
+        if ($this->subject_sect_studyplan_id !== 0) {
             if ($this->studyplan_subject_list == '') {
 //                $message = 'Группа ' . RefBook::find('sect_name_2')->getValue($this->subject_sect_studyplan_id) . ' не заполнена';
                 $message = 'Группа не заполнена';
@@ -111,6 +111,7 @@ trait TeachersLoadTrait
             }
             return implode('', $tooltip);
         }
+        return null;
     }
 
     public function getItemLoadStudyplanNotice()
@@ -128,6 +129,7 @@ trait TeachersLoadTrait
         }
         return null;
     }
+
     public function getItemLoadNotice()
     {
         $tooltip = [];

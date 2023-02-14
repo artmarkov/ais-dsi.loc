@@ -29,7 +29,7 @@ $columns = [
         'attribute' => 'sect_name',
         'width' => '310px',
         'value' => function ($model, $key, $index, $widget) {
-            return $model->sect_name != 'Индивидуально' ? $model->sect_name . $model->getSectNotice() : $model->sect_name;
+            return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
         },
         'format' => 'raw',
         'group' => true,  // enable grouping
