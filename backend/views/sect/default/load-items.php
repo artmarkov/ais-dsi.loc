@@ -14,24 +14,14 @@ use artsoft\grid\GridView;
 $this->title = Yii::t('art/guide', 'Teachers Load');
 $this->params['breadcrumbs'][] = $this->title;
 
-//$studyplan_subject_list = \common\models\subjectsect\SubjectSect::getStudentsListForSect($model->id, $model_date->plan_year);
-//$sect_list = \common\models\subjectsect\SubjectSect::getSectListForSect($model->id, $model_date->plan_year);
-//$teachers_list = \common\models\subjectsect\SubjectSect::getTeachersListForSect($model->id, $model_date->plan_year);
-
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
-        'attribute' => 'subject_sect_studyplan_id',
+        'attribute' => 'sect_name',
         'width' => '310px',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => $sect_list,
         'value' => function ($model, $key, $index, $widget) {
-            return RefBook::find('sect_memo_2')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice();
+            return $model->sect_name . $model->getSectNotice();
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'format' => 'raw',
         'group' => true,  // enable grouping
     ],
@@ -54,30 +44,18 @@ $columns = [
 
     [
         'attribute' => 'direction_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => \common\models\guidejob\Direction::getDirectionList(),
         'value' => function ($model, $key, $index, $widget) {
             return $model->direction ? $model->direction->name : null;
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,
-        'subGroupOf' => 1
+        'subGroupOf' => 3
 
     ],
     [
         'attribute' => 'teachers_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => $teachers_list,
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 4
     ],
@@ -94,7 +72,6 @@ $columns = [
             return $model->load_time_consult . ' ' . $model->getItemLoadConsultNotice();
         },
         'format' => 'raw',
-         'subGroupOf' => 4
     ],
     [
         'class' => 'kartik\grid\ActionColumn',

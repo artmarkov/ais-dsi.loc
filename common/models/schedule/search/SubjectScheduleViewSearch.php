@@ -27,7 +27,7 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
         return [
             [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'plan_year', 'time_out', 'auditory_id',  'teachers_load_id', 'direction_id', 'teachers_id', 'load_time', 'subject_schedule_id', 'week_num', 'week_day', 'time_in'], 'integer'],
             [['load_time', 'week_time'], 'number'],
-            [['studyplan_subject_list', 'description', 'sect_name'], 'string'],
+            [['studyplan_subject_list', 'description', 'sect_name', 'subject'], 'string'],
         ];
     }
 
@@ -57,7 +57,7 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
             'sort' => [
-                'defaultOrder' => ['sect_name' => SORT_ASC],
+                'defaultOrder' => false,
             ],
         ]);
 

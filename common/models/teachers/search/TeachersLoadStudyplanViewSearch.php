@@ -20,7 +20,7 @@ class TeachersLoadStudyplanViewSearch extends TeachersLoadStudyplanView
         return [
             [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'studyplan_id', 'student_id', 'plan_year', 'status','teachers_load_id','direction_id', 'teachers_id'], 'integer'],
             [['load_time', 'load_time_consult', 'week_time', 'year_time_consult'], 'number'],
-            [['sect_name', 'student_fio'], 'number'],
+            [['sect_name', 'student_fio', 'subject'], 'number'],
         ];
     }
 
@@ -49,7 +49,9 @@ class TeachersLoadStudyplanViewSearch extends TeachersLoadStudyplanView
             'pagination' => [
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
-            'sort' => false,
+            'sort' => [
+                'defaultOrder' => false,
+            ],
         ]);
 
         $this->load($params);

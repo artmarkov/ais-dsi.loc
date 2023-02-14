@@ -65,6 +65,7 @@ class SubjectScheduleView extends SubjectSchedule
         $attr['subject_schedule_id'] = Yii::t('art/guide', 'Subject Schedule');
         $attr['scheduleDisplay'] = Yii::t('art/guide', 'Subject Schedule');
         $attr['sect_name'] = Yii::t('art/guide', 'Sect Name');
+        $attr['subject'] = Yii::t('art/guide', 'Subject');
 
         return $attr;
     }

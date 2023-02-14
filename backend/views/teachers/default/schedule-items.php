@@ -19,33 +19,24 @@ $this->params['breadcrumbs'][] = $this->title;
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
-        'attribute' => 'studyplan_subject_id',
-        'filter' => false,
+        'attribute' => 'subject',
         'value' => function ($model) {
-            return $model->subject_sect_studyplan_id != 0 ? RefBook::find('sect_name_4')->getValue($model->subject_sect_id) : RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
+            return $model->subject;
         },
         'group' => true,
     ],
     [
-        'attribute' => 'subject_sect_studyplan_id',
+        'attribute' => 'sect_name',
         'width' => '310px',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => $sect_list,
         'value' => function ($model, $key, $index, $widget) {
-            return $model->subject_sect_studyplan_id === 0 ? 'Индивидуально' :
-                ($model->subject_sect_studyplan_id != null ? RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id) . $model->getSectNotice() : null);
+            return $model->sect_name != 'Индивидуально' ? $model->sect_name . $model->getSectNotice() : $model->sect_name;
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+        'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
-        'format' => 'raw',
     ],
     [
         'attribute' => 'week_time',
-        'filter' => false,
         'value' => function ($model) {
             return $model->week_time;
         },
@@ -53,52 +44,31 @@ $columns = [
         'subGroupOf' => 2,
     ],
     [
-        'attribute' => 'studyplan_subject_list',
-        'width' => '210px',
-        'filter' => false,
-        'value' => function ($model, $key, $index, $widget) {
-            $data = [];
-            if (!empty($model->studyplan_subject_list)) {
-                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
-                    $data[] = RefBook::find('studyplan_subject-student_fio')->getValue($studyplan_subject_id);
-                }
-            }
-            return implode(',', $data);
-        },
-        'group' => true,  // enable grouping
-        'subGroupOf' => 2
-    ],
-    [
         'attribute' => 'direction_id',
-        'filter' => false,
         'value' => function ($model, $key, $index, $widget) {
             return $model->direction ? $model->direction->name : null;
+        },
+        'group' => true,  // enable grouping
+        'subGroupOf' => 3
+    ],
+    [
+        'attribute' => 'teachers_id',
+        'value' => function ($model) {
+            return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 4
     ],
     [
-        'attribute' => 'teachers_id',
-        'filter' => false,
-        'value' => function ($model) {
-            return RefBook::find('teachers_fio')->getValue($model->teachers_id);
-        },
-        'group' => true,  // enable grouping
-        'subGroupOf' => 5
-    ],
-    [
         'attribute' => 'load_time',
-        'filter' => false,
         'value' => function ($model) {
             return $model->load_time . ' ' . $model->getItemLoadNotice();
         },
         'format' => 'raw',
-        'group' => true,  // enable grouping
-        'subGroupOf' => 5
     ],
     [
         'attribute' => 'scheduleDisplay',
-        'width' => '310px',
+        'width' => '300px',
         'value' => function ($model) {
             return $model->getScheduleDisplay();
         },
@@ -106,15 +76,10 @@ $columns = [
     ],
     [
         'attribute' => 'auditory_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => RefBook::find('auditory_memo_1')->getList(),
+        'width' => '300px',
         'value' => function ($model) {
             return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -205,7 +170,7 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                            ['content' => 'Дисциплина', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
                             ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
                             ['content' => 'Расписание занятий', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
                         ],

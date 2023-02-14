@@ -13,36 +13,21 @@ use yii\widgets\Pjax;
 $this->title = Yii::t('art/guide', 'Teachers Load');
 $this->params['breadcrumbs'][] = $this->title;
 
-//$studyplan_subject_list = \common\models\studyplan\Studyplan::getSubjectListForStudyplan($model->id);
-//$subject_sect_studyplan_list = \common\models\studyplan\Studyplan::getSectListForStudyplan($model->id);
-
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
-        'attribute' => 'studyplan_subject_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => $studyplan_subject_list,
+        'attribute' => 'subject',
         'value' => function ($model) {
-            return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
+            return $model->subject;
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,
     ],
     [
         'attribute' => 'sect_name',
         'width' => '320px',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => $subject_sect_studyplan_list,
         'value' => function ($model) {
             return $model->sect_name != 'Индивидуально' ? $model->sect_name . $model->getSectNotice() : $model->sect_name;
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
         'format' => 'raw',
@@ -70,29 +55,17 @@ $columns = [
     ],
     [
         'attribute' => 'direction_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => \common\models\guidejob\Direction::getDirectionList(),
         'value' => function ($model, $key, $index, $widget) {
             return $model->direction ? $model->direction->name : null;
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1
     ],
     [
         'attribute' => 'teachers_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => RefBook::find('teachers_fio')->getList(),
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1
     ],

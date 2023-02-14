@@ -35,7 +35,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
 
 
         $this->db->createCommand()->createView('teachers_load_studyplan_view', '
-   SELECT studyplan_subject.id AS studyplan_subject_id,
+     SELECT studyplan_subject.id AS studyplan_subject_id,
     studyplan_subject.week_time,
     studyplan_subject.year_time_consult,
     0 AS subject_sect_studyplan_id,
@@ -43,7 +43,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
     0 AS subject_sect_id,
     studyplan.id AS studyplan_id,
     studyplan.student_id,
-	concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,        
+    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
     studyplan.plan_year,
     studyplan.status,
     teachers_load.id AS teachers_load_id,
@@ -54,14 +54,19 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
     guide_subject_category.sort_order,
     studyplan_subject.subject_vid_id,
     studyplan_subject.subject_id,
-	\'Индивидуально\'::text AS sect_name
+    \'Индивидуально\'::text AS sect_name,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject
    FROM studyplan
      JOIN studyplan_subject ON studyplan_subject.studyplan_id = studyplan.id
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
      JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
      LEFT JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
-	 JOIN students ON students.id = studyplan.student_id
+     JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id
+     JOIN subject ON subject.id = studyplan_subject.subject_id
+     JOIN education_programm ON education_programm.id = studyplan.programm_id
+     JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id
+     LEFT JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
 UNION ALL
  SELECT studyplan_subject.id AS studyplan_subject_id,
     studyplan_subject.week_time,
@@ -71,7 +76,7 @@ UNION ALL
     subject_sect.id AS subject_sect_id,
     studyplan.id AS studyplan_id,
     studyplan.student_id,
-	concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,        
+    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
     studyplan.plan_year,
     studyplan.status,
     teachers_load.id AS teachers_load_id,
@@ -82,19 +87,23 @@ UNION ALL
     guide_subject_category.sort_order,
     studyplan_subject.subject_vid_id,
     studyplan_subject.subject_id,
-	concat(subject_sect.sect_name, \' (\',
+    concat(subject_sect.sect_name, \' (\',
         CASE
             WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
             ELSE \'\'::text
-        END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name
+        END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
    FROM studyplan
      JOIN studyplan_subject ON studyplan.id = studyplan_subject.studyplan_id
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
      JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
      JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
      LEFT JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
-	 JOIN students ON students.id = studyplan.student_id
+     JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id
+     JOIN subject ON subject.id = subject_sect.subject_id
+     LEFT JOIN guide_subject_type ON guide_subject_type.id = subject_sect.subject_type_id
+     JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
 UNION ALL
  SELECT studyplan_subject.id AS studyplan_subject_id,
     studyplan_subject.week_time,
@@ -104,7 +113,7 @@ UNION ALL
     NULL::integer AS subject_sect_id,
     studyplan.id AS studyplan_id,
     studyplan.student_id,
-	NULL::text AS student_fio,    
+    NULL::text AS student_fio,
     studyplan.plan_year,
     studyplan.status,
     NULL::integer AS teachers_load_id,
@@ -115,7 +124,8 @@ UNION ALL
     guide_subject_category.sort_order,
     studyplan_subject.subject_vid_id,
     studyplan_subject.subject_id,
-	NULL::text AS sect_name
+    NULL::text AS sect_name,
+    NULL::text AS subject
    FROM studyplan_subject
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
@@ -130,12 +140,12 @@ UNION ALL
              JOIN studyplan_subject studyplan_subject_1 ON studyplan_1.id = studyplan_subject_1.studyplan_id
              JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject_1.subject_cat_id AND subject_sect.subject_id = studyplan_subject_1.subject_id AND subject_sect.subject_vid_id = studyplan_subject_1.subject_vid_id
              JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject_1.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
-             LEFT JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0));
-
+             LEFT JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0))
+  ORDER BY 20, 21, 13, 14;
         ')->execute();
 
         $this->db->createCommand()->createView('teachers_load_view', '
-        SELECT studyplan_subject.id AS studyplan_subject_id,
+         SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
     0 AS subject_sect_id,
@@ -147,10 +157,17 @@ UNION ALL
     teachers_load.teachers_id,
     teachers_load.load_time,
     teachers_load.load_time_consult,
-    \'Индивидуально\'::text AS sect_name
+    \'Индивидуально\'::text AS sect_name,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject
    FROM studyplan_subject
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
      LEFT JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
+     JOIN subject ON subject.id = studyplan_subject.subject_id
+     JOIN education_programm ON education_programm.id = studyplan.programm_id
+     JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id
+     JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
+     LEFT JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
+     JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
 UNION ALL
  SELECT 0 AS studyplan_subject_id,
     subject_sect_studyplan.id AS subject_sect_studyplan_id,
@@ -179,11 +196,16 @@ UNION ALL
         CASE
             WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
             ELSE \'\'::text
-        END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name
+        END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      LEFT JOIN teachers_load ON subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0
-	 ORDER BY studyplan_subject_id, sect_name;
+     JOIN subject ON subject.id = subject_sect.subject_id
+     JOIN guide_subject_category ON guide_subject_category.id = subject_sect.subject_cat_id
+     LEFT JOIN guide_subject_type ON guide_subject_type.id = subject_sect.subject_type_id
+     JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
+  ORDER BY 13, 14, 9, 10;
         ')->execute();
 
         $this->createTableWithHistory('subject_schedule', [

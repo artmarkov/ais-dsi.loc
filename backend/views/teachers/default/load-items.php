@@ -19,45 +19,24 @@ $this->params['breadcrumbs'][] = $this->title;
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
-        'attribute' => 'studyplan_subject_id',
-        'filter' => false,
-        'value' => function ($model) {
-            return $model->subject_sect_studyplan_id != 0 ? RefBook::find('sect_name_4')->getValue($model->subject_sect_id) : RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
+        'attribute' => 'subject',
+        'width' => '310px',
+        'value' => function ($model, $key, $index, $widget) {
+            return $model->subject;
         },
+        'format' => 'raw',
         'group' => true,
     ],
     [
         'attribute' => 'sect_name',
         'width' => '310px',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => $sect_list,
         'value' => function ($model, $key, $index, $widget) {
             return $model->sect_name != 'Индивидуально' ? $model->sect_name . $model->getSectNotice() : $model->sect_name;
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+        'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
-        'format' => 'raw',
     ],
-//    [
-//        'attribute' => 'studyplan_subject_list',
-//        'width' => '310px',
-//        'filter' => false,
-//        'value' => function ($model, $key, $index, $widget) {
-//            $data = [];
-//            if (!empty($model->studyplan_subject_list)) {
-//                foreach (explode(',', $model->studyplan_subject_list) as $item => $studyplan_subject_id) {
-//                    $data[] = RefBook::find('studyplan_subject-student_fio')->getValue($studyplan_subject_id);
-//                }
-//            }
-//            return implode(',', $data);
-//        },
-//        'group' => true,  // enable grouping
-//        'subGroupOf' => 1
-//    ],
     [
         'attribute' => 'week_time',
         'filter' => false,
@@ -65,7 +44,7 @@ $columns = [
             return $model->week_time;
         },
         'group' => true,
-        'subGroupOf' => 1,
+        'subGroupOf' => 2,
     ],
     [
         'attribute' => 'year_time_consult',
@@ -74,7 +53,7 @@ $columns = [
             return $model->year_time_consult;
         },
         'group' => true,
-        'subGroupOf' => 1,
+        'subGroupOf' => 2,
     ],
     [
         'attribute' => 'direction_id',
@@ -84,21 +63,15 @@ $columns = [
         },
 
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 4
     ],
     [
         'attribute' => 'teachers_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => false /*RefBook::find('teachers_fio')->getList()*/,
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 5
     ],
     [
         'attribute' => 'load_time',
