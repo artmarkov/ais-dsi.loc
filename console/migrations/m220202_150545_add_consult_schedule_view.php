@@ -57,7 +57,7 @@ UNION ALL
   ;;
         ')->execute();
 
-        $this->db->createCommand()->createView('consult_schedule_studyplan_view', ' SELECT studyplan_subject.id AS studyplan_subject_id,
+        $this->db->createCommand()->createView('consult_schedule_studyplan_view', '
      SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
