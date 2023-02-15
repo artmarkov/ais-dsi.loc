@@ -36,7 +36,7 @@ $columns = [
         'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
-        'label' =>  Yii::t('art/guide', 'Sect Name').'/'.Yii::t('art/student', 'Student'),
+        'label' =>  Yii::t('art/guide', 'Sect').'/'.Yii::t('art/student', 'Student'),
     ],
     [
         'attribute' => 'week_time',

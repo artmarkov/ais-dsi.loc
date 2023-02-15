@@ -16,14 +16,9 @@ use artsoft\grid\GridPageSize;
 $this->title = Yii::t('art/guide', 'Teachers Plan');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="teachers-plan-index">
+<div class="indivplan-index">
     <div class="panel">
-        <div class="panel-heading">
-            Планирование инд.занятий: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
-        </div>
         <div class="panel-body">
-            <?= $this->render('_search', compact('model_date')) ?>
-            <hr>
             <div class="row">
                 <div class="col-sm-6">
                     <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
@@ -39,21 +34,21 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
 
                 <div class="col-sm-6 text-right">
-                    <?= GridPageSize::widget(['pjaxId' => 'teachers-plan-grid-pjax']) ?>
+                    <?= GridPageSize::widget(['pjaxId' => 'tindivplan-grid-pjax']) ?>
                 </div>
             </div>
 
             <?php
             Pjax::begin([
-                'id' => 'teachers-plan-grid-pjax',
+                'id' => 'indivplan-grid-pjax',
             ])
             ?>
 
             <?=
             GridView::widget([
-                'id' => 'teachers-plan-grid',
+                'id' => 'indivplan-grid',
                 'dataProvider' => $dataProvider,
-//                'filterModel' => $searchModel,
+                'filterModel' => $searchModel,
                 'bulkActionOptions' => [
                     'gridId' => 'teachers-plan-grid',
                     'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
@@ -75,9 +70,22 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
 
                     ],
-                    //  'teachers_id',
+                    [
+                        'attribute' => 'teachers_id',
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'width' => '250px',
+                        'filter' => RefBook::find('teachers_fullname')->getList(),
+                        'value' => function ($model) {
+                            return $model->teachers->fullName;
+                        },
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => ['allowClear' => true],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                    ],
                     [
                         'attribute' => 'plan_year',
+                        'filter' => \artsoft\helpers\ArtHelper::getStudyYearsList(),
                         'value' => function (TeachersPlan $model) {
                             return \artsoft\helpers\ArtHelper::getStudyYearsValue($model->plan_year);
                         },
@@ -86,6 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'attribute' => 'half_year',
+                        'filter' => \artsoft\helpers\ArtHelper::getHalfYearList(),
                         'value' => function (TeachersPlan $model) {
                             return \artsoft\helpers\ArtHelper::getHalfYearValue($model->half_year);
                         },
@@ -109,30 +118,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'class' => 'kartik\grid\ActionColumn',
                         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
-                        'controller' => '/teachers/teachers-plan',
+                        'width' => '90px',
+                        'controller' => '/indivplan/default',
+                        'urlCreator' => function ($action, $model, $key, $index) {
+                            return [$action, 'id' => $model->id];
+                        },
                         'template' => '{update} {delete}',
-                        'buttons' => [
-                            'update' => function ($key, $model) {
-                                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                                    Url::to(['/teachers/default/teachers-plan', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update']), [
-                                        'title' => Yii::t('art', 'Edit'),
-                                        'data-method' => 'post',
-                                        'data-pjax' => '0',
-                                    ]
-                                );
-                            },
-                            'delete' => function ($key, $model) {
-                                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                                    Url::to(['/teachers/default/teachers-plan', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'delete']), [
-                                        'title' => Yii::t('art', 'Delete'),
-                                        'aria-label' => Yii::t('art', 'Delete'),
-                                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                        'data-method' => 'post',
-                                        'data-pjax' => '0',
-                                    ]
-                                );
-                            },
-                        ],
                     ],
                 ],
             ]);

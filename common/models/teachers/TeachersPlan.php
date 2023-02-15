@@ -2,16 +2,15 @@
 
 namespace common\models\teachers;
 
-use artsoft\behaviors\TimeFieldBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use artsoft\widgets\Tooltip;
 use common\models\guidejob\Direction;
-use common\models\subjectsect\SubjectSchedule;
-use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use artsoft\behaviors\TimeFieldBehavior;
+use Yii;
 
 /**
  * This is the model class for table "teachers_plan".
@@ -20,6 +19,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $direction_id
  * @property int $teachers_id
  * @property int|null $plan_year
+ * @property int $half_year
  * @property int|null $week_num
  * @property int|null $week_day
  * @property int|null $time_plan_in
@@ -70,8 +70,9 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
         return [
             [['direction_id', 'teachers_id', 'time_plan_in', 'time_plan_out', 'plan_year', 'week_day', 'auditory_id'], 'required'],
             [['description'], 'string', 'max' => 512],
+            [['half_year'], 'default', 'value' => 0],
             [['time_plan_in', 'time_plan_out'], 'safe'],
-            [['direction_id', 'teachers_id', 'plan_year', 'week_num', 'week_day', 'auditory_id'], 'integer'],
+            [['direction_id', 'teachers_id', 'plan_year', 'week_num', 'week_day', 'auditory_id', 'half_year'], 'integer'],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
             [['time_plan_in', 'time_plan_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
@@ -95,8 +96,9 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/guide', 'ID'),
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
-            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
+            'teachers_id' => Yii::t('art/teachers', 'Teacher'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
+            'half_year' => Yii::t('art/guide', 'Half Year'),
             'week_num' => Yii::t('art/guide', 'Week Num'),
             'week_day' => Yii::t('art/guide', 'Week Day'),
             'time_plan_in' => Yii::t('art/guide', 'Time In'),
@@ -161,6 +163,7 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
                 ['auditory_id' => $this->auditory_id],
                 ['direction_id' => $this->direction_id],
                 ['plan_year' => $this->plan_year],
+                ['half_year' => $this->half_year],
                 ['OR',
                     ['AND',
                         ['<', 'time_plan_in', Schedule::encodeTime($this->time_plan_out)],
@@ -196,6 +199,7 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
                 ['teachers_id' => $this->teachers_id],
                 ['!=', 'auditory_id', $this->auditory_id],
                 ['plan_year' => $this->plan_year],
+                ['half_year' => $this->half_year],
                 ['OR',
                     ['AND',
                         ['<', 'time_plan_in', Schedule::encodeTime($this->time_plan_out)],

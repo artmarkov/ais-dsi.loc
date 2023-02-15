@@ -567,7 +567,7 @@ class DefaultController extends MainController
                 $this->getSubmitAction($model);
             }
 
-            return $this->renderIsAjax('@backend/views/teachers/teachers-plan/_form.php', [
+            return $this->renderIsAjax('@backend/views/teachersplan/default_form.php', [
                 'model' => $model,
             ]);
 
@@ -597,7 +597,7 @@ class DefaultController extends MainController
                 $this->getSubmitAction($model);
             }
 
-            return $this->renderIsAjax('@backend/views/teachers/teachers-plan/_form.php', [
+            return $this->renderIsAjax('@backend/views/teachersplan/default/_form.php', [
                 'model' => $model,
             ]);
 

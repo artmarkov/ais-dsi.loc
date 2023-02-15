@@ -6,10 +6,10 @@ use yii\helpers\Html;
 /* @var $model common\models\teachers\TeachersPlan */
 
 $this->title = Yii::t('art', 'Create');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['teachers/teachers-plan/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['indivplan/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="teachers-plan-create">    
+<div class="indivplan-create">
     <?=  $this->render('_form', compact('model')) ?>
 </div>

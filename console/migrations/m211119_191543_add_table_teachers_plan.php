@@ -238,6 +238,7 @@ UNION ALL
             'direction_id' => $this->integer()->notNull(),
             'teachers_id' => $this->integer()->notNull(),
             'plan_year' => $this->integer(),
+            'half_year' => $this->integer()->defaultValue(0),
             'week_num' => $this->integer(),
             'week_day' => $this->integer(),
             'time_plan_in' => $this->integer(),

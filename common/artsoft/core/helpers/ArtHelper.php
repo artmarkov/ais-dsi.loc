@@ -213,6 +213,17 @@ class ArtHelper
     }
 
     /**
+     * @param $val
+     * @return mixed|null
+     */
+    public static function getStudyYearsValue($val)
+    {
+        $list = self::getStudyYearsList();
+
+        return isset($list[$val]) ? $list[$val] : null;
+    }
+
+    /**
      * @param int $month_dev
      * @return false|int|string
      */
@@ -223,10 +234,11 @@ class ArtHelper
         return $month < $month_dev ? date("Y") - 1 : date("Y");
     }
 
-    public static function getStudyYearParams($year = null, $month_dev = null)
+    public static function getStudyYearParams($study_year = null, $month_dev = null)
     {
+        $data = [];
         $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 6) : $month_dev;
-        $year = $year == null ? self::getStudyYearDefault($month_dev) : $year;
+        $year = $study_year == null ? self::getStudyYearDefault($month_dev) : $study_year;
 
         $data['timestamp_in'] = mktime(0, 0, 0, $month_dev, 1, $year);
         $data['timestamp_out'] = mktime(0, 0, 0, $month_dev, 1, $year + 1);
@@ -347,5 +359,40 @@ class ArtHelper
             'age_year' => $age_year,
             'age_month' => $age_month,
         ];
+    }
+
+    public static function getHalfYearList()
+    {
+        return [
+            0 => 'полный год',
+            1 => '1-е полугодие',
+            2 => '2-е полугодие',
+        ];
+    }
+
+    public static function getHalfYearValue($val)
+    {
+        $list = self::getHalfYearList();
+
+        return isset($list[$val]) ? $list[$val] : null;
+    }
+
+    public static function getHalfYearParams($study_year = null, $month_dev = null, $half_year = 0)
+    {
+        $data = [];
+        $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 6) : $month_dev;
+        $year = $study_year == null ? self::getStudyYearDefault($month_dev) : $study_year;
+
+        if ($half_year == 1) {
+            $data['timestamp_in'] = mktime(0, 0, 0, $month_dev, 1, $year);
+            $data['timestamp_out'] = mktime(0, 0, 0, 12, 1, $year);
+        } elseif ($half_year == 2) {
+            $data['timestamp_in'] = mktime(0, 0, 0, 1, 1, $year + 1);
+            $data['timestamp_out'] = mktime(0, 0, 0, $month_dev, 1, $year + 1);
+        } else {
+            $data['timestamp_in'] = mktime(0, 0, 0, $month_dev, 1, $year);
+            $data['timestamp_out'] = mktime(0, 0, 0, $month_dev, 1, $year + 1);
+        }
+        return $data;
     }
 }

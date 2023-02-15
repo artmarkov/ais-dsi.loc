@@ -2,11 +2,8 @@
 
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
-use common\models\guidejob\Direction;
-use common\models\teachers\TeachersPlan;
-use artsoft\helpers\Html;
-use common\models\user\UserCommon;
 use yii\widgets\MaskedInput;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\teachers\TeachersPlan */
@@ -38,13 +35,32 @@ use yii\widgets\MaskedInput;
                                     ]
                                 ]);
                             ?>
-                            <?= $form->field($model, 'teachers_id')->dropDownList(RefBook::find('teachers_fio')->getList(), [
-                                'disabled' => true,
+                            <?= $form->field($model, 'half_year')->dropDownList(\artsoft\helpers\ArtHelper::getHalfYearList());
+                            ?>
+                            <?= $form->field($model, 'direction_id')->widget(\kartik\select2\Select2::class, [
+                                'data' => \common\models\guidejob\Direction::getDirectionList(),
+                                'options' => [
+                                    'id' => 'direction_id',
+                                    'disabled' => !$model->isNewRecord,
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
                             ]);
                             ?>
-                            <?= $form->field($model, 'direction_id')->dropDownList(Direction::getDirectionList(), [
-                                'prompt' => Yii::t('art/teachers', 'Select Direction...'),
-                                'id' => 'direction_id'
+
+                            <?= $form->field($model, 'teachers_id')->widget(\kartik\depdrop\DepDrop::class, [
+                                'data' => \common\models\teachers\Teachers::getTeachersList($model->direction_id),
+                                'options' => [
+                                    // 'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                ],
+                                'pluginOptions' => [
+                                    'depends' => ['direction_id'],
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                    'url' => Url::to(['/teachers/default/teachers'])
+                                ]
                             ]);
                             ?>
 

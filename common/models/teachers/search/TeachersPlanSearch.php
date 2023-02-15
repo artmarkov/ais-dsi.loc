@@ -26,7 +26,7 @@ class TeachersPlanSearch extends TeachersPlan
     public function rules()
     {
         return [
-            [['id', 'direction_id', 'teachers_id', 'plan_year', 'week_num', 'week_day', 'time_plan_in', 'time_plan_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['id', 'direction_id', 'teachers_id', 'plan_year', 'half_year', 'week_num', 'week_day', 'time_plan_in', 'time_plan_out', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['description'], 'safe'],
         ];
     }
@@ -76,6 +76,7 @@ class TeachersPlanSearch extends TeachersPlan
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
             'plan_year' => $this->plan_year,
+            'half_year' => $this->half_year,
             'week_num' => $this->week_num,
             'week_day' => $this->week_day,
             'time_plan_in' => $this->time_plan_in,

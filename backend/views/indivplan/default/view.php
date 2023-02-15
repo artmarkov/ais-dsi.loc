@@ -7,10 +7,10 @@ use artsoft\helpers\Html;
 /* @var $model common\models\teachers\TeachersPlan */
 
 $this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['indivplan/default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="teachers-plan-view">
+<div class="indivplan-view">
 
 <div class="panel">
     <div class="panel-heading">
