@@ -36,6 +36,7 @@ $columns = [
         'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
+        'label' =>  Yii::t('art/guide', 'Sect Name').'/'.Yii::t('art/student', 'Student'),
     ],
     [
         'attribute' => 'week_time',
@@ -188,7 +189,7 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
+                            ['content' => 'Дисциплина/Группа/Ученик', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
                             ['content' => 'Нагрузка', 'options' => ['colspan' => 5, 'class' => 'text-center info']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
