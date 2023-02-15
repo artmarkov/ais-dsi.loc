@@ -11,12 +11,12 @@ use kartik\date\DatePicker;
 
 <?php
 $form = ActiveForm::begin([
-    'id' => 'studyplan-progress',
+    'id' => 'schoolplan-search',
     'validateOnBlur' => false,
 ])
 ?>
-<div class="studyplan-progres-search">
-    <div class="panel panel-default">
+<div class="schoolplan-search">
+    <div class="panel">
         <div class="panel-body">
             <?= $form->field($model_date, "date_in")->widget(DatePicker::class)->label('Дата начала периода'); ?>
             <?= $form->field($model_date, "date_out")->widget(DatePicker::class)->label('Дата окончания периода'); ?>
@@ -25,3 +25,4 @@ $form = ActiveForm::begin([
     </div>
 </div>
 <?php ActiveForm::end(); ?>
+

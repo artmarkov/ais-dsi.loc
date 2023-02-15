@@ -117,54 +117,55 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             </div>
             <div class="panel-body">
                 <?= $this->render('@app/views/studyplan/lesson-items/_search', compact('model_date')) ?>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <?php
-                            /* Uncomment this to activate GridQuickLinks */
-                            /* echo GridQuickLinks::widget([
-                                'model' => SubjectSect::className(),
-                                'searchModel' => $searchModel,
-                            ])*/
-                            ?>
-                        </div>
-                        <div class="col-sm-6 text-right">
-                            <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'studyplan-progress-grid-pjax']) ?>
-                        </div>
-                    </div>
-                    <?php
-                    Pjax::begin([
-                        'id' => 'studyplan-progress-grid-pjax',
-                    ])
-                    ?>
-                    <?= GridView::widget([
-                        'id' => 'studyplan-progress-grid',
-                        'pjax' => false,
-                        'dataProvider' => new \yii\data\ArrayDataProvider([
-                            'allModels' => $model['data'],
-                            'sort' => false,
-                            'pagination' => false,
-                        ]),
-                        'panel' => [
-                            'heading' => false,
-                            'type' => '',
-                            'footer' => $hints,
-                        ],
-                        'columns' => $columns,
-                        'beforeHeader' => [
-                            [
-                                'columns' => [
-                                    ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-                                    ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
-                                ],
-                                'options' => ['class' => 'skip-export'] // remove this row from export
-                            ]
-                        ],
-                    ]);
-                    ?>
-                    <?php Pjax::end() ?>
-                </div>
             </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <?php
+                        /* Uncomment this to activate GridQuickLinks */
+                        /* echo GridQuickLinks::widget([
+                            'model' => SubjectSect::className(),
+                            'searchModel' => $searchModel,
+                        ])*/
+                        ?>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'studyplan-progress-grid-pjax']) ?>
+                    </div>
+                </div>
+                <?php
+                Pjax::begin([
+                    'id' => 'studyplan-progress-grid-pjax',
+                ])
+                ?>
+                <?= GridView::widget([
+                    'id' => 'studyplan-progress-grid',
+                    'pjax' => false,
+                    'dataProvider' => new \yii\data\ArrayDataProvider([
+                        'allModels' => $model['data'],
+                        'sort' => false,
+                        'pagination' => false,
+                    ]),
+                    'panel' => [
+                        'heading' => false,
+                        'type' => '',
+                        'footer' => $hints,
+                    ],
+                    'columns' => $columns,
+                    'beforeHeader' => [
+                        [
+                            'columns' => [
+                                ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                                ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
+                            ],
+                            'options' => ['class' => 'skip-export'] // remove this row from export
+                        ]
+                    ],
+                ]);
+                ?>
+                <?php Pjax::end() ?>
+            </div>
+
         </div>
     </div>
 

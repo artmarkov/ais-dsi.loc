@@ -1,7 +1,6 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use common\models\activities\ActivitiesOver;
 use common\models\own\Department;
 use common\models\user\UserCommon;
 use yii\helpers\Url;
@@ -9,7 +8,6 @@ use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
 use common\models\schoolplan\Schoolplan;
-use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
@@ -24,6 +22,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="panel-heading">
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
         </div>
+        <div class="panel-body">
+        </div>
+            <?= $this->render('_search', compact('model_date')) ?>
         <div class="panel-body">
             <div class="panel panel-default">
                 <div class="panel-body">
@@ -87,45 +88,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'title',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/schoolplan/default',
-                                'title' => function (Schoolplan $model) {
-                                    return Html::a($model->title, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (Schoolplan $model) {
+                                    return $model->title;
                                 },
-                                'buttonsTemplate' => '{update} {view} {delete}',
-                                'buttons' => [
-                                    'update' => function ($url, $model, $key) {
-                                        return Html::a(Yii::t('art', 'Edit'),
-                                            Url::to(['update', 'id' => $model->id]), [
-                                                'title' => Yii::t('art', 'Edit'),
-                                                'data-method' => 'post',
-                                                'data-pjax' => '0',
-                                            ]
-                                        );
-                                    },
-                                    'view' => function ($url, $model, $key) {
-                                        return Html::a(Yii::t('art', 'View'),
-                                            Url::to(['view', 'id' => $model->id]), [
-                                                'title' => Yii::t('art', 'View'),
-                                                'data-method' => 'post',
-                                                'data-pjax' => '0',
-                                            ]
-                                        );
-                                    },
-                                    'delete' => function ($url, $model, $key) {
-                                        return Html::a(Yii::t('art', 'Delete'),
-                                            Url::to(['delete', 'id' => $model->id]), [
-                                                'title' => Yii::t('art', 'Delete'),
-                                                'aria-label' => Yii::t('art', 'Delete'),
-                                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                                'data-method' => 'post',
-                                                'data-pjax' => '0',
-                                            ]
-                                        );
-                                    },
-                                ],
+                                'options' => ['style' => 'width:450px'],
                             ],
-
                             'datetime_in:datetime',
                             'datetime_out:datetime',
                             [
@@ -170,21 +137,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-//                            'bars_flag',
-                            // 'form_partic',
-                            // 'partic_price',
-                            // 'visit_poss',
-                            // 'visit_content:ntext',
-                            // 'important_event',
-                            // 'region_partners:ntext',
-                            // 'site_url:url',
-                            // 'site_media',
-//                            'description:ntext',
-//                            'rider:ntext',
-//                    'result:ntext',
-//                    'num_users',
-//                    'num_winners',
-//                    'num_visitors',
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/schoolplan/default',
+                                'template' => '{view} {update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                            ],
                         ],
                     ]);
                     ?>

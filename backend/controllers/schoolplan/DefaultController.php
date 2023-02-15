@@ -2,6 +2,9 @@
 
 namespace backend\controllers\schoolplan;
 
+use artsoft\helpers\ArtHelper;
+use artsoft\models\OwnerAccess;
+use artsoft\models\User;
 use backend\models\Model;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
@@ -10,8 +13,15 @@ use common\models\history\EfficiencyHistory;
 use common\models\history\SchoolplanProtocolHistory;
 use common\models\schoolplan\SchoolplanProtocol;
 use common\models\schoolplan\SchoolplanProtocolItems;
+use common\models\schoolplan\SchoolplanView;
 use common\models\schoolplan\search\SchoolplanProtocolSearch;
+use common\models\schoolplan\search\SchoolplanViewSearch;
+use common\models\teachers\search\TeachersLoadViewSearch;
+use common\models\teachers\TeachersLoad;
+use common\models\teachers\TeachersLoadView;
 use Yii;
+use yii\base\DynamicModel;
+use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
 
@@ -23,6 +33,35 @@ class DefaultController extends MainController
     public $modelClass = 'common\models\schoolplan\Schoolplan';
     public $modelSearchClass = 'common\models\schoolplan\search\SchoolplanViewSearch';
     public $modelHistoryClass = 'common\models\history\SchoolplanHistory';
+
+    public function actionIndex()
+    { $session = Yii::$app->session;
+
+        $day_in = 1;
+        $day_out = date("t");
+
+        $model_date = new DynamicModel(['date_in', 'date_out']);
+        $model_date->addRule(['date_in', 'date_out'], 'required')
+            ->addRule(['date_in', 'date_out'], 'date');
+
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $mon = date('m');
+            $year = date('Y');
+
+            $model_date->date_in = $session->get('_schoolplan_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:d.m.Y');
+            $model_date->date_out = $session->get('_schoolplan_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
+        }
+        $session->set('_schoolplan_date_in', $model_date->date_in);
+        $session->set('_schoolplan_date_out', $model_date->date_out);
+
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $query = SchoolplanView::find()->where(['between', 'datetime_in', Yii::$app->formatter->asTimestamp($model_date->date_in), Yii::$app->formatter->asTimestamp($model_date->date_out)]);
+        $searchModel = new SchoolplanViewSearch($query);
+        $params = Yii::$app->request->getQueryParams();
+        $dataProvider = $searchModel->search($params);
+        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel', 'model_date'));
+    }
 
     /**
      * @return mixed|string|\yii\web\Response
