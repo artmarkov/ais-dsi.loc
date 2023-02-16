@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
 
                 <div class="col-sm-6 text-right">
-                    <?= GridPageSize::widget(['pjaxId' => 'tindivplan-grid-pjax']) ?>
+                    <?= GridPageSize::widget(['pjaxId' => 'indivplan-grid-pjax']) ?>
                 </div>
             </div>
 
@@ -74,7 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'teachers_id',
                         'filterType' => GridView::FILTER_SELECT2,
                         'width' => '250px',
-                        'filter' => RefBook::find('teachers_fullname')->getList(),
+                        'filter' => RefBook::find('teachers_fullname', \common\models\user\UserCommon::STATUS_ACTIVE)->getList(),
                         'value' => function ($model) {
                             return $model->teachers->fullName;
                         },

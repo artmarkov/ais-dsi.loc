@@ -20,59 +20,58 @@ use yii\helpers\Url;
     ?>
 
     <div class="panel">
+        <div class="panel-heading">
+           Карточка планирования индивидуальных занятий
+            <?php if (!$model->isNewRecord): ?>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
+            <?php endif; ?>
+        </div>
         <div class="panel-body">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Элемент планирования индивидуальных занятий
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
-                                [
-                                    'disabled' => $model->plan_year ? true : false,
-                                    'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' => $model->isNewRecord ? true : false]
-                                    ]
-                                ]);
-                            ?>
-                            <?= $form->field($model, 'half_year')->dropDownList(\artsoft\helpers\ArtHelper::getHalfYearList());
-                            ?>
-                            <?= $form->field($model, 'direction_id')->widget(\kartik\select2\Select2::class, [
-                                'data' => \common\models\guidejob\Direction::getDirectionList(),
-                                'options' => [
-                                    'id' => 'direction_id',
-                                    'disabled' => !$model->isNewRecord,
-                                    'placeholder' => Yii::t('art', 'Select...'),
-                                ],
-                                'pluginOptions' => [
-                                    'allowClear' => true
-                                ],
-                            ]);
-                            ?>
+            <div class="row">
+                <div class="col-sm-12">
+                    <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
+                        [
+                            'disabled' => $model->plan_year ? true : false,
+                            'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' => $model->isNewRecord ? true : false]
+                            ]
+                        ]);
+                    ?>
+                    <?= $form->field($model, 'half_year')->dropDownList(\artsoft\helpers\ArtHelper::getHalfYearList());
+                    ?>
+                    <?= $form->field($model, 'direction_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => \common\models\guidejob\Direction::getDirectionList(),
+                        'options' => [
+                            'id' => 'direction_id',
+                            'disabled' => !$model->isNewRecord,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ]);
+                    ?>
 
-                            <?= $form->field($model, 'teachers_id')->widget(\kartik\depdrop\DepDrop::class, [
-                                'data' => \common\models\teachers\Teachers::getTeachersList($model->direction_id),
-                                'options' => [
-                                    // 'disabled' => $readonly,
-                                    'placeholder' => Yii::t('art', 'Select...'),
-                                ],
-                                'pluginOptions' => [
-                                    'depends' => ['direction_id'],
-                                    'placeholder' => Yii::t('art', 'Select...'),
-                                    'url' => Url::to(['/teachers/default/teachers'])
-                                ]
-                            ]);
-                            ?>
+                    <?= $form->field($model, 'teachers_id')->widget(\kartik\depdrop\DepDrop::class, [
+                        'data' => \common\models\teachers\Teachers::getTeachersList($model->direction_id),
+                        'options' => [
+                            // 'disabled' => $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                        ],
+                        'pluginOptions' => [
+                            'depends' => ['direction_id'],
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'url' => Url::to(['/teachers/default/teachers'])
+                        ]
+                    ]);
+                    ?>
 
-                            <?= $form->field($model, "week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList()) ?>
-                            <?= $form->field($model, "week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList()) ?>
-                            <?= $form->field($model, "time_plan_in")->textInput()->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
-                            <?= $form->field($model, "time_plan_out")->textInput()->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
-                            <?= $form->field($model, "auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList()) ?>
-                            <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+                    <?= $form->field($model, "week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList()) ?>
+                    <?= $form->field($model, "week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList()) ?>
+                    <?= $form->field($model, "time_plan_in")->textInput()->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
+                    <?= $form->field($model, "time_plan_out")->textInput()->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
+                    <?= $form->field($model, "auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList()) ?>
+                    <?= $form->field($model, 'description')->textarea(['rows' => 3]) ?>
 
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
