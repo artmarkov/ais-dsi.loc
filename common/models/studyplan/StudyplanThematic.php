@@ -18,6 +18,8 @@ use yii\behaviors\TimestampBehavior;
  * @property int $period_out
  * @property int|null $template_flag
  * @property string|null $template_name
+ * @property bool $confirm_flag
+ * @property int $confirm_teachers_id
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -59,9 +61,11 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
     {
         return [
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'template_flag'], 'default', 'value' => null],
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'template_flag', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'template_flag', 'confirm_teachers_id'], 'integer'],
             [['thematic_category', 'period_in', 'period_out'], 'required'],
             [['period_in', 'period_out'], 'safe'],
+            [['confirm_flag'], 'boolean'],
+            [['confirm_flag'], 'default', 'value' => false],
             [['period_out'], 'compareTimestamp', 'skipOnEmpty' => false],
             [['template_name'], 'string', 'max' => 256],
             [['template_name'], 'unique'],
@@ -99,6 +103,8 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
             'period_out' => Yii::t('art/studyplan', 'Period Out'),
             'template_flag' => Yii::t('art/studyplan', 'Template Flag'),
             'template_name' => Yii::t('art/studyplan', 'Template Name'),
+            'confirm_flag' => Yii::t('art/studyplan', 'Confirm Flag'),
+            'confirm_teachers_id' => Yii::t('art/studyplan', 'Confirm Teachers'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),

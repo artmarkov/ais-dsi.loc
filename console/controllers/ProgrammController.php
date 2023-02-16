@@ -3,6 +3,7 @@
 namespace console\controllers;
 
 use artsoft\fileinput\models\FileManager;
+use artsoft\helpers\ArtHelper;
 use artsoft\helpers\Schedule;
 use Box\Spout\Common\Entity\Row;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
@@ -16,6 +17,8 @@ use common\models\schedule\SubjectSchedule;
 use common\models\schoolplan\Schoolplan;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\studyplan\StudyplanThematic;
+use common\models\studyplan\StudyplanThematicItems;
 use common\models\subject\Subject;
 use common\models\subjectsect\SubjectSect;
 use common\models\subjectsect\SubjectSectStudyplan;
@@ -40,8 +43,8 @@ class ProgrammController extends Controller
     public function actionIndex()
     {
         $this->stdout("\n");
-        $this->addProgramm();
-        $this->generateGroup();
+//        $this->addProgramm();
+//        $this->generateGroup();
         $this->addStudyplan();
         // print_r(array_unique($this->err));
     }
@@ -97,7 +100,7 @@ class ProgrammController extends Controller
         // ini_set('memory_limit', '2024M');
         $f = file_get_contents('data/studyplan.txt');
         $data = json_decode($f, true);
-        //  print_r($data);
+//          print_r($data); die();
         foreach ($data as $i => $d) {
             if ($d['plan_year'] != '2022') {
                 continue;
@@ -147,7 +150,8 @@ class ProgrammController extends Controller
                             $subject_sect_studyplan_id = $this->setSubjectSectStaudyplan($model_programm, $model_subject, $dd);
                             $studyplan_subject_id = 0;
                         }
-                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+                      //  $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+                        $this->setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
                     }
                 } catch (\Exception $e) {
                     // $transaction->rollBack();
@@ -224,6 +228,60 @@ class ProgrammController extends Controller
         return true;
     }
 
+    protected function setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd)
+    {
+        foreach ($dd['plan_sub'] as $half => $ddd) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                $flag = true;
+            try {
+                $model = StudyplanThematic::find()
+                    ->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])
+                    ->andWhere(['=', 'studyplan_subject_id', $studyplan_subject_id])
+                    ->one();
+                if (!$model) {
+                    $model = new StudyplanThematic();
+                    $per = ArtHelper::getHalfYearParams(null, null, $half);
+
+                    $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
+                    $model->studyplan_subject_id = $studyplan_subject_id;
+                    $model->thematic_category = $ddd['items'][0]['category_id'] != '' ? 2 : 1;
+                    $model->period_in = \Yii::$app->formatter->asDate($per['timestamp_in'], 'php:d.m.Y');
+                    $model->period_out = \Yii::$app->formatter->asDate($per['timestamp_out'], 'php:d.m.Y');
+                    $model->confirm_flag = $ddd['confirm'];
+                    $model->confirm_teachers_id = $this->findByTeachers2($ddd['confirm_name']);
+
+                    if (!$model->save(false)) {
+                        $transaction->rollBack();
+                        break;
+                    }
+                    foreach ($ddd['items'] as $iii => $dddd) {
+                        // print_r( $ddd);
+                        $model_th = new StudyplanThematicItems();
+                        $model_th->studyplan_thematic_id = $model->id;
+                        $model_th->piece_category_id = $dddd['category_id'] != '' ? (integer)($dddd['category_id'] - 1 + 1000) : null;
+                        $model_th->author = $dddd['author_name'] ?? null;
+                        $model_th->piece_name = $dddd['piece_name'] ?? null;
+                        $model_th->task = $dddd['mission'] ?? null;
+                        if (!($flag = $model_th->save(false))) {
+                            $transaction->rollBack();
+                            break;
+                        }
+                    }
+                }
+                if ($flag) {
+                    $transaction->commit();
+                    $this->stdout('Добавлен план: ' . $model->id . " ", Console::FG_GREY);
+                    $this->stdout("\n");
+                }
+            } catch (\Exception $e) {
+                $transaction->rollBack();
+                $this->stdout('Ошибка: ', Console::FG_PURPLE);
+                $this->stdout("\n");
+            }
+        }
+        return true;
+    }
+
     protected function setSubjectSectStaudyplan($model_programm, $model_subject, $dd)
     {
         $d = explode('||', $dd['group_name']);
@@ -281,7 +339,7 @@ class ProgrammController extends Controller
     private function getSubjectList($string, $item)
     {
         $arr = [];
-        if($string != '') {
+        if ($string != '') {
             $arr = explode(',', $string);
         }
         array_push($arr, $item);

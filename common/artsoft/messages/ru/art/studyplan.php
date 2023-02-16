@@ -30,5 +30,7 @@ return [
     'Middle Avg Mark' => 'Средняя оценка ПА',
     'Finish Avg Mark' => 'Средняя оценка ИА',
     'Lesson Tests' => 'Виды испытвний',
+    'Confirm Flag' => 'Факт утверждения',
+    'Confirm Teachers' => 'Утвердил',
 
 ];
