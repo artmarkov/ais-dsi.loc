@@ -11,5 +11,4 @@ class DefaultController extends MainController
     public $modelSearchClass = 'common\models\teachers\search\TeachersPlanSearch';
     public $modelHistoryClass = 'common\models\history\TeachersPlanHistory';
 
-
 }
