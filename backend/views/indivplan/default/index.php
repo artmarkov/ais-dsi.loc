@@ -123,7 +123,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'urlCreator' => function ($action, $model, $key, $index) {
                             return [$action, 'id' => $model->id];
                         },
-                        'template' => '{update} {delete}',
+                        'template' => '{view} {update} {delete}',
                     ],
                 ],
             ]);

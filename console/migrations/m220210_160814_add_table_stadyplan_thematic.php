@@ -80,61 +80,71 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
         $this->addForeignKey('studyplan_thematic_items_ibfk_2', 'studyplan_thematic_items', 'piece_category_id', 'guide_piece_category', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('studyplan_thematic_view', '
-           (select studyplan.id as studyplan_id,
-                         studyplan.student_id as student_id,
-                         studyplan.plan_year as plan_year,
-                         studyplan.programm_id as programm_id,
-                         studyplan.course as course,
-                         studyplan.status as status,
-                         studyplan_subject.id as studyplan_subject_id,
-                         studyplan_subject.subject_cat_id as subject_cat_id,
-                         studyplan_subject.subject_id as subject_id,
-                         studyplan_subject.subject_type_id as subject_type_id,
-                         studyplan_subject.subject_vid_id as subject_vid_id,
-                         studyplan_thematic.id as studyplan_thematic_id,
-                         studyplan_thematic.subject_sect_studyplan_id as subject_sect_studyplan_id,
-                         studyplan_thematic.thematic_category as thematic_category,
-                         studyplan_thematic.half_year as half_year,
-                         studyplan_thematic.doc_status as doc_status,
-                         studyplan_thematic.doc_sign_teachers_id as doc_sign_teachers_id,
-                         studyplan_thematic.doc_sign_timestamp as doc_sign_timestamp,
-                         studyplan_thematic.created_by as author_id
-                 from studyplan
-                 inner join studyplan_subject on (studyplan.id = studyplan_subject.studyplan_id)
-                 inner join guide_subject_vid on (guide_subject_vid.id = studyplan_subject.subject_vid_id and guide_subject_vid.qty_min = 1 and guide_subject_vid.qty_max = 1)
-                 left join studyplan_thematic on (studyplan_thematic.studyplan_subject_id = studyplan_subject.id 
-											and studyplan_thematic.subject_sect_studyplan_id = 0)
-           )
-           UNION ALL
-           (select studyplan.id as studyplan_id,
-                         studyplan.student_id as student_id,
-                         studyplan.plan_year as plan_year,
-                         studyplan.programm_id as programm_id,
-                         studyplan.course as course,
-                         studyplan.status as status,
-                         studyplan_subject.id as studyplan_subject_id,
-                         studyplan_subject.subject_cat_id as subject_cat_id,
-                         studyplan_subject.subject_id as subject_id,
-                         studyplan_subject.subject_type_id as subject_type_id,
-                         studyplan_subject.subject_vid_id as subject_vid_id,
-                         studyplan_thematic.id as studyplan_thematic_id,
-                         subject_sect_studyplan.id as subject_sect_studyplan_id,
-                         studyplan_thematic.thematic_category as thematic_category,
-                        studyplan_thematic.half_year as half_year,
-                         studyplan_thematic.doc_status as doc_status,
-                         studyplan_thematic.doc_sign_teachers_id as doc_sign_teachers_id,
-                         studyplan_thematic.doc_sign_timestamp as doc_sign_timestamp,
-                         studyplan_thematic.created_by as author_id
-                 from studyplan
-                 inner join studyplan_subject on (studyplan_subject.studyplan_id = studyplan.id)
-                 left join subject_sect on (subject_sect.subject_cat_id = studyplan_subject.subject_cat_id
-                                           and subject_sect.subject_id = studyplan_subject.subject_id
-                                           and subject_sect.subject_vid_id = studyplan_subject.subject_vid_id)
-                 inner join subject_sect_studyplan on (subject_sect_studyplan.subject_sect_id = subject_sect.id and studyplan_subject.id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\')::int[])) 				   
-                 left join studyplan_thematic  on (studyplan_thematic.subject_sect_studyplan_id = subject_sect_studyplan.id
-		                            and studyplan_thematic.studyplan_subject_id = 0)
-           )
-           ORDER BY studyplan_id, subject_cat_id, subject_sect_studyplan_id
+           SELECT studyplan.id AS studyplan_id,
+    studyplan.student_id,
+    studyplan.plan_year,
+    studyplan.programm_id,
+    studyplan.course,
+    studyplan.status,
+    studyplan_subject.id AS studyplan_subject_id,
+    studyplan_subject.subject_cat_id,
+    studyplan_subject.subject_id,
+    studyplan_subject.subject_type_id,
+    studyplan_subject.subject_vid_id,
+    studyplan_thematic.id AS studyplan_thematic_id,
+    studyplan_thematic.subject_sect_studyplan_id,
+    studyplan_thematic.thematic_category,
+    studyplan_thematic.half_year,
+    studyplan_thematic.doc_status,
+    studyplan_thematic.doc_sign_teachers_id,
+    studyplan_thematic.doc_sign_timestamp,
+    studyplan_thematic.created_by AS author_id,
+	\'Индивидуально\'::text AS sect_name,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject
+   FROM studyplan
+     JOIN studyplan_subject ON studyplan.id = studyplan_subject.studyplan_id
+     JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
+	 JOIN subject ON subject.id = studyplan_subject.subject_id
+     JOIN education_programm ON education_programm.id = studyplan.programm_id
+     JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id
+     JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
+     JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
+     LEFT JOIN studyplan_thematic ON studyplan_thematic.studyplan_subject_id = studyplan_subject.id AND studyplan_thematic.subject_sect_studyplan_id = 0
+UNION ALL
+ SELECT studyplan.id AS studyplan_id,
+    studyplan.student_id,
+    studyplan.plan_year,
+    studyplan.programm_id,
+    studyplan.course,
+    studyplan.status,
+    studyplan_subject.id AS studyplan_subject_id,
+    studyplan_subject.subject_cat_id,
+    studyplan_subject.subject_id,
+    studyplan_subject.subject_type_id,
+    studyplan_subject.subject_vid_id,
+    studyplan_thematic.id AS studyplan_thematic_id,
+    subject_sect_studyplan.id AS subject_sect_studyplan_id,
+    studyplan_thematic.thematic_category,
+    studyplan_thematic.half_year,
+    studyplan_thematic.doc_status,
+    studyplan_thematic.doc_sign_teachers_id,
+    studyplan_thematic.doc_sign_timestamp,
+    studyplan_thematic.created_by AS author_id,
+	concat(subject_sect.sect_name, \' (\',
+        CASE
+            WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
+            ELSE \'\'::text
+        END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
+   FROM studyplan
+     JOIN studyplan_subject ON studyplan_subject.studyplan_id = studyplan.id
+     LEFT JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
+     JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
+	 JOIN subject ON subject.id = studyplan_subject.subject_id     
+     JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
+     JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id
+     LEFT JOIN studyplan_thematic ON studyplan_thematic.subject_sect_studyplan_id = subject_sect_studyplan.id AND studyplan_thematic.studyplan_subject_id = 0
+  ORDER BY subject, sect_name;
   		   
         ')->execute();
 

@@ -246,7 +246,7 @@ class ProgrammController extends Controller
                     $model->half_year = $half;
                     $model->doc_status = $ddd['confirm'];
                     $model->doc_sign_teachers_id = $this->findByTeachers2($ddd['confirm_name']);
-                    $model->doc_sign_timestamp = time();
+                    $model->doc_sign_timestamp = $ddd['confirm_timestamp'];
 
                     if (!$model->save(false)) {
                         $transaction->rollBack();
@@ -268,12 +268,12 @@ class ProgrammController extends Controller
                 }
                 if ($flag) {
                     $transaction->commit();
-                    $this->stdout('Добавлен план: ' . $model->id . " ", Console::FG_GREY);
-                    $this->stdout("\n");
+//                    $this->stdout('Добавлен план: ' . $model->id . " ", Console::FG_GREY);
+//                    $this->stdout("\n");
                 }
             } catch (\Exception $e) {
                 $transaction->rollBack();
-                $this->stdout('Ошибка: ', Console::FG_PURPLE);
+                $this->stdout('Ошибка добавления плана: ', Console::FG_PURPLE);
                 $this->stdout("\n");
             }
         }

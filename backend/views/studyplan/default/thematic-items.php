@@ -17,12 +17,21 @@ $this->params['breadcrumbs'][] = $this->title;
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
-        'attribute' => 'studyplan_subject_id',
-        'width' => '320px',
+        'attribute' => 'subject',
         'value' => function ($model) {
-            return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
+            return $model->subject;
         },
         'group' => true,
+    ],
+    [
+        'attribute' => 'sect_name',
+        'width' => '320px',
+        'value' => function ($model) {
+            return $model->sect_name ? $model->sect_name : null;
+        },
+        'group' => true,  // enable grouping
+        'subGroupOf' => 1,
+        'format' => 'raw',
     ],
     [
         'attribute' => 'thematic_category',
@@ -53,7 +62,6 @@ $columns = [
         'value' => function (StudyplanThematic $model) {
             return StudyplanThematic::getDocStatusValue($model->doc_status);
         },
-        'options' => ['style' => 'width:150px'],
         'format' => 'raw',
     ],
     [
@@ -66,10 +74,18 @@ $columns = [
         'format' => 'raw',
     ],
     [
+        'attribute' => 'doc_sign_timestamp',
+        'value' => function (StudyplanThematic $model) {
+            return Yii::$app->formatter->asDatetime($model->doc_sign_timestamp);
+        },
+        'options' => ['style' => 'width:150px'],
+        'format' => 'raw',
+    ],
+    [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
-        'template' => '{create} {update} {delete}',
+        'template' => '{create} {view} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
                 if ($model->subject_sect_studyplan_id == null) {
@@ -92,6 +108,15 @@ $columns = [
                     );
                 }
 
+            },
+            'view' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                    Url::to(['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'view']), [
+                        'title' => Yii::t('art', 'View'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
             },
             'update' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
@@ -122,6 +147,9 @@ $columns = [
                 return $model->studyplan_thematic_id;
             },
             'update' => function ($model) {
+                return $model->studyplan_thematic_id;
+            },
+            'view' => function ($model) {
                 return $model->studyplan_thematic_id;
             }
         ],
@@ -162,8 +190,8 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина', 'options' => ['colspan' => 2, 'class' => 'text-center warning']],
-                            ['content' => 'План', 'options' => ['colspan' => 5, 'class' => 'text-center danger']],
+                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                            ['content' => 'План', 'options' => ['colspan' => 6, 'class' => 'text-center danger']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

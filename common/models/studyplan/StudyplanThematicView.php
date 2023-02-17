@@ -18,4 +18,13 @@ class StudyplanThematicView extends StudyplanThematic
         return 'studyplan_thematic_view';
     }
 
+    public function attributeLabels()
+    {
+        $attr = parent::attributeLabels();
+
+        $attr['sect_name'] = Yii::t('art/guide', 'Sect Name');
+        $attr['subject'] = Yii::t('art/guide', 'Subject');
+
+        return $attr;
+    }
 }

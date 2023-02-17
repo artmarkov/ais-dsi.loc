@@ -10,5 +10,8 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'
 $this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 ?>
 <div class="indivplan-update">
-    <?= $this->render('_form', compact('model')) ?>
+    <?= $this->render('_form', [
+        'model' => $model,
+        'readonly' => $readonly
+    ]) ?>
 </div>

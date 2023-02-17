@@ -32,6 +32,7 @@ use common\models\subject\SubjectType;
 use common\models\teachers\search\TeachersLoadStudyplanViewSearch;
 use common\models\teachers\TeachersLoad;
 use yii\base\DynamicModel;
+use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use Yii;
 use yii\helpers\StringHelper;
@@ -532,7 +533,7 @@ class DefaultController extends MainController
         }
     }
 
-    public function actionThematicItems($id, $objectId = null, $mode = null)
+    public function actionThematicItems($id, $objectId = null, $mode = null, $readonly = false)
     {
         $model = $this->findModel($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
@@ -589,6 +590,7 @@ class DefaultController extends MainController
             return $this->renderIsAjax('@backend/views/studyplan/studyplan-thematic/_form.php', [
                 'model' => $model,
                 'modelsItems' => (empty($modelsItems)) ? [new StudyplanThematicItems] : $modelsItems,
+                'readonly' => $readonly
             ]);
 
         } elseif ('history' == $mode && $objectId) {
@@ -606,7 +608,9 @@ class DefaultController extends MainController
             return $this->redirect($this->getRedirectPage('delete', $model));
 
         } elseif ($objectId) {
-
+            if ('view' == $mode) {
+                $readonly = true;
+            }
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Thematic plans'), 'url' => ['studyplan/default/thematic-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $model = StudyplanThematic::findOne($objectId);
@@ -655,6 +659,7 @@ class DefaultController extends MainController
             return $this->renderIsAjax('@backend/views/studyplan/studyplan-thematic/_form.php', [
                 'model' => $model,
                 'modelsItems' => (empty($modelsItems)) ? [new StudyplanThematicItems] : $modelsItems,
+                'readonly' => $readonly
             ]);
 
         } else {

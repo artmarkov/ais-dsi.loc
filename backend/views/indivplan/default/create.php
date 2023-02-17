@@ -11,5 +11,8 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="indivplan-create">
-    <?=  $this->render('_form', compact('model')) ?>
+    <?= $this->render('_form', [
+        'model' => $model,
+        'readonly' => $readonly
+    ]) ?>
 </div>

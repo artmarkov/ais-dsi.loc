@@ -5,8 +5,10 @@ namespace common\models\studyplan;
 use artsoft\behaviors\DateFieldBehavior;
 use common\models\teachers\Teachers;
 use Yii;
+use yii\base\ErrorException;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\AfterSaveEvent;
 
 /**
  * This is the model class for table "studyplan_thematic".
@@ -51,6 +53,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
             BlameableBehavior::class,
         ];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -59,7 +62,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
         return [
             [['thematic_category', 'half_year'], 'required'],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'template_flag'], 'integer'],
-            [['doc_status','doc_sign_teachers_id','doc_sign_timestamp', 'half_year'], 'integer'],
+            [['doc_status', 'doc_sign_teachers_id', 'doc_sign_timestamp', 'half_year'], 'integer'],
             [['half_year'], 'default', 'value' => 0],
             [['template_name'], 'string', 'max' => 256],
             [['template_name'], 'unique'],
@@ -138,9 +141,16 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
      */
     public function beforeSave($insert)
     {
-        if($this->template_flag == 0) {
+        if ($this->template_flag == 0) {
             $this->template_name = null;
         }
+       if($this->isAttributeChanged('doc_status')) {
+           if ($this->doc_status == self::DOC_STATUS_AGREED) {
+               $this->doc_sign_timestamp = time();
+           } else {
+               $this->doc_sign_timestamp = null;
+           }
+       }
         return parent::beforeSave($insert);
     }
 }
