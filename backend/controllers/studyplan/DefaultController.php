@@ -46,14 +46,7 @@ class DefaultController extends MainController
     public function actionIndex()
     {
         $modelSearchClass = 'common\models\studyplan\search\StudyplanViewSearch';
-        $session = Yii::$app->session;
-
-        $model_date = new DynamicModel(['plan_year']);
-        $model_date->addRule(['plan_year'], 'required');
-        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-            $model_date->plan_year = $session->get('_studyplan_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-        }
-        $session->set('_studyplan_plan_year', $model_date->plan_year);
+        $model_date = $this->modelDate;
 
         $searchName = StringHelper::basename($modelSearchClass::className());
         $searchModel = new $modelSearchClass;

@@ -110,8 +110,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'kartik\grid\ActionColumn',
                         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
                         'controller' => '/teachers/teachers-plan',
-                        'template' => '{update} {delete}',
+                        'template' => '{view} {update} {delete}',
                         'buttons' => [
+                            'view' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                                    Url::to(['/teachers/default/teachers-plan', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'view']), [
+                                        'title' => Yii::t('art', 'View'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
                             'update' => function ($key, $model) {
                                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                                     Url::to(['/teachers/default/teachers-plan', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update']), [

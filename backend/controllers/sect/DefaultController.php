@@ -98,14 +98,7 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = 'Расписание занятий';
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
-        $session = Yii::$app->session;
-
-        $model_date = new DynamicModel(['plan_year']);
-        $model_date->addRule(['plan_year'], 'required');
-        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-            $model_date->plan_year = $session->get('_sect_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-        }
-        $session->set('_sect_plan_year', $model_date->plan_year);
+        $model_date = $this->modelDate;
 
         $model = $this->modelClass::findOne($id);
         $readonly = false;
@@ -175,14 +168,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $session = Yii::$app->session;
-
-            $model_date = new DynamicModel(['plan_year']);
-            $model_date->addRule(['plan_year'], 'required');
-            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_sect_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            }
-            $session->set('_sect_plan_year', $model_date->plan_year);
+            $model_date = $this->modelDate;
 
             $modelsSubjectSectStudyplan = $model->setSubjectSect($model_date);
 
@@ -282,14 +268,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $session = Yii::$app->session;
-
-            $model_date = new DynamicModel(['plan_year']);
-            $model_date->addRule(['plan_year'], 'required');
-            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_sect_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            }
-            $session->set('_sect_plan_year', $model_date->plan_year);
+            $model_date = $this->modelDate;
 
             $searchModel = new TeachersLoadViewSearch();
 
@@ -372,14 +351,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $session = Yii::$app->session;
-
-            $model_date = new DynamicModel(['plan_year']);
-            $model_date->addRule(['plan_year'], 'required');
-            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_sect_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            }
-            $session->set('_sect_plan_year', $model_date->plan_year);
+            $model_date = $this->modelDate;
 
             $searchModel = new SubjectScheduleViewSearch();
 
@@ -613,14 +585,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $session = Yii::$app->session;
-
-            $model_date = new DynamicModel(['plan_year']);
-            $model_date->addRule(['plan_year'], 'required');
-            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_sect_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            }
-            $session->set('_sect_plan_year', $model_date->plan_year);
+            $model_date = $this->modelDate;
 
             $searchModel = new ConsultScheduleViewSearch();
 

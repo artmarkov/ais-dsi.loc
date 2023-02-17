@@ -19,10 +19,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="indivplan-index">
     <div class="panel">
         <div class="panel-body">
+            <?= $this->render('_search', compact('model_date')) ?>
+            <hr>
             <div class="row">
                 <div class="col-sm-6">
                     <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
-
                     <?php
 
                     /* Uncomment this to activate GridQuickLinks */
@@ -85,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'attribute' => 'plan_year',
-                        'filter' => \artsoft\helpers\ArtHelper::getStudyYearsList(),
+                        'filter' => false,
                         'value' => function (TeachersPlan $model) {
                             return \artsoft\helpers\ArtHelper::getStudyYearsValue($model->plan_year);
                         },

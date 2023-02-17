@@ -34,18 +34,16 @@ use yii\helpers\Url;
                 <div class="col-sm-12">
                     <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                         [
-                            'disabled' => $model->plan_year ? true : false,
+                            'disabled' => $model->plan_year ? true : $readonly,
                             'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' => $model->isNewRecord ? true : false]
                             ]
                         ]);
-                    ?>
-                    <?= $form->field($model, 'half_year')->dropDownList(\artsoft\helpers\ArtHelper::getHalfYearList(), ['disabled' => $readonly]);
                     ?>
                     <?= $form->field($model, 'direction_id')->widget(\kartik\select2\Select2::class, [
                         'data' => \common\models\guidejob\Direction::getDirectionList(),
                         'options' => [
                             'id' => 'direction_id',
-                            'disabled' => !$model->isNewRecord || $readonly,
+                            'disabled' => $model->direction_id ? true : $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [
@@ -57,7 +55,7 @@ use yii\helpers\Url;
                     <?= $form->field($model, 'teachers_id')->widget(\kartik\depdrop\DepDrop::class, [
                         'data' => \common\models\teachers\Teachers::getTeachersList($model->direction_id),
                         'options' => [
-                             'disabled' => $readonly,
+                            'disabled' => $model->teachers_id ? true : $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [
@@ -68,6 +66,7 @@ use yii\helpers\Url;
                     ]);
                     ?>
 
+                    <?= $form->field($model, 'half_year')->dropDownList(\artsoft\helpers\ArtHelper::getHalfYearList(), ['disabled' => $readonly]);?>
                     <?= $form->field($model, "week_num")->dropDownList(['' => Yii::t('art/guide', 'Select week num...')] + \artsoft\helpers\ArtHelper::getWeekList(), ['disabled' => $readonly]) ?>
                     <?= $form->field($model, "week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList(), ['disabled' => $readonly]) ?>
                     <?= $form->field($model, "time_plan_in")->textInput()->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>

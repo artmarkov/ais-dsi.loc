@@ -2,23 +2,41 @@
 
 namespace backend\controllers\indivplan;
 
+use common\models\teachers\search\TeachersPlanSearch;
+use common\models\teachers\TeachersPlan;
 use Yii;
 use yii\web\NotFoundHttpException;
 
 /**
  * DefaultController implements the CRUD actions for common\models\teachers\TeachersPlan model.
+ * $model_date
  */
 class DefaultController extends MainController
 {
-    public $modelClass       = 'common\models\teachers\TeachersPlan';
+    public $modelClass = 'common\models\teachers\TeachersPlan';
     public $modelSearchClass = 'common\models\teachers\search\TeachersPlanSearch';
     public $modelHistoryClass = 'common\models\history\TeachersPlanHistory';
+
+    public function actionIndex()
+    {
+        $model_date = $this->modelDate;
+
+        $query = TeachersPlan::find()->where(['=', 'plan_year', $model_date->plan_year]);
+
+        $searchModel = new TeachersPlanSearch($query);
+        $params = Yii::$app->request->getQueryParams();
+        $dataProvider = $searchModel->search($params);
+
+        return $this->renderIsAjax('index', compact('dataProvider', 'searchModel', 'model_date'));
+    }
 
     public function actionCreate()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
 
+        $model_date = $this->modelDate;
         $model = new $this->modelClass;
+        $model->plan_year = $model_date->plan_year;
 
         if ($model->load(Yii::$app->request->post())) {
 

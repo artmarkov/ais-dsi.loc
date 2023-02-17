@@ -3,7 +3,6 @@
 namespace backend\controllers\teachers;
 
 use artsoft\helpers\ArtHelper;
-use artsoft\helpers\Schedule;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use common\models\education\LessonItems;
@@ -44,6 +43,7 @@ use Yii;
 
 /**
  * DefaultController implements the CRUD actions for common\models\teachers\Teachers model.
+ * $model_date
  */
 class DefaultController extends MainController
 {
@@ -366,14 +366,7 @@ class DefaultController extends MainController
         if (!isset($model)) {
             throw new NotFoundHttpException("The StudyplanSubject was not found.");
         }
-        $session = Yii::$app->session;
-
-        $model_date = new DynamicModel(['plan_year']);
-        $model_date->addRule(['plan_year'], 'required');
-        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-            $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-        }
-        $session->set('_teachers_plan_year', $model_date->plan_year);
+        $model_date = $this->modelDate;
 
         return $this->render('schedule', [
             'model' => $model,
@@ -454,14 +447,7 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $session = Yii::$app->session;
-
-            $model_date = new DynamicModel(['plan_year']);
-            $model_date->addRule(['plan_year'], 'required');
-            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            }
-            $session->set('_teachers_plan_year', $model_date->plan_year);
+            $model_date = $this->modelDate;
 
             $query = TeachersLoadView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)])->andWhere(['=', 'plan_year', $model_date->plan_year]);
             $searchModel = new TeachersLoadViewSearch($query);
@@ -532,14 +518,8 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $session = Yii::$app->session;
+            $model_date = $this->modelDate;
 
-            $model_date = new DynamicModel(['plan_year']);
-            $model_date->addRule(['plan_year'], 'required');
-            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            }
-            $session->set('_teachers_plan_year', $model_date->plan_year);
             $query = SubjectScheduleView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)])->andWhere(['=', 'plan_year', $model_date->plan_year]);
             $searchModel = new SubjectScheduleViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
@@ -549,28 +529,31 @@ class DefaultController extends MainController
         }
     }
 
-    public function actionTeachersPlan($id, $objectId = null, $mode = null)
+    public function actionTeachersPlan($id, $objectId = null, $mode = null, $readonly = false)
     {
+        $model_date = $this->modelDate;
+
         $modelTeachers = $this->findModel($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['teachers/default/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if ('create' == $mode) {
-
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['teachers/default/teachers-plan', 'id' => $modelTeachers->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление записи';
             $model = new TeachersPlan();
+            $model->direction_id = $modelTeachers->getTeachersActivity()->one()->direction_id ?? null;
             $model->teachers_id = $modelTeachers->id;
+            $model->plan_year = $model_date->plan_year;
             if ($model->load(Yii::$app->request->post()) AND $model->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
                 $this->getSubmitAction($model);
             }
 
-            return $this->renderIsAjax('@backend/views/teachersplan/default_form.php', [
+            return $this->renderIsAjax('@backend/views/indivplan/default/_form.php', [
                 'model' => $model,
+                'readonly' => $readonly
             ]);
-
 
         } elseif ('history' == $mode && $objectId) {
             $model = TeachersPlan::findOne($objectId);
@@ -587,6 +570,9 @@ class DefaultController extends MainController
             return $this->redirect($this->getRedirectPage('delete', $model));
 
         } elseif ($objectId) {
+            if ('view' == $mode) {
+                $readonly = true;
+            }
 
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['teachers/default/teachers-plan', 'id' => $modelTeachers->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
@@ -597,19 +583,13 @@ class DefaultController extends MainController
                 $this->getSubmitAction($model);
             }
 
-            return $this->renderIsAjax('@backend/views/teachersplan/default/_form.php', [
+            return $this->renderIsAjax('@backend/views/indivplan/default/_form.php', [
                 'model' => $model,
+                'readonly' => $readonly
             ]);
 
         } else {
-            $session = Yii::$app->session;
 
-            $model_date = new DynamicModel(['plan_year']);
-            $model_date->addRule(['plan_year'], 'required');
-            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            }
-            $session->set('_teachers_plan_year', $model_date->plan_year);
 
             $query = TeachersPlan::find()->where(['=', 'teachers_id', $modelTeachers->id])->andWhere(['=', 'plan_year', $model_date->plan_year]);
 
@@ -685,14 +665,8 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $session = Yii::$app->session;
+            $model_date = $this->modelDate;
 
-            $model_date = new DynamicModel(['plan_year']);
-            $model_date->addRule(['plan_year'], 'required');
-            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            }
-            $session->set('_teachers_plan_year', $model_date->plan_year);
             $query = ConsultScheduleView::find()->where(['=', 'teachers_id', $id])
                 ->andWhere(['=', 'plan_year', $model_date->plan_year]);
             $searchModel = new ConsultScheduleViewSearch($query);
@@ -915,15 +889,8 @@ class DefaultController extends MainController
             ]);
 
         } elseif ('bar' == $mode) {
-            $session = Yii::$app->session;
 
-            $model_date = new DynamicModel(['plan_year']);
-            $model_date->addRule(['plan_year'], 'required')
-                ->addRule(['plan_year'], 'string');
-            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            }
-            $session->set('_teachers_plan_year', $model_date->plan_year);
+            $model_date = $this->modelDate;
 
             $data = TeachersEfficiency::getSummaryTeachersData($id, $model_date);
 
@@ -960,15 +927,9 @@ class DefaultController extends MainController
             ]);
         } else {
             $this->view->params['breadcrumbs'][] = Yii::t('art/guide', 'Efficiencies');
-            $session = Yii::$app->session;
+            $model_date = $this->modelDate;
 
-            $model_date = new DynamicModel(['plan_year']);
-            $model_date->addRule(['plan_year'], 'required');
-            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_teachers_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            }
             $data = ArtHelper::getStudyYearParams($model_date->plan_year);
-            $session->set('_teachers_plan_year', $model_date->plan_year);
             $query = TeachersEfficiency::find()->where(['=', 'teachers_id', $id])
                 ->andWhere(['and', ['>=', 'date_in', $data['timestamp_in']], ['<=', 'date_in', $data['timestamp_out']]])
             ;
