@@ -49,18 +49,19 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
             'subject_sect_studyplan_id' => $this->integer()->defaultValue(0),
             'studyplan_subject_id' => $this->integer()->defaultValue(0),
             'thematic_category' => $this->integer()->notNull(),
-            'period_in' => $this->integer()->notNull(),
-            'period_out' => $this->integer()->notNull(),
+            'half_year' => $this->integer()->notNull()->defaultValue(0),
             'template_flag' => $this->integer()->defaultValue(0),
             'template_name' => $this->string(256),
-            'confirm_flag' => $this->boolean(),
-            'confirm_teachers_id' => $this->integer(),
+            'doc_status' => $this->integer(),
+            'doc_sign_teachers_id' => $this->integer(),
+            'doc_sign_timestamp' => $this->integer(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
             'updated_by' => $this->integer(),
         ], $tableOptions);
 
+        $this->addForeignKey('studyplan_thematic_ibfk_1', 'studyplan_thematic', 'doc_sign_teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
         $this->addCommentOnTable('studyplan_thematic', 'Тематические планы инд. плана ученика');
         $this->db->createCommand()->resetSequence('studyplan_thematic', 1000)->execute();
 
@@ -93,8 +94,11 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
                          studyplan_thematic.id as studyplan_thematic_id,
                          studyplan_thematic.subject_sect_studyplan_id as subject_sect_studyplan_id,
                          studyplan_thematic.thematic_category as thematic_category,
-                         studyplan_thematic.period_in as period_in,
-                         studyplan_thematic.period_out as period_out
+                         studyplan_thematic.half_year as half_year,
+                         studyplan_thematic.doc_status as doc_status,
+                         studyplan_thematic.doc_sign_teachers_id as doc_sign_teachers_id,
+                         studyplan_thematic.doc_sign_timestamp as doc_sign_timestamp,
+                         studyplan_thematic.created_by as author_id
                  from studyplan
                  inner join studyplan_subject on (studyplan.id = studyplan_subject.studyplan_id)
                  inner join guide_subject_vid on (guide_subject_vid.id = studyplan_subject.subject_vid_id and guide_subject_vid.qty_min = 1 and guide_subject_vid.qty_max = 1)
@@ -116,8 +120,11 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
                          studyplan_thematic.id as studyplan_thematic_id,
                          subject_sect_studyplan.id as subject_sect_studyplan_id,
                          studyplan_thematic.thematic_category as thematic_category,
-                         studyplan_thematic.period_in as period_in,
-                         studyplan_thematic.period_out as period_out
+                        studyplan_thematic.half_year as half_year,
+                         studyplan_thematic.doc_status as doc_status,
+                         studyplan_thematic.doc_sign_teachers_id as doc_sign_teachers_id,
+                         studyplan_thematic.doc_sign_timestamp as doc_sign_timestamp,
+                         studyplan_thematic.created_by as author_id
                  from studyplan
                  inner join studyplan_subject on (studyplan_subject.studyplan_id = studyplan.id)
                  left join subject_sect on (subject_sect.subject_cat_id = studyplan_subject.subject_cat_id

@@ -59,9 +59,20 @@ $form = ActiveForm::begin([
 
                             <?= $form->field($model, 'thematic_category')->dropDownList(\common\models\studyplan\StudyplanThematic::getCategoryList()) ?>
 
-                            <?= $form->field($model, 'period_in')->widget(kartik\date\DatePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
+                            <?= $form->field($model, 'half_year')->dropDownList(\artsoft\helpers\ArtHelper::getHalfYearList());?>
 
-                            <?= $form->field($model, 'period_out')->widget(kartik\date\DatePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput() ?>
+                            <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(\common\models\studyplan\StudyplanThematic::getDocStatusList()/*, ['disabled' => $readonly]*/) ?>
+
+                            <?= $form->field($model, 'doc_sign_teachers_id')->widget(\kartik\select2\Select2::class, [
+                                'data' => RefBook::find('teachers_fio')->getList(),
+                                'options' => [
+                                    'disabled' => true,
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
+                            ]); ?>
 
                             <?= $form->field($model, 'template_flag')->checkbox() ?>
 

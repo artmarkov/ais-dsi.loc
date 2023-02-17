@@ -5,6 +5,7 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridView;
+use common\models\studyplan\StudyplanThematic;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\studyplan\search\StudyplanThematicViewSearch */
@@ -28,7 +29,7 @@ $columns = [
 //        'filterType' => GridView::FILTER_SELECT2,
 //        'filter' => \common\models\studyplan\StudyplanThematic::getCategoryList(),
         'value' => function ($model) {
-            return \common\models\studyplan\StudyplanThematic::getCategoryValue($model->thematic_category);
+            return StudyplanThematic::getCategoryValue($model->thematic_category);
         },
 //        'filterWidgetOptions' => [
 //            'pluginOptions' => ['allowClear' => true],
@@ -38,8 +39,32 @@ $columns = [
         'group' => true,
         'subGroupOf' => 1
     ],
-    'period_in:date',
-    'period_out:date',
+    [
+        'attribute' => 'half_year',
+        'value' => function (StudyplanThematic $model) {
+            return \artsoft\helpers\ArtHelper::getHalfYearValue($model->half_year);
+        },
+        'options' => ['style' => 'width:150px'],
+        'format' => 'raw',
+    ],
+    [
+        'attribute' => 'doc_status',
+        'filter' => StudyplanThematic::getDocStatusList(),
+        'value' => function (StudyplanThematic $model) {
+            return StudyplanThematic::getDocStatusValue($model->doc_status);
+        },
+        'options' => ['style' => 'width:150px'],
+        'format' => 'raw',
+    ],
+    [
+        'attribute' => 'doc_sign_teachers_id',
+        'filter' => RefBook::find('teachers_fio')->getList(),
+        'value' => function (StudyplanThematic $model) {
+            return RefBook::find('teachers_fio')->getValue($model->doc_sign_teachers_id);
+        },
+        'options' => ['style' => 'width:150px'],
+        'format' => 'raw',
+    ],
     [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
@@ -138,7 +163,7 @@ $columns = [
                     [
                         'columns' => [
                             ['content' => 'Дисциплина', 'options' => ['colspan' => 2, 'class' => 'text-center warning']],
-                            ['content' => 'План', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
+                            ['content' => 'План', 'options' => ['colspan' => 5, 'class' => 'text-center danger']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

@@ -43,8 +43,8 @@ class ProgrammController extends Controller
     public function actionIndex()
     {
         $this->stdout("\n");
-//        $this->addProgramm();
-//        $this->generateGroup();
+        $this->addProgramm();
+        $this->generateGroup();
         $this->addStudyplan();
         // print_r(array_unique($this->err));
     }
@@ -95,7 +95,6 @@ class ProgrammController extends Controller
                       )
 
               )*/
-
 
         // ini_set('memory_limit', '2024M');
         $f = file_get_contents('data/studyplan.txt');
@@ -150,7 +149,7 @@ class ProgrammController extends Controller
                             $subject_sect_studyplan_id = $this->setSubjectSectStaudyplan($model_programm, $model_subject, $dd);
                             $studyplan_subject_id = 0;
                         }
-                      //  $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
                         $this->setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
                     }
                 } catch (\Exception $e) {
@@ -240,15 +239,14 @@ class ProgrammController extends Controller
                     ->one();
                 if (!$model) {
                     $model = new StudyplanThematic();
-                    $per = ArtHelper::getHalfYearParams(null, null, $half);
 
                     $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
                     $model->studyplan_subject_id = $studyplan_subject_id;
                     $model->thematic_category = $ddd['items'][0]['category_id'] != '' ? 2 : 1;
-                    $model->period_in = \Yii::$app->formatter->asDate($per['timestamp_in'], 'php:d.m.Y');
-                    $model->period_out = \Yii::$app->formatter->asDate($per['timestamp_out'], 'php:d.m.Y');
-                    $model->confirm_flag = $ddd['confirm'];
-                    $model->confirm_teachers_id = $this->findByTeachers2($ddd['confirm_name']);
+                    $model->half_year = $half;
+                    $model->doc_status = $ddd['confirm'];
+                    $model->doc_sign_teachers_id = $this->findByTeachers2($ddd['confirm_name']);
+                    $model->doc_sign_timestamp = time();
 
                     if (!$model->save(false)) {
                         $transaction->rollBack();
