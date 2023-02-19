@@ -67,7 +67,4 @@ class StudyplanInvoicesView extends StudyplanInvoices
             $attr['studyplan_invoices_status'] = 'Статус платежа';
         return $attr;
     }
-    public function getStudentFio() {
-        return $this->student_id;
-    }
 }

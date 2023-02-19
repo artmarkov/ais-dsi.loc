@@ -33,57 +33,33 @@ $columns = [
     [
         'attribute' => 'studentFio',
         'width' => '310px',
-        'filter' => RefBook::find('students_fio')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model, $key, $index, $widget) {
 
-            return RefBook::find('students_fio')->getValue($model->getStudentFio());
+            return RefBook::find('students_fio')->getValue($model->student_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
     ],
     [
         'attribute' => 'programm_id',
-        'filter' => RefBook::find('education_programm_short_name')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model) {
             return RefBook::find('education_programm_short_name')->getValue($model->programm_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
     [
         'attribute' => 'education_cat_id',
-        'filter' => RefBook::find('education_cat_short')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model) {
             return RefBook::find('education_cat_short')->getValue($model->education_cat_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
     [
         'attribute' => 'course',
-        'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
-        'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model) {
             return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
