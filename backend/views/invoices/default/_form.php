@@ -20,7 +20,10 @@ use yii\helpers\Url;
 
     <div class="panel">
         <div class="panel-heading">
-            Карточка платежа
+            Карточка платежа: <?= $model->studyplan->student->fullName?>
+            <?php if (!$model->isNewRecord): ?>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
+            <?php endif; ?>
         </div>
         <div class="panel-body">
             <div class="row">

@@ -84,8 +84,6 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
     <div class="panel">
         <div class="panel-body">
             <div class="panel">
-
-
                 <div class="panel-body">
                     <div class="row">
                         <?= $form->field($model, "lesson_test_id")->widget(\kartik\select2\Select2::class, [

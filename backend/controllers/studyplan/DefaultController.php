@@ -10,6 +10,7 @@ use common\models\education\LessonProgressView;
 use common\models\history\ConsultScheduleHistory;
 use common\models\history\LessonItemsHistory;
 use common\models\history\StudyplanHistory;
+use common\models\history\StudyplanInvoicesHistory;
 use common\models\history\SubjectCharacteristicHistory;
 use common\models\history\SubjectScheduleHistory;
 use common\models\history\TeachersLoadHistory;
@@ -909,7 +910,6 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if ('create' == $mode) {
-
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление карточки';
             $modelStudyplanInvoices = new StudyplanInvoices();
@@ -925,11 +925,11 @@ class DefaultController extends MainController
             ]);
 
         } elseif ('history' == $mode && $objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/studypkan-perform', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
-            $modelStudyplanInvoices = StudyplanInvoices::findOne($objectId);
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Studyplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
+            $model = StudyplanInvoices::findOne($objectId);
             $data = new StudyplanInvoicesHistory($objectId);
-            return $this->renderIsAjax('@backend/views/history/index.php', compact(['modelProtocolItems', 'data']));
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
             $modelStudyplanInvoices = StudyplanInvoices::findOne($objectId);
@@ -940,16 +940,16 @@ class DefaultController extends MainController
 
         } elseif ($objectId) {
 
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Studyplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $modelStudyplanInvoices = StudyplanInvoices::findOne($objectId);
-            if (!isset($modelProtocolItems)) {
-                throw new NotFoundHttpException("The SchoolplanProtocolItems was not found.");
+            if (!isset($modelStudyplanInvoices)) {
+                throw new NotFoundHttpException("The StudyplanInvoices was not found.");
             }
 
-            if ($model->load(Yii::$app->request->post()) AND $modelStudyplanInvoices->save()) {
+            if ($modelStudyplanInvoices->load(Yii::$app->request->post()) AND $modelStudyplanInvoices->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction($model);
+                $this->getSubmitAction($modelStudyplanInvoices);
             }
 
             return $this->renderIsAjax('@backend/views/invoices/default/_form.php', [
@@ -959,14 +959,45 @@ class DefaultController extends MainController
             ]);
 
         } else {
-            $searchModel = new StudyplanInvoicesViewSearch();
+            $session = Yii::$app->session;
 
+            $day_in = 1;
+            $day_out = date("t");
+
+            $model_date = new DynamicModel(['date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
+            $model_date->addRule(['date_in', 'date_out' ], 'required')
+                ->addRule(['date_in', 'date_out'], 'string')
+                ->addRule(['programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $mon = date('m');
+                $year = date('Y');
+
+                $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:d.m.Y');
+                $model_date->date_out = $session->get('_invoices_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
+            }
+            $session->set('_invoices_date_in', $model_date->date_in);
+            $session->set('_invoices_date_out', $model_date->date_out);
+
+            $searchModel = new StudyplanInvoicesViewSearch();
             $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['studyplan_id'] = $id;
+            $params = ArrayHelper::merge(Yii::$app->request->getQueryParams(), [
+                $searchName => [
+                    'studyplan_id' => $id,
+                    'date_in' => $model_date->date_in,
+                    'date_out' => $model_date->date_out,
+                    'subject_id' => $model_date->subject_id,
+                    'subject_type_id' => $model_date->subject_type_id,
+                    'subject_type_sect_id' => $model_date->subject_type_sect_id,
+                    'subject_vid_id' => $model_date->subject_vid_id,
+                    'studyplan_invoices_status' => $model_date->studyplan_invoices_status,
+                    'direction_id' => $model_date->direction_id,
+                    'teachers_id' => $model_date->teachers_id,
+                    'status' => Studyplan::STATUS_ACTIVE,
+                ]
+            ]);
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('invoices-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('invoices-items', compact('dataProvider', 'searchModel', 'model_date'));
         }
     }
 

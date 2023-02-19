@@ -35,7 +35,8 @@ class DefaultController extends MainController
     public $modelHistoryClass = 'common\models\history\SchoolplanHistory';
 
     public function actionIndex()
-    { $session = Yii::$app->session;
+    {
+        $session = Yii::$app->session;
 
         $day_in = 1;
         $day_out = date("t");

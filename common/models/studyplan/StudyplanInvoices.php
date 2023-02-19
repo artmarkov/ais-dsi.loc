@@ -9,6 +9,7 @@ use artsoft\helpers\Schedule;
 use common\models\guidejob\Direction;
 use common\models\own\Invoices;
 use common\models\subject\SubjectType;
+use common\models\subject\SubjectVid;
 use common\models\teachers\Teachers;
 use common\widgets\qrcode\QRcode;
 use common\widgets\qrcode\widgets\Link;
@@ -152,6 +153,16 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
     public function getSubjectType()
     {
         return $this->hasOne(SubjectType::class, ['id' => 'type_id']);
+    }
+
+    /**
+     * Gets query for [[SubjectVid]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubjectVid()
+    {
+        return $this->hasOne(SubjectVid::class, ['id' => 'vid_id']);
     }
 
     /**

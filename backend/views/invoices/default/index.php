@@ -133,7 +133,7 @@ $columns = [
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
-                return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                     Url::to(['/invoices/default/create', 'studyplan_id' => $model->studyplan_id]), [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
@@ -142,7 +142,7 @@ $columns = [
                 );
             },
             'update' => function ($key, $model) {
-                return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                     Url::to(['/invoices/default/update', 'id' => $model->studyplan_invoices_id]), [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
@@ -151,7 +151,7 @@ $columns = [
                 );
             },
             'delete' => function ($key, $model) {
-                return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
+                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     Url::to(['/invoices/default/delete', 'id' => $model->studyplan_invoices_id]), [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),

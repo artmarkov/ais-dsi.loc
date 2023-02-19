@@ -33,57 +33,57 @@ $columns = [
     [
         'attribute' => 'studentFio',
         'width' => '310px',
-        'filter' => RefBook::find('students_fio')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('students_fio')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model, $key, $index, $widget) {
 
             return RefBook::find('students_fio')->getValue($model->getStudentFio());
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
     ],
     [
         'attribute' => 'programm_id',
-        'filter' => RefBook::find('education_programm_short_name')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('education_programm_short_name')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model) {
             return RefBook::find('education_programm_short_name')->getValue($model->programm_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
     [
         'attribute' => 'education_cat_id',
-        'filter' => RefBook::find('education_cat_short')->getList(),
-        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => RefBook::find('education_cat_short')->getList(),
+//        'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model) {
             return RefBook::find('education_cat_short')->getValue($model->education_cat_id);
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
     [
         'attribute' => 'course',
-        'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
-        'filterType' => GridView::FILTER_SELECT2,
+//        'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
+//        'filterType' => GridView::FILTER_SELECT2,
         'value' => function ($model) {
             return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
         },
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//        'filterWidgetOptions' => [
+//            'pluginOptions' => ['allowClear' => true],
+//        ],
+//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
@@ -133,8 +133,8 @@ $columns = [
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
-                return Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
-                    Url::to(['/invoices/default/create', 'studyplan_id' => $model->studyplan_id]), [
+                return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
+                    Url::to(['/studyplan/default/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id,  'mode' => 'create']), [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -142,8 +142,8 @@ $columns = [
                 );
             },
             'update' => function ($key, $model) {
-                return Html::a('<i class="fa fa-edit" aria-hidden="true"></i>',
-                    Url::to(['/invoices/default/update', 'id' => $model->studyplan_invoices_id]), [
+                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                    Url::to(['/studyplan/default/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id,  'mode' => 'update']), [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -151,8 +151,8 @@ $columns = [
                 );
             },
             'delete' => function ($key, $model) {
-                return Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
-                    Url::to(['/invoices/default/delete', 'id' => $model->studyplan_invoices_id]), [
+                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                    Url::to(['/studyplan/default/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id,  'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -178,7 +178,7 @@ $columns = [
 ?>
 <div class="studyplan-invoices-index">
     <div class="panel">
-        <?/*= $this->render('_search', compact('model_date'))*/ ?>
+        <?= $this->render('_search_inv', compact('model_date')) ?>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-6">

@@ -19,6 +19,7 @@ class DefaultController extends BaseController
 {
     public $modelClass       = 'common\models\studyplan\StudyplanInvoices';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanInvoicesViewSearch';
+    public $modelHistoryClass = 'common\models\history\StudyplanInvoicesHistory';
 
     public function actionIndex()
     {
