@@ -11,6 +11,8 @@ use common\models\activities\ActivitiesOver;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\EducationProgrammLevelSubject;
+use common\models\education\LessonItems;
+use common\models\education\LessonProgress;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\own\Department;
 use common\models\schedule\SubjectSchedule;
@@ -32,24 +34,22 @@ use yii\helpers\Console;
 /**
  * Description of ObjectController
  *
- * run console command:  php yii programm
+ * run console command:  php yii progress
  *
  * @author markov-av
  */
-class ProgrammController extends Controller
+class ProgressController extends Controller
 {
     public $err = [];
 
     public function actionIndex()
     {
         $this->stdout("\n");
-        $this->addProgramm();
-        $this->generateGroup();
-        $this->addStudyplan();
+        $this->addProgress();
         // print_r(array_unique($this->err));
     }
 
-    public function addStudyplan()
+    public function addProgress()
     {
         /*       [1186] => Array
           (
@@ -96,23 +96,23 @@ class ProgrammController extends Controller
 
               )*/
 
-        // ini_set('memory_limit', '2024M');
-        $f = file_get_contents('data/studyplan.txt');
+         ini_set('memory_limit', '2024M');
+        $f = file_get_contents('data/lesson_progress.json');
         $data = json_decode($f, true);
 //          print_r($data); die();
         foreach ($data as $i => $d) {
             if ($d['plan_year'] != '2022') {
                 continue;
             }
-//            if ($i > 100) {
-//                break;
-//            }
+            if ($i > 100) {
+                break;
+            }
             if (!$this->findByStudent($d['student_fio'])) {
                 $this->stdout('Не найден ученик: ' . $d['student_fio'] . " ", Console::FG_RED);
                 $this->stdout("\n");
                 continue;
             }
-            // print_r($d);
+             print_r($d);
             $model_programm = EducationProgramm::findOne($this->getProgrammId($d['plan_id']));
             if ($model_programm) {
                 try {
@@ -149,8 +149,7 @@ class ProgrammController extends Controller
                             $subject_sect_studyplan_id = $this->setSubjectSectStaudyplan($model_programm, $model_subject, $dd);
                             $studyplan_subject_id = 0;
                         }
-                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
-                        $this->setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+                        $this->setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
                     }
                 } catch (\Exception $e) {
                     // $transaction->rollBack();
@@ -165,115 +164,53 @@ class ProgrammController extends Controller
         }
     }
 
-    protected function setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd)
+
+    protected function setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $dd)
     {
-        foreach ([1000, 1001] as $direction_id) {
-            if ($direction_id == 1000) {
-                $teachers_id = $this->findByTeachers2($dd['teach']);
-                $load_time = $dd['week_time'];
-                $load_time_consult = $dd['year_time'];
-            } else {
-                $teachers_id = $this->findByTeachers2($dd['accomp']);
-                $load_time = $dd['week_time_accomp'];
-                $load_time_consult = null;
-            }
-            if (!$teachers_id) {
-                continue;
-            }
-            $model_load = TeachersLoad::find()
-                    ->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])
-                    ->andWhere(['=', 'studyplan_subject_id', $studyplan_subject_id])
-                    ->andWhere(['=', 'direction_id', $direction_id])
-                    ->andWhere(['=', 'teachers_id', $teachers_id])
-                    ->one() ?? new TeachersLoad();
-
-            $model_load->subject_sect_studyplan_id = $subject_sect_studyplan_id;
-            $model_load->studyplan_subject_id = $studyplan_subject_id;
-            $model_load->direction_id = $direction_id;
-            $model_load->teachers_id = $teachers_id;
-            $model_load->load_time = $load_time;
-            $model_load->load_time_consult = $load_time_consult;
-            if (!$model_load->save(false)) {
-                return false;
-            }
-
-            foreach ($dd['schedule'] as $iii => $ddd) {
-                // print_r( $ddd);
-                if (($ddd['accomp_flag'] == 1 && $direction_id == 1001) || $direction_id == 1000) {
-                    $model_schedule = (new Query())->from('subject_schedule')
-                        ->where(['=', 'teachers_load_id', $model_load->id])
-                        ->andWhere(['=', 'week_day', $ddd['week_day']])
-                        ->andWhere(['=', 'time_in', Schedule::encodeTime($ddd['time_in'])])
-                        ->andWhere(['=', 'time_out', Schedule::encodeTime($ddd['time_out'])])
-                        ->andWhere(['=', 'auditory_id', $this->findByAuditoryNum($ddd['auditory_number'])]);
-                    if ($ddd['week_num'] != 0) {
-                        $model_schedule->andWhere(['=', 'week_num', $ddd['week_num']]);
-                    }
-
-                    if (!$model_schedule->exists()) {
-                        $model_schedule = new SubjectSchedule();
-
-                        $model_schedule->teachers_load_id = $model_load->id;
-                        $model_schedule->week_num = $ddd['week_num'];
-                        $model_schedule->week_day = $ddd['week_day'];
-                        $model_schedule->time_in = $ddd['time_in'];
-                        $model_schedule->time_out = $ddd['time_out'];
-                        $model_schedule->auditory_id = $this->findByAuditoryNum($ddd['auditory_number']);
-                        $model_schedule->save(false);
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    protected function setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd)
-    {
-        foreach ($dd['plan_sub'] as $half => $ddd) {
+        foreach ($dd['lessons'] as $item => $ddd) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 $flag = true;
             try {
-                $model = StudyplanThematic::find()
+                $model = (new Query())->from('lesson_items')
                     ->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])
                     ->andWhere(['=', 'studyplan_subject_id', $studyplan_subject_id])
-                    ->one();
-                if (!$model) {
-                    $model = new StudyplanThematic();
+                    ->andWhere(['=', 'lesson_date', $ddd['lesson_date']])
+                    ->one() ?? new LessonItems();
 
                     $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
                     $model->studyplan_subject_id = $studyplan_subject_id;
-                    $model->thematic_category = $ddd['items'][0]['category_id'] != '' ? 2 : 1;
-                    $model->half_year = $half;
-                    $model->doc_status = $ddd['confirm'];
-                    $model->doc_sign_teachers_id = $this->findByTeachers2($ddd['confirm_name']);
-                    $model->doc_sign_timestamp = $ddd['confirm_timestamp'];
+                    $model->lesson_test_id = $this->getLessonTest($ddd['test_name']);
+                    $model->lesson_date = Yii::$app->formatter->asDate($ddd['lesson_date'], 'php:d.m.Y');
+                    $model->lesson_topic = $ddd['lesson_topic'];
 
                     if (!$model->save(false)) {
                         $transaction->rollBack();
                         break;
                     }
-                    foreach ($ddd['items'] as $iii => $dddd) {
+                    foreach ($ddd['progress'] as $iii => $dddd) {
                         // print_r( $ddd);
-                        $model_th = new StudyplanThematicItems();
-                        $model_th->studyplan_thematic_id = $model->id;
-                        $model_th->piece_category_id = $dddd['category_id'] != '' ? (integer)($dddd['category_id'] - 1 + 1000) : null;
-                        $model_th->author = $dddd['author_name'] ?? null;
-                        $model_th->piece_name = $dddd['piece_name'] ?? null;
-                        $model_th->task = $dddd['mission'] ?? null;
+                        $model_th = LessonProgress::find()
+                                ->where(['=', 'lesson_items_id', $model->id])
+                                ->andWhere(['=', 'studyplan_subject_id', $this->findStudyplanSub($dddd['fio'])])
+                                ->one() ?? new LessonProgress();
+                        $model_th->lesson_items_id = $model->id;
+                        $model_th->studyplan_subject_id = $this->findStudyplanSub($dddd['fio']);
+                        $model_th->lesson_mark_id = $this->findMark($dddd['mark']);
+
                         if (!($flag = $model_th->save(false))) {
                             $transaction->rollBack();
                             break;
                         }
                     }
-                }
+
                 if ($flag) {
                     $transaction->commit();
-//                    $this->stdout('Добавлен план: ' . $model->id . " ", Console::FG_GREY);
-//                    $this->stdout("\n");
+                    $this->stdout('Добавлен урок: ' . $model->id . " ", Console::FG_GREY);
+                    $this->stdout("\n");
                 }
             } catch (\Exception $e) {
                 $transaction->rollBack();
-                $this->stdout('Ошибка добавления плана: ', Console::FG_PURPLE);
+                $this->stdout('Ошибка добавления урока: ', Console::FG_PURPLE);
                 $this->stdout("\n");
             }
         }
@@ -343,121 +280,111 @@ class ProgrammController extends Controller
         return implode(',', array_unique($arr));
     }
 
-    /**
-     * @throws \Box\Spout\Common\Exception\IOException
-     * @throws \Box\Spout\Reader\Exception\ReaderNotOpenedException
-     * @throws \yii\base\Exception
-     * @throws \yii\db\Exception
-     */
-    public function addProgramm()
+
+    private function findMark($mark)
     {
-        $f = file_get_contents('data/programm.txt');
-        $data = json_decode($f, true);
-
-        foreach ($data as $i => $d) {
-            if ($d['plan_year'] != '2022') {
-                continue;
-            }
-            // print_r($d);
-            $model_programm = EducationProgramm::findOne($this->getProgrammId($d['plan_id']));
-            if ($model_programm) {
-                foreach ($d['study_sub'] as $ii => $dd) {
-                    foreach ($dd['time'] as $iii => $ddd) {
-                        if ($ddd['week_time'] == 0) {
-                            continue;
-                        }
-                        try {
-                            $transaction = \Yii::$app->db->beginTransaction();
-                            $model_level = EducationProgrammLevel::find()->where(['=', 'programm_id', $model_programm->id])->andWhere(['=', 'course', $ddd['course']])->one() ?? new EducationProgrammLevel();
-                            $model_level->programm_id = $model_programm->id;
-                            $model_level->course = $ddd['course'];
-                            if (!($flag = $model_level->save(false))) {
-                                $transaction->rollBack();
-                                break;
-                            }
-                            $model_subject = EducationProgrammLevelSubject::find()->where(['=', 'programm_level_id', $model_level->id])->andWhere(['=', 'subject_cat_id', $this->getSubjectCat($dd['cat_name'], $dd['sub_name'])])->andWhere(['=', 'subject_id', $this->getSubject($dd['sub_name'])])->one() ?? new EducationProgrammLevelSubject();
-                            $model_subject->programm_level_id = $model_level->id;
-                            $model_subject->subject_cat_id = $this->getSubjectCat($dd['cat_name'], $dd['sub_name']);
-                            $model_subject->subject_vid_id = $this->getSubjectVid2($dd['vid_id']);
-                            $model_subject->subject_id = $this->getSubject($dd['sub_name']);
-                            $model_subject->week_time = $ddd['week_time'];
-                            $model_subject->year_time_consult = $ddd['year_time'];
-
-                            if (!($flag = $model_subject->save(false))) {
-                                $transaction->rollBack();
-                                break;
-                            } else {
-                                $transaction->commit();
-                            }
-                        } catch (\Exception $e) {
-                            $transaction->rollBack();
-                            $this->stdout('Error ' . $i . "-" . $ii . "-" . $iii . " ", Console::FG_RED);
-                            $this->stdout("\n");
-                        }
-                    }
-                }
-            } else {
-                $this->stdout('Не найдена программа: ' . $d['plan_id'] . " ", Console::FG_RED);
-                $this->stdout("\n");
-            }
-        }
-    }
-
-    public function generateGroup()
-    {
-        $models = \Yii::$app->db->createCommand('SELECT *
-                                                    FROM generator_course_view 
-                                                    ')->queryAll();
-
-        if ($models) {
-            foreach ($models as $item => $model) {
-                $group = new SubjectSect();
-                $group->programm_list = explode(',', $model['programm_list']);
-                $group->course_list = explode(',', $model['course_list']);
-                $group->term_mastering = $model['term_mastering'];
-                $group->subject_cat_id = $model['subject_cat_id'];
-                $group->subject_id = $model['subject_id'];
-                $group->subject_vid_id = $model['subject_vid_id'];
-                $group->subject_type_id = 1001;
-                $group->sub_group_qty = $this->getGroupQty($model['term_mastering']);
-                $group->sect_name = $model['sect_name'];
-                $group->course_flag = $model['course_flag'];
-                $group->save(false);
-            }
-            return true;
-        }
-        $this->stdout('Не загружены программы: ', Console::FG_RED);
-        $this->stdout("\n");
-        return false;
-    }
-
-    private function getGroupQty($qty)
-    {
-
-        switch ($qty) {
-            case '1' :
-                $sub_group_qty = 3;
+        $id = null;
+        switch ($mark) {
+            case 'ЗЧ' :
+                $id = 1000;
+                break;
+            case 'НЗ' :
+                $id = 1001;
+                break;
+            case 'НА' :
+                $id = 1002;
                 break;
             case '2' :
-                $sub_group_qty = 6;
+                $id = 1003;
+                break;
+            case '3-' :
+                $id = 1004;
                 break;
             case '3' :
+                $id = 1005;
+                break;
+            case '3+' :
+                $id = 1006;
+                break;
+            case '4-' :
+                $id = 1007;
+                break;
             case '4' :
-                $sub_group_qty = 5;
+                $id = 1008;
+                break;
+            case '4+' :
+                $id = 1009;
+                break;
+            case '5-' :
+                $id = 1010;
                 break;
             case '5' :
-                $sub_group_qty = 6;
+                $id = 1011;
                 break;
-            case '7' :
-            case '8' :
-                $sub_group_qty = 12;
+            case '5+' :
+                $id = 1012;
                 break;
-            default :
-                $sub_group_qty = 8;
+            case 'Н' :
+                $id = 1013;
+                break;
+             case 'П' :
+                $id = 1014;
+                break;
+             case 'Б' :
+                $id = 1015;
+                break;
+             case 'О' :
+                $id = 1016;
+                break;
+             case '*' :
+                $id = 1017;
+                break;
+        }
+        return $id;
+    }
 
+  private function getLessonTest($m)
+    {
+        $id = 1000;
+        switch ($m) {
+            case 0 :
+                $id = 1000;
+                break;
+            case 16 :
+                $id = 1001;
+                break;
+            case 8 :
+                $id = 1002;
+                break;
+            case 30 :
+                $id = 1003;
+                break;
+            case 32 :
+                $id = 1004;
+                break;
+            case 34 :
+                $id = 1005;
+                break;
+            case 40 :
+                $id = 1006;
+                break;
+            case 60 :
+                $id = 1007;
+                break;
+            case 80 :
+                $id = 1008;
+                break;
+            case  81:
+            case  125:
+            case  126:
+                $id = 1009;
+                break;
+            case 127 :
+                $id = 1010;
+                break;
 
         }
-        return $sub_group_qty;
+        return $id;
     }
 
 
