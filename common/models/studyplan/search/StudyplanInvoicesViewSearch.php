@@ -27,10 +27,10 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
     public function rules()
     {
         return [
-            [['studyplan_id', 'programm_id', 'student_id', 'plan_year', 'course', 'status', 'education_cat_id', 'studyplan_invoices_id', 'plan_year', 'studyplan_invoices_status', 'invoices_id'], 'integer'],
+            [['studyplan_id', 'programm_id', 'student_id', 'student_fio', 'plan_year', 'course', 'status', 'education_cat_id', 'studyplan_invoices_id', 'plan_year', 'studyplan_invoices_status', 'invoices_id'], 'integer'],
             [['month_time_fact', 'invoices_date', 'payment_time', 'payment_time_fact'], 'integer'],
             [['invoices_summ'], 'number'],
-            [['studyplan_subject_ids', 'subject_list', 'subject_type_list', 'subject_type_sect_list', 'subject_vid_list', 'direction_list', 'teachers_list'], 'string'],
+            [['studyplan_subjects', 'subject_list', 'subject_type_list', 'subject_type_sect_list', 'subject_vid_list', 'direction_list', 'teachers_list'], 'string'],
             [['date_in', 'date_out', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'direction_id', 'teachers_id'], 'safe'],
         ];
     }
@@ -90,6 +90,8 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
             'payment_time_fact' => $this->payment_time_fact,
             'invoices_summ' => $this->invoices_summ
         ]);
+        $query->andFilterWhere(['like', 'student_fio', $this->student_fio]);
+
         if ($this->date_in && $this->date_out) {
             $query->andWhere(['OR', ['between', 'invoices_date', Yii::$app->formatter->asTimestamp($this->date_in), Yii::$app->formatter->asTimestamp($this->date_out)], ['IS', 'invoices_date', NULL]]);
         }

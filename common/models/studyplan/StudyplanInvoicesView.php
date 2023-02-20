@@ -14,7 +14,10 @@ use Yii;
  * @property int|null $course
  * @property int|null $status
  * @property int|null $education_cat_id
- * @property string|null $studyplan_subject_ids
+ * @property int|null $programm_short_name
+ * @property int|null $education_cat_short_name
+ * @property int|null $student_fio
+ * @property string|null $studyplan_subjects
  * @property string|null $subject_list
  * @property string|null $subject_type_list
  * @property string|null $subject_type_sect_list
@@ -51,12 +54,12 @@ class StudyplanInvoicesView extends StudyplanInvoices
             $attr['studyplan_id'] = Yii::t('art/guide', 'Studyplan');
             $attr['programm_id'] = Yii::t('art/studyplan', 'Education Programm');
             $attr['student_id'] = Yii::t('art/student', 'Student');
-            $attr['studentFio'] = Yii::t('art/student', 'Student');
+            $attr['student_fio'] = Yii::t('art/student', 'Student');
             $attr['plan_year'] = Yii::t('art/studyplan', 'Plan Year');
             $attr['course'] = Yii::t('art/guide', 'Course');
             $attr['status'] = Yii::t('art/guide', 'Status');
             $attr['education_cat_id'] = 'Вид программы';
-            $attr['studyplan_subject_ids'] = 'Дисциплины';
+            $attr['studyplan_subjects'] = 'Дисциплины';
             $attr['subject_list'] = 'Предметы';
             $attr['subject_type_list'] = 'Тип занятия';
             $attr['subject_type_sect_list'] = 'Тип занятия';

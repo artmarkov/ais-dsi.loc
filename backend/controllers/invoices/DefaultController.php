@@ -2,6 +2,9 @@
 
 namespace backend\controllers\invoices;
 
+use artsoft\helpers\ArtHelper;
+use artsoft\models\OwnerAccess;
+use artsoft\models\User;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanInvoicesView;
@@ -88,5 +91,27 @@ class DefaultController extends BaseController
     public function actionMakeInvoices($id) {
         $model = $this->findModel($id);
       return  $model->makeDocx();
+    }
+
+    public function actionBulkNew()
+    {
+       // print_r(Yii::$app->request->post('selection', [])); die();
+        $model = new $this->modelClass;
+        if (!Yii::$app->request->post('selection')) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр POST selection.");
+        }
+            $studyplanIds = Yii::$app->request->post('selection', []);
+//        if (Yii::$app->request->post('selection')) {
+//            $modelClass = $this->modelClass;
+//            foreach (Yii::$app->request->post('selection', []) as $id) {
+//                $where = ['id' => $id];
+//
+//
+//            }
+//        }
+        return $this->renderIsAjax($this->createView, [
+            'model' => $model,
+            'studyplanIds' => $studyplanIds,
+        ]);
     }
 }

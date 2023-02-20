@@ -21,7 +21,6 @@ $columns = [
         return ['value' => $model->studyplan_invoices_id];
     }
       ],
-    ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'student_id',
         'value' => function ($model) {
@@ -31,18 +30,18 @@ $columns = [
         'group' => true,  // enable grouping
     ],
     [
-        'attribute' => 'studentFio',
+        'attribute' => 'student_fio',
         'width' => '310px',
         'value' => function ($model, $key, $index, $widget) {
 
-            return RefBook::find('students_fio')->getValue($model->student_id);
+            return $model->student_fio;
         },
         'group' => true,  // enable grouping
     ],
     [
         'attribute' => 'programm_id',
         'value' => function ($model) {
-            return RefBook::find('education_programm_short_name')->getValue($model->programm_id);
+            return $model->programm_short_name;
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 2
@@ -50,7 +49,7 @@ $columns = [
     [
         'attribute' => 'education_cat_id',
         'value' => function ($model) {
-            return RefBook::find('education_cat_short')->getValue($model->education_cat_id);
+            return $model->education_cat_short_name;
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 2
@@ -64,14 +63,14 @@ $columns = [
         'subGroupOf' => 2
     ],
     [
-        'attribute' => 'studyplan_subject_ids',
+        'attribute' => 'studyplan_subjects',
         'value' => function ($model) {
             $v = [];
-            foreach (explode(',', $model->studyplan_subject_ids) as $studyplan_subject_id) {
-                if (!$studyplan_subject_id) {
+            foreach (explode(',', $model->studyplan_subjects) as $studyplan_subject) {
+                if (!$studyplan_subject) {
                     continue;
                 }
-                $v[] = RefBook::find('subject_memo_3')->getValue($studyplan_subject_id);
+                $v[] = $studyplan_subject;
             }
             return implode('<br/> ', $v);
         },
@@ -137,6 +136,15 @@ $columns = [
                     ]
                 );
             },
+            'print' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-print" aria-hidden="true"></span>',
+                    Url::to(['/invoices/default/make-invoices', 'id' => $model->studyplan_invoices_id]), [
+                        'title' => Yii::t('art', 'Print'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            },
         ],
         'visibleButtons' => [
             'create' => function ($model) {
@@ -146,6 +154,9 @@ $columns = [
                 return $model->studyplan_invoices_id !== null;
             },
             'update' => function ($model) {
+                return $model->studyplan_invoices_id !== null;
+            },
+            'print' => function ($model) {
                 return $model->studyplan_invoices_id !== null;
             }
         ],
@@ -187,8 +198,8 @@ $columns = [
                     'gridId' => 'studyplan-invoices-grid',
                     'actions' => [
                         Url::to(['bulk-delete']) => 'Удалить квитанции',
-                        Url::to(['bulk-load']) => 'Выгрузить квитанции в Excel',
-                        Url::to(['bulk-new']) => 'Создать новые квитанции',
+                       /* Url::to(['bulk-load']) => 'Выгрузить квитанции в Word',
+                        Url::to(['bulk-new']) => 'Создать новые квитанции',*/
                     ] //Configure here you bulk actions
                 ],
                 'columns' => $columns,

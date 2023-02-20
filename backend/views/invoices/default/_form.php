@@ -28,6 +28,12 @@ use yii\helpers\Url;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
+                   <!-- --><?php
+/*                    foreach ($studyplanIds as $index => $studyplan_id) {
+                        echo \yii\helpers\Html::activeHiddenInput($model, "[{$index}]studyplan_id");
+
+                    }
+                    */?>
                     <?php
                     echo \yii\helpers\Html::activeHiddenInput($model, 'studyplan_id');
                     ?>
