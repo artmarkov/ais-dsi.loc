@@ -11,6 +11,8 @@ use common\models\activities\ActivitiesOver;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\EducationProgrammLevelSubject;
+use common\models\education\LessonItems;
+use common\models\education\LessonProgress;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\own\Department;
 use common\models\schedule\SubjectSchedule;
@@ -44,8 +46,8 @@ class ProgrammController extends Controller
     {
         $this->stdout("\n");
         $this->addProgramm();
-        $this->generateGroup();
-        $this->addStudyplan();
+//        $this->generateGroup();
+//        $this->addStudyplan();
         // print_r(array_unique($this->err));
     }
 
@@ -96,8 +98,8 @@ class ProgrammController extends Controller
 
               )*/
 
-        // ini_set('memory_limit', '2024M');
-        $f = file_get_contents('data/studyplan.txt');
+         ini_set('memory_limit', '2024M');
+        $f = file_get_contents('data/studyplan.json');
         $data = json_decode($f, true);
 //          print_r($data); die();
         foreach ($data as $i => $d) {
@@ -151,6 +153,7 @@ class ProgrammController extends Controller
                         }
                         $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
                         $this->setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+                        $this->setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $model_subject, $dd);
                     }
                 } catch (\Exception $e) {
                     // $transaction->rollBack();
@@ -549,9 +552,6 @@ class ProgrammController extends Controller
             case 'Струнный ансамбль' :
                 $name = 'Ансамбль';
                 break;
-            case 'Основы актерского мастерства' :
-                $name = 'Основы сценического мастерства';
-                break;
             case 'Классическая хореография' :
                 $name = 'Классический танец';
                 break;
@@ -606,7 +606,8 @@ class ProgrammController extends Controller
             590 => 1019, 593 => 1020, 575 => 1021, 577 => 1022, 579 => 1023, 571 => 1024, 582 => 1026, 583 => 1027, 536 => 1050,
             580 => 1028, 581 => 1029, 556 => 1030, 559 => 1032, 537 => 1034, 542 => 1035, 540 => 1036, 534 => 1037, 552 => 1038,
             544 => 1039, 538 => 1040, 543 => 1041, 547 => 1042, 550 => 1043, 546 => 1044, 549 => 1045, 551 => 1046, 554 => 1047,
-            555 => 1048, 563 => 1049, 539 => 1051, 545 => 1052, 558 => 1053, 548 => 1053, 565 => 1055, 572 => 1012, 535 => 1033, 597 => 1054
+            555 => 1048, 563 => 1049, 539 => 1051, 545 => 1052, 558 => 1053, 565 => 1055, 572 => 1012, 535 => 1033, 597 => 1054,
+            595 => 1056, 541 => 1057, 548 => 1058, 566 => 1059,
         ];
 
         return $ids[$id] ?? null;
@@ -671,6 +672,190 @@ class ProgrammController extends Controller
                 'num' => $num
             ])->queryOne();
         return $auditory['id'];
+    }
+
+    protected function setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $model_subject, $dd)
+    {
+        foreach ($dd['lessons'] as $item => $ddd) {
+            // $transaction = \Yii::$app->db->beginTransaction();
+            $flag = true;
+            try {
+                $model = LessonItems::find()->from('lesson_items')
+                        ->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])
+                        ->andWhere(['=', 'studyplan_subject_id', $studyplan_subject_id])
+                        ->andWhere(['=', 'lesson_date', $ddd['lesson_date']])
+                        ->one() ?? new LessonItems();
+
+                $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
+                $model->studyplan_subject_id = $studyplan_subject_id;
+                $model->lesson_test_id = $this->getLessonTest($ddd['test_id']);
+                $model->lesson_date = Yii::$app->formatter->asDate($ddd['lesson_date'], 'php:d.m.Y');
+                $model->lesson_topic = $ddd['lesson_topic'];
+
+                if (!$model->save(false)) {
+                    //  $transaction->rollBack();
+                    break;
+                }
+                foreach ($ddd['progress'] as $iii => $dddd) {
+                    // print_r( $ddd);
+                    $studyplanSubjectId = $this->findByStudyplanSubject($model_subject, $dddd['fio']);
+                    if($studyplan_subject_id) {
+                        $model_th = LessonProgress::find()
+                                ->where(['=', 'lesson_items_id', $model->id])
+                                ->andWhere(['=', 'studyplan_subject_id', $studyplanSubjectId])
+                                ->one() ?? new LessonProgress();
+                        $model_th->lesson_items_id = $model->id;
+                        $model_th->studyplan_subject_id = $studyplanSubjectId;
+                        $model_th->lesson_mark_id = $this->findMark($dddd['mark']);
+
+                        if (!($model_th->save(false))) {
+                            // $transaction->rollBack();
+                            break;
+                        }
+                    }
+                }
+
+                if ($flag) {
+                    // $transaction->commit();
+//                    $this->stdout('Добавлен урок: ' . $model->id . " ", Console::FG_GREY);
+//                    $this->stdout("\n");
+                }
+            } catch (\Exception $e) {
+                // $transaction->rollBack();
+                $this->stdout('Ошибка добавления урока: ', Console::FG_PURPLE);
+                $this->stdout("\n");
+            }
+        }
+        return true;
+    }
+
+    public function findByStudyplanSubject($model_subject, $full_name)
+    {
+        $user = \Yii::$app->db->createCommand('SELECT studyplan_subject.id as id
+                                                    FROM studyplan_subject
+                                                    JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+                                                    JOIN students_view ON students_view.students_id = studyplan.student_id
+                                                    WHERE fullname=:fullname
+                                                    AND studyplan_subject.studyplan_id=:studyplan_id 
+                                                    AND studyplan_subject.subject_cat_id=:subject_cat_id 
+                                                    AND studyplan_subject.subject_id=:subject_id 
+                                                    AND studyplan_subject.subject_type_id=:subject_type_id 
+                                                    ',
+            [
+                'fullname' => $this->lat2cyr($full_name),
+                'studyplan_id' => $model_subject->studyplan_id ,
+                'subject_cat_id' => $model_subject->subject_cat_id ,
+                'subject_id' => $model_subject->subject_id ,
+                'subject_type_id' => $model_subject->subject_type_id ,
+            ])->queryOne();
+        return $user['id'] ?? false;
+    }
+
+
+    private function findMark($mark)
+    {
+        $id = null;
+        switch ($mark) {
+            case 'ЗЧ' :
+                $id = 1000;
+                break;
+            case 'НЗ' :
+                $id = 1001;
+                break;
+            case 'НА' :
+                $id = 1002;
+                break;
+            case '2' :
+                $id = 1003;
+                break;
+            case '3-' :
+                $id = 1004;
+                break;
+            case '3' :
+                $id = 1005;
+                break;
+            case '3+' :
+                $id = 1006;
+                break;
+            case '4-' :
+                $id = 1007;
+                break;
+            case '4' :
+                $id = 1008;
+                break;
+            case '4+' :
+                $id = 1009;
+                break;
+            case '5-' :
+                $id = 1010;
+                break;
+            case '5' :
+                $id = 1011;
+                break;
+            case '5+' :
+                $id = 1012;
+                break;
+            case 'Н' :
+                $id = 1013;
+                break;
+            case 'П' :
+                $id = 1014;
+                break;
+            case 'Б' :
+                $id = 1015;
+                break;
+            case 'О' :
+                $id = 1016;
+                break;
+            case '*' :
+                $id = 1017;
+                break;
+        }
+        return $id;
+    }
+
+    private function getLessonTest($m)
+    {
+        $id = 1000;
+        switch ($m) {
+            case 0 :
+                $id = 1000;
+                break;
+            case 16 :
+                $id = 1001;
+                break;
+            case 8 :
+                $id = 1002;
+                break;
+            case 30 :
+                $id = 1003;
+                break;
+            case 32 :
+                $id = 1004;
+                break;
+            case 34 :
+                $id = 1005;
+                break;
+            case 40 :
+                $id = 1006;
+                break;
+            case 60 :
+                $id = 1007;
+                break;
+            case 80 :
+                $id = 1008;
+                break;
+            case  81:
+            case  125:
+            case  126:
+                $id = 1009;
+                break;
+            case 127 :
+                $id = 1010;
+                break;
+
+        }
+        return $id;
     }
 
 }

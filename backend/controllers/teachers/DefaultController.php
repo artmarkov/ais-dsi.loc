@@ -751,7 +751,7 @@ class DefaultController extends MainController
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
             return $this->redirect($this->getRedirectPage('delete', $model));
         } elseif ($objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Journal Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Journal Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
 
             $model = LessonItems::findOne($objectId);

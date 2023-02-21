@@ -96,7 +96,8 @@ return [
             'dateFormat' => 'php:d.m.Y',
             'timeFormat' => 'php:H:i',
             'defaultTimeZone' => 'Europe/Moscow',
-            'sizeFormatBase' => 1000
+            'sizeFormatBase' => 1000,
+            'nullDisplay' => '&nbsp;',
         ],
     ],
     'modules' => [
