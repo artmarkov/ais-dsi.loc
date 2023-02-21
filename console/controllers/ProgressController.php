@@ -536,12 +536,14 @@ class ProgressController extends Controller
                                                     AND studyplan_subject.studyplan_id=:studyplan_id 
                                                     AND studyplan_subject.subject_cat_id=:subject_cat_id 
                                                     AND studyplan_subject.subject_id=:subject_id 
+                                                    AND studyplan_subject.subject_type_id=:subject_type_id 
                                                     ',
             [
                 'fullname' => $this->lat2cyr($full_name),
                 'studyplan_id' => $model_subject->studyplan_id ,
                 'subject_cat_id' => $model_subject->subject_cat_id ,
                 'subject_id' => $model_subject->subject_id ,
+                'subject_type_id' => $model_subject->subject_type_id ,
             ])->queryOne();
         return $user['id'] ?? false;
     }
