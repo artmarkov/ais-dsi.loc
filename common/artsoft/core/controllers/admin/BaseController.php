@@ -259,6 +259,26 @@ abstract class BaseController extends \artsoft\controllers\BaseController
     }
 
     /**
+     * @param $id
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionClone($id)
+    {
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        $tmpModel = $this->findModel($id);
+        $model = new $this->modelClass;
+        $model->setAttributes($tmpModel->attributes);
+
+        if ($model->save()) {
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been cloned.'));
+        }
+
+        return $this->actionIndex();
+    }
+
+    /**
      * @param string $attribute
      * @param int $id
      */

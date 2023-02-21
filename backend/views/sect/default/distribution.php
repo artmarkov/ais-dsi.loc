@@ -15,6 +15,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $sub_group_qty = $model->sub_group_qty;
 $course_list = $model->course_list;
+if($course_list[0] == null) {
+    $course_list = range(1, $model->term_mastering);
+}
 $class_index = $model->class_index;
 $course_flag = $model->course_flag;
 $group = 0;

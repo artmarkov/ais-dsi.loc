@@ -79,6 +79,7 @@ class DefaultController extends MainController
         ]);
     }
 
+
     /**
      * @param int $id
      * @return mixed|string
@@ -174,16 +175,22 @@ class DefaultController extends MainController
 
             if (isset($_POST['SubjectSectStudyplan'])) {
                 $modelsSubjectSectStudyplan = $model->getSubjectSectStudyplans($model_date->plan_year);
+                $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
+
                 $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
                 Model::loadMultiple($modelsSubjectSectStudyplan, Yii::$app->request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
 
                 // validate all models
-               // $valid = Model::validateMultiple($modelsSubjectSectStudyplan);  // не работает с course = ''
-                $valid = true;
+                $valid = Model::validateMultiple($modelsSubjectSectStudyplan);
+//                $valid = true;
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
                         $flag = true;
+                        if (!empty($deletedIDs)) {
+                            SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
+                        }
                         foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
                             if (!($flag = $modelSubjectSectStudyplan->save(false))) {
                                 $transaction->rollBack();

@@ -96,8 +96,8 @@ $form = ActiveForm::begin([
                     <?= $form->field($model, 'sub_group_qty')->widget(kartik\touchspin\TouchSpin::class, [
                         'disabled' => $readonly,
                         'pluginOptions' => [
-                            'min' => $model->sub_group_qty ?? 0,
-                            'max' => 15,
+//                            'min' => $model->sub_group_qty ?? 0,
+//                            'max' => 15,
                         ]]);
                     ?>
                     <?= $form->field($model, 'course_list')->widget(\kartik\select2\Select2::className(), [

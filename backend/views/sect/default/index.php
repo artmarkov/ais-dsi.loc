@@ -7,6 +7,7 @@ use common\models\subjectsect\SubjectSect;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 use artsoft\helpers\RefBook;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\subjectsect\search\SubjectSectSearch */
@@ -50,12 +51,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'subject-sect-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                       /* 'bulkActionOptions' => [
+                        'bulkActionOptions' => [
                             'gridId' => 'subject-sect-grid',
                             'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
-                        ],*/
+                        ],
                         'columns' => [
-//                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
                                 'value' => function (SubjectSect $model) {
@@ -144,7 +145,19 @@ $this->params['breadcrumbs'][] = $this->title;
 //                                    return [$action, 'id' => $key];
 //                                },
                                 'controller' => '/sect/default',
-                                // 'template' => '{view} {update} {delete}',
+                                'template' => '{view} {update} {clone} {delete}',
+                                'buttons' => [
+                                    'clone' => function ($key, $model) {
+                                        return Html::a('<span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>',
+                                                Url::to(['/sect/default/clone', 'id' => $model->id]), [
+                                                'title' => Yii::t('art', 'Clone'),
+                                                'data-method' => 'post',
+                                                'data-confirm' => Yii::t('art', 'Are you sure you want to clone this item?'),
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
 //                                'headerOptions' => ['class' => 'kartik-sheet-style'],
                             ],
                         ],

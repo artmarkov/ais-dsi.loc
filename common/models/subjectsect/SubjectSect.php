@@ -3,12 +3,15 @@
 namespace common\models\subjectsect;
 
 use artsoft\behaviors\ArrayFieldBehavior;
+use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
+use artsoft\helpers\Schedule;
 use common\models\schedule\SubjectScheduleView;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
 use common\models\subject\SubjectVid;
+use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -88,11 +91,21 @@ class SubjectSect extends \artsoft\db\ActiveRecord
             [['sect_name'], 'string', 'max' => 127],
             [['class_index'], 'string', 'max' => 32],
             [['description'], 'string', 'max' => 1024],
+            [['term_mastering'], 'checkCourseAndTerm', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
             [['subject_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectVid::class, 'targetAttribute' => ['subject_vid_id' => 'id']],
             [['subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => Subject::class, 'targetAttribute' => ['subject_id' => 'id']],
         ];
+    }
+
+    public function checkCourseAndTerm($attribute, $params)
+    {
+        if($this->course_list[0] != '') {
+            if ($this->$attribute < max($this->course_list)) {
+                $this->addError($attribute, 'Некорректно заданы атрибуты \'Ограничение по классам\' и \'Срок обучения\'.');
+            }
+        }
     }
 
     /**
@@ -224,7 +237,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
      */
     public function getStudyplanForProgramms($plan_year, $course = null, $readonly = false)
     {
-       // $this->subject_type_id = $this->subject_type_id == null ? 0 : $this->subject_type_id;
+        // $this->subject_type_id = $this->subject_type_id == null ? 0 : $this->subject_type_id;
         $course = $course == null ? 0 : $course;
         $programm_list = implode(',', $this->programm_list);
         $funcSql = <<< SQL
@@ -338,7 +351,10 @@ SQL;
         $modelsSubjectSectStudyplan = [];
         $sub_group_qty = $this->sub_group_qty;
         $course_list = $this->course_list;
-
+        if ($course_list[0] == null) {
+            $course_list = range(1, $this->term_mastering);
+        }
+//        print_r($course_list);
         if ($this->course_flag) {
             for ($group = 1; $group <= $sub_group_qty; $group++) {
                 foreach ($course_list as $item => $course) {
@@ -446,4 +462,5 @@ SQL;
 
         return parent::beforeSave($insert);
     }
+
 }

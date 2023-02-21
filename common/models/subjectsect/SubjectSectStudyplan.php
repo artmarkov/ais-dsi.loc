@@ -116,6 +116,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
     {
         return $this->hasOne(SubjectType::class, ['id' => 'subject_type_id']);
     }
+
     /**
      * @return array
      */
@@ -194,4 +195,13 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
         $this->save(false);
         return $this;
     }
+
+//    public function beforeDelete()
+//    {
+//        $ids = $this->getTeachersLoads()->column();
+//        if ($ids) {
+//            TeachersLoad::deleteAll(['id' => $ids]);
+//        }
+//        return parent::beforeDelete();
+//    }
 }

@@ -150,6 +150,7 @@ return [
     'Your item has been updated.' => 'Запись успешно обновлена.',
     'Your item has been created.' => 'Запись успешно создана.',
     'Your item has been deleted.' => 'Запись успешно удалена.',
+    'Your item has been cloned.' => 'Запись успешно склонирована.',
     'Yes' => 'Да',
     'No' => 'Нет',
     'Save & Exit' => 'Сохранить и выйти',
@@ -170,4 +171,6 @@ return [
     'Agreed' => 'Согласовано',
     'Wait' => 'На согласовании',
     'Canceled' => 'Отменено',
+    'Clone' => 'Клонировать',
+    'Are you sure you want to clone this item?' => 'Вы уверены, что хотите клонировать данную запись?',
 ];

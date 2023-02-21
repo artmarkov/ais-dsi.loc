@@ -121,9 +121,17 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
         ], $tableOptions);
 
         $this->addCommentOnTable('lesson_items', 'Уроки дисциплин плана учащегося');
+
+        $this->createIndex('lesson_items_subject_sect_studyplan_id', 'lesson_items', ['subject_sect_studyplan_id']);
+        $this->createIndex('lesson_items_studyplan_subject_id', 'lesson_items', ['studyplan_subject_id']);
+        $this->createIndex('lesson_items_lesson_test_id', 'lesson_items', ['lesson_test_id']);
+        $this->createIndex('lesson_items_lesson_date', 'lesson_items', ['lesson_date']);
+
         $this->addForeignKey('lesson_items_ibfk_1', 'lesson_items', 'lesson_test_id', 'guide_lesson_test', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('lesson_items_ibfk_2', 'lesson_items', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('lesson_items_ibfk_3', 'lesson_items', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('lesson_items_ibfk_4', 'lesson_items', 'subject_sect_studyplan_id', 'subject_sect_studyplan', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('lesson_items_ibfk_5', 'lesson_items', 'studyplan_subject_id', 'studyplan_subject', 'id', 'CASCADE', 'CASCADE');
 
         $this->createTableWithHistory('lesson_progress', [
             'id' => $this->primaryKey(),
@@ -137,6 +145,9 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
             'updated_by' => $this->integer(),
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
+        $this->createIndex('lesson_progress_lesson_items_id', 'lesson_progress', ['lesson_items_id']);
+        $this->createIndex('lesson_progress_studyplan_subject_id', 'lesson_progress', ['studyplan_subject_id']);
+        $this->createIndex('lesson_progress_lesson_mark_id', 'lesson_progress', ['lesson_mark_id']);
         $this->addForeignKey('lesson_progress_ibfk_1', 'lesson_progress', 'lesson_items_id', 'lesson_items', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('lesson_progress_ibfk_2', 'lesson_progress', 'studyplan_subject_id', 'studyplan_subject', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('lesson_progress_ibfk_3', 'lesson_progress', 'lesson_mark_id', 'guide_lesson_mark', 'id', 'NO ACTION', 'NO ACTION');

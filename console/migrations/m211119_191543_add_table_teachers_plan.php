@@ -32,6 +32,8 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
         $this->createIndex('teachers_id', 'teachers_load', 'teachers_id');
         $this->addForeignKey('teachers_load_ibfk_1', 'teachers_load', 'direction_id', 'guide_teachers_direction', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('teachers_load_ibfk_2', 'teachers_load', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('teachers_load_ibfk_3', 'teachers_load', 'subject_sect_studyplan_id', 'subject_sect_studyplan', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('teachers_load_ibfk_4', 'teachers_load', 'studyplan_subject_id', 'studyplan_subject', 'id', 'CASCADE', 'CASCADE');
 
 
         $this->db->createCommand()->createView('teachers_load_studyplan_view', '

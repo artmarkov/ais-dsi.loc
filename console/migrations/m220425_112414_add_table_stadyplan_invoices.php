@@ -35,13 +35,13 @@ class m220425_112414_add_table_stadyplan_invoices extends \artsoft\db\BaseMigrat
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addForeignKey('studyplan_invoices_1', 'studyplan_invoices', 'studyplan_id', 'studyplan', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('studyplan_invoices_2', 'studyplan_invoices', 'invoices_id', 'invoices', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('studyplan_invoices_3', 'studyplan_invoices', 'direction_id', 'guide_teachers_direction', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('studyplan_invoices_4', 'studyplan_invoices', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('studyplan_invoices_5', 'studyplan_invoices', 'type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('studyplan_invoices_6', 'studyplan_invoices', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('studyplan_invoices_7', 'studyplan_invoices', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('studyplan_invoices_ibfk_1', 'studyplan_invoices', 'studyplan_id', 'studyplan', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('studyplan_invoices_ibfk_2', 'studyplan_invoices', 'invoices_id', 'invoices', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('studyplan_invoices_ibfk_3', 'studyplan_invoices', 'direction_id', 'guide_teachers_direction', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('studyplan_invoices_ibfk_4', 'studyplan_invoices', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('studyplan_invoices_ibfk_5', 'studyplan_invoices', 'type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('studyplan_invoices_ibfk_6', 'studyplan_invoices', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('studyplan_invoices_ibfk_7', 'studyplan_invoices', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
 // Учитывает нагрузку преподавателей и наличие расписания занятий, дисциплины должны быть в активном статусе. Статус активности плана задать в контроллере.
 // Для фильтрации заданы все массивы
