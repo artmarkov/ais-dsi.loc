@@ -2,33 +2,16 @@
 
 namespace console\controllers;
 
-use artsoft\fileinput\models\FileManager;
-use artsoft\helpers\ArtHelper;
-use artsoft\helpers\Schedule;
-use Box\Spout\Common\Entity\Row;
-use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
-use common\models\activities\ActivitiesOver;
 use common\models\education\EducationProgramm;
-use common\models\education\EducationProgrammLevel;
-use common\models\education\EducationProgrammLevelSubject;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
-use common\models\efficiency\TeachersEfficiency;
-use common\models\own\Department;
-use common\models\schedule\SubjectSchedule;
-use common\models\schoolplan\Schoolplan;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
-use common\models\studyplan\StudyplanThematic;
-use common\models\studyplan\StudyplanThematicItems;
 use common\models\subject\Subject;
 use common\models\subjectsect\SubjectSect;
 use common\models\subjectsect\SubjectSectStudyplan;
-use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\console\Controller;
-use yii\db\Query;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 
 /**
@@ -104,15 +87,15 @@ class ProgressController extends Controller
             if ($d['plan_year'] != '2022') {
                 continue;
             }
-            if ($i > 100) {
-                break;
-            }
+//            if ($i > 1) {
+//                break;
+//            }
             if (!$this->findByStudent($d['student_fio'])) {
                 $this->stdout('Не найден ученик: ' . $d['student_fio'] . " ", Console::FG_RED);
                 $this->stdout("\n");
                 continue;
             }
-             print_r($d);
+            // print_r($d);
             $model_programm = EducationProgramm::findOne($this->getProgrammId($d['plan_id']));
             if ($model_programm) {
                 try {
@@ -146,10 +129,10 @@ class ProgressController extends Controller
                             $subject_sect_studyplan_id = 0;
                             $studyplan_subject_id = $model_subject->id;
                         } else {
-                            $subject_sect_studyplan_id = $this->setSubjectSectStaudyplan($model_programm, $model_subject, $dd);
+                            $subject_sect_studyplan_id = $this->setSubjectSectStadyplan($model_programm, $model_subject, $dd);
                             $studyplan_subject_id = 0;
                         }
-                        $this->setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+                        $this->setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $model_subject, $dd);
                     }
                 } catch (\Exception $e) {
                     // $transaction->rollBack();
@@ -165,13 +148,13 @@ class ProgressController extends Controller
     }
 
 
-    protected function setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $dd)
+    protected function setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $model_subject, $dd)
     {
         foreach ($dd['lessons'] as $item => $ddd) {
-                $transaction = \Yii::$app->db->beginTransaction();
+               // $transaction = \Yii::$app->db->beginTransaction();
                 $flag = true;
             try {
-                $model = (new Query())->from('lesson_items')
+                $model = LessonItems::find()->from('lesson_items')
                     ->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])
                     ->andWhere(['=', 'studyplan_subject_id', $studyplan_subject_id])
                     ->andWhere(['=', 'lesson_date', $ddd['lesson_date']])
@@ -179,37 +162,40 @@ class ProgressController extends Controller
 
                     $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
                     $model->studyplan_subject_id = $studyplan_subject_id;
-                    $model->lesson_test_id = $this->getLessonTest($ddd['test_name']);
+                    $model->lesson_test_id = $this->getLessonTest($ddd['test_id']);
                     $model->lesson_date = Yii::$app->formatter->asDate($ddd['lesson_date'], 'php:d.m.Y');
                     $model->lesson_topic = $ddd['lesson_topic'];
 
                     if (!$model->save(false)) {
-                        $transaction->rollBack();
+                      //  $transaction->rollBack();
                         break;
                     }
                     foreach ($ddd['progress'] as $iii => $dddd) {
                         // print_r( $ddd);
-                        $model_th = LessonProgress::find()
-                                ->where(['=', 'lesson_items_id', $model->id])
-                                ->andWhere(['=', 'studyplan_subject_id', $this->findStudyplanSub($dddd['fio'])])
-                                ->one() ?? new LessonProgress();
-                        $model_th->lesson_items_id = $model->id;
-                        $model_th->studyplan_subject_id = $this->findStudyplanSub($dddd['fio']);
-                        $model_th->lesson_mark_id = $this->findMark($dddd['mark']);
+                        $studyplanSubjectId = $this->findByStudyplanSubject($model_subject, $dddd['fio']);
+                        if($studyplan_subject_id) {
+                            $model_th = LessonProgress::find()
+                                    ->where(['=', 'lesson_items_id', $model->id])
+                                    ->andWhere(['=', 'studyplan_subject_id', $studyplanSubjectId])
+                                    ->one() ?? new LessonProgress();
+                            $model_th->lesson_items_id = $model->id;
+                            $model_th->studyplan_subject_id = $studyplanSubjectId;
+                            $model_th->lesson_mark_id = $this->findMark($dddd['mark']);
 
-                        if (!($flag = $model_th->save(false))) {
-                            $transaction->rollBack();
-                            break;
+                            if (!($model_th->save(false))) {
+                               // $transaction->rollBack();
+                                break;
+                            }
                         }
                     }
 
                 if ($flag) {
-                    $transaction->commit();
+                   // $transaction->commit();
                     $this->stdout('Добавлен урок: ' . $model->id . " ", Console::FG_GREY);
                     $this->stdout("\n");
                 }
             } catch (\Exception $e) {
-                $transaction->rollBack();
+               // $transaction->rollBack();
                 $this->stdout('Ошибка добавления урока: ', Console::FG_PURPLE);
                 $this->stdout("\n");
             }
@@ -217,7 +203,7 @@ class ProgressController extends Controller
         return true;
     }
 
-    protected function setSubjectSectStaudyplan($model_programm, $model_subject, $dd)
+    protected function setSubjectSectStadyplan($model_programm, $model_subject, $dd)
     {
         $d = explode('||', $dd['group_name']);
         $group_num = preg_replace("/[^\d]+/", '', $d[2]); // только числа
@@ -249,7 +235,8 @@ class ProgressController extends Controller
             $this->stdout("\n");
             return false;
         }
-        $subject_sect_studyplan = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $sect->id])
+        $subject_sect_studyplan = SubjectSectStudyplan::find()
+            ->where(['=', 'subject_sect_id', $sect->id])
             ->andWhere(['=', 'plan_year', 2022])
             ->andWhere(['=', 'group_num', (int)$group_num]);
         if ($course != null) {
@@ -539,15 +526,24 @@ class ProgressController extends Controller
         return $ids[$id] ?? null;
     }
 
-    public function findByStudent($full_name)
+    public function findByStudyplanSubject($model_subject, $full_name)
     {
-        $user = \Yii::$app->db->createCommand('SELECT students_id 
-                                                    FROM students_view 
-                                                    WHERE fullname=:fullname ',
+        $user = \Yii::$app->db->createCommand('SELECT studyplan_subject.id as id
+                                                    FROM studyplan_subject
+                                                    JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+                                                    JOIN students_view ON students_view.students_id = studyplan.student_id
+                                                    WHERE fullname=:fullname
+                                                    AND studyplan_subject.studyplan_id=:studyplan_id 
+                                                    AND studyplan_subject.subject_cat_id=:subject_cat_id 
+                                                    AND studyplan_subject.subject_id=:subject_id 
+                                                    ',
             [
-                'fullname' => $this->lat2cyr($full_name)
+                'fullname' => $this->lat2cyr($full_name),
+                'studyplan_id' => $model_subject->studyplan_id ,
+                'subject_cat_id' => $model_subject->subject_cat_id ,
+                'subject_id' => $model_subject->subject_id ,
             ])->queryOne();
-        return $user['students_id'] ?? false;
+        return $user['id'] ?? false;
     }
 
     protected function lat2cyr($text)
@@ -600,4 +596,14 @@ class ProgressController extends Controller
         return $auditory['id'];
     }
 
+    public function findByStudent($full_name)
+    {
+        $user = \Yii::$app->db->createCommand('SELECT students_id 
+                                                    FROM students_view 
+                                                    WHERE fullname=:fullname ',
+            [
+                'fullname' => $this->lat2cyr($full_name)
+            ])->queryOne();
+        return $user['students_id'] ?? false;
+    }
 }
