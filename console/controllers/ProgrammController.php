@@ -46,7 +46,7 @@ class ProgrammController extends Controller
     {
         $this->stdout("\n");
         $this->addProgramm();
-//        $this->generateGroup();
+        $this->generateGroup();
 //        $this->addStudyplan();
         // print_r(array_unique($this->err));
     }
@@ -554,6 +554,9 @@ class ProgrammController extends Controller
                 break;
             case 'Классическая хореография' :
                 $name = 'Классический танец';
+                break;
+            case 'ОФП' :
+                $name = 'Общая физическая подготовка';
                 break;
         }
 

@@ -1,5 +1,6 @@
 <?php
 
+use common\models\studyplan\StudyplanView;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -68,18 +69,27 @@ $this->params['breadcrumbs'][] = $this->title;
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/education/default',
-                                'title' => function (EducationProgramm $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (EducationProgramm $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {view} {delete}',
+                                'contentOptions' => function (EducationProgramm $model) {
+                                    return [];
+                                },
                             ],
+//                            [
+//                                'attribute' => 'id',
+//                                'class' => 'artsoft\grid\columns\TitleActionColumn',
+//                                'controller' => '/education/default',
+//                                'title' => function (EducationProgramm $model) {
+//                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+//                                },
+//                                'buttonsTemplate' => '{update} {view} {delete}',
+//                            ],
                             [
                                 'attribute' => 'education_cat_id',
-                                'filter' => RefBook::find('education_cat')->getList(),
+                                'filter' => RefBook::find('education_cat_short')->getList(),
                                 'value' => function (EducationProgramm $model) {
-                                    return RefBook::find('education_cat')->getValue($model->education_cat_id);
+                                    return RefBook::find('education_cat_short')->getValue($model->education_cat_id);
                                 },
                             ],
                             [
@@ -101,6 +111,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [EducationProgramm::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:150px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/education/default',
+                                'template' => '{view} {update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
                             ],
                         ],
                     ]);
