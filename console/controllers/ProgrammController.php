@@ -45,9 +45,9 @@ class ProgrammController extends Controller
     public function actionIndex()
     {
         $this->stdout("\n");
-        $this->addProgramm();
-        $this->generateGroup();
-//        $this->addStudyplan();
+      //  $this->addProgramm();
+       // $this->generateGroup();
+        $this->addStudyplan();
         // print_r(array_unique($this->err));
     }
 
@@ -151,8 +151,8 @@ class ProgrammController extends Controller
                             $subject_sect_studyplan_id = $this->setSubjectSectStaudyplan($model_programm, $model_subject, $dd);
                             $studyplan_subject_id = 0;
                         }
-                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
-                        $this->setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+//                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+//                        $this->setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
                         $this->setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $model_subject, $dd);
                     }
                 } catch (\Exception $e) {
@@ -173,14 +173,15 @@ class ProgrammController extends Controller
         foreach ([1000, 1001] as $direction_id) {
             if ($direction_id == 1000) {
                 $teachers_id = $this->findByTeachers2($dd['teach']);
-                $load_time = $dd['week_time'];
-                $load_time_consult = $dd['year_time'];
+                $load_time = $dd['week_time_teach'];
+                $load_time_consult = $dd['year_time'] != '' ? $dd['year_time'] : 0;
             } else {
                 $teachers_id = $this->findByTeachers2($dd['accomp']);
                 $load_time = $dd['week_time_accomp'];
-                $load_time_consult = null;
+                $load_time_consult = 0;
             }
-            if (!$teachers_id) {
+       // print_r([$studyplan_subject_id, $subject_sect_studyplan_id,$direction_id,$teachers_id,$load_time,$load_time_consult]);
+            if (!$teachers_id && !$load_time) {
                 continue;
             }
             $model_load = TeachersLoad::find()
@@ -515,6 +516,7 @@ class ProgrammController extends Controller
             case 'Основы изобразительной грамоты' :
                 $name = 'Основы изобразительного искусства';
                 break;
+            case 'Композиция мультипликации' :
             case 'Основы мультипликации' :
                 $name = 'Основы мультипликации и режиссуры анимационного кино';
                 break;
