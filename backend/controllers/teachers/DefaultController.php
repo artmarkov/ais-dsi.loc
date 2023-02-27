@@ -15,6 +15,7 @@ use common\models\history\EfficiencyHistory;
 use common\models\history\LessonItemsHistory;
 use common\models\history\SubjectScheduleHistory;
 use common\models\history\TeachersLoadHistory;
+use common\models\history\TeachersPlanHistory;
 use common\models\info\Document;
 use common\models\info\search\DocumentSearch;
 use common\models\schedule\ConsultSchedule;
@@ -560,7 +561,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Teachers Plan'), 'url' => ['teachers/default/teachers-plan', 'id' => $modelTeachers->id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['teachers/default/update', 'id' => $modelTeachers->id]];
             $data = new TeachersPlanHistory($objectId);
-            return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
+            return $this->renderIsAjax('/indivplan/default/history', compact(['model', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
             $model = TeachersPlan::findOne($objectId);
