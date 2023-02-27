@@ -62,8 +62,8 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
         ], $tableOptions);
 
         $this->addForeignKey('studyplan_thematic_ibfk_1', 'studyplan_thematic', 'doc_sign_teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('studyplan_thematic_ibfk_2', 'studyplan_thematic', 'subject_sect_studyplan_id', 'subject_sect_studyplan', 'id', 'CASCADE', 'CASCADE');
-        $this->addForeignKey('studyplan_thematic_ibfk_3', 'studyplan_thematic', 'studyplan_subject_id', 'studyplan_subject', 'id', 'CASCADE', 'CASCADE');
+//        $this->addForeignKey('studyplan_thematic_ibfk_2', 'studyplan_thematic', 'subject_sect_studyplan_id', 'subject_sect_studyplan', 'id', 'CASCADE', 'CASCADE');
+//        $this->addForeignKey('studyplan_thematic_ibfk_3', 'studyplan_thematic', 'studyplan_subject_id', 'studyplan_subject', 'id', 'CASCADE', 'CASCADE');
 
         $this->addCommentOnTable('studyplan_thematic', 'Тематические планы инд. плана ученика');
         $this->db->createCommand()->resetSequence('studyplan_thematic', 1000)->execute();
