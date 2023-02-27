@@ -149,7 +149,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttons' => [
                                     'clone' => function ($key, $model) {
                                         return Html::a('<span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>',
-                                                Url::to(['/sect/default/clone', 'id' => $model->id]), [
+                                                Url::to(['/sect/default/create', 'id' => $model->id]), [
                                                 'title' => Yii::t('art', 'Clone'),
                                                 'data-method' => 'post',
                                                 'data-confirm' => Yii::t('art', 'Are you sure you want to clone this item?'),

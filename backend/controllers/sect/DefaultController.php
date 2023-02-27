@@ -35,8 +35,13 @@ class DefaultController extends MainController
     public function actionCreate()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
-
         $model = new $this->modelClass;
+
+        if (Yii::$app->request->get('id')) {
+            $id = Yii::$app->request->get('id');
+            $tmpModel = $this->findModel($id);
+            $model->setAttributes($tmpModel->attributes);
+        }
 
         if ($model->load(Yii::$app->request->post())) {
 
