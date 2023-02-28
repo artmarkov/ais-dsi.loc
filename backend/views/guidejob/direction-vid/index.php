@@ -55,20 +55,28 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:300px'],
-                                'attribute' => 'name',
-                                'controller' => '/guidejob/direction-vid',
-                                'title' => function (DirectionVid $model) {
-                                    return Html::a($model->name, ['/guidejob/direction-vid/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (DirectionVid $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
-//
-//            'id',
-//            'name',
+                            [
+                                'options' => ['style' => 'width:300px'],
+                                'value' => 'name',
+                                'value' => function (DirectionVid $model) {
+                                    return $model->name;
+                                },
+                            ],
                             'slug',
-
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidejob/direction-vid',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                            ],
                         ],
                     ]);
                     ?>

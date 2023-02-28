@@ -74,19 +74,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:30px'],
                                 'attribute' => 'id',
                                 'value' => function (CreativeWorks $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return sprintf('#%06d', $model->id);
                                 },
                                 'format' => 'raw'
                             ],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:800px'],
                                 'attribute' => 'name',
-                                'controller' => '/creative/default',
-                                'title' => function (CreativeWorks $model) {
-                                    return Html::a($model->name, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (CreativeWorks $model) {
+                                    return $model->name;
                                 },
-                                'buttonsTemplate' => '{update} {view} {delete}',
                             ],
                             [
                                 'attribute' => 'category_id',
@@ -142,6 +139,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'format' => 'raw',
                                 'options' => ['style' => 'width:150px'],
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/creative/default',
+                                'template' => '{view} {update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

@@ -54,13 +54,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'attribute' => 'name',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/guidestudy/education-level',
-                                'title' => function (EducationLevel $model) {
-                                    return Html::a($model->name, ['/guidestudy/education-level/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (EducationLevel $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
+                            ],
+                            [
+                                'attribute' => 'name',
+                                'value' => function (EducationLevel $model) {
+                                    return $model->name;
+                                },
                             ],
                             'short_name',
                             [
@@ -71,6 +74,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [EducationLevel::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:150px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidestudy/education-level',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

@@ -54,20 +54,19 @@ $this->params['breadcrumbs'][] = $this->title;
 //                        ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
-                            ['attribute' => 'id', 'value' => function (ActivitiesCat $model) {
-                                return sprintf('#%06d', $model->id);
-                            },
-                                'options' => ['style' => 'width:20px']],
+                            [
+                                'attribute' => 'id',
+                                'value' => function (ActivitiesCat $model) {
+                                    return sprintf('#%06d', $model->id);
+                                },
+                                'options' => ['style' => 'width:20px']
+                            ],
                             [
                                 'attribute' => 'name',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/guidesys/activities-cat',
-                                'title' => function (ActivitiesCat $model) {
-                                    return Html::a($model->name, ['/guidesys/activities-cat/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (ActivitiesCat $model) {
+                                    return $model->name;
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
-
                             [
                                 'attribute' => 'color',
                                 'value' => function (ActivitiesCat $model) {
@@ -80,6 +79,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'rendering',
                                 'options' => ['style' => 'width:60px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidesys/activities-cat',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

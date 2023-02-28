@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
 
                     <div class="col-sm-6 text-right">
-                        <?=  GridPageSize::widget(['pjaxId' => 'division-grid-pjax']) ?>
+                        <?= GridPageSize::widget(['pjaxId' => 'division-grid-pjax']) ?>
                     </div>
                 </div>
 
@@ -54,20 +54,29 @@ $this->params['breadcrumbs'][] = $this->title;
                     'columns' => [
                         ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                         [
-                            'class' => 'artsoft\grid\columns\TitleActionColumn',
+                            'attribute' => 'id',
+                            'value' => function (Division $model) {
+                                return sprintf('#%06d', $model->id);
+                            },
+                        ],
+                        [
                             'options' => ['style' => 'width:300px'],
                             'attribute' => 'name',
-                            'controller' => '/own/division',
-                            'title' => function (Division $model) {
-                                return Html::a($model->name, ['/own/division/update', 'id' => $model->id], ['data-pjax' => 0]);
+                            'value' => function (Division $model) {
+                                return $model->name;
                             },
-                            'buttonsTemplate' => '{update} {delete}',
                         ],
-
-//            'id',
-//            'name',
                         'slug',
+                        [
+                            'class' => 'kartik\grid\ActionColumn',
+                            'urlCreator' => function ($action, $model, $key, $index) {
+                                return [$action, 'id' => $model->id];
+                            },
+                            'controller' => '/own/division',
+                            'template' => '{update} {delete}',
+                            'headerOptions' => ['class' => 'kartik-sheet-style'],
 
+                        ],
                     ],
                 ]);
                 ?>

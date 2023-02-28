@@ -11,7 +11,6 @@ use Yii;
  * @property int $id
  * @property string|null $name
  * @property string $short_name
- * @property int $type_id
  * @property int $status
  *
  * @property EducationProgramm[] $educationProgramms
@@ -38,7 +37,7 @@ class EducationCat extends \artsoft\db\ActiveRecord
         return [
             [['name', 'short_name', /*'type_id',*/ 'status'], 'required'],
             [['status'], 'default', 'value' => null],
-            [['status', 'type_id'], 'integer'],
+            [['status', /*'type_id'*/], 'integer'],
             [['name'], 'string', 'max' => 127],
             [['short_name'], 'string', 'max' => 64],
 
@@ -54,7 +53,7 @@ class EducationCat extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art', 'ID'),
             'name' => Yii::t('art', 'Name'),
             'short_name' => Yii::t('art', 'Short Name'),
-            'type_id' => Yii::t('art/guide', 'Subject Type Name'),
+//            'type_id' => Yii::t('art/guide', 'Subject Type Name'),
             'status' => Yii::t('art', 'Status'),
         ];
     }

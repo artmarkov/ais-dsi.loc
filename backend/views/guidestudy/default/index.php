@@ -54,14 +54,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:300px'],
-                                'attribute' => 'name',
-                                'controller' => '/guidestudy/default',
-                                'title' => function (StudentPosition $model) {
-                                    return Html::a($model->name, ['/guidestudy/default/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (StudentPosition $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
+                            ],
+                            [
+                                'attribute' => 'name',
+                                'options' => ['style' => 'width:300px'],
+                                'value' => function (StudentPosition $model) {
+                                    return $model->name;
+                                },
                             ],
                             'slug',
                             [
@@ -72,6 +75,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [StudentPosition::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:60px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidestudy/default',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

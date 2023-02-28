@@ -50,7 +50,7 @@ class AuditoryCatSearch extends AuditoryCat
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'id' => SORT_DESC,
+                    'id' => SORT_ASC,
                 ],
             ],
         ]);

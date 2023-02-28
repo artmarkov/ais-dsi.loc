@@ -55,18 +55,30 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
-                            ['class' => 'yii\grid\SerialColumn', 'options' => ['style' => 'width:20px'],],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
+                                'attribute' => 'id',
+                                'value' => function (CreativeCategory $model) {
+                                    return sprintf('#%06d', $model->id);
+                                },
+                            ],
+                            [
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'name',
-                                'controller' => '/creative/category',
-                                'title' => function (CreativeCategory $model) {
-                                    return Html::a($model->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (CreativeCategory $model) {
+                                    return $model->name;
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
                             'description:ntext',
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/creative/category',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
+                            ],
                         ],
                     ]);
                     ?>

@@ -8,60 +8,50 @@ use yii\widgets\Pjax;
 //echo '<pre>' . print_r($data, true) . '</pre>'; die();
 $columns = [];
 foreach ($data['attributes'] as $attribute => $label) {
-    if ($attribute == 'question_users_id') {
-        $columns[] = [
-            'attribute' => $attribute,
-            'label' => $label,
-            'class' => 'artsoft\grid\columns\TitleActionColumn',
-            'controller' => '/questions/default',
-            'title' => function ($data) {
-                return Html::a(sprintf('#%06d', $data['question_users_id']),
-                    Url::to(['question/default/answers', 'id' => $data['question_id'], 'objectId' => $data['question_users_id'], 'mode' => 'view']), [
-                        'data-method' => 'post',
-                        'data-pjax' => '0',
-                    ]);
-            },
-            'buttonsTemplate' => '{update} {view} {delete}',
-            'buttons' => [
-                'update' => function ($url, $data, $key) {
-                    return Html::a(Yii::t('art', 'Edit'),
-                        Url::to(['question/default/answers', 'id' => $data['question_id'], 'objectId' => $data['question_users_id'], 'mode' => 'update']), [
-                            'title' => Yii::t('art', 'Edit'),
-                            'data-method' => 'post',
-                            'data-pjax' => '0',
-                        ]
-                    );
-                },
-                'view' => function ($url, $data, $key) {
-                    return Html::a(Yii::t('art', 'View'),
-                        Url::to(['question/default/answers', 'id' => $data['question_id'], 'objectId' => $data['question_users_id'], 'mode' => 'view']), [
-                            'data-method' => 'post',
-                            'data-pjax' => '0',
-                        ]);
-                },
-                'delete' => function ($url, $data, $key) {
-                    return Html::a(Yii::t('art', 'Delete'),
-                        Url::to(['question/default/answers', 'id' => $data['question_id'], 'objectId' => $data['question_users_id'], 'mode' => 'delete']), [
-                            'title' => Yii::t('art', 'Delete'),
-                            'aria-label' => Yii::t('art', 'Delete'),
-                            'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                            'data-method' => 'post',
-                            'data-pjax' => '0',
-                        ]);
-                }
-            ],
-            'format' => 'raw',
-            'options' => ['style' => 'width:250px'],
-            'headerOptions' => ['class' => "grid"],
-        ];
-    } else {
-        $columns[] = [
-            'attribute' => $attribute,
-            'label' => $label,
-            'headerOptions' => ['class' => "grid"]
-        ];
-    }
+    $columns[] = [
+        'attribute' => $attribute,
+        'label' => $label,
+        'headerOptions' => ['class' => "grid"]
+    ];
 }
+$columns[] = [
+    'class' => 'kartik\grid\ActionColumn',
+
+    'controller' => '/question/default',
+    'template' => '{view} {update} {delete}',
+    'buttons' => [
+        'update' => function ($url, $data, $key) {
+            return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                Url::to(['question/default/answers', 'id' => $data['question_id'], 'objectId' => $data['question_users_id'], 'mode' => 'update']), [
+                    'title' => Yii::t('art', 'Edit'),
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                ]
+            );
+        },
+        'view' => function ($url, $data, $key) {
+            return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                Url::to(['question/default/answers', 'id' => $data['question_id'], 'objectId' => $data['question_users_id'], 'mode' => 'view']), [
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                ]);
+        },
+        'delete' => function ($url, $data, $key) {
+            return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                Url::to(['question/default/answers', 'id' => $data['question_id'], 'objectId' => $data['question_users_id'], 'mode' => 'delete']), [
+                    'title' => Yii::t('art', 'Delete'),
+                    'aria-label' => Yii::t('art', 'Delete'),
+                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                ]);
+        }
+    ],
+    'options' => ['style' => 'width:250px'],
+    'headerOptions' => ['class' => 'kartik-sheet-style'],
+
+];
+
 
 $this->title = Yii::t('art/question', 'Answers');
 $this->params['breadcrumbs'][] = $this->title;

@@ -7,10 +7,6 @@ use artsoft\grid\GridQuickLinks;
 use common\models\subject\Subject;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
-use yii\helpers\ArrayHelper;
-use common\models\own\Department;
-use common\models\subject\SubjectCategory;
-use common\models\subject\SubjectVid;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\subject\search\SubjectSearch */
@@ -61,14 +57,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:300px'],
-                                'attribute' => 'name',
-                                'controller' => '/subject/default',
-                                'title' => function (Subject $model) {
-                                    return Html::a($model->name, ['/subject/default/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (Subject $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
+                            ],
+                            [
+                                'attribute' => 'name',
+                                'options' => ['style' => 'width:350px'],
+                                'value' => function (Subject $model) {
+                                    return $model->name;
+                                },
                             ],
                             'slug',
                             [
@@ -100,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     }
                                     return implode(', ', $v);
                                 },
-                                'options' => ['style' => 'width:350px'],
+                                'options' => ['style' => 'width:250px'],
                                 'format' => 'raw',
                             ],
                             [
@@ -128,7 +127,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'options' => ['style' => 'width:150px']
                             ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/subject/default',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
 
+                            ],
                         ],
                     ]);
                     ?>

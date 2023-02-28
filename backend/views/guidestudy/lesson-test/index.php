@@ -58,12 +58,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/guidestudy/lesson-test',
-                                'title' => function (LessonTest $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (LessonTest $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
                             [
                                 'attribute' => 'division_list',
@@ -109,6 +106,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [LessonTest::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:60px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidestudy/lesson-test',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

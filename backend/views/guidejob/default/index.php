@@ -55,20 +55,29 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
+                                'attribute' => 'id',
+                                'value' => function (Work $model) {
+                                    return sprintf('#%06d', $model->id);
+                                },
+                            ],
+                            [
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'name',
-                                'controller' => '/guidejob/default',
-                                'title' => function (Work $model) {
-                                    return Html::a($model->name, ['/guidejob/default/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (Work $model) {
+                                    return $model->name;
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
-
-//            'id',
-//            'name',
                             'slug',
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidejob/default',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
 
+                            ],
                         ],
                     ]);
                     ?>

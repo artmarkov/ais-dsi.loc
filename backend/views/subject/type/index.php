@@ -56,16 +56,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:300px'],
-                                'attribute' => 'name',
-                                'controller' => '/subject/type',
-                                'title' => function (SubjectType $model) {
-                                    return Html::a($model->name, ['/subject/type/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (SubjectType $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
-
+                            'name',
                             'slug',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
@@ -84,6 +80,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [SubjectType::BASIS_PAY, Yii::t('art/guide', 'Basis Pay'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:150px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/subject/type',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

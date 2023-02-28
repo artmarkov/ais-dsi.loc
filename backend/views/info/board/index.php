@@ -57,13 +57,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'attribute' => 'title',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/info/board',
-                                'title' => function (Board $model) {
-                                    return sprintf('#%06d', $model->id) . ' ' . $model->title;
+                                'attribute' => 'id',
+                                'value' => function (Board $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
+                            ],
+                            [
+                                'attribute' => 'title',
+                                'value' => function (Board $model) {
+                                    return $model->title;
+                                },
                             ],
                             [
                                 'attribute' => 'category_id',
@@ -125,6 +128,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [Board::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
                                 ],
                                 'options' => ['style' => 'width:120px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/info/board',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

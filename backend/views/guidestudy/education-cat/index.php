@@ -56,13 +56,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'attribute' => 'name',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/guidestudy/education-cat',
-                                'title' => function (EducationCat $model) {
-                                    return Html::a($model->name, ['/guidestudy/education-cat/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (EducationCat $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
+                            ],
+                            [
+                                'attribute' => 'name',
+                                'value' => function (EducationCat $model) {
+                                    return $model->name;
+                                },
                             ],
                             'short_name',
                             [
@@ -73,6 +76,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [EducationCat::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:150px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidestudy/education-cat',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

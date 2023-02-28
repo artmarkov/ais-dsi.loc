@@ -55,16 +55,29 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'attribute' => 'name',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/guidesys/default',
-                                'options' => ['style' => 'width:300px'],
-                                'title' => function (UserRelation $model) {
-                                    return Html::a($model->name, ['/guidesys/default/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (UserRelation $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
+                            ],
+                            [
+                                'attribute' => 'name',
+                                'options' => ['style' => 'width:300px'],
+                                'value' => function (UserRelation $model) {
+                                    return $model->name;
+                                },
                             ],
                             'slug',
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidesys/default',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
+                            ],
                         ],
                     ]);
                     ?>

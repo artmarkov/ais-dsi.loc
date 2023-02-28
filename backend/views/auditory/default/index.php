@@ -59,14 +59,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:300px'],
                                 'attribute' => 'id',
-                                'controller' => '/auditory/default',
-                                'title' => function (Auditory $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['/auditory/default/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (Auditory $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
 
                             'num',
@@ -94,7 +90,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'options' => ['style' => 'width:60px']
                             ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/auditory/default',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
 
+                            ],
                         ],
                     ]);
                     ?>

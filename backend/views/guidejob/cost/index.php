@@ -57,13 +57,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:300px'],
-                                'controller' => '/guidejob/cost',
-                                'title' => function (Cost $model) {
-                                    return Html::a($model->directionName . ' - ' . $model->stakeSlug, ['/guidejob/cost/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (Cost $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
+                            ],
+                            [
+                                'options' => ['style' => 'width:300px'],
+                                'value' => function (Cost $model) {
+                                    return $model->directionName . ' - ' . $model->stakeSlug;
+                                },
                             ],
                             [
                                 'attribute' => 'direction_id',
@@ -78,6 +81,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'filter' => common\models\guidejob\Stake::getStakeList(),
                             ],
                             'stake_value',
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidejob/cost',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
+                            ],
                         ],
                     ]);
                     ?>

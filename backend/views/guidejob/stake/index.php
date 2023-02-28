@@ -55,17 +55,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
+                                'attribute' => 'id',
+                                'value' => function (Stake $model) {
+                                    return sprintf('#%06d', $model->id);
+                                },
+                            ],
+                            [
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'name',
-                                'controller' => '/guidejob/stake',
-                                'title' => function (Stake $model) {
-                                    return Html::a($model->name, ['/guidejob/stake/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (Stake $model) {
+                                    return $model->name;
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
-//            'id',
-//            'name',
                             'slug',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
@@ -75,6 +76,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [Stake::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:60px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidejob/stake',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

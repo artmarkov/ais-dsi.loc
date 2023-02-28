@@ -78,8 +78,8 @@ class CostSearch extends Cost
         $query->joinWith(['stake']);
 
         $query->andFilterWhere([
+            'teachers_cost.id' => $this->id,
             'stake_value' => $this->stake_value,
-            'id' => $this->id,
             'direction_id' => $this->direction_id,
             'stake_id' => $this->stake_id,
         ]);

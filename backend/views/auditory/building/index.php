@@ -55,24 +55,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
-                            ['class' => 'yii\grid\SerialColumn', 'options' => ['style' => 'width:20px'],],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:300px'],
-                                'attribute' => 'name',
-
-                                'controller' => '/auditory/building',
-                                'title' => function (AuditoryBuilding $model) {
-                                    return Html::a($model->name, ['/auditory/building/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (AuditoryBuilding $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
-
-                            //'id',
-                            //'name',
+                            'name',
                             'slug',
                             'address',
-
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/auditory/building',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                            ],
                         ],
                     ]);
                     ?>

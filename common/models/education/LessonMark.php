@@ -61,8 +61,8 @@ class LessonMark extends \artsoft\db\ActiveRecord
     {
         return [
             [['mark_label', 'mark_category'], 'required'],
-            [['mark_category'], 'unique', 'when' => function ($model) {
-                return $model->mark_category != self::MARK;
+            [['mark_value', 'mark_label'], 'unique', 'when' => function ($model) {
+                return $model->isNewRecord;
             }, 'enableClientValidation' => false],
             [['mark_value'], 'number'],
             [['mark_value'], 'required', 'when' => function ($model) {

@@ -57,15 +57,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'attribute' => 'cat_id',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/routine/default',
-                                'label' => Yii::t('art', 'Name'),
-                                'title' => function (Routine $model) {
-                                    return Html::a($model->cat->name, ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (Routine $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
+                            ],
+                            [
+                                'attribute' => 'cat_id',
                                 'filter' => \common\models\routine\RoutineCat::getCatList(),
-                                'buttonsTemplate' => '{update} {delete}',
+                                'label' => Yii::t('art', 'Name'),
+                                'value' => function (Routine $model) {
+                                    return $model->cat->name;
+                                },
                             ],
                             'description',
                             [
@@ -91,6 +94,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label' => Yii::t('art/routine', 'End Date'),
                                 'format' => 'raw',
                                 'options' => ['style' => 'width:150px'],
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/routine/default',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

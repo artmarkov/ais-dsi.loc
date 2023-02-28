@@ -101,7 +101,7 @@ class AuditorySearch extends Auditory
             $query->joinWith(['building']);
 
         $query->andFilterWhere([
-            'id' => $this->id,
+            'auditory.id' => $this->id,
             'status' => $this->status,
 
 //                закоментировать для поиска путем ввода названия            

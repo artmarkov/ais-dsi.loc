@@ -59,15 +59,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:300px'],
-                                'attribute' => 'name',
-                                'controller' => '/subject/category',
-                                'title' => function (SubjectCategory $model) {
-                                    return Html::a($model->name, ['/subject/category/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (SubjectCategory $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
+                            'name',
                             'slug',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
@@ -96,7 +93,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'options' => ['style' => 'width:150px']
                             ],
-//            'order',
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/subject/category',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
+                            ],
                         ],
                     ]);
                     ?>

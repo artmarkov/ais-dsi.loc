@@ -56,14 +56,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
+                                'attribute' => 'id',
+                                'value' => function (RoutineCat $model) {
+                                    return sprintf('#%06d', $model->id);
+                                },
+                            ],
+                            [
                                 'options' => ['style' => 'width:300px'],
                                 'attribute' => 'name',
-                                'controller' => '/guidesys/routine-cat',
-                                'title' => function (RoutineCat $model) {
-                                    return Html::a($model->name, ['/guidesys/routine-cat/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (RoutineCat $model) {
+                                    return $model->name;
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
                             [
                                 'attribute' => 'color',
@@ -89,6 +92,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [0, Yii::t('art', 'No'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:150px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidesys/routine-cat',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

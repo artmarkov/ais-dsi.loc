@@ -40,7 +40,7 @@ return [
     'Select Department...' => 'Выберите отдел...',
     'Select Teachers Bonus...' => 'Выберите достижения...',
     'Measure Unit' => 'Единица измерения',
-    'Stake Value' => 'Ставки',
+    'Stake Value' => 'Значение ставки',
     'Cost' => 'Ставки',
     'Select Position...' => 'Выберите должность...',
     'Select Work...' => 'Выберите вид работы...',

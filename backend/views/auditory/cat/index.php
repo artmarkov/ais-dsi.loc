@@ -56,20 +56,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
-                            ['class' => 'yii\grid\SerialColumn', 'options' => ['style' => 'width:20px'],],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:300px'],
-                                'attribute' => 'name',
-                                'controller' => '/auditory/cat',
-                                'title' => function (AuditoryCat $model) {
-                                    return Html::a($model->name, ['/auditory/cat/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (AuditoryCat $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
-
-                            // 'id',
-                            // 'name',
+                            'name',
                             'description',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
@@ -77,7 +70,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:60px']
                             ],
                             // 'study_flag',
-
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/auditory/cat',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                            ],
                         ],
                     ]);
                     ?>

@@ -57,6 +57,7 @@ class DepartmentSearch extends Department
         ]);
         $dataProvider->setSort([
             'attributes' => [
+                'id',
                 'division_id',
                 'name',
                 'slug',
@@ -74,7 +75,7 @@ class DepartmentSearch extends Department
         $query->joinWith(['division']);
 
         $query->andFilterWhere([
-            'id' => $this->id,
+            'guide_department.id' => $this->id,
             'division_id' => $this->division_id,
             'status' => $this->status,
         ]);

@@ -69,7 +69,7 @@ class BonusSearch extends Bonus
         $query->joinWith(['bonusCategory']);
 
         $query->andFilterWhere([
-            'id' => $this->id,
+            'guide_teachers_bonus.id' => $this->id,
             'bonus_vid_id' => $this->bonus_vid_id,
             'bonus_category_id' => $this->bonus_category_id,
             'status' => $this->status,

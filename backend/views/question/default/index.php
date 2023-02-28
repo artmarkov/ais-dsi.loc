@@ -64,12 +64,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'attribute' => 'name',
-                        'class' => 'artsoft\grid\columns\TitleActionColumn',
-                        'controller' => '/question/default',
-                        'title' => function (Question $model) {
-                            return Html::a($model->name, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                        'value' => function (Question $model) {
+                            return $model->name;
                         },
-                        'buttonsTemplate' => '{update} {view} {delete}',
                     ],
                     [
                         'attribute' => 'category_id',
@@ -130,6 +127,16 @@ $this->params['breadcrumbs'][] = $this->title;
                             [Question::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                         ],
                         'options' => ['style' => 'width:150px']
+                    ],
+                    [
+                        'class' => 'kartik\grid\ActionColumn',
+                        'urlCreator' => function ($action, $model, $key, $index) {
+                            return [$action, 'id' => $model->id];
+                        },
+                        'controller' => '/question/default',
+                        'template' => '{view} {update} {delete}',
+                        'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                     ],
                 ],
             ]);

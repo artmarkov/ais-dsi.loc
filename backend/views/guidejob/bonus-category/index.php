@@ -57,21 +57,28 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:300px'],
-                                'attribute' => 'name',
-                                'controller' => '/guidejob/bonus-category',
-                                'title' => function (BonusCategory $model) {
-                                    return Html::a($model->name, ['/guidejob/bonus-category/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (BonusCategory $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
+                            'name',
                             'slug',
                             /* [
                                  'class' => 'artsoft\grid\columns\StatusColumn',
                                  'attribute' => 'multiple',
                                  'options' => ['style' => 'width:100px']
                              ],*/
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidejob/bonus-category',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
+                            ],
 
                         ],
                     ]);

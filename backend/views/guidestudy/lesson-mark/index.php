@@ -57,12 +57,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/guidestudy/lesson-mark',
-                                'title' => function (LessonMark $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (LessonMark $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
                             [
                                 'attribute' => 'mark_category',
@@ -84,6 +81,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [LessonMark::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                                 ],
                                 'options' => ['style' => 'width:60px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/guidestudy/lesson-mark',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+
                             ],
                         ],
                     ]);

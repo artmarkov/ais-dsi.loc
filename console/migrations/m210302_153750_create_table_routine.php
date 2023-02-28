@@ -29,7 +29,7 @@ class m210302_153750_create_table_routine extends \artsoft\db\BaseMigration
         ])->execute();
 
         $this->createTableWithHistory('routine', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 999999)',
+            'id' => $this->primaryKey(),
             'description' => $this->string(1024)->notNull(),
             'cat_id' => $this->integer()->notNull(),
             'start_date' => $this->integer()->notNull(),
@@ -37,7 +37,6 @@ class m210302_153750_create_table_routine extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('routine' ,'Производственный календарь');
-        $this->db->createCommand()->resetSequence('routine', 1000)->execute();
 
         $this->addForeignKey('routine_ibfk_1', 'routine', 'cat_id', 'guide_routine_cat', 'id', 'RESTRICT', 'RESTRICT');
     }

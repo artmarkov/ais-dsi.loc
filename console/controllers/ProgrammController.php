@@ -45,7 +45,7 @@ class ProgrammController extends Controller
     public function actionIndex()
     {
         $this->stdout("\n");
-      //  $this->addProgramm();
+        $this->addProgramm();
        // $this->generateGroup();
         $this->addStudyplan();
         // print_r(array_unique($this->err));
@@ -151,8 +151,8 @@ class ProgrammController extends Controller
                             $subject_sect_studyplan_id = $this->setSubjectSectStaudyplan($model_programm, $model_subject, $dd);
                             $studyplan_subject_id = 0;
                         }
-//                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
-//                        $this->setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+                        $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+                        $this->setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
                         $this->setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $model_subject, $dd);
                     }
                 } catch (\Exception $e) {

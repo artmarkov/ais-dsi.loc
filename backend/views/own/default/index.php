@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-6">
-                            <?php 
+                            <?php
                             /* Uncomment this to activate GridQuickLinks */
                             /* echo GridQuickLinks::widget([
                                 'model' => Invoices::className(),
@@ -34,17 +34,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?=  GridPageSize::widget(['pjaxId' => 'invoices-grid-pjax']) ?>
+                            <?= GridPageSize::widget(['pjaxId' => 'invoices-grid-pjax']) ?>
                         </div>
                     </div>
 
-                    <?php 
+                    <?php
                     Pjax::begin([
                         'id' => 'invoices-grid-pjax',
                     ])
                     ?>
 
-                    <?= 
+                    <?=
                     GridView::widget([
                         'id' => 'invoices-grid',
                         'dataProvider' => $dataProvider,
@@ -55,31 +55,41 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'attribute' => 'name',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/own/default',
-                                'title' => function(Invoices $model) {
-                                    return Html::a($model->name, ['/own/default/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                'attribute' => 'id',
+                                'value' => function (Invoices $model) {
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
                             ],
+                            [
+                                'attribute' => 'name',
+                                'value' => function (Invoices $model) {
+                                    return $model->name;
+                                },
+                            ],
+                            'recipient',
+                            'inn',
+                            'kpp',
+                            // 'payment_account',
+                            // 'corr_account',
+                            // 'personal_account',
+                            // 'bank_name',
+                            // 'bik',
+                            // 'oktmo',
+                            // 'kbk',
 
-//            'id',
-//            'name',
-            'recipient',
-            'inn',
-            'kpp',
-            // 'payment_account',
-            // 'corr_account',
-            // 'personal_account',
-            // 'bank_name',
-            // 'bik',
-            // 'oktmo',
-            // 'kbk',
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/own/default',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
 
-                ],
-            ]);
-            ?>
+                            ],
+                        ],
+                    ]);
+                    ?>
 
                     <?php Pjax::end() ?>
                 </div>
