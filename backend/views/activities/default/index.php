@@ -17,9 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="activities-index">
     <div class="panel">
-        <div class="panel-heading">
-            <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
-        </div>
+        <?= $this->render('_search', compact('model_date')) ?>
         <div class="panel-body">
             <div class="panel panel-default">
                 <div class="panel-body">
@@ -54,28 +52,20 @@ $this->params['breadcrumbs'][] = $this->title;
                              'gridId' => 'activities-grid',
                              'actions' => [ Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
                          ],*/
+
                         'columns' => [
+                            [
+                                'options' => ['style' => 'width:20px'],
+                                'contentOptions' => function (Activities $model) {
+                                    return ['style' => 'background-color:' . $model->color];
+                                },
+                            ],
                             ['class' => 'yii\grid\SerialColumn', 'options' => ['style' => 'width:20px']],
                             [
                                 'attribute' => 'title',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/activities/default',
-                                'title' => function (Activities $model) {
-                                    return Html::a($model->title, ['view', 'id' => $model->id, 'resource' => $model->resource], ['data-pjax' => 0]);
+                                'value' => function (Activities $model) {
+                                    return $model->title;
                                 },
-                                'options' => ['style' => 'width:350px'],
-                                'buttonsTemplate' => '{view}',
-                                'buttons' => [
-                                    'view' => function ($url, $model, $key) {
-                                        return  Html::a(Yii::t('art', 'View'),
-                                            Url::to(['/activities/default/view', 'id' => $model->id, 'resource' => $model->resource]), [
-                                                'title' => Yii::t('art', 'View'),
-                                                'data-method' => 'post',
-                                                'data-pjax' => '0',
-                                            ]
-                                        );
-                                    },
-                                ],
                             ],
                             [
                                 'attribute' => 'category_id',
@@ -101,7 +91,26 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                             ],
                             'end_time',
-
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/activities/default',
+                                'template' => '{view}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                'buttons' => [
+                                    'view' => function ($url, $model, $key) {
+                                        return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                                            Url::to(['/activities/default/view', 'id' => $model->id, 'resource' => $model->resource]), [
+                                                'title' => Yii::t('art', 'View'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
+                            ],
                         ],
                     ]);
                     ?>

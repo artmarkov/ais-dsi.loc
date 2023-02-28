@@ -61,6 +61,7 @@ class m230109_123114_add_activities_view extends BaseMigration
     data.direction_id,
     data.teachers_id,
     data.title,
+    data.category_id,
     data.auditory_id,
     data.description,
     data."timestamp" + data.time_in::double precision AS datetime_in,
@@ -74,30 +75,22 @@ class m230109_123114_add_activities_view extends BaseMigration
             subject_schedule_view.direction_id,
             subject_schedule_view.teachers_id,
             subject_schedule_view.plan_year,
-            concat(\'Занятие: \',
-                CASE
-                    WHEN subject_schedule_view.studyplan_subject_id = 0 AND subject_schedule_view.subject_sect_studyplan_id <> 0 THEN ( SELECT studyplan_subject_view.memo_4
-                       FROM studyplan_subject_view
-                      WHERE studyplan_subject_view.subject_sect_studyplan_id = subject_schedule_view.subject_sect_studyplan_id LIMIt 1)
-                    WHEN subject_schedule_view.studyplan_subject_id <> 0 AND subject_schedule_view.subject_sect_studyplan_id = 0 THEN ( SELECT studyplan_subject_view.memo_4
-                       FROM studyplan_subject_view
-                      WHERE studyplan_subject_view.studyplan_subject_id = subject_schedule_view.studyplan_subject_id LIMIt 1)
-                    ELSE NULL::text
-                END) AS title
+            concat(subject_schedule_view.sect_name, \' - \', subject_schedule_view.subject) AS title,
+            subject_schedule_view.subject_vid_id AS category_id
            FROM generator_date_view gen
              JOIN subject_schedule_view ON gen.week_day = subject_schedule_view.week_day::double precision AND
                 CASE
-                    WHEN subject_schedule_view.week_num IS NOT NULL THEN subject_schedule_view.week_num = gen.week_num
+                    WHEN subject_schedule_view.week_num IS NOT NULL AND subject_schedule_view.week_num <> 0 THEN subject_schedule_view.week_num = gen.week_num
                     ELSE true
                 END) data
-  WHERE data."timestamp" >= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year, 9, 1)::date) AND data."timestamp" <= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year + 1, 5, 31)::date);       
+  WHERE data."timestamp" >= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year, 9, 1)::date) AND data."timestamp" <= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year + 1, 5, 31)::date);
   ')->execute();
 
 
         $this->db->createCommand()->createView('activities_view', '
- SELECT \'schoolplan\'::text AS resource,
+  SELECT \'schoolplan\'::text AS resource,
     schoolplan.id,
-    1000 AS category_id,
+    1003 AS category_id,
     schoolplan.auditory_id,
     schoolplan.executors_list,
     schoolplan.title,
@@ -105,11 +98,11 @@ class m230109_123114_add_activities_view extends BaseMigration
     schoolplan.datetime_in AS start_time,
     schoolplan.datetime_out AS end_time
    FROM schoolplan
-   WHERE schoolplan.auditory_id IS NOT NULL
+  WHERE schoolplan.auditory_id IS NOT NULL
 UNION ALL
  SELECT \'consult_schedule\'::text AS resource,
     consult_schedule.id,
-    1002 AS category_id,
+    1004 AS category_id,
     consult_schedule.auditory_id,
     teachers_load.teachers_id::text AS executors_list,
     concat(\'Консультация: \',
@@ -131,7 +124,7 @@ UNION ALL
 UNION ALL
  SELECT \'activities_over\'::text AS resource,
     activities_over.id,
-    1003 AS category_id,
+    1005 AS category_id,
     activities_over.auditory_id,
     activities_over.executors_list,
     activities_over.title,
@@ -143,14 +136,15 @@ UNION ALL
 UNION ALL
  SELECT \'subject_schedule\'::text AS resource,
     activities_schedule_view.subject_schedule_id AS id,
-    1001 AS category_id,
+    activities_schedule_view.category_id,
     activities_schedule_view.auditory_id,
     activities_schedule_view.teachers_id::text AS executors_list,
     activities_schedule_view.title,
     activities_schedule_view.description,
     activities_schedule_view.datetime_in AS start_time,
     activities_schedule_view.datetime_out AS end_time
-   FROM activities_schedule_view WHERE activities_schedule_view.direction_id = 1000
+   FROM activities_schedule_view
+  WHERE activities_schedule_view.direction_id = 1000
   ORDER BY 8;
         ')->execute();
 

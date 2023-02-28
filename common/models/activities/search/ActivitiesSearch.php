@@ -15,6 +15,13 @@ class ActivitiesSearch extends Activities
     public $start_time_operand;
     public $end_time_operand;
 
+    public $query;
+
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: Activities::find();
+        parent::__construct();
+    }
     /**
      * @inheritdoc
      */
@@ -47,7 +54,7 @@ class ActivitiesSearch extends Activities
      */
     public function search($params)
     {
-        $query = Activities::find();
+        $query = $this->query;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

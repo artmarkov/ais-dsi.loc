@@ -20,10 +20,12 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
         $this->addCommentOnTable('guide_activities_cat' ,'Категории мероприятий');
         $this->db->createCommand()->resetSequence('guide_activities_cat', 1000)->execute();
         $this->db->createCommand()->batchInsert('guide_activities_cat', ['name', 'color'], [
-            ['Согласно плану работы', '#0000ff'],
-            ['Согласно расписанию', '#ff0000'],
-            ['Консультации', '#6aa84f'],
-            ['Внеплановые мероприятия', '#ffd966'],
+            ['Индивидуальные занятия', '#4a86e8'],
+            ['Мелкогрупповые занятия', '#e40000'],
+            ['Групповые занятия', '#783f04'],
+            ['Согласно плану работы', '#3c78d8'],
+            ['Консультации', '#e69138'],
+            ['Внеплановые мероприятия', '#6aa84f'],
         ])->execute();
 
         $this->createTableWithHistory('activities', [

@@ -3,7 +3,9 @@
 namespace backend\controllers\activities;
 
 use common\models\activities\Activities;
+use common\models\activities\search\ActivitiesSearch;
 use common\widgets\fullcalendar\src\models\Event as BaseEvent;
+use yii\base\DynamicModel;
 use yii\helpers\Url;
 use yii\web\Response;
 use Yii;
@@ -12,6 +14,34 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\activities\Activities';
     public $modelSearchClass = 'common\models\activities\search\ActivitiesSearch';
+
+    public function actionIndex()
+    {
+        $session = Yii::$app->session;
+
+        $model_date = new DynamicModel(['date']);
+        $model_date->addRule(['date'], 'required')
+            ->addRule(['date'], 'date');
+
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $day = date('d');
+            $mon = date('m');
+            $year = date('Y');
+
+            $model_date->date = $session->get('_activities_date') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day, $year), 'php:d.m.Y');
+        }
+        $session->set('_activities_date', $model_date->date);
+        $timestamp_in = Yii::$app->formatter->asTimestamp($model_date->date);
+        $timestamp_out = $timestamp_in + 86400;
+
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $query = Activities::find()->where(['between', 'start_time', $timestamp_in, $timestamp_out]);
+        $searchModel = new ActivitiesSearch($query);
+        $params = Yii::$app->request->getQueryParams();
+        $dataProvider = $searchModel->search($params);
+        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel', 'model_date'));
+    }
 
     public function actionView($id)
     {

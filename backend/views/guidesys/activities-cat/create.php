@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model common\models\activities\ActivitiesCat */
 
 $this->title = Yii::t('art', 'New entry');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/calendar', 'Activities Cats'), 'url' => ['activities/activities-cat/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/calendar', 'Activities Cats'), 'url' => ['guidesys/activities-cat/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

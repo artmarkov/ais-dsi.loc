@@ -142,6 +142,11 @@ EOF;
 EOF;
             ?>
             <?= \common\widgets\fullcalendarscheduler\src\FullcalendarScheduler::widget([
+                   'headerToolbar' => [
+                        'left' => 'today prev,next',
+                        'center' => 'title',
+                        'right' => '',
+                    ],
                 'clientOptions' => [
                     'schedulerLicenseKey' => 'GPL-My-Project-Is-Open-Source',
                     'initialView' => 'resourceTimelineDay',
@@ -152,18 +157,18 @@ EOF;
                     'selectable' => true,// разрешено выбирать область
                     'expandRows' => true,
                     'nowIndicator' => true, //Отображение маркера, указывающего Текущее время
-                    'slotMinTime' => '07:00',// Определяет первый временной интервал, который будет отображаться для каждого дня
+                    'slotMinTime' => '08:00',// Определяет первый временной интервал, который будет отображаться для каждого дня
                     'slotMaxTime' => '22:00',
-                    'slotDuration' => '00:15:00', // Частота отображения временных интервалов.
+                    'slotDuration' => '00:10:00', // Частота отображения временных интервалов.
                     'eventDurationEditable' => true, // разрешить изменение размера
                     'eventOverlap' => true, // разрешить перекрытие событий
-                    'views' => [
+                   /* 'views' => [
                         'resourceTimelineThreeDays' => [
                             'type' => 'resourceTimeline',
                             'duration' => ['days' => 3],
                             'buttonText' => Yii::t('art/calendar', '3 days'),
                         ]
-                    ],
+                    ],*/
                     'select' => new JsExpression($JSSelect),
                     'eventClick' => new JsExpression($JSEventClick),
                     'eventResize' => new JsExpression($JSEventResize),

@@ -22,8 +22,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="panel-heading">
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
         </div>
-        <div class="panel-body">
-        </div>
             <?= $this->render('_search', compact('model_date')) ?>
         <div class="panel-body">
             <div class="panel panel-default">

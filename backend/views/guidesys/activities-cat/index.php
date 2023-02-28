@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-6">
-                            <?php 
+                            <?php
                             /* Uncomment this to activate GridQuickLinks */
                             /* echo GridQuickLinks::widget([
                                 'model' => ActivitiesCat::className(),
@@ -34,31 +34,35 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <?=  GridPageSize::widget(['pjaxId' => 'activities-cat-grid-pjax']) ?>
+                            <?= GridPageSize::widget(['pjaxId' => 'activities-cat-grid-pjax']) ?>
                         </div>
                     </div>
 
-                    <?php 
+                    <?php
                     Pjax::begin([
                         'id' => 'activities-cat-grid-pjax',
                     ])
                     ?>
 
-                    <?= 
+                    <?=
                     GridView::widget([
                         'id' => 'activities-cat-grid',
                         'dataProvider' => $dataProvider,
-                                                'bulkActionOptions' => [
-                            'gridId' => 'activities-cat-grid',
-                            'actions' => [ Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-                        ],
+//                        'bulkActionOptions' => [
+//                            'gridId' => 'activities-cat-grid',
+//                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
+//                        ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                            ['attribute' => 'id', 'value' => function (ActivitiesCat $model) {
+                                return sprintf('#%06d', $model->id);
+                            },
+                                'options' => ['style' => 'width:20px']],
                             [
                                 'attribute' => 'name',
                                 'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'controller' => '/guidesys/activities-cat',
-                                'title' => function(ActivitiesCat $model) {
+                                'title' => function (ActivitiesCat $model) {
                                     return Html::a($model->name, ['/guidesys/activities-cat/update', 'id' => $model->id], ['data-pjax' => 0]);
                                 },
                                 'buttonsTemplate' => '{update} {delete}',
@@ -66,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                             [
                                 'attribute' => 'color',
-                                'value' => function(ActivitiesCat $model){
+                                'value' => function (ActivitiesCat $model) {
                                     return '<div style="background-color:' . $model->color . '">&nbsp;</div>';
                                 },
                                 'format' => 'html',
@@ -77,9 +81,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'rendering',
                                 'options' => ['style' => 'width:60px']
                             ],
-                ],
-            ]);
-            ?>
+                        ],
+                    ]);
+                    ?>
 
                     <?php Pjax::end() ?>
                 </div>
