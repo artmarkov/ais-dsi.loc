@@ -23,7 +23,6 @@ class StudentSearch extends Student
     {
         return [
             [['id', 'userStatus'], 'integer'],
-            [['position_id'], 'safe'],
             [['fullName', 'userBirthDate', 'userBirthDate_operand'], 'string'],
         ];
     }
@@ -63,7 +62,6 @@ class StudentSearch extends Student
             ],
             'attributes' => [
                 'id',
-                'position_id',
                 'userBirthDate' => [
                     'asc' => ['birth_date' => SORT_ASC],
                     'desc' => ['birth_date' => SORT_DESC],
@@ -91,7 +89,6 @@ class StudentSearch extends Student
         $query->andFilterWhere([
             'id' => $this->id,
             'user_common.status' => $this->userStatus,
-            'position_id' => $this->position_id
 
         ]);
 

@@ -16,14 +16,12 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property int $id
  * @property int $user_common_id
- * @property int $position_id
  * @property string $sert_name
  * @property string $sert_series
  * @property string $sert_num
  * @property string $sert_organ
  * @property string $sert_date
  *
- * @property StudentPosition $position
  * @property UserCommon $user
  */
 class Student extends ActiveRecord
@@ -65,12 +63,10 @@ class Student extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_common_id', 'position_id'], 'required'],
-            [['position_id'], 'integer'],
+            [['user_common_id'], 'required'],
             [['sert_date'], 'safe'],
             [['sert_name', 'sert_series', 'sert_num'], 'string', 'max' => 32],
             [['sert_organ'], 'string', 'max' => 127],
-            [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudentPosition::class, 'targetAttribute' => ['position_id' => 'id']],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
             [['sert_series', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_name != NULL;
@@ -100,7 +96,6 @@ class Student extends ActiveRecord
     {
         return [
             'id' => Yii::t('art/student', 'ID'),
-            'position_id' => Yii::t('art/student', 'Position'),
             'sert_name' => Yii::t('art/student', 'Sertificate Name'),
             'sert_series' => Yii::t('art/student', 'Sertificate Series'),
             'sert_num' => Yii::t('art/student', 'Sertificate Num'),
@@ -119,14 +114,6 @@ class Student extends ActiveRecord
     public function optimisticLock()
     {
         return 'version';
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPosition()
-    {
-        return $this->hasOne(StudentPosition::class, ['id' => 'position_id']);
     }
 
     /**

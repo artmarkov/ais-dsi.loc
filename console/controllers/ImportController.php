@@ -276,7 +276,6 @@ class ImportController extends Controller
                             $userCommon->snils = str_replace('-', '.', $v[15]);
                             if ($flag = $userCommon->save(false)) {
                                 $model->user_common_id = $userCommon->id;
-                                $model->position_id = $this->getPosId($v[18]);
                                 $model->sert_name = $v[10] ? 'birth_cert' : '';
                                 $model->sert_series = $v[11];
                                 $model->sert_num = $v[12];
@@ -501,29 +500,6 @@ class ImportController extends Controller
         return $level_id;
     }
 
-    public function getPosId($name)
-    {
-        $position_id = null;
-
-        switch ($name) {
-            case 'Абитуриенты' :
-                $position_id = 1000;
-                break;
-            case 'Ученики школы' :
-                $position_id = 1001;
-                break;
-            case 'Выпускники школы' :
-                $position_id = 1002;
-                break;
-            case 'Отчислены из школы' :
-                $position_id = 1003;
-                break;
-            case 'Не прошли испытания' :
-                $position_id = 1004;
-                break;
-        }
-        return $position_id;
-    }
 
     /**
      * @param $last_name

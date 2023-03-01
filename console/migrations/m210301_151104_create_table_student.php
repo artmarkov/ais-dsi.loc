@@ -31,7 +31,6 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
         $this->createTableWithHistory('students', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'user_common_id' => $this->integer(),
-            'position_id' => $this->integer(),
             'sert_name' => $this->string(32),
             'sert_series' => $this->string(32),
             'sert_num' => $this->string(32),
@@ -46,11 +45,10 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
 
         $this->addCommentOnTable('students' ,'Ученики');
         $this->db->createCommand()->resetSequence('students', 1000)->execute();
-        $this->addForeignKey('student_ibfk_1', 'students', 'position_id', 'guide_student_position', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('students_view', '
          SELECT users.id AS user_id, user_common.id AS user_common_id, students.id AS students_id, users.username, users.email, users.status AS user_status, 
-                user_common.status, position_id, user_common.last_name,user_common.first_name,user_common.middle_name, 
+                user_common.status, user_common.last_name,user_common.first_name,user_common.middle_name, 
                 CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) AS fullname, 
                 CONCAT(user_common.last_name ,\' \', left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'.\') as fio, 
                 CONCAT(left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'. \', user_common.last_name) as iof

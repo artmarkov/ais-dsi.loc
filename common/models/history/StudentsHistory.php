@@ -21,7 +21,6 @@ class StudentsHistory extends BaseHistory
     protected function getFields()
     {
         return [
-            'position_id',
             'sert_name',
             'sert_series',
             'sert_num',
@@ -40,8 +39,6 @@ class StudentsHistory extends BaseHistory
     protected static function getDisplayValue($model, $name, $value)
     {
         switch ($name) {
-            case 'position_id':
-                return isset($model->position_id) ? $model->position->name : $value;
             case 'sert_name':
                 return isset(self::getModelName()::STUDENT_DOC[$value]) ? self::getModelName()::STUDENT_DOC[$value] : $value;
         }

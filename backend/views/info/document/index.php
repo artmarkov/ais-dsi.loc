@@ -71,12 +71,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'title',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/info/document',
-                                'title' => function (Document $model) {
-                                    return Html::a($model->title, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (Document $model) {
+                                    return $model->title;
                                 },
-                                'buttonsTemplate' => '{update} {view} {delete}',
                             ],
                             [
                                 'attribute' => 'fullName',
@@ -92,6 +89,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                             ],
 //                            'description',
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/info/document',
+                                'template' => '{view} {update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                            ],
                         ],
                     ]);
                     ?>

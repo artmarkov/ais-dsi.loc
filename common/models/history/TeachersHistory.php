@@ -69,7 +69,7 @@ class TeachersHistory extends BaseHistory
             case 'position_id':
                 return isset($model->position_id) ? $model->position->name : $value;
             case 'work_id':
-                return isset($model->position_id) ? $model->work->name : $value;
+                return isset($model->work_id) ? $model->work->name : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }

@@ -63,15 +63,30 @@ use artsoft\grid\GridPageSize;
                     ],
                     [
                         'attribute' => 'title',
-                        'class' => 'artsoft\grid\columns\TitleActionColumn',
-                        'controller' => '/teachers/default',
-                        'title' => function ($model) use ($modelTeachers) {
-                            return Html::a($model->title, ['/teachers/default/document', 'id' => $modelTeachers->id, 'objectId' => $model->id, 'mode' => 'view'], ['data-pjax' => 0]);
+                        'value' => function ($model) {
+                            return $model->title;
                         },
-                        'buttonsTemplate' => '{update} {view} {delete}',
+                    ],
+//                            'user_common_id',
+//                            'description',
+                    'doc_date:date',
+                    [
+                        'attribute' => 'countFiles',
+                        'value' => function (Document $model) {
+                            return $model->getFilesCount();
+                        },
+                    ],
+                    [
+                        'class' => 'kartik\grid\ActionColumn',
+                        'urlCreator' => function ($action, $model, $key, $index) {
+                            return [$action, 'id' => $model->id];
+                        },
+                        'controller' => '/teachers/default',
+                        'template' => '{view} {update} {delete}',
+                        'headerOptions' => ['class' => 'kartik-sheet-style'],
                         'buttons' => [
                             'update' => function ($url, $model, $key) use ($modelTeachers) {
-                                return Html::a(Yii::t('art', 'Edit'),
+                                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                                     Url::to(['/teachers/default/document', 'id' => $modelTeachers->id, 'objectId' => $model->id, 'mode' => 'update']), [
                                         'title' => Yii::t('art', 'Edit'),
                                         'data-method' => 'post',
@@ -80,7 +95,7 @@ use artsoft\grid\GridPageSize;
                                 );
                             },
                             'view' => function ($url, $model, $key) use ($modelTeachers) {
-                                return Html::a(Yii::t('art', 'View'),
+                                return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
                                     Url::to(['/teachers/default/document', 'id' => $modelTeachers->id, 'objectId' => $model->id, 'mode' => 'view']), [
                                         'title' => Yii::t('art', 'View'),
                                         'data-method' => 'post',
@@ -89,7 +104,7 @@ use artsoft\grid\GridPageSize;
                                 );
                             },
                             'delete' => function ($url, $model, $key) use ($modelTeachers) {
-                                return Html::a(Yii::t('art', 'Delete'),
+                                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                                     Url::to(['/teachers/default/document', 'id' => $modelTeachers->id, 'objectId' => $model->id, 'mode' => 'delete']), [
                                         'title' => Yii::t('art', 'Delete'),
                                         'aria-label' => Yii::t('art', 'Delete'),
@@ -100,16 +115,6 @@ use artsoft\grid\GridPageSize;
                                 );
                             },
                         ],
-                    ],
-
-//                            'user_common_id',
-//                            'description',
-                    'doc_date:date',
-                    [
-                        'attribute' => 'countFiles',
-                        'value' => function (Document $model) {
-                            return $model->getFilesCount();
-                        },
                     ],
                 ],
             ]);

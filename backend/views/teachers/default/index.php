@@ -64,23 +64,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
-                                'options' => ['style' => 'width:30px'],
                                 'attribute' => 'id',
+                                'options' => ['style' => 'width:30px'],
                                 'value' => function (Teachers $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'format' => 'raw'
                             ],
                             [
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'options' => ['style' => 'width:1500px'],
+                                'options' => ['style' => 'width:300px'],
                                 'attribute' => 'fullName',
-                                'controller' => '/teachers/default',
-
-                                'title' => function (Teachers $model) {
-                                    return Html::a($model->fullName, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (Teachers $model) {
+                                    return $model->fullName;
                                 },
-                                'buttonsTemplate' => '{update} {view} {delete}',
                             ],
                             [
                                 'attribute' => 'position_id',
@@ -142,6 +137,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 'label' => 'Доступ к работе',
                                 'options' => ['style' => 'width:150px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/teachers/default',
+                                'template' => '{view} {update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
                             ],
                         ],
                     ]);

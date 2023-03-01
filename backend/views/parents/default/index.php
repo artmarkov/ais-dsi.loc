@@ -61,28 +61,34 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:30px'],
                                 'attribute' => 'id',
                                 'value' => function (Parents $model) {
-                                    return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                    return sprintf('#%06d', $model->id);
                                 },
-                                'format' => 'raw'
                             ],
                             [
                                 'attribute' => 'fullName',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/parents/default',
-                                'title' => function (Parents $model) {
-                                    return Html::a($model->fullName, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'options' => ['style' => 'width:300px'],
+                                'value' => function (Parents $model) {
+                                    return $model->fullName;
                                 },
-                                'buttonsTemplate' => '{update} {view} {delete}',
                             ],
 
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
+                                'options' => ['style' => 'width:120px'],
                                 'attribute' => 'userStatus',
                                 'optionsArray' => [
                                     [UserCommon::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
                                     [UserCommon::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
                                 ],
-                                'options' => ['style' => 'width:120px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/parents/default',
+                                'template' => '{view} {update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
                             ],
                         ],
                     ]);
