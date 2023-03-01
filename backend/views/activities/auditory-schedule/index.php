@@ -175,8 +175,8 @@ EOF;
                     'eventDrop' => new JsExpression($JSEventDrop),
                     'resourceAreaHeaderContent' => Yii::t('art/calendar', 'Auditories'),
                     'resourceGroupField' => 'parent',
-                    'resources' => \yii\helpers\Url::to(['/activities/schedule/resources']),
-                    'events' => \yii\helpers\Url::to(['/activities/schedule/init-calendar']),
+                    'resources' => \yii\helpers\Url::to(['/activities/auditory-schedule/auditories']),
+                    'events' => \yii\helpers\Url::to(['/activities/auditory-schedule/init-calendar']),
                 ],
             ]);
             ?>

@@ -9,7 +9,7 @@ use yii\helpers\Url;
 use yii\web\Response;
 use Yii;
 
-class ScheduleController extends MainController
+class AuditoryScheduleController extends MainController
 {
     public $modelClass = 'common\models\activities\Activities';
     public $modelSearchClass = 'common\models\activities\search\ActivitiesSearch';
@@ -74,16 +74,12 @@ class ScheduleController extends MainController
     /**
      * @return array
      */
-    public function actionResources()
+    public function actionAuditories()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         $this->view->params['tabMenu'] = $this->tabMenu;
-        $auditories = Auditory::find()
-            ->joinWith('cat')
-            ->where(['=', 'study_flag', 1])
-            ->orderBy(['sort_order' => SORT_ASC])
-            ->all();
+        $auditories = Auditory::find()->joinWith('cat')->where(['=', 'study_flag', true])->orderBy(['sort_order' => SORT_ASC])->all();
         $tasks = [];
         foreach ($auditories as $item) {
             $resource = new Resource();

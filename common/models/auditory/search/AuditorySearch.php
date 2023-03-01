@@ -27,6 +27,7 @@ class AuditorySearch extends Auditory
             [['id', 'building_id', 'cat_id', 'num', 'capacity', 'status'], 'integer'],
             [['name', 'floor', 'description', 'sort_order'], 'safe'],
             [['area'], 'number'],
+            [['study_flag'], 'boolean'],
             [['catName', 'buildingName'], 'string'],
         ];
     }
@@ -103,6 +104,7 @@ class AuditorySearch extends Auditory
         $query->andFilterWhere([
             'auditory.id' => $this->id,
             'status' => $this->status,
+            'study_flag' => $this->study_flag,
 
 //                закоментировать для поиска путем ввода названия            
             'building_id' => $this->building_id,

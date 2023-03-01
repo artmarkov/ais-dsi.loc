@@ -176,12 +176,12 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         SELECT auditory.id, auditory.sort_order, building_id, cat_id, 
                auditory.num, auditory.name as auditory_name, guide_auditory_cat.name as cat_name, 
                guide_auditory_building.name as building_name, guide_auditory_building.slug as building_slug,
-               auditory.floor, auditory.area, auditory.capacity, auditory.status, guide_auditory_cat.study_flag,
+               auditory.floor, auditory.area, auditory.capacity, auditory.status, auditory.study_flag,
                concat(auditory.num, \' - \',auditory.name) as auditory_memo_1
             FROM auditory
             inner join guide_auditory_cat on guide_auditory_cat.id = auditory.cat_id
             inner join guide_auditory_building on guide_auditory_building.id = auditory.building_id
-            where guide_auditory_cat.study_flag = 1
+            where auditory.study_flag = true 
 	        order by auditory.sort_order
         ')->execute();
 

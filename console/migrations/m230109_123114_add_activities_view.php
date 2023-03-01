@@ -20,7 +20,7 @@ class m230109_123114_add_activities_view extends BaseMigration
    FROM generate_series(to_char(( SELECT CURRENT_TIMESTAMP - \'1 year\'::interval), \'YYYY-MM-DD\'::text)::date::timestamp with time zone, to_char(( SELECT CURRENT_TIMESTAMP + \'1 year\'::interval), \'YYYY-MM-DD\'::text)::date::timestamp with time zone, \'1 day\'::interval) dt(dt);
         ')->execute();
 
-        $this->db->createCommand()->createView('generator_course_view', '
+      /*  $this->db->createCommand()->createView('generator_course_view', '
      SELECT p.term_mastering,
     p.subject_cat_id,
     p.subject_vid_id,
@@ -54,7 +54,7 @@ class m230109_123114_add_activities_view extends BaseMigration
           WHERE education_programm_level_subject.subject_id IS NOT NULL AND education_programm_level_subject.subject_vid_id <> 1000
           GROUP BY education_programm.term_mastering, education_programm_level_subject.subject_cat_id, education_programm_level_subject.subject_vid_id, education_programm_level_subject.subject_id, subject.name
           ORDER BY subject.name) p;
-        ')->execute();
+        ')->execute();*/
 
         $this->db->createCommand()->createView('activities_schedule_view', '
  SELECT data.subject_schedule_id,
@@ -148,13 +148,29 @@ UNION ALL
   ORDER BY 8;
         ')->execute();
 
+ $this->db->createCommand()->createView('activities_teachers_view', '
+ SELECT activities_view.resource,
+    activities_view.id,
+    activities_view.category_id,
+    activities_view.auditory_id,
+    teachers.id AS teachers_id,
+    concat(activities_view.title, \' (\', auditory.num, \' - \', auditory.name, \')\') AS title,
+    activities_view.description,
+    activities_view.start_time,
+    activities_view.end_time
+   FROM activities_view
+     JOIN teachers ON teachers.id = ANY (string_to_array(activities_view.executors_list::text, \',\'::text)::integer[])
+     JOIN auditory ON auditory.id = activities_view.auditory_id;
+        ')->execute();
+
     }
 
     public function down()
     {
+        $this->db->createCommand()->dropView('activities_teachers_view')->execute();
         $this->db->createCommand()->dropView('activities_view')->execute();
         $this->db->createCommand()->dropView('activities_schedule_view')->execute();
-        $this->db->createCommand()->dropView('generator_course_view')->execute();
+//        $this->db->createCommand()->dropView('generator_course_view')->execute();
         $this->db->createCommand()->dropView('generator_date_view')->execute();
     }
 }

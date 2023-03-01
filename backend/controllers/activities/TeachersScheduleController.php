@@ -2,74 +2,28 @@
 
 namespace backend\controllers\activities;
 
-use common\models\activities\Activities;
-use common\models\activities\search\ActivitiesSearch;
-use common\widgets\fullcalendar\src\models\Event as BaseEvent;
-use yii\base\DynamicModel;
-use yii\helpers\Url;
+use common\models\user\UserCommon;
+use common\widgets\fullcalendarscheduler\src\models\Resource;
+use common\widgets\fullcalendarscheduler\src\models\Event as BaseEvent;
+use yii\db\Query;
 use yii\web\Response;
 use Yii;
 
-class DefaultController extends MainController
+class TeachersScheduleController extends MainController
 {
-    public $modelClass = 'common\models\activities\Activities';
-    public $modelSearchClass = 'common\models\activities\search\ActivitiesSearch';
+    public $modelClass = 'common\models\activities\ActivitiesTeachersView';
 
+    /**
+     * @return mixed|string
+     */
     public function actionIndex()
     {
-        $session = Yii::$app->session;
-
-        $model_date = new DynamicModel(['date']);
-        $model_date->addRule(['date'], 'required')
-            ->addRule(['date'], 'date');
-
-        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-            $day = date('d');
-            $mon = date('m');
-            $year = date('Y');
-
-            $model_date->date = $session->get('_activities_date') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day, $year), 'php:d.m.Y');
-        }
-        $session->set('_activities_date', $model_date->date);
-        $timestamp_in = Yii::$app->formatter->asTimestamp($model_date->date);
-        $timestamp_out = $timestamp_in + 86400;
-
         $this->view->params['tabMenu'] = $this->tabMenu;
-
-        $query = Activities::find()->where(['between', 'start_time', $timestamp_in, $timestamp_out]);
-        $searchModel = new ActivitiesSearch($query);
-        $params = Yii::$app->request->getQueryParams();
-        $dataProvider = $searchModel->search($params);
-        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel', 'model_date'));
-    }
-
-    public function actionView($id)
-    {
-        $resource = Yii::$app->request->get('resource');
-        $this->view->params['tabMenu'] = $this->tabMenu;
-        return $this->renderIsAjax($this->viewView, [
-            'model' => Activities::find()->where(['id' => $id])->andWhere(['resource' => $resource])->one(),
-        ]);
+        return $this->render('index');
     }
 
     /**
-     * @return string|\yii\web\Response
-     *
-     * рендерим виджет календаря
-     *
-     */
-    public function actionCalendar()
-    {
-        $this->view->params['tabMenu'] = $this->tabMenu;
-        return $this->render('calendar');
-    }
-
-    /**
-     * @param null $start
-     * @param null $end
-     *
      * формирует массив событий текущей страницы календаря
-     *
      * @return array
      */
     public function actionInitCalendar()
@@ -78,13 +32,12 @@ class DefaultController extends MainController
 
         $start = Yii::$app->request->get('start');
         $end = Yii::$app->request->get('end');
-
         $start_time = Yii::$app->formatter->asTimestamp($start);
         $end_time = Yii::$app->formatter->asTimestamp($end);
 
         $events = $this->modelClass::find()
             ->where(
-                "start_time > :start_time and end_time < :end_time and resource != 'subject_schedule' and resource != 'consult_schedule'",
+                "start_time > :start_time and end_time < :end_time",
                 [
                     ":start_time" => $start_time,
                     ":end_time" => $end_time
@@ -108,12 +61,33 @@ class DefaultController extends MainController
 
             //$event->url = Url::to(['/activities/default/view/', 'id' => $item->id]); // ссылка для просмотра события - перебивает событие по клику!!!
             $event->allDay = $item->allDay;
-
+            $event->resourceId = $item->teachers_id;
             $tasks[] = $event;
         }
 
 //        echo '<pre>' . print_r($tasks, true) . '</pre>';
 
+        return $tasks;
+    }
+
+    /**
+     * @return array
+     */
+    public function actionTeachers()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $teachers = (new Query())->from('teachers_view')->where(['=', 'status', UserCommon::STATUS_ACTIVE])->orderBy(['fullname' => SORT_ASC])->all();
+        $tasks = [];
+        foreach ($teachers as $item) {
+            $resource = new Resource();
+            $resource->id = $item['teachers_id'];
+            $resource->parent = false;
+            $resource->title = $item['fullname'];
+            $tasks[] = $resource;
+        }
+//        echo '<pre>' . print_r($events, true) . '</pre>';
         return $tasks;
     }
 
@@ -132,13 +106,13 @@ class DefaultController extends MainController
 
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
-                return $this->redirect('/admin/activities/default/calendar');
+                return $this->redirect('/admin/activities/schedule/index');
             }
             $model->getData($eventData);
         } else {
             $model = $this->modelClass::findOne($id);
         }
-        return $this->renderAjax('activities-modal', [
+        return $this->renderAjax('schedule-modal', [
             'model' => $model
         ]);
 
@@ -169,7 +143,7 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been updated.'));
-            return $this->redirect('/admin/activities/default/calendar');
+            return $this->redirect('/admin/activities/schedule/index');
         }
     }
 
@@ -187,6 +161,6 @@ class DefaultController extends MainController
         $model->delete();
 
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-        return $this->redirect('/admin/activities/default/calendar');
+        return $this->redirect('/admin/activities/schedule/index');
     }
 }

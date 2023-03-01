@@ -10,4 +10,6 @@ return [
     'Activities Cats' => 'Категории мероприятий',
     'Color' => 'Цвет событий',
     'Background event' => 'фоновое событие',
+    'Teachers' => 'Преподаватели',
+    'Auditories' => 'Аудитории',
 ];

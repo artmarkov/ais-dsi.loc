@@ -21,6 +21,7 @@ use yii\helpers\ArrayHelper;
  * @property double $area
  * @property int $capacity
  * @property string $description
+ * @property string $study_flag
  * @property int $sort_order
  * @property int $created_at
  * @property int $updated_at
@@ -61,9 +62,10 @@ class Auditory extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'num', 'building_id', 'cat_id'], 'required'],
+            [['name', 'num', 'building_id', 'cat_id', 'study_flag'], 'required'],
             [['id', 'building_id', 'cat_id', 'num', 'capacity', 'sort_order', 'version', 'status'], 'integer'],
             [['area'], 'number'],
+            [['study_flag'], 'boolean'],
             [['name'], 'string', 'max' => 128],
             [['floor'], 'string', 'max' => 32],
             [['description'], 'string', 'max' => 255],
@@ -91,6 +93,7 @@ class Auditory extends ActiveRecord
             'area' => Yii::t('art/guide', 'Area Auditory'),
             'capacity' => Yii::t('art/guide', 'Capacity Auditory'),
             'description' => Yii::t('art/guide', 'Description Auditory'),
+            'study_flag' => Yii::t('art/guide', 'Study Opportunity'),
             'sort_order' => Yii::t('art/guide', 'Order'),
             'status' => Yii::t('art', 'Status'),
             'created_at' => Yii::t('art', 'Created'),

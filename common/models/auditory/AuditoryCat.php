@@ -10,7 +10,6 @@ use Yii;
  * @property int $id
  * @property string $name
  * @property string $description
- * @property string $study_flag
  */
 class AuditoryCat extends \artsoft\db\ActiveRecord
 {
@@ -28,8 +27,7 @@ class AuditoryCat extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'study_flag'], 'required'],
-            [['study_flag'], 'integer'],
+            [['name'], 'required'],
             [['name'], 'string', 'max' => 128],
             [['description'], 'string', 'max' => 256],
         ];
@@ -44,7 +42,6 @@ class AuditoryCat extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art/guide', 'ID'),
             'name' => Yii::t('art/guide', 'Name Auditory Category'),
             'description' => Yii::t('art/guide', 'Description Auditory Category'),
-            'study_flag' => Yii::t('art/guide', 'Study Opportunity'),
         ];
     }
     public function getAuditory()

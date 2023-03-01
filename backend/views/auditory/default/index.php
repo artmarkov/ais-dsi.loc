@@ -83,6 +83,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'study_flag',
+                                'optionsArray' => [
+                                    [1, Yii::t('art', 'Yes'), 'success'],
+                                    [0, Yii::t('art', 'No'), 'danger'],
+                                ],
+                                'options' => ['style' => 'width:150px']
+                            ],
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'status',
                                 'optionsArray' => [
                                     [Auditory::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],

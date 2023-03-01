@@ -48,9 +48,9 @@ use common\models\auditory\AuditoryCat;
 
                     <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
 
+                    <?= $form->field($model, 'study_flag')->checkbox() ?>
+
                     <?= $form->field($model->loadDefaultValues(), 'status')->dropDownList(\common\models\auditory\Auditory::getStatusList()) ?>
-
-
 
                 </div>
             </div>

@@ -64,12 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'name',
                             'description',
-                            [
-                                'class' => 'artsoft\grid\columns\StatusColumn',
-                                'attribute' => 'study_flag',
-                                'options' => ['style' => 'width:60px']
-                            ],
-                            // 'study_flag',
+
                             [
                                 'class' => 'kartik\grid\ActionColumn',
                                 'urlCreator' => function ($action, $model, $key, $index) {
