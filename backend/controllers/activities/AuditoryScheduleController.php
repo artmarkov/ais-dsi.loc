@@ -38,7 +38,7 @@ class AuditoryScheduleController extends MainController
 
         $events = $this->modelClass::find()
             ->where(
-                "start_time > :start_time and end_time < :end_time",
+                "start_time > :start_time and end_time < :end_time and (direction_id = 1000 OR direction_id IS NULL)",
                 [
                     ":start_time" => $start_time,
                     ":end_time" => $end_time

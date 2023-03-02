@@ -10,7 +10,7 @@ use yii\web\JsExpression;
 
 //echo '<pre>' . print_r($events, true) . '</pre>';
 
-$this->title = Yii::t('art/calendar', 'Activities calendar');
+$this->title = 'Ежедневник по аудиториям';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="activities-index">
@@ -145,7 +145,7 @@ EOF;
                    'headerToolbar' => [
                         'left' => 'today prev,next',
                         'center' => 'title',
-                        'right' => '',
+                        'right' => 'resourceTimelineDay,resourceTimelineThreeDays',
                     ],
                 'clientOptions' => [
                     'schedulerLicenseKey' => 'GPL-My-Project-Is-Open-Source',
@@ -153,7 +153,7 @@ EOF;
                     'aspectRatio' => 1.8,
                     'height' => 'auto', // 'auto' - aspectRatio no works
                     'navLinks' => true,
-                    'editable' => true,
+                    'editable' => false,
                     'selectable' => true,// разрешено выбирать область
                     'expandRows' => true,
                     'nowIndicator' => true, //Отображение маркера, указывающего Текущее время
@@ -162,17 +162,17 @@ EOF;
                     'slotDuration' => '00:10:00', // Частота отображения временных интервалов.
                     'eventDurationEditable' => true, // разрешить изменение размера
                     'eventOverlap' => true, // разрешить перекрытие событий
-                   /* 'views' => [
+                    'views' => [
                         'resourceTimelineThreeDays' => [
                             'type' => 'resourceTimeline',
                             'duration' => ['days' => 3],
                             'buttonText' => Yii::t('art/calendar', '3 days'),
                         ]
-                    ],*/
-                    'select' => new JsExpression($JSSelect),
+                    ],
+//                    'select' => new JsExpression($JSSelect),
                     'eventClick' => new JsExpression($JSEventClick),
-                    'eventResize' => new JsExpression($JSEventResize),
-                    'eventDrop' => new JsExpression($JSEventDrop),
+//                    'eventResize' => new JsExpression($JSEventResize),
+//                    'eventDrop' => new JsExpression($JSEventDrop),
                     'resourceAreaHeaderContent' => Yii::t('art/calendar', 'Auditories'),
                     'resourceGroupField' => 'parent',
                     'resources' => \yii\helpers\Url::to(['/activities/auditory-schedule/auditories']),

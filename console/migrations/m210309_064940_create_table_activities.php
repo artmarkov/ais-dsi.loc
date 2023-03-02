@@ -28,7 +28,7 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
             ['Внеплановые мероприятия', '#6aa84f'],
         ])->execute();
 
-        $this->createTableWithHistory('activities', [
+        /*$this->createTableWithHistory('activities', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'category_id' => $this->integer()->notNull(),
             'auditory_id' => $this->integer()->notNull(),
@@ -43,12 +43,12 @@ class m210309_064940_create_table_activities extends \artsoft\db\BaseMigration
         $this->db->createCommand()->resetSequence('activities', 10000)->execute();
 
         $this->addForeignKey('activities_ibfk_1', 'activities', 'category_id', 'guide_activities_cat', 'id', 'RESTRICT', 'RESTRICT');
-        $this->addForeignKey('activities_ibfk_2', 'activities', 'auditory_id', 'auditory', 'id', 'RESTRICT', 'RESTRICT');
+        $this->addForeignKey('activities_ibfk_2', 'activities', 'auditory_id', 'auditory', 'id', 'RESTRICT', 'RESTRICT');*/
     }
 
     public function down()
     {
-        $this->dropTableWithHistory('activities');
+//        $this->dropTableWithHistory('activities');
         $this->dropTable('guide_activities_cat');
     }
 }

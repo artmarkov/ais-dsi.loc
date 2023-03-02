@@ -92,6 +92,7 @@ class m230109_123114_add_activities_view extends BaseMigration
     schoolplan.id,
     1003 AS category_id,
     schoolplan.auditory_id,
+    NULL::integer AS direction_id,
     schoolplan.executors_list,
     schoolplan.title,
     schoolplan.description,
@@ -101,31 +102,23 @@ class m230109_123114_add_activities_view extends BaseMigration
   WHERE schoolplan.auditory_id IS NOT NULL
 UNION ALL
  SELECT \'consult_schedule\'::text AS resource,
-    consult_schedule.id,
+    consult_schedule_view.consult_schedule_id AS id,
     1004 AS category_id,
-    consult_schedule.auditory_id,
-    teachers_load.teachers_id::text AS executors_list,
-    concat(\'Консультация: \',
-        CASE
-            WHEN teachers_load.studyplan_subject_id = 0 AND teachers_load.subject_sect_studyplan_id <> 0 THEN ( SELECT studyplan_subject_view.memo_4
-               FROM studyplan_subject_view
-              WHERE studyplan_subject_view.subject_sect_studyplan_id = teachers_load.subject_sect_studyplan_id)
-            WHEN teachers_load.studyplan_subject_id <> 0 AND teachers_load.subject_sect_studyplan_id = 0 THEN ( SELECT studyplan_subject_view.memo_4
-               FROM studyplan_subject_view
-              WHERE studyplan_subject_view.studyplan_subject_id = teachers_load.studyplan_subject_id)
-            ELSE NULL::text
-        END) AS title,
-    consult_schedule.description,
-    consult_schedule.datetime_in AS start_time,
-    consult_schedule.datetime_out AS end_time
-   FROM consult_schedule
-     JOIN teachers_load ON teachers_load.id = consult_schedule.teachers_load_id
-  WHERE consult_schedule.auditory_id IS NOT NULL AND teachers_load.direction_id = 1000
+    consult_schedule_view.auditory_id,
+    consult_schedule_view.direction_id,
+    consult_schedule_view.teachers_id::text AS executors_list,
+    concat(consult_schedule_view.sect_name, \' - \', consult_schedule_view.subject) AS title,
+    consult_schedule_view.description,
+    consult_schedule_view.datetime_in AS start_time,
+    consult_schedule_view.datetime_out AS end_time
+   FROM consult_schedule_view
+  WHERE consult_schedule_view.auditory_id IS NOT NULL
 UNION ALL
  SELECT \'activities_over\'::text AS resource,
     activities_over.id,
     1005 AS category_id,
     activities_over.auditory_id,
+    NULL::integer AS direction_id,
     activities_over.executors_list,
     activities_over.title,
     activities_over.description,
@@ -138,14 +131,14 @@ UNION ALL
     activities_schedule_view.subject_schedule_id AS id,
     activities_schedule_view.category_id,
     activities_schedule_view.auditory_id,
+    activities_schedule_view.direction_id,
     activities_schedule_view.teachers_id::text AS executors_list,
     activities_schedule_view.title,
     activities_schedule_view.description,
     activities_schedule_view.datetime_in AS start_time,
     activities_schedule_view.datetime_out AS end_time
    FROM activities_schedule_view
-  WHERE activities_schedule_view.direction_id = 1000
-  ORDER BY 8;
+  ORDER BY 9;
         ')->execute();
 
  $this->db->createCommand()->createView('activities_teachers_view', '
@@ -153,6 +146,7 @@ UNION ALL
     activities_view.id,
     activities_view.category_id,
     activities_view.auditory_id,
+    activities_view.direction_id,
     teachers.id AS teachers_id,
     concat(activities_view.title, \' (\', auditory.num, \' - \', auditory.name, \')\') AS title,
     activities_view.description,

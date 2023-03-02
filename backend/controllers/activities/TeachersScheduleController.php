@@ -78,12 +78,16 @@ class TeachersScheduleController extends MainController
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         $this->view->params['tabMenu'] = $this->tabMenu;
-        $teachers = (new Query())->from('teachers_view')->where(['=', 'status', UserCommon::STATUS_ACTIVE])->orderBy(['fullname' => SORT_ASC])->all();
+        $teachers = (new Query())->select('t.teachers_id, t.fullname, d.name')
+                    ->from('teachers_view t')
+                    ->innerJoin('teachers_activity a', 't.teachers_id = a.teachers_id')
+                    ->innerJoin('guide_teachers_direction d', 'd.id = a.direction_id')
+                    ->where(['=', 't.status', UserCommon::STATUS_ACTIVE])->orderBy(['t.fullname' => SORT_ASC])->all();
         $tasks = [];
         foreach ($teachers as $item) {
             $resource = new Resource();
             $resource->id = $item['teachers_id'];
-            $resource->parent = false;
+            $resource->parent = $item['name'];
             $resource->title = $item['fullname'];
             $tasks[] = $resource;
         }
