@@ -153,11 +153,12 @@ class DefaultController extends MainController
                             $m = new TeachersEfficiency();
                             $m->teachers_id = $teachers_id;
                             $m->efficiency_id = $modelEfficiency->efficiency_id;
+                            $m->bonus_vid_id = $modelEfficiency->bonus_vid_id;
                             $m->bonus = $modelEfficiency->bonus;
                             $m->date_in = $modelEfficiency->date_in;
                             $m->class = \yii\helpers\StringHelper::basename(get_class($model));
                             $m->item_id = $id;
-                            if (!($flag = $m->save())) {
+                            if (!($flag = $m->save(false))) {
                                 $transaction->rollBack();
                                 break;
                             }

@@ -59,7 +59,7 @@ class ConsultScheduleViewSearch extends ConsultScheduleView
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
             'sort' => [
-                'defaultOrder' => ['sect_name' => SORT_ASC],
+                'defaultOrder' => false,
             ],
         ]);
 

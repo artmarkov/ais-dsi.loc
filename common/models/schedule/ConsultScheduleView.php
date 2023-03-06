@@ -60,6 +60,7 @@ class ConsultScheduleView extends ConsultSchedule
         $attr['load_time_consult'] = Yii::t('art/guide', 'Load Time Consult');
         $attr['consult_schedule_id'] = Yii::t('art/guide', 'Consult Schedule ID');
         $attr['sect_name'] = Yii::t('art/guide', 'Sect Name');
+        $attr['subject'] = Yii::t('art/guide', 'Subject');
 
         return $attr;
     }

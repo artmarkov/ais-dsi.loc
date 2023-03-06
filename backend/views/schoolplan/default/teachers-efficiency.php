@@ -55,43 +55,13 @@ use artsoft\grid\GridPageSize;
 //                                ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                                 [
                                     'attribute' => 'id',
-                                    'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                    'controller' => '/schoolplan/default',
-                                    'title' => function (TeachersEfficiency $model) use ($id) {
-                                        return Html::a(sprintf('#%06d', $model->id), ['/schoolplan/default/teachers-efficiency', 'id' => $id, 'objectId' => $model->id, 'mode' => 'view'], ['data-pjax' => 0]);
+                                    'value' => function (TeachersEfficiency $model) {
+                                        return sprintf('#%06d', $model->id);
                                     },
-                                    'buttonsTemplate' => '{update} {view} {delete}',
-                                    'buttons' => [
-                                        'update' => function ($url, $model, $key) use ($id) {
-                                            return Html::a(Yii::t('art', 'Edit'),
-                                                Url::to(['/schoolplan/default/teachers-efficiency', 'id' => $id, 'objectId' => $model->id, 'mode' => 'update']), [
-                                                    'title' => Yii::t('art', 'Edit'),
-                                                    'data-method' => 'post',
-                                                    'data-pjax' => '0',
-                                                ]
-                                            );
-                                        },
-                                        'view' => function ($url, $model, $key) use ($id) {
-                                            return Html::a(Yii::t('art', 'View'),
-                                                Url::to(['/schoolplan/default/teachers-efficiency', 'id' => $id, 'objectId' => $model->id, 'mode' => 'view']), [
-                                                    'title' => Yii::t('art', 'View'),
-                                                    'data-method' => 'post',
-                                                    'data-pjax' => '0',
-                                                ]
-                                            );
-                                        },
-                                        'delete' => function ($url, $model, $key) use ($id) {
-                                            return Html::a(Yii::t('art', 'Delete'),
-                                                Url::to(['/schoolplan/default/teachers-efficiency', 'id' => $id, 'objectId' => $model->id, 'mode' => 'delete']), [
-                                                    'title' => Yii::t('art', 'Delete'),
-                                                    'aria-label' => Yii::t('art', 'Delete'),
-                                                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                                    'data-method' => 'post',
-                                                    'data-pjax' => '0',
-                                                ]
-                                            );
-                                        },
-                                    ],
+                                    'format' => 'raw',
+                                    'contentOptions' => function (TeachersEfficiency $model) {
+                                        return [];
+                                    },
                                 ],
                                 [
                                     'attribute' => 'efficiency_id',
@@ -127,7 +97,43 @@ use artsoft\grid\GridPageSize;
                                     },
                                     'options' => ['style' => 'width:150px'],
                                 ],
-
+                                [
+                                    'class' => 'kartik\grid\ActionColumn',
+                                    'controller' => '/schoolplan/default',
+                                    'template' => '{view} {update} {delete}',
+                                    'buttons' => [
+                                        'update' => function ($url, $model, $key) use ($id) {
+                                            return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                                                Url::to(['/schoolplan/default/teachers-efficiency', 'id' => $id, 'objectId' => $model->id, 'mode' => 'update']), [
+                                                    'title' => Yii::t('art', 'Edit'),
+                                                    'data-method' => 'post',
+                                                    'data-pjax' => '0',
+                                                ]
+                                            );
+                                        },
+                                        'view' => function ($url, $model, $key) use ($id) {
+                                            return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                                                Url::to(['/schoolplan/default/teachers-efficiency', 'id' => $id, 'objectId' => $model->id, 'mode' => 'view']), [
+                                                    'title' => Yii::t('art', 'View'),
+                                                    'data-method' => 'post',
+                                                    'data-pjax' => '0',
+                                                ]
+                                            );
+                                        },
+                                        'delete' => function ($url, $model, $key) use ($id) {
+                                            return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                                                Url::to(['/schoolplan/default/teachers-efficiency', 'id' => $id, 'objectId' => $model->id, 'mode' => 'delete']), [
+                                                    'title' => Yii::t('art', 'Delete'),
+                                                    'aria-label' => Yii::t('art', 'Delete'),
+                                                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                                    'data-method' => 'post',
+                                                    'data-pjax' => '0',
+                                                ]
+                                            );
+                                        },
+                                    ],
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                ],
                             ],
                         ]);
                         ?>

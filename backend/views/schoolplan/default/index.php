@@ -64,7 +64,12 @@ $this->params['breadcrumbs'][] = $this->title;
 //                            return [];
 //                        },
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'],
+                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                            [
+                                'attribute' => 'id',
+                                'value' => function (Schoolplan $model) {
+                                    return sprintf('#%06d', $model->id);
+                                },
                                 'contentOptions' => function (Schoolplan $model) {
                                     switch ($model->doc_status) {
                                         case Schoolplan::DOC_STATUS_DRAFT:
@@ -76,12 +81,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                         case Schoolplan::DOC_STATUS_CANCEL:
                                             return ['class' => 'danger'];
                                     }
-                                },
-                            ],
-                            [
-                                'attribute' => 'id',
-                                'value' => function (Schoolplan $model) {
-                                    return sprintf('#%06d', $model->id);
                                 },
                             ],
                             [

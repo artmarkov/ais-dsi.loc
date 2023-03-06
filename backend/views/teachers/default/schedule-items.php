@@ -31,6 +31,7 @@ $columns = [
         'value' => function ($model, $key, $index, $widget) {
             return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
         },
+        'label' =>  Yii::t('art/guide', 'Sect').'/'.Yii::t('art/student', 'Student'),
         'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1,

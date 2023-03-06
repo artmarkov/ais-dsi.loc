@@ -18,45 +18,27 @@ $columns = [
     [
         'attribute' => 'sect_name',
         'width' => '320px',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => $subject_sect_studyplan_list,
         'value' => function ($model) {
             return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'format' => 'raw',
 
     ],
     [
         'attribute' => 'direction_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => \common\models\guidejob\Direction::getDirectionList(),
         'value' => function ($model, $key, $index, $widget) {
             return $model->direction ? $model->direction->name : null;
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
 
         'group' => true,  // enable grouping
         'subGroupOf' => 1
     ],
     [
         'attribute' => 'teachers_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => false /*RefBook::find('teachers_fio')->getList()*/,
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1
     ],
@@ -89,15 +71,9 @@ $columns = [
     [
         'attribute' => 'auditory_id',
         'width' => '300px',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => RefBook::find('auditory_memo_1', 1, true)->getList(),
         'value' => function ($model) {
             return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
     ],
     [
         'class' => 'kartik\grid\ActionColumn',

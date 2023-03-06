@@ -537,13 +537,13 @@ class DefaultController extends MainController
     public function actionConsultItems($id, $objectId = null, $mode = null)
     {
         $model = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
-        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['sect/default/view', 'id' => $id]];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/view', 'id' => $model->id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if ('create' == $mode) {
 
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['studyplan/default/consult-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['sect/default/consult-items', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
             if (!Yii::$app->request->get('load_id')) {
                 throw new NotFoundHttpException("Отсутствует обязательный параметр GET load_id.");

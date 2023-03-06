@@ -55,12 +55,9 @@ use artsoft\grid\GridPageSize;
                                 ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                                 [
                                     'attribute' => 'id',
-                                    'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                    'controller' => '/efficiency/default',
-                                    'title' => function (TeachersEfficiency $model) {
-                                        return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                    'value' => function (TeachersEfficiency $model) {
+                                        return sprintf('#%06d', $model->id);
                                     },
-                                    'buttonsTemplate' => '{update} {view} {delete}',
                                 ],
                                 [
                                     'attribute' => 'efficiency_id',
@@ -96,7 +93,15 @@ use artsoft\grid\GridPageSize;
                                     },
                                     'options' => ['style' => 'width:150px'],
                                 ],
-
+                                [
+                                    'class' => 'kartik\grid\ActionColumn',
+                                    'urlCreator' => function ($action, $model, $key, $index) {
+                                        return [$action, 'id' => $key];
+                                    },
+                                    'controller' => '/efficiency/default',
+                                    'template' => '{view} {update} {delete}',
+                                    'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                ],
                             ],
                         ]);
                         ?>
