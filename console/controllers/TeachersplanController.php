@@ -4,6 +4,7 @@ namespace console\controllers;
 
 use Box\Spout\Common\Entity\Row;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
+use common\models\schedule\ConsultScheduleConfirm;
 use common\models\teachers\TeachersPlan;
 use Yii;
 use yii\console\Controller;
@@ -21,6 +22,7 @@ class TeachersplanController extends Controller
     public function actionIndex()
     {
         $this->addPlan();
+        $this->addConsultSign();
     }
 
     /**
@@ -80,6 +82,45 @@ class TeachersplanController extends Controller
         }
     }
 
+    protected function addConsultSign() {
+        $reader = ReaderEntityFactory::createXLSXReader();
+        $reader->open('data/consult_sign.xlsx');
+        foreach ($reader->getSheetIterator() as $k => $sheet) {
+            if (1 != $k) {
+                continue;
+            }
+            foreach ($sheet->getRowIterator() as $i => $row) {
+                if ($i == 1) {
+                    continue; // skip header
+                }
+//                if ($i > 15) {
+//                    continue; // skip header
+//                }
+                /* @var $row Row */
+                $v = $row->toArray();
+                // print_r($v);
+
+                    try {
+                            $teachers_id = $this->findByTeachers2($v[1]);
+                        if ($teachers_id) {
+                            $model = new ConsultScheduleConfirm();
+                            $model->teachers_id = $teachers_id;
+                            $model->plan_year = $v[2];
+                            $model->confirm_flag = $v[3] == 1 ? true : false;
+                            $model->teachers_sign = $this->findByTeachers2($v[4]);
+                            $model->timestamp_sign = Yii::$app->formatter->asDate($v[5], 'php:d.m.Y H:i');
+                            if ($model->save(false)) {
+                                $this->stdout('Добавлена подпись: ' . $model->id, Console::FG_GREY);
+                                $this->stdout("\n");
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        $this->stdout('Ошибка: ' . $v[1], Console::FG_PURPLE);
+                        $this->stdout("\n");
+                    }
+                }
+        }
+    }
     public function findByAuditoryNum($num)
     {
         $auditory = \Yii::$app->db->createCommand('SELECT id 

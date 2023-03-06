@@ -11,7 +11,7 @@ class m220203_134045_add_table_subject_characteristic extends \artsoft\db\BaseMi
         }
 
         $this->createTableWithHistory('subject_characteristic', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'id' => $this->primaryKey(),
             'studyplan_subject_id' => $this->integer(),
             'teachers_id' => $this->integer()->notNull(),
             'description' => $this->string(512),
@@ -23,7 +23,6 @@ class m220203_134045_add_table_subject_characteristic extends \artsoft\db\BaseMi
         ], $tableOptions);
 
         $this->addCommentOnTable('subject_characteristic', 'Характеристика по предметам');
-        $this->db->createCommand()->resetSequence('subject_characteristic', 10000)->execute();
         $this->addForeignKey('subject_characteristic_ibfk_1', 'subject_characteristic', 'studyplan_subject_id', 'studyplan_subject', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('subject_characteristic_ibfk_2', 'subject_characteristic', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
 

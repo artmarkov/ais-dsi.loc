@@ -51,7 +51,7 @@ $columns = [
             return $model->direction ? $model->direction->name : null;
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 2
     ],
     [
         'attribute' => 'teachers_id',
@@ -59,7 +59,7 @@ $columns = [
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 1
+        'subGroupOf' => 2
     ],
     [
         'attribute' => 'load_time_consult',

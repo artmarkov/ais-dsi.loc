@@ -12,7 +12,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
         }
 
         $this->createTableWithHistory('teachers_load', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'id' => $this->primaryKey(),
             'subject_sect_studyplan_id' => $this->integer()->defaultValue(0),
             'studyplan_subject_id' => $this->integer()->defaultValue(0),
             'direction_id' => $this->integer()->notNull(),
@@ -27,7 +27,6 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('teachers_load', 'Нагрузка преподавателя');
-        $this->db->createCommand()->resetSequence('teachers_load', 10000)->execute();
         $this->createIndex('subject_sect_studyplan_id', 'teachers_load', 'subject_sect_studyplan_id');
         $this->createIndex('teachers_id', 'teachers_load', 'teachers_id');
         $this->addForeignKey('teachers_load_ibfk_1', 'teachers_load', 'direction_id', 'guide_teachers_direction', 'id', 'NO ACTION', 'NO ACTION');
@@ -216,7 +215,7 @@ UNION ALL
         ')->execute();
 
         $this->createTableWithHistory('subject_schedule', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'id' => $this->primaryKey(),
             'teachers_load_id' => $this->integer(),
             'week_num' => $this->integer(),
             'week_day' => $this->integer(),
@@ -232,11 +231,10 @@ UNION ALL
         ], $tableOptions);
 
         $this->addCommentOnTable('subject_schedule', 'Расписание занятий');
-        $this->db->createCommand()->resetSequence('subject_schedule', 10000)->execute();
         $this->addForeignKey('subject_schedule_ibfk_1', 'subject_schedule', 'teachers_load_id', 'teachers_load', 'id', 'CASCADE', 'CASCADE');
 
         $this->createTableWithHistory('teachers_plan', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'id' => $this->primaryKey(),
             'direction_id' => $this->integer()->notNull(),
             'teachers_id' => $this->integer()->notNull(),
             'plan_year' => $this->integer(),
@@ -255,12 +253,11 @@ UNION ALL
         ], $tableOptions);
 
         $this->addCommentOnTable('teachers_plan', 'Планирование инд. занятий преподавателя');
-        $this->db->createCommand()->resetSequence('teachers_plan', 10000)->execute();
         $this->addForeignKey('teachers_plan_ibfk_1', 'teachers_plan', 'direction_id', 'guide_teachers_direction', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('teachers_plan_ibfk_2', 'teachers_plan', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('consult_schedule', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'id' => $this->primaryKey(),
             'teachers_load_id' => $this->integer(),
             'datetime_in' => $this->integer(),
             'datetime_out' => $this->integer(),
@@ -274,14 +271,33 @@ UNION ALL
         ], $tableOptions);
 
         $this->addCommentOnTable('consult_schedule', 'Расписание консультаций');
-        $this->db->createCommand()->resetSequence('consult_schedule', 10000)->execute();
         $this->addForeignKey('consult_schedule_ibfk_1', 'consult_schedule', 'teachers_load_id', 'teachers_load', 'id', 'CASCADE', 'CASCADE');
+
+        $this->createTableWithHistory('consult_schedule_confirm', [
+            'id' => $this->primaryKey(),
+            'teachers_id' => $this->integer()->notNull(),
+            'plan_year' => $this->integer()->notNull(),
+            'confirm_flag' => $this->boolean()->notNull()->defaultValue(false),
+            'teachers_sign' => $this->integer(),
+            'timestamp_sign' => $this->integer(),
+            'created_at' => $this->integer()->notNull(),
+            'created_by' => $this->integer(),
+            'updated_at' => $this->integer()->notNull(),
+            'updated_by' => $this->integer(),
+            'version' => $this->bigInteger()->notNull()->defaultValue(0),
+        ], $tableOptions);
+
+        $this->addCommentOnTable('consult_schedule_confirm', 'Утверждение расписания консультаций');
+        $this->addForeignKey('consult_schedule_confirm_ibfk_1', 'consult_schedule_confirm', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('consult_schedule_confirm_ibfk_2', 'consult_schedule_confirm', 'teachers_sign', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
 
     }
 
     public function down()
     {
 
+        $this->dropForeignKey('consult_schedule_confirm_ibfk_2', 'consult_schedule_confirm');
+        $this->dropForeignKey('consult_schedule_confirm_ibfk_1', 'consult_schedule_confirm');
         $this->dropForeignKey('consult_schedule_ibfk_1', 'consult_schedule');
         $this->dropForeignKey('teachers_plan_ibfk_1', 'teachers_plan');
         $this->dropForeignKey('teachers_plan_ibfk_2', 'teachers_plan');
@@ -290,6 +306,7 @@ UNION ALL
         $this->db->createCommand()->dropView('teachers_load_studyplan_view')->execute();
         $this->dropForeignKey('teachers_load_ibfk_1', 'teachers_load');
         $this->dropForeignKey('teachers_load_ibfk_2', 'teachers_load');
+        $this->dropTableWithHistory('consult_schedule_confirm');
         $this->dropTableWithHistory('consult_schedule');
         $this->dropTableWithHistory('teachers_plan');
         $this->dropTableWithHistory('subject_schedule');

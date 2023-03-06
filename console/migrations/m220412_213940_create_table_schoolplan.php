@@ -100,7 +100,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
 
 
         $this->createTableWithHistory('schoolplan', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'id' => $this->primaryKey(),
             'author_id' => $this->integer()->notNull()->comment('Автор записи'),
             'title' => $this->string(512)->comment('Название мероприятия'),
             'datetime_in' => $this->integer()->notNull()->comment('Дата и время начала'),
@@ -136,7 +136,6 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('schoolplan', 'План мероприятий');
-        $this->db->createCommand()->resetSequence('schoolplan', 10000)->execute();
 
         $this->addForeignKey('schoolplan_ibfk_1', 'schoolplan', 'category_id', 'guide_plan_tree', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('schoolplan_ibfk_2', 'schoolplan', 'auditory_id', 'auditory', 'id', 'NO ACTION', 'NO ACTION');
@@ -145,7 +144,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
         $this->addForeignKey('schoolplan_ibfk_5', 'schoolplan', 'author_id', 'user_common', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('activities_over', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
+            'id' => $this->primaryKey(),
             'title' => $this->string(512)->comment('Название мероприятия'),
             'over_category' => $this->integer()->defaultValue(0)->comment('Категория мероприятия (подготовка, штатно, замена, отмена и пр.)'),
             'datetime_in' => $this->integer()->notNull()->comment('Дата и время начала'),
@@ -162,7 +161,6 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('activities_over' ,'Календарь мероприятий вне плана');
-        $this->db->createCommand()->resetSequence('activities_over', 10000)->execute();
 
         $this->addForeignKey('activities_over_ibfk_1', 'activities_over', 'auditory_id', 'auditory', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('activities_over_ibfk_2', 'activities_over', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');

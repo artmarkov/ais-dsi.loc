@@ -15,6 +15,7 @@ use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\own\Department;
+use common\models\schedule\ConsultSchedule;
 use common\models\schedule\SubjectSchedule;
 use common\models\schoolplan\Schoolplan;
 use common\models\studyplan\Studyplan;
@@ -45,7 +46,7 @@ class ProgrammController extends Controller
     public function actionIndex()
     {
         $this->stdout("\n");
-        $this->addProgramm();
+       // $this->addProgramm();
        // $this->generateGroup();
         $this->addStudyplan();
         // print_r(array_unique($this->err));
@@ -106,7 +107,7 @@ class ProgrammController extends Controller
             if ($d['plan_year'] != '2022') {
                 continue;
             }
-//            if ($i > 100) {
+//            if ($i > 10) {
 //                break;
 //            }
             if (!$this->findByStudent($d['student_fio'])) {
@@ -114,7 +115,7 @@ class ProgrammController extends Controller
                 $this->stdout("\n");
                 continue;
             }
-            // print_r($d);
+           //  print_r($d);
             $model_programm = EducationProgramm::findOne($this->getProgrammId($d['plan_id']));
             if ($model_programm) {
                 try {
@@ -152,8 +153,8 @@ class ProgrammController extends Controller
                             $studyplan_subject_id = 0;
                         }
                         $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
-                        $this->setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
-                        $this->setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $model_subject, $dd);
+//                        $this->setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
+//                        $this->setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $model_subject, $dd);
                     }
                 } catch (\Exception $e) {
                     // $transaction->rollBack();
@@ -226,6 +227,23 @@ class ProgrammController extends Controller
                         $model_schedule->save(false);
                     }
                 }
+            }
+
+            foreach ($dd['consult'] as $iii => $ddd) {
+                // print_r( $ddd);
+                    $model_consult = (new Query())->from('consult_schedule')
+                        ->where(['=', 'teachers_load_id', $model_load->id])
+                        ->andWhere(['=', 'datetime_in', $ddd['timestamp_in']])
+                        ->andWhere(['=', 'datetime_out', $ddd['timestamp_out']]);
+                    if (!$model_consult->exists()) {
+                        $model_consult = new ConsultSchedule();
+                        $model_consult->teachers_load_id = $model_load->id;
+                        $model_consult->datetime_in = Yii::$app->formatter->asDate($ddd['timestamp_in'], 'php:d.m.Y H:i');
+                        $model_consult->datetime_out = Yii::$app->formatter->asDate($ddd['timestamp_out'], 'php:d.m.Y H:i');
+                        $model_consult->description = $ddd['consult_topic'];
+                        $model_consult->auditory_id = $this->findByAuditoryNum($ddd['auditory_number']);
+                        $model_consult->save(false);
+                    }
             }
         }
         return true;
