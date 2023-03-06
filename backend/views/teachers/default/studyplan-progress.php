@@ -20,7 +20,7 @@ $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
     if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
         if ($model['subject_sect_studyplan_id'] != 0) {
-            $content += [3 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+            $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                 Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']),
                 [
                     'title' => 'Добавить занятие',
@@ -31,7 +31,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                 ]
             )];
         } else {
-            $content += [3 => Html::a('<i class="fa fa-plus-square-o" aria-hidden="true"></i>',
+            $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                 Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'studyplan_subject_id' => $model['studyplan_subject_id'], 'mode' => 'create']),
                 [
                     'title' => 'Добавить занятие',
@@ -45,14 +45,14 @@ $editMarks = function ($model, $key, $index, $widget) {
     }
     foreach ($model['lesson_timestamp'] as $id => $item) {
         if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
-            $content += [$id + 4 => Html::a('<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
+            $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                     Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'update']), [
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
                         'class' => 'btn btn-xs btn-link',
                     ])
-                . Html::a('<i class="fa fa-trash-o" aria-hidden="true"></i>',
+                . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xs btn-link',
@@ -79,8 +79,8 @@ $columns = [
     [
         'attribute' => 'studyplan_subject_id',
         'label' => $model['attributes']['studyplan_subject_id'],
-        'value' => function ($model) {
-            return RefBook::find('subject_memo_1')->getValue($model['studyplan_subject_id'] ?? null);
+        'value' => function ($models) {
+            return $models['subject'];
         },
         'format' => 'raw',
         'group' => true,
@@ -88,8 +88,8 @@ $columns = [
     [
         'attribute' => 'subject_sect_studyplan_id',
         'label' => $model['attributes']['subject_sect_studyplan_id'],
-        'value' => function ($model) {
-            return RefBook::find('sect_name_3')->getValue($model['subject_sect_studyplan_id'] ?? null);
+        'value' => function ($models) {
+            return $models['sect_name'];
         },
         'format' => 'raw',
         'group' => true,
@@ -100,7 +100,7 @@ $columns = [
         'attribute' => 'student_id',
         'label' => $model['attributes']['student_id'],
         'value' => function ($model) {
-            return RefBook::find('students_fio')->getValue($model['student_id'] ?? null);
+            return $model['student_fio'];
         },
         'format' => 'raw',
     ],

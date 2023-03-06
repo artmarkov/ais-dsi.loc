@@ -80,7 +80,7 @@ $columns = [
         'attribute' => 'studyplan_subject_id',
         'label' => $model['attributes']['studyplan_subject_id'],
         'value' => function ($model) {
-            return RefBook::find('subject_memo_1')->getValue($model['studyplan_subject_id'] ?? null);
+            return $model['subject'];
         },
         'format' => 'raw',
         'group' => true,

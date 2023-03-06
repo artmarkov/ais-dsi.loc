@@ -19,6 +19,7 @@ use yii\helpers\Url;
  * @property int|null $student_id
  * @property string|null $teachers_list
  * @property string|null $sect_name
+ * @property string|null $subject
  */
 class LessonProgressView extends \artsoft\db\ActiveRecord
 {
@@ -45,6 +46,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             'student_id' => Yii::t('art/student', 'Student'),
             'teachers_list' => Yii::t('art/teachers', 'Teachers'),
             'sect_name' => Yii::t('art/guide', 'Sect Name'),
+            'subject' => Yii::t('art/guide', 'Subject'),
         ];
     }
 
@@ -135,6 +137,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $data[$item]['studyplan_subject_id'] = $modelProgress->studyplan_subject_id;
             $data[$item]['subject_sect_studyplan_id'] = $modelProgress->subject_sect_studyplan_id;
             $data[$item]['sect_name'] = $modelProgress->sect_name;
+            $data[$item]['subject'] = $modelProgress->subject;
 
             $marks = LessonItemsProgressView::find()
                 ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
@@ -185,6 +188,9 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $data[$item]['teachers_id'] = $teachers_id;
             $data[$item]['studyplan_id'] = $modelProgress->studyplan_id;
             $data[$item]['student_id'] = $modelProgress->student_id;
+            $data[$item]['sect_name'] = $modelProgress->sect_name;
+            $data[$item]['student_fio'] = $modelProgress->student_fio;
+            $data[$item]['subject'] = $modelProgress->subject;
 
             $marks = LessonItemsProgressView::find()
                 ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])

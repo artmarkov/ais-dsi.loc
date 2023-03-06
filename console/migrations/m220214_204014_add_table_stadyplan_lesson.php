@@ -156,21 +156,27 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
 
 
         $this->db->createCommand()->createView('lesson_progress_view', '
- SELECT studyplan_subject.id AS studyplan_subject_id,
+  SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     0 AS subject_sect_id,
     studyplan.plan_year,
     studyplan.id AS studyplan_id,
     studyplan.student_id,
-	concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,        
+    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
     array_to_string(ARRAY( SELECT teachers_load.teachers_id
            FROM teachers_load
           WHERE teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0), \',\'::text) AS teachers_list,
-    \'Индивидуально\'::text AS sect_name
+    \'Индивидуально\'::text AS sect_name,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject
    FROM studyplan_subject
      JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
-	 JOIN students ON students.id = studyplan.student_id
+     JOIN subject ON subject.id = studyplan_subject.subject_id
+     JOIN education_programm ON education_programm.id = studyplan.programm_id
+     JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id
+     LEFT JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
+     LEFT JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
+     JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id
 UNION ALL
  SELECT studyplan_subject.id AS studyplan_subject_id,
@@ -179,7 +185,7 @@ UNION ALL
     subject_sect_studyplan.plan_year,
     studyplan.id AS studyplan_id,
     studyplan.student_id,
-	concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
+    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
     array_to_string(ARRAY( SELECT teachers_load.teachers_id
            FROM teachers_load
           WHERE teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0), \',\'::text) AS teachers_list,
@@ -187,13 +193,19 @@ UNION ALL
         CASE
             WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
             ELSE \'\'::text
-        END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name
+        END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      JOIN studyplan_subject ON studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
-	 JOIN students ON students.id = studyplan.student_id
-     JOIN user_common ON user_common.id = students.user_common_id;
+     JOIN subject ON subject.id = subject_sect.subject_id
+     LEFT JOIN guide_subject_category ON guide_subject_category.id = subject_sect.subject_cat_id
+     LEFT JOIN guide_subject_type ON guide_subject_type.id = subject_sect.subject_type_id
+     LEFT JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
+     JOIN students ON students.id = studyplan.student_id
+     JOIN user_common ON user_common.id = students.user_common_id
+  ORDER BY 10, 9, 7;
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_view', '
