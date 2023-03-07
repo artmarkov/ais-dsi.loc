@@ -10,7 +10,7 @@ class GridView extends \kartik\grid\GridView
     public $pjax = true;
     public $responsive = true;
     public $responsiveWrap = false;
-    public $bordered = false;
+    public $bordered = true;
     public $striped = true;
     public $condensed = false;
     public $hover = true;

@@ -137,17 +137,17 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                     ?>
                 </div>
                 <div class="col-sm-6 text-right">
-                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'teachers-progress-grid-pjax']) ?>
+                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'studyplan-progress-grid-pjax']) ?>
                 </div>
             </div>
             <?php
             Pjax::begin([
-                'id' => 'teachers-progress-grid-pjax',
+                'id' => 'studyplan-progress-grid-pjax',
             ])
             ?>
             <?php
             echo GridView::widget([
-                'id' => 'teachers-progress-grid',
+                'id' => 'studyplan-progress-grid',
                 'pjax' => false,
                 'dataProvider' => new \yii\data\ArrayDataProvider([
                     'allModels' => $model['data'],

@@ -686,7 +686,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if ('create' == $mode) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Journal Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Journal Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $modelTeachers->id]];
 
             if (!Yii::$app->request->get('studyplan_subject_id') && !Yii::$app->request->get('subject_sect_studyplan_id')) {
                 throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
