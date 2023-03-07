@@ -26,7 +26,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                     'title' => 'Добавить занятие',
                     'data-method' => 'post',
                     'data-pjax' => '0',
-                    'class' => 'btn btn-xs btn-link'
+                    'class' => 'btn btn-xxs btn-link'
 
                 ]
             )];
@@ -37,7 +37,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                     'title' => 'Добавить занятие',
                     'data-method' => 'post',
                     'data-pjax' => '0',
-                    'class' => 'btn btn-xs btn-link'
+                    'class' => 'btn btn-xxs btn-link'
 
                 ]
             )];
@@ -50,12 +50,12 @@ $editMarks = function ($model, $key, $index, $widget) {
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
-                        'class' => 'btn btn-xs btn-link',
+                        'class' => 'btn btn-xxs btn-link',
                     ])
                 . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
-                        'class' => 'btn btn-xs btn-link',
+                        'class' => 'btn btn-xxs btn-link',
                         'data' => [
                             'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                             'pjax' => '0',

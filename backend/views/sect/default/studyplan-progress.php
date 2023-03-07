@@ -19,7 +19,7 @@ $editMarks = function ($models, $key, $index, $widget) {
                 'title' => 'Добавить занятие',
                 'data-method' => 'post',
                 'data-pjax' => '0',
-                'class' => 'btn btn-xs btn-link'
+                'class' => 'btn btn-xxs btn-link'
 
             ]
         )];
@@ -31,12 +31,12 @@ $editMarks = function ($models, $key, $index, $widget) {
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
-                        'class' => 'btn btn-xs btn-link',
+                        'class' => 'btn btn-xxs btn-link',
                     ])
                 . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     Url::to(['/sect/default/studyplan-progress', 'id' => $models['subject_sect_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
-                        'class' => 'btn btn-xs btn-link',
+                        'class' => 'btn btn-xxs btn-link',
                         'data' => [
                             'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                             'pjax' => '0',
@@ -93,10 +93,10 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
 <div class="studyplan-progress-index">
     <div class="panel">
         <div class="panel-body">
-            <?= $this->render('@app/views/studyplan/lesson-items/_search', compact('model_date')) ?>
+            <?= $this->render('_search-progress', compact('model', 'model_date', 'plan_year')) ?>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Результаты запроса
+                    Дисциплина: <?php echo RefBook::find('sect_name_4')->getValue($model->id);?>
                 </div>
                 <div class="panel-body">
                     <div class="row">

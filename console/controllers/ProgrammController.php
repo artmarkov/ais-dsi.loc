@@ -154,7 +154,7 @@ class ProgrammController extends Controller
                         }
                         $this->setTeachersLoad($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
 //                        $this->setThematicPlans($studyplan_subject_id, $subject_sect_studyplan_id, $dd);
-//                        $this->setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $model_subject, $dd);
+                        $this->setLessonProgress($studyplan_subject_id, $subject_sect_studyplan_id, $model_subject, $dd);
                     }
                 } catch (\Exception $e) {
                     // $transaction->rollBack();

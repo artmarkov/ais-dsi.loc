@@ -15,7 +15,7 @@ $form = ActiveForm::begin([
     'validateOnBlur' => false,
 ])
 ?>
-<div class="studyplan-progres-search">
+<div class="studyplan-progress-search">
     <div class="panel panel-default">
         <div class="panel-body">
             <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [
@@ -28,10 +28,19 @@ $form = ActiveForm::begin([
                             'minViewMode' => 1,
                             'todayBtn' => 'linked',
                             'todayHighlight' => true,
-                        ]
+                        ],
+                    'pluginEvents' => ['changeDate' => "function(e){
+                           $(e.target).closest('form').submit();
+                        }" ]
                     ]
-            )->label('Месяц и год'); ?>
-            <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); ?>
+            )->label('Месяц и год');
+            ?>
+            <?= $form->field($model_date, 'subject_sect_studyplan_id')->dropDownList(\common\models\subjectsect\SubjectSect::getSectListForSect($model->id, $plan_year),
+                [
+                    'disabled' => false,
+                    'onchange'=>'js: $(this).closest("form").submit()',
+                ])->label('Группа');
+            ?>
         </div>
     </div>
 </div>

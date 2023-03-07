@@ -411,12 +411,25 @@ SQL;
     {
         return ArrayHelper::map(Yii::$app->db->createCommand('SELECT id, sect_name_1
                                                     FROM subject_sect_view  
-                                                    WHERE subject_sect_id=:subject_sect_id AND plan_year=:plan_year ORDER BY sect_name_1',
+                                                    WHERE subject_sect_id=:subject_sect_id AND plan_year=:plan_year 
+                                                    AND studyplan_subject_list IS NOT NULL 
+                                                    ORDER BY sect_name_1',
             ['subject_sect_id' => $subject_sect_id,
                 'plan_year' => $plan_year
             ])->queryAll(), 'id', 'sect_name_1');
     }
 
+    public static function getSectFirstValue($subject_sect_id, $plan_year)
+    {
+        return Yii::$app->db->createCommand('SELECT id, sect_name_1
+                                                    FROM subject_sect_view  
+                                                    WHERE subject_sect_id=:subject_sect_id AND plan_year=:plan_year 
+                                                    AND studyplan_subject_list IS NOT NULL 
+                                                    ORDER BY sect_name_1',
+            ['subject_sect_id' => $subject_sect_id,
+                'plan_year' => $plan_year
+            ])->queryScalar();
+    }
     /**
      * @param $subject_sect_id
      * @return array

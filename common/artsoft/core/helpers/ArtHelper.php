@@ -231,7 +231,8 @@ class ArtHelper
     {
         $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 6) : $month_dev;
         $month = $timestamp == null ? date("n") : date("n", $timestamp);
-        return $month < $month_dev ? date("Y") - 1 : date("Y");
+        $year = $timestamp == null ? date("Y") : date("Y", $timestamp);
+        return $month < $month_dev ? $year - 1 : $year;
     }
 
     public static function getStudyYearParams($study_year = null, $month_dev = null)

@@ -336,7 +336,7 @@ img.dw-media-image {
 }
 
 /*отображение кнопок в журнале успеваемости*/
-.studyplan-progress-grid .btn-xs {
+.btn-xxs {
     padding: 0px 0px;
     margin: 0px 1px 0px 1px;
     font-size: 10px;

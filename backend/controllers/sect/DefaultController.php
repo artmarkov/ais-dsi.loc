@@ -2,6 +2,7 @@
 
 namespace backend\controllers\sect;
 
+use artsoft\helpers\ArtHelper;
 use backend\models\Model;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
@@ -13,6 +14,7 @@ use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleViewSearch;
 use common\models\schedule\search\SubjectScheduleViewSearch;
 use common\models\schedule\SubjectSchedule;
+use common\models\subjectsect\SubjectSect;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\search\TeachersLoadViewSearch;
@@ -506,8 +508,8 @@ class DefaultController extends MainController
         } else {
             $session = Yii::$app->session;
 
-            $model_date = new DynamicModel(['date_in']);
-            $model_date->addRule(['date_in'], 'required')
+            $model_date = new DynamicModel(['date_in', 'subject_sect_studyplan_id']);
+            $model_date->addRule(['date_in', 'subject_sect_studyplan_id'], 'required')
                 ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
@@ -515,16 +517,25 @@ class DefaultController extends MainController
                 $year = date('Y');
 
                 $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+                $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+                $timestamp_in = $timestamp[0];
+                $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
+                $model_date->subject_sect_studyplan_id = $session->get('_progress_subject_sect_studyplan_id') ?? SubjectSect::getSectFirstValue($id, $plan_year);
+//                print_r($plan_year); die();
             }
             $session->set('_progress_date_in', $model_date->date_in);
+            $session->set('_progress_subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id);
 
             $models = LessonProgressView::getDataSect($model_date, $id);
+            $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+            $timestamp_in = $timestamp[0];
+            $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
 
             if (Yii::$app->request->post('submitAction') == 'excel') {
                 // TeachersEfficiency::sendXlsx($data);
             }
 
-            return $this->renderIsAjax('studyplan-progress', compact(['model', 'models', 'model_date']));
+            return $this->renderIsAjax('studyplan-progress', compact(['model', 'models', 'model_date', 'plan_year']));
         }
     }
 

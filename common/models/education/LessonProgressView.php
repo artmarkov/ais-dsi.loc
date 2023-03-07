@@ -64,13 +64,15 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
             ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
             ->andWhere(['=', 'subject_sect_id', $subject_sect_id])
+            ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
             ->orderBy('lesson_date')
             ->asArray()->all();
-        $modelsProgress = self::find()->where(['subject_sect_id' => $subject_sect_id])->orderBy('sect_name')->all();
+        $modelsProgress = self::find()->where(['subject_sect_studyplan_id' => $model_date->subject_sect_studyplan_id])->orderBy('sect_name')->all();
 
         $modelsMarks = ArrayHelper::index(LessonItemsProgressView::find()
                         ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
                         ->andWhere(['subject_sect_id' => $subject_sect_id])
+                        ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
                         ->all(), null, 'studyplan_subject_id');
 
         // echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();

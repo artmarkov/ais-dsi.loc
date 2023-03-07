@@ -16,12 +16,12 @@ class Model extends \yii\base\Model
      */
     public static function createMultiple($modelClass, $multipleModels = [])
     {
-        $model    = new $modelClass;
+        $model = new $modelClass;
         $formName = $model->formName();
-        $post     = Yii::$app->request->post($formName);
-        $models   = [];
+        $post = Yii::$app->request->post($formName);
+        $models = [];
 
-        if (! empty($multipleModels)) {
+        if (!empty(ArrayHelper::index($multipleModels, 'id'))) {
             $keys = array_keys(ArrayHelper::map($multipleModels, 'id', 'id'));
             $multipleModels = array_combine($keys, $multipleModels);
         }

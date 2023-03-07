@@ -755,11 +755,10 @@ class DefaultController extends MainController
                 throw new NotFoundHttpException("The LessonItems was not found.");
             }
             $modelsItems = $model->getLessonProgress();
-
             if ($model->load(Yii::$app->request->post())) {
 
                 $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
-                $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
+                $modelsItems = Model::createMultiple(LessonProgress::class);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
                 $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
 
