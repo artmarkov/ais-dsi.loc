@@ -52,7 +52,7 @@ $editMarks = function ($models, $key, $index, $widget) {
         'contentOptions' => [      // content html attributes for each summary cell
             2 => ['class' => 'text-right text-end'],
         ],
-        'options' => ['class' => 'info h-25 text-center']
+        'options' => ['class' => 'info h-25 text-left']
     ];
 };
 $columns = [

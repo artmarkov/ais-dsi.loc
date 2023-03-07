@@ -18,8 +18,19 @@ $form = ActiveForm::begin([
 <div class="studyplan-progres-search">
     <div class="panel panel-default">
         <div class="panel-body">
-            <?= $form->field($model_date, "date_in")->widget(DatePicker::class)->label('Дата начала периода'); ?>
-            <?= $form->field($model_date, "date_out")->widget(DatePicker::class)->label('Дата окончания периода'); ?>
+            <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [
+                        'type' => \kartik\date\DatePicker::TYPE_INPUT,
+                        'options' => ['placeholder' => ''],
+                        'convertFormat' => true,
+                        'pluginOptions' => [
+                            'format' => 'MM.yyyy',
+                            'autoclose' => true,
+                            'minViewMode' => 1,
+                            'todayBtn' => 'linked',
+                            'todayHighlight' => true,
+                        ]
+                    ]
+            )->label('Месяц и год выборки'); ?>
             <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); ?>
         </div>
     </div>

@@ -506,23 +506,17 @@ class DefaultController extends MainController
         } else {
             $session = Yii::$app->session;
 
-            $day_in = 1;
-            $day_out = date("t");
-
-            $model_date = new DynamicModel(['date_in', 'date_out', 'hidden_flag']);
-            $model_date->addRule(['date_in', 'date_out'], 'required')
-                ->addRule(['date_in', 'date_out'], 'date')
-                ->addRule('hidden_flag', 'integer');
+            $model_date = new DynamicModel(['date_in']);
+            $model_date->addRule(['date_in'], 'required')
+                ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
                 $mon = date('m');
                 $year = date('Y');
 
-                $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:d.m.Y');
-                $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
+                $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
             }
             $session->set('_progress_date_in', $model_date->date_in);
-            $session->set('_progress_date_out', $model_date->date_out);
 
             $models = LessonProgressView::getDataSect($model_date, $id);
 

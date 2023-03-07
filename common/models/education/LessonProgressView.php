@@ -2,6 +2,7 @@
 
 namespace common\models\education;
 
+use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use common\widgets\editable\Editable;
 use Yii;
@@ -53,9 +54,9 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     public static function getDataSect($model_date, $subject_sect_id)
     {
         $data = $dates = [];
-
-        $timestamp_in = Yii::$app->formatter->asTimestamp($model_date->date_in);
-        $timestamp_out = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86399;
+        $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+        $timestamp_in = $timestamp[0];
+        $timestamp_out = $timestamp[1];
 
         $attributes = ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
         $attributes += ['student_id' => Yii::t('art/student', 'Student')];
@@ -75,7 +76,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         // echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
         foreach ($lessonDates as $id => $lessonDate) {
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
-            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.y');
+            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
             $attributes += [$date => $label];
             $dates[] = $date;
         }
@@ -103,9 +104,9 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
     public static function getDataStudyplan($model_date, $studyplan_id)
     {
-        $timestamp_in = Yii::$app->formatter->asTimestamp($model_date->date_in);
-        $timestamp_out = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86399;
-
+        $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+        $timestamp_in = $timestamp[0];
+        $timestamp_out = $timestamp[1];
         $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
             ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
             ->andWhere(['=', 'studyplan_id', $studyplan_id])
@@ -126,7 +127,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $dates = [];
         foreach ($lessonDates as $id => $lessonDate) {
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
-            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.y');
+            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
             $attributes += [$date => $label];
             $dates[] = $date;
         }
@@ -159,8 +160,9 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     {
         $data = $dates = [];
 
-        $timestamp_in = Yii::$app->formatter->asTimestamp($model_date->date_in);
-        $timestamp_out = Yii::$app->formatter->asTimestamp($model_date->date_out) + 86399;
+        $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+        $timestamp_in = $timestamp[0];
+        $timestamp_out = $timestamp[1];
 
         $attributes = ['studyplan_subject_id' => Yii::t('art/guide', 'Subject Name')];
         $attributes += ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
@@ -177,7 +179,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
         foreach ($lessonDates as $id => $lessonDate) {
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
-            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.y');
+            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
             $attributes += [$date => $label];
             $dates[] = $date;
         }

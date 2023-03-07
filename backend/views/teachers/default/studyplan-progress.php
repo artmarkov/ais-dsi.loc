@@ -69,9 +69,9 @@ $editMarks = function ($model, $key, $index, $widget) {
     return [
         'content' => $content,
         'contentOptions' => [      // content html attributes for each summary cell
-            2 => ['class' => 'text-right text-end'],
+            3 => ['class' => 'text-right text-end'],
         ],
-        'options' => ['class' => 'info h-25 text-center']
+        'options' => ['class' => 'info h-25 text-left']
     ];
 };
 $columns = [
@@ -84,6 +84,7 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,
+        'groupFooter' => $editMarks
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',
@@ -94,7 +95,6 @@ $columns = [
         'format' => 'raw',
         'group' => true,
         'subGroupOf' => 1,
-        'groupFooter' => $editMarks
     ],
     [
         'attribute' => 'student_id',

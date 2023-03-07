@@ -395,4 +395,15 @@ class ArtHelper
         }
         return $data;
     }
+
+    public static function getMonYearParams($date)
+    {
+        $date_array = explode('.', $date);
+        $mon = $date_array[0];
+        $year = $date_array[1];
+        $timestamp_in = mktime(0, 0, 0, $mon, 1, $year);
+        $day_out = date("t", $timestamp_in);
+        $timestamp_out = mktime(23, 59, 59, $mon, $day_out, $year);
+        return [$timestamp_in, $timestamp_out];
+    }
 }
