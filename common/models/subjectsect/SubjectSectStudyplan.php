@@ -3,6 +3,7 @@
 namespace common\models\subjectsect;
 
 use artsoft\helpers\RefBook;
+use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subject\SubjectType;
 use common\models\teachers\TeachersLoad;
@@ -138,6 +139,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
         if (!empty($this->studyplan_subject_list)) {
             $modelsItems = (new Query())->from('studyplan_subject_view')
                 ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$this->studyplan_subject_list}', ',')::int[])"))
+                ->andWhere(['status' => Studyplan::STATUS_ACTIVE])->orderBy('student_fio')
                 ->all();
             foreach ($modelsItems as $item => $model) {
                 $data[$model['studyplan_subject_id']] = [

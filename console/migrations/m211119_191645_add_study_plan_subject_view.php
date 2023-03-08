@@ -82,7 +82,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             education_programm.short_name AS education_programm_short_name,
             guide_education_cat.name AS education_cat_name,
             guide_education_cat.short_name AS education_cat_short_name,
-            user_common.status,
+            studyplan.status,
             concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
             concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_1,
             concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \')\') AS memo_2,

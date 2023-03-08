@@ -250,6 +250,8 @@ class SubjectSect extends \artsoft\db\ActiveRecord
                 and subject_id = {$this->subject_id}
                 and subject_vid_id = {$this->subject_vid_id}
                 and case when {$course} != 0 then course = {$course} else true end
+                and status = 1
+                order by student_fio
 		
 SQL;
         $data = [];

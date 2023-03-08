@@ -70,7 +70,8 @@ $group = 0;
                                 }
                                 echo '<td>';
                                 echo RefBook::find('sect_memo_2')->getValue($modelSubjectSectStudyplan->id);
-
+                                $items =  $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
+                                echo ' -' . count($items);
                                 // necessary for update action.
                                 if (!$modelSubjectSectStudyplan->isNewRecord) {
                                     echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]id");
@@ -91,7 +92,7 @@ $group = 0;
                                     ],
                                     'options' => ['class' => 'form-control', 'readonly' => true],
                                     'delimiter' => ',',
-                                    'items' => $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly),
+                                    'items' => $items,
                                 ]);
 
                                 echo '<p class="help-block help-block-error"></p>
