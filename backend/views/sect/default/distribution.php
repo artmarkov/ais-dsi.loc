@@ -21,6 +21,7 @@ if($course_list[0] == null) {
 $class_index = $model->class_index;
 $course_flag = $model->course_flag;
 $group = 0;
+$type_list = \common\models\subject\SubjectType::getTypeList();
 ?>
 <div class="subject-sect-form">
 
@@ -67,6 +68,7 @@ $group = 0;
                                     $class_name = $class_index != '' ? sprintf('%s %s-%02d', $model->sect_name, $class_index, $group) : sprintf('%s %02d', $model->sect_name, $group);
                                     echo '<tr>
                                 <td class="text-center" style="vertical-align: middle;">' . $class_name . '</td>';
+
                                 }
                                 echo '<td>';
                                 echo RefBook::find('sect_memo_2')->getValue($modelSubjectSectStudyplan->id);
@@ -80,7 +82,9 @@ $group = 0;
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]group_num");
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]plan_year");
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]course");
-                                echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_type_id");
+                               // echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_type_id");
+                                echo $form->field($modelSubjectSectStudyplan, "[{$index}]subject_type_id")->dropDownList($type_list);
+
                                 echo SortableInput::widget([
                                     'model' => $modelSubjectSectStudyplan,
                                     'attribute' => "[{$index}]studyplan_subject_list",
@@ -157,7 +161,9 @@ $group = 0;
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]group_num");
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]plan_year");
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]course");
-                                echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_type_id");
+                               // echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_type_id");
+                                echo $form->field($modelSubjectSectStudyplan, "[{$index}]subject_type_id")->dropDownList($type_list);
+
                                 echo SortableInput::widget([
                                     'model' => $modelSubjectSectStudyplan,
                                     'attribute' => "[{$index}]studyplan_subject_list",
