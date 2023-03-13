@@ -363,13 +363,16 @@ SQL;
                     $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $this->id])
                             ->andWhere(['=', 'group_num', $group])
                             ->andWhere(['=', 'plan_year', $model_date->plan_year])
-                            ->andWhere(['=', 'course', $course])->one() ?? new SubjectSectStudyplan();
-                    $m->subject_sect_id = $this->id;
-                    $m->group_num = $group;
-                    $m->plan_year = $model_date->plan_year;
-                    $m->course = $course;
-                    $m->subject_type_id = $this->subject_type_id;
-                    $m->save(false);
+                            ->andWhere(['=', 'course', $course])->one();
+                    if(!$m) {
+                        $m = new SubjectSectStudyplan();
+                        $m->subject_sect_id = $this->id;
+                        $m->group_num = $group;
+                        $m->plan_year = $model_date->plan_year;
+                        $m->course = $course;
+                        $m->subject_type_id = $this->subject_type_id;
+                        $m->save(false);
+                    }
                     $modelsSubjectSectStudyplan[] = $m;
                 }
             }
@@ -377,12 +380,15 @@ SQL;
             for ($group = 1; $group <= $sub_group_qty; $group++) {
                 $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $this->id])
                         ->andWhere(['=', 'group_num', $group])
-                        ->andWhere(['=', 'plan_year', $model_date->plan_year])->one() ?? new SubjectSectStudyplan();
-                $m->subject_sect_id = $this->id;
-                $m->group_num = $group;
-                $m->plan_year = $model_date->plan_year;
-                $m->subject_type_id = $this->subject_type_id;
-                $m->save(false);
+                        ->andWhere(['=', 'plan_year', $model_date->plan_year])->one();
+                if(!$m) {
+                    new SubjectSectStudyplan();
+                    $m->subject_sect_id = $this->id;
+                    $m->group_num = $group;
+                    $m->plan_year = $model_date->plan_year;
+                    $m->subject_type_id = $this->subject_type_id;
+                    $m->save(false);
+                }
                 $modelsSubjectSectStudyplan[] = $m;
             }
         }

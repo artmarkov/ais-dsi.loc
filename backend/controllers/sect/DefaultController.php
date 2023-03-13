@@ -22,6 +22,7 @@ use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
 
@@ -122,62 +123,7 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/view', 'id' => $model->id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 //        echo '<pre>' . print_r(Yii::$app->request->post(), true) . '</pre>'; die();
-        if ('create' == $mode) {
-            if (!Yii::$app->request->get('subject_sect_studyplan_id')) {
-                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_sect_studyplan_id.");
-            }
-            $teachersLoadModel = StudyplanSubject::findOne(Yii::$app->request->get('subject_sect_studyplan_id'));
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Distribution'), 'url' => ['sect/default/distribution', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = 'Добавление нагрузки';
-            $model = new TeachersLoad();
-            $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id');
-            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                $this->getSubmitAction($model);
-            }
-
-            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
-                'model' => $model,
-                'teachersLoadModel' => $teachersLoadModel,
-            ]);
-
-        } elseif ('history' == $mode && $objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/load-items', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['sect/default/load-items', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
-            $model = TeachersLoad::findOne($objectId);
-            $data = new TeachersLoadHistory($objectId);
-            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
-
-        } elseif ('delete' == $mode && $objectId) {
-            $model = TeachersLoad::findOne($objectId);
-            $model->delete();
-
-            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-            return $this->redirect($this->getRedirectPage('delete', $model));
-
-        } elseif ($objectId) {
-
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/load-items', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $model = TeachersLoad::findOne($objectId);
-            $teachersLoadModel = StudyplanSubject::findOne($model->studyplan_subject_id);
-            if (!isset($model)) {
-                throw new NotFoundHttpException("The StudyplanSubject was not found.");
-            }
-
-            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction($model);
-            }
-
-            return $this->renderIsAjax('@backend/views/teachers/teachers-load/_form.php', [
-                'model' => $model,
-                'teachersLoadModel' => $teachersLoadModel,
-            ]);
-
-        } else {
             $model_date = $this->modelDate;
-
             $modelsSubjectSectStudyplan = $model->setSubjectSect($model_date);
 
             if (isset($_POST['SubjectSectStudyplan'])) {
@@ -218,7 +164,7 @@ class DefaultController extends MainController
 
             $readonly = false;
             return $this->renderIsAjax('distribution', compact('model', 'modelsSubjectSectStudyplan', 'model_date', 'readonly'));
-        }
+
     }
 
     public function actionLoadItems($id, $objectId = null, $mode = null)
@@ -636,6 +582,51 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
+    /**
+     * Установка типа дисциплины бюджет/внебюджет
+     * @return string|null
+     * @throws \yii\db\Exception
+     */
+    public function actionSetType()
+    {
+        $subject_sect_studyplan_id = $_GET['subject_sect_studyplan_id'];
+
+        if (isset($_POST['hasEditable'])) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            if (isset($_POST['subject_type_id'])) {
+                $model = SubjectSectStudyplan::findOne($subject_sect_studyplan_id);
+                $model->subject_type_id = $_POST['subject_type_id'];
+                $model->save(false);
+                return Json::encode(['output' => $model->subject_type_id, 'message' => '']);
+            } else {
+                return Json::encode(['output' => '', 'message' => '']);
+            }
+        }
+
+        return null;
+    }
+    /**
+     * Изменение группы
+     * @return string|null
+     * @throws \yii\db\Exception
+     */
+    public function actionSetStudyplan()
+    {
+        if (isset($_POST['hasEditable'])) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            if (isset($_POST['subject_sect_studyplan_id']) && isset($_GET['studyplan_subject_id'])) {
+                $modelOld = SubjectSectStudyplan::findOne($_GET['subject_sect_studyplan_id']);
+                $modelNew = SubjectSectStudyplan::findOne($_POST['subject_sect_studyplan_id']);
+                $modelOld->removeStudyplanSubject($_GET['studyplan_subject_id']);
+                $modelNew->insertStudyplanSubject($_GET['studyplan_subject_id']);
+                return Json::encode(['output' => $modelNew->id, 'message' => '']);
+            } else {
+                return Json::encode(['output' => '', 'message' => '']);
+            }
+        }
+
+        return null;
+    }
     /**
      * @return false|string
      */

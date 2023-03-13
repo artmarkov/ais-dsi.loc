@@ -1,9 +1,11 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use common\widgets\editable\Editable;
 use yii\helpers\Url;
 use artsoft\helpers\Html;
 use artsoft\grid\GridView;
+use yii\web\JsExpression;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
@@ -12,6 +14,15 @@ use yii\widgets\Pjax;
 
 $this->title = Yii::t('art/guide', 'Teachers Load');
 $this->params['breadcrumbs'][] = $this->title;
+
+$JSSubmit = <<<EOF
+    function(event, val, form) {
+//    console.log(event);
+//    console.log(val);
+//    console.log(form);
+    $.pjax.reload({container: '#teachers-load-grid-pjax', async: true});
+    }
+EOF;
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
@@ -25,8 +36,35 @@ $columns = [
     [
         'attribute' => 'sect_name',
         'width' => '320px',
-        'value' => function ($model) {
-            return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
+        'value' => function ($model) use ($JSSubmit){
+            if($model->subject_sect_studyplan_id == 0) {
+                return $model->sect_name ? $model->sect_name : null;
+            } else {
+                $sectList =  \yii\helpers\ArrayHelper::map((new \yii\db\Query())->select('id, sect_name_1')
+                    ->from('subject_sect_view')
+                    ->where(['=', 'subject_id', $model->subject_id])
+                    ->orderBy('sect_name_1')->all(), 'id', 'sect_name_1');
+
+                return Editable::widget([
+                    'buttonsTemplate' => "{reset}{submit}",
+                    'name' => 'subject_sect_studyplan_id',
+                    'asPopover' => true,
+                    'value' => $model->subject_sect_studyplan_id,
+                    'header' => '',
+                    'displayValueConfig' => $sectList,
+                    'format' => Editable::FORMAT_LINK,
+                    'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                    'data' => $sectList,
+                    'size' => 'md',
+                    'options' => ['class' => 'form-control', 'placeholder' => Yii::t('art', 'Select...')],
+                    'formOptions' => [
+                        'action' => Url::toRoute(['/sect/default/set-studyplan', 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id, 'studyplan_subject_id' => $model->studyplan_subject_id]),
+                    ],
+                    'pluginEvents' => [
+                        "editableSubmit" => new JsExpression($JSSubmit),
+                    ],
+                ]);
+            }
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
@@ -176,8 +214,8 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
-                            ['content' => 'Нагрузка', 'options' => ['colspan' => 5, 'class' => 'text-center info']],
+                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 7, 'class' => 'text-center info']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

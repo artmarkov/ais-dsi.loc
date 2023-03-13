@@ -187,25 +187,28 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ])->execute();
 
         $this->db->createCommand()->createView('subject_sect_view', '
-            SELECT sect.id,
+ SELECT sect.id,
     sect.subject_sect_id,
     sect.term_mastering,
     sect.plan_year,
     sect.course,
     sect.group_num,
+    sect.subject_id,
     sect.subject_type_id,
     sect.studyplan_subject_list,
     concat(sect.course_text, sect.class_text, to_char(sect.group_num, \'fm00\'::text)) AS sect_memo_1,
     concat(sect.subject_name, \' (\', sect.course_text, sect.class_text, to_char(sect.group_num, \'fm00\'::text), \')\') AS sect_memo_2,
-    concat(sect.group_name,   \' (\', sect.course_text, to_char(sect.group_num, \'fm00\'::text), \') \') AS sect_name_1,
-    concat(sect.group_name,   \' (\', sect.course_text, sect.class_text, to_char(sect.group_num, \'fm00\'::text), \') \', \' \', sect.vid_slug, \' \', sect.type_slug) AS sect_name_2,
-    concat(sect.subject_name, \' (\', sect.vid_slug, \' \', sect.type_slug, \')\') AS sect_name_3
+    concat(sect.group_name, \' (\', sect.course_text, to_char(sect.group_num, \'fm00\'::text), \') \') AS sect_name_1,
+    concat(sect.group_name, \' (\', sect.course_text, sect.class_text, to_char(sect.group_num, \'fm00\'::text), \') \', \' \', sect.vid_slug, \' \', sect.type_slug) AS sect_name_2,
+    concat(sect.subject_name, \' (\', sect.vid_slug, \' \', sect.type_slug, \')\') AS sect_name_3,
+    concat(sect.subject_name, \' (\', sect.vid_slug, \')\') AS sect_name_4
    FROM ( SELECT subject_sect_studyplan.id,
             subject_sect.id AS subject_sect_id,
             subject_sect.term_mastering,
             subject_sect_studyplan.plan_year,
             subject_sect_studyplan.course,
             subject_sect_studyplan.group_num,
+		    subject_sect.subject_id as subject_id,
             subject_sect_studyplan.subject_type_id,
             subject_sect_studyplan.studyplan_subject_list,
             guide_subject_vid.slug AS vid_slug,
@@ -241,7 +244,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['sect_name_4', 'subject_sect_view', 'subject_sect_id', 'sect_name_3', 'sect_name_3', null, null, 'Название группы'],
+            ['sect_name_4', 'subject_sect_view', 'subject_sect_id', 'sect_name_4', 'sect_name_4', null, null, 'Название группы'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [

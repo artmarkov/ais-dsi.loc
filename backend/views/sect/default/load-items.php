@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use common\widgets\editable\Editable;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
@@ -13,7 +14,7 @@ use artsoft\grid\GridView;
 
 $this->title = Yii::t('art/guide', 'Teachers Load');
 $this->params['breadcrumbs'][] = $this->title;
-
+$typeList = RefBook::find('subject_type_name')->getList();
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
@@ -24,6 +25,30 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,  // enable grouping
+    ],
+    [
+        'attribute' => 'subject_type_id',
+        'value' => function ($model) use ($typeList){
+            return Editable::widget([
+                'buttonsTemplate' => "{reset}{submit}",
+                'name' => 'subject_type_id',
+                'asPopover' => true,
+                'value' => $model->subject_type_id,
+                'header' => '',
+                'displayValueConfig' => $typeList,
+                'format' => Editable::FORMAT_LINK,
+                'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                'data' => $typeList,
+                'size' => 'md',
+                'options' => ['class' => 'form-control', 'placeholder' => Yii::t('art', 'Select...')],
+                'formOptions' => [
+                    'action' => Url::toRoute(['/sect/default/set-type', 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id]),
+                ],
+            ]);
+        },
+        'format' => 'raw',
+        'group' => true,
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'week_time',
@@ -48,7 +73,7 @@ $columns = [
             return $model->direction ? $model->direction->name : null;
         },
         'group' => true,
-        'subGroupOf' => 3
+        'subGroupOf' => 4
 
     ],
     [
@@ -57,7 +82,7 @@ $columns = [
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 4
+        'subGroupOf' => 5
     ],
     [
         'attribute' => 'load_time',
@@ -161,8 +186,8 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
-                            ['content' => 'Нагрузка', 'options' => ['colspan' => 5, 'class' => 'text-center info']],
+                            ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 7, 'class' => 'text-center info']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

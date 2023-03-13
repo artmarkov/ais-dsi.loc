@@ -21,7 +21,6 @@ if($course_list[0] == null) {
 $class_index = $model->class_index;
 $course_flag = $model->course_flag;
 $group = 0;
-$type_list = \common\models\subject\SubjectType::getTypeList();
 ?>
 <div class="subject-sect-form">
 
@@ -71,7 +70,7 @@ $type_list = \common\models\subject\SubjectType::getTypeList();
 
                                 }
                                 echo '<td>';
-                                echo RefBook::find('sect_memo_2')->getValue($modelSubjectSectStudyplan->id);
+                                echo RefBook::find('sect_name_2')->getValue($modelSubjectSectStudyplan->id);
                                 $items =  $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
                                 echo ' -' . count($items);
                                 // necessary for update action.
@@ -82,8 +81,7 @@ $type_list = \common\models\subject\SubjectType::getTypeList();
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]group_num");
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]plan_year");
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]course");
-                               // echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_type_id");
-                                echo $form->field($modelSubjectSectStudyplan, "[{$index}]subject_type_id")->dropDownList($type_list);
+                                echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_type_id");
 
                                 echo SortableInput::widget([
                                     'model' => $modelSubjectSectStudyplan,
@@ -148,7 +146,7 @@ $type_list = \common\models\subject\SubjectType::getTypeList();
                             <tbody class="container-items">
                             <?php foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan): ?>
                                 <?php
-                                $class_name = RefBook::find('sect_memo_2')->getValue($modelSubjectSectStudyplan->id);
+                                $class_name = RefBook::find('sect_name_2')->getValue($modelSubjectSectStudyplan->id);
                                 echo '<tr>
                                 <td class="text-center" style="vertical-align: middle;">' . $class_name . '</td>';
 
@@ -161,8 +159,7 @@ $type_list = \common\models\subject\SubjectType::getTypeList();
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]group_num");
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]plan_year");
                                 echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]course");
-                               // echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_type_id");
-                                echo $form->field($modelSubjectSectStudyplan, "[{$index}]subject_type_id")->dropDownList($type_list);
+                                echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_type_id");
 
                                 echo SortableInput::widget([
                                     'model' => $modelSubjectSectStudyplan,

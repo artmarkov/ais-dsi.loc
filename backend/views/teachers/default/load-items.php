@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use common\widgets\editable\Editable;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
@@ -15,7 +16,7 @@ $this->title = Yii::t('art/guide', 'Teachers Load');
 $this->params['breadcrumbs'][] = $this->title;
 
 //$sect_list = \common\models\teachers\Teachers::getSectListForTeachers($model->id, $model_date->plan_year);
-
+$typeList = RefBook::find('subject_type_name')->getList();
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
@@ -39,13 +40,35 @@ $columns = [
         'label' =>  Yii::t('art/guide', 'Sect').'/'.Yii::t('art/student', 'Student'),
     ],
     [
+        'attribute' => 'subject_type_id',
+        'value' => function ($model) use ($typeList){
+            return Editable::widget([
+                'buttonsTemplate' => "{reset}{submit}",
+                'name' => 'subject_type_id',
+                'asPopover' => true,
+                'value' => $model->subject_type_id,
+                'header' => '',
+                'displayValueConfig' => $typeList,
+                'format' => Editable::FORMAT_LINK,
+                'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                'data' => $typeList,
+                'size' => 'md',
+                'options' => ['class' => 'form-control', 'placeholder' => Yii::t('art', 'Select...')],
+                'formOptions' => [
+                    'action' => Url::toRoute(['/sect/default/set-type', 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id]),
+                ],
+            ]);
+        },
+        'format' => 'raw',
+
+    ],
+    [
         'attribute' => 'week_time',
         'filter' => false,
         'value' => function ($model) {
             return $model->week_time;
         },
-        'group' => true,
-        'subGroupOf' => 2,
+
     ],
     [
         'attribute' => 'year_time_consult',
@@ -53,8 +76,7 @@ $columns = [
         'value' => function ($model) {
             return $model->year_time_consult;
         },
-        'group' => true,
-        'subGroupOf' => 2,
+
     ],
     [
         'attribute' => 'direction_id',
@@ -64,7 +86,7 @@ $columns = [
         },
 
         'group' => true,  // enable grouping
-        'subGroupOf' => 4
+        'subGroupOf' => 2
     ],
     [
         'attribute' => 'teachers_id',
@@ -72,7 +94,7 @@ $columns = [
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 5
+        'subGroupOf' => 6
     ],
     [
         'attribute' => 'load_time',
@@ -189,8 +211,8 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина/Группа/Ученик', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
-                            ['content' => 'Нагрузка', 'options' => ['colspan' => 5, 'class' => 'text-center info']],
+                            ['content' => 'Дисциплина/Группа/Ученик', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 7, 'class' => 'text-center info']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]
