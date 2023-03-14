@@ -59,7 +59,7 @@ $columns = [
     [
         'attribute' => 'load_time',
         'value' => function ($model) {
-            return $model->load_time . ' ' . $model->getItemLoadNotice();
+            return $model->load_time . ' ' . $model->getItemLoadStudyplanNotice();
         },
          'group' => true,  // enable grouping
         'subGroupOf' => 4,

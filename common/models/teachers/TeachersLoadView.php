@@ -3,6 +3,7 @@
 namespace common\models\teachers;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class TeachersLoadView extends TeachersLoad
 {
@@ -40,7 +41,18 @@ class TeachersLoadView extends TeachersLoad
         ];
     }
 
+    public static function getSectListForTeachers($teachers_id, $plan_year)
+    {
+        $list = self::find()
+            ->select('subject_id, subject_name')
+            ->distinct()
+            ->andWhere(['plan_year' => $plan_year])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->orderBy('subject_name')
+            ->all();
 
+        return ArrayHelper::map($list, 'subject_id',  'subject_name');
+    }
 
 //    public function getStudyplanWeekTime()
 //    {

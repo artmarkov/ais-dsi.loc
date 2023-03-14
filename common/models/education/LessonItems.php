@@ -3,6 +3,7 @@
 namespace common\models\education;
 
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\ArtHelper;
 use artsoft\helpers\Schedule;
 use common\models\schedule\SubjectScheduleView;
 use common\models\subjectsect\SubjectSectStudyplan;
@@ -190,6 +191,26 @@ class LessonItems extends \artsoft\db\ActiveRecord
             $m->studyplan_subject_id = $this->studyplan_subject_id;
             $modelsItems[] = $m;
         }
+        return $modelsItems;
+    }
+
+    public function getLessonProgressTeachersNew($teachers_id, $subject_id, $timestamp_in)
+    {
+        $modelsItems = [];
+        if (!$subject_id && !$timestamp_in) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр subject_id или timestamp_in.");
+        }
+        $modelsProgress = LessonProgressView::find()
+            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
+            ->andWhere(['=', 'subject_id', $subject_id])
+            ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
+            ->all();
+        foreach($modelsProgress as $item => $modelProgress) {
+            $m = new LessonProgress();
+            $m->studyplan_subject_id = $modelProgress->studyplan_subject_id;
+            $modelsItems[] = $m;
+        }
+//        echo '<pre>' . print_r($modelsItems, true) . '</pre>';
         return $modelsItems;
     }
     /**

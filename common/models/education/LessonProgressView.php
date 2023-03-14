@@ -4,6 +4,7 @@ namespace common\models\education;
 
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
+use common\models\teachers\TeachersLoadView;
 use common\widgets\editable\Editable;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -173,11 +174,13 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
             ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
             ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
+            ->andWhere(['=', 'subject_id', $model_date->subject_id])
             ->orderBy('lesson_date')
             ->asArray()->all();
         $modelsProgress = self::find()
             ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
-            ->all();;
+            ->andWhere(['=', 'subject_id', $model_date->subject_id])
+            ->all();
 
         foreach ($lessonDates as $id => $lessonDate) {
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
@@ -194,7 +197,9 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $data[$item]['student_id'] = $modelProgress->student_id;
             $data[$item]['sect_name'] = $modelProgress->sect_name;
             $data[$item]['student_fio'] = $modelProgress->student_fio;
+            $data[$item]['subject_id'] = $modelProgress->subject_id;
             $data[$item]['subject'] = $modelProgress->subject;
+            $data[$item]['timestamp_in'] = $timestamp_in;
 
             $marks = LessonItemsProgressView::find()
                 ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])

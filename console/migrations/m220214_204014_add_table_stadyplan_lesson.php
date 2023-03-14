@@ -167,7 +167,8 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
            FROM teachers_load
           WHERE teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0), \',\'::text) AS teachers_list,
     \'Индивидуально\'::text AS sect_name,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
+    studyplan_subject.subject_id
    FROM studyplan_subject
      JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
@@ -194,7 +195,8 @@ UNION ALL
             WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
             ELSE \'\'::text
         END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject,
+    subject_sect.subject_id
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      JOIN studyplan_subject ON studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])
@@ -205,66 +207,70 @@ UNION ALL
      LEFT JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
      JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id
-  ORDER BY 10, 9, 7;
+  ORDER BY 9, 10, 7;
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_view', '
-(select 0 as subject_sect_studyplan_id,
-                lesson_progress.studyplan_subject_id,
- 				studyplan_subject.studyplan_id,
-                0 as subject_sect_id,
-                lesson_items.id as lesson_items_id,
-                lesson_items.lesson_date,
-                lesson_items.lesson_topic,
-                lesson_items.lesson_rem,	   
-                lesson_progress.id as lesson_progress_id,
-                lesson_progress.lesson_mark_id,
-                guide_lesson_test.test_category,
-                guide_lesson_test.test_name,
-                guide_lesson_test.test_name_short,
-                guide_lesson_test.plan_flag,
-                guide_lesson_mark.mark_category,
-                guide_lesson_mark.mark_label,
-                guide_lesson_mark.mark_hint,
-                guide_lesson_mark.mark_value,
-                lesson_progress.mark_rem,
-				array_to_string(ARRAY(select teachers_id from teachers_load where studyplan_subject_id = lesson_items.studyplan_subject_id and subject_sect_studyplan_id = 0), \',\')::text as teachers_list
-             from lesson_items            
-            inner join lesson_progress  on (lesson_progress.lesson_items_id = lesson_items.id and lesson_items.subject_sect_studyplan_id = 0) 
- 			inner join studyplan_subject on (studyplan_subject.id = lesson_progress.studyplan_subject_id)
-            left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
-            left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 			
-				 )
-UNION ALL 
-(select lesson_items.subject_sect_studyplan_id,
-                lesson_progress.studyplan_subject_id,
- 				studyplan_subject.studyplan_id,
-                subject_sect.id as subject_sect_id,
-                lesson_items.id as lesson_items_id,
-                lesson_items.lesson_date,
-                lesson_items.lesson_topic,
-                lesson_items.lesson_rem,	   
-                lesson_progress.id as lesson_progress_id,
-                lesson_progress.lesson_mark_id,
-                guide_lesson_test.test_category,
-                guide_lesson_test.test_name,
-                guide_lesson_test.test_name_short,
-                guide_lesson_test.plan_flag,
-                guide_lesson_mark.mark_category,
-                guide_lesson_mark.mark_label,
-                guide_lesson_mark.mark_hint,
-                guide_lesson_mark.mark_value,
-                lesson_progress.mark_rem,
-				array_to_string(ARRAY(select teachers_id from teachers_load where subject_sect_studyplan_id = lesson_items.subject_sect_studyplan_id and studyplan_subject_id = 0), \',\')::text as teachers_list
-             from lesson_items
-			 left join lesson_progress  on (lesson_progress.lesson_items_id = lesson_items.id and lesson_items.studyplan_subject_id = 0)
- 			 inner join studyplan_subject on (studyplan_subject.id = lesson_progress.studyplan_subject_id)
-             inner join subject_sect_studyplan  on (subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id)
-             inner join subject_sect on (subject_sect.id = subject_sect_studyplan.subject_sect_id)
-             left join guide_lesson_test on (guide_lesson_test.id = lesson_items.lesson_test_id)
-             left join guide_lesson_mark on (guide_lesson_mark.id = lesson_progress.lesson_mark_id) 
-				 )
-ORDER BY subject_sect_studyplan_id, studyplan_subject_id, lesson_date
+ SELECT 0 AS subject_sect_studyplan_id,
+    lesson_progress.studyplan_subject_id,
+    studyplan_subject.studyplan_id,
+    0 AS subject_sect_id,
+    lesson_items.id AS lesson_items_id,
+    lesson_items.lesson_date,
+    lesson_items.lesson_topic,
+    lesson_items.lesson_rem,
+    lesson_progress.id AS lesson_progress_id,
+    lesson_progress.lesson_mark_id,
+    guide_lesson_test.test_category,
+    guide_lesson_test.test_name,
+    guide_lesson_test.test_name_short,
+    guide_lesson_test.plan_flag,
+    guide_lesson_mark.mark_category,
+    guide_lesson_mark.mark_label,
+    guide_lesson_mark.mark_hint,
+    guide_lesson_mark.mark_value,
+    lesson_progress.mark_rem,
+    array_to_string(ARRAY( SELECT teachers_load.teachers_id
+           FROM teachers_load
+          WHERE teachers_load.studyplan_subject_id = lesson_items.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0), \',\'::text) AS teachers_list,
+    studyplan_subject.subject_id
+   FROM lesson_items
+     JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.subject_sect_studyplan_id = 0
+     JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
+     LEFT JOIN guide_lesson_test ON guide_lesson_test.id = lesson_items.lesson_test_id
+     LEFT JOIN guide_lesson_mark ON guide_lesson_mark.id = lesson_progress.lesson_mark_id
+UNION ALL
+ SELECT lesson_items.subject_sect_studyplan_id,
+    lesson_progress.studyplan_subject_id,
+    studyplan_subject.studyplan_id,
+    subject_sect.id AS subject_sect_id,
+    lesson_items.id AS lesson_items_id,
+    lesson_items.lesson_date,
+    lesson_items.lesson_topic,
+    lesson_items.lesson_rem,
+    lesson_progress.id AS lesson_progress_id,
+    lesson_progress.lesson_mark_id,
+    guide_lesson_test.test_category,
+    guide_lesson_test.test_name,
+    guide_lesson_test.test_name_short,
+    guide_lesson_test.plan_flag,
+    guide_lesson_mark.mark_category,
+    guide_lesson_mark.mark_label,
+    guide_lesson_mark.mark_hint,
+    guide_lesson_mark.mark_value,
+    lesson_progress.mark_rem,
+    array_to_string(ARRAY( SELECT teachers_load.teachers_id
+           FROM teachers_load
+          WHERE teachers_load.subject_sect_studyplan_id = lesson_items.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0), \',\'::text) AS teachers_list,
+    subject_sect.subject_id
+   FROM lesson_items
+     LEFT JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.studyplan_subject_id = 0
+     JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
+     JOIN subject_sect_studyplan ON subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id
+     JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
+     LEFT JOIN guide_lesson_test ON guide_lesson_test.id = lesson_items.lesson_test_id
+     LEFT JOIN guide_lesson_mark ON guide_lesson_mark.id = lesson_progress.lesson_mark_id
+  ORDER BY 1, 2, 6;
         ')->execute();
     }
 

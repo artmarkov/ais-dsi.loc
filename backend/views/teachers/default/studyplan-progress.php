@@ -18,31 +18,30 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
-    if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
-        if ($model['subject_sect_studyplan_id'] != 0) {
+//    if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
+//        if ($model['subject_sect_studyplan_id'] != 0) {
             $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create']),
+                Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'subject_id' => $model['subject_id'], 'timestamp_in' => $model['timestamp_in'], 'mode' => 'create']),
                 [
                     'title' => 'Добавить занятие',
                     'data-method' => 'post',
                     'data-pjax' => '0',
                     'class' => 'btn btn-xxs btn-link'
-
                 ]
             )];
-        } else {
-            $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'studyplan_subject_id' => $model['studyplan_subject_id'], 'mode' => 'create']),
-                [
-                    'title' => 'Добавить занятие',
-                    'data-method' => 'post',
-                    'data-pjax' => '0',
-                    'class' => 'btn btn-xxs btn-link'
-
-                ]
-            )];
-        }
-    }
+//        } else {
+//            $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
+//                Url::to(['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'studyplan_subject_id' => $model['studyplan_subject_id'], 'mode' => 'create']),
+//                [
+//                    'title' => 'Добавить занятие',
+//                    'data-method' => 'post',
+//                    'data-pjax' => '0',
+//                    'class' => 'btn btn-xxs btn-link'
+//
+//                ]
+//            )];
+//        }
+//    }
     foreach ($model['lesson_timestamp'] as $id => $item) {
         if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
             $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
@@ -84,7 +83,6 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,
-        'groupFooter' => $editMarks
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',
@@ -95,6 +93,7 @@ $columns = [
         'format' => 'raw',
         'group' => true,
         'subGroupOf' => 1,
+        'groupFooter' => $editMarks
     ],
     [
         'attribute' => 'student_id',
@@ -125,7 +124,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             Результаты запроса: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
-            <?= $this->render('@app/views/studyplan/lesson-items/_search', compact('model_date')) ?>
+            <?= $this->render('_search-progress', compact('modelTeachers', 'model_date', 'plan_year')) ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

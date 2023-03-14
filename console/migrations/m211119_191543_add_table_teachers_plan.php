@@ -149,7 +149,7 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->createView('teachers_load_view', '
- SELECT studyplan_subject.id AS studyplan_subject_id,
+  SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
     0 AS subject_sect_id,
@@ -164,7 +164,9 @@ UNION ALL
     concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
     studyplan_subject.subject_type_id,
-    guide_subject_type.name AS subject_type_name
+    guide_subject_type.name AS subject_type_name,
+    studyplan_subject.subject_id,
+    subject.name AS subject_name
    FROM studyplan_subject
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
      LEFT JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
@@ -207,7 +209,9 @@ UNION ALL
         END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \') \') AS subject,
     subject_sect_studyplan.subject_type_id,
-    guide_subject_type.name AS subject_type_name
+    guide_subject_type.name AS subject_type_name,
+    subject_sect.subject_id,
+    subject.name AS subject_name
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      LEFT JOIN teachers_load ON subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0
