@@ -108,8 +108,6 @@ class LessonItems extends \artsoft\db\ActiveRecord
             ])->scalar();
     }
 
-
-
     public function checkLessonDate($attribute, $params)
     {
         $checkLesson = SubjectScheduleView::find()->where(
@@ -194,25 +192,6 @@ class LessonItems extends \artsoft\db\ActiveRecord
         return $modelsItems;
     }
 
-    public function getLessonProgressTeachersNew($teachers_id, $subject_id, $timestamp_in)
-    {
-        $modelsItems = [];
-        if (!$subject_id && !$timestamp_in) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр subject_id или timestamp_in.");
-        }
-        $modelsProgress = LessonProgressView::find()
-            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
-            ->andWhere(['=', 'subject_id', $subject_id])
-            ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
-            ->all();
-        foreach($modelsProgress as $item => $modelProgress) {
-            $m = new LessonProgress();
-            $m->studyplan_subject_id = $modelProgress->studyplan_subject_id;
-            $modelsItems[] = $m;
-        }
-//        echo '<pre>' . print_r($modelsItems, true) . '</pre>';
-        return $modelsItems;
-    }
     /**
      * @return array|LessonProgress[]|\yii\db\ActiveRecord[]
      */
@@ -241,6 +220,26 @@ class LessonItems extends \artsoft\db\ActiveRecord
         } else {
             $modelsItems = $this->lessonProgresses;
         }
+        return $modelsItems;
+    }
+
+    public function getLessonProgressTeachersNew($teachers_id, $subject_key, $timestamp_in)
+    {
+        $modelsItems = [];
+        if (!$subject_key && !$timestamp_in && !$teachers_id) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр teachers_id или subject_key или timestamp_in.");
+        }
+        $modelsProgress = LessonProgressView::find()
+            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
+            ->andWhere(['=', 'subject_key', $subject_key])
+            ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
+            ->all();
+        foreach($modelsProgress as $item => $modelProgress) {
+            $m = new LessonProgress();
+            $m->studyplan_subject_id = $modelProgress->studyplan_subject_id;
+            $modelsItems[] = $m;
+        }
+//        echo '<pre>' . print_r($modelsItems, true) . '</pre>';
         return $modelsItems;
     }
 }

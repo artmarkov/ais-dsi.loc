@@ -91,6 +91,11 @@ public static function astr2academ($astr_hour)
 
     }
 
+    public static function decodeTime($value)
+    {
+        return  date('H:i', $value);
+    }
+
     public static function getWeekDay($day, $mon, $year)
     {
         $week_day = date("w", mktime(0, 0, 0, $mon, $day, $year));

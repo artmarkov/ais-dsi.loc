@@ -35,11 +35,11 @@ $form = ActiveForm::begin([
                     ]
             )->label('Месяц и год');
             ?>
-            <?= $form->field($model_date, 'subject_sect_studyplan_id')->dropDownList( \common\models\education\LessonProgressView::getSectListForTeachers($modelTeachers->id, $plan_year),
+            <?= $form->field($model_date, 'subject_key')->dropDownList( \common\models\education\LessonProgressView::getIndivListForTeachers($modelTeachers->id, $plan_year),
                 [
                     'disabled' => false,
                     'onchange'=>'js: $(this).closest("form").submit()',
-                ])->label('Группа');
+                ])->label('Предмет');
             ?>
         </div>
     </div>

@@ -177,6 +177,7 @@ return [
     'Lesson Rem' => 'Задание',
     'Studyplan Progress' => 'Дневник успеваемости',
     'Group Progress' => 'Журнал успеваемости группы',
+    'Indiv Progress' => 'Журнал успеваемости индивидуальных занятий',
     'Journal Progress' => 'Журнал успеваемости',
     'Users Card Logs' => 'Журнал СКУД',
     'Users Cards' => 'Журнал пропусков',

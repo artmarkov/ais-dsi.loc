@@ -3,7 +3,9 @@
 namespace common\models\schedule;
 
 
+use artsoft\helpers\ArtHelper;
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "subject_schedule_studyplan_view".
@@ -54,4 +56,25 @@ class SubjectScheduleStudyplanView extends SubjectScheduleView
         return $attr;
     }
 
+    /**
+     * Получаем расписание индивидуальных занятий выбранной дисциплины
+     * @param $subject_key
+     * @param $timestamp_in
+     * @return array
+     */
+    public static function getScheduleIndiv($subject_key, $teachers_id, $timestamp_in)
+    {
+        return (new Query())->select(['week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'student_fio'])
+            ->distinct()
+            ->from('subject_schedule_studyplan_view')
+            ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = subject_schedule_studyplan_view.direction_id')
+            ->where(
+                ['AND',
+                    ['=', 'subject_key', $subject_key],
+                    ['=', 'teachers_id', $teachers_id],
+                    ['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)]
+                ])
+            ->andWhere(['is', 'guide_teachers_direction.parent', null])
+            ->all();
+    }
 }

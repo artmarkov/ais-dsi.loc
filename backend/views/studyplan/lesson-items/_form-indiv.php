@@ -2,7 +2,6 @@
 
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
-use common\models\education\LessonProgress;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
@@ -12,21 +11,17 @@ use yii\widgets\MaskedInput;
 /* @var $model common\models\education\LessonItems */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $modelsItems */
-/* @var $studyplan_subject_id */
-/* @var $subject_sect_studyplan_id */
+/* @var $subject_key */
+/* @var $timestamp_in */
+/* @var $modelTeachers */
 
-$models_sch = \common\models\schedule\SubjectSchedule::getSchedule($model->subject_sect_studyplan_id, $model->studyplan_subject_id);
+$models_sch = \common\models\schedule\SubjectScheduleStudyplanView::getScheduleIndiv($subject_key, $modelTeachers->id, $timestamp_in);
 $mark_list = RefBook::find('lesson_mark')->getList();
-if ($model->subject_sect_studyplan_id != 0) {
-    $studyplanSubjectList = \common\models\subjectsect\SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id)->studyplan_subject_list;
-} else {
-    $studyplanSubjectList = $model->studyplan_subject_id;
-}
-$modelsStudent = (new \yii\db\Query())->select('studyplan_subject_id, student_fio')->from('studyplan_subject_view')
-    ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$studyplanSubjectList}', ',')::int[])"))
-    ->all();
-$modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subject_id');
-//print_r($modelsStudent);
+$subject= (new \yii\db\Query())->select('subject')
+    ->from('lesson_progress_view')
+    ->where(['=', 'subject_key', $subject_key])
+    ->scalar();
+//print_r($model);
 ?>
 <div class="lesson-items-form">
     <?php
@@ -39,8 +34,7 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
         <div class="panel-heading">
             <div class="panel-heading">
                 Посещаемость и успеваемость:
-                <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
-                <?php echo RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id); ?>
+                <?php echo $subject; ?>
 
                 <?php if (!$model->isNewRecord): ?>
                     <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
@@ -54,6 +48,7 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                 <thead>
                 <tr>
                     <th class="text-center">№</th>
+                    <th class="text-center">Ученик</th>
                     <th class="text-center">Расписание</th>
                     <th class="text-center">Аудитория</th>
                 </tr>
@@ -61,8 +56,8 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                 <tbody class="container-items">
                 <?php foreach ($models_sch as $index => $m): ?>
                     <?php
-                    $string = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
-                    $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out;
+                    $string = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m['week_num']);
+                    $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m['week_day']) . ' ' . \artsoft\helpers\Schedule::decodeTime($m['time_in']) . '-' . \artsoft\helpers\Schedule::decodeTime($m['time_out']);
 
                     ?>
                     <tr class="item">
@@ -70,10 +65,13 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                             <span class="panel-title"><?= $index + 1 ?></span>
                         </td>
                         <td>
+                            <span class="panel-title"><?= $m['student_fio'] ?></span>
+                        </td>
+                        <td>
                             <span class="panel-title"><?= $string ?></span>
                         </td>
                         <td>
-                            <span class="panel-title"><?= RefBook::find('auditory_memo_1')->getValue($m->auditory_id) ?></span>
+                            <span class="panel-title"><?= RefBook::find('auditory_memo_1')->getValue($m['auditory_id']) ?></span>
                         </td>
                     <tr/>
                 <?php endforeach; ?>
@@ -131,7 +129,7 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                                     </td>
                                     <td>
                                         <?= Html::activeHiddenInput($modelItems, "[{$index}]studyplan_subject_id"); ?>
-                                        <?= $modelItems->studyplan_subject_id; ?>
+                                        <?= RefBook::find('studyplan_subject-student_fio')->getValue($modelItems->studyplan_subject_id); ?>
                                     </td>
                                     <td>
                                         <?php

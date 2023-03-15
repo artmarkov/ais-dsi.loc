@@ -679,6 +679,17 @@ class DefaultController extends MainController
         }
     }
 
+    /**
+     * Журнал успеваемости групповых занятий
+     * @param $id
+     * @param null $objectId
+     * @param null $mode
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\db\Exception
+     * @throws \yii\db\StaleObjectException
+     */
     public function actionStudyplanProgress($id, $objectId = null, $mode = null)
     {
         $modelTeachers = $this->findModel($id);
@@ -687,19 +698,19 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if ('create' == $mode) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Journal Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $modelTeachers->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $modelTeachers->id]];
 
-//            if (!Yii::$app->request->get('studyplan_subject_id') && !Yii::$app->request->get('subject_sect_studyplan_id')) {
-//                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
-//            }
+            if (!Yii::$app->request->get('subject_sect_studyplan_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_sect_studyplan_id.");
+            }
 
-            $subject_id = Yii::$app->request->get('subject_id') ?? 0;
-            $timestamp_in = Yii::$app->request->get('timestamp_in') ?? 0;
+            $subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id');
 
             $model = new LessonItems();
-
+            $model->studyplan_subject_id = 0;
+            $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
             // предустановка учеников
-            $modelsItems = $model->getLessonProgressTeachersNew($id, $subject_id, $timestamp_in);
+            $modelsItems = $model->getLessonProgressNew();
 
             if ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class);
@@ -712,7 +723,6 @@ class DefaultController extends MainController
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
-
                         if ($flag = $model->save(false)) {
                             foreach ($modelsItems as $modelItems) {
                                 $modelItems->lesson_items_id = $model->id;
@@ -732,13 +742,13 @@ class DefaultController extends MainController
                     }
                 }
             }
-            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_teachers_form.php', [
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
                 'model' => $model,
                 'modelsItems' => (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
             ]);
 
         } elseif ('history' == $mode && $objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Journal Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['teachers/default/studyplan-progress', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
             $this->view->params['tabMenu'] = $this->getMenu($id);
 
@@ -752,7 +762,7 @@ class DefaultController extends MainController
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
             return $this->redirect($this->getRedirectPage('delete', $model));
         } elseif ($objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Journal Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
 
             $model = LessonItems::findOne($objectId);
@@ -796,7 +806,7 @@ class DefaultController extends MainController
                 }
             }
 
-            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_teachers_form.php', [
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
                 'model' => $model,
                 'modelsItems' => (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
             ]);
@@ -804,8 +814,8 @@ class DefaultController extends MainController
         } else {
             $session = Yii::$app->session;
 
-            $model_date = new DynamicModel(['date_in', 'subject_id']);
-            $model_date->addRule(['date_in', 'subject_id'], 'required')
+            $model_date = new DynamicModel(['date_in', 'subject_sect_studyplan_id']);
+            $model_date->addRule(['date_in', 'subject_sect_studyplan_id'], 'required')
                 ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
@@ -816,22 +826,188 @@ class DefaultController extends MainController
                 $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
                 $timestamp_in = $timestamp[0];
                 $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
-                $model_date->subject_id = $session->get('_progress_subject_id') ?? 0;
-//                print_r($plan_year); die();
+                $model_date->subject_sect_studyplan_id = $session->get('_progress_subject_sect_studyplan_id') ?? 0;
             }
             $session->set('_progress_date_in', $model_date->date_in);
-            $session->set('_progress_subject_id', $model_date->subject_id);
+            $session->set('_progress_subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id);
 
             $model = LessonProgressView::getDataTeachers($model_date, $id);
             $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
             $timestamp_in = $timestamp[0];
             $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
-
             if (Yii::$app->request->post('submitAction') == 'excel') {
                 // TeachersEfficiency::sendXlsx($data);
             }
 
             return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
+        }
+    }
+
+    /**
+     * Журнал успеваемости индивидуальных занятий
+     * @param $id
+     * @param null $objectId
+     * @param null $mode
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\db\Exception
+     * @throws \yii\db\StaleObjectException
+     */
+    public function actionStudyplanProgressIndiv($id, $objectId = null, $mode = null)
+    {
+        $modelTeachers = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['teachers/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $modelTeachers->id]];
+
+            if (!Yii::$app->request->get('subject_key')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_key");
+            }
+
+            $subject_key = base64_decode(Yii::$app->request->get('subject_key'));
+            $timestamp_in = Yii::$app->request->get('timestamp_in');
+
+            $model = new LessonItems();
+            // предустановка учеников
+            $modelsItems = $model->getLessonProgressTeachersNew($id, $subject_key, $timestamp_in);
+
+            if ($model->load(Yii::$app->request->post())) {
+                $modelsItems = Model::createMultiple(LessonProgress::class);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
+                //$valid = true;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+
+                        if ($flag = $model->save(false)) {
+                            foreach ($modelsItems as $modelItems) {
+                                $modelItems->lesson_items_id = $model->id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction($model);
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+            }
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form-indiv.php', [
+                'model' => $model,
+                'modelTeachers' => $modelTeachers,
+                'modelsItems' => (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+                'subject_key' => $subject_key,
+                'timestamp_in' => $timestamp_in,
+            ]);
+
+        } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['teachers/default/studyplan-progress', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
+            $this->view->params['tabMenu'] = $this->getMenu($id);
+
+            $model = LessonItems::findOne($objectId);
+            $data = new LessonItemsHistory($objectId);
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
+        } elseif ('delete' == $mode && $objectId) {
+            $model = LessonItems::findOne($objectId);
+            $model->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+        } elseif ($objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+
+            $model = LessonItems::findOne($objectId);
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The LessonItems was not found.");
+            }
+            $modelsItems = $model->getLessonProgress();
+            if ($model->load(Yii::$app->request->post())) {
+
+                $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
+                $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
+
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
+
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        if ($flag = $model->save(false)) {
+                            if (!empty($deletedIDs)) {
+                                LessonProgress::deleteAll(['id' => $deletedIDs]);
+                            }
+                            foreach ($modelsItems as $modelItems) {
+                                $modelItems->lesson_items_id = $model->id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                            if ($flag) {
+                                $transaction->commit();
+                                $this->getSubmitAction($model);
+                            }
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+            }
+
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
+                'model' => $model,
+                'modelsItems' => (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+            ]);
+
+        } else {
+            $session = Yii::$app->session;
+
+            $model_date = new DynamicModel(['date_in', 'subject_key']);
+            $model_date->addRule(['date_in', 'subject_key'], 'required')
+                ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
+
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $mon = date('m');
+                $year = date('Y');
+
+                $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+                $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+                $timestamp_in = $timestamp[0];
+                $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
+                $model_date->subject_key = $session->get('_progress_subject_key') ?? 0;
+//                print_r($plan_year); die();
+            }
+            $session->set('_progress_date_in', $model_date->date_in);
+            $session->set('_progress_subject_key', $model_date->subject_key);
+
+            $model = LessonProgressView::getDataIndivTeachers($model_date, $id);
+            $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+            $timestamp_in = $timestamp[0];
+            $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
+            if (Yii::$app->request->post('submitAction') == 'excel') {
+                // TeachersEfficiency::sendXlsx($data);
+            }
+
+            return $this->renderIsAjax('studyplan-progress-indiv', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
         }
     }
 
@@ -1046,7 +1222,8 @@ class DefaultController extends MainController
             ['label' => 'Злементы расписания', 'url' => ['/teachers/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/teachers/default/schedule', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/teachers/default/consult-items', 'id' => $id]],
-            ['label' => 'Журнал успеваемости', 'url' => ['/teachers/default/studyplan-progress', 'id' => $id]],
+            ['label' => 'Журнал успеваемости группы', 'url' => ['/teachers/default/studyplan-progress', 'id' => $id]],
+            ['label' => 'Журнал успеваемости индивидуальных занятий', 'url' => ['/teachers/default/studyplan-progress-indiv', 'id' => $id]],
             ['label' => 'Показатели эффективности', 'url' => ['/teachers/default/efficiency', 'id' => $id]],
             ['label' => 'Портфолио', 'url' => ['/teachers/default/portfolio', 'id' => $id]],
             ['label' => 'Документы', 'url' => ['/teachers/default/document', 'id' => $id]],
