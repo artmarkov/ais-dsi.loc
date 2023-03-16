@@ -17,7 +17,7 @@ use yii\widgets\MaskedInput;
 
 $models_sch = \common\models\schedule\SubjectScheduleStudyplanView::getScheduleIndiv($subject_key, $modelTeachers->id, $timestamp_in);
 $mark_list = RefBook::find('lesson_mark')->getList();
-$subject= (new \yii\db\Query())->select('subject')
+$subject = (new \yii\db\Query())->select('subject')
     ->from('lesson_progress_view')
     ->where(['=', 'subject_key', $subject_key])
     ->scalar();
@@ -40,8 +40,6 @@ $subject= (new \yii\db\Query())->select('subject')
                     <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
                 <?php endif; ?>
             </div>
-
-
         </div>
         <div class="panel-body">
             <table class="table table-bordered table-striped">
@@ -77,108 +75,115 @@ $subject= (new \yii\db\Query())->select('subject')
                 <?php endforeach; ?>
                 </tbody>
             </table>
-        </div>
-    </div>
-    <div class="panel">
-        <div class="panel-body">
             <div class="panel">
                 <div class="panel-body">
-                    <div class="row">
-                        <?= $form->field($model, "lesson_test_id")->widget(\kartik\select2\Select2::class, [
-                            'data' => \common\models\education\LessonTest::getLessonTestList($model),
-                            'options' => [
+                    <div class="panel">
+                        <div class="panel-body">
+                            <div class="row">
+                                <?= $form->field($model, "lesson_test_id")->widget(\kartik\select2\Select2::class, [
+                                    'data' => \common\models\education\LessonTest::getLessonTestList($model),
+                                    'options' => [
 //                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art', 'Select...'),
-                                'multiple' => false,
-                            ],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ]
-                        ]);
-                        ?>
-                        <?= $form->field($model, 'lesson_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, [/*'disabled' => $readonly*/]); ?>
-                        <?= $form->field($model, 'lesson_topic')->textInput() ?>
-                        <?= $form->field($model, 'lesson_rem')->textInput() ?>
-                    </div>
-                </div>
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Список оценок
-                    </div>
-                    <div class="panel-body">
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                            <tr>
-                                <th class="text-center">№</th>
-                                <th class="text-center">Ученик</th>
-                                <th class="text-center">Оценка</th>
-                                <th class="text-center">Примечание</th>
-                            </tr>
-                            </thead>
-                            <tbody class="container-items">
-                            <?php foreach ($modelsItems as $index => $modelItems): ?>
-                                <tr class="item">
-                                    <?php
-                                    // necessary for update action.
-                                    if (!$modelItems->isNewRecord) {
-                                        echo Html::activeHiddenInput($modelItems, "[{$index}]id");
-                                    }
-                                    ?>
-                                    <td>
-                                        <span class="panel-title-activities"><?= ($index + 1) ?></span>
-                                    </td>
-                                    <td>
-                                        <?= Html::activeHiddenInput($modelItems, "[{$index}]studyplan_subject_id"); ?>
-                                        <?= RefBook::find('studyplan_subject-student_fio')->getValue($modelItems->studyplan_subject_id); ?>
-                                    </td>
-                                    <td>
-                                        <?php
-                                        $field = $form->field($modelItems, "[{$index}]lesson_mark_id");
-                                        echo $field->begin();
-                                        ?>
-                                        <div class="col-sm-12">
-                                            <?= \kartik\select2\Select2::widget(
-                                                [
-                                                    'model' => $modelItems,
-                                                    'attribute' => "[{$index}]lesson_mark_id",
-                                                    'data' => $mark_list,
-                                                    'options' => [
+                                        'placeholder' => Yii::t('art', 'Select...'),
+                                        'multiple' => false,
+                                    ],
+                                    'pluginOptions' => [
+                                        'allowClear' => true
+                                    ]
+                                ]);
+                                ?>
+                                <?= $form->field($model, 'lesson_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['readonly' => $model->lesson_date]); ?>
+                                <?= $form->field($model, 'lesson_topic')->textInput() ?>
+                                <?= $form->field($model, 'lesson_rem')->textInput() ?>
+                            </div>
+                        </div>
+                        <?php if ($model->lesson_date && !empty($modelsItems)): ?>
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    Список оценок
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th class="text-center">№</th>
+                                            <th class="text-center">Ученик</th>
+                                            <th class="text-center">Оценка</th>
+                                            <th class="text-center">Примечание</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="container-items">
+                                        <?php foreach ($modelsItems as $index => $modelItems): ?>
+                                            <tr class="item">
+                                                <?php
+                                                // necessary for update action.
+                                                if (!$modelItems->isNewRecord) {
+                                                    echo Html::activeHiddenInput($modelItems, "[{$index}]id");
+                                                }
+                                                ?>
+                                                <td>
+                                                    <span class="panel-title-activities"><?= ($index + 1) ?></span>
+                                                </td>
+                                                <td>
+                                                    <?= Html::activeHiddenInput($modelItems, "[{$index}]studyplan_subject_id"); ?>
+                                                    <?= RefBook::find('studyplan_subject-student_fio')->getValue($modelItems->studyplan_subject_id); ?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    $field = $form->field($modelItems, "[{$index}]lesson_mark_id");
+                                                    echo $field->begin();
+                                                    ?>
+                                                    <div class="col-sm-12">
+                                                        <?= \kartik\select2\Select2::widget(
+                                                            [
+                                                                'model' => $modelItems,
+                                                                'attribute' => "[{$index}]lesson_mark_id",
+                                                                'data' => $mark_list,
+                                                                'options' => [
 
 //                                                                'disabled' => $readonly,
-                                                        'placeholder' => Yii::t('art', 'Select...'),
-                                                    ],
-                                                    'pluginOptions' => [
-                                                        'allowClear' => true
-                                                    ],
-                                                ]
-                                            ) ?>
-                                            <p class="help-block help-block-error"></p>
-                                        </div>
-                                        <?= $field->end(); ?>
-                                    </td>
+                                                                    'placeholder' => Yii::t('art', 'Select...'),
+                                                                ],
+                                                                'pluginOptions' => [
+                                                                    'allowClear' => true
+                                                                ],
+                                                            ]
+                                                        ) ?>
+                                                        <p class="help-block help-block-error"></p>
+                                                    </div>
+                                                    <?= $field->end(); ?>
+                                                </td>
 
-                                    <td>
-                                        <?php
-                                        $field = $form->field($modelItems, "[{$index}]mark_rem");
-                                        echo $field->begin();
-                                        ?>
-                                        <div class="col-sm-12">
-                                            <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]mark_rem", ['class' => 'form-control']); ?>
-                                            <p class="help-block help-block-error"></p>
-                                        </div>
-                                        <?= $field->end(); ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                                <td>
+                                                    <?php
+                                                    $field = $form->field($modelItems, "[{$index}]mark_rem");
+                                                    echo $field->begin();
+                                                    ?>
+                                                    <div class="col-sm-12">
+                                                        <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]mark_rem", ['class' => 'form-control']); ?>
+                                                        <p class="help-block help-block-error"></p>
+                                                    </div>
+                                                    <?= $field->end(); ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
+                <?php if ($model->lesson_date && !empty($modelsItems)): ?>
                 <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                <?php else: ?>
+                   <?= \artsoft\helpers\ButtonHelper::exitButton();?>
+                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'next']); ?>
+                <?php endif; ?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

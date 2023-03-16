@@ -64,11 +64,11 @@ class LessonItems extends \artsoft\db\ActiveRecord
     {
         return [
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'version'], 'integer'],
-            [['subject_sect_studyplan_id', 'studyplan_subject_id'], 'default', 'value' => 0],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'version'], 'default', 'value' => 0],
             [['lesson_test_id', 'lesson_date'], 'required'],
             [['lesson_date'], 'safe'],
-            [['lesson_date'], 'checkLessonExist', 'skipOnEmpty' => false],
-            [['lesson_date'], 'checkLessonDate', 'skipOnEmpty' => false],
+//            [['lesson_date'], 'checkLessonExist', 'skipOnEmpty' => false],
+//            [['lesson_date'], 'checkLessonDate', 'skipOnEmpty' => false],
             [['lesson_topic'], 'string', 'max' => 512],
             [['lesson_rem'], 'string', 'max' => 1024],
             [['lesson_test_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonTest::className(), 'targetAttribute' => ['lesson_test_id' => 'id']],
@@ -223,7 +223,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
         return $modelsItems;
     }
 
-    public function getLessonProgressTeachersNew($teachers_id, $subject_key, $timestamp_in)
+    public function getLessonProgressTeachersNew($teachers_id, $subject_key, $timestamp_in, $model)
     {
         $modelsItems = [];
         if (!$subject_key && !$timestamp_in && !$teachers_id) {
@@ -234,12 +234,27 @@ class LessonItems extends \artsoft\db\ActiveRecord
             ->andWhere(['=', 'subject_key', $subject_key])
             ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
             ->all();
-        foreach($modelsProgress as $item => $modelProgress) {
+        foreach ($modelsProgress as $item => $modelProgress) {
+            if (!self::checkLesson($modelProgress, $model->lesson_date)) {
+                continue;
+            }
             $m = new LessonProgress();
             $m->studyplan_subject_id = $modelProgress->studyplan_subject_id;
             $modelsItems[] = $m;
+
         }
 //        echo '<pre>' . print_r($modelsItems, true) . '</pre>';
         return $modelsItems;
+    }
+
+    public static function checkLesson($model, $lesson_date)
+    {
+        return SubjectScheduleView::find()->where(
+            ['AND',
+                ['=', 'subject_sect_studyplan_id', $model->subject_sect_studyplan_id],
+                ['=', 'studyplan_subject_id', $model->studyplan_subject_id],
+                ['=', 'week_day', Schedule::timestamp2WeekDay(strtotime($lesson_date))],
+
+            ])->exists();
     }
 }

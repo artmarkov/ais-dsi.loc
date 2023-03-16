@@ -31,16 +31,16 @@ $editMarks = function ($model, $key, $index, $widget) {
             )];
 //        }
     foreach ($model['lesson_timestamp'] as $id => $item) {
-        if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
+//        if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
             $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                    Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'update']), [
+                    Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key']), 'timestamp_in' => $item['lesson_date'],'mode' => 'update']), [
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
                         'class' => 'btn btn-xxs btn-link',
                     ])
                 . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                    Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete']), [
+                    Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key']), 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xxs btn-link',
                         'data' => [
@@ -51,7 +51,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                     ]
                 ),
             ];
-        }
+//        }
     }
     return [
         'content' => $content,

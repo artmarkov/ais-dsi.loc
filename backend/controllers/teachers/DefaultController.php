@@ -5,6 +5,7 @@ namespace backend\controllers\teachers;
 use artsoft\helpers\ArtHelper;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
+use artsoft\widgets\Notice;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
@@ -872,31 +873,43 @@ class DefaultController extends MainController
             $timestamp_in = Yii::$app->request->get('timestamp_in');
 
             $model = new LessonItems();
+            $modelsItems = [];
             // предустановка учеников
-            $modelsItems = $model->getLessonProgressTeachersNew($id, $subject_key, $timestamp_in);
-
-            if ($model->load(Yii::$app->request->post())) {
+            if (isset($_POST['submitAction']) && $_POST['submitAction'] == 'next') {
+                $model->load(Yii::$app->request->post());
+                $modelsItems = $model->getLessonProgressTeachersNew($id, $subject_key, $timestamp_in, $model);
+                if (empty($modelsItems)) {
+                    Notice::registerDanger('Дата занятия не соответствует расписанию!');
+                }
+            } elseif ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
-
+                $valid = true;
                 // validate all models
                 $valid = $model->validate();
                 $valid = Model::validateMultiple($modelsItems) && $valid;
+//                echo '<pre>' . print_r($_POST, true) . '</pre>';
+//                echo '<pre>' . print_r($valid, true) . '</pre>';
+//                die();
                 //$valid = true;
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
-
-                        if ($flag = $model->save(false)) {
-                            foreach ($modelsItems as $modelItems) {
-                                $modelItems->lesson_items_id = $model->id;
-                                if (!($flag = $modelItems->save(false))) {
-                                    $transaction->rollBack();
-                                    break;
-                                }
+                        $flag = true;
+                        foreach ($modelsItems as $modelItems) {
+                            $modelLesson = new LessonItems();
+                            $modelLesson->attributes = $model->attributes;
+                            $modelLesson->studyplan_subject_id = $modelItems->studyplan_subject_id;
+                            if (!($flag = $modelLesson->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                            $modelItems->lesson_items_id = $modelLesson->id;
+                            if (!($flag = $modelItems->save(false))) {
+                                $transaction->rollBack();
+                                break;
                             }
                         }
-
                         if ($flag) {
                             $transaction->commit();
                             $this->getSubmitAction($model);
@@ -909,7 +922,7 @@ class DefaultController extends MainController
             return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form-indiv.php', [
                 'model' => $model,
                 'modelTeachers' => $modelTeachers,
-                'modelsItems' => (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+                'modelsItems' => $modelsItems,
                 'subject_key' => $subject_key,
                 'timestamp_in' => $timestamp_in,
             ]);

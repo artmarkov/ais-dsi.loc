@@ -168,7 +168,7 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
           WHERE teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0), \',\'::text) AS teachers_list,
     \'Индивидуально\'::text AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
-    studyplan_subject.subject_id
+    concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key
    FROM studyplan_subject
      JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
@@ -196,7 +196,7 @@ UNION ALL
             ELSE \'\'::text
         END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject,
-    subject_sect.subject_id
+    NULL::text AS subject_key
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      JOIN studyplan_subject ON studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])
@@ -211,7 +211,7 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_view', '
- SELECT 0 AS subject_sect_studyplan_id,
+  SELECT 0 AS subject_sect_studyplan_id,
     lesson_progress.studyplan_subject_id,
     studyplan_subject.studyplan_id,
     0 AS subject_sect_id,
@@ -233,10 +233,13 @@ UNION ALL
     array_to_string(ARRAY( SELECT teachers_load.teachers_id
            FROM teachers_load
           WHERE teachers_load.studyplan_subject_id = lesson_items.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0), \',\'::text) AS teachers_list,
-    studyplan_subject.subject_id
+    concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key
    FROM lesson_items
      JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.subject_sect_studyplan_id = 0
      JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+     JOIN subject ON subject.id = studyplan_subject.subject_id
+     JOIN education_programm ON education_programm.id = studyplan.programm_id
      LEFT JOIN guide_lesson_test ON guide_lesson_test.id = lesson_items.lesson_test_id
      LEFT JOIN guide_lesson_mark ON guide_lesson_mark.id = lesson_progress.lesson_mark_id
 UNION ALL
@@ -262,7 +265,7 @@ UNION ALL
     array_to_string(ARRAY( SELECT teachers_load.teachers_id
            FROM teachers_load
           WHERE teachers_load.subject_sect_studyplan_id = lesson_items.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0), \',\'::text) AS teachers_list,
-    subject_sect.subject_id
+    NULL::text AS subject_key
    FROM lesson_items
      LEFT JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.studyplan_subject_id = 0
      JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
