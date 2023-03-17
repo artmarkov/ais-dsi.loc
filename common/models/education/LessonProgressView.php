@@ -71,10 +71,10 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $modelsProgress = self::find()->where(['subject_sect_studyplan_id' => $model_date->subject_sect_studyplan_id])->orderBy('sect_name')->all();
 
         $modelsMarks = ArrayHelper::index(LessonItemsProgressView::find()
-                        ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
-                        ->andWhere(['subject_sect_id' => $subject_sect_id])
-                        ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
-                        ->all(), null, 'studyplan_subject_id');
+            ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
+            ->andWhere(['subject_sect_id' => $subject_sect_id])
+            ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
+            ->all(), null, 'studyplan_subject_id');
 
         // echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
         foreach ($lessonDates as $id => $lessonDate) {
@@ -161,7 +161,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
     public static function getDataTeachers($model_date, $teachers_id)
     {
-        $data = $dates = [];
+        $data = $dates = $modelsProgress = [];
 
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
         $timestamp_in = $timestamp[0];
@@ -171,22 +171,23 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $attributes += ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
         $attributes += ['student_id' => Yii::t('art/student', 'Student')];
 
-        $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
-            ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
-            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
-            ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
-            ->orderBy('lesson_date')
-            ->asArray()->all();
-        $modelsProgress = self::find()
-            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
-            ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
-            ->all();
-
-        foreach ($lessonDates as $id => $lessonDate) {
-            $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
-            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
-            $attributes += [$date => $label];
-            $dates[] = $date;
+        if ($model_date->subject_sect_studyplan_id != 0) {
+            $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
+                ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
+                ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
+                ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
+                ->orderBy('lesson_date')
+                ->asArray()->all();
+            $modelsProgress = self::find()
+                ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
+                ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
+                ->all();
+            foreach ($lessonDates as $id => $lessonDate) {
+                $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
+                $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
+                $attributes += [$date => $label];
+                $dates[] = $date;
+            }
         }
         foreach ($modelsProgress as $item => $modelProgress) {
             $data[$item]['lesson_timestamp'] = $lessonDates;
@@ -214,18 +215,27 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
     }
 
-    public static function getSectListForTeachers($teachers_id, $plan_year)
+
+    public static function getSectListForTeachersQuery($teachers_id, $plan_year)
     {
-        $list = self::find()
+        return  self::find()
             ->select('subject_sect_studyplan_id, sect_name, subject')
             ->distinct()
             ->where(['!=', 'subject_sect_studyplan_id', 0])
             ->andWhere(['plan_year' => $plan_year])
             ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
-            ->orderBy('sect_name')
-            ->all();
+            ->orderBy('sect_name');
 
-        return ArrayHelper::map($list, 'subject_sect_studyplan_id',  'sect_name', 'subject');
+    }
+
+    public static function getSectListForTeachers($teachers_id, $plan_year)
+    {
+        return ArrayHelper::map(self::getSectListForTeachersQuery($teachers_id, $plan_year)->all(), 'subject_sect_studyplan_id', 'sect_name', 'subject');
+    }
+    public static function getSecListForTeachersDefault($teachers_id, $plan_year)
+    {
+        $model = self::getSectListForTeachersQuery($teachers_id, $plan_year)->one();
+        return $model->subject_sect_studyplan_id ?? 0;
     }
 
     public static function getDataIndivTeachers($model_date, $teachers_id)
@@ -284,19 +294,28 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
     }
 
-    public static function getIndivListForTeachers($teachers_id, $plan_year)
+    public static function getIndivListForTeachersQuery($teachers_id, $plan_year)
     {
-        $list = self::find()
+        return  self::find()
             ->select('subject_key, subject')
             ->distinct()
             ->where(['is not', 'subject_key', NULL])
             ->andWhere(['plan_year' => $plan_year])
             ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
-            ->orderBy('subject')
-            ->all();
+            ->orderBy('subject');
 
-        return ArrayHelper::map($list, 'subject_key', 'subject');
     }
+
+    public static function getIndivListForTeachers($teachers_id, $plan_year)
+    {
+        return ArrayHelper::map(self::getIndivListForTeachersQuery($teachers_id, $plan_year)->all(), 'subject_key', 'subject');
+    }
+    public static function getIndivListForTeachersDefault($teachers_id, $plan_year)
+    {
+        $model = self::getIndivListForTeachersQuery($teachers_id, $plan_year)->one();
+        return $model->subject_key ?? 0;
+    }
+
     /**
      * @param $date_label
      * @param $mark

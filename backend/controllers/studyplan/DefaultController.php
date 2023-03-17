@@ -686,6 +686,7 @@ class DefaultController extends MainController
             $studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
 
             $model = new LessonItems();
+            $model->scenario = LessonItems::SCENARIO_COMMON;
             $model->studyplan_subject_id = $studyplan_subject_id;
             $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
             // предустановка учеников
@@ -754,6 +755,7 @@ class DefaultController extends MainController
             if (!isset($model)) {
                 throw new NotFoundHttpException("The LessonItems was not found.");
             }
+            $model->scenario = LessonItems::SCENARIO_COMMON;
             $modelsItems = $model->getLessonProgress();
             if ($model->load(Yii::$app->request->post())) {
 

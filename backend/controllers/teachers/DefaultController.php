@@ -7,6 +7,7 @@ use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use artsoft\widgets\Notice;
 use common\models\education\LessonItems;
+use common\models\education\LessonItemsProgressView;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
 use common\models\efficiency\search\TeachersEfficiencySearch;
@@ -708,6 +709,7 @@ class DefaultController extends MainController
             $subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id');
 
             $model = new LessonItems();
+            $model->scenario = LessonItems::SCENARIO_COMMON;
             $model->studyplan_subject_id = 0;
             $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
             // предустановка учеников
@@ -770,6 +772,7 @@ class DefaultController extends MainController
             if (!isset($model)) {
                 throw new NotFoundHttpException("The LessonItems was not found.");
             }
+            $model->scenario = LessonItems::SCENARIO_COMMON;
             $modelsItems = $model->getLessonProgress();
             if ($model->load(Yii::$app->request->post())) {
 
@@ -814,7 +817,9 @@ class DefaultController extends MainController
 
         } else {
             $session = Yii::$app->session;
-
+            if($session->get('_progress_teachers_id') != $id) {
+                $session->remove('_progress_subject_sect_studyplan_id');
+            }
             $model_date = new DynamicModel(['date_in', 'subject_sect_studyplan_id']);
             $model_date->addRule(['date_in', 'subject_sect_studyplan_id'], 'required')
                 ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
@@ -827,10 +832,12 @@ class DefaultController extends MainController
                 $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
                 $timestamp_in = $timestamp[0];
                 $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
-                $model_date->subject_sect_studyplan_id = $session->get('_progress_subject_sect_studyplan_id') ?? 0;
+                $model_date->subject_sect_studyplan_id = $session->get('_progress_subject_sect_studyplan_id') ?? LessonProgressView::getSecListForTeachersDefault($id, $plan_year);
             }
             $session->set('_progress_date_in', $model_date->date_in);
             $session->set('_progress_subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id);
+
+            $session->set('_progress_teachers_id', $id);
 
             $model = LessonProgressView::getDataTeachers($model_date, $id);
             $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
@@ -865,8 +872,8 @@ class DefaultController extends MainController
         if ('create' == $mode) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $modelTeachers->id]];
 
-            if (!Yii::$app->request->get('subject_key')) {
-                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_key");
+            if (!Yii::$app->request->get('subject_key') && !Yii::$app->request->get('timestamp_in')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_key или timestamp_in");
             }
 
             $subject_key = base64_decode(Yii::$app->request->get('subject_key'));
@@ -880,6 +887,11 @@ class DefaultController extends MainController
                 $modelsItems = $model->getLessonProgressTeachersNew($id, $subject_key, $timestamp_in, $model);
                 if (empty($modelsItems)) {
                     Notice::registerDanger('Дата занятия не соответствует расписанию!');
+                } else {
+                    $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model->lesson_date);
+                    if (empty($modelsItems)) {
+                        Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
+                    }
                 }
             } elseif ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class);
@@ -888,18 +900,21 @@ class DefaultController extends MainController
                 // validate all models
                 $valid = $model->validate();
                 $valid = Model::validateMultiple($modelsItems) && $valid;
-//                echo '<pre>' . print_r($_POST, true) . '</pre>';
-//                echo '<pre>' . print_r($valid, true) . '</pre>';
-//                die();
-                //$valid = true;
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
                         $flag = true;
                         foreach ($modelsItems as $modelItems) {
-                            $modelLesson = new LessonItems();
-                            $modelLesson->attributes = $model->attributes;
+                            $modelLesson = LessonItems::find()
+                                    ->where(['=', 'subject_sect_studyplan_id', 0])
+                                    ->andWhere(['=', 'studyplan_subject_id', $modelItems->studyplan_subject_id])
+                                    ->andWhere(['=', 'lesson_date', strtotime($model->lesson_date)])
+                                    ->one() ?? new LessonItems();
                             $modelLesson->studyplan_subject_id = $modelItems->studyplan_subject_id;
+                            $modelLesson->lesson_date = $model->lesson_date;
+                            $modelLesson->lesson_test_id = $model->lesson_test_id;
+                            $modelLesson->lesson_topic = $model->lesson_topic;
+                            $modelLesson->lesson_rem = $model->lesson_rem;
                             if (!($flag = $modelLesson->save(false))) {
                                 $transaction->rollBack();
                                 break;
@@ -927,35 +942,41 @@ class DefaultController extends MainController
                 'timestamp_in' => $timestamp_in,
             ]);
 
-        } elseif ('history' == $mode && $objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['teachers/default/studyplan-progress', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
-            $this->view->params['tabMenu'] = $this->getMenu($id);
-
-            $model = LessonItems::findOne($objectId);
-            $data = new LessonItemsHistory($objectId);
-            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
         } elseif ('delete' == $mode && $objectId) {
-            $model = LessonItems::findOne($objectId);
-            $model->delete();
-
+            if (!Yii::$app->request->get('timestamp_in')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET timestamp_in");
+            }
+            $subject_key = base64_decode($objectId);
+            $timestamp_in = Yii::$app->request->get('timestamp_in');
+            $models = LessonItemsProgressView::find()
+                ->where(['=', 'subject_key', $subject_key])
+                ->andWhere(['=', 'lesson_date', $timestamp_in])
+                ->all();
+            foreach ($models as $model) {
+                $deletedIDs = LessonItems::find()->where(['=', 'id', $model->lesson_items_id])->column();
+                LessonItems::deleteAll(['id' => $deletedIDs]);
+            }
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
             return $this->redirect($this->getRedirectPage('delete', $model));
         } elseif ($objectId) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
 
-            $model = LessonItems::findOne($objectId);
-            if (!isset($model)) {
-                throw new NotFoundHttpException("The LessonItems was not found.");
+            if (!Yii::$app->request->get('timestamp_in')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET timestamp_in");
             }
-            $modelsItems = $model->getLessonProgress();
-            if ($model->load(Yii::$app->request->post())) {
+            $subject_key = base64_decode($objectId);
+            $timestamp_in = Yii::$app->request->get('timestamp_in');
+            $modelLesson = LessonItemsProgressView::find()
+                ->where(['=', 'subject_key', $subject_key])
+                ->andWhere(['=', 'lesson_date', $timestamp_in])
+                ->one();
+            $model = LessonItems::findOne($modelLesson->lesson_items_id);
+            $modelsItems = $model->getLessonProgressTeachers($id, $subject_key, $timestamp_in);
 
-                $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
+            if ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
-                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
 
                 // validate all models
                 $valid = $model->validate();
@@ -964,36 +985,52 @@ class DefaultController extends MainController
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
-                        if ($flag = $model->save(false)) {
-                            if (!empty($deletedIDs)) {
-                                LessonProgress::deleteAll(['id' => $deletedIDs]);
+                        $flag = true;
+                        foreach ($modelsItems as $modelItems) {
+                            $modelLesson = LessonItems::find()
+                                    ->where(['=', 'subject_sect_studyplan_id', 0])
+                                    ->andWhere(['=', 'studyplan_subject_id', $modelItems->studyplan_subject_id])
+                                    ->andWhere(['=', 'lesson_date', strtotime($model->lesson_date)])
+                                    ->one() ?? new LessonItems();
+                            $modelLesson->studyplan_subject_id = $modelItems->studyplan_subject_id;
+                            $modelLesson->lesson_date = $model->lesson_date;
+                            $modelLesson->lesson_test_id = $model->lesson_test_id;
+                            $modelLesson->lesson_topic = $model->lesson_topic;
+                            $modelLesson->lesson_rem = $model->lesson_rem;
+                            if (!($flag = $modelLesson->save(false))) {
+                                $transaction->rollBack();
+                                break;
                             }
-                            foreach ($modelsItems as $modelItems) {
-                                $modelItems->lesson_items_id = $model->id;
-                                if (!($flag = $modelItems->save(false))) {
-                                    $transaction->rollBack();
-                                    break;
-                                }
-                            }
-                            if ($flag) {
-                                $transaction->commit();
-                                $this->getSubmitAction($model);
+                            $modelItems->lesson_items_id = $modelLesson->id;
+                            if (!($flag = $modelItems->save(false))) {
+                                $transaction->rollBack();
+                                break;
                             }
                         }
-                    } catch (Exception $e) {
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction($model);
+                        }
+                    } catch
+                    (Exception $e) {
                         $transaction->rollBack();
                     }
                 }
             }
 
-            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form.php', [
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form-indiv.php', [
                 'model' => $model,
-                'modelsItems' => (empty($modelsItems)) ? [new LessonProgress] : $modelsItems,
+                'modelTeachers' => $modelTeachers,
+                'modelsItems' => $modelsItems,
+                'subject_key' => $subject_key,
+                'timestamp_in' => $timestamp_in,
             ]);
 
         } else {
             $session = Yii::$app->session;
-
+            if($session->get('_progress_teachers_id') != $id) {
+                $session->remove('_progress_subject_key');
+            }
             $model_date = new DynamicModel(['date_in', 'subject_key']);
             $model_date->addRule(['date_in', 'subject_key'], 'required')
                 ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
@@ -1006,11 +1043,13 @@ class DefaultController extends MainController
                 $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
                 $timestamp_in = $timestamp[0];
                 $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
-                $model_date->subject_key = $session->get('_progress_subject_key') ?? 0;
-//                print_r($plan_year); die();
+                $model_date->subject_key = $session->get('_progress_subject_key') ?? LessonProgressView::getIndivListForTeachersDefault($id, $plan_year);
+//                print_r(LessonProgressView::getIndivListForTeachers($id, $plan_year)); die();
             }
+
             $session->set('_progress_date_in', $model_date->date_in);
             $session->set('_progress_subject_key', $model_date->subject_key);
+            $session->set('_progress_teachers_id', $id);
 
             $model = LessonProgressView::getDataIndivTeachers($model_date, $id);
             $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
@@ -1033,7 +1072,8 @@ class DefaultController extends MainController
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
-    public function actionEfficiency($id, $objectId = null, $mode = null)
+    public
+    function actionEfficiency($id, $objectId = null, $mode = null)
     {
         $modelTeachers = $this->findModel($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['teachers/default/index']];
@@ -1122,8 +1162,7 @@ class DefaultController extends MainController
 
             $data = ArtHelper::getStudyYearParams($model_date->plan_year);
             $query = TeachersEfficiency::find()->where(['=', 'teachers_id', $id])
-                ->andWhere(['and', ['>=', 'date_in', $data['timestamp_in']], ['<=', 'date_in', $data['timestamp_out']]])
-            ;
+                ->andWhere(['and', ['>=', 'date_in', $data['timestamp_in']], ['<=', 'date_in', $data['timestamp_out']]]);
             $searchModel = new TeachersEfficiencySearch($query);
             $params = Yii::$app->request->getQueryParams();
             $dataProvider = $searchModel->search($params);
@@ -1142,7 +1181,8 @@ class DefaultController extends MainController
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
-    public function actionDocument($id, $objectId = null, $mode = null, $readonly = false)
+    public
+    function actionDocument($id, $objectId = null, $mode = null, $readonly = false)
     {
         $model = $this->findModel($id);
         $this->view->params['tabMenu'] = $this->getMenu($id);
@@ -1224,7 +1264,8 @@ class DefaultController extends MainController
      * @param $id
      * @return array
      */
-    public function getMenu($id)
+    public
+    function getMenu($id)
     {
         return [
 //            ['label' => 'Монитор', 'url' => ['/teachers/default/monitor', 'id' => $id]],

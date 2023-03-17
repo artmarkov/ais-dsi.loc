@@ -703,7 +703,7 @@ class ProgrammController extends Controller
             // $transaction = \Yii::$app->db->beginTransaction();
             $flag = true;
             try {
-                $model = LessonItems::find()->from('lesson_items')
+                $model = LessonItems::find()
                         ->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])
                         ->andWhere(['=', 'studyplan_subject_id', $studyplan_subject_id])
                         ->andWhere(['=', 'lesson_date', $ddd['lesson_date']])

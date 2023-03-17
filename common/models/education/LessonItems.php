@@ -34,6 +34,8 @@ use yii\web\NotFoundHttpException;
  */
 class LessonItems extends \artsoft\db\ActiveRecord
 {
+    const SCENARIO_COMMON =  'common';
+
     /**
      * {@inheritdoc}
      */
@@ -67,8 +69,8 @@ class LessonItems extends \artsoft\db\ActiveRecord
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'version'], 'default', 'value' => 0],
             [['lesson_test_id', 'lesson_date'], 'required'],
             [['lesson_date'], 'safe'],
-//            [['lesson_date'], 'checkLessonExist', 'skipOnEmpty' => false],
-//            [['lesson_date'], 'checkLessonDate', 'skipOnEmpty' => false],
+            [['lesson_date'], 'checkLessonExist', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
+            [['lesson_date'], 'checkLessonDate', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_topic'], 'string', 'max' => 512],
             [['lesson_rem'], 'string', 'max' => 1024],
             [['lesson_test_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonTest::className(), 'targetAttribute' => ['lesson_test_id' => 'id']],
@@ -169,6 +171,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Инициация списка оценок для группы или оценки для предмета ученика
      * @return array
      * @throws NotFoundHttpException
      */
@@ -193,6 +196,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Формирует список оценок для группы или оценку для предмета ученика
      * @return array|LessonProgress[]|\yii\db\ActiveRecord[]
      */
     public function getLessonProgress()
@@ -223,6 +227,15 @@ class LessonItems extends \artsoft\db\ActiveRecord
         return $modelsItems;
     }
 
+    /**
+     * Инициация оценок для инд. занятий
+     * @param $teachers_id
+     * @param $subject_key
+     * @param $timestamp_in
+     * @param $model
+     * @return array
+     * @throws NotFoundHttpException
+     */
     public function getLessonProgressTeachersNew($teachers_id, $subject_key, $timestamp_in, $model)
     {
         $modelsItems = [];
@@ -235,7 +248,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
             ->all();
         foreach ($modelsProgress as $item => $modelProgress) {
-            if (!self::checkLesson($modelProgress, $model->lesson_date)) {
+            if (!self::checkLessonSchedule($modelProgress, $model->lesson_date)) {
                 continue;
             }
             $m = new LessonProgress();
@@ -247,7 +260,48 @@ class LessonItems extends \artsoft\db\ActiveRecord
         return $modelsItems;
     }
 
-    public static function checkLesson($model, $lesson_date)
+    /**
+     * Формирует список оценок для инд. занятий
+     * @param $teachers_id
+     * @param $subject_key
+     * @param $timestamp_in
+     * @return array
+     * @throws NotFoundHttpException
+     */
+    public function getLessonProgressTeachers($teachers_id, $subject_key, $timestamp_in)
+    {
+        $modelsItems = [];
+        if (!$subject_key && !$timestamp_in && !$teachers_id) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр teachers_id или subject_key или timestamp_in.");
+        }
+        $modelsProgress = LessonProgressView::find()
+            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
+            ->andWhere(['=', 'subject_key', $subject_key])
+            ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
+            ->all();
+        foreach ($modelsProgress as $item => $model) {
+            $modelProgress = LessonItemsProgressView::find()
+                ->where(
+                    ['AND',
+                        ['=', 'subject_sect_studyplan_id', $model->subject_sect_studyplan_id],
+                        ['=', 'studyplan_subject_id', $model->studyplan_subject_id],
+                        ['=', 'lesson_date', $timestamp_in],
+                    ])
+                ->one();
+            $m = LessonProgress::findOne(['id' => $modelProgress['lesson_progress_id']]) ?? new LessonProgress();
+            $m->studyplan_subject_id = $model['studyplan_subject_id'];
+            $modelsItems[] = $m;
+        }
+        return $modelsItems;
+    }
+
+    /**
+     * Проверка, соответствует ли расписание выбранной дате
+     * @param $model
+     * @param $lesson_date
+     * @return bool
+     */
+    public static function checkLessonSchedule($model, $lesson_date)
     {
         return SubjectScheduleView::find()->where(
             ['AND',
@@ -256,5 +310,38 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 ['=', 'week_day', Schedule::timestamp2WeekDay(strtotime($lesson_date))],
 
             ])->exists();
+    }
+
+    /**
+     * Проверка на существование урока для индивидуальных занятий
+     * @param $model
+     * @param $lesson_date
+     * @return bool
+     */
+    public static function checkLessonIndiv($model, $lesson_date)
+    {
+        return  LessonItemsProgressView::find()
+            ->where(['=', 'subject_sect_studyplan_id', 0])
+            ->andWhere(['=', 'studyplan_subject_id', $model->studyplan_subject_id])
+            ->andWhere(['=', 'lesson_date', strtotime($lesson_date)])
+            ->exists();
+    }
+
+    /**
+     * Проверка всех уроков индивидуальных занятий и удаление существующих уроков
+     * Остаются незаполненные для добавления оценок новым ученикам
+     *
+     * @param $modelsProgress
+     * @param $lesson_date
+     * @return mixed
+     */
+    public static function checkLessonsIndiv($modelsProgress, $lesson_date)
+    {
+        foreach ($modelsProgress as $item => $modelProgress) {
+            if (self::checkLessonIndiv($modelProgress, $lesson_date)) {
+                unset($modelsProgress[$item]);
+            }
+        }
+        return $modelsProgress;
     }
 }

@@ -40,7 +40,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                         'class' => 'btn btn-xxs btn-link',
                     ])
                 . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                    Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key']), 'mode' => 'delete']), [
+                    Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key']), 'timestamp_in' => $item['lesson_date'], 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xxs btn-link',
                         'data' => [

@@ -1,10 +1,12 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use artsoft\helpers\Schedule;
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
+use common\models\education\LessonItems;
 
 
 /* @var $this yii\web\View */
@@ -92,7 +94,7 @@ $subject = (new \yii\db\Query())->select('subject')
                                     ]
                                 ]);
                                 ?>
-                                <?= $form->field($model, 'lesson_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['readonly' => $model->lesson_date]); ?>
+                                <?= $form->field($model, 'lesson_date')->widget(DatePicker::class, ['options' => ['readonly' => $model->lesson_date]]); ?>
                                 <?= $form->field($model, 'lesson_topic')->textInput() ?>
                                 <?= $form->field($model, 'lesson_rem')->textInput() ?>
                             </div>
@@ -179,7 +181,8 @@ $subject = (new \yii\db\Query())->select('subject')
         <div class="panel-footer">
             <div class="form-group btn-group">
                 <?php if ($model->lesson_date && !empty($modelsItems)): ?>
-                <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                    <?= \artsoft\helpers\ButtonHelper::exitButton();?>
+                    <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit');?>
                 <?php else: ?>
                    <?= \artsoft\helpers\ButtonHelper::exitButton();?>
                     <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'next']); ?>
