@@ -153,7 +153,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                     'beforeHeader' => [
                         [
                             'columns' => [
-                                ['content' => 'Дисциплина/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                                ['content' => 'Учебный предмет/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
                                 ['content' => 'Посещаемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
                             ],
                             'options' => ['class' => 'skip-export'] // remove this row from export

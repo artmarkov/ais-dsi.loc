@@ -207,7 +207,7 @@ $columns = [
                     [
                         'columns' => [
                             ['content' => 'Ученик/Программа', 'options' => ['colspan' => 7, 'class' => 'text-center warning']],
-                            ['content' => 'Дисциплина/Преподаватель', 'options' => ['colspan' => 1, 'class' => 'text-center info']],
+                            ['content' => 'Учебный предмет/Преподаватель', 'options' => ['colspan' => 1, 'class' => 'text-center info']],
                             ['content' => 'Счета за обучение', 'options' => ['colspan' => 2, 'class' => 'text-center success']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export

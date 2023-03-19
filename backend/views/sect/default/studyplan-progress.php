@@ -96,7 +96,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             <?= $this->render('_search-progress', compact('model', 'model_date', 'plan_year')) ?>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Дисциплина: <?php echo RefBook::find('sect_name_4')->getValue($model->id);?>
+                    Учебный предмет: <?php echo RefBook::find('sect_name_4')->getValue($model->id);?>
                 </div>
                 <div class="panel-body">
                     <div class="row">

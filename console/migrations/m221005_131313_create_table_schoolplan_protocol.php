@@ -36,7 +36,7 @@ class m221005_131313_create_table_schoolplan_protocol extends \artsoft\db\BaseMi
         $this->createTableWithHistory('schoolplan_protocol_items', [
             'id' => $this->primaryKey(),
             'schoolplan_protocol_id' => $this->integer()->defaultValue(0)->comment('Протокол'),
-            'studyplan_subject_id' => $this->integer()->notNull()->comment('Дисциплина ученика'),
+            'studyplan_subject_id' => $this->integer()->notNull()->comment('Учебный предмет ученика'),
             'thematic_items_list' => $this->string(1024)->comment('Список заданий из тематич/реп плана'),
             'lesson_mark_id' =>  $this->integer()->comment('Оценка'),
             'winner_id' => $this->string()->defaultValue(0)->comment('Звание/Диплом'),

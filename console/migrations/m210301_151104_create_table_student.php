@@ -25,11 +25,11 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
             ['Ученики школы', 'Уч-к', 1],
             ['Выпускники школы', 'Вып', 1],
             ['Отчислены из школы', 'Отч', 1],
-            ['Не прошли испытания', 'Не прошел', 1],
+            ['Не прошел испытания', 'Не прошел', 1],
         ])->execute();
 
         $this->createTableWithHistory('students', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'user_common_id' => $this->integer(),
             'sert_name' => $this->string(32),
             'sert_series' => $this->string(32),
@@ -44,7 +44,7 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('students' ,'Ученики');
-        $this->db->createCommand()->resetSequence('students', 1000)->execute();
+        $this->db->createCommand()->resetSequence('students', 10000)->execute();
 
         $this->db->createCommand()->createView('students_view', '
          SELECT users.id AS user_id, user_common.id AS user_common_id, students.id AS students_id, users.username, users.email, users.status AS user_status, 
@@ -78,7 +78,6 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
         $this->db->createCommand()->delete('refbooks', ['name' => 'students_fullname'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'students_fio'])->execute();
         $this->db->createCommand()->dropView('students_view')->execute();
-        $this->dropForeignKey('student_ibfk_1', 'students');
         $this->dropTableWithHistory('students');
         $this->dropTable('guide_student_position');
     }

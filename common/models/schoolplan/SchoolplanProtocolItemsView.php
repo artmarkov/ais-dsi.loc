@@ -8,7 +8,7 @@ namespace common\models\schoolplan;
  * @property int $id
  * @property int $studyplan_id
  * @property int|null $schoolplan_protocol_id Протокол
- * @property int $studyplan_subject_id Дисциплина ученика
+ * @property int $studyplan_subject_id Учебный предмет ученика
  * @property string|null $thematic_items_list Список заданий из тематич/реп плана
  * @property int $lesson_mark_id Оцкнка
  * @property string|null $winner_id Звание/Диплом

@@ -30,24 +30,24 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
         $this->addForeignKey('guide_lesson_mark_ibfk_2', 'guide_lesson_mark', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->batchInsert('guide_lesson_mark', ['id', 'mark_category', 'mark_label', 'mark_hint', 'mark_value', 'status', 'sort_order', 'created_at', 'created_by', 'updated_at', 'updated_by'], [
-            [1000, 2, 'ЗЧ', 'Зачет', null, 1, 10, time(), 1000, time(), 1000],
-            [1001, 2, 'НЗ', 'Незачет', null, 1, 1001, time(), 1000, time(), 1000],
-            [1002, 1, 'НА', 'Не аттестован', null, 1, 1002, time(), 1000, time(), 1000],
-            [1003, 1, '2', null, 2, 1, 1003, time(), 1000, time(), 1000],
-            [1004, 1, '3-', null, 2.6, 1, 1004, time(), 1000, time(), 1000],
-            [1005, 1, '3', null, 3, 1, 1005, time(), 1000, time(), 1000],
-            [1006, 1, '3+', null, 3.5, 1, 1006, time(), 1000, time(), 1000],
-            [1007, 1, '4-', null, 3.6, 1, 1007, time(), 1000, time(), 1000],
-            [1008, 1, '4', null, 4, 1, 1008, time(), 1000, time(), 1000],
-            [1009, 1, '4+', null, 4.5, 1, 1009, time(), 1000, time(), 1000],
-            [1010, 1, '5-', null, 4.6, 1, 1010, time(), 1000, time(), 1000],
-            [1011, 1, '5', null, 5, 1, 1011, time(), 1000, time(), 1000],
-            [1012, 1, '5+', null, 5.5, 1, 1012, time(), 1000, time(), 1000],
-            [1013, 3, 'Н', 'Отсутствие по неуважительной причине', null, 1, 1013, time(), 1000, time(), 1000],
-            [1014, 3, 'П', 'Отсутствие по уважительной причине', null, 1, 1014, time(), 1000, time(), 1000],
-            [1015, 3, 'Б', 'Отсутствие по причине болезни', null, 1, 1015, time(), 1000, time(), 1000],
-            [1016, 3, 'О', 'Опоздание на урок', null, 1, 1016, time(), 1000, time(), 1000],
-            [1017, 1, '*', 'Факт присутствия(без оценки)', null, 1, 1017, time(), 1000, time(), 1000],
+            [1000, 2, 'ЗЧ', 'Зачет', null, 1, 10, time(), 10000, time(), 10000],
+            [1001, 2, 'НЗ', 'Незачет', null, 1, 1001, time(), 10000, time(), 10000],
+            [1002, 1, 'НА', 'Не аттестован', null, 1, 1002, time(), 10000, time(), 10000],
+            [1003, 1, '2', null, 2, 1, 1003, time(), 10000, time(), 10000],
+            [1004, 1, '3-', null, 2.6, 1, 1004, time(), 10000, time(), 10000],
+            [1005, 1, '3', null, 3, 1, 1005, time(), 10000, time(), 10000],
+            [1006, 1, '3+', null, 3.5, 1, 1006, time(), 10000, time(), 10000],
+            [1007, 1, '4-', null, 3.6, 1, 1007, time(), 10000, time(), 10000],
+            [1008, 1, '4', null, 4, 1, 1008, time(), 10000, time(), 10000],
+            [1009, 1, '4+', null, 4.5, 1, 1009, time(), 10000, time(), 10000],
+            [1010, 1, '5-', null, 4.6, 1, 1010, time(), 10000, time(), 10000],
+            [1011, 1, '5', null, 5, 1, 1011, time(), 10000, time(), 10000],
+            [1012, 1, '5+', null, 5.5, 1, 1012, time(), 10000, time(), 10000],
+            [1013, 3, 'Н', 'Отсутствие по неуважительной причине', null, 1, 1013, time(), 10000, time(), 10000],
+            [1014, 3, 'П', 'Отсутствие по уважительной причине', null, 1, 1014, time(), 10000, time(), 10000],
+            [1015, 3, 'Б', 'Отсутствие по причине болезни', null, 1, 1015, time(), 10000, time(), 10000],
+            [1016, 3, 'О', 'Опоздание на урок', null, 1, 1016, time(), 10000, time(), 10000],
+            [1017, 1, '*', 'Факт присутствия(без оценки)', null, 1, 1017, time(), 10000, time(), 10000],
         ])->execute();
         $this->db->createCommand()->resetSequence('guide_lesson_mark', 1018)->execute();
 
@@ -79,19 +79,19 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
         $this->addForeignKey('guide_lesson_test_ibfk_2', 'guide_lesson_test', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->batchInsert('guide_lesson_test', ['id', 'division_list', 'test_category', 'test_name', 'test_name_short', 'plan_flag', 'status', 'sort_order', 'created_at', 'created_by', 'updated_at', 'updated_by'], [
-            [1000, '1000,1001,1002', 1, 'Текущая работа', 'ТР', 0, 1, 1000, time(), 1000, time(), 1000],
-            [1001, '1001', 3, 'Итоговый просмотр (для выпускников)', 'ИП', 1, 1, 1001, time(), 1000, time(), 1000],
-            [1002, '1000,1001,1002', 1, 'Контрольный урок/Зачет', 'КУ', 0, 1, 1002, time(), 1000, time(), 1000],
-            [1003, '1001', 1, 'Промежуточный просмотр', 'ПП', 0, 1, 1003, time(), 1000, time(), 1000],
-            [1004, '1001', 1, 'Домашнее задание', 'ДЗ', 0, 1, 1004, time(), 1000, time(), 1000],
-            [1005, '1001', 1, 'Летняя работа', 'ЛР', 0, 1, 1005, time(), 1000, time(), 1000],
-            [1006, '1001', 2, 'Экзаменационный просмотр', 'ЭП', 1, 1, 1006, time(), 1000, time(), 1000],
-            [1007, '1001', 1, 'Реферат', 'Реф', 0, 1, 1007, time(), 1000, time(), 1000],
-            [1008, '1002', 2, 'Экзамен', 'Экз.', 1, 1, 1008, time(), 1000, time(), 1000],
-            [1009, '1000,1001,1002', 2, 'Промежуточная аттестация', 'ПА', 1, 1, 1010, time(), 1000, time(), 1000],
-            [1010, '1000,1001,1002', 3, 'Итоговая аттестация', 'ИА', 1, 1, 1011, time(), 1000, time(), 1000],
+            [1000, '1000,1001,1002', 1, 'Текущая работа', 'ТР', 0, 1, 10000, time(), 10000, time(), 10000],
+            [1001, '1001', 3, 'Итоговый просмотр (для выпускников)', 'ИП', 1, 1, 1001, time(), 10000, time(), 10000],
+            [1002, '1000,1001,1002', 1, 'Контрольный урок/Зачет', 'КУ', 0, 1, 1002, time(), 10000, time(), 10000],
+            [1003, '1001', 1, 'Промежуточный просмотр', 'ПП', 0, 1, 1003, time(), 10000, time(), 10000],
+            [1004, '1001', 1, 'Домашнее задание', 'ДЗ', 0, 1, 1004, time(), 10000, time(), 10000],
+            [1005, '1001', 1, 'Летняя работа', 'ЛР', 0, 1, 1005, time(), 10000, time(), 10000],
+            [1006, '1001', 2, 'Экзаменационный просмотр', 'ЭП', 1, 1, 1006, time(), 10000, time(), 10000],
+            [1007, '1001', 1, 'Реферат', 'Реф', 0, 1, 1007, time(), 10000, time(), 10000],
+            [1008, '1002', 2, 'Экзамен', 'Экз.', 1, 1, 1008, time(), 10000, time(), 10000],
+            [1009, '1000,1001,1002', 2, 'Промежуточная аттестация', 'ПА', 1, 1, 1010, time(), 10000, time(), 10000],
+            [1010, '1000,1001,1002', 3, 'Итоговая аттестация', 'ИА', 1, 1, 1011, time(), 10000, time(), 10000],
         ])->execute();
-        $this->db->createCommand()->resetSequence('guide_lesson_test', 1012)->execute();
+        $this->db->createCommand()->resetSequence('guide_lesson_test', 1011)->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['lesson_test', 'guide_lesson_test', 'id', 'test_name', 'sort_order', 'status', null, 'Список испытаний'],
@@ -168,7 +168,8 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
           WHERE teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0), \',\'::text) AS teachers_list,
     \'Индивидуально\'::text AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
-    concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key
+    concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
+    studyplan.status
    FROM studyplan_subject
      JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
@@ -196,7 +197,8 @@ UNION ALL
             ELSE \'\'::text
         END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject,
-    NULL::text AS subject_key
+    NULL::text AS subject_key,
+    studyplan.status
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      JOIN studyplan_subject ON studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])

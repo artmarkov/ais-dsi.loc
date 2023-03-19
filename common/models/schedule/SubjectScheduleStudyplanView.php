@@ -4,6 +4,7 @@ namespace common\models\schedule;
 
 
 use artsoft\helpers\ArtHelper;
+use common\models\studyplan\Studyplan;
 use Yii;
 use yii\db\Query;
 
@@ -57,7 +58,6 @@ class SubjectScheduleStudyplanView extends SubjectScheduleView
     }
 
     /**
-     * Получаем расписание индивидуальных занятий выбранной дисциплины
      * @param $subject_key
      * @param $timestamp_in
      * @return array
@@ -74,6 +74,7 @@ class SubjectScheduleStudyplanView extends SubjectScheduleView
                     ['=', 'teachers_id', $teachers_id],
                     ['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)]
                 ])
+            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
             ->andWhere(['is', 'guide_teachers_direction.parent', null])
             ->all();
     }

@@ -18,7 +18,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property int|null $schoolplan_protocol_id Протокол
- * @property int $studyplan_subject_id Дисциплина ученика
+ * @property int $studyplan_subject_id Учебный предмет ученика
  * @property string|null $thematic_items_list Список заданий из тематич/реп плана
  * @property int $lesson_mark_id Оцкнка
  * @property string|null $winner_id Звание/Диплом
@@ -92,7 +92,7 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
         return [
             'id' => 'ID',
             'schoolplan_protocol_id' => 'Протокол',
-            'studyplan_subject_id' => 'Дисциплина ученика',
+            'studyplan_subject_id' => 'Учебный предмет ученика',
             'thematic_items_list' => 'Список заданий из репертуарного плана',
             'lesson_mark_id' => 'Оценка',
             'winner_id' => 'Звание/Диплом',

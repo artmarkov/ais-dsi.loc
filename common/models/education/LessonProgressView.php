@@ -4,6 +4,7 @@ namespace common\models\education;
 
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
+use common\models\studyplan\Studyplan;
 use common\models\teachers\TeachersLoadView;
 use common\widgets\editable\Editable;
 use Yii;
@@ -68,7 +69,9 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
             ->orderBy('lesson_date')
             ->asArray()->all();
-        $modelsProgress = self::find()->where(['subject_sect_studyplan_id' => $model_date->subject_sect_studyplan_id])->orderBy('sect_name')->all();
+        $modelsProgress = self::find()->where(['subject_sect_studyplan_id' => $model_date->subject_sect_studyplan_id])
+            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+            ->orderBy('sect_name')->all();
 
         $modelsMarks = ArrayHelper::index(LessonItemsProgressView::find()
             ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
@@ -181,6 +184,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $modelsProgress = self::find()
                 ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
                 ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
+                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
                 ->all();
             foreach ($lessonDates as $id => $lessonDate) {
                 $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
@@ -259,6 +263,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $modelsProgress = self::find()
             ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->andWhere(['=', 'subject_key', $model_date->subject_key])
+            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
             ->all();
 
         foreach ($lessonDates as $id => $lessonDate) {

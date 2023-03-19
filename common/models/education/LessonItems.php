@@ -6,6 +6,7 @@ use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\Schedule;
 use common\models\schedule\SubjectScheduleView;
+use common\models\studyplan\Studyplan;
 use common\models\subjectsect\SubjectSectStudyplan;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -181,8 +182,11 @@ class LessonItems extends \artsoft\db\ActiveRecord
         }
         $modelsItems = [];
         if($this->subject_sect_studyplan_id != 0) {
-            $studyplanSubjectList = SubjectSectStudyplan::findOne($this->subject_sect_studyplan_id)->studyplan_subject_list;
-            foreach (explode(',', $studyplanSubjectList) as $item => $studyplan_subject_id) {
+            $studyplanSubjectList = LessonProgressView::find()->select('studyplan_subject_id')
+                ->andWhere(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
+                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->column();
+            foreach ($studyplanSubjectList as $item => $studyplan_subject_id) {
                 $m = new LessonProgress();
                 $m->studyplan_subject_id = $studyplan_subject_id;
                 $modelsItems[] = $m;
@@ -201,22 +205,27 @@ class LessonItems extends \artsoft\db\ActiveRecord
      */
     public function getLessonProgress()
     {
+        $modelsItems = [];
         if ($this->subject_sect_studyplan_id != 0) {
-            // находим только оценки тех учеников, которые числяться в данной группе(переведенные игнорируются)
-            $modelsItems = LessonProgress::find()
-                ->innerJoin('lesson_items', 'lesson_items.id = lesson_progress.lesson_items_id and lesson_items.studyplan_subject_id = 0')
-                ->innerJoin('subject_sect_studyplan', 'subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id')
-                ->where(['=', 'lesson_items.id', $this->id])
-                ->andWhere(new \yii\db\Expression("lesson_progress.studyplan_subject_id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, ',')::int[])"))
+            $studyplan = [];
+            $models = LessonItemsProgressView::find()
+                ->where(['=', 'lesson_items_id', $this->id])
+                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
                 ->all();
-            // список учеников с оценками
-            $list = LessonProgress::find()->select('studyplan_subject_id')->where(['=', 'lesson_items_id', $this->id])->distinct()->column();
-            // список всех учеников группы
-            $studyplanSubjectList = SubjectSectStudyplan::findOne($this->subject_sect_studyplan_id)->studyplan_subject_list;
-            // добавляем новые модели вновь принятых учеников
-            $list_new = array_unique(explode(',', $studyplanSubjectList));
 
-            foreach (array_diff($list_new, $list) as $item => $studyplan_subject_id) {
+            foreach ($models as $item => $modelItems) {
+                $m = LessonProgress::find()->where(['=', 'id', $modelItems->lesson_progress_id])->one() ?? new LessonProgress();
+                $studyplan[] = $modelItems->studyplan_subject_id;
+                $modelsItems[] = $m;
+            }
+            $models = LessonProgressView::find()->select('studyplan_subject_id')
+                ->andWhere(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
+                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->column();
+            foreach ($models as $item => $studyplan_subject_id) {
+                if (in_array($studyplan_subject_id, $studyplan)) {
+                    continue;
+                }
                 $m = new LessonProgress();
                 $m->studyplan_subject_id = $studyplan_subject_id;
                 $modelsItems[] = $m;
@@ -226,6 +235,33 @@ class LessonItems extends \artsoft\db\ActiveRecord
         }
         return $modelsItems;
     }
+//    public function getLessonProgress()
+//    {
+//        if ($this->subject_sect_studyplan_id != 0) {
+//            // находим только оценки тех учеников, которые числяться в данной группе(переведенные игнорируются)
+//            $modelsItems = LessonProgress::find()
+//                ->innerJoin('lesson_items', 'lesson_items.id = lesson_progress.lesson_items_id and lesson_items.studyplan_subject_id = 0')
+//                ->innerJoin('subject_sect_studyplan', 'subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id')
+//                ->where(['=', 'lesson_items.id', $this->id])
+//                ->andWhere(new \yii\db\Expression("lesson_progress.studyplan_subject_id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, ',')::int[])"))
+//                ->all();
+//            // список учеников с оценками
+//            $list = LessonProgress::find()->select('studyplan_subject_id')->where(['=', 'lesson_items_id', $this->id])->distinct()->column();
+//            // список всех учеников группы
+//            $studyplanSubjectList = SubjectSectStudyplan::findOne($this->subject_sect_studyplan_id)->studyplan_subject_list;
+//            // добавляем новые модели вновь принятых учеников
+//            $list_new = array_unique(explode(',', $studyplanSubjectList));
+//
+//            foreach (array_diff($list_new, $list) as $item => $studyplan_subject_id) {
+//                $m = new LessonProgress();
+//                $m->studyplan_subject_id = $studyplan_subject_id;
+//                $modelsItems[] = $m;
+//            }
+//        } else {
+//            $modelsItems = $this->lessonProgresses;
+//        }
+//        return $modelsItems;
+//    }
 
     /**
      * Инициация оценок для инд. занятий
@@ -246,6 +282,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->andWhere(['=', 'subject_key', $subject_key])
             ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
+            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
             ->all();
         foreach ($modelsProgress as $item => $modelProgress) {
             if (!self::checkLessonSchedule($modelProgress, $model->lesson_date)) {
@@ -267,6 +304,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
      * @param $timestamp_in
      * @return array
      * @throws NotFoundHttpException
+     * @throws \yii\base\InvalidConfigException
      */
     public function getLessonProgressTeachers($teachers_id, $subject_key, $timestamp_in)
     {
@@ -278,8 +316,12 @@ class LessonItems extends \artsoft\db\ActiveRecord
             ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->andWhere(['=', 'subject_key', $subject_key])
             ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
+            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
             ->all();
         foreach ($modelsProgress as $item => $model) {
+            if (!self::checkLessonSchedule($model, \Yii::$app->formatter->asDate($timestamp_in, 'php:d.m.Y'))) {
+                continue;
+            }
             $modelProgress = LessonItemsProgressView::find()
                 ->where(
                     ['AND',
@@ -289,7 +331,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
                     ])
                 ->one();
             $m = LessonProgress::findOne(['id' => $modelProgress['lesson_progress_id']]) ?? new LessonProgress();
-            $m->studyplan_subject_id = $model['studyplan_subject_id'];
+            $m->studyplan_subject_id = $model->studyplan_subject_id;
             $modelsItems[] = $m;
         }
         return $modelsItems;

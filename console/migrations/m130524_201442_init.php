@@ -9,7 +9,7 @@ class m130524_201442_init extends BaseMigration
         $tableOptions = null;
 
         $this->createTable('users', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'username' => $this->string()->notNull()->unique(),
             'auth_key' => $this->string(32)->notNull(),
             'password_hash' => $this->string(),
@@ -29,10 +29,10 @@ class m130524_201442_init extends BaseMigration
         ], $tableOptions);
 
         $this->addCommentOnTable('users', 'Учетные записи');
-        $this->db->createCommand()->resetSequence('users', 1100)->execute();
+        $this->db->createCommand()->resetSequence('users', 10100)->execute();
 
         $this->createTableWithHistory('user_common', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'user_id' => $this->integer(),
             'user_category' => $this->string(124)->notNull()->defaultValue(\common\models\user\UserCommon::USER_CATEGORY_EMPLOYEES),
             'last_name' => $this->string(124),
@@ -56,7 +56,7 @@ class m130524_201442_init extends BaseMigration
 
         $this->createIndex('user_id', 'user_common', 'user_id');
         $this->addCommentOnTable('user_common', 'Общие данные');
-        $this->db->createCommand()->resetSequence('user_common', 1000)->execute();
+        $this->db->createCommand()->resetSequence('user_common', 10000)->execute();
 
     }
 

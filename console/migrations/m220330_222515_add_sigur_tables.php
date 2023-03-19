@@ -13,7 +13,7 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
 
         $this->createTableWithHistory('users_card', [
             'id' => $this->primaryKey(),
-            'user_common_id' => $this->string(4)->defaultValue(null),
+            'user_common_id' => $this->string(5)->defaultValue(null),
             'key_hex' => $this->string(8)->defaultValue(null)->comment('Пропуск (в формате HEX)'),
             'timestamp_deny' => $this->dateTime()->defaultValue(null)->comment('Срок действия в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС'),
             'mode_main' => $this->string(127)->defaultValue(null)->comment('Основной режим'),

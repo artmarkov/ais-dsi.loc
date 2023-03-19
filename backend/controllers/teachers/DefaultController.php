@@ -872,12 +872,14 @@ class DefaultController extends MainController
         if ('create' == $mode) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $modelTeachers->id]];
 
-            if (!Yii::$app->request->get('subject_key') && !Yii::$app->request->get('timestamp_in')) {
-                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_key или timestamp_in");
+            if (!Yii::$app->request->get('subject_key')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_key");
             }
 
             $subject_key = base64_decode(Yii::$app->request->get('subject_key'));
-            $timestamp_in = Yii::$app->request->get('timestamp_in');
+            $keyArray = explode('||', $subject_key);
+            $subject_key = $keyArray[0];
+            $timestamp_in = $keyArray[1];
 
             $model = new LessonItems();
             $modelsItems = [];
@@ -896,10 +898,10 @@ class DefaultController extends MainController
             } elseif ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
-                $valid = true;
                 // validate all models
                 $valid = $model->validate();
                 $valid = Model::validateMultiple($modelsItems) && $valid;
+                // $valid = true;
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
@@ -943,11 +945,12 @@ class DefaultController extends MainController
             ]);
 
         } elseif ('delete' == $mode && $objectId) {
-            if (!Yii::$app->request->get('timestamp_in')) {
-                throw new NotFoundHttpException("Отсутствует обязательный параметр GET timestamp_in");
-            }
+
             $subject_key = base64_decode($objectId);
-            $timestamp_in = Yii::$app->request->get('timestamp_in');
+            $keyArray = explode('||', $subject_key);
+            $subject_key = $keyArray[0];
+            $timestamp_in = $keyArray[1];
+
             $models = LessonItemsProgressView::find()
                 ->where(['=', 'subject_key', $subject_key])
                 ->andWhere(['=', 'lesson_date', $timestamp_in])
@@ -962,11 +965,11 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
 
-            if (!Yii::$app->request->get('timestamp_in')) {
-                throw new NotFoundHttpException("Отсутствует обязательный параметр GET timestamp_in");
-            }
             $subject_key = base64_decode($objectId);
-            $timestamp_in = Yii::$app->request->get('timestamp_in');
+            $keyArray = explode('||', $subject_key);
+            $subject_key = $keyArray[0];
+            $timestamp_in = $keyArray[1];
+
             $modelLesson = LessonItemsProgressView::find()
                 ->where(['=', 'subject_key', $subject_key])
                 ->andWhere(['=', 'lesson_date', $timestamp_in])
@@ -1072,8 +1075,7 @@ class DefaultController extends MainController
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
-    public
-    function actionEfficiency($id, $objectId = null, $mode = null)
+    public function actionEfficiency($id, $objectId = null, $mode = null)
     {
         $modelTeachers = $this->findModel($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['teachers/default/index']];

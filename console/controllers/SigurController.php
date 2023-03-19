@@ -54,9 +54,9 @@ class SigurController extends Controller
                             'timestamp_deny' => $v[8] != 'не ограничен' ? \Yii::$app->formatter->asDate($v[8], 'php:Y-m-d H:i:s') : null,
                             'photo_bin' => $model['id'] == 1020 ? base64_encode(file_get_contents(Yii::getAlias('data/sigur/test.jpg'))) : null,
                             'created_at' => \Yii::$app->formatter->asTimestamp($v[7]),
-                            'created_by' => 1000,
+                            'created_by' => 10000,
                             'updated_at' => \Yii::$app->formatter->asTimestamp($v[7]),
-                            'updated_by' => 1000,
+                            'updated_by' => 10000,
                         ])->execute();
 
                     $this->stdout('Добавлен пропуск для записи user_common_id: ' . $model['id'], Console::FG_GREY);

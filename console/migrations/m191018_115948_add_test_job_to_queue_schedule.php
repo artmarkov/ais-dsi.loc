@@ -6,7 +6,7 @@ class m191018_115948_add_test_job_to_queue_schedule extends Migration
 {
     public function up()
     {
-       $this->insert('queue_schedule', ['class' => 'artsoft\queue\jobs\TestJob', 'title' => 'Тестовое задание',  'content' => 'Используется для тестирования приложения.', 'cron_expression' => '*/2 * * * *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 1000, 'updated_by' => 1000]);
+       $this->insert('queue_schedule', ['class' => 'artsoft\queue\jobs\TestJob', 'title' => 'Тестовое задание',  'content' => 'Используется для тестирования приложения.', 'cron_expression' => '*/2 * * * *', 'priority' => 1024 ,'created_at' => time(), 'updated_at' => time(), 'created_by' => 10000, 'updated_by' => 10000]);
     }
 
     public function down()

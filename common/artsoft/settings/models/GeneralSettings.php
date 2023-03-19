@@ -32,7 +32,7 @@ class GeneralSettings extends BaseSettingsModel
             [
                 [['title', 'email', /*'timezone', 'dateformat', 'timeformat'*/], 'required'],
                 [['email'], 'email'],
-                [['description', 'phone', 'facebook', 'instagram'], 'safe'],
+                [['description', 'phone', /*'facebook', 'instagram'*/], 'safe'],
                 ['title', 'default', 'value' => 'Art Site'],
                 ['timezone', 'default', 'value' => 'Europe/London'],
                 ['dateformat', 'default', 'value' => 'F j, Y'],

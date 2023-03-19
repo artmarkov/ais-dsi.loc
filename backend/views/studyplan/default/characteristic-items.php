@@ -116,7 +116,7 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Дисциплина', 'options' => ['colspan' => 2, 'class' => 'text-center warning']],
+                            ['content' => 'Учебный предмет', 'options' => ['colspan' => 2, 'class' => 'text-center warning']],
                             ['content' => 'Характеристика', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
