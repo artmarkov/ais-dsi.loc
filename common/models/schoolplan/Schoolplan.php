@@ -537,4 +537,5 @@ class Schoolplan extends \artsoft\db\ActiveRecord
                 ->queue();
         }
     }
+
 }
