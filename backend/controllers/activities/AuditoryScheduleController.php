@@ -52,6 +52,7 @@ class AuditoryScheduleController extends MainController
             $event = new BaseEvent();
             $event->id = $item->id;
             $event->title = $item->title;
+            $event->source = $item->resource;
             $event->end = BaseEvent::getDate($item->end_time);
             $event->start = BaseEvent::getDate($item->start_time);
 

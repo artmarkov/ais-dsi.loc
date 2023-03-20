@@ -56,20 +56,21 @@ EOF;
             $JSEventClick = <<<EOF
     function(e) {
         eventData = {
-                id: e.event.id          
+                id: e.event.id,              
+                resource: e.event.extendedProps.source,        
             };
     // change the border color just for fun
     e.el.style.borderColor = 'red';
         
         console.log('кликаем по событию ' + e.event.id);
-      $.ajax({
-            url: '/admin/activities/schedule/create-event',
+       $.ajax({
+            url: '/admin/activities/default/create-event',
             type: 'POST',
             data: {eventData: eventData},
             success: function (res) {
 //                console.log(res);
-                $('#schedule-modal .modal-body').html(res);
-                $('#schedule-modal').modal();
+                $('#activities-modal .modal-body').html(res);
+                $('#activities-modal').modal();
             },
             error: function () {
                 alert('Error!!!');
@@ -160,7 +161,7 @@ EOF;
                     'slotMinTime' => '08:00',// Определяет первый временной интервал, который будет отображаться для каждого дня
                     'slotMaxTime' => '22:00',
                     'slotDuration' => '00:10:00', // Частота отображения временных интервалов.
-                    'eventDurationEditable' => false, // разрешить изменение размера
+                    'eventDurationEditable' => true, // разрешить изменение размера
                     'eventOverlap' => true, // разрешить перекрытие событий
                     'views' => [
                         'resourceTimelineThreeDays' => [
@@ -186,9 +187,9 @@ EOF;
 </div>
 
 <?php \yii\bootstrap\Modal::begin([
-    'header' => '<h3 class="lte-hide-title page-title">' . Yii::t('art/calendar', 'Event') . '</h3>',
+    'header' => '<h4 class="lte-hide-title page-title">Карточка мероприятия</h4>',
     'size' => 'modal-lg',
-    'id' => 'schedule-modal',
+    'id' => 'activities-modal',
 ]);
 
 \yii\bootstrap\Modal::end(); ?>

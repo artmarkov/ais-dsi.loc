@@ -12,4 +12,5 @@ return [
     'Background event' => 'фоновое событие',
     'Teachers' => 'Преподаватели',
     'Auditories' => 'Аудитории',
+    'Executors List' => 'Ответственные',
 ];

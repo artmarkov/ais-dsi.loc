@@ -56,20 +56,22 @@ EOF;
             $JSEventClick = <<<EOF
     function(e) {
         eventData = {
-                id: e.event.id          
+                id: e.event.id,              
+                resource: e.event.extendedProps.source,           
             };
     // change the border color just for fun
     e.el.style.borderColor = 'red';
         
         console.log('кликаем по событию ' + e.event.id);
+         console.log(e.event);
       $.ajax({
-            url: '/admin/activities/schedule/create-event',
+            url: '/admin/activities/default/create-event',
             type: 'POST',
             data: {eventData: eventData},
             success: function (res) {
 //                console.log(res);
-                $('#schedule-modal .modal-body').html(res);
-                $('#schedule-modal').modal();
+                $('#activities-modal .modal-body').html(res);
+                $('#activities-modal').modal();
             },
             error: function () {
                 alert('Error!!!');
@@ -186,9 +188,9 @@ EOF;
 </div>
 
 <?php \yii\bootstrap\Modal::begin([
-    'header' => '<h3 class="lte-hide-title page-title">' . Yii::t('art/calendar', 'Event') . '</h3>',
+    'header' => '<h4 class="lte-hide-title page-title">Карточка мероприятия</h4>',
     'size' => 'modal-lg',
-    'id' => 'schedule-modal',
+    'id' => 'activities-modal',
 ]);
 
 \yii\bootstrap\Modal::end(); ?>

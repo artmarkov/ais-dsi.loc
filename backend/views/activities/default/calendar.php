@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="activities-index">
     <div class="panel">
         <div class="panel-heading">
-            <?= Html::encode($this->title) ?>
+            <?= Html::encode($this->title) ?>  <?= $this->render('_search-calendar', compact('model_date')) ?>
         </div>
         <div class="panel-body">
             <div class="col-sm-12"
@@ -54,11 +54,13 @@ EOF;
     function(e) {
         eventData = {
                 id: e.event.id,              
+                resource: e.event.extendedProps.source,              
             };
     // change the border color just for fun
     e.el.style.borderColor = 'red';
         
         console.log('кликаем по событию ' + e.event.id);
+        console.log(e.event);
       $.ajax({
             url: '/admin/activities/default/create-event',
             type: 'POST',
@@ -166,23 +168,23 @@ EOF;
                     'aspectRatio' => 1.8,
                     'navLinks' => true,
                     'businessHours' => true,
-                    'editable' => true,
-                    'selectable' => true,
-                    'expandRows' => true,
+                    'editable' => false,
+                    'selectable' => false,
+                    'expandRows' => false,
                     'nowIndicator' => true, //Отображение маркера, указывающего Текущее время
                     'slotMinTime' => '07:00',
                     'slotMaxTime' => '22:00',
                     'slotDuration' => '00:15:00', // Частота отображения временных интервалов.
-                    'eventDurationEditable' => true, // разрешить изменение размера
+                    'eventDurationEditable' => false, // разрешить изменение размера
                     'eventOverlap' => true, // разрешить перекрытие событий
                     'eventClick' => new JsExpression($JSEventClick),
 //                    'eventMouseEnter' => new JsExpression($JSOnDay),
 //                    'eventMouseLeave' => new JsExpression($JSOutDay),
-                    'eventDrop' => new JsExpression($JSEventDrop),
-                    'select' => new JsExpression($JSSelect),
-                    'eventResize' => new JsExpression($JSEventResize),
+//                    'eventDrop' => new JsExpression($JSEventDrop),
+//                    'select' => new JsExpression($JSSelect),
+//                    'eventResize' => new JsExpression($JSEventResize),
                 ],
-                'events' => \yii\helpers\Url::to(['/activities/default/init-calendar']),
+                'events' => \yii\helpers\Url::to(['/activities/default/init-calendar', 'auditory_id' => $model_date->auditory_id]),
             ]);
             ?>
         </div>
@@ -190,7 +192,7 @@ EOF;
 </div>
 
 <?php \yii\bootstrap\Modal::begin([
-    'header' => '<h3 class="lte-hide-title page-title">' . Yii::t('art/calendar', 'Event') . '</h3>',
+    'header' => '<h4 class="lte-hide-title page-title">Карточка мероприятия</h4>',
     'size' => 'modal-lg',
     'id' => 'activities-modal',
 ]);

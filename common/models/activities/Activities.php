@@ -93,6 +93,7 @@ class Activities extends ActiveRecord
             'resource' => Yii::t('art', 'Resource'),
             'title' => Yii::t('art', 'Title'),
             'description' => Yii::t('art', 'Description'),
+            'executors_list' => Yii::t('art/calendar', 'Executors List'),
             'start_time' => Yii::t('art/calendar', 'Start Date'),
             'end_time' => Yii::t('art/calendar', 'End Date'),
             'all_day' => Yii::t('art/calendar', 'All Day'),

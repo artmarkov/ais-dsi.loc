@@ -66,12 +66,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'title',
                         'options' => ['style' => 'width:300px'],
-                        'class' => 'artsoft\grid\columns\TitleActionColumn',
-                        'controller' => '/activities/activities-over',
-                        'title' => function (ActivitiesOver $model) {
-                            return Html::a($model->title, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                        'value' => function (ActivitiesOver $model) {
+                            return $model->title;
                         },
-                        'buttonsTemplate' => '{update} {view} {delete}',
                     ],
                     [
                         'attribute' => 'over_category',
@@ -124,6 +121,16 @@ $this->params['breadcrumbs'][] = $this->title;
 //                    'description:ntext',
                     'datetime_in:datetime',
                     'datetime_out:datetime',
+                    [
+                        'class' => 'kartik\grid\ActionColumn',
+                        'urlCreator' => function ($action, $model, $key, $index) {
+                            return [$action, 'id' => $model->id];
+                        },
+                        'controller' => '/activities/activities-over',
+                        'template' => '{view} {update} {delete}',
+                        'headerOptions' => ['class' => 'kartik-sheet-style'],
+
+                    ],
                 ],
             ]);
             ?>

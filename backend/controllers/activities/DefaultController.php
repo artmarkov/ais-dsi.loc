@@ -4,6 +4,7 @@ namespace backend\controllers\activities;
 
 use common\models\activities\Activities;
 use common\models\activities\search\ActivitiesSearch;
+use common\models\schoolplan\Schoolplan;
 use common\widgets\fullcalendar\src\models\Event as BaseEvent;
 use yii\base\DynamicModel;
 use yii\helpers\Url;
@@ -60,8 +61,20 @@ class DefaultController extends MainController
      */
     public function actionCalendar()
     {
+        $session = Yii::$app->session;
+
+        $model_date = new DynamicModel(['auditory_id']);
+        $model_date->addRule(['auditory_id'], 'required');
         $this->view->params['tabMenu'] = $this->tabMenu;
-        return $this->render('calendar');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+
+            $model_date->auditory_id = $session->get('_calendar-auditory') ?? '';
+        }
+        $session->set('_calendar-auditory', $model_date->auditory_id);
+
+        return $this->render('calendar', [
+            'model_date' => $model_date
+        ]);
     }
 
     /**
@@ -78,16 +91,18 @@ class DefaultController extends MainController
 
         $start = Yii::$app->request->get('start');
         $end = Yii::$app->request->get('end');
+        $auditory_id = Yii::$app->request->get('auditory_id');
 
         $start_time = Yii::$app->formatter->asTimestamp($start);
         $end_time = Yii::$app->formatter->asTimestamp($end);
 
         $events = $this->modelClass::find()
             ->where(
-                "start_time > :start_time and end_time < :end_time and resource != 'subject_schedule' and resource != 'consult_schedule'",
+                "start_time > :start_time and end_time < :end_time and auditory_id = :auditory_id",
                 [
                     ":start_time" => $start_time,
-                    ":end_time" => $end_time
+                    ":end_time" => $end_time,
+                    ":auditory_id" => $auditory_id
                 ]
             )
             ->orderBy('start_time')
@@ -98,6 +113,7 @@ class DefaultController extends MainController
             $event = new BaseEvent();
             $event->id = $item->id;
             $event->title = $item->title;
+            $event->source = $item->resource;
             $event->end = BaseEvent::getDate($item->end_time);
             $event->start = BaseEvent::getDate($item->start_time);
 
@@ -125,19 +141,23 @@ class DefaultController extends MainController
     {
 
         $eventData = Yii::$app->request->post('eventData');
+//        print_r($eventData); die();
         $id = $eventData['id'];
-
-        if ($id == 0) {
-            $model = new $this->modelClass();
-
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
-                return $this->redirect('/admin/activities/default/calendar');
-            }
-            $model->getData($eventData);
-        } else {
-            $model = $this->modelClass::findOne($id);
-        }
+        $resource = $eventData['resource'];
+        $model = $this->modelClass::find()->where(['=', 'resource', $resource])->andWhere(['=', 'id', $id])->one();
+//        if ($id == 0) {
+//            $model = new $this->modelClass();
+//
+//            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+//                Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+//                return $this->redirect('/admin/activities/default/calendar');
+//            }
+//            $model->getData($eventData);
+//        } else {
+//            if ($resource == 'schoolplan') {
+//                $model = Schoolplan::findOne($id);
+//            }
+//        }
         return $this->renderAjax('activities-modal', [
             'model' => $model
         ]);
