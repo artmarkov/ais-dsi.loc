@@ -40,29 +40,6 @@ $columns = [
         'label' =>  Yii::t('art/guide', 'Sect').'/'.Yii::t('art/student', 'Student'),
     ],
     [
-        'attribute' => 'subject_type_id',
-        'value' => function ($model) use ($typeList){
-            return Editable::widget([
-                'buttonsTemplate' => "{reset}{submit}",
-                'name' => 'subject_type_id',
-                'asPopover' => true,
-                'value' => $model->subject_type_id,
-                'header' => '',
-                'displayValueConfig' => $typeList,
-                'format' => Editable::FORMAT_LINK,
-                'inputType' => Editable::INPUT_DROPDOWN_LIST,
-                'data' => $typeList,
-                'size' => 'md',
-                'options' => ['class' => 'form-control', 'placeholder' => Yii::t('art', 'Select...')],
-                'formOptions' => [
-                    'action' => Url::toRoute(['/sect/default/set-type', 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id]),
-                ],
-            ]);
-        },
-        'format' => 'raw',
-
-    ],
-    [
         'attribute' => 'week_time',
         'filter' => false,
         'value' => function ($model) {
@@ -94,7 +71,7 @@ $columns = [
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 6
+        'subGroupOf' => 5
     ],
     [
         'attribute' => 'load_time',
@@ -211,8 +188,8 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Учебный предмет/Группа/Ученик', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
-                            ['content' => 'Нагрузка', 'options' => ['colspan' => 7, 'class' => 'text-center info']],
+                            ['content' => 'Учебный предмет/Группа/Ученик', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 6, 'class' => 'text-center info']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]
