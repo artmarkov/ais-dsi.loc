@@ -159,7 +159,7 @@ EOF;
 
             <?= \common\widgets\fullcalendar\src\Fullcalendar::widget([
                 'clientOptions' => [
-                    'initialView' => 'timeGridWeek',
+                    'initialView' => 'dayGridMonth',
                     'height' => 'auto', // 'auto' - aspectRatio no works
                     'aspectRatio' => 1.8,
                     'navLinks' => true,
