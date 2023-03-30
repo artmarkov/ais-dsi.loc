@@ -49,10 +49,12 @@ class AvatarHelper
 
     public static function deleteAvatar($avatar)
     {
-        foreach (json_decode($avatar) as $item => $avatarUrl) {
-            $avatarUrl = ltrim($avatarUrl, '/');
-            if (file_exists($avatarUrl)) {
-                unlink($avatarUrl);
+        if($avatar) {
+            foreach (json_decode($avatar) as $item => $avatarUrl) {
+                $avatarUrl = ltrim($avatarUrl, '/');
+                if (file_exists($avatarUrl)) {
+                    unlink($avatarUrl);
+                }
             }
         }
     }
