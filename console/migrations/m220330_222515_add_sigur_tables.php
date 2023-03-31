@@ -14,7 +14,7 @@ class m220330_222515_add_sigur_tables extends \artsoft\db\BaseMigration
         $this->createTableWithHistory('users_card', [
             'id' => $this->primaryKey(),
             'user_common_id' => $this->string(5)->defaultValue(null),
-            'key_hex' => $this->char(8)->defaultValue(null)->comment('Пропуск (в формате HEX)'),
+            'key_hex' => $this->char(8)->defaultValue(null)->comment('Пропуск (в формате HEX)'), // Очень важно для Сигур - char
             'timestamp_deny' => $this->dateTime()->defaultValue(null)->comment('Срок действия в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС'),
             'mode_main' => $this->string(127)->defaultValue(null)->comment('Основной режим'),
             'mode_list' => $this->string(512)->defaultValue(null)->comment('Список режимов'),
