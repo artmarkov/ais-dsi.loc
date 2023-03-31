@@ -25,9 +25,6 @@ class AvatarHelper
         if (!file_exists($uploadPath)) {
             mkdir($uploadPath, 0777, true);
         }
-        else {
-            chmod($uploadPath, 0777);
-        }
 
         $image->saveAs($sourceFile);
 
