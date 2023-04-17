@@ -335,7 +335,7 @@ class ArtHelper
     {
         $week_list = self::getWeekList($vid, $from, $to);
 
-        return isset($week_list[$val]) ? $week_list[$val] : null;
+        return isset($week_list[$val]) ? $week_list[$val] : 0;
     }
 
     public static function per($i)

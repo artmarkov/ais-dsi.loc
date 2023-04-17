@@ -73,6 +73,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             [['teachers_load_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
             [['teachers_load_id', 'week_day', 'auditory_id', 'time_in', 'time_out'], 'required'],
             [['time_in', 'time_out', 'teachersLoadId'], 'safe'],
+            [['week_num'], 'default', 'value' => 0],
             [['description'], 'string', 'max' => 512],
             [['teachers_load_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeachersLoad::class, 'targetAttribute' => ['teachers_load_id' => 'id']],
             [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],

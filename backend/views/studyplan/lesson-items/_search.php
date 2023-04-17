@@ -15,7 +15,7 @@ $form = ActiveForm::begin([
     'validateOnBlur' => false,
 ])
 ?>
-<div class="studyplan-progres-search">
+<div class="studyplan-progress-search">
     <div class="panel panel-default">
         <div class="panel-body">
             <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [

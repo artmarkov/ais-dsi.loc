@@ -25,13 +25,14 @@ class DefaultController extends MainController
 
             $model_date->date_in = $session->get('_timesheet_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $m, 1, $y), 'php:d.m.Y');
             $model_date->date_out = $session->get('_timesheet_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $m, $t, $y), 'php:d.m.Y');
-            $model_date->subject_type_id = $session->get('_timesheet_subject_type_id') ?? SubjectType::BASIS_FREE;
+            $model_date->subject_type_id = $session->get('_timesheet_subject_type_id') ?? SubjectType::find()->scalar();
             $model_date->activity_list = Yii::$app->user->getSetting('_timesheet_activity_list') ?? [];
         }
         $session->set('_timesheet_date_in', $model_date->date_in);
         $session->set('_timesheet_date_out', $model_date->date_out);
         $session->set('_timesheet_subject_type_id', $model_date->subject_type_id);
         Yii::$app->user->setSetting('_timesheet_activity_list', $model_date->activity_list);
+       // echo '<pre>' . print_r($model_date->subject_type_id, true) . '</pre>'; die();
 
         if (Yii::$app->request->post('submitAction') == 'excel') {
             $timesheet = new TeachersTimesheet($model_date);

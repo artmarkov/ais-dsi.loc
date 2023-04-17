@@ -70,7 +70,7 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
         return [
             [['direction_id', 'teachers_id', 'time_plan_in', 'time_plan_out', 'plan_year', 'week_day', 'auditory_id'], 'required'],
             [['description'], 'string', 'max' => 512],
-            [['half_year'], 'default', 'value' => 0],
+            [['half_year', 'week_num'], 'default', 'value' => 0],
             [['time_plan_in', 'time_plan_out'], 'safe'],
             [['direction_id', 'teachers_id', 'plan_year', 'week_num', 'week_day', 'auditory_id', 'half_year'], 'integer'],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
@@ -177,7 +177,7 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
                 ],
                 ['=', 'week_day', $this->week_day]
             ]);
-        if ($this->getAttribute($this->week_num) !== null) {
+        if ($this->getAttribute($this->week_num) !== 0) {
             $thereIsAnOverlapping->andWhere(['=', 'week_num', $this->week_num]);
         }
 
@@ -213,7 +213,7 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
                 ],
                 ['=', 'week_day', $this->week_day]
             ]);
-        if ($this->getAttribute($this->week_num) !== null) {
+        if ($this->getAttribute($this->week_num) !== 0) {
             $thereIsAnOverlapping->andWhere(['=', 'week_num', $this->week_num]);
         }
 

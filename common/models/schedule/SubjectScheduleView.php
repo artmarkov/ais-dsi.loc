@@ -141,7 +141,7 @@ class SubjectScheduleView extends SubjectSchedule
                 ],
                 ['=', 'week_day', $model->week_day]
             ]);
-        if ($model->getAttribute($model->week_num) !== null) {
+        if ($model->getAttribute($model->week_num) !== 0) {
             $thereIsAnOverlapping->andWhere(['=', 'week_num', $model->week_num]);
         }
 
@@ -176,7 +176,7 @@ class SubjectScheduleView extends SubjectSchedule
                 ],
                 ['=', 'week_day', $model->week_day]
             ]);
-        if ($model->getAttribute($model->week_num) !== null) {
+        if ($model->getAttribute($model->week_num) !== 0) {
             $thereIsAnOverlapping->andWhere(['=', 'week_num', $model->week_num]);
         }
 
@@ -203,7 +203,7 @@ class SubjectScheduleView extends SubjectSchedule
                     ['>=', 'time_plan_out', Schedule::encodeTime($model->time_out)],
                 ],
                 ['=', 'week_day', $model->week_day]
-            ])->andWhere(new \yii\db\Expression('CASE WHEN week_num IS NOT NULL THEN week_num = :week_num ELSE TRUE END', [':week_num' => $model->week_num]));
+            ])->andWhere(new \yii\db\Expression('CASE WHEN week_num != 0 THEN week_num = :week_num ELSE TRUE END', [':week_num' => $model->week_num]));
         ;
 
 
@@ -263,7 +263,7 @@ class SubjectScheduleView extends SubjectSchedule
                 ['>=', 'time_out', Schedule::encodeTime($this->time_out)],
                 ['=', 'week_day', $this->week_day]
             ]);
-        if ($this->getAttribute($this->week_num) !== null) {
+        if ($this->getAttribute($this->week_num) !== 0) {
             $thereIsAnAccompLimit->andWhere(['=', 'week_num', $this->week_num]);
         }
         return $thereIsAnAccompLimit;
