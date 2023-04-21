@@ -99,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'urlCreator' => function ($action, $model, $key, $index) {
                             return [$action, 'id' => $model->id];
                         },
-                        'controller' => '/studyplan/default',
+                        'controller' => '/students/default',
                         'headerOptions' => ['class' => 'kartik-sheet-style'],
                         'template' => '{view} {update} {delete}',
                         'buttons' => [

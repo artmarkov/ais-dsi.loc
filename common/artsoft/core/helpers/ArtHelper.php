@@ -205,7 +205,7 @@ class ArtHelper
     {
         $list = [];
         $year = self::getStudyYearDefault();
-        for ($i = $year; $i > ($year - $start); $i--) {
+        for ($i = $year + 1; $i > ($year - $start); $i--) {
             $list[$i] = $i . '/' . ($i + 1);
         }
 
@@ -335,7 +335,7 @@ class ArtHelper
     {
         $week_list = self::getWeekList($vid, $from, $to);
 
-        return isset($week_list[$val]) ? $week_list[$val] : 0;
+        return isset($week_list[$val]) ? $week_list[$val] : '';
     }
 
     public static function per($i)

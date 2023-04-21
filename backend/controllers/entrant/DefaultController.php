@@ -14,6 +14,7 @@ use common\models\entrant\search\EntrantGroupSearch;
 use common\models\entrant\search\EntrantSearch;
 use common\models\history\EntrantGroupHistory;
 use common\models\history\EntrantHistory;
+use common\models\teachers\Teachers;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
@@ -396,6 +397,22 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('group', compact('dataProvider', 'searchModel', 'id'));
         }
+    }
+
+    public function actionGroups()
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $cat_id = $parents[0];
+                $out = Entrant::getCommGroupById($cat_id);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
     }
 
     /**

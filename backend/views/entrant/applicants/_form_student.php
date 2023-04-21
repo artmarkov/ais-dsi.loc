@@ -61,12 +61,6 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                    <?php
-                    // necessary for update action.
-                    if (!$model->isNewRecord) {
-                        echo Html::activeHiddenInput($model, "comm_id");
-                    }
-                    ?>
                     <?= $form->field($model, 'student_id')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('students_fullname')->getList(),
                         'options' => [
@@ -79,16 +73,30 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
                         ],
                     ]);
                     ?>
-                    <?= $form->field($model, 'group_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \common\models\entrant\Entrant::getCommGroupList($model->comm_id),
+
+                    <?= $form->field($model, 'comm_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => EntrantComm::getComList(),
                         'options' => [
-                            'disabled' => $readonly,
+                            'id' => 'comm_id',
+                            'disabled' => $model->comm_id ? true : false,
                             'placeholder' => Yii::t('art', 'Select...'),
-                            'multiple' => false,
                         ],
                         'pluginOptions' => [
                             'allowClear' => true
                         ],
+                    ]);
+                    ?>
+
+                    <?= $form->field($model, 'group_id')->widget(\kartik\depdrop\DepDrop::class, [
+                        'data' => \common\models\entrant\Entrant::getCommGroupList($model->comm_id),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                        ],
+                        'pluginOptions' => [
+                            'depends' => ['comm_id'],
+                            'url' => Url::to(['/entrant/default/groups'])
+                        ]
                     ]);
                     ?>
 

@@ -74,6 +74,7 @@ class Entrant extends \artsoft\db\ActiveRecord
             [['last_experience', 'remark'], 'string', 'max' => 127],
             [['decision_id'], 'default', 'value' => 0],
             [['subject_list'], 'safe'],
+            [['student_id'], 'unique','targetAttribute' => ['student_id', 'comm_id'],  'message' => 'Ученик уже записан на экзамен.'],
             [['reason'], 'string', 'max' => 1024],
             [['programm_id', 'course', 'type_id'], 'required', 'when' => function ($model) {
                 return $model->decision_id === '1';
@@ -245,6 +246,18 @@ class Entrant extends \artsoft\db\ActiveRecord
         return \yii\helpers\ArrayHelper::map(EntrantGroup::find()->andWhere(['=', 'comm_id', $comm_id])->all(), 'id', 'name');
     }
 
+    /**
+     * @param $comm_id
+     * @return array|EntrantGroup[]|\yii\db\ActiveRecord[]
+     */
+    public static function getCommGroupById($comm_id)
+    {
+        if (!$comm_id) {
+            return [];
+        }
+
+        return EntrantGroup::find()->andWhere(['=', 'comm_id', $comm_id])->asArray()->all();
+    }
     /**
      * @param $comm_id
      * @param $val

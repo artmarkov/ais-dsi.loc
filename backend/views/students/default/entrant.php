@@ -1,21 +1,25 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use common\models\own\Department;
-use common\models\studyplan\Studyplan;
+use common\models\entrant\Entrant;
+use common\models\entrant\EntrantComm;
 use common\models\subject\Subject;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\entrant\Entrant;
+use common\models\studyplan\Studyplan;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
+use lo\widgets\modal\ModalAjax;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\entrant\search\EntrantSearch */
+/* @var $searchModel common\models\studyplan\search\StudyplanSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
+$this->title = Yii::t('art/guide', 'Entrant');
+$this->params['breadcrumbs'][] = $this->title;
+//echo '<pre>' . print_r($arr, true) . '</pre>';
 ?>
 <div class="entrant-index">
     <div class="panel">
@@ -62,22 +66,36 @@ use artsoft\grid\GridPageSize;
                             return sprintf('#%06d', $model->id);
                         },
                     ],
+//                    [
+//                        'attribute' => 'student_id',
+//                        'filter' => RefBook::find('students_fullname')->getList(),
+//                        'value' => function (Entrant $model) {
+//                            return RefBook::find('students_fullname')->getValue($model->student_id);
+//                        },
+//                        'format' => 'raw'
+//                    ],
                     [
-                        'attribute' => 'student_id',
-                        'filter' => RefBook::find('students_fullname')->getList(),
+                        'attribute' => 'comm_id',
                         'value' => function (Entrant $model) {
-                            return RefBook::find('students_fullname')->getValue($model->student_id);
+                            return $model->comm->name;
                         },
                         'format' => 'raw'
                     ],
-//            'comm_id',
+                    [
+                        'attribute' => 'plan_year',
+                        'value' => function (Entrant $model) {
+                            return \artsoft\helpers\ArtHelper::getStudyYearsList()[$model->comm->plan_year];
+                        },
+                        'label' => Yii::t('art/studyplan', 'Plan Year'),
+                        'format' => 'raw'
+                    ],
                     [
                         'attribute' => 'group_id',
                         'filter' =>  function (EntrantComm $model) {
-                            return \common\models\entrant\EntrantComm::getEntrantGroupsList();
+                            return EntrantComm::getEntrantGroupsList();
                         },
                         'value' => function (Entrant $model) {
-                            return\common\models\entrant\Entrant::getCommGroupValue($model->comm_id, $model->group_id);
+                            return Entrant::getCommGroupValue($model->comm_id, $model->group_id);
                         },
                         'format' => 'raw'
                     ],
@@ -131,7 +149,7 @@ use artsoft\grid\GridPageSize;
                         'buttons' => [
                             'update' => function ($url, $model, $key) {
                                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                                    Url::to(['/entrant/default/applicants', 'id' => $model->comm_id, 'objectId' => $model->id, 'mode' => 'update']), [
+                                    Url::to(['/students/default/entrant', 'id' => $model->student_id, 'objectId' => $model->id, 'mode' => 'update']), [
                                         'title' => Yii::t('art', 'Edit'),
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
@@ -140,7 +158,7 @@ use artsoft\grid\GridPageSize;
                             },
                             'view' => function ($url, $model, $key) {
                                 return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
-                                    Url::to(['/entrant/default/applicants', 'id' => $model->comm_id, 'objectId' => $model->id, 'mode' => 'view']), [
+                                    Url::to(['/students/default/entrant', 'id' => $model->student_id, 'objectId' => $model->id, 'mode' => 'view']), [
                                         'title' => Yii::t('art', 'View'),
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
@@ -149,7 +167,7 @@ use artsoft\grid\GridPageSize;
                             },
                             'delete' => function ($url, $model, $key) {
                                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                                    Url::to(['/entrant/default/applicants', 'id' => $model->comm_id, 'objectId' => $model->id, 'mode' => 'delete']), [
+                                    Url::to(['/students/default/entrant', 'id' => $model->student_id, 'objectId' => $model->id, 'mode' => 'delete']), [
                                         'title' => Yii::t('art', 'Delete'),
                                         'aria-label' => Yii::t('art', 'Delete'),
                                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),

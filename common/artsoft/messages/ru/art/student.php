@@ -5,7 +5,7 @@ return [
     'Sertificate Num' => 'Номер',
     'Sertificate Organ' => 'Кем выдан',
     'Sertificate Date' => 'Дата выдачи',
-    'Position' => 'Состояние учащегося',
+    'Position' => 'Состояние перевода',
     'Select Position...' => 'Выберите состояние...',
     'Students' => 'Ученики',
     'Relation' => 'Отношения',

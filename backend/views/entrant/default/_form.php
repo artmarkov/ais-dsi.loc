@@ -28,7 +28,7 @@ use kartik\date\DatePicker;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'name')->textInput(['maxlength' => true])->hint('Введите название. Например: Комиссия Муз.Отделение 2023/2024 уч.год') ?>
 
                     <?php
                     echo $form->field($model, 'division_id')->dropDownList(\common\models\own\Division::getDivisionList(), [

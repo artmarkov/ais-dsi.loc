@@ -166,6 +166,11 @@ class EntrantComm extends \artsoft\db\ActiveRecord
         return $this->hasMany(EntrantGroup::className(), ['comm_id' => 'id']);
     }
 
+    public static function getComList()
+    {
+        return \yii\helpers\ArrayHelper::map(self::find()->all(), 'id', 'name');
+
+    }
     /**
      * @return array
      */

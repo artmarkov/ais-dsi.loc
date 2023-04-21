@@ -18,15 +18,16 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
             'status' => $this->integer()->unsigned()->notNull(),
         ], $tableOptions);
 
-        $this->addCommentOnTable('guide_student_position','Состояние ученика');
-        $this->db->createCommand()->resetSequence('guide_student_position', 1000)->execute();
-        $this->db->createCommand()->batchInsert('guide_student_position', ['name', 'slug', 'status'], [
-            ['Абитуриенты', 'Абит', 1],
-            ['Ученики школы', 'Уч-к', 1],
-            ['Выпускники школы', 'Вып', 1],
-            ['Отчислены из школы', 'Отч', 1],
-            ['Не прошел испытания', 'Не прошел', 1],
+        $this->addCommentOnTable('guide_student_position','Состояние перевода');
+        $this->db->createCommand()->batchInsert('guide_student_position', ['id', 'name', 'slug', 'status'], [
+            [1000, 'Принят на обучение', 'Принят', 1],
+            [1001, 'Переведен в следующий класс', 'Переведен', 1],
+            [1002, 'Повторение учебной программы', 'Повторение', 1],
+            [1003, 'Окончание учебной программы', 'Окончание', 1],
+            [1004, 'Досрочное завершение программы', 'Завершение', 1],
         ])->execute();
+
+        $this->db->createCommand()->resetSequence('guide_student_position', 1005)->execute();
 
         $this->createTableWithHistory('students', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',

@@ -56,12 +56,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
                         'attribute' => 'name',
-                        'class' => 'artsoft\grid\columns\TitleActionColumn',
-                        'controller' => '/entrant/default',
-                        'title' => function (EntrantComm $model) {
-                            return Html::a($model->name, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                        'value' => function (EntrantComm $model) {
+                            return $model->name;
                         },
-                        'buttonsTemplate' => '{update} {view} {delete}',
                     ],
                     [
                         'attribute' => 'division_id',
@@ -83,6 +80,16 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     'timestamp_in:date',
                     'timestamp_out:date',
+                    [
+                        'class' => 'kartik\grid\ActionColumn',
+                        'urlCreator' => function ($action, $model, $key, $index) {
+                            return [$action, 'id' => $model->id];
+                        },
+                        'controller' => '/entrant/default',
+                        'template' => '{view} {update} {delete}',
+                        'headerOptions' => ['class' => 'kartik-sheet-style'],
+
+                    ],
                 ],
             ]);
             ?>

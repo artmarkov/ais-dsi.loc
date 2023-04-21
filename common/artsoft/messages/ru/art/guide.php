@@ -201,6 +201,7 @@ return [
     'Prep Off Test List' => 'Испытания без подготовки',
     'Applicants' => 'Поступающие',
     'Group' => 'Группа',
+    'Entrant' => 'Испытания',
     'Entrant Groups' => 'Экзаменационные группы',
     'Entrant Test' => 'Экзаменационная ведомость',
     'Entrant Test Item' => 'Название испытания',
