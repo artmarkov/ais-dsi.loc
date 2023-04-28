@@ -3,6 +3,7 @@
 use artsoft\helpers\Html;
 use artsoft\settings\assets\SettingsAsset;
 use artsoft\widgets\ActiveForm;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $model artsoft\models\Setting */
@@ -83,6 +84,24 @@ SettingsAsset::register($this);
                         <div class="col-md-12">
 
                             <?= $form->field($model, 'study_plan_month_in')->textInput(['maxlength' => true])->hint('Введите месяц') ?>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Модуль: Дистанционная запись на обучение
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <?= $form->field($model, 'pre_status')->radioList(['0' => 'Закрыт', '1' => 'Открыт']) ?>
+                            <?= $form->field($model, 'pre_date_in')->widget(DatePicker::class)->hint('Введите дату открытия записи') ?>
+                            <?= $form->field($model, 'pre_date_out')->widget(DatePicker::class)->hint('Введите дату закрытия записи') ?>
+                            <?= $form->field($model, 'pre_plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList())->hint('Введите учебный год на каторый ведется приеи') ?>
+                            <?= $form->field($model, 'pre_date_start')->widget(DatePicker::class)->hint('Введите дату начала обучения') ?>
 
                         </div>
                     </div>

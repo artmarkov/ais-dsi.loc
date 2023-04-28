@@ -125,7 +125,7 @@ JS
             ]); ?>
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    Сведения об связях
+                    Сведения о связях
                 </div>
                 <div class="panel-body">
                     <div class="container-items"><!-- widgetBody -->

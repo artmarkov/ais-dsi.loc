@@ -21,8 +21,9 @@ class DashboardController extends BaseController
                     [
                         'class' => 'col-md-8',
                         'content' => [
+                            'backend\widgets\dashboard\Student',
                             'artsoft\user\widgets\dashboard\UsersVisitMap',
-                        ],   
+                        ],
                     ],
                     [
                         'class' => 'col-md-4',

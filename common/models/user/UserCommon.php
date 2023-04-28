@@ -53,6 +53,7 @@ class UserCommon extends ActiveRecord
     const USER_CATEGORY_PARENTS = 'parents';
 
     const SCENARIO_DEFAULT = 'default';
+    const SCENARIO_REG = 'registration';
 
     /**
      * @inheritdoc
@@ -89,8 +90,8 @@ class UserCommon extends ActiveRecord
             [['user_category', 'first_name', 'middle_name', 'last_name', 'address', 'email'], 'string', 'max' => 124],
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
-            [['last_name', 'first_name', 'middle_name'], 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'],
-                'message' => Yii::t('art/auth', 'The user with the entered data already exists.')],
+            [['last_name'], 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'],
+                'message' => Yii::t('art/auth', 'The user with the entered data already exists.'), 'except' => self::SCENARIO_REG],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             [['snils'], 'string', 'max' => 16],
             ['info', 'string'],

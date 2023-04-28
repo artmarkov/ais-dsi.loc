@@ -18,7 +18,16 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="student-index">
     <div class="panel">
         <div class="panel-heading">
-            <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
+            <?= Html::a(
+                '<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('art/student', 'Student Registration'),
+                ['students/default/finding'],
+                [
+                    'class' => 'btn btn-success btn-md' ,
+                    'name' => 'submitAction',
+                    'value' => 'save',
+                ]
+            );
+            ?>
         </div>
         <div class="panel-body">
             <div class="panel panel-default">

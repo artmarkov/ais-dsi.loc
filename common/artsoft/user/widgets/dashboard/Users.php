@@ -5,6 +5,7 @@ namespace artsoft\user\widgets\dashboard;
 use artsoft\models\User;
 use artsoft\user\models\search\UserSearch;
 use artsoft\widgets\DashboardWidget;
+use common\models\user\search\UsersViewSearch;
 use Yii;
 
 class Users extends DashboardWidget
@@ -34,7 +35,7 @@ class Users extends DashboardWidget
 
         if (User::hasPermission('viewUsers')) {
 
-            $searchModel = new UserSearch();
+            $searchModel = new UsersViewSearch();
             $formName = $searchModel->formName();
 
             $recent = User::find()->orderBy(['id' => SORT_DESC])->limit($this->recentLimit)->all();

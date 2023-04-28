@@ -151,7 +151,7 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                             <div class="row">
                                 <?= $form->field($userCommon, 'last_name')->textInput(['maxlength' => 124]) ?>
                                 <?= $form->field($userCommon, 'first_name')->textInput(['maxlength' => 124]) ?>
-                                <?= $form->field($userCommon, 'middle_name')->textInput(['maxlength' => 124]) ?>
+                                <?= $form->field($userCommon, 'middle_name')->textInput(['maxlength' => 124])->hint('Важно: Поле необходимо заполнить как в документе. При отсутствии Отчества заполнение не требуется.') ?>
                                 <?= $form->field($userCommon, 'gender')->dropDownList(\common\models\user\UserCommon::getGenderList()) ?>
                                 <?= $form->field($userCommon, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(\kartik\date\DatePicker::classname()); ?>
                                 <?= $form->field($userCommon, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>

@@ -48,16 +48,25 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
         $this->db->createCommand()->resetSequence('students', 10000)->execute();
 
         $this->db->createCommand()->createView('students_view', '
-         SELECT users.id AS user_id, user_common.id AS user_common_id, students.id AS students_id, users.username, users.email, users.status AS user_status, 
-                user_common.status, user_common.last_name,user_common.first_name,user_common.middle_name, 
-                CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) AS fullname, 
-                CONCAT(user_common.last_name ,\' \', left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'.\') as fio, 
-                CONCAT(left(user_common.first_name, 1), \'.\', left(user_common.middle_name, 1), \'. \', user_common.last_name) as iof
-        FROM students 
-        INNER JOIN user_common ON user_common.id = students.user_common_id 
-        LEFT JOIN users ON user_common.user_id = users.id 
-        WHERE user_common.user_category=\'students\'
-        ORDER BY user_common.last_name, user_common.first_name
+         SELECT users.id AS user_id,
+            user_common.id AS user_common_id,
+            students.id AS students_id,
+            users.username,
+            users.email,
+            users.status AS user_status,
+            user_common.status,
+            user_common.last_name,
+            user_common.first_name,
+            user_common.middle_name,
+            user_common.birth_date,
+            concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name) AS fullname,
+            concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS fio,
+            concat("left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'. \', user_common.last_name) AS iof
+           FROM students
+             JOIN user_common ON user_common.id = students.user_common_id
+             LEFT JOIN users ON user_common.user_id = users.id
+          WHERE user_common.user_category::text = \'students\'::text
+          ORDER BY user_common.last_name, user_common.first_name;
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [

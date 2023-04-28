@@ -11,10 +11,12 @@ use common\models\entrant\Entrant;
 use common\models\entrant\EntrantMembers;
 use common\models\entrant\EntrantTest;
 use common\models\entrant\search\EntrantSearch;
+use common\models\forms\RegistrationForm;
 use common\models\history\EntrantHistory;
 use common\models\history\StudyplanHistory;
 use common\models\info\Document;
 use common\models\info\search\DocumentSearch;
+use common\models\parents\Parents;
 use common\models\service\UsersCard;
 use common\models\students\StudentDependence;
 use common\models\studyplan\search\StudyplanSearch;
@@ -22,6 +24,7 @@ use common\models\studyplan\search\StudyplanViewSearch;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subject\SubjectType;
+use common\models\forms\FindingForm;
 use common\models\user\UserCommon;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
@@ -37,6 +40,48 @@ class DefaultController extends MainController
     public $modelClass = 'common\models\students\Student';
     public $modelSearchClass = 'common\models\students\search\StudentSearch';
     public $modelHistoryClass = 'common\models\history\StudentsHistory';
+
+    /**
+     * @return string|\yii\web\Response
+     */
+    public function actionFinding()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model = new FindingForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $students_id = FindingForm::findByFio($model);
+            if ($students_id) {
+                Yii::$app->session->setFlash('success', 'Ученик найден в базе. Продолжайте заполнять форму');
+                return $this->redirect(['update', 'id' => $students_id]);
+            } else {
+                Yii::$app->session->setFlash('info', 'Ученик не найден в базе. Создайте новую запись.');
+                return $this->redirect(['registration', 'first_name' => $model->first_name, 'middle_name' => $model->middle_name, 'last_name' => $model->last_name, 'birth_date' => $model->birth_date]);
+            }
+        }
+        return $this->render('finding', compact('model'));
+    }
+
+    /**
+     * @return string
+     */
+    public function actionRegistration()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model = new RegistrationForm();
+
+        $model->student_first_name = $_GET['first_name'] ?? null;
+        $model->student_middle_name = $_GET['middle_name'] ?? null;
+        $model->student_last_name = $_GET['last_name'] ?? null;
+        $model->student_birth_date = $_GET['birth_date'] ?? null;
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            echo '<pre>' . print_r($model->errors, true) . '</pre>';
+            echo '<pre>' . print_r(Yii::$app->request->post(), true) . '</pre>';
+        }
+        return $this->render('registration', compact('model'));
+    }
 
     /**
      * @return mixed|string|\yii\web\Response

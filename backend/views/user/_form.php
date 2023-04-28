@@ -22,7 +22,7 @@ use common\models\user\UserCommon;
             <div class="col-sm-12">
                 <?= $form->field($model, 'last_name')->textInput(['maxlength' => 124]) ?>
                 <?= $form->field($model, 'first_name')->textInput(['maxlength' => 124]) ?>
-                <?= $form->field($model, 'middle_name')->textInput(['maxlength' => 124]) ?>
+                <?= $form->field($model, 'middle_name')->textInput(['maxlength' => 124])->hint('Важно: Поле необходимо заполнить как в документе. При отсутствии Отчества заполнение не требуется.') ?>
                 <?= $form->field($model, 'gender')->dropDownList(UserCommon::getGenderList(), ['disabled' => $readonly]) ?>
                 <?= $form->field($model, 'birth_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => $readonly]); ?>
                 <?= $form->field($model, 'snils')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>

@@ -19,6 +19,12 @@ class ModuleSettings extends BaseSettingsModel
     public $shelf_life_sitelog;
     public $shelf_life_requestlog;
 
+    public $pre_status;
+    public $pre_date_in;
+    public $pre_date_out;
+    public $pre_plan_year;
+    public $pre_date_start;
+
     /**
      * @inheritdoc
      */
@@ -31,6 +37,11 @@ class ModuleSettings extends BaseSettingsModel
 
                 [['shelf_life_pass', 'shelf_life_attendlog', 'shelf_life_sitelog', 'shelf_life_requestlog'], 'required'],
                 [['shelf_life_pass', 'shelf_life_attendlog', 'shelf_life_sitelog', 'shelf_life_requestlog'], 'string'],
+
+                [['pre_status', 'pre_date_in', 'pre_date_out', 'pre_plan_year', 'pre_date_start'], 'required'],
+                [['pre_status'], 'boolean'],
+                [['pre_date_in', 'pre_date_out', 'pre_date_start'], 'date'],
+                [['pre_plan_year'], 'string'],
             ]);
     }
 
@@ -45,6 +56,12 @@ class ModuleSettings extends BaseSettingsModel
             'shelf_life_attendlog' => 'Срок хранения Журнала выдачи ключей (дней)',
             'shelf_life_sitelog' => 'Срок хранения Лога посещения сайта (дней)',
             'shelf_life_requestlog' => 'Срок хранения Лога запросов (дней)',
+
+            'pre_status' => 'Статус набора',
+            'pre_date_in' => 'Открытие формы предварительной записи',
+            'pre_date_out' => 'Закрытие формы предварительной записи',
+            'pre_plan_year' => 'Учебный год',
+            'pre_date_start' => 'Начало обучения',
         ];
     }
 
