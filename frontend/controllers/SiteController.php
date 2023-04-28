@@ -80,4 +80,11 @@ class SiteController extends DashboardController
         //if nothing suitable was found then throw 404 error
         throw new \yii\web\NotFoundHttpException('Page not found.');
     }
+
+    public function actionPreregistration()
+    {
+
+        return $this->render('preregistration');
+
+    }
 }

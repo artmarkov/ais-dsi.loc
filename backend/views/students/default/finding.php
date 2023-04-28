@@ -7,8 +7,6 @@
 use artsoft\widgets\ActiveForm;
 use yii\widgets\MaskedInput;
 
-$this->title = Yii::t('art/student', 'Students');
-$this->params['breadcrumbs'][] = $this->title;
 $this->params['breadcrumbs'][] = 'Поиск ученика';
 
 ?>

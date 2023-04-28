@@ -46,6 +46,7 @@ class DefaultController extends MainController
      */
     public function actionFinding()
     {
+        $this->view->params['breadcrumbs'][] = Yii::t('art/student', 'Students');
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = new FindingForm();
@@ -67,6 +68,7 @@ class DefaultController extends MainController
      */
     public function actionRegistration()
     {
+        $this->view->params['breadcrumbs'][] = Yii::t('art/student', 'Students');
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model = new RegistrationForm();

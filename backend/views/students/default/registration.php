@@ -9,8 +9,6 @@ use common\models\user\UserCommon;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
 
-$this->title = Yii::t('art/student', 'Students');
-$this->params['breadcrumbs'][] = $this->title;
 $this->params['breadcrumbs'][] = 'Регистрация';
 
 ?>
@@ -127,46 +125,57 @@ $this->params['breadcrumbs'][] = 'Регистрация';
     <div class="panel-footer">
         <div class="form-group btn-group">
             <div class="form-group btn-group">
-                <?php
-                echo \artsoft\helpers\ButtonHelper::exitButton('/admin/students/default/index', 'btn-md');
-                echo \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'save', 'Save', 'btn-md');
-                 ?>
-                <?= \artsoft\helpers\Html::submitButton(
-                    '<i class="fa fa-floppy-o" aria-hidden="true"></i> Перейти в карточку',
-                    [
-                        'class' => 'btn btn-info btn-md',
-                        'name' => 'submitAction',
-                        'value' => 'students',
-                    ]
-                );
-                ?>
-                <?= \artsoft\helpers\Html::submitButton(
-                    '<i class="fa fa-floppy-o" aria-hidden="true"></i> Принять на обучение',
-                    [
-                        'class' => 'btn btn-info btn-md',
-                        'name' => 'submitAction',
-                        'value' => 'studyplan',
-                    ]
-                );
-                ?>
-                <?= \artsoft\helpers\Html::submitButton(
-                    '<i class="fa fa-floppy-o" aria-hidden="true"></i> Отправить на экзамены',
-                    [
-                        'class' => 'btn btn-info btn-md',
-                        'name' => 'submitAction',
-                        'value' => 'examination',
-                    ]
-                );
-                ?>
-                <?= \artsoft\helpers\Html::submitButton(
-                    '<i class="fa fa-floppy-o" aria-hidden="true"></i> Предварительная запись',
-                    [
-                        'class' => 'btn btn-warning btn-md',
-                        'name' => 'submitAction',
-                        'value' => 'preregostration',
-                    ]
-                );
-                ?>
+                <?php if (!Yii::$app->user->isGuest): ?>
+                    <?= \artsoft\helpers\ButtonHelper::exitButton('/admin/students/default/index', 'btn-md'); ?>
+                    <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'save', 'Save', 'btn-md'); ?>
+
+                    <?= \artsoft\helpers\Html::submitButton(
+                        '<i class="fa fa-floppy-o" aria-hidden="true"></i> Перейти в карточку',
+                        [
+                            'class' => 'btn btn-info btn-md',
+                            'name' => 'submitAction',
+                            'value' => 'students',
+                        ]
+                    );
+                    ?>
+                    <?= \artsoft\helpers\Html::submitButton(
+                        '<i class="fa fa-floppy-o" aria-hidden="true"></i> Принять на обучение',
+                        [
+                            'class' => 'btn btn-info btn-md',
+                            'name' => 'submitAction',
+                            'value' => 'studyplan',
+                        ]
+                    );
+                    ?>
+                    <?= \artsoft\helpers\Html::submitButton(
+                        '<i class="fa fa-floppy-o" aria-hidden="true"></i> Отправить на экзамены',
+                        [
+                            'class' => 'btn btn-info btn-md',
+                            'name' => 'submitAction',
+                            'value' => 'examination',
+                        ]
+                    );
+                    ?>
+                    <?= \artsoft\helpers\Html::submitButton(
+                        '<i class="fa fa-floppy-o" aria-hidden="true"></i> Предварительная запись',
+                        [
+                            'class' => 'btn btn-warning btn-md',
+                            'name' => 'submitAction',
+                            'value' => 'preregostration',
+                        ]
+                    );
+                    ?>
+                <?php else: ?>
+                    <?= \artsoft\helpers\Html::submitButton(
+                        '<i class="fa fa-floppy-o" aria-hidden="true"></i> Продолжить',
+                        [
+                            'class' => 'btn btn-primary btn-md',
+                            'name' => 'submitAction',
+                            'value' => 'preregostration',
+                        ]
+                    );
+                    ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>

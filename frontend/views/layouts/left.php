@@ -20,6 +20,12 @@ use artsoft\widgets\Nav;
                 'url' => Yii::$app->urlManager->hostInfo,
             ],
             [
+                'label' => 'Запись на обучение',
+                'icon' => 'fa fa-th',
+                'url' => ['/preregistration/default/finding'],
+                'visible' => Yii::$app->user->isGuest
+            ],
+            [
                 'label' => 'Информационный ресурс',
                 'icon' => 'fa fa-inbox',
                 'url' => '#',
