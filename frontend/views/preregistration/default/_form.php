@@ -49,6 +49,10 @@ use artsoft\helpers\Html;
             </div>
         </div>
         <div class="panel-footer">
+                <?= \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info-circle"></i> Нажимая кнопку "Сохранить" Вы соглашаетесь на обработку персональных данных.',
+                    'options' => ['class' => 'alert-info'],
+                ]);?>
             <div class="form-group btn-group">
                 <?= \artsoft\helpers\ButtonHelper::saveButton() ?>
             </div>

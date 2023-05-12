@@ -32,6 +32,12 @@ $this->params['breadcrumbs'][] = 'Поиск ученика';
         </div>
     </div>
     <div class="panel-footer">
+        <?php if (Yii::$app->user->isGuest): ?>
+            <?= \yii\bootstrap\Alert::widget([
+                'body' => '<i class="fa fa-info-circle"></i> Нажимая кнопку "Поиск" Вы соглашаетесь на обработку персональных данных.',
+                'options' => ['class' => 'alert-info'],
+            ]);?>
+        <?php endif; ?>
         <div class="form-group btn-group">
         <?= \artsoft\helpers\Html::submitButton(
             '<i class="fa fa-search" aria-hidden="true"></i> ' . Yii::t('art', 'Finding'),

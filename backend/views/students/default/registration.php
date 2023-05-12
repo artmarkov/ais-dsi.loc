@@ -123,6 +123,12 @@ $this->params['breadcrumbs'][] = 'Регистрация';
         </div>
     </div>
     <div class="panel-footer">
+        <?php if (Yii::$app->user->isGuest): ?>
+        <?= \yii\bootstrap\Alert::widget([
+            'body' => '<i class="fa fa-info-circle"></i> Нажимая кнопку "Продолжить" Вы соглашаетесь на обработку персональных данных.',
+            'options' => ['class' => 'alert-info'],
+        ]);?>
+        <?php endif; ?>
         <div class="form-group btn-group">
             <div class="form-group btn-group">
                 <?php if (!Yii::$app->user->isGuest): ?>

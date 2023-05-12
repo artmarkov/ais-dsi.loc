@@ -59,8 +59,8 @@ class DefaultController extends \frontend\controllers\DefaultController
             if ($students_id = $model->registration()) {
                 return $this->redirect(['create', 'id' => $students_id]);
             }
-            echo '<pre>' . print_r($model->errors, true) . '</pre>';
-            echo '<pre>' . print_r(Yii::$app->request->post(), true) . '</pre>';
+//            echo '<pre>' . print_r($model->errors, true) . '</pre>';
+//            echo '<pre>' . print_r(Yii::$app->request->post(), true) . '</pre>';
         }
         return $this->render('registration', compact('model'));
     }
