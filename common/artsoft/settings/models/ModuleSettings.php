@@ -39,9 +39,8 @@ class ModuleSettings extends BaseSettingsModel
                 [['shelf_life_pass', 'shelf_life_attendlog', 'shelf_life_sitelog', 'shelf_life_requestlog'], 'string'],
 
                 [['pre_status', 'pre_date_in', 'pre_date_out', 'pre_plan_year', 'pre_date_start'], 'required'],
-                [['pre_status'], 'boolean'],
+                [['pre_status', 'pre_plan_year'], 'string'],
                 [['pre_date_in', 'pre_date_out', 'pre_date_start'], 'date'],
-                [['pre_plan_year'], 'string'],
             ]);
     }
 

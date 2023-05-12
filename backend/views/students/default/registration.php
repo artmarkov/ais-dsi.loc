@@ -127,12 +127,11 @@ $this->params['breadcrumbs'][] = 'Регистрация';
             <div class="form-group btn-group">
                 <?php if (!Yii::$app->user->isGuest): ?>
                     <?= \artsoft\helpers\ButtonHelper::exitButton('/admin/students/default/index', 'btn-md'); ?>
-                    <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'save', 'Save', 'btn-md'); ?>
 
                     <?= \artsoft\helpers\Html::submitButton(
-                        '<i class="fa fa-floppy-o" aria-hidden="true"></i> Перейти в карточку',
+                        '<i class="fa fa-floppy-o" aria-hidden="true"></i> Сохранить и перейти в карточку',
                         [
-                            'class' => 'btn btn-info btn-md',
+                            'class' => 'btn btn-primary btn-md',
                             'name' => 'submitAction',
                             'value' => 'students',
                         ]

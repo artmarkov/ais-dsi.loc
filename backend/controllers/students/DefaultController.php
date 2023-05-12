@@ -18,6 +18,7 @@ use common\models\info\Document;
 use common\models\info\search\DocumentSearch;
 use common\models\parents\Parents;
 use common\models\service\UsersCard;
+use common\models\students\Student;
 use common\models\students\StudentDependence;
 use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\search\StudyplanViewSearch;
@@ -79,8 +80,17 @@ class DefaultController extends MainController
         $model->student_birth_date = $_GET['birth_date'] ?? null;
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            echo '<pre>' . print_r($model->errors, true) . '</pre>';
-            echo '<pre>' . print_r(Yii::$app->request->post(), true) . '</pre>';
+            if ($students_id = $model->registration()) {
+                if ($_POST['submitAction'] === 'preregostration') {
+                    return $this->redirect(['preregistration/create', 'id' => $students_id]);
+                } elseif ($_POST['submitAction'] === 'students') {
+                    return $this->redirect(['students/default/view', 'id' => $students_id]);
+                } elseif ($_POST['submitAction'] === 'studyplan') {
+                    return $this->redirect(['students/default/studyplan', 'id' => $students_id, 'mode' => 'create']);
+                } elseif ($_POST['submitAction'] === 'examination') {
+                    return $this->redirect(['students/default/entrant', 'id' => $students_id, 'mode' => 'create']);
+                }
+            }
         }
         return $this->render('registration', compact('model'));
     }
@@ -123,7 +133,7 @@ class DefaultController extends MainController
                         $user->generateConfirmationToken();
                     }
                     if ($flag = $user->save(false)) {
-                        $user->assignRoles(['user', 'student']);
+                        $user->assignRoles(['student']);
                         $userCommon->user_category = UserCommon::USER_CATEGORY_STUDENTS;
                         $userCommon->user_id = $user->id;
                         if ($flag = $userCommon->save(false)) {

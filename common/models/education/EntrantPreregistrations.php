@@ -2,16 +2,21 @@
 
 namespace common\models\education;
 
+use artsoft\helpers\ArtHelper;
 use artsoft\models\User;
 use common\models\students\Student;
+use common\models\studyplan\Studyplan;
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "entrant_preregistrations".
  *
  * @property int $id
  * @property int $entrant_programm_id Выбранная программа для предварительной записи
- * @property int $stydent_id Учетная запись ученика-кандидата
+ * @property int $student_id Учетная запись ученика-кандидата
  * @property int $plan_year Учебный год приема ученика
  * @property int $reg_vid Вид записи (Список: для приема, в резерв)
  * @property int $created_at
@@ -21,10 +26,17 @@ use Yii;
  * @property int $status
  *
  * @property EntrantProgramm $entrantProgramm
- * @property Students $stydent
+ * @property Student $student
  */
 class EntrantPreregistrations extends \artsoft\db\ActiveRecord
 {
+    const REG_ENTRANT = 1;
+    const REG_RESERVE = 2;
+
+    const REG_STATUS_DRAFT = 0;
+    const REG_STATUS_STUDENT = 1;
+    const REG_STATUS_OUTSIDE = 3;
+
     /**
      * {@inheritdoc}
      */
@@ -34,17 +46,30 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            BlameableBehavior::class,
+            TimestampBehavior::class,
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['plan_year', 'entrant_programm_id', 'stydent_id', 'reg_vid'], 'required'],
-            [['plan_year', 'entrant_programm_id', 'stydent_id', 'reg_vid', 'status'], 'integer'],
+            [['plan_year', 'entrant_programm_id', 'student_id', 'reg_vid'], 'required'],
+            [['plan_year', 'entrant_programm_id', 'student_id', 'reg_vid', 'status'], 'integer'],
             [['entrant_programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantProgramm::class, 'targetAttribute' => ['entrant_programm_id' => 'id']],
-            [['stydent_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['stydent_id' => 'id']],
+            [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
+            [['entrant_programm_id'], 'unique', 'targetAttribute' => ['entrant_programm_id', 'plan_year', 'student_id'],
+                'message' => 'Ученик уже записан на выбранную программу.'],
         ];
     }
 
@@ -54,10 +79,10 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('art/guide', 'ID'),
-            'entrant_programm_id' => Yii::t('art/guide', 'Entrant Programm ID'),
-            'stydent_id' => Yii::t('art/guide', 'Stydent ID'),
-            'plan_year' => Yii::t('art/guide', 'Plan Year'),
+            'id' => Yii::t('art', 'ID'),
+            'entrant_programm_id' => Yii::t('art/guide', 'Entrant Programms'),
+            'student_id' => Yii::t('art/student', 'Student'),
+            'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'reg_vid' => Yii::t('art/guide', 'Reg Vid'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -78,13 +103,125 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Stydent]].
+     * Gets query for [[Student]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getStydent()
+    public function getStudent()
     {
-        return $this->hasOne(Student::class, ['id' => 'stydent_id']);
+        return $this->hasOne(Student::class, ['id' => 'student_id']);
     }
 
+    public static function getRegList()
+    {
+        return array(
+            self::REG_ENTRANT => Yii::t('art/guide', 'Reg Entrant'),
+            self::REG_RESERVE => Yii::t('art/guide', 'Reg Reserve'),
+        );
+    }
+
+    /**
+     * getDocStatusList
+     * @return array
+     */
+    public static function getRegStatusList()
+    {
+        return array(
+            self::REG_STATUS_DRAFT => Yii::t('art', 'Draft'),
+            self::REG_STATUS_STUDENT => Yii::t('art/guide', 'Accepted for training'),
+            self::REG_STATUS_OUTSIDE => Yii::t('art/guide', 'Refused admission'),
+        );
+    }
+
+    /**
+     * @param $val
+     * @return mixed
+     */
+    public static function getRegStatusValue($val)
+    {
+        $ar = self::getRegStatusList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    public function sendMessage($email)
+    {
+        if ($email) {
+            $textBody = 'Сообщение модуля "Предварительная регистрация на обучение" ' . PHP_EOL;
+            $htmlBody = '<p><b>Сообщение модуля "Предварительная регистрация на обучение"</b></p>';
+
+            $textBody .= 'Вы успешно записались на обучение по программе: ' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id))  . PHP_EOL;
+            $htmlBody .= '<p>Вы успешно записались на обучение по программе:' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id))  . '</p>';
+
+            $textBody .= 'В ближайшее время с Вами свяжутся для уточнения деталей обучения и оплаты.' . PHP_EOL;
+            $htmlBody .= '<p>В ближайшее время с Вами свяжутся для уточнения деталей обучения и оплаты.' . '</p>';
+
+            $textBody .= '--------------------------' . PHP_EOL;
+            $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
+            $htmlBody .= '<hr>';
+            $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
+
+            return Yii::$app->mailqueue->compose()
+                ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
+                ->setTo($email)
+                ->setSubject('Сообщение с сайта ' . Yii::$app->name)
+                ->setTextBody($textBody)
+                ->setHtmlBody($htmlBody)
+                ->queue();
+        }
+    }
+
+    public static function getRegSummary($model_date)
+    {
+//        $data = $dates = [];
+//        $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+//        $timestamp_in = $timestamp[0];
+//        $timestamp_out = $timestamp[1];
+//
+//        $attributes = ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
+//        $attributes += ['student_id' => Yii::t('art/student', 'Student')];
+//
+//        $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
+//            ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
+//            ->andWhere(['=', 'subject_sect_id', $subject_sect_id])
+//            ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
+//            ->orderBy('lesson_date')
+//            ->asArray()->all();
+//        $modelsProgress = self::find()->where(['subject_sect_studyplan_id' => $model_date->subject_sect_studyplan_id])
+//            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+//            ->orderBy('sect_name')->all();
+//
+//        $modelsMarks = ArrayHelper::index(LessonItemsProgressView::find()
+//            ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
+//            ->andWhere(['subject_sect_id' => $subject_sect_id])
+//            ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
+//            ->all(), null, 'studyplan_subject_id');
+//
+//        // echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
+//        foreach ($lessonDates as $id => $lessonDate) {
+//            $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
+//            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
+//            $attributes += [$date => $label];
+//            $dates[] = $date;
+//        }
+//        foreach ($modelsProgress as $item => $modelProgress) {
+//            $data[$item]['lesson_timestamp'] = $lessonDates;
+//            $data[$item]['subject_sect_id'] = $modelProgress->subject_sect_id;
+//            $data[$item]['subject_sect_studyplan_id'] = $modelProgress->subject_sect_studyplan_id;
+//            $data[$item]['sect_name'] = $modelProgress->sect_name;
+//            $data[$item]['studyplan_subject_id'] = $modelProgress->studyplan_subject_id;
+//            $data[$item]['studyplan_id'] = $modelProgress->studyplan_id;
+//            $data[$item]['student_id'] = $modelProgress->student_id;
+//            $data[$item]['student_fio'] = $modelProgress->student_fio;
+//
+//            if (isset($modelsMarks[$modelProgress->studyplan_subject_id])) {
+//                foreach ($modelsMarks[$modelProgress->studyplan_subject_id] as $id => $mark) {
+//                    $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
+//                    $data[$item][$date_label] = self::getEditableForm($date_label, $mark);
+//                }
+//            }
+//        }
+
+         echo '<pre>' . print_r($model_date, true) . '</pre>'; die();
+        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
+    }
 }

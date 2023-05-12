@@ -2,8 +2,14 @@
 
 namespace common\models\forms;
 
+use artsoft\models\User;
+use common\models\parents\Parents;
+use common\models\students\Student;
+use common\models\students\StudentDependence;
+use common\models\user\UserCommon;
 use Yii;
 use yii\base\Model;
+use yii\db\Query;
 
 class RegistrationForm extends Model
 {
@@ -48,7 +54,8 @@ class RegistrationForm extends Model
         return [
             [['email', 'phone'], 'required'],
             [['student_first_name', 'student_last_name', 'student_birth_date'], 'required'],
-            [['parent_first_name',  'parent_last_name', 'parent_birth_date'], 'required'],
+            ['student_last_name', 'validateStudent'],
+            [['parent_first_name', 'parent_last_name', 'parent_birth_date'], 'required'],
             [['relation_id'], 'required'],
             [['student_snils', 'parent_snils'], 'required'],
             [['student_first_name', 'student_middle_name', 'student_last_name'], 'trim'],
@@ -57,7 +64,7 @@ class RegistrationForm extends Model
             [['parent_first_name', 'parent_middle_name', 'parent_last_name'], 'string', 'max' => 124],
             [['student_first_name', 'student_middle_name', 'student_last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             [['parent_first_name', 'parent_middle_name', 'parent_last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
-            [['student_birth_date'],'safe'],
+            [['student_birth_date'], 'safe'],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             [['student_snils', 'parent_snils'], 'string', 'max' => 16],
             ['email', 'email'],
@@ -108,6 +115,29 @@ class RegistrationForm extends Model
         ];
     }
 
+    public function validateStudent($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            $birth_date = Yii::$app->formatter->asTimestamp($this->student_birth_date);
+
+            $user = (new Query())->from('students_view')
+                ->select(['students_id'])
+                ->where(['AND',
+                    ['first_name' => $this->student_first_name],
+                    ['last_name' => $this->student_last_name],
+                ]);
+
+            if ($this->student_middle_name != null) {
+                $user = $user->andWhere(['like', 'middle_name', $this->student_middle_name]);
+            }
+            $user = $user->andWhere(['=', 'birth_date', $birth_date]);
+
+            if ($user->exists()) {
+                $this->addError($attribute, 'Ученик с введенными данными уже добавлен');
+            }
+        }
+    }
+
     public function attributeLabels()
     {
         return [
@@ -141,4 +171,101 @@ class RegistrationForm extends Model
         ];
     }
 
+    public function registration()
+    {
+        $userStudent = new User();
+        $userParent = new User();
+        $userCommonStudent = new UserCommon();
+        $userCommonParent = new UserCommon();
+        $modelStudent = new Student();
+        $modelParent = new Parents();
+        $modelDependence = new StudentDependence();
+
+        $userCommonStudent->setAttributes([
+            'first_name' => $this->student_first_name,
+            'middle_name' => $this->student_middle_name,
+            'last_name' => $this->student_last_name,
+            'birth_date' => $this->student_birth_date,
+            'gender' => $this->student_gender,
+            'phone' => $this->phone,
+            'phone_optional' => $this->phone_optional,
+            'snils' => $this->student_snils,
+            'email' => $this->email,
+        ]);
+        $modelStudent->setAttributes([
+            'sert_name' => $this->student_sert_name,
+            'sert_series' => $this->student_sert_series,
+            'sert_num' => $this->student_sert_num,
+            'sert_organ' => $this->student_sert_organ,
+            'sert_date' => $this->student_sert_date,
+        ]);
+        $userCommonParent->setAttributes([
+            'first_name' => $this->parent_first_name,
+            'middle_name' => $this->parent_middle_name,
+            'last_name' => $this->parent_last_name,
+            'birth_date' => $this->parent_birth_date,
+            'gender' => $this->parent_gender,
+            'phone' => $this->phone,
+            'phone_optional' => $this->phone_optional,
+            'snils' => $this->parent_snils,
+            'email' => $this->email,
+        ]);
+        $modelParent->setAttributes([
+            'sert_name' => $this->parent_sert_name,
+            'sert_series' => $this->parent_sert_series,
+            'sert_num' => $this->parent_sert_num,
+            'sert_organ' => $this->parent_sert_organ,
+            'sert_code' => $this->parent_sert_code,
+            'sert_date' => $this->parent_sert_date,
+        ]);
+        $modelDependence->relation_id = $this->relation_id;
+
+        $transaction = \Yii::$app->db->beginTransaction();
+        $flag = false;
+        try {
+            $userStudent->username = $userCommonStudent->generateUsername();
+            $userStudent->email = $userCommonStudent->email;
+            $userStudent->generateAuthKey();
+
+            $userParent->username = $userCommonParent->generateUsername();
+            $userParent->email = $userCommonParent->email;
+            $userParent->generateAuthKey();
+
+            if (Yii::$app->art->emailConfirmationRequired) {
+                $userStudent->status = User::STATUS_INACTIVE;
+                $userStudent->generateConfirmationToken();
+
+                $userParent->status = User::STATUS_INACTIVE;
+                $userParent->generateConfirmationToken();
+            }
+            if ($flag = $userStudent->save(false) && $flag = $userParent->save(false)) {
+                $userStudent->assignRoles(['student']);
+                $userCommonStudent->user_category = UserCommon::USER_CATEGORY_STUDENTS;
+                $userCommonStudent->user_id = $userStudent->id;
+
+                $userParent->assignRoles(['parents']);
+                $userCommonParent->user_category = UserCommon::USER_CATEGORY_PARENTS;
+                $userCommonParent->user_id = $userParent->id;
+
+                if ($flag = $userCommonStudent->save(false) && $flag = $userCommonParent->save(false)) {
+                    $modelStudent->user_common_id = $userCommonStudent->id;
+                    $modelParent->user_common_id = $userCommonParent->id;
+                    if ($modelStudent->save(false) && $modelParent->save(false)) {
+                        $modelDependence->student_id = $modelStudent->id;
+                        $modelDependence->parent_id = $modelParent->id;
+                        $flag = $modelDependence->save(false);
+                    }
+                }
+            }
+
+            if ($flag) {
+                $transaction->commit();
+                return $modelStudent->id;
+            }
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            return false;
+        }
+
+    }
 }

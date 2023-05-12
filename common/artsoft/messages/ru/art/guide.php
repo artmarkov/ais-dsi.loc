@@ -227,7 +227,13 @@ return [
     'Doc Status' => 'Статус документа',
     'Sign Teachers' => 'Подписант документа',
     'Sign Time' => 'Время согласования',
-    'Entrant Programms' => 'Программы для предварительной записи',
+    'Entrant Programms' => 'Программа',
+    'Entrant Preregistrations' => 'Предварительная запись',
+    'Reg Entrant' => 'Запись на обучение',
+    'Reg Reserve' => 'Запись в резерв',
+    'Reg Vid' => 'Вид регистрации',
+    'Accepted for training' => 'Принят на обучение',
+    'Refused admission' => 'Отказано в приеме',
 
 ];
 ?>

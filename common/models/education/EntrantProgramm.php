@@ -6,6 +6,7 @@ use artsoft\models\User;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "entrant_programm".
@@ -108,5 +109,80 @@ class EntrantProgramm extends \artsoft\db\ActiveRecord
     public function getProgramm()
     {
         return $this->hasOne(EducationProgramm::class, ['id' => 'programm_id']);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getEntrantProgrammList()
+    {
+        return ArrayHelper::map(self::find()
+            ->select('id, name')
+            ->where(['status' => self::STATUS_ACTIVE])
+            ->orderBy('name')
+            ->asArray()->all(), 'id', 'name');
+    }
+
+    public static function getEntrantProgrammValue($val)
+    {
+        $ar = self::getEntrantProgrammList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+    /**
+     * Получение списка программ для предварительной записи с учетом возраста ребенка и оставшихся мест
+     * @param $age
+     * @param $plan_year
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getEntrantProgrammLimitList($age, $plan_year)
+    {
+        $query =\Yii::$app->db->createCommand('SELECT id, name, age_in, age_out, qty_entrant, qty_reserve, description, status, summ_entrant, summ_reserve
+            FROM (SELECT id, name, age_in, age_out, qty_entrant, qty_reserve, description, status,
+                    (SELECT COUNT(entrant_preregistrations.id) FROM entrant_preregistrations where entrant_preregistrations.entrant_programm_id = entrant_programm.id AND reg_vid = 1 AND plan_year = :plan_year) as summ_entrant,
+                    (SELECT COUNT(entrant_preregistrations.id) FROM entrant_preregistrations where entrant_preregistrations.entrant_programm_id = entrant_programm.id AND reg_vid = 2 AND plan_year = :plan_year) as summ_reserve
+            FROM entrant_programm) data
+            WHERE (qty_entrant > summ_entrant OR qty_reserve > summ_reserve)  AND age_in <= :age AND age_out >= :age AND status = :status ',
+            [
+                'plan_year' => $plan_year,
+                'age' => $age,
+                'status' => self::STATUS_ACTIVE,
+            ])->queryAll();
+
+        return ArrayHelper::map($query, 'id', 'name');
+    }
+
+    /**
+     * Получение колличества записей программы по виду(обучение,резерв) за учебный год
+     * @param $entrant_programm_id
+     * @param $reg_vid
+     * @param $plan_year
+     * @return false|int|string|null
+     * @throws \yii\db\Exception
+     */
+    public static function getEntrantRegVidCount($entrant_programm_id, $reg_vid, $plan_year)
+    {
+        return \Yii::$app->db->createCommand('SELECT COUNT(id) 
+            FROM entrant_preregistrations 
+            where entrant_programm_id = :entrant_programm_id 
+            AND reg_vid = :reg_vid AND plan_year = :plan_year',
+            [
+                'entrant_programm_id' => $entrant_programm_id,
+                'reg_vid' => $reg_vid,
+                'plan_year' => $plan_year,
+            ])->queryScalar();
+    }
+
+    /**
+     * Автоматическое определение вида записи (обучение,резерв)
+     * @param $entrant_programm_id
+     * @param $plan_year
+     * @return int
+     * @throws \yii\db\Exception
+     */
+    public static function getEntrantRegVid($entrant_programm_id, $plan_year){
+        $qty_entrant = self::getEntrantRegVidCount($entrant_programm_id, EntrantPreregistrations::REG_ENTRANT, $plan_year);
+        $model = self::findOne(['id' => $entrant_programm_id]);
+        return $model->qty_entrant > $qty_entrant ? EntrantPreregistrations::REG_ENTRANT : EntrantPreregistrations::REG_RESERVE;
     }
 }

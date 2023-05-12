@@ -97,7 +97,7 @@ SettingsAsset::register($this);
                     <div class="row">
                         <div class="col-md-12">
 
-                            <?= $form->field($model, 'pre_status')->radioList(['0' => 'Закрыт', '1' => 'Открыт']) ?>
+                            <?= $form->field($model, 'pre_status')->radioList([0 => 'Закрыт', 1 => 'Открыт']) ?>
                             <?= $form->field($model, 'pre_date_in')->widget(DatePicker::class)->hint('Введите дату открытия записи') ?>
                             <?= $form->field($model, 'pre_date_out')->widget(DatePicker::class)->hint('Введите дату закрытия записи') ?>
                             <?= $form->field($model, 'pre_plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList())->hint('Введите учебный год на каторый ведется приеи') ?>

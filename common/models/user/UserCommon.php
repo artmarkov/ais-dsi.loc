@@ -41,6 +41,7 @@ use yii\helpers\Url;
  * @property int $version
  *
  */
+
 class UserCommon extends ActiveRecord
 {
     const GENDER_NOT_SET = 0;
