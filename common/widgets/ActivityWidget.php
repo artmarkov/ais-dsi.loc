@@ -23,7 +23,7 @@ class ActivityWidget extends \yii\bootstrap\Widget
                 ->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($model->getRelatedId())])
                 ->andWhere(['is not', 'subject_schedule_id', null])
                 ->andWhere(['=', 'week_day', $week_day])
-                ->andWhere(new \yii\db\Expression('CASE WHEN week_num IS NOT NULL THEN week_num = :week_num ELSE TRUE END', [':week_num' => $week_num]));
+                ->andWhere(new \yii\db\Expression('CASE WHEN (week_num != 0 OR week_num != NULL) THEN week_num = :week_num ELSE TRUE END', [':week_num' => $week_num]));
             $dataProvider = new ActiveDataProvider(['query' => $query, 'sort' => false, 'pagination' => false]);
             return $this->render('activityWidget', [
                 'dataProvider' => $dataProvider]);
