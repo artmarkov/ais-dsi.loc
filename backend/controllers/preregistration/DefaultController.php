@@ -2,7 +2,6 @@
 
 namespace backend\controllers\preregistration;
 
-use common\models\teachers\search\TeachersLoadViewSearch;
 use Yii;
 use yii\helpers\StringHelper;
 

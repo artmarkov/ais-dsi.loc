@@ -10,6 +10,7 @@ use common\models\guidejob\Work;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
+use yii\db\Query;
 
 
 /**
@@ -56,7 +57,7 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
             [['direction_vid_id', 'direction_id', 'stake_id'], 'required'],
             [['teachers_id', 'direction_vid_id', 'direction_id', 'stake_id'], 'integer'],
 //            ['work_id', 'unique', 'targetAttribute' => ['teachers_id', 'work_id'], 'message' => Yii::t('art/teachers', 'The main activity may not be the same as the secondary one.')],
-            ['direction_id', 'compareDirection'],
+//            ['direction_id', 'compareDirection'],
             [['direction_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => DirectionVid::class, 'targetAttribute' => ['direction_vid_id' => 'id']],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
             [['stake_id'], 'exist', 'skipOnError' => true, 'targetClass' => Stake::class, 'targetAttribute' => ['stake_id' => 'id']],
@@ -142,5 +143,39 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
     public function getTeachers()
     {
         return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
+    }
+
+    public static function getDirectionListById($teachers_id)
+    {
+        if (!$teachers_id) {
+            return [];
+        }
+        return self::find()
+            ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = teachers_activity.direction_id')
+            ->select('guide_teachers_direction.id as id, guide_teachers_direction.name as name')
+            ->where(['=', 'teachers_id', $teachers_id])
+            ->asArray()
+            ->all();
+    }
+    public static function getDirectionListForTeachers($teachers_id = null)
+    {
+        return \yii\helpers\ArrayHelper::map(self::getDirectionListById($teachers_id), 'id', 'name');
+    }
+    public static function getDirectionVidListById($teachers_id, $direction_id)
+    {
+        if (!$teachers_id && !$direction_id) {
+            return [];
+        }
+        return self::find()
+            ->innerJoin('guide_teachers_direction_vid', 'guide_teachers_direction_vid.id = teachers_activity.direction_vid_id')
+            ->select('guide_teachers_direction_vid.id as id, guide_teachers_direction_vid.name as name')
+            ->where(['=', 'teachers_id', $teachers_id])
+            ->andWhere(['=', 'direction_id', $direction_id])
+            ->asArray()
+            ->all();
+    }
+    public static function getDirectionVidListForTeachers($teachers_id = null, $direction_id = null)
+    {
+        return \yii\helpers\ArrayHelper::map(self::getDirectionVidListById($teachers_id, $direction_id), 'id', 'name');
     }
 }

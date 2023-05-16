@@ -36,29 +36,42 @@ use artsoft\helpers\RefBook;
                     echo Html::activeHiddenInput($model, 'subject_sect_studyplan_id');
                     echo Html::activeHiddenInput($model, 'studyplan_subject_id');
                     ?>
-                    <?= $form->field($model, 'direction_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \common\models\guidejob\Direction::getDirectionList(),
+                    <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => \common\models\teachers\Teachers::getTeachersAll($model->isNewRecord ? \common\models\teachers\Teachers::STATUS_ACTIVE : null),
                         'options' => [
-                            'id' => 'direction_id',
+                            'id' => 'teachers_id',
                             'disabled' => !$model->isNewRecord,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [
                             'allowClear' => true
+                        ]
+                    ]);
+                    ?>
+                    <?= $form->field($model, 'direction_id')->widget(\kartik\depdrop\DepDrop::class, [
+                        'data' => \common\models\teachers\TeachersActivity::getDirectionListForTeachers($model->teachers_id),
+                        'options' => [
+                            'id' => 'direction_id',
+                            'placeholder' => Yii::t('art', 'Select...'),
+                        ],
+                        'pluginOptions' => [
+                            'depends' => ['teachers_id'],
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'url' => Url::to(['/teachers/default/direction'])
                         ],
                     ]);
                     ?>
 
-                    <?= $form->field($model, 'teachers_id')->widget(\kartik\depdrop\DepDrop::class, [
-                        'data' => \common\models\teachers\Teachers::getTeachersList($model->direction_id),
+
+                    <?= $form->field($model, 'direction_vid_id')->widget(\kartik\depdrop\DepDrop::class, [
+                        'data' => \common\models\teachers\TeachersActivity::getDirectionVidListForTeachers($model->teachers_id, $model->direction_id),
                         'options' => [
-                            // 'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [
-                            'depends' => ['direction_id'],
+                            'depends' => ['teachers_id', 'direction_id'],
                             'placeholder' => Yii::t('art', 'Select...'),
-                            'url' => Url::to(['/teachers/default/teachers'])
+                            'url' => Url::to(['/teachers/default/direction-vid'])
                         ]
                     ]);
                     ?>

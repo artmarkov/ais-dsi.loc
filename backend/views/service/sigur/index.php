@@ -65,13 +65,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'name',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
                                 'options' => ['style' => 'width:350px'],
-                                'controller' => '/service/sigur',
-                                'title' => function (UsersCardLog $model) {
-                                    return Html::a($model->name, ['view', 'id' => $model->id], ['data-pjax' => 0]);
+                                'value' => function (UsersCardLog $model) {
+                                    return $model->name;
                                 },
-                                'buttonsTemplate' => '{view} {delete}',
                             ],
                             'position',
                             'datetime',
@@ -97,9 +94,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'deny_reason',
-                                'filter' =>  UsersCardLog::DENY_REASON,
+                                'filter' => UsersCardLog::DENY_REASON,
                                 'value' => function (UsersCardLog $model) {
-                                    return (int)$model->deny_reason != null ? UsersCardLog::DENY_REASON[(int)$model->deny_reason] : '';
+                                    return (int)$model->deny_reason != null ? substr(UsersCardLog::DENY_REASON[(int)$model->deny_reason], 0, 100) . '...' : '';
                                 },
                                 'format' => 'raw'
                             ],
@@ -111,6 +108,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label' => 'Зарегистрирован в АИС',
                                 'format' => 'raw',
                                 'contentOptions' => ['style' => "text-align:center; vertical-align: middle;"]
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/service/sigur',
+                                'template' => '{view} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
                             ],
                         ],
                     ]);

@@ -10,7 +10,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         }
 
         $this->createTableWithHistory('studyplan', [
-            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'student_id' => $this->integer()->notNull(),
             'programm_id' => $this->integer()->notNull(),
             'subject_type_id' => $this->integer(),
@@ -39,7 +39,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->addForeignKey('studyplan_ibfk_2', 'studyplan', 'programm_id', 'education_programm', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('studyplan_ibfk_3', 'studyplan', 'subject_type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
 
-        $this->db->createCommand()->resetSequence('studyplan', 1000)->execute();
+        $this->db->createCommand()->resetSequence('studyplan', 10000)->execute();
 
         $this->createTableWithHistory('subject_sect', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',

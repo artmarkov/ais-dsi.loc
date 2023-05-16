@@ -15,6 +15,7 @@ use common\models\user\UserCommon;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -245,6 +246,15 @@ class Teachers extends ActiveRecord
     public static function getTeachersList($direction_id)
     {
         return \yii\helpers\ArrayHelper::map(self::getTeachersById($direction_id), 'id', 'name');
+    }
+
+    public static function getTeachersAll($status = null)
+    {
+        $qyery =  (new Query())->from('teachers_view')
+            ->select(['teachers_id', 'fio'])
+            ->where($status != null ? ['=', 'status', $status] : ['in', 'status', [0,1]])
+            ->all();
+        return \yii\helpers\ArrayHelper::map($qyery, 'teachers_id', 'fio');
     }
 
     /**

@@ -8,6 +8,8 @@ use artsoft\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model common\models\education\EntrantPreregistrations */
 /* @var $form artsoft\widgets\ActiveForm */
+
+$readonly = $model->status == EntrantPreregistrations::REG_STATUS_STUDENT;
 ?>
 
 <div class="entrant-preregistrations-form">
@@ -55,7 +57,7 @@ use artsoft\helpers\Html;
                     <?= $form->field($model, 'entrant_programm_id')->widget(\kartik\select2\Select2::class, [
                         'data' => \common\models\education\EntrantProgramm::getEntrantProgrammList(),
                         'options' => [
-//                            'disabled' => $readonly,
+                            'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
                             'multiple' => false,
                         ],
@@ -67,14 +69,14 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                         [
-                            /* 'disabled' => $model->plan_year ? true : $readonly,*/
+                             'disabled' => $readonly,
                             'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' => $model->isNewRecord ? true : false]
                             ]
                         ]);
                     ?>
                     <?= $form->field($model, 'reg_vid')->radioList(EntrantPreregistrations::getRegList()/*, ['itemOptions' => ['disabled' => $readonly]]*/) ?>
 
-                    <?= $form->field($model, 'status')->dropDownList(EntrantPreregistrations::getRegStatusList()/*, ['disabled' => $readonly]*/) ?>
+                    <?= $form->field($model, 'status')->dropDownList(EntrantPreregistrations::getRegStatusList(), ['disabled' => $readonly])->hint('При смене статуса "Принят на обучение", будет создан учебный план автоматически.') ?>
                 </div>
             </div>
         </div>

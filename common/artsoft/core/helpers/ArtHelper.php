@@ -190,11 +190,22 @@ class ArtHelper
      */
     public static function getMonthsList($format = 'MMMM')
     {
-        for ($i = 1; $i <= 12; $i++) {
-            $months[$i] = \Yii::$app->formatter->asDate(mktime(0, 0, 0, $i), $format);
-        }
+        $monthAr = [
+            1 => 'января',
+            2 => 'февраля',
+            3 => 'марта',
+            4 => 'апреля',
+            5 => 'мая',
+            6 => 'июня',
+            7 => 'июля',
+            8 => 'августа',
+            9 => 'сентября',
+            10 => 'октября',
+            11 => 'ноября',
+            12 => 'декабря'
+        ];
 
-        return $months;
+        return $monthAr;
     }
 
     /**

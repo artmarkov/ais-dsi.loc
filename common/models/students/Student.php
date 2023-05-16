@@ -68,23 +68,27 @@ class Student extends ActiveRecord
             [['sert_name', 'sert_series', 'sert_num'], 'string', 'max' => 32],
             [['sert_organ'], 'string', 'max' => 127],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
-            [['sert_series', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
-                return $model->sert_name != NULL;
-            }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+            [['sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_series != NULL;
-            }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_series', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#student-sert_series').val() != NULL;
+                    }"],
+            [['sert_series', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_num != NULL;
-            }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_num', 'sert_series', 'sert_date'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#student-sert_num').val() != NULL;
+                    }"],
+            [['sert_num', 'sert_series', 'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_organ != NULL;
-            }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_num', 'sert_series', 'sert_organ'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#student-sert_organ').val() != NULL;
+                    }"],
+            [['sert_num', 'sert_series', 'sert_organ'], 'required', 'when' => function ($model) {
                 return $model->sert_date != NULL;
-            }, 'enableClientValidation' => false],
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#student-sert_date').val() != NULL;
+                    }"],
             ['sert_date', 'default', 'value' => NULL],
-            [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['user_common_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['user_common_id' => 'id']],
         ];
     }
@@ -151,7 +155,7 @@ class Student extends ActiveRecord
 
     public static function getDocumentValue($val)
     {
-        $ar = self::STUDENT_DOC;
+        $ar = self::DOC;
 
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
@@ -169,12 +173,12 @@ class Student extends ActiveRecord
 
     public function getStudentDependence()
     {
-        return $this->hasMany(StudentDependence::class, ['student_id' => 'id']);
+        return $this->hasMany(StudentDependence::class, ['id' => 'id']);
     }
 
-    public function getStudentDependenceNameById($student_id)
+    public function getStudentDependenceNameById($id)
     {
-        return StudentDependence::find(['student_id' => $student_id])
+        return StudentDependence::find(['id' => $id])
             ->innerJoin('userRelation');
     }
 
@@ -189,7 +193,7 @@ class Student extends ActiveRecord
         if (!$model->delete(false)) {
             return false;
         }
-        foreach (StudentDependence::findAll(['student_id' => $this->id]) as $model) {
+        foreach (StudentDependence::findAll(['id' => $this->id]) as $model) {
             if (!$model->delete(false)) {
                 break;
                 return false;

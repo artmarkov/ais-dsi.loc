@@ -3,6 +3,7 @@
 namespace common\models\teachers;
 
 use common\models\guidejob\Direction;
+use common\models\guidejob\DirectionVid;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
 use Yii;
@@ -16,6 +17,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $subject_sect_studyplan_id
  * @property int|null $studyplan_subject_id
  * @property int $direction_id
+ * @property int $direction_vid_id
  * @property int $teachers_id
  * @property float|null $load_time
  * @property float|null $load_time_consult
@@ -32,6 +34,7 @@ use yii\behaviors\TimestampBehavior;
 class TeachersLoad extends \artsoft\db\ActiveRecord
 {
     use TeachersLoadTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -59,9 +62,10 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
         return [
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'load_time_consult'], 'default', 'value' => 0],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'direction_id', 'teachers_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['direction_id', 'teachers_id', 'load_time'], 'required'],
+            [['direction_id', 'teachers_id', 'load_time', 'direction_vid_id'], 'required'],
             [['load_time', 'load_time_consult'], 'number'],
             [['direction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Direction::class, 'targetAttribute' => ['direction_id' => 'id']],
+            [['direction_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => DirectionVid::class, 'targetAttribute' => ['direction_vid_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
@@ -76,6 +80,7 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Subject_Sect_Studyplan ID'),
             'studyplan_subject_id' => Yii::t('art/guide', 'Subject Name'),
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
+            'direction_vid_id' => Yii::t('art/teachers', 'Name Direction Vid'),
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
             'load_time' => Yii::t('art/guide', 'Load Time'),
             'load_time_consult' => Yii::t('art/guide', 'Load Time Consult'),
@@ -101,6 +106,16 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
     public function getDirection()
     {
         return $this->hasOne(Direction::class, ['id' => 'direction_id']);
+    }
+
+    /**
+     * Gets query for [[Direction]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDirectionVid()
+    {
+        return $this->hasOne(DirectionVid::class, ['id' => 'direction_vid_id']);
     }
 
     /**

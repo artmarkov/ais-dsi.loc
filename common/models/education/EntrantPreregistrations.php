@@ -4,11 +4,14 @@ namespace common\models\education;
 
 use artsoft\helpers\ArtHelper;
 use artsoft\models\User;
+use artsoft\widgets\Notice;
 use common\models\students\Student;
 use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubject;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -149,8 +152,8 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
             $textBody = 'Сообщение модуля "Предварительная регистрация на обучение" ' . PHP_EOL;
             $htmlBody = '<p><b>Сообщение модуля "Предварительная регистрация на обучение"</b></p>';
 
-            $textBody .= 'Вы успешно записались на обучение по программе: ' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id))  . PHP_EOL;
-            $htmlBody .= '<p>Вы успешно записались на обучение по программе:' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id))  . '</p>';
+            $textBody .= 'Вы успешно записались на обучение по программе: ' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . PHP_EOL;
+            $htmlBody .= '<p>Вы успешно записались на обучение по программе:' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . '</p>';
 
             $textBody .= 'В ближайшее время с Вами свяжутся для уточнения деталей обучения и оплаты.' . PHP_EOL;
             $htmlBody .= '<p>В ближайшее время с Вами свяжутся для уточнения деталей обучения и оплаты.' . '</p>';
@@ -221,7 +224,67 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
 //            }
 //        }
 
-         echo '<pre>' . print_r($model_date, true) . '</pre>'; die();
+        echo '<pre>' . print_r($model_date, true) . '</pre>';
+        die();
         return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($this->status == self::REG_STATUS_STUDENT) {
+            $entrantProgramm = $this->entrantProgramm;
+            $exists = Studyplan::find()->where(['=', 'programm_id', $entrantProgramm->programm_id])
+                ->andWhere(['=', 'plan_year', $this->plan_year])
+                ->andWhere(['=', 'course', $entrantProgramm->course])
+                ->andWhere(['=', 'student_id', $this->student_id])->exists();
+
+            if (!$exists) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                $model = new Studyplan();
+                $model->setAttributes(
+                    [
+                        'programm_id' => $entrantProgramm->programm_id,
+                        'subject_type_id' => $entrantProgramm->subject_type_id,
+                        'course' => $entrantProgramm->course,
+                        'student_id' => $this->student_id,
+                        'plan_year' => $this->plan_year,
+                    ]
+                );
+                try {
+                    $modelProgrammLevel = EducationProgrammLevel::find()
+                        ->where(['programm_id' => $entrantProgramm->programm_id])
+                        ->andWhere(['course' => $entrantProgramm->course])
+                        ->one();
+                    if ($modelProgrammLevel) {
+                        $model->copyAttributes($modelProgrammLevel);
+                    }
+                    if ($flag = $model->save(false)) {
+//                echo '<pre>' . print_r($model, true) . '</pre>';
+
+                        if (isset($modelProgrammLevel->educationProgrammLevelSubject)) {
+                            $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;
+                            foreach ($modelsSubTime as $modelSubTime) {
+                                $modelSub = new StudyplanSubject();
+                                $modelSub->copyAttributes($model, $modelSubTime);
+
+                                if (!($flag = $modelSub->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if ($flag) {
+                        $transaction->commit();
+                        return true;
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                    return false;
+                }
+            }
+        }
+        return parent::beforeSave($insert);
     }
 }

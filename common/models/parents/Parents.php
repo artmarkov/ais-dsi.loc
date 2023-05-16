@@ -70,21 +70,31 @@ class Parents extends \artsoft\db\ActiveRecord
             [['sert_name', 'sert_series', 'sert_num', 'sert_code'], 'string', 'max' => 32],
             [['sert_organ'], 'string', 'max' => 127],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
-            [['sert_series', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
-                return $model->sert_name != NULL;
-            }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+            [['sert_num', 'sert_organ', 'sert_code','sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_series != NULL;
-            }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_series', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#parents-sert_series').val() != NULL;
+                    }"],
+            [['sert_series', 'sert_organ', 'sert_code','sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_num != NULL;
-            }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_num', 'sert_series', 'sert_date'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#parents-sert_num').val() != NULL;
+                    }"],
+            [['sert_series', 'sert_num', 'sert_code','sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_organ != NULL;
-            }, 'enableClientValidation' => false],
-            [['sert_name', 'sert_num', 'sert_series', 'sert_organ'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#parents-sert_organ').val() != NULL;
+                    }"],
+            [['sert_series', 'sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+                return $model->sert_code != NULL;
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#parents-sert_code').val() != NULL;
+                    }"],
+            [['sert_series', 'sert_num', 'sert_organ', 'sert_code'], 'required', 'when' => function ($model) {
                 return $model->sert_date != NULL;
-            }, 'enableClientValidation' => false],
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#parents-sert_date').val() != NULL;
+                    }"],
             ['sert_date', 'default', 'value' => NULL],
         ];
     }
@@ -147,7 +157,7 @@ class Parents extends \artsoft\db\ActiveRecord
 
     public static function getDocumentValue($val)
     {
-        $ar = self::PARENT_DOC;
+        $ar = self::DOC;
 
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
@@ -165,7 +175,7 @@ class Parents extends \artsoft\db\ActiveRecord
      */
     public function getStudentDependence()
     {
-        return $this->hasMany(StudentDependence::className(), ['parent_id' => 'id']);
+        return $this->hasMany(StudentDependence::className(), ['id' => 'id']);
     }
 
     /**
@@ -179,7 +189,7 @@ class Parents extends \artsoft\db\ActiveRecord
         if (!$model->delete(false)) {
             return false;
         }
-        foreach (StudentDependence::findAll(['parent_id' => $this->id]) as $model) {
+        foreach (StudentDependence::findAll(['id' => $this->id]) as $model) {
             if (!$model->delete(false)) {
                 break;
                 return false;

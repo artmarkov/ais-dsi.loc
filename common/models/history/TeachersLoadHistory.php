@@ -21,6 +21,7 @@ class TeachersLoadHistory extends BaseHistory
     {
         return [
             'direction_id',
+            'direction_vid_id',
             'teachers_id',
             'load_time',
         ];
@@ -38,6 +39,8 @@ class TeachersLoadHistory extends BaseHistory
         switch ($name) {
             case 'direction_id':
                 return isset($model->direction_id) ? $model->direction->name : $value;
+            case 'direction_vid_id':
+                return isset($model->direction_vid_id) ? $model->directionVid->name : $value;
             case 'teachers_id':
                 return isset($model->teachers_id) ? RefBook::find('teachers_fio')->getValue($model->teachers_id) : $value;
             case 'load_time':

@@ -48,7 +48,7 @@ class DefaultController extends \frontend\controllers\DefaultController
 
         $this->view->params['breadcrumbs'][] = 'Запись на обучение';
 
-        $model = new RegistrationForm();
+        $model = new RegistrationForm(['scenario' => RegistrationForm::SCENARIO_FRONFEND]);
 
         $model->student_first_name = $_GET['first_name'] ?? null;
         $model->student_middle_name = $_GET['middle_name'] ?? null;

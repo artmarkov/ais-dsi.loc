@@ -13,6 +13,9 @@ use yii\db\Query;
 
 class RegistrationForm extends Model
 {
+    const SCENARIO_FRONFEND = 'frontend';
+    const SCENARIO_BACKEND = 'backend';
+
     public $student_first_name;
     public $student_middle_name;
     public $student_last_name;
@@ -52,12 +55,13 @@ class RegistrationForm extends Model
     public function rules()
     {
         return [
-            [['email', 'phone'], 'required'],
+            [['email', 'phone'], 'required', 'on' => self::SCENARIO_FRONFEND],
             [['student_first_name', 'student_last_name', 'student_birth_date'], 'required'],
             ['student_last_name', 'validateStudent'],
-            [['parent_first_name', 'parent_last_name', 'parent_birth_date'], 'required'],
+            [['parent_first_name', 'parent_last_name'], 'required'],
             [['relation_id'], 'required'],
-            [['student_snils', 'parent_snils'], 'required'],
+            [['parent_birth_date'], 'required', 'on' => self::SCENARIO_FRONFEND],
+            [['student_snils', 'parent_snils'], 'required', 'on' => self::SCENARIO_FRONFEND],
             [['student_first_name', 'student_middle_name', 'student_last_name'], 'trim'],
             [['parent_first_name', 'parent_middle_name', 'parent_last_name'], 'trim'],
             [['student_first_name', 'student_middle_name', 'student_last_name'], 'string', 'max' => 124],
@@ -71,43 +75,59 @@ class RegistrationForm extends Model
             [['student_sert_date'], 'date'],
             [['student_sert_name', 'student_sert_series', 'student_sert_num'], 'string', 'max' => 32],
             [['student_sert_organ'], 'string', 'max' => 127],
+            [['student_sert_series', 'student_sert_num', 'student_sert_organ', 'student_sert_date'], 'required', 'on' => self::SCENARIO_FRONFEND],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
-            [['student_sert_series', 'student_sert_num', 'student_sert_organ', 'student_sert_date'], 'required', 'when' => function ($model) {
-                return $model->student_sert_name != NULL;
-            }, 'enableClientValidation' => true],
-            [['student_sert_name', 'student_sert_num', 'student_sert_organ', 'student_sert_date'], 'required', 'when' => function ($model) {
+            [['student_sert_num', 'student_sert_organ', 'student_sert_date'], 'required', 'when' => function ($model) {
                 return $model->student_sert_series != NULL;
-            }, 'enableClientValidation' => true],
-            [['student_sert_name', 'student_sert_series', 'student_sert_organ', 'student_sert_date'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#registrationform-student_sert_series').val() != NULL;
+                    }"],
+            [['student_sert_series', 'student_sert_organ', 'student_sert_date'], 'required', 'when' => function ($model) {
                 return $model->student_sert_num != NULL;
-            }, 'enableClientValidation' => true],
-            [['student_sert_name', 'student_sert_num', 'student_sert_series', 'student_sert_date'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#registrationform-student_sert_num').val() != NULL;
+                    }"],
+            [['student_sert_num', 'student_sert_series', 'student_sert_date'], 'required', 'when' => function ($model) {
                 return $model->student_sert_organ != NULL;
-            }, 'enableClientValidation' => true],
-            [['student_sert_name', 'student_sert_num', 'student_sert_series', 'student_sert_organ'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#registrationform-student_sert_organ').val() != NULL;
+                    }"],
+            [['student_sert_num', 'student_sert_series', 'student_sert_organ'], 'required', 'when' => function ($model) {
                 return $model->student_sert_date != NULL;
-            }, 'enableClientValidation' => true],
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#registrationform-student_sert_date').val() != NULL;
+                    }"],
             ['student_sert_date', 'default', 'value' => NULL],
-
             [['parent_sert_date'], 'date'],
             [['parent_sert_name', 'parent_sert_series', 'parent_sert_num', 'parent_sert_code'], 'string', 'max' => 32],
             [['parent_sert_organ'], 'string', 'max' => 127],
+            [['parent_sert_series', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_code','parent_sert_date'], 'required', 'on' => self::SCENARIO_FRONFEND],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
-            [['parent_sert_series', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_date'], 'required', 'when' => function ($model) {
-                return $model->parent_sert_name != NULL;
-            }, 'enableClientValidation' => true],
-            [['parent_sert_name', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_date'], 'required', 'when' => function ($model) {
+            [['parent_sert_num', 'parent_sert_organ', 'parent_sert_code','parent_sert_date'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_series != NULL;
-            }, 'enableClientValidation' => true],
-            [['parent_sert_name', 'parent_sert_series', 'parent_sert_organ', 'parent_sert_date'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#registrationform-parent_sert_series').val() != NULL;
+                    }"],
+            [['parent_sert_series', 'parent_sert_organ', 'parent_sert_code','parent_sert_date'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_num != NULL;
-            }, 'enableClientValidation' => true],
-            [['parent_sert_name', 'parent_sert_num', 'parent_sert_series', 'parent_sert_date'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#registrationform-parent_sert_num').val() != NULL;
+                    }"],
+            [['parent_sert_series', 'parent_sert_num', 'parent_sert_code','parent_sert_date'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_organ != NULL;
-            }, 'enableClientValidation' => true],
-            [['parent_sert_name', 'parent_sert_num', 'parent_sert_series', 'parent_sert_organ'], 'required', 'when' => function ($model) {
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#registrationform-parent_sert_organ').val() != NULL;
+                    }"],
+            [['parent_sert_series', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_date'], 'required', 'when' => function ($model) {
+                return $model->parent_sert_code != NULL;
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#registrationform-parent_sert_code').val() != NULL;
+                    }"],
+            [['parent_sert_series', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_code'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_date != NULL;
-            }, 'enableClientValidation' => true],
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#registrationform-parent_sert_date').val() != NULL;
+                    }"],
             ['parent_sert_date', 'default', 'value' => NULL],
             [['student_gender', 'parent_gender'], 'integer'],
 

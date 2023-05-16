@@ -255,7 +255,7 @@ class DefaultController extends MainController
         return null;
     }
 
-    public function actionTeachers()
+    public function actionDirection()
     {
         $out = [];
         if (isset($_POST['depdrop_parents'])) {
@@ -263,7 +263,23 @@ class DefaultController extends MainController
 
             if (!empty($parents)) {
                 $cat_id = $parents[0];
-                $out = Teachers::getTeachersById($cat_id);
+                $out = TeachersActivity::getDirectionListById($cat_id);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
+    public function actionDirectionVid()
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $cat_id = $parents[0];
+                $cat_id2 = $parents[1];
+                $out = TeachersActivity::getDirectionVidListById($cat_id, $cat_id2);
 
                 return json_encode(['output' => $out, 'selected' => '']);
             }
@@ -407,7 +423,7 @@ class DefaultController extends MainController
 
             $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
             $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
-            $model->direction_id = 1000;
+            $model->teachers_id = $id;
 
             if ($model->load(Yii::$app->request->post()) AND $model->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
