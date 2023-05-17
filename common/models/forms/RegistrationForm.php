@@ -55,7 +55,8 @@ class RegistrationForm extends Model
     public function rules()
     {
         return [
-            [['email', 'phone'], 'required', 'on' => self::SCENARIO_FRONFEND],
+            [['email'], 'required', 'on' => self::SCENARIO_FRONFEND],
+            [['phone'], 'required'],
             [['student_first_name', 'student_last_name', 'student_birth_date'], 'required'],
             ['student_last_name', 'validateStudent'],
             [['parent_first_name', 'parent_last_name'], 'required'],
@@ -283,6 +284,7 @@ class RegistrationForm extends Model
                 return $modelStudent->id;
             }
         } catch (\Exception $e) {
+            print_r($e);
             $transaction->rollBack();
             return false;
         }

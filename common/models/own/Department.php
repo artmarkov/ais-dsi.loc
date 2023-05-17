@@ -68,6 +68,22 @@ class Department extends ActiveRecord
             ->asArray()->all(), 'id', 'name', 'name_category');
     }
 
+    public static function getDepartmentListById($division_id)
+    {
+        return self::find()
+            ->innerJoin('guide_division', 'guide_division.id = guide_department.division_id')
+            ->andWhere(['guide_department.status' => self::STATUS_ACTIVE])
+            ->andWhere(['guide_department.division_id' => $division_id])
+            ->select('guide_department.id as id, guide_department.name as name')
+            ->orderBy('guide_department.name')
+            ->asArray()->all();
+    }
+
+    public static function getDepartmentListByDivision($division_id)
+    {
+        return ArrayHelper::map(self::getDepartmentListById($division_id), 'id', 'name');
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

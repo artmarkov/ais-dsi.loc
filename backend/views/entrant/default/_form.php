@@ -1,7 +1,9 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
+use common\models\own\Department;
 use kartik\date\DatePicker;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\entrant\EntrantComm */
@@ -30,14 +32,35 @@ use kartik\date\DatePicker;
                 <div class="col-sm-12">
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true])->hint('Введите название. Например: Комиссия Муз.Отделение 2023/2024 уч.год') ?>
 
-                    <?php
-                    echo $form->field($model, 'division_id')->dropDownList(\common\models\own\Division::getDivisionList(), [
-                        'prompt' => Yii::t('art/guide', 'Select Name Division...'),
-                        'id' => 'division_id',
-                        'disabled' => $readonly
-                    ])->label(Yii::t('art/guide', 'Name Division'));
+                    <?= $form->field($model, 'division_id')->widget(\kartik\select2\Select2::className(), [
+                        'data' => \common\models\own\Division::getDivisionList(),
+                        'options' => [
+                            'id' => 'division_id',
+                             'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/guide', 'Select Division...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Division'));
                     ?>
-
+                    <?= $form->field($model, 'department_list')->widget(\kartik\depdrop\DepDrop::className(), [
+                        'data' => Department::getDepartmentListByDivision($model->division_id),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/teachers', 'Select Department...'),
+                            'multiple' => true,
+                        ],
+                        'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
+                        'select2Options' => ['pluginOptions' => ['allowClear' => true]],
+                         'pluginOptions' => [
+                            'depends' => ['division_id'],
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'url' => Url::to(['/entrant/default/department'])
+                        ]
+                    ])->label(Yii::t('art/guide', 'Department'));
+                    ?>
                     <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                         [
                             'disabled' => $readonly,
@@ -46,7 +69,7 @@ use kartik\date\DatePicker;
                         ]);
                     ?>
 
-                    <?= $form->field($model, 'description')->textarea(['rows' => '3', 'maxlength' => true]) ?>
+<!--                   = $form->field($model, 'description')->textarea(['rows' => '3', 'maxlength' => true]) -->
 
                     <?= $form->field($model, 'timestamp_in')->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
@@ -152,7 +175,7 @@ use kartik\date\DatePicker;
                     </div>
                 </div>
             </div>
-            <div class="panel panel-info">
+            <!--<div class="panel panel-info">
                 <div class="panel-heading">
                     Связанные события из плана работы
                 </div>
@@ -162,7 +185,7 @@ use kartik\date\DatePicker;
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
             <div class="panel-footer">
                 <div class="form-group btn-group">
                     <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>

@@ -70,6 +70,22 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filter' => \artsoft\helpers\RefBook::find('division_name')->getList()
                     ],
                     [
+                        'attribute' => 'department_list',
+                        'filter' => \artsoft\helpers\RefBook::find('department_name')->getList(),
+                        'value' => function (EntrantComm $model) {
+                            $v = [];
+                            foreach ($model->department_list as $id) {
+                                if (!$id) {
+                                    continue;
+                                }
+                                $v[] = \artsoft\helpers\RefBook::find('department_name_dev')->getValue($id) ?? '';
+                            }
+                            return implode(', ', $v);
+                        },
+                        'options' => ['style' => 'width:350px'],
+                        'format' => 'raw',
+                    ],
+                    [
                         'attribute' => 'plan_year',
                         'filter' => \artsoft\helpers\ArtHelper::getStudyYearsList(),
                         'value' => function (EntrantComm $model) {

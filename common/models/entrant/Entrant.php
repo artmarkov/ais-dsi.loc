@@ -3,11 +3,14 @@
 namespace common\models\entrant;
 
 use artsoft\behaviors\ArrayFieldBehavior;
+use common\models\education\EducationProgrammLevel;
 use common\models\students\Student;
 use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubject;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Exception;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -69,12 +72,12 @@ class Entrant extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['student_id', 'comm_id', 'group_id', 'last_experience', 'subject_list'], 'required'],
-            [['student_id', 'comm_id', 'group_id', 'decision_id',  'programm_id', 'course', 'type_id', 'status', 'version'], 'integer'],
+            [['student_id', 'comm_id', 'group_id', 'subject_list'], 'required'],
+            [['student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'course', 'type_id', 'status', 'version'], 'integer'],
             [['last_experience', 'remark'], 'string', 'max' => 127],
             [['decision_id'], 'default', 'value' => 0],
             [['subject_list'], 'safe'],
-            [['student_id'], 'unique','targetAttribute' => ['student_id', 'comm_id'],  'message' => 'Ученик уже записан на экзамен.'],
+            [['student_id'], 'unique', 'targetAttribute' => ['student_id', 'comm_id'], 'message' => 'Ученик уже записан на экзамен.'],
             [['reason'], 'string', 'max' => 1024],
             [['programm_id', 'course', 'type_id'], 'required', 'when' => function ($model) {
                 return $model->decision_id === '1';
@@ -185,9 +188,9 @@ class Entrant extends \artsoft\db\ActiveRecord
     {
         $mark = 0;
         $i = 0;
-        if(isset($this->entrantMembers)) {
+        if (isset($this->entrantMembers)) {
             foreach ($this->entrantMembers as $members) {
-                if(isset($members->entrantTest)) {
+                if (isset($members->entrantTest)) {
                     foreach ($members->entrantTest as $test) {
                         if (isset($test->entrantMark)) {
                             $mark += $test->entrantMark->mark_value;
@@ -197,7 +200,7 @@ class Entrant extends \artsoft\db\ActiveRecord
                 }
             }
         }
-        return $i != 0 ? round($mark/$i, 2) : 0;
+        return $i != 0 ? round($mark / $i, 2) : 0;
     }
 
     /**
@@ -207,7 +210,7 @@ class Entrant extends \artsoft\db\ActiveRecord
     {
         $models = [];
         $modelComm = $this->comm;
-        foreach ($modelComm->members_list as $item => $members_id){
+        foreach ($modelComm->members_list as $item => $members_id) {
             $model = EntrantMembers::find()->andWhere(['members_id' => $members_id])->andWhere(['entrant_id' => $this->id])->one() ?: new EntrantMembers();
             $model->members_id = $members_id;
             $model->entrant_id = $this->id;
@@ -243,7 +246,13 @@ class Entrant extends \artsoft\db\ActiveRecord
      */
     public static function getCommGroupList($comm_id)
     {
-        return \yii\helpers\ArrayHelper::map(EntrantGroup::find()->andWhere(['=', 'comm_id', $comm_id])->all(), 'id', 'name');
+        if (!$comm_id) {
+            return [];
+        }
+        $query = EntrantGroup::find()
+            ->select(['id', 'CONCAT(name, \' - \', to_char(to_timestamp(timestamp_in), \'DD.MM.YYYY HH24:mi\')) as name'])
+            ->andWhere(['=', 'comm_id', $comm_id])->all();
+        return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
     }
 
     /**
@@ -255,9 +264,9 @@ class Entrant extends \artsoft\db\ActiveRecord
         if (!$comm_id) {
             return [];
         }
-
         return EntrantGroup::find()->andWhere(['=', 'comm_id', $comm_id])->asArray()->all();
     }
+
     /**
      * @param $comm_id
      * @param $val
@@ -277,6 +286,7 @@ class Entrant extends \artsoft\db\ActiveRecord
     {
         if ($this->decision_id == 1) {
             $this->reason = null;
+            $this->makeStadylan();
         } elseif ($this->decision_id == 2) {
             $this->programm_id = null;
             $this->course = null;
@@ -288,5 +298,60 @@ class Entrant extends \artsoft\db\ActiveRecord
             $this->type_id = null;
         }
         return parent::beforeSave($insert);
+    }
+
+    public function makeStadylan()
+    {
+        $exists = Studyplan::find()->where(['=', 'programm_id', $this->programm_id])
+            ->andWhere(['=', 'plan_year', $this->comm->plan_year])
+            ->andWhere(['=', 'course', $this->course])
+            ->andWhere(['=', 'student_id', $this->student_id])->exists();
+
+        if (!$exists) {
+            $transaction = \Yii::$app->db->beginTransaction();
+            $model = new Studyplan();
+            $model->setAttributes(
+                [
+                    'programm_id' => $this->programm_id,
+                    'subject_type_id' => $this->type_id,
+                    'course' => $this->course,
+                    'student_id' => $this->student_id,
+                    'plan_year' => $this->comm->plan_year,
+                ]
+            );
+            try {
+                $modelProgrammLevel = EducationProgrammLevel::find()
+                    ->where(['programm_id' => $this->programm_id])
+                    ->andWhere(['course' => $this->course])
+                    ->one();
+                if ($modelProgrammLevel) {
+                    $model->copyAttributes($modelProgrammLevel);
+                }
+                if ($flag = $model->save(false)) {
+//                echo '<pre>' . print_r($model, true) . '</pre>';
+
+                    if (isset($modelProgrammLevel->educationProgrammLevelSubject)) {
+                        $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;
+                        foreach ($modelsSubTime as $modelSubTime) {
+                            $modelSub = new StudyplanSubject();
+                            $modelSub->copyAttributes($model, $modelSubTime);
+
+                            if (!($flag = $modelSub->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if ($flag) {
+                    $transaction->commit();
+                    return true;
+                }
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                return false;
+            }
+        }
     }
 }

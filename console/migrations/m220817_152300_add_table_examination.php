@@ -61,6 +61,7 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
         $this->createTableWithHistory('entrant_comm', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'division_id' => $this->integer()->notNull(),
+            'department_list' => $this->string(1024),
             'plan_year' => $this->integer()->notNull()->comment('Учебный год'),
             'name' => $this->string(127)->notNull()->comment('Название комиссии'),
             'leader_id' => $this->integer()->notNull()->comment('Реководитель комиссии user_id'),
@@ -173,30 +174,29 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
         $this->addForeignKey('entrant_test_ibfk_5', 'entrant_test', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('entrant_view', '
-        select 
-                entrant.id,
-                entrant.student_id,
-                entrant.comm_id,
-                entrant.group_id,
-                entrant.subject_list,
-                entrant.last_experience,
-                entrant.decision_id,
-                entrant.reason,
-                entrant.programm_id,
-                entrant.course,
-                entrant.type_id,
-                entrant.status,
-                entrant_comm.timestamp_in,
-                (
-                    select AVG(guide_lesson_mark.mark_value) from entrant_members
-                    inner join entrant_test on (entrant_test.entrant_members_id = entrant_members.id)
-                    inner join guide_lesson_mark on (guide_lesson_mark.id = entrant_test.entrant_mark_id)
-                    where entrant_members.entrant_id = entrant.id
-                ) as mid_mark
-                from entrant 
-                inner join entrant_group on (entrant_group.id = entrant.group_id)
-                inner join entrant_comm on (entrant_comm.id = entrant.comm_id)
-                order by entrant.comm_id;
+         SELECT entrant.id,
+            entrant.student_id,
+            entrant.comm_id,
+            entrant.group_id,
+            concat(entrant_group.name, \' - \', to_char(to_timestamp(entrant_group.timestamp_in::double precision), \'DD.MM.YYYY HH24:mi\'::text)) AS group_name,
+            entrant.subject_list,
+            entrant.last_experience,
+            entrant.decision_id,
+            entrant.reason,
+            entrant.programm_id,
+            entrant.course,
+            entrant.type_id,
+            entrant.status,
+            entrant_comm.timestamp_in,
+            ( SELECT avg(guide_lesson_mark.mark_value) AS avg
+                   FROM entrant_members
+                     JOIN entrant_test ON entrant_test.entrant_members_id = entrant_members.id
+                     JOIN guide_lesson_mark ON guide_lesson_mark.id = entrant_test.entrant_mark_id
+                  WHERE entrant_members.entrant_id = entrant.id) AS mid_mark
+           FROM entrant
+             JOIN entrant_group ON entrant_group.id = entrant.group_id
+             JOIN entrant_comm ON entrant_comm.id = entrant.comm_id
+          ORDER BY entrant.comm_id;
         ')->execute();
     }
 

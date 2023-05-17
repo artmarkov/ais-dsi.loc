@@ -157,7 +157,7 @@ class Parents extends \artsoft\db\ActiveRecord
 
     public static function getDocumentValue($val)
     {
-        $ar = self::DOC;
+        $ar = self::PARENT_DOC;
 
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
@@ -175,7 +175,7 @@ class Parents extends \artsoft\db\ActiveRecord
      */
     public function getStudentDependence()
     {
-        return $this->hasMany(StudentDependence::className(), ['id' => 'id']);
+        return $this->hasMany(StudentDependence::className(), ['parent_id' => 'id']);
     }
 
     /**

@@ -73,12 +73,11 @@ use artsoft\grid\GridPageSize;
 //            'comm_id',
                     [
                         'attribute' => 'group_id',
-                        'filter' =>  function (EntrantComm $model) {
-                            return \common\models\entrant\EntrantComm::getEntrantGroupsList();
+                        'filter' =>  \common\models\entrant\Entrant::getCommGroupList($id),
+                        'value' => function (\common\models\entrant\Entrant $model) use ($id){
+                            return \common\models\entrant\Entrant::getCommGroupValue($id, $model->group_id);
                         },
-                        'value' => function (Entrant $model) {
-                            return\common\models\entrant\Entrant::getCommGroupValue($model->comm_id, $model->group_id);
-                        },
+                        'options' => ['style' => 'width:250px'],
                         'format' => 'raw'
                     ],
                     [

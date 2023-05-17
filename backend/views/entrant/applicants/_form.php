@@ -12,6 +12,7 @@ use yii\helpers\Url;
 /* @var $model common\models\entrant\Entrant */
 /* @var $model common\models\entrant\EntrantComm */
 /* @var $form artsoft\widgets\ActiveForm */
+/* @var $model */
 /* @var $modelsMembers */
 /* @var $modelsTest */
 
@@ -36,7 +37,7 @@ JS;
 
 $this->registerJs($js, \yii\web\View::POS_LOAD);
 
-
+$readonly = $model->decision_id != 0 ? true : $readonly;
 ?>
 
 <div class="applicants-form">
@@ -233,7 +234,7 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
                                 'data' => RefBook::find('education_programm_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
                                 'options' => [
                                     'id' => 'programm_id',
-                                    'disabled' => $readonly,
+                                    'disabled' => $model->decision_id != 0 ? true : $readonly,
                                     'placeholder' => Yii::t('art/studyplan', 'Select Education Programm...'),
                                     'multiple' => false,
                                 ],

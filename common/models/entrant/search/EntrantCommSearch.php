@@ -19,7 +19,7 @@ class EntrantCommSearch extends EntrantComm
     {
         return [
             [['id', 'division_id', 'plan_year', 'leader_id', 'secretary_id', 'version'], 'integer'],
-            [['name', 'members_list', 'prep_on_test_list', 'prep_off_test_list', 'description'], 'safe'],
+            [['name', 'members_list', 'prep_on_test_list', 'prep_off_test_list', 'description', 'department_list'], 'safe'],
         ];
     }
 
@@ -78,7 +78,8 @@ class EntrantCommSearch extends EntrantComm
             ->andFilterWhere(['like', 'members_list', $this->members_list])
             ->andFilterWhere(['like', 'prep_on_test_list', $this->prep_on_test_list])
             ->andFilterWhere(['like', 'prep_off_test_list', $this->prep_off_test_list])
-            ->andFilterWhere(['like', 'description', $this->description]);
+            ->andFilterWhere(['like', 'description', $this->description])
+            ->andFilterWhere(['like', 'department_list', $this->department_list]);
 
         return $dataProvider;
     }

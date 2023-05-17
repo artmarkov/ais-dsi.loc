@@ -155,7 +155,7 @@ class Student extends ActiveRecord
 
     public static function getDocumentValue($val)
     {
-        $ar = self::DOC;
+        $ar = self::STUDENT_DOC;
 
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
@@ -173,12 +173,12 @@ class Student extends ActiveRecord
 
     public function getStudentDependence()
     {
-        return $this->hasMany(StudentDependence::class, ['id' => 'id']);
+        return $this->hasMany(StudentDependence::class, ['student_id' => 'id']);
     }
 
-    public function getStudentDependenceNameById($id)
+    public function getStudentDependenceNameById($student_id)
     {
-        return StudentDependence::find(['id' => $id])
+        return StudentDependence::find(['student_id' => $student_id])
             ->innerJoin('userRelation');
     }
 

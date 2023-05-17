@@ -5,6 +5,7 @@ namespace common\models\history;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use common\models\entrant\EntrantComm;
+use common\models\own\Department;
 use common\models\user\UserCommon;
 use common\widgets\history\BaseHistory;
 use yii\helpers\Json;
@@ -25,6 +26,7 @@ class EntrantCommHistory extends BaseHistory
     {
         return [
             'division_id',
+            'department_list',
             'plan_year',
             'name',
             'leader_id',
@@ -70,6 +72,14 @@ class EntrantCommHistory extends BaseHistory
                     $v = [];
                     foreach (Json::decode($model->prep_off_test_list) as $id) {
                         $v[] = $id != null ? RefBook::find('entrant_test_name')->getValue($id) : null;
+                    }
+                    return implode(', ', $v);
+                }
+            case 'department_list':
+                if (isset($model->department_list)) {
+                    $v = [];
+                    foreach (Json::decode($model->department_list) as $id) {
+                        $v[] = $id != null ? Department::findOne($id)->name : null;
                     }
                     return implode(', ', $v);
                 }

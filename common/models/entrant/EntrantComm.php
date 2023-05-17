@@ -17,6 +17,7 @@ use yii\web\NotFoundHttpException;
  *
  * @property int $id
  * @property int $division_id
+ * @property string $department_list
  * @property int $plan_year Учебный год
  * @property string|null $name Название комиссии
  * @property int $leader_id Реководитель комиссии user_id
@@ -59,7 +60,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
             TimestampBehavior::class,
             [
                 'class' => ArrayFieldBehavior::class,
-                'attributes' => ['members_list', 'prep_on_test_list', 'prep_off_test_list'],
+                'attributes' => ['members_list', 'prep_on_test_list', 'prep_off_test_list', 'department_list'],
             ],
             [
                 'class' => DateFieldBehavior::class,
@@ -73,10 +74,10 @@ class EntrantComm extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'division_id', 'plan_year', 'leader_id', 'secretary_id', 'timestamp_in', 'timestamp_out', 'members_list', 'prep_on_test_list', 'prep_off_test_list'], 'required'],
+            [['name', 'division_id', 'plan_year', 'leader_id', 'secretary_id', 'timestamp_in', 'timestamp_out', 'members_list', 'prep_on_test_list', 'prep_off_test_list', 'department_list'], 'required'],
             [['division_id', 'plan_year', 'leader_id', 'secretary_id', 'version'], 'integer'],
             [['name'], 'string', 'max' => 127],
-            [['members_list', 'prep_on_test_list', 'prep_off_test_list', 'timestamp_in', 'timestamp_out'], 'safe'],
+            [['members_list', 'prep_on_test_list', 'prep_off_test_list', 'timestamp_in', 'timestamp_out', 'department_list'], 'safe'],
             [['description'], 'string', 'max' => 1024],
             [['division_id'], 'exist', 'skipOnError' => true, 'targetClass' => Division::className(), 'targetAttribute' => ['division_id' => 'id']],
             [['leader_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['leader_id' => 'id']],
@@ -92,6 +93,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/guide', 'ID'),
             'division_id' => Yii::t('art/guide', 'Division'),
+            'department_list' => Yii::t('art/guide', 'Department'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'name' => Yii::t('art', 'Name'),
             'leader_id' => Yii::t('art/guide', 'Leader'),
