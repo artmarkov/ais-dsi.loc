@@ -149,7 +149,7 @@ JS
                                         <th class="text-center" style="min-width: 100px">Раздел</br>учебных</br>предметов</th>
                                         <th class="text-center" style="min-width: 150px">Предмет</th>
                                         <th class="text-center" style="min-width: 150px">Тип</br>занятий</th>
-                                        <th class="text-center" style="min-width: 150px">Форма</br>занятий</th>
+                                        <th class="text-center" style="min-width: 150px">Вид</br>занятий</th>
                                         <th class="text-center">Часов</br>в неделю</th>
                                         <th class="text-center">Часов</br>в год</th>
                                         <!--                    --><?php //if ($model->catType != 1000): ?>

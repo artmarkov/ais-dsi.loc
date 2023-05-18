@@ -40,7 +40,7 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
             'info' => $this->text()->notNull(),
             'status' => $this->smallInteger()->notNull()->defaultValue(1),
         ], $tableOptions);
-        $this->addCommentOnTable('guide_subject_vid', 'Форма занятий');
+        $this->addCommentOnTable('guide_subject_vid', 'Вид занятий');
         $this->db->createCommand()->resetSequence('guide_subject_vid', 1000)->execute();
         $this->db->createCommand()->batchInsert('guide_subject_vid', ['name', 'slug', 'qty_min', 'qty_max', 'info', 'status'], [
             ['Индивидуальная', 'Инд.', 1, 1, '', 1],
@@ -62,6 +62,21 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
         $this->db->createCommand()->batchInsert('guide_subject_type', ['name', 'slug', 'status'], [
             ['Бюджет', 'Бюд.', 1],
             ['Внебюджет', 'Внеб.', 1],
+        ])->execute();
+
+        $this->createTable('guide_subject_form', [
+            'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'name' => $this->string(127)->notNull(),
+            'slug' => $this->string(64)->notNull(),
+            'status' => $this->smallInteger()->notNull()->defaultValue(1),
+        ], $tableOptions);
+
+        $this->addCommentOnTable('guide_subject_form', 'Форма обучения');
+        $this->db->createCommand()->resetSequence('guide_subject_form', 1000)->execute();
+        $this->db->createCommand()->batchInsert('guide_subject_form', ['name', 'slug', 'status'], [
+            ['Ѕюджет', 'Ѕюд.', 1],
+            ['Внебюджет', 'Внеб.', 1],
+            ['Бюджет с оплатой>', 'Бюд.опл.', 1],
         ])->execute();
 
         $this->createTableWithHistory('subject', [
@@ -174,11 +189,11 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_vid_name', 'guide_subject_vid', 'id', 'name', 'id', 'status', null, 'Форма занятий (полное)'],
+            ['subject_vid_name', 'guide_subject_vid', 'id', 'name', 'id', 'status', null, 'Вид занятий (полное)'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['subject_vid_name_dev', 'guide_subject_vid', 'id', 'slug', 'id', 'status', null, 'Форма занятий (кратко)'],
+            ['subject_vid_name_dev', 'guide_subject_vid', 'id', 'slug', 'id', 'status', null, 'Вид занятий (кратко)'],
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
@@ -187,6 +202,14 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['subject_type_name_dev', 'guide_subject_type', 'id', 'slug', 'id', 'status', null, 'Тип занятий (кратко)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['subject_form_name', 'guide_subject_form', 'id', 'name', 'id', 'status', null, 'Форма обучения (полное)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['subject_form_name_dev', 'guide_subject_form', 'id', 'slug', 'id', 'status', null, 'Форма обучения (кратко)'],
         ])->execute();
     }
 
@@ -198,7 +221,10 @@ class m210301_151057_create_table_subject extends \artsoft\db\BaseMigration
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_vid_name_dev'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_type_name'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_type_name_dev'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'subject_form_name'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'subject_form_name_dev'])->execute();
         $this->dropTableWithHistory('subject');
+        $this->dropTable('guide_subject_form');
         $this->dropTable('guide_subject_type');
         $this->dropTable('guide_subject_vid');
         $this->dropTable('guide_subject_category');

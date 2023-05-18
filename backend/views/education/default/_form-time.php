@@ -39,7 +39,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
     <tr>
         <th class="text-center" style="min-width: 100px">Раздел<br>учебных<br>предметов</th>
         <th class="text-center" style="min-width: 100px">Предмет</th>
-        <th class="text-center" style="min-width: 100px">Форма<br>занятий</th>
+        <th class="text-center" style="min-width: 100px">Вид<br>занятий</th>
         <th class="text-center">Часов<br>в неделю</th>
         <th class="text-center">Часов<br>в год</th>
         <th class="text-center">Стоимость часа</th>

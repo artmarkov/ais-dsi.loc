@@ -25,6 +25,7 @@ class m210301_151059_add_subject_permissions extends PermissionsMigration
                     '/admin/subject/category/*',
                     '/admin/subject/type/*',
                     '/admin/subject/vid/*',
+                    '/admin/subject/form/*',
                 ],
                 'viewSubject' => [
                     'title' => 'Просмотр "Предметы"',
@@ -42,6 +43,9 @@ class m210301_151059_add_subject_permissions extends PermissionsMigration
                         '/admin/subject/vid/index',
                         '/admin/subject/vid/view',
                         '/admin/subject/vid/grid-page-size',
+                        '/admin/subject/form/index',
+                        '/admin/subject/form/view',
+                        '/admin/subject/form/grid-page-size',
                     ],
                     'roles' => [
                         self::ROLE_SYSTEM,
@@ -54,6 +58,7 @@ class m210301_151059_add_subject_permissions extends PermissionsMigration
                         '/admin/subject/category/update',
                         '/admin/subject/type/update',
                         '/admin/subject/vid/update',
+                        '/admin/subject/form/update',
                     ],
                     'roles' => [
                         self::ROLE_SYSTEM,
@@ -69,7 +74,7 @@ class m210301_151059_add_subject_permissions extends PermissionsMigration
                         '/admin/subject/category/create',
                         '/admin/subject/type/create',
                         '/admin/subject/vid/create',
-
+                        '/admin/subject/form/create',
                     ],
                     'roles' => [
                         self::ROLE_SYSTEM,
@@ -89,6 +94,8 @@ class m210301_151059_add_subject_permissions extends PermissionsMigration
                         '/admin/subject/type/bulk-delete',
                         '/admin/subject/vid/delete',
                         '/admin/subject/vid/bulk-delete',
+                        '/admin/subject/form/delete',
+                        '/admin/subject/form/bulk-delete',
                     ],
                     'roles' => [
                         self::ROLE_SYSTEM,
