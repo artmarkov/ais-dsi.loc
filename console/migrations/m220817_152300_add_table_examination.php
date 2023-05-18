@@ -120,7 +120,7 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
             'programm_id' => $this->integer()->comment('Назначена программа'),
             'course' => $this->integer()->comment('Назначен курс'),
             'type_id' => $this->integer()->comment('Назначен вид обучения(бюджет, внебюджет)'),
-            'status' => $this->smallInteger()->notNull()->defaultValue(1)->comment('Статус (Активная, Не активная)'),
+            'status' => $this->smallInteger()->notNull()->defaultValue(0)->comment('Статус (В ожидании испытаний, Испытания открыты, Испытания завершены)'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

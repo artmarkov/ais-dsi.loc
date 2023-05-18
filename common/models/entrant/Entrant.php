@@ -28,7 +28,7 @@ use yii\web\NotFoundHttpException;
  * @property int|null $programm_id Назначена программа
  * @property int|null $course Назначен курс
  * @property int|null $type_id Назначен вид обучения(бюджет, внебюджет)
- * @property int $status Статус (Активная, Не активная)
+ * @property int $status Статус (В ожидании испытаний, Испытания открыты, Испытания завершены)
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -43,6 +43,9 @@ use yii\web\NotFoundHttpException;
  */
 class Entrant extends \artsoft\db\ActiveRecord
 {
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+
     /**
      * {@inheritdoc}
      */
@@ -76,6 +79,7 @@ class Entrant extends \artsoft\db\ActiveRecord
             [['student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'course', 'type_id', 'status', 'version'], 'integer'],
             [['last_experience', 'remark'], 'string', 'max' => 127],
             [['decision_id'], 'default', 'value' => 0],
+            [['status'], 'default', 'value' => 0],
             [['subject_list'], 'safe'],
             [['student_id'], 'unique', 'targetAttribute' => ['student_id', 'comm_id'], 'message' => 'Ученик уже записан на экзамен.'],
             [['reason'], 'string', 'max' => 1024],
@@ -222,6 +226,27 @@ class Entrant extends \artsoft\db\ActiveRecord
     /**
      * @return array
      */
+    public static function getStatusList()
+    {
+        return array(
+            0 => 'В ожидании испытаний',
+            1 => 'Испытания открыты',
+            2 => 'Испытания завершены',
+        );
+    }
+
+    /**
+     * @param string $val
+     * @return mixed|string
+     */
+    public static function getStatusValue($val)
+    {
+        $ar = self::getStatusList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+    /**
+     * @return array
+     */
     public static function getDecisionList()
     {
         return array(
@@ -353,5 +378,38 @@ class Entrant extends \artsoft\db\ActiveRecord
                 return false;
             }
         }
+    }
+    public static function runActivate($id)
+    {
+        $model = self::findOne($id);
+        if (!$model)
+        {
+            return false;
+        }
+        $model->status = 1;
+        if ($model->save(false))
+        {
+            return true;
+        }
+        return false;
+    }
+    /**
+     *
+     * @param type $id
+     * @return boolean
+     */
+    public static function runDeactivate($id)
+    {
+        $model = self::findOne($id);
+        if (!$model)
+        {
+            return false;
+        }
+        $model->status = 2;
+        if ($model->save(false))
+        {
+            return true;
+        }
+        return false;
     }
 }

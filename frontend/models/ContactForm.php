@@ -55,6 +55,7 @@ class ContactForm extends Model
         return Yii::$app->mailqueue->compose(
             Yii::$app->art->emailTemplates['send-contact'],
             [
+                'name' => $this->name,
                 'body' => $this->body,
                 'subject' => $this->subject,
                 'email' => $this->email,

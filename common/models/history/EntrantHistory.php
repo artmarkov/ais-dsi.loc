@@ -4,7 +4,6 @@ namespace common\models\history;
 
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
-use common\models\education\EducationProgramm;
 use common\models\entrant\Entrant;
 use common\models\subject\SubjectType;
 use common\widgets\history\BaseHistory;
@@ -63,7 +62,7 @@ class EntrantHistory extends BaseHistory
                     return implode(', ', $v);
                 }
             case 'status':
-                return isset($model->status) ? EducationProgramm::getStatusValue($value) : $value;
+                return isset($model->status) ? Entrant::getStatusValue($value) : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }

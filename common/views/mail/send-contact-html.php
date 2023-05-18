@@ -1,6 +1,7 @@
 <?php
 /**
  * @var $this yii\web\View
+ * @var $name
  * @var $email
  * @var $subject
  * @var $body
@@ -10,7 +11,9 @@ use yii\helpers\Html;
 ?>
 
 <div class="send-contact">
-    <p><b><?= Yii::t('art/mail', 'From') . ':</b> ' . Html::encode($email) ?></p>
+    <p><b><?= Yii::t('art/mail', 'From') . ':</b> ' . Html::encode($name) ?></p>
+
+    <p><b><?= Yii::t('art/art', 'E-mail') . ':</b> ' . Html::encode($email) ?></p>
 
     <p><b><?= Yii::t('art/mail', 'Title') . ':</b> ' . Html::encode($subject) ?></p>
 
