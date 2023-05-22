@@ -38,7 +38,7 @@ class ImportController extends Controller
 //        $this->addTeachers();
 //        $this->stdout("\n");
 
-//        $this->addStudents();
+        $this->addStudents();
         $this->stdout("\n");
 
         $this->addParents();
@@ -155,7 +155,7 @@ class ImportController extends Controller
                         $this->stdout('Добавлен преподаватель: ' . $userCommon->last_name . ' ' . $userCommon->first_name . ' ' . $userCommon->middle_name . " ", Console::FG_GREY);
                         $this->stdout("\n");
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $transaction->rollBack();
                 }
             }
@@ -248,7 +248,7 @@ class ImportController extends Controller
                 $v = $row->toArray();
 //                 print_r($v);
                 $student_id = $this->findByStudent($this->lat2cyr(trim($v[1])), $this->lat2cyr(trim($v[2])), $this->lat2cyr(trim($v[3])));
-                if ($student_id) {
+                if (!$student_id) {
                     $user = new User();
                     $userCommon = new UserCommon();
                     $model = new Student();
@@ -326,22 +326,22 @@ class ImportController extends Controller
                 /* @var $row Row */
                 $v = $row->toArray();
 //                 print_r($v);
-                $user = new User();
-                $userCommon = new UserCommon();
-                $model = new Parents();
 
                 $student_id = $this->findByStudent($this->lat2cyr(trim($v[5])), $this->lat2cyr(trim($v[6])), $this->lat2cyr(trim($v[7])));
                 $parent_id = $this->findByParent($this->lat2cyr(trim($v[1])), $this->lat2cyr(trim($v[2])), $this->lat2cyr(trim($v[3])));
+//                print_r([$student_id, $parent_id]);
                 if (!$parent_id) {
-                    if ($student_id) {
+                    $user = new User();
+                    $userCommon = new UserCommon();
+                    $model = new Parents();
                         $transaction = \Yii::$app->db->beginTransaction();
                         try {
-                            $user->username = $this->generateUsername($v[15] = null, $v[1], $v[2], $v[3]);
+                            $user->username = $this->generateUsername($v[15] ?? '', $v[1], $v[2], $v[3]);
                             $user->password = $v[16] ?? null;
                             $user->email = $v[17] ?? null;
                             $user->email_confirmed = isset($v[17]) ? ($v[17] ? 1 : 0) : null;
                             $user->generateAuthKey();
-                            $user->status = isset($v[16]) ? ($v[16] ? User::STATUS_ACTIVE : User::STATUS_INACTIVE) : null;
+                            $user->status = isset($v[16]) ? ($v[16] ? User::STATUS_ACTIVE : User::STATUS_INACTIVE) : User::STATUS_INACTIVE;
                             if ($flag = $user->save(false)) {
                                 $user->assignRoles(['parents']);
 
@@ -354,24 +354,37 @@ class ImportController extends Controller
                                 $userCommon->gender = $this->getGender($v[8]);
 
                                 $userCommon->birth_date = isset($v[9]) ? \Yii::$app->formatter->asDate($this->getDate($v[9]), 'php:d.m.Y') : 0;
-                                $userCommon->phone = str_replace('-', ' ', $v[12]);
-                                $userCommon->phone_optional = $v[10] ? str_replace('-', ' ', $v[10]) : str_replace('-', ' ', $v[11]);
-                                $userCommon->snils = str_replace('-', '.', $v[14]);
+                                $userCommon->phone = str_replace('-', ' ', $v[12] ?? '');
+                                $userCommon->phone_optional = isset($v[10]) ? str_replace('-', ' ', $v[10]) : str_replace('-', ' ', $v[11] ?? '');
+                                $userCommon->snils = str_replace('-', '.', $v[14] ?? '');
                                 if ($flag = $userCommon->save(false)) {
                                     $model->user_common_id = $userCommon->id;
 
                                     if ($flag = $model->save(false)) {
 
                                         if ($student_id) {
-                                            $studentDependence = new StudentDependence();
-                                            $studentDependence->student_id = $student_id;
-                                            $studentDependence->parent_id = $model->id;
-                                            $studentDependence->relation_id = $this->getRelationId($v[4]);
+                                            $dep = \Yii::$app->db->createCommand('SELECT * 
+                                                    FROM student_dependence 
+                                                    WHERE student_id=:student_id 
+                                                    AND parent_id=:parent_id',
+                                                [
+                                                    'student_id' => $student_id,
+                                                    'parent_id' => $model->id
+                                                ])->queryOne();
+                                            if(!$dep) {
+                                                $studentDependence = new StudentDependence();
+                                                $studentDependence->student_id = $student_id;
+                                                $studentDependence->parent_id = $model->id;
+                                                $studentDependence->relation_id = $this->getRelationId($v[4]);
 
-                                            $flag = $studentDependence->save(false);
+                                                if ($flag = $studentDependence->save(false)) {
+                                                    $this->stdout('Добавлена связь для: ' . $v[5] . ' ' . $v[6] . ' ' . $v[7] . " ", Console::FG_GREEN);
+                                                    $this->stdout("\n");
+                                                }
+                                            }
                                         } else {
-                                            $this->stdout('Не найдена запись: ' . $v[5] . ' ' . $v[6] . ' ' . $v[7] . " ", Console::FG_RED);
-
+                                            $this->stdout('Не найдена запись ученика: ' . $v[5] . ' ' . $v[6] . ' ' . $v[7] . " ", Console::FG_RED);
+                                            $this->stdout("\n");
                                         }
                                     }
                                 }
@@ -382,24 +395,33 @@ class ImportController extends Controller
                                 $this->stdout("\n");
                             }
                         } catch (\Exception $e) {
-                            print_r($e);
+                            print_r($e->getMessage());
                             $transaction->rollBack();
                         }
-                    }
+
                 } else {
                     if ($student_id) {
-                        $studentDependence = new StudentDependence();
-                        $studentDependence->student_id = $student_id;
-                        $studentDependence->parent_id = $parent_id;
-                        $studentDependence->relation_id = $this->getRelationId($v[4]);
+                        $dep = \Yii::$app->db->createCommand('SELECT * 
+                                                    FROM student_dependence 
+                                                    WHERE student_id=:student_id 
+                                                    AND parent_id=:parent_id',
+                            [
+                                'student_id' => $student_id,
+                                'parent_id' => $parent_id
+                            ])->queryOne();
+                        if(!$dep) {
+                            $studentDependence = new StudentDependence();
+                            $studentDependence->student_id = $student_id;
+                            $studentDependence->parent_id = $parent_id;
+                            $studentDependence->relation_id = $this->getRelationId($v[4]);
 
-                        $studentDependence->save(false);
-                        $this->stdout('Добавлена связь для: ' . $v[5] . ' ' . $v[6] . ' ' . $v[7] . " ", Console::FG_GREEN);
-                        $this->stdout("\n");
+                            $studentDependence->save(false);
+                            $this->stdout('Добавлена связь для: ' . $v[5] . ' ' . $v[6] . ' ' . $v[7] . " ", Console::FG_GREEN);
+                            $this->stdout("\n");
+                        }
                     } else {
-                        $this->stdout('Не найдена запись: ' . $v[5] . ' ' . $v[6] . ' ' . $v[7] . " ", Console::FG_RED);
+                        $this->stdout('Не найдена запись ученика: ' . $v[5] . ' ' . $v[6] . ' ' . $v[7] . " ", Console::FG_RED);
                         $this->stdout("\n");
-
                     }
                 }
 
@@ -548,39 +570,34 @@ class ImportController extends Controller
 
     public function findByStudent($last_name, $first_name, $middle_name)
     {
-//        $birth_date = \Yii::$app->formatter->asTimestamp($birth_date);
-
-        $user = (new Query())->from('students_view')
-            ->select(['students_id'])
-            ->where(['AND',
-                ['first_name' => $first_name],
-                ['last_name' => $last_name],
-            ]);
-
-        if ($middle_name != '') {
-            $user = $user->andWhere([ 'middle_name' => $middle_name]);
-        }
-//        $user = $user->andWhere(['=', 'birth_date', $birth_date]);
-        $user->one();
-
-        return $user->students_id ?? false;
+        $user = \Yii::$app->db->createCommand('SELECT students_id 
+                                                    FROM students_view 
+                                                    WHERE last_name=:last_name 
+                                                    AND first_name=:first_name 
+                                                    AND middle_name=:middle_name',
+            [
+                'last_name' => $last_name,
+                'first_name' => $first_name,
+                'middle_name' => $middle_name
+            ])->queryOne();
+        return $user['students_id'] ?? false;
     }
 
     public function findByParent($last_name, $first_name, $middle_name)
     {
-        $user = (new Query())->from('parents_view')
-            ->select(['parents_id'])
-            ->where(['AND',
-                ['first_name' => $first_name],
-                ['last_name' => $last_name],
-            ]);
+        $user = \Yii::$app->db->createCommand('SELECT parents_id 
+                                                    FROM parents_view 
+                                                    WHERE last_name=:last_name 
+                                                    AND first_name=:first_name 
+                                                    AND middle_name=:middle_name',
+            [
+                'last_name' => $last_name,
+                'first_name' => $first_name,
+                'middle_name' => $middle_name
+            ])->queryOne();
+        return $user['parents_id'] ?? false;
 
-        if ($middle_name != '') {
-            $user = $user->andWhere(['middle_name' => $middle_name]);
-        }
-        $user->one();
 
-        return $user->parents_id ?? false;
     }
 
     public function getRelationId($name)
