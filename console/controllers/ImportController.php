@@ -16,6 +16,7 @@ use common\models\teachers\TeachersActivity;
 use common\models\user\UserCommon;
 use dosamigos\transliterator\TransliteratorHelper;
 use yii\console\Controller;
+use yii\db\Query;
 use yii\helpers\Console;
 
 /**
@@ -31,13 +32,13 @@ class ImportController extends Controller
     {
         $this->stdout("\n");
 
-        $this->addEmployees();
-        $this->stdout("\n");
+//        $this->addEmployees();
+//        $this->stdout("\n");
+//
+//        $this->addTeachers();
+//        $this->stdout("\n");
 
-        $this->addTeachers();
-        $this->stdout("\n");
-
-        $this->addStudents();
+//        $this->addStudents();
         $this->stdout("\n");
 
         $this->addParents();
@@ -231,7 +232,7 @@ class ImportController extends Controller
     public function addStudents()
     {
         $reader = ReaderEntityFactory::createXLSXReader();
-        $reader->open('data/students.xlsx');
+        $reader->open('data/students_2023.xlsx');
         foreach ($reader->getSheetIterator() as $k => $sheet) {
             if (1 != $k) {
                 continue;
@@ -245,58 +246,63 @@ class ImportController extends Controller
 //                }
                 /* @var $row Row */
                 $v = $row->toArray();
-                // print_r($v);
-                $user = new User();
-                $userCommon = new UserCommon();
-                $model = new Student();
+//                 print_r($v);
+                $student_id = $this->findByStudent($this->lat2cyr(trim($v[1])), $this->lat2cyr(trim($v[2])), $this->lat2cyr(trim($v[3])));
+                if ($student_id) {
+                    $user = new User();
+                    $userCommon = new UserCommon();
+                    $model = new Student();
+                    if ($v[18] == 'Абитуриенты' || $v[18] == 'Ученики школы') {
+                        $transaction = \Yii::$app->db->beginTransaction();
+                        try {
+                            $user->username = $this->generateUsername($v[19], $v[1], $v[2], $v[3]);
+                            $user->password = $v[20];
+                            $user->email = $v[21];
+                            $user->email_confirmed = $v[21] ? 1 : 0;
+                            $user->generateAuthKey();
+                            $user->status = $v[20] != '' ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
+                            if ($flag = $user->save(false)) {
+                                $user->assignRoles(['student']);
 
-                if ($v[18] == 'Абитуриенты' || $v[18] == 'Ученики школы') {
-                    $transaction = \Yii::$app->db->beginTransaction();
-                    try {
-                        $user->username = $this->generateUsername($v[19], $v[1], $v[2], $v[3]);
-                        $user->password = $v[20];
-                        $user->email = $v[21];
-                        $user->email_confirmed = $v[21] ? 1 : 0;
-                        $user->generateAuthKey();
-                        $user->status = $v[20] != '' ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
-                        if ($flag = $user->save(false)) {
-                            $user->assignRoles(['student']);
-
-                            $userCommon->user_id = $user->id;
-                            $userCommon->user_category = UserCommon::USER_CATEGORY_STUDENTS;
-                            $userCommon->status = ($v[18] == 'Абитуриенты' || $v[18] == 'Ученики школы') ? UserCommon::STATUS_ACTIVE : UserCommon::STATUS_INACTIVE;
-                            $userCommon->last_name = $this->lat2cyr($v[1]);
-                            $userCommon->first_name = $this->lat2cyr($v[2]);
-                            $userCommon->middle_name = $this->lat2cyr($v[3]);
-                            $userCommon->gender = $this->getGender($v[4]);
-                            $userCommon->birth_date = \Yii::$app->formatter->asDate($this->getDate($v[5]), 'php:d.m.Y');
-                            $userCommon->phone = str_replace('-', ' ', $v[6]);
-                            $userCommon->phone_optional = str_replace('-', ' ', $v[7]);
-                            $userCommon->address = $v[8];
-                            $userCommon->snils = str_replace('-', '.', $v[15]);
-                            if ($flag = $userCommon->save(false)) {
-                                $model->user_common_id = $userCommon->id;
-                                $model->sert_name = $v[10] ? 'birth_cert' : '';
-                                $model->sert_series = $v[11];
-                                $model->sert_num = $v[12];
-                                $model->sert_organ = $v[13];
-                                if ($v[14]) {
-                                    $model->sert_date = \Yii::$app->formatter->asDate($this->getDate($v[14]), 'php:d.m.Y');
-                                }
-                                if (!($flag = $model->save(false))) {
-                                    $transaction->rollBack();
-                                    break;
+                                $userCommon->user_id = $user->id;
+                                $userCommon->user_category = UserCommon::USER_CATEGORY_STUDENTS;
+                                $userCommon->status = ($v[18] == 'Абитуриенты' || $v[18] == 'Ученики школы') ? UserCommon::STATUS_ACTIVE : UserCommon::STATUS_INACTIVE;
+                                $userCommon->last_name = $this->lat2cyr($v[1]);
+                                $userCommon->first_name = $this->lat2cyr($v[2]);
+                                $userCommon->middle_name = $this->lat2cyr($v[3]);
+                                $userCommon->gender = $this->getGender($v[4]);
+                                $userCommon->birth_date = \Yii::$app->formatter->asDate($this->getDate($v[5]), 'php:d.m.Y');
+                                $userCommon->phone = str_replace('-', ' ', $v[6]);
+                                $userCommon->phone_optional = str_replace('-', ' ', $v[7]);
+                                $userCommon->address = $v[8];
+                                $userCommon->snils = str_replace('-', '.', $v[15]);
+                                if ($flag = $userCommon->save(false)) {
+                                    $model->user_common_id = $userCommon->id;
+                                    $model->sert_name = $v[10] ? 'birth_cert' : '';
+                                    $model->sert_series = $v[11];
+                                    $model->sert_num = $v[12];
+                                    $model->sert_organ = $v[13];
+                                    if ($v[14]) {
+                                        $model->sert_date = \Yii::$app->formatter->asDate($this->getDate($v[14]), 'php:d.m.Y');
+                                    }
+                                    if (!($flag = $model->save(false))) {
+                                        $transaction->rollBack();
+                                        break;
+                                    }
                                 }
                             }
+                            if ($flag) {
+                                $transaction->commit();
+                                $this->stdout('Добавлен ученик: ' . $userCommon->last_name . ' ' . $userCommon->first_name . ' ' . $userCommon->middle_name . " ", Console::FG_GREY);
+                                $this->stdout("\n");
+                            }
+                        } catch (\Exception $e) {
+                            $transaction->rollBack();
                         }
-                        if ($flag) {
-                            $transaction->commit();
-                            $this->stdout('Добавлен ученик: ' . $userCommon->last_name . ' ' . $userCommon->first_name . ' ' . $userCommon->middle_name . " ", Console::FG_GREY);
-                            $this->stdout("\n");
-                        }
-                    } catch (Exception $e) {
-                        $transaction->rollBack();
                     }
+                } else {
+                    $this->stdout('Найден ученик: ' . $v[1] . ' ' . $v[2] . ' ' . $v[3] . " ", Console::FG_GREEN);
+                    $this->stdout("\n");
                 }
             }
         }
@@ -305,7 +311,7 @@ class ImportController extends Controller
     public function addParents()
     {
         $reader = ReaderEntityFactory::createXLSXReader();
-        $reader->open('data/parents.xlsx');
+        $reader->open('data/parents_2023.xlsx');
         foreach ($reader->getSheetIterator() as $k => $sheet) {
             if (1 != $k) {
                 continue;
@@ -330,12 +336,12 @@ class ImportController extends Controller
                     if ($student_id) {
                         $transaction = \Yii::$app->db->beginTransaction();
                         try {
-                            $user->username = $this->generateUsername($v[15], $v[1], $v[2], $v[3]);
-                            $user->password = $v[16];
-                            $user->email = $v[17];
-                            $user->email_confirmed = $v[17] ? 1 : 0;
+                            $user->username = $this->generateUsername($v[15] = null, $v[1], $v[2], $v[3]);
+                            $user->password = $v[16] ?? null;
+                            $user->email = $v[17] ?? null;
+                            $user->email_confirmed = isset($v[17]) ? ($v[17] ? 1 : 0) : null;
                             $user->generateAuthKey();
-                            $user->status = $v[16] ? User::STATUS_ACTIVE : User::STATUS_INACTIVE;
+                            $user->status = isset($v[16]) ? ($v[16] ? User::STATUS_ACTIVE : User::STATUS_INACTIVE) : null;
                             if ($flag = $user->save(false)) {
                                 $user->assignRoles(['parents']);
 
@@ -347,7 +353,7 @@ class ImportController extends Controller
                                 $userCommon->middle_name = $this->lat2cyr(trim($v[3]));
                                 $userCommon->gender = $this->getGender($v[8]);
 
-                                $userCommon->birth_date = \Yii::$app->formatter->asDate($this->getDate($v[9]), 'php:d.m.Y');
+                                $userCommon->birth_date = isset($v[9]) ? \Yii::$app->formatter->asDate($this->getDate($v[9]), 'php:d.m.Y') : 0;
                                 $userCommon->phone = str_replace('-', ' ', $v[12]);
                                 $userCommon->phone_optional = $v[10] ? str_replace('-', ' ', $v[10]) : str_replace('-', ' ', $v[11]);
                                 $userCommon->snils = str_replace('-', '.', $v[14]);
@@ -375,7 +381,8 @@ class ImportController extends Controller
                                 $this->stdout('Добавлен родитель: ' . $userCommon->last_name . ' ' . $userCommon->first_name . ' ' . $userCommon->middle_name . " ", Console::FG_GREY);
                                 $this->stdout("\n");
                             }
-                        } catch (Exception $e) {
+                        } catch (\Exception $e) {
+                            print_r($e);
                             $transaction->rollBack();
                         }
                     }
@@ -541,32 +548,39 @@ class ImportController extends Controller
 
     public function findByStudent($last_name, $first_name, $middle_name)
     {
-        $user = \Yii::$app->db->createCommand('SELECT students_id 
-                                                    FROM students_view 
-                                                    WHERE last_name=:last_name 
-                                                    AND first_name=:first_name 
-                                                    AND middle_name=:middle_name',
-            [
-                'last_name' => $last_name,
-                'first_name' => $first_name,
-                'middle_name' => $middle_name
-            ])->queryOne();
-        return $user['students_id'];
+//        $birth_date = \Yii::$app->formatter->asTimestamp($birth_date);
+
+        $user = (new Query())->from('students_view')
+            ->select(['students_id'])
+            ->where(['AND',
+                ['first_name' => $first_name],
+                ['last_name' => $last_name],
+            ]);
+
+        if ($middle_name != '') {
+            $user = $user->andWhere([ 'middle_name' => $middle_name]);
+        }
+//        $user = $user->andWhere(['=', 'birth_date', $birth_date]);
+        $user->one();
+
+        return $user->students_id ?? false;
     }
 
     public function findByParent($last_name, $first_name, $middle_name)
     {
-        $user = \Yii::$app->db->createCommand('SELECT parents_id 
-                                                    FROM parents_view 
-                                                    WHERE last_name=:last_name 
-                                                    AND first_name=:first_name 
-                                                    AND middle_name=:middle_name',
-            [
-                'last_name' => $last_name,
-                'first_name' => $first_name,
-                'middle_name' => $middle_name
-            ])->queryOne();
-        return $user['parents_id'];
+        $user = (new Query())->from('parents_view')
+            ->select(['parents_id'])
+            ->where(['AND',
+                ['first_name' => $first_name],
+                ['last_name' => $last_name],
+            ]);
+
+        if ($middle_name != '') {
+            $user = $user->andWhere(['middle_name' => $middle_name]);
+        }
+        $user->one();
+
+        return $user->parents_id ?? false;
     }
 
     public function getRelationId($name)
