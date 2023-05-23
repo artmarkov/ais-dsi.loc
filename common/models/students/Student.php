@@ -4,6 +4,8 @@ namespace common\models\students;
 
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\db\ActiveRecord;
+use artsoft\widgets\Notice;
+use common\models\studyplan\Studyplan;
 use common\models\user\UserCommon;
 use common\models\students\StudentPosition;
 use Yii;
@@ -23,6 +25,8 @@ use yii\behaviors\TimestampBehavior;
  * @property string $sert_date
  *
  * @property UserCommon $user
+ * @property Studyplan $studyplans
+ * @property StudentDependence $studentDependence
  */
 class Student extends ActiveRecord
 {
@@ -159,6 +163,7 @@ class Student extends ActiveRecord
 
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
+
     /**
      * Геттер полного имени юзера
      */
@@ -176,6 +181,11 @@ class Student extends ActiveRecord
         return $this->hasMany(StudentDependence::class, ['student_id' => 'id']);
     }
 
+    public function getStudyplans()
+    {
+        return $this->hasMany(Studyplan::class, ['student_id' => 'id']);
+    }
+
     public function getStudentDependenceNameById($student_id)
     {
         return StudentDependence::find(['student_id' => $student_id])
@@ -189,11 +199,14 @@ class Student extends ActiveRecord
      */
     public function beforeDelete()
     {
-        $model = UserCommon::findOne($this->user_common_id);
+        if ($this->studyplans) {
+            return false;
+        }
+        $model = $this->user;
         if (!$model->delete(false)) {
             return false;
         }
-        foreach (StudentDependence::findAll(['id' => $this->id]) as $model) {
+        foreach ($this->studentDependence as $model) {
             if (!$model->delete(false)) {
                 break;
                 return false;

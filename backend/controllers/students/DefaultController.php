@@ -5,6 +5,7 @@ namespace backend\controllers\students;
 use artsoft\helpers\ArtHelper;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
+use artsoft\widgets\Notice;
 use backend\models\Model;
 use common\models\education\EducationProgrammLevel;
 use common\models\entrant\Entrant;
@@ -251,6 +252,19 @@ class DefaultController extends MainController
     public function actionView($id)
     {
         return $this->actionUpdate($id, true);
+    }
+
+    public function actionDelete($id)
+    {
+        /* @var $model \artsoft\db\ActiveRecord */
+        $model = $this->findModel($id);
+        if ($model->studyplans) {
+            Yii::$app->session->setFlash('danger','Учетная запись содержит Учебные планы. Удаление невозмлжно!');
+        } else {
+            $model->delete();
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+        }
+        return $this->redirect($this->getRedirectPage('delete', $model));
     }
 
     public function actionEntrant($id, $objectId = null, $mode = null, $readonly = false)
