@@ -55,6 +55,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'columns' => [
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
+                        'attribute' => 'id',
+                        'value' => function (EntrantComm $model) {
+                            return sprintf('#%06d', $model->id);
+                        },
+                        'options' => ['style' => 'width:100px']
+                    ],
+                    [
                         'attribute' => 'name',
                         'value' => function (EntrantComm $model) {
                             return $model->name;

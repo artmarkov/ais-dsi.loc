@@ -21,7 +21,7 @@ class EntrantSearch extends EntrantView
         return [
             [['id', 'student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'course', 'type_id', 'status'], 'integer'],
             [['last_experience', 'reason', 'subject_list', 'group_name'], 'safe'],
-            [['mid_mark'], 'safe'],
+            [['mid_mark', 'fullname', 'fio'], 'safe'],
         ];
     }
 
@@ -52,7 +52,7 @@ class EntrantSearch extends EntrantView
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'id' => SORT_DESC,
+                    'group_name' => SORT_ASC,
                 ],
             ],
         ]);
@@ -81,7 +81,9 @@ class EntrantSearch extends EntrantView
         $query->andFilterWhere(['like', 'last_experience', $this->last_experience])
             ->andFilterWhere(['like', 'subject_list', $this->subject_list])
             ->andFilterWhere(['like', 'reason', $this->reason])
-            ->andFilterWhere(['like', 'group_name', $this->group_name]);
+            ->andFilterWhere(['like', 'group_name', $this->group_name])
+            ->andFilterWhere(['like', 'fullname', $this->fullname])
+            ->andFilterWhere(['like', 'fio', $this->fio]);
 
         return $dataProvider;
     }

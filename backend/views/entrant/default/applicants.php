@@ -57,29 +57,36 @@ use artsoft\grid\GridPageSize;
                 'columns' => [
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
-                        'attribute' => 'id',
-                        'value' => function (Entrant $model) {
-                            return sprintf('#%06d', $model->id);
-                        },
-                    ],
-                    [
-                        'attribute' => 'student_id',
-                        'filter' => RefBook::find('students_fullname')->getList(),
-                        'value' => function (Entrant $model) {
-                            return RefBook::find('students_fullname')->getValue($model->student_id);
-                        },
-                        'format' => 'raw'
-                    ],
-//            'comm_id',
-                    [
                         'attribute' => 'group_id',
                         'filter' =>  \common\models\entrant\Entrant::getCommGroupList($id),
                         'value' => function (\common\models\entrant\Entrant $model) use ($id){
                             return \common\models\entrant\Entrant::getCommGroupValue($id, $model->group_id);
                         },
-                        'options' => ['style' => 'width:250px'],
+                        'options' => ['style' => 'width:350px'],
+                        'format' => 'raw',
+                        'group' => true
+                    ],
+                    [
+                        'attribute' => 'id',
+                        'value' => function (Entrant $model) {
+                            return sprintf('#%06d', $model->id);
+                        },
+                        'options' => ['style' => 'width:100px']
+                    ],
+                    [
+                        'attribute' => 'fullname',
+                        'options' => ['style' => 'width:350px'],
                         'format' => 'raw'
                     ],
+//                    [
+//                        'attribute' => 'student_id',
+//                        'filter' => RefBook::find('students_fullname')->getList(),
+//                        'value' => function (Entrant $model) {
+//                            return RefBook::find('students_fullname')->getValue($model->student_id);
+//                        },
+//                        'format' => 'raw'
+//                    ],
+//            'comm_id',
                     [
                         'attribute' => 'subject_list',
                         'filter' => RefBook::find('subject_name')->getList(),

@@ -5,6 +5,7 @@ namespace common\models\user;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\Schedule;
 use artsoft\models\User;
+use common\models\service\UsersCard;
 use common\models\students\Student;
 use dosamigos\transliterator\TransliteratorHelper;
 use yii\behaviors\BlameableBehavior;
@@ -394,6 +395,12 @@ class UserCommon extends ActiveRecord
     public function beforeDelete()
     {
         $model = User::findOne($this->user_id);
+        if ($model) {
+            if (!$model->delete()) {
+                return false;
+            }
+        }
+        $model = UsersCard::findOne(['user_common_id' => $this->id]);
         if ($model) {
             if (!$model->delete()) {
                 return false;

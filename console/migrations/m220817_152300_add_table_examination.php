@@ -175,28 +175,32 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
 
         $this->db->createCommand()->createView('entrant_view', '
          SELECT entrant.id,
-            entrant.student_id,
-            entrant.comm_id,
-            entrant.group_id,
-            concat(entrant_group.name, \' - \', to_char(to_timestamp(entrant_group.timestamp_in::double precision), \'DD.MM.YYYY HH24:mi\'::text)) AS group_name,
-            entrant.subject_list,
-            entrant.last_experience,
-            entrant.decision_id,
-            entrant.reason,
-            entrant.programm_id,
-            entrant.course,
-            entrant.type_id,
-            entrant.status,
-            entrant_comm.timestamp_in,
-            ( SELECT avg(guide_lesson_mark.mark_value) AS avg
-                   FROM entrant_members
-                     JOIN entrant_test ON entrant_test.entrant_members_id = entrant_members.id
-                     JOIN guide_lesson_mark ON guide_lesson_mark.id = entrant_test.entrant_mark_id
-                  WHERE entrant_members.entrant_id = entrant.id) AS mid_mark
-           FROM entrant
-             JOIN entrant_group ON entrant_group.id = entrant.group_id
-             JOIN entrant_comm ON entrant_comm.id = entrant.comm_id
-          ORDER BY entrant.comm_id;
+    entrant.student_id,
+    entrant.comm_id,
+    entrant.group_id,
+    concat(entrant_group.name, \' - \', to_char(to_timestamp(entrant_group.timestamp_in::double precision), \'DD.MM.YYYY HH24:mi\'::text)) AS group_name,
+    entrant.subject_list,
+    entrant.last_experience,
+    entrant.decision_id,
+    entrant.reason,
+    entrant.programm_id,
+    entrant.course,
+    entrant.type_id,
+    entrant.status,
+    entrant_comm.timestamp_in,
+    ( SELECT avg(guide_lesson_mark.mark_value) AS avg
+           FROM entrant_members
+             JOIN entrant_test ON entrant_test.entrant_members_id = entrant_members.id
+             JOIN guide_lesson_mark ON guide_lesson_mark.id = entrant_test.entrant_mark_id
+          WHERE entrant_members.entrant_id = entrant.id) AS mid_mark,
+    concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name) AS fullname,
+    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS fio
+   FROM entrant
+     JOIN students ON students.id = entrant.student_id
+     JOIN user_common ON user_common.id = students.user_common_id
+     JOIN entrant_group ON entrant_group.id = entrant.group_id
+     JOIN entrant_comm ON entrant_comm.id = entrant.comm_id
+  ORDER BY entrant.comm_id; 
         ')->execute();
     }
 

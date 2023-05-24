@@ -50,7 +50,7 @@ class EntrantGroupSearch extends EntrantGroup
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'id' => SORT_DESC,
+                    'name' => SORT_ASC,
                 ],
             ],
         ]);

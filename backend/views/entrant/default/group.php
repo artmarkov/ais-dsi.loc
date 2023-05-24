@@ -53,6 +53,13 @@ use artsoft\grid\GridPageSize;
                 'columns' => [
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
+                        'attribute' => 'id',
+                        'value' => function (EntrantGroup $model) {
+                            return sprintf('#%06d', $model->id);
+                        },
+                        'options' => ['style' => 'width:100px']
+                    ],
+                    [
                         'attribute' => 'name',
                         'value' => function (EntrantGroup $model) {
                             return $model->name;

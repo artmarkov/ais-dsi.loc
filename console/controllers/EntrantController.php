@@ -80,6 +80,7 @@ class EntrantController extends Controller
                         $model->last_experience = $v[5];
                         $model->remark = '';
                         $model->status = 0;
+                        $model->decision_id = 0;
 
                         if ($model->save(false)) {
                             $this->stdout('Добавлен абитуриент: ' . $v[0] . ' ' . $v[1] . ' ' . $v[2] . " ", Console::FG_GREY);
@@ -96,10 +97,10 @@ class EntrantController extends Controller
         $position_id = null;
         switch ($id) {
             case '31' :
-                $position_id = 1000;
+                $position_id = 1001;
                 break;
             case '32' :
-                $position_id = 1001;
+                $position_id = 1002;
                 break;
         }
         return $position_id;
