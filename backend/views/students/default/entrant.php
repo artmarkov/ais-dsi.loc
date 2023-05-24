@@ -137,8 +137,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'artsoft\grid\columns\StatusColumn',
                         'attribute' => 'status',
                         'optionsArray' => [
-                            [Entrant::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
-                            [Entrant::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
+                            [0, 'В ожидании испытаний', 'default'],
+                            [1, 'Испытания открыты', 'success'],
+                            [2, 'Испытания завершены', 'warning'],
                         ],
                         'options' => ['style' => 'width:120px']
                     ],

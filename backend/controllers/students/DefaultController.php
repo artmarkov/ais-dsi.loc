@@ -340,7 +340,7 @@ class DefaultController extends MainController
                 }
             }
 
-            return $this->renderIsAjax('/entrant/applicants/_form_student', [
+            return $this->renderIsAjax('/entrant/applicants/_form', [
                     'model' => $model,
                     'modelsMembers' => (empty($modelsMembers)) ? [new EntrantMembers] : $modelsMembers,
                     'modelsTest' => (empty($modelsTest)) ? [[new EntrantTest]] : $modelsTest,
@@ -362,6 +362,16 @@ class DefaultController extends MainController
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
             return $this->redirect($this->getRedirectPage('delete', $model));
 
+        } elseif ('activate' == $mode && $objectId) {
+            if (Entrant::runActivate($objectId)) {
+                Yii::$app->session->setFlash('success', 'Форма подключена к испытаниям.');
+            }
+            return $this->getSubmitAction($model);
+        } elseif ('deactivate' == $mode && $objectId) {
+            if (Entrant::runDeactivate($objectId)) {
+                Yii::$app->session->setFlash('warning', 'Форма отключена от испытаний.');
+            }
+            return $this->getSubmitAction($model);
         } elseif ($objectId) {
 
             if ('view' == $mode) {
@@ -458,7 +468,7 @@ class DefaultController extends MainController
                 }
             }
 
-            return $this->renderIsAjax('/entrant/applicants/_form_student', [
+            return $this->renderIsAjax('/entrant/applicants/_form', [
                     'model' => $model,
                     'modelsMembers' => (empty($modelsMembers)) ? [new EntrantMembers] : $modelsMembers,
                     'modelsTest' => (empty($modelsTest)) ? [[new EntrantTest]] : $modelsTest,

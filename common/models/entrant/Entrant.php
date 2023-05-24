@@ -274,10 +274,7 @@ class Entrant extends \artsoft\db\ActiveRecord
         if (!$comm_id) {
             return [];
         }
-        $query = EntrantGroup::find()
-            ->select(['id', 'CONCAT(name, \' - \', to_char(to_timestamp(timestamp_in), \'DD.MM.YYYY HH24:mi\')) as name'])
-            ->andWhere(['=', 'comm_id', $comm_id])->all();
-        return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
+        return \yii\helpers\ArrayHelper::map(self::getCommGroupById($comm_id), 'id', 'name');
     }
 
     /**
@@ -289,7 +286,9 @@ class Entrant extends \artsoft\db\ActiveRecord
         if (!$comm_id) {
             return [];
         }
-        return EntrantGroup::find()->andWhere(['=', 'comm_id', $comm_id])->asArray()->all();
+        return EntrantGroup::find()
+            ->select(['id', 'CONCAT(name, \' - \', to_char(to_timestamp(timestamp_in), \'DD.MM.YYYY HH24:mi\')) as name'])
+            ->andWhere(['=', 'comm_id', $comm_id])->asArray()->all();
     }
 
     /**

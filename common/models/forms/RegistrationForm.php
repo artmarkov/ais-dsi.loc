@@ -130,6 +130,7 @@ class RegistrationForm extends Model
                         return $('#registrationform-parent_sert_date').val() != NULL;
                     }"],
             ['parent_sert_date', 'default', 'value' => NULL],
+            [['student_gender'], 'required'],
             [['student_gender', 'parent_gender'], 'integer'],
 
 

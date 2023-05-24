@@ -39,7 +39,8 @@ JS;
 $this->registerJs($js, \yii\web\View::POS_LOAD);
 
 $readonly = $model->decision_id != 0 ? true : $readonly;
-$readonlyMarks = $model->status != 1 ? true : $readonly
+$readonlyMarks = $model->status != 1 ? true : $readonly;
+
 ?>
 
 <div class="applicants-form">
@@ -64,13 +65,8 @@ $readonlyMarks = $model->status != 1 ? true : $readonly
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                    <?php
-                    // necessary for update action.
-                    if (!$model->isNewRecord) {
-                        echo Html::activeHiddenInput($model, "comm_id");
-                    }
-                    ?>
-                    <?= $form->field($model, 'student_id')->widget(\kartik\select2\Select2::class, [
+
+                   <?= $form->field($model, 'student_id')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('students_fullname')->getList(),
                         'options' => [
                             'disabled' => $model->student_id ? true : false,
@@ -82,16 +78,30 @@ $readonlyMarks = $model->status != 1 ? true : $readonly
                         ],
                     ]);
                     ?>
-                    <?= $form->field($model, 'group_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \common\models\entrant\Entrant::getCommGroupList($model->comm_id),
+
+                    <?= $form->field($model, 'comm_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => EntrantComm::getComList(),
                         'options' => [
-                            'disabled' => $readonly,
+                            'id' => 'comm_id',
+                            'disabled' => $model->comm_id ? true : false,
                             'placeholder' => Yii::t('art', 'Select...'),
-                            'multiple' => false,
                         ],
                         'pluginOptions' => [
                             'allowClear' => true
                         ],
+                    ]);
+                    ?>
+
+                    <?= $form->field($model, 'group_id')->widget(\kartik\depdrop\DepDrop::class, [
+                        'data' => \common\models\entrant\Entrant::getCommGroupList($model->comm_id),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                        ],
+                        'pluginOptions' => [
+                            'depends' => ['comm_id'],
+                            'url' => Url::to(['/entrant/default/groups'])
+                        ]
                     ]);
                     ?>
 
@@ -224,8 +234,9 @@ $readonlyMarks = $model->status != 1 ? true : $readonly
                     <div class="panel-footer">
                         <div class="row">
                             <div class="form-group btn-group">
+                                <?php $Url = Yii::$app->request->resolve(); ?>
                                 <?=  \artsoft\helpers\Html::a('<i class="fa fa-hourglass-start" aria-hidden="true"></i> Начать испытания',
-                                    Url::to(['/entrant/default/applicants', 'id' => $model->comm_id, 'objectId' => $model->id, 'mode' => 'activate']), [
+                                    Url::to([$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'activate']), [
                                         'class' => 'btn btn-success btn-md',
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
@@ -233,7 +244,7 @@ $readonlyMarks = $model->status != 1 ? true : $readonly
                                     ]
                                 )?>
                                 <?=  \yii\helpers\Html::a('<i class="fa fa-hourglass-end" aria-hidden="true"></i> Завершить испытания',
-                                    Url::to(['/entrant/default/applicants', 'id' => $model->comm_id, 'objectId' => $model->id, 'mode' => 'deactivate']), [
+                                    Url::to([$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'deactivate']), [
                                         'class' => 'btn btn-warning btn-md',
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
