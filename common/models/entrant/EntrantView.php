@@ -9,6 +9,8 @@ use Yii;
  * @property string $group_name
  * @property string $fullname
  * @property string $fio
+ * @property int $timestamp_in
+ * @property int $birth_date
  */
 class EntrantView extends Entrant
 {
@@ -30,6 +32,7 @@ class EntrantView extends Entrant
         $attr['group_name'] = Yii::t('art/guide', 'Group');
         $attr['fullname'] = Yii::t('art/student', 'Student');
         $attr['fio'] = Yii::t('art/student', 'Student');
+        $attr['birth_date'] = Yii::t('art', 'Birth Date');
 
         return $attr;
     }

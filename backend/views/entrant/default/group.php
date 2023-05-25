@@ -73,7 +73,15 @@ use artsoft\grid\GridPageSize;
 
                         'filter' => EntrantGroup::getPrepList(),
                     ],
-                    'timestamp_in:datetime',
+                    [
+                        'attribute' => 'timestamp_in',
+                        'filter' => false,
+                        'value' => function (\common\models\entrant\EntrantGroup $model) {
+                            return Yii::$app->formatter->asDatetime($model->timestamp_in);
+                        },
+                        'options' => ['style' => 'width:350px'],
+                        'format' => 'raw'
+                    ],
                     [
                         'class' => 'kartik\grid\ActionColumn',
                         'template' => '{view} {update} {delete}',

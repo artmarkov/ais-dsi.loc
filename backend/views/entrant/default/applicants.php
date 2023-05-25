@@ -58,8 +58,8 @@ use artsoft\grid\GridPageSize;
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
                         'attribute' => 'group_id',
-                        'filter' =>  \common\models\entrant\Entrant::getCommGroupList($id),
-                        'value' => function (\common\models\entrant\Entrant $model) use ($id){
+                        'filter' => \common\models\entrant\Entrant::getCommGroupList($id),
+                        'value' => function (\common\models\entrant\Entrant $model) use ($id) {
                             return \common\models\entrant\Entrant::getCommGroupValue($id, $model->group_id);
                         },
                         'options' => ['style' => 'width:350px'],
@@ -76,6 +76,16 @@ use artsoft\grid\GridPageSize;
                     [
                         'attribute' => 'fullname',
                         'options' => ['style' => 'width:350px'],
+                        'format' => 'raw'
+                    ],
+                    [
+                        'attribute' => 'birth_date',
+                        'filter' => false,
+                        'value' => function (\common\models\entrant\EntrantView $model) {
+                            $age = \artsoft\helpers\ArtHelper::age($model->birth_date);
+                            return Yii::$app->formatter->asDate($model->birth_date) . ' (' . $age['age_year'] . ' лет ' . $age['age_month'] . ' мес.)';
+                        },
+                        'options' => ['style' => 'width:370px'],
                         'format' => 'raw'
                     ],
 //                    [

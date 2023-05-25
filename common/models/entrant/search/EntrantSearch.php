@@ -19,7 +19,7 @@ class EntrantSearch extends EntrantView
     public function rules()
     {
         return [
-            [['id', 'student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'course', 'type_id', 'status'], 'integer'],
+            [['id', 'student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'course', 'type_id', 'status', 'timestamp_in', 'birth_date'], 'integer'],
             [['last_experience', 'reason', 'subject_list', 'group_name'], 'safe'],
             [['mid_mark', 'fullname', 'fio'], 'safe'],
         ];
@@ -52,7 +52,8 @@ class EntrantSearch extends EntrantView
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'group_name' => SORT_ASC,
+                    'timestamp_in' => SORT_ASC,
+                    'fullname' => SORT_ASC
                 ],
             ],
         ]);
@@ -76,6 +77,8 @@ class EntrantSearch extends EntrantView
             'type_id' => $this->type_id,
             'status' => $this->status,
             'mid_mark' => $this->mid_mark,
+            'timestamp_in' => $this->timestamp_in,
+            'birth_date' => $this->birth_date,
         ]);
 
         $query->andFilterWhere(['like', 'last_experience', $this->last_experience])
