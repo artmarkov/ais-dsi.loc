@@ -60,7 +60,6 @@ class DefaultController extends \frontend\controllers\DefaultController
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['entrant/default/view', 'id' => $id]];
 
         if ($objectId) {
-
             if ('view' == $mode) {
                 $readonly = true;
             }
@@ -155,7 +154,7 @@ class DefaultController extends \frontend\controllers\DefaultController
                 }
             }
 
-            return $this->renderIsAjax('/entrant/applicants/_form', [
+            return $this->renderIsAjax('@backend/views/entrant/applicants/_form', [
                     'model' => $model,
                     'modelsMembers' => (empty($modelsMembers)) ? [new EntrantMembers] : $modelsMembers,
                     'modelsTest' => (empty($modelsTest)) ? [[new EntrantTest]] : $modelsTest,
@@ -183,37 +182,6 @@ class DefaultController extends \frontend\controllers\DefaultController
     }
 
 
-    public function actionGroups()
-    {
-        $out = [];
-        if (isset($_POST['depdrop_parents'])) {
-            $parents = $_POST['depdrop_parents'];
-
-            if (!empty($parents)) {
-                $cat_id = $parents[0];
-                $out = Entrant::getCommGroupById($cat_id);
-
-                return json_encode(['output' => $out, 'selected' => '']);
-            }
-        }
-        return json_encode(['output' => '', 'selected' => '']);
-    }
-
-    public function actionDepartment()
-    {
-        $out = [];
-        if (isset($_POST['depdrop_parents'])) {
-            $parents = $_POST['depdrop_parents'];
-
-            if (!empty($parents)) {
-                $cat_id = $parents[0];
-                $out = Department::getDepartmentListById($cat_id);
-
-                return json_encode(['output' => $out, 'selected' => '']);
-            }
-        }
-        return json_encode(['output' => '', 'selected' => '']);
-    }
 
 
     /**
@@ -225,7 +193,7 @@ class DefaultController extends \frontend\controllers\DefaultController
     {
         $model = $this->findModel($id);
         return [
-            ['label' => 'Карточка вступительных экзаменов', 'url' => ['/entrant/default/update', 'id' => $id]],
+            ['label' => 'Карточка вступительных экзаменов', 'url' => ['/entrant/default/view', 'id' => $id]],
             ['label' => 'Экзаменационная ведомость', 'url' => ['/entrant/default/applicants', 'id' => $id]],
         ];
 

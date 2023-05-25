@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use artsoft\models\User;
 use artsoft\widgets\ActiveForm;
 use common\models\entrant\Entrant;
 use artsoft\helpers\Html;
@@ -40,6 +41,7 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
 
 $readonly = $model->decision_id != 0 ? true : $readonly;
 $readonlyMarks = $model->status != 1 ? true : $readonly;
+$readonlyBase = $model->status != 1 || !User::hasPermission('fullEntrantAccess')? true : $readonly;
 
 ?>
 
@@ -66,7 +68,7 @@ $readonlyMarks = $model->status != 1 ? true : $readonly;
             <div class="row">
                 <div class="col-sm-12">
 
-                   <?= $form->field($model, 'student_id')->widget(\kartik\select2\Select2::class, [
+                    <?= $form->field($model, 'student_id')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('students_fullname')->getList(),
                         'options' => [
                             'disabled' => $model->student_id ? true : false,
@@ -96,7 +98,7 @@ $readonlyMarks = $model->status != 1 ? true : $readonly;
                         'data' => \common\models\entrant\Entrant::getCommGroupList($model->comm_id),
                         'type' => DepDrop::TYPE_SELECT2,
                         'options' => [
-                            'disabled' => $readonly,
+                            'disabled' => $readonlyBase,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [
@@ -109,7 +111,7 @@ $readonlyMarks = $model->status != 1 ? true : $readonly;
                     <?= $form->field($model, 'subject_list')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('subject_name', $model->isNewRecord ? \common\models\subject\Subject::STATUS_ACTIVE : '')->getList(),
                         'options' => [
-                            'disabled' => $readonly,
+                            'disabled' => $readonlyBase,
                             'placeholder' => Yii::t('art', 'Select...'),
                             'multiple' => true,
                         ],
@@ -119,9 +121,9 @@ $readonlyMarks = $model->status != 1 ? true : $readonly;
                     ]);
                     ?>
 
-                    <?= $form->field($model, 'last_experience')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'last_experience')->textInput(['maxlength' => true, 'disabled' => $readonlyBase]) ?>
 
-                    <?= $form->field($model, 'remark')->textarea(['rows' => 6]) ?>
+                    <?= $form->field($model, 'remark')->textarea(['rows' => 6,  'disabled' => $readonlyBase]) ?>
 
                     <?= $form->field($model, 'status')->dropDownList(Entrant::getStatusList(), ['disabled' => true]) ?>
 
@@ -235,84 +237,88 @@ $readonlyMarks = $model->status != 1 ? true : $readonly;
                     <div class="panel-footer">
                         <div class="row">
                             <div class="form-group btn-group">
-                                <?php $Url = Yii::$app->request->resolve(); ?>
-                                <?=  \artsoft\helpers\Html::a('<i class="fa fa-hourglass-start" aria-hidden="true"></i> Начать испытания',
-                                    Url::to([$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'activate']), [
-                                        'class' => 'btn btn-success btn-md',
-                                        'data-method' => 'post',
-                                        'data-pjax' => '0',
-                                        'disabled' => !$readonlyMarks
-                                    ]
-                                )?>
-                                <?=  \yii\helpers\Html::a('<i class="fa fa-hourglass-end" aria-hidden="true"></i> Завершить испытания',
-                                    Url::to([$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'deactivate']), [
-                                        'class' => 'btn btn-warning btn-md',
-                                        'data-method' => 'post',
-                                        'data-pjax' => '0',
-                                        'disabled' => $readonlyMarks
-                                    ]
-                                ); ?>
+                                <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess')): ?>
+                                    <?php $Url = Yii::$app->request->resolve(); ?>
+                                    <?= \artsoft\helpers\Html::a('<i class="fa fa-hourglass-start" aria-hidden="true"></i> Начать испытания',
+                                        Url::to([$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'activate']), [
+                                            'class' => 'btn btn-success btn-md',
+                                            'data-method' => 'post',
+                                            'data-pjax' => '0',
+                                            'disabled' => !$readonlyMarks
+                                        ]
+                                    ) ?>
+                                    <?= \yii\helpers\Html::a('<i class="fa fa-hourglass-end" aria-hidden="true"></i> Завершить испытания',
+                                        Url::to([$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'deactivate']), [
+                                            'class' => 'btn btn-warning btn-md',
+                                            'data-method' => 'post',
+                                            'data-pjax' => '0',
+                                            'disabled' => $readonlyMarks
+                                        ]
+                                    ); ?>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 </div>
                 <?php DynamicFormWidget::end(); ?>
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        Решение комиссии
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <?= $form->field($model, 'decision_id')->radioList(Entrant::getDecisionList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
-                            </div>
-                            <div class="dec2 col-sm-12">
-                                <?= $form->field($model, 'reason')->textInput(['maxlength' => true]) ?>
-                            </div>
-                            <div class="dec1 col-sm-12">
-                                <?= $form->field($model, "programm_id")->widget(\kartik\select2\Select2::class, [
-                                    'data' => RefBook::find('education_programm_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
-                                    'options' => [
-                                        'id' => 'programm_id',
-                                        'disabled' => $model->decision_id != 0 ? true : $readonly,
-                                        'placeholder' => Yii::t('art/studyplan', 'Select Education Programm...'),
-                                        'multiple' => false,
-                                    ],
-                                    'pluginOptions' => [
-                                        'allowClear' => true
-                                    ]
-                                ]);
-                                ?>
+                <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess')): ?>
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            Решение комиссии
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <?= $form->field($model, 'decision_id')->radioList(Entrant::getDecisionList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
+                                </div>
+                                <div class="dec2 col-sm-12">
+                                    <?= $form->field($model, 'reason')->textInput(['maxlength' => true]) ?>
+                                </div>
+                                <div class="dec1 col-sm-12">
+                                    <?= $form->field($model, "programm_id")->widget(\kartik\select2\Select2::class, [
+                                        'data' => RefBook::find('education_programm_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
+                                        'options' => [
+                                            'id' => 'programm_id',
+                                            'disabled' => $model->decision_id != 0 ? true : $readonly,
+                                            'placeholder' => Yii::t('art/studyplan', 'Select Education Programm...'),
+                                            'multiple' => false,
+                                        ],
+                                        'pluginOptions' => [
+                                            'allowClear' => true
+                                        ]
+                                    ]);
+                                    ?>
 
-                                <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
-                                    'data' => \artsoft\helpers\ArtHelper::getCourseList(),
-                                    'options' => [
-                                        'disabled' => $readonly,
-                                        'placeholder' => Yii::t('art/guide', 'Select Course...'),
-                                        'multiple' => false,
-                                    ],
-                                    'pluginOptions' => [
-                                        'allowClear' => true
-                                    ],
-                                ]);
-                                ?>
+                                    <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
+                                        'data' => \artsoft\helpers\ArtHelper::getCourseList(),
+                                        'options' => [
+                                            'disabled' => $readonly,
+                                            'placeholder' => Yii::t('art/guide', 'Select Course...'),
+                                            'multiple' => false,
+                                        ],
+                                        'pluginOptions' => [
+                                            'allowClear' => true
+                                        ],
+                                    ]);
+                                    ?>
 
-                                <?= $form->field($model, 'type_id')->widget(\kartik\select2\Select2::class, [
-                                    'data' => \common\models\subject\SubjectType::getTypeList(),
-                                    'options' => [
-                                        'disabled' => $readonly,
-                                        'placeholder' => Yii::t('art', 'Select...'),
-                                        'multiple' => false,
-                                    ],
-                                    'pluginOptions' => [
-                                        'allowClear' => true
-                                    ],
-                                ]);
-                                ?>
+                                    <?= $form->field($model, 'type_id')->widget(\kartik\select2\Select2::class, [
+                                        'data' => \common\models\subject\SubjectType::getTypeList(),
+                                        'options' => [
+                                            'disabled' => $readonly,
+                                            'placeholder' => Yii::t('art', 'Select...'),
+                                            'multiple' => false,
+                                        ],
+                                        'pluginOptions' => [
+                                            'allowClear' => true
+                                        ],
+                                    ]);
+                                    ?>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
         <div class="panel-footer">

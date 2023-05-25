@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\models\User;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -111,7 +112,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         'controller' => '/entrant/default',
                         'template' => '{view} {update} {delete}',
                         'headerOptions' => ['class' => 'kartik-sheet-style'],
-
+                        'visibleButtons' => [
+                            'view' => function () {
+                                return User::hasPermission('fullEntrantAccess') || User::hasPermission('editEntrant');
+                            },
+                            'delete' => function () {
+                                return User::hasPermission('fullEntrantAccess');
+                            },
+                            'update' => function () {
+                                return User::hasPermission('fullEntrantAccess');
+                            },
+                        ]
                     ],
                 ],
             ]);

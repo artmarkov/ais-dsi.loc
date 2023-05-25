@@ -262,7 +262,7 @@ class ButtonHelper
             $arr['objectId'] = isset($url[1]['objectId']) ? $url[1]['objectId'] : null;
             $arr['mode'] = 'delete';
         } else {
-            $arr[] = str_replace('update', 'delete', $url[0]);
+            $arr[] = str_replace(['view', 'update'], 'delete', $url[0]);
         }
 
         return $arr;

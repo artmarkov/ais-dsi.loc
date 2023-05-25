@@ -115,6 +115,10 @@ class AuthHelper
 
         $routeAsString = $route[0];
 
+        //  /entrant/default/applicants?mode=view for access
+        if (is_array($route)) {
+            $routeAsString .= isset($route['mode']) ? '?mode=' . $route['mode'] : null;
+        }
         // If it's not clean url like localhost/folder/index.php/bla-bla then remove
         // baseUrl and leave only relative path 'bla-bla'
         if ($baseUrl) {

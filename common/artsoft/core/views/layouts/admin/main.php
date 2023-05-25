@@ -81,7 +81,7 @@ MetisMenuAsset::register($this);
             'items' => $menuItems,
         ]);
 
-        echo LanguageSelector::widget(['display' => 'label']);
+//        echo LanguageSelector::widget(['display' => 'label']);
 
         NavBar::end();
         ?>
