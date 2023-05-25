@@ -92,6 +92,7 @@ class AuthHelper
      */
     public static function unifyRoute($route)
     {
+
         // If its like Html::a('Create', ['create'])
         if (is_array($route) AND strpos($route[0], '/') === false) {
             $route = Url::toRoute($route);
@@ -117,8 +118,15 @@ class AuthHelper
 
         //  /entrant/default/applicants?mode=view for access
         if (is_array($route)) {
+            $routeAsString .= isset($route[1]['mode']) ? '?mode=' . $route[1]['mode'] : null;
             $routeAsString .= isset($route['mode']) ? '?mode=' . $route['mode'] : null;
         }
+        if (strpos($routeAsString, '/') !== 0) {
+            $routeAsString = '/' . $routeAsString;
+        }
+        //  /entrant/default/applicants?mode=view for access
+
+
         // If it's not clean url like localhost/folder/index.php/bla-bla then remove
         // baseUrl and leave only relative path 'bla-bla'
         if ($baseUrl) {

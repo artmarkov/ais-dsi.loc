@@ -67,6 +67,8 @@ class AccessFilter extends ActionFilter
             Yii::$app->getResponse()->redirect(Yii::$app->getHomeUrl());
         }
 
+        $route = Yii::$app->request->resolve();// Добавил для сложных роутов /entrant/default/applicants?mode=view
+
         if (User::canRoute($route)) {
             $modelId = Yii::$app->getRequest()->getQueryParam('id');
             $modelClass = (isset($this->owner->modelClass)) ? $this->owner->modelClass : null;
