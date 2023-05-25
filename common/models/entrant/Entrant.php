@@ -212,9 +212,17 @@ class Entrant extends \artsoft\db\ActiveRecord
      */
     public function getEntrantMembersDefault()
     {
-        $models = [];
+        $models = $modelsComm = [];
         $modelComm = $this->comm;
-        foreach ($modelComm->members_list as $item => $members_id) {
+        $userId = Yii::$app->user->identity->getId();
+
+        if (\artsoft\models\User::hasPermission('fullEntrantAccess')) {
+            $modelsComm = $modelComm->members_list;
+        } elseif (in_array($userId, $modelComm->members_list)) {
+            $modelsComm = [$userId];
+        }
+
+        foreach ($modelsComm as $item => $members_id) {
             $model = EntrantMembers::find()->andWhere(['members_id' => $members_id])->andWhere(['entrant_id' => $this->id])->one() ?: new EntrantMembers();
             $model->members_id = $members_id;
             $model->entrant_id = $this->id;
@@ -244,6 +252,7 @@ class Entrant extends \artsoft\db\ActiveRecord
         $ar = self::getStatusList();
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
+
     /**
      * @return array
      */
@@ -378,20 +387,20 @@ class Entrant extends \artsoft\db\ActiveRecord
             }
         }
     }
+
     public static function runActivate($id)
     {
         $model = self::findOne($id);
-        if (!$model)
-        {
+        if (!$model) {
             return false;
         }
         $model->status = 1;
-        if ($model->save(false))
-        {
+        if ($model->save(false)) {
             return true;
         }
         return false;
     }
+
     /**
      *
      * @param type $id
@@ -400,13 +409,11 @@ class Entrant extends \artsoft\db\ActiveRecord
     public static function runDeactivate($id)
     {
         $model = self::findOne($id);
-        if (!$model)
-        {
+        if (!$model) {
             return false;
         }
         $model->status = 2;
-        if ($model->save(false))
-        {
+        if ($model->save(false)) {
             return true;
         }
         return false;

@@ -41,7 +41,7 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
 
 $readonly = $model->decision_id != 0 ? true : $readonly;
 $readonlyMarks = $model->status != 1 ? true : $readonly;
-$readonlyBase = $model->status != 1 || !User::hasPermission('fullEntrantAccess')? true : $readonly;
+$readonlyBase = $model->status != 1 || !User::hasPermission('fullEntrantAccess') ? true : $readonly;
 
 ?>
 
@@ -67,7 +67,11 @@ $readonlyBase = $model->status != 1 || !User::hasPermission('fullEntrantAccess')
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-
+                    <?php
+                    if (!$model->isNewRecord) {
+                        echo Html::activeHiddenInput($model, 'id');
+                    }
+                    ?>
                     <?= $form->field($model, 'student_id')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('students_fullname')->getList(),
                         'options' => [
@@ -123,7 +127,7 @@ $readonlyBase = $model->status != 1 || !User::hasPermission('fullEntrantAccess')
 
                     <?= $form->field($model, 'last_experience')->textInput(['maxlength' => true, 'disabled' => $readonlyBase]) ?>
 
-                    <?= $form->field($model, 'remark')->textarea(['rows' => 6,  'disabled' => $readonlyBase]) ?>
+                    <?= $form->field($model, 'remark')->textarea(['rows' => 6, 'disabled' => $readonlyBase]) ?>
 
                     <?= $form->field($model, 'status')->dropDownList(Entrant::getStatusList(), ['disabled' => true]) ?>
 
@@ -146,7 +150,8 @@ $readonlyBase = $model->status != 1 || !User::hasPermission('fullEntrantAccess')
                         'mark_rem',
                     ],
                 ]); ?>
-                <?php $modelComm = EntrantComm::findOne($model->comm_id);
+                <?php
+                $modelComm = EntrantComm::findOne($model->comm_id);
                 $guideTests = $modelComm->getTests($model->group_id);
                 ?>
                 <div class="panel panel-primary">
@@ -220,16 +225,18 @@ $readonlyBase = $model->status != 1 || !User::hasPermission('fullEntrantAccess')
                                         </tr>
                                     <?php endforeach; ?>
                                     </tbody>
-                                    <tfoot>
-                                    <tr class="info">
-                                        <td colspan="2" align="right">
-                                            <b>Средняя оценка:</b>
-                                        </td>
-                                        <td colspan="<?= count($guideTests) + 1 ?>">
-                                            <b><?= $model->getEntrantMidMark(); ?></b>
-                                        </td>
-                                    </tr>
-                                    </tfoot>
+                                    <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess')): ?>
+                                        <tfoot>
+                                        <tr class="info">
+                                            <td colspan="2" align="right">
+                                                <b>Средняя оценка:</b>
+                                            </td>
+                                            <td colspan="<?= count($guideTests) + 1 ?>">
+                                                <b><?= $model->getEntrantMidMark(); ?></b>
+                                            </td>
+                                        </tr>
+                                        </tfoot>
+                                    <?php endif; ?>
                                 </table>
                             </div>
                         </div>

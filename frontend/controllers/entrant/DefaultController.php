@@ -9,12 +9,7 @@ use backend\models\Model;
 use common\models\entrant\EntrantMembers;
 use common\models\entrant\EntrantTest;
 use common\models\entrant\Entrant;
-use common\models\entrant\EntrantGroup;
-use common\models\entrant\search\EntrantGroupSearch;
 use common\models\entrant\search\EntrantSearch;
-use common\models\history\EntrantGroupHistory;
-use common\models\history\EntrantHistory;
-use common\models\own\Department;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
@@ -27,7 +22,6 @@ class DefaultController extends \frontend\controllers\DefaultController
 {
     public $modelClass = 'common\models\entrant\EntrantComm';
     public $modelSearchClass = 'common\models\entrant\search\EntrantCommSearch';
-    public $modelHistoryClass = 'common\models\history\EntrantCommHistory';
 
     public function init()
     {
@@ -88,10 +82,8 @@ class DefaultController extends \frontend\controllers\DefaultController
                 $modelsMembers = $model->entrantMembers;
                 $modelsTest = [];
 
-                $oldMembersIDs = ArrayHelper::map($modelsMembers, 'id', 'id');
                 $modelsMembers = Model::createMultiple(EntrantMembers::class, $modelsMembers);
                 Model::loadMultiple($modelsMembers, Yii::$app->request->post());
-                $deletedMembersIDs = array_diff($oldMembersIDs, array_filter(ArrayHelper::map($modelsMembers, 'id', 'id')));
 
                 $valid = $model->validate();
                 $valid = Model::validateMultiple($modelsMembers) && $valid;
@@ -109,20 +101,11 @@ class DefaultController extends \frontend\controllers\DefaultController
                         }
                     }
                 }
-                $oldTestIDs = ArrayHelper::getColumn($oldTest, 'id');
-                $deletedTestsIDs = array_diff($oldTestIDs, $testsIDs);
 
                 if ($valid) {
                     $transaction = Yii::$app->db->beginTransaction();
                     try {
                         if ($flag = $model->save(false)) {
-                            if (!empty($deletedTestsIDs)) {
-                                EntrantTest::deleteAll(['id' => $deletedTestsIDs]);
-                            }
-                            if (!empty($deletedMembersIDs)) {
-                                EntrantMembers::deleteAll(['id' => $deletedMembersIDs]);
-                            }
-
                             foreach ($modelsMembers as $index => $modelMembers) {
                                 if ($flag === false) {
                                     break;
@@ -145,10 +128,8 @@ class DefaultController extends \frontend\controllers\DefaultController
                         if ($flag) {
                             $transaction->commit();
                             return $this->getSubmitAction($model);
-                        } else {
-                            $transaction->rollBack();
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $transaction->rollBack();
                     }
                 }
