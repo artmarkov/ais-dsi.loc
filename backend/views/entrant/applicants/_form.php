@@ -92,8 +92,9 @@ $readonlyMarks = $model->status != 1 ? true : $readonly;
                     ]);
                     ?>
 
-                    <?= $form->field($model, 'group_id')->widget(\kartik\depdrop\DepDrop::class, [
+                    <?= $form->field($model, 'group_id')->widget(DepDrop::class, [
                         'data' => \common\models\entrant\Entrant::getCommGroupList($model->comm_id),
+                        'type' => DepDrop::TYPE_SELECT2,
                         'options' => [
                             'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),

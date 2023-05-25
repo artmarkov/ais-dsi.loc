@@ -15,7 +15,6 @@ use common\models\entrant\search\EntrantSearch;
 use common\models\history\EntrantGroupHistory;
 use common\models\history\EntrantHistory;
 use common\models\own\Department;
-use common\models\teachers\Teachers;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;

@@ -66,12 +66,12 @@ use artsoft\widgets\Nav;
 //                    ['label' => 'Работы и сертификаты', 'icon' => 'fa fa-minus', 'url' => ['/creative/default/index']],
 //                ],
 //            ],
-//            [
-//                'label' => 'Учебная работа',
-//                'icon' => 'fa fa-graduation-cap',
-//                'url' => '#',
-//                'items' => [
-//                    ['label' => 'Испытания', 'icon' => 'fa fa-minus', 'url' => ['/examination/default/index']],
+            [
+                'label' => 'Учебная работа',
+                'icon' => 'fa fa-graduation-cap',
+                'url' => '#',
+                'items' => [
+                    ['label' => 'Испытания', 'icon' => 'fa fa-minus', 'url' => ['/entrant/default/index']],
 //                    ['label' => 'Планы учащихся', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
 //                    ['label' => 'Движение учеников', 'icon' => 'fa fa-minus', 'url' => ['/transfer/default/index']],
 //                    ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/schedule/default/index']],
@@ -79,8 +79,8 @@ use artsoft\widgets\Nav;
 //                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/index']],
 //                    ['label' => 'Журнал успеваемости', 'icon' => 'fa fa-minus', 'url' => ['/progress/default/index']],
 //                    ['label' => 'Учебные группы', 'icon' => 'fa fa-minus', 'url' => ['/subjectsect/default/index']],
-//                ],
-//            ],
+                ],
+            ],
 //            [
 //                'label' => 'Аналитика',
 //                'icon' => 'fa fa-bar-chart',
