@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use artsoft\models\User;
 use common\models\subject\Subject;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
@@ -117,7 +118,8 @@ use artsoft\grid\GridPageSize;
                         'value' => function (\common\models\entrant\EntrantView $model) {
                             return round($model->mid_mark, 2);
                         },
-                        'format' => 'raw'
+                        'format' => 'raw',
+                        'visible' => User::hasPermission('fullEntrantAccess'),
                     ],
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',

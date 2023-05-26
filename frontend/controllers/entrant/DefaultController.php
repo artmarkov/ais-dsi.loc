@@ -6,11 +6,14 @@ use artsoft\helpers\ArtHelper;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use backend\models\Model;
+use common\models\entrant\EntrantComm;
 use common\models\entrant\EntrantMembers;
 use common\models\entrant\EntrantTest;
 use common\models\entrant\Entrant;
+use common\models\entrant\search\EntrantCommSearch;
 use common\models\entrant\search\EntrantSearch;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
@@ -27,6 +30,21 @@ class DefaultController extends \frontend\controllers\DefaultController
     {
         $this->viewPath = '@backend/views/entrant/default';
         parent::init();
+    }
+
+    /**
+     * @return mixed|string|\yii\web\Response
+     */
+    public function actionIndex()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $userId = Yii::$app->user->identity->getId();
+        $query = EntrantComm::find()->where(new \yii\db\Expression("{$userId} = any (string_to_array(members_list::text, ',')::int[])"));
+        $searchModel = new EntrantCommSearch($query);
+        $params = Yii::$app->request->getQueryParams();
+        $dataProvider = $searchModel->search($params);
+
+        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel'));
     }
 
     /**

@@ -12,6 +12,14 @@ use common\models\entrant\EntrantComm;
  */
 class EntrantCommSearch extends EntrantComm
 {
+    public $query;
+
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: EntrantComm::find();
+        parent::__construct();
+    }
+
     /**
      * @inheritdoc
      */
@@ -41,7 +49,7 @@ class EntrantCommSearch extends EntrantComm
      */
     public function search($params)
     {
-        $query = EntrantComm::find();
+        $query = $this->query;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
