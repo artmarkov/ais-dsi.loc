@@ -2,6 +2,7 @@
 
 namespace artsoft\models;
 
+use artsoft\Art;
 use artsoft\auth\helpers\AvatarHelper;
 use artsoft\behaviors\DateToTimeBehavior;
 use artsoft\helpers\AuthHelper;
@@ -241,7 +242,7 @@ class User extends UserIdentity
      */
     public static function canRoute($route, $superAdminAllowed = true)
     {
-        if ($superAdminAllowed AND Yii::$app->user->isSuperadmin) {
+        if ($superAdminAllowed AND Yii::$app->user->isSuperadmin AND Art::isBackend()) {
             return true;
         }
 

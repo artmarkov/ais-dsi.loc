@@ -2,6 +2,7 @@
 
 namespace artsoft\behaviors;
 
+use artsoft\Art;
 use artsoft\helpers\ArtHelper;
 use artsoft\models\OwnerAccess;
 use artsoft\models\Route;
@@ -58,7 +59,7 @@ class AccessFilter extends ActionFilter
         }
 
         // Superadmin owns everyone
-        if (Yii::$app->user->isSuperadmin) {
+        if (Yii::$app->user->isSuperadmin AND Art::isBackend()) {
             return true;
         }
 

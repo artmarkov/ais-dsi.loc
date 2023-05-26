@@ -41,7 +41,7 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
 
 $readonly = $model->decision_id != 0 ? true : $readonly;
 $readonlyMarks = $model->status != 1 ? true : $readonly;
-$readonlyBase = $model->status != 1 || !User::hasPermission('fullEntrantAccess') ? true : $readonly;
+$readonlyBase = ($model->status != 1 && !$model->isNewRecord) || !User::hasPermission('fullEntrantAccess') ? true : $readonly;
 
 ?>
 
@@ -247,7 +247,7 @@ $readonlyBase = $model->status != 1 || !User::hasPermission('fullEntrantAccess')
                                 <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess')): ?>
                                     <?php $Url = Yii::$app->request->resolve(); ?>
                                     <?= \artsoft\helpers\Html::a('<i class="fa fa-hourglass-start" aria-hidden="true"></i> Начать испытания',
-                                        Url::to([$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'activate']), [
+                                        [$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'activate'], [
                                             'class' => 'btn btn-success btn-md',
                                             'data-method' => 'post',
                                             'data-pjax' => '0',
@@ -255,7 +255,7 @@ $readonlyBase = $model->status != 1 || !User::hasPermission('fullEntrantAccess')
                                         ]
                                     ) ?>
                                     <?= \yii\helpers\Html::a('<i class="fa fa-hourglass-end" aria-hidden="true"></i> Завершить испытания',
-                                        Url::to([$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'deactivate']), [
+                                        [$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'deactivate'], [
                                             'class' => 'btn btn-warning btn-md',
                                             'data-method' => 'post',
                                             'data-pjax' => '0',
