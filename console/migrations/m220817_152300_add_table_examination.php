@@ -112,7 +112,7 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
             'student_id' => $this->integer()->notNull(),
             'comm_id' => $this->integer()->notNull()->comment('Комиссия Id'),
             'group_id' => $this->integer()->notNull()->comment('Группа экзаменационная'),
-            'subject_list' => $this->string(1024)->notNull()->comment('Выбранный инструмент'),
+            'subject_list' => $this->string(1024)->comment('Выбранный инструмент'),
             'last_experience' => $this->string(127)->notNull()->comment('Где обучался ранее'),
             'remark' => $this->string(127)->notNull()->comment('Примечание'),
             'decision_id' => $this->integer()->comment('Решение комиссии (Рекомендован, Не рекомендован)'),

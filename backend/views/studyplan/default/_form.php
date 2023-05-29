@@ -73,17 +73,17 @@ JS
                     ])->label(Yii::t('art/studyplan', 'Education Programm'));
                     ?>
 
-                    <?= $form->field($model, 'subject_type_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \common\models\subject\SubjectType::getTypeList(),
+                    <?= $form->field($model, 'subject_form_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => \common\models\subject\SubjectForm::getFormList(),
                         'options' => [
-                            'disabled' =>  $model->subject_type_id ? true : $readonly,
+                            'disabled' =>  $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
                             'multiple' => false,
                         ],
                         'pluginOptions' => [
                             'allowClear' => true
                         ],
-                    ])->label(Yii::t('art/guide', 'Subject Type'));
+                    ])->label(Yii::t('art/guide', 'Subject Form'));
                     ?>
 
                     <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
@@ -441,7 +441,7 @@ JS
                             <?php if (!$model->isNewRecord): ?>
                                 <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Скачать договор', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'doc_contract']); ?>
                                 <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Скачать заявление', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'doc_statement']); ?>
-                                <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить документы на электронную почту', ['class' => 'btn btn-sm btn-warning', 'name' => 'submitAction', 'value' => 'doc_send']); ?>
+                                <?php /*Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить документы на электронную почту', ['class' => 'btn btn-sm btn-warning', 'name' => 'submitAction', 'value' => 'doc_send']);*/ ?>
                             <?php endif; ?>
                         </div>
                     </div>

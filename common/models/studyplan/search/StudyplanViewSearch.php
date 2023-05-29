@@ -19,7 +19,7 @@ class StudyplanViewSearch extends StudyplanView
     public function rules()
     {
         return [
-            [['id', 'course', 'plan_year', 'status', 'subject_type_id', 'student_id'], 'integer'],
+            [['id', 'course', 'plan_year', 'status', 'subject_form_id', 'student_id'], 'integer'],
             [['education_programm_name', 'education_programm_short_name', 'education_cat_name', 'education_cat_short_name', 'student_fio', 'subject_type_name'], 'safe'],
             [['description'], 'safe'],
         ];
@@ -69,7 +69,7 @@ class StudyplanViewSearch extends StudyplanView
             'id' => $this->id,
             'course' => $this->course,
             'plan_year' => $this->plan_year,
-            'subject_type_id' => $this->subject_type_id,
+            'subject_form_id' => $this->subject_form_id,
             'status' => $this->status,
             'student_id' => $this->student_id,
         ]);
@@ -80,7 +80,7 @@ class StudyplanViewSearch extends StudyplanView
             $query->andFilterWhere(['like', 'education_cat_name', $this->education_cat_name]);
             $query->andFilterWhere(['like', 'education_cat_short_name', $this->education_cat_short_name]);
             $query->andFilterWhere(['like', 'student_fio', $this->student_fio]);
-            $query->andFilterWhere(['like', 'subject_type_name', $this->subject_type_name]);
+            $query->andFilterWhere(['like', 'subject_form_name', $this->subject_form_name]);
 
 
         return $dataProvider;

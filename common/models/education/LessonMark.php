@@ -30,6 +30,7 @@ class LessonMark extends \artsoft\db\ActiveRecord
     const MARK = 1;
     const OFFSET_NONOFFSET = 2;
     const REASON_ABSENCE = 3;
+    const MARK_10 = 4;
 
     /**
      * {@inheritdoc}
@@ -61,9 +62,9 @@ class LessonMark extends \artsoft\db\ActiveRecord
     {
         return [
             [['mark_label', 'mark_category'], 'required'],
-            [['mark_value', 'mark_label'], 'unique', 'when' => function ($model) {
-                return $model->isNewRecord;
-            }, 'enableClientValidation' => false],
+//            [['mark_value', 'mark_label'], 'unique', 'when' => function ($model) {
+//                return $model->isNewRecord;
+//            }, 'enableClientValidation' => false],
             [['mark_value'], 'number'],
             [['mark_value'], 'required', 'when' => function ($model) {
                 return $model->mark_category == self::MARK;
@@ -103,7 +104,8 @@ class LessonMark extends \artsoft\db\ActiveRecord
     public static function getMarkCatogoryList()
     {
         return array(
-            self::MARK => 'Оценка',
+            self::MARK => 'Оценка 5-ти бальная',
+            self::MARK_10 => 'Оценка 10-ти бальная',
             self::OFFSET_NONOFFSET => 'Зачет/Незачет',
             self::REASON_ABSENCE => 'Причины отсутствия',
         );
@@ -123,11 +125,13 @@ class LessonMark extends \artsoft\db\ActiveRecord
             ->asArray()->all(), 'mark_label', 'mark_hint');
     }
 
-    public static function getMarkLabelForEntrant()
+    public static function getMarkLabelForEntrant($mark_category = self::MARK)
     {
         return ArrayHelper::map(self::find()
             ->select('id, mark_label')
             ->where(['is not', 'mark_value', null])
+            ->andWhere(['=', 'mark_category', $mark_category])
+            ->orderBy('mark_value')
             ->asArray()->all(), 'id', 'mark_label');
     }
 }

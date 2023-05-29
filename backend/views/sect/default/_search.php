@@ -22,8 +22,8 @@ $form = ActiveForm::begin([
                             [
                                 'disabled' => false,
                                 'onchange'=>'js: $(this).closest("form").submit()',
-                                'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' =>  true ],
-                                ],
+//                                'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' =>  true ],
+//                                ],
                             ])->label(Yii::t('art/studyplan', 'Plan Year'));
                         ?>
 

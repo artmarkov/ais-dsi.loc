@@ -11,7 +11,7 @@ use Yii;
  * @property string|null $education_cat_name
  * @property string|null $education_cat_short_name
  * @property string|null $student_fio
- * @property string|null $subject_type_name
+ * @property string|null $subject_form_name
  */
 class StudyplanView extends Studyplan
 {
@@ -35,7 +35,7 @@ class StudyplanView extends Studyplan
         $attr['education_cat_name'] = 'Категория программы';
         $attr['education_cat_short_name'] = 'Категория программы';
         $attr['student_fio'] = 'Ученик';
-        $attr['subject_type_name'] = 'Тип занятий';
+        $attr['subject_form_name'] = 'Тип занятий';
 
         return $attr;
     }

@@ -24,6 +24,7 @@ class StudyplanHistory extends BaseHistory
         return [
             'student_id',
             'programm_id',
+            'subject_form_id',
             'course',
             'plan_year',
             'description',
@@ -45,6 +46,8 @@ class StudyplanHistory extends BaseHistory
                 return isset($model->student_id) ? $model->student->fullName : $value;
             case 'programm_id':
                 return isset($model->programm_id) ? $model->programm->name : $value;
+            case 'subject_form_id':
+                return isset($model->subject_form_id) ? $model->subjectForm->name : $value;
             case 'status':
                 return isset($model->status) ? Studyplan::getStatusList()[$value] : $value;
             case 'plan_year':

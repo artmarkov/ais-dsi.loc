@@ -11,6 +11,7 @@ use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Exception;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -75,7 +76,7 @@ class Entrant extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['student_id', 'comm_id', 'group_id', 'subject_list'], 'required'],
+            [['student_id', 'comm_id', 'group_id'], 'required'],
             [['student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'course', 'type_id', 'status', 'version'], 'integer'],
             [['last_experience', 'remark'], 'string', 'max' => 127],
             [['decision_id'], 'default', 'value' => 0],
@@ -297,7 +298,7 @@ class Entrant extends \artsoft\db\ActiveRecord
         }
         return EntrantGroup::find()
             ->select(['id', 'CONCAT(name, \' - \', to_char(to_timestamp(timestamp_in), \'DD.MM.YYYY HH24:mi\')) as name'])
-            ->andWhere(['=', 'comm_id', $comm_id])->asArray()->all();
+            ->andWhere(['=', 'comm_id', $comm_id])->orderBy('timestamp_in')->asArray()->all();
     }
 
     /**
@@ -309,6 +310,43 @@ class Entrant extends \artsoft\db\ActiveRecord
     {
         $ar = self::getCommGroupList($comm_id);
         return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    /**
+     * @param $comm_id
+     * @return array
+     * @throws Exception
+     */
+    public static function getCommSubjectList($comm_id)
+    {
+        if (!$comm_id) {
+            return [];
+        }
+        return \yii\helpers\ArrayHelper::map(self::getCommSubjectListById($comm_id), 'id', 'name');
+    }
+
+    /**
+     * Определение дисциплин для выбранных отделов комиссии
+     * @param $comm_id
+     * @return array
+     * @throws Exception
+     */
+    public static function getCommSubjectListById($comm_id)
+    {
+        if (!$comm_id) {
+            return [];
+        }
+        $entrantComm = EntrantComm::findOne($comm_id);
+        $department_list = implode(',', $entrantComm->department_list);
+        $funcSql = <<< SQL
+            SELECT DISTINCT subject_id AS id,
+                  subject_name AS name
+            FROM subject_view
+            WHERE department_id = ANY (string_to_array('{$department_list}', ',')::int[]) 
+            ORDER BY subject_name;
+		
+SQL;
+        return Yii::$app->db->createCommand($funcSql)->queryAll();
     }
 
     /**

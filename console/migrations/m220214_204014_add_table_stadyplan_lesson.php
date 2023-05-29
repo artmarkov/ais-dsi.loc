@@ -48,8 +48,18 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
             [1015, 3, 'Б', 'Отсутствие по причине болезни', null, 1, 1015, time(), 10000, time(), 10000],
             [1016, 3, 'О', 'Опоздание на урок', null, 1, 1016, time(), 10000, time(), 10000],
             [1017, 1, '*', 'Факт присутствия(без оценки)', null, 1, 1017, time(), 10000, time(), 10000],
+            [1018, 1, '1', null, 2, 1, 1018, time(), 10000, time(), 10000],
+            [1019, 1, '2', null, 2.6, 1, 1019, time(), 10000, time(), 10000],
+            [1020, 1, '3', null, 3, 1, 1020, time(), 10000, time(), 10000],
+            [1021, 1, '4', null, 3.5, 1, 1021, time(), 10000, time(), 10000],
+            [1022, 1, '5', null, 3.6, 1, 1022, time(), 10000, time(), 10000],
+            [1023, 1, '6', null, 4, 1, 1023, time(), 10000, time(), 10000],
+            [1024, 1, '7', null, 4.5, 1, 1024, time(), 10000, time(), 10000],
+            [1025, 1, '8', null, 4.6, 1, 1025, time(), 10000, time(), 10000],
+            [1026, 1, '9', null, 5, 1, 1026, time(), 10000, time(), 10000],
+            [1027, 1, '10', null, 5.5, 1, 1027, time(), 10000, time(), 10000],
         ])->execute();
-        $this->db->createCommand()->resetSequence('guide_lesson_mark', 1018)->execute();
+        $this->db->createCommand()->resetSequence('guide_lesson_mark', 1028)->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['lesson_mark', 'guide_lesson_mark', 'id', 'mark_label', 'sort_order', 'status', null, 'Список оценок'],

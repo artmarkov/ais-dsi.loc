@@ -29,6 +29,7 @@ use common\models\schedule\search\SubjectScheduleStudyplanViewSearch;
 use common\models\schedule\SubjectSchedule;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\subject\SubjectForm;
 use common\models\subject\SubjectType;
 use common\models\teachers\search\TeachersLoadStudyplanViewSearch;
 use common\models\teachers\TeachersLoad;
@@ -151,7 +152,6 @@ class DefaultController extends MainController
             // validate all models
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsStudyplanSubject) && $valid;
-
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
@@ -162,7 +162,7 @@ class DefaultController extends MainController
 
                         foreach ($modelsStudyplanSubject as $modelStudyplanSubject) {
                             $modelStudyplanSubject->studyplan_id = $model->id;
-                            $modelStudyplanSubject->subject_type_id = $modelStudyplanSubject->subject_type_id != null ? $modelStudyplanSubject->subject_type_id : $model->subject_type_id;
+                            $modelStudyplanSubject->subject_type_id = $modelStudyplanSubject->subject_type_id != null ? $modelStudyplanSubject->subject_type_id : null;
                             if (!($flag = $modelStudyplanSubject->save(false))) {
                                 $transaction->rollBack();
                                 break;
@@ -179,7 +179,7 @@ class DefaultController extends MainController
             }
         }
         if (Yii::$app->request->post('submitAction') == 'doc_contract') {
-            if ($model->subject_type_id == SubjectType::BASIS_FREE) {
+            if ($model->subject_form_id != 1001) {
                 $model->makeDocx(Studyplan::template_csf);
             } else {
                 $model->makeDocx(Studyplan::template_cs);

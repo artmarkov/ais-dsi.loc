@@ -4,6 +4,7 @@ namespace common\models\subject;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\db\ActiveRecord;
+use common\models\entrant\EntrantComm;
 use common\models\own\Department;
 use Yii;
 use yii\behaviors\BlameableBehavior;

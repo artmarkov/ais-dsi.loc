@@ -1,15 +1,15 @@
 <?php
 
-use artsoft\helpers\RefBook;
 use yii\helpers\Html;
 use wbraganca\dynamicform\DynamicFormWidget;
-use yii\helpers\Url;
+use common\models\education\LessonMark;
 
 /* @var $modelsTest */
 /* @var $model */
 /* @var $index */
 /* @var $readonly */
 
+$modelComm = \common\models\entrant\EntrantComm::findOne($model->comm_id);
 ?>
 
 <?php DynamicFormWidget::begin([
@@ -51,7 +51,7 @@ use yii\helpers\Url;
                         [
                             'model' => $modelTest,
                             'attribute' => "[{$index}][{$indexTest}]entrant_mark_id",
-                            'data' => \common\models\education\LessonMark::getMarkLabelForEntrant(),
+                            'data' => \common\models\education\LessonMark::getMarkLabelForEntrant($modelComm->division_id == 1001 ?LessonMark::MARK_10 : LessonMark::MARK),
                             'options' => [
                                     'disabled' => $readonly,
                                 'placeholder' => Yii::t('art', 'Select...'),

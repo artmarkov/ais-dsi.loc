@@ -41,7 +41,7 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
 
 $readonly = $model->decision_id != 0 ? true : $readonly;
 $readonlyMarks = $model->status != 1 ? true : $readonly;
-$readonlyBase = ($model->status != 1 && !$model->isNewRecord) || !User::hasPermission('fullEntrantAccess') ? true : $readonly;
+$readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermission('fullEntrantAccess') ? true : $readonly;
 
 ?>
 
@@ -112,16 +112,17 @@ $readonlyBase = ($model->status != 1 && !$model->isNewRecord) || !User::hasPermi
                     ]);
                     ?>
 
-                    <?= $form->field($model, 'subject_list')->widget(\kartik\select2\Select2::class, [
-                        'data' => RefBook::find('subject_name', $model->isNewRecord ? \common\models\subject\Subject::STATUS_ACTIVE : '')->getList(),
+                    <?= $form->field($model, 'subject_list')->widget(DepDrop::class, [
+                        'data' => \common\models\entrant\Entrant::getCommSubjectList($model->comm_id),
+                        'type' => DepDrop::TYPE_SELECT2,
                         'options' => [
                             'disabled' => $readonlyBase,
                             'placeholder' => Yii::t('art', 'Select...'),
-                            'multiple' => true,
                         ],
                         'pluginOptions' => [
-                            'allowClear' => true
-                        ],
+                            'depends' => ['comm_id'],
+                            'url' => Url::to(['/entrant/default/subject'])
+                        ]
                     ]);
                     ?>
 
@@ -225,7 +226,7 @@ $readonlyBase = ($model->status != 1 && !$model->isNewRecord) || !User::hasPermi
                                         </tr>
                                     <?php endforeach; ?>
                                     </tbody>
-                                    <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess')): ?>
+                                    <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend()): ?>
                                         <tfoot>
                                         <tr class="info">
                                             <td colspan="2" align="right">
@@ -244,7 +245,7 @@ $readonlyBase = ($model->status != 1 && !$model->isNewRecord) || !User::hasPermi
                     <div class="panel-footer">
                         <div class="row">
                             <div class="form-group btn-group">
-                                <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess')): ?>
+                                <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend()): ?>
                                     <?php $Url = Yii::$app->request->resolve(); ?>
                                     <?= \artsoft\helpers\Html::a('<i class="fa fa-hourglass-start" aria-hidden="true"></i> Начать испытания',
                                         [$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'activate'], [
@@ -268,7 +269,7 @@ $readonlyBase = ($model->status != 1 && !$model->isNewRecord) || !User::hasPermi
                     </div>
                 </div>
                 <?php DynamicFormWidget::end(); ?>
-                <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess')): ?>
+                <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend()): ?>
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             Решение комиссии

@@ -13,7 +13,7 @@ use common\models\parents\Parents;
 use common\models\students\Student;
 use common\models\subject\Subject;
 use common\models\schedule\SubjectScheduleStudyplanView;
-use common\models\subject\SubjectType;
+use common\models\subject\SubjectForm;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
@@ -27,7 +27,7 @@ use function morphos\Russian\inflectName;
  * @property int $id
  * @property int $student_id
  * @property int $programm_id
- * @property int $subject_type_id
+ * @property int $subject_form_id
  * @property int|null $course
  * @property int|null $plan_year
  * @property string|null $description
@@ -86,18 +86,18 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['student_id', 'programm_id', 'subject_type_id', 'course', 'plan_year'], 'required'],
+            [['student_id', 'programm_id', 'subject_form_id', 'course', 'plan_year'], 'required'],
 //            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) {
 //                return !$model->isNewRecord;
 //            }],
-            [['student_id', 'programm_id',  'course', 'plan_year', 'subject_type_id', 'status', 'version'], 'integer'],
+            [['student_id', 'programm_id',  'course', 'plan_year', 'subject_form_id', 'status', 'version'], 'integer'],
             [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
             ['doc_date', 'default', 'value' => date('d.m.Y')],
             [['description'], 'string', 'max' => 1024],
             [['year_time_total', 'cost_month_total', 'cost_year_total'], 'number'],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EducationProgramm::class, 'targetAttribute' => ['programm_id' => 'id']],
-            [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
+            [['subject_form_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectForm::class, 'targetAttribute' => ['subject_form_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
             [['doc_signer'], 'exist', 'skipOnError' => true, 'targetClass' => Parents::class, 'targetAttribute' => ['doc_signer' => 'id']],
         ];
@@ -113,7 +113,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'student_id' => Yii::t('art/student', 'Student'),
             'programm_id' => Yii::t('art/studyplan', 'Education Programm'),
             'programmName' => Yii::t('art/studyplan', 'Education Programm'),
-            'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
+            'subject_form_id' => Yii::t('art/guide', 'Subject Form'),
             'course' => Yii::t('art/studyplan', 'Course'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'description' => Yii::t('art', 'Description'),
@@ -150,18 +150,18 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $this->hasOne(EducationProgramm::class, ['id' => 'programm_id']);
     }
 
-    public function getSubjectType()
+    public function getSubjectForm()
     {
-        return $this->hasOne(SubjectType::class, ['id' => 'subject_type_id']);
+        return $this->hasOne(SubjectForm::class, ['id' => 'subject_form_id']);
     }
 
     /**
      * Геттер категория
      * @return array
      */
-    public function getType()
+    public function getForm()
     {
-        return $this->subject_type_id;
+        return $this->subject_form_id;
     }
 
     /**

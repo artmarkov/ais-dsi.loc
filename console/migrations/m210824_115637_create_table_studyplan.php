@@ -13,7 +13,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'student_id' => $this->integer()->notNull(),
             'programm_id' => $this->integer()->notNull(),
-            'subject_type_id' => $this->integer(),
+            'subject_form_id' => $this->integer(),
             'course' => $this->integer(),
             'plan_year' => $this->integer(),
             'description' => $this->string(1024),
@@ -37,7 +37,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
         $this->addCommentOnTable('studyplan', 'Планы учащихся');
         $this->addForeignKey('studyplan_ibfk_1', 'studyplan', 'student_id', 'students', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('studyplan_ibfk_2', 'studyplan', 'programm_id', 'education_programm', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('studyplan_ibfk_3', 'studyplan', 'subject_type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('studyplan_ibfk_3', 'studyplan', 'subject_form_id', 'guide_subject_form', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->resetSequence('studyplan', 10000)->execute();
 
