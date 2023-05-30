@@ -118,6 +118,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                         'options' => [
                             'disabled' => $readonlyBase,
                             'placeholder' => Yii::t('art', 'Select...'),
+                            'multiple' => true,
                         ],
                         'pluginOptions' => [
                             'depends' => ['comm_id'],
@@ -130,7 +131,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
 
                     <?= $form->field($model, 'remark')->textarea(['rows' => 6, 'disabled' => $readonlyBase]) ?>
 
-                    <?= $form->field($model, 'status')->dropDownList(Entrant::getStatusList(), ['disabled' => true]) ?>
+                    <?= $form->field($model, 'status')->dropDownList(Entrant::getStatusList(), ['disabled' => !Yii::$app->user->isSuperadmin]) ?>
 
                 </div>
             </div>
@@ -245,7 +246,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                     <div class="panel-footer">
                         <div class="row">
                             <div class="form-group btn-group">
-                                <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend()): ?>
+                                <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess')): ?>
                                     <?php $Url = Yii::$app->request->resolve(); ?>
                                     <?= \artsoft\helpers\Html::a('<i class="fa fa-hourglass-start" aria-hidden="true"></i> Начать испытания',
                                         [$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'activate'], [
@@ -310,17 +311,17 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                                     ]);
                                     ?>
 
-                                    <?= $form->field($model, 'type_id')->widget(\kartik\select2\Select2::class, [
-                                        'data' => \common\models\subject\SubjectType::getTypeList(),
+                                    <?= $form->field($model, 'subject_form_id')->widget(\kartik\select2\Select2::class, [
+                                        'data' => \common\models\subject\SubjectForm::getFormList(),
                                         'options' => [
-                                            'disabled' => $readonly,
+                                            'disabled' =>  $readonly,
                                             'placeholder' => Yii::t('art', 'Select...'),
                                             'multiple' => false,
                                         ],
                                         'pluginOptions' => [
                                             'allowClear' => true
                                         ],
-                                    ]);
+                                    ])->label(Yii::t('art/guide', 'Subject Form'));
                                     ?>
                                 </div>
                             </div>

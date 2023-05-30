@@ -316,7 +316,7 @@ img.dw-media-image {
     font-size: unset;
 }
 .btn {
-    margin: 0px 2px 0px 2px;
+    margin: 2px 2px 2px 2px;
 }
 /*настройка виджета kartik select2*/
 .select2-container--krajee .select2-selection--multiple .select2-selection__choice__remove {

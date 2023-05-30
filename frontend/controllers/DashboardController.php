@@ -40,7 +40,7 @@ class DashboardController extends BaseController
                     [
                     'class' => 'col-md-6',
                     'content' => [
-                        'common\widgets\EfficiencyUserBarWidget',
+//                        'common\widgets\EfficiencyUserBarWidget',
 //                        'artsoft\comment\widgets\dashboard\Comments',
                     ],
                 ],

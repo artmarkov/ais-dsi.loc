@@ -16,12 +16,19 @@ class DashboardController extends BaseController
     {
 
         if ($this->widgets === NULL) {
-            $this->widgets = [  
+            $this->widgets = [
+                [
+                    [
+                        'class' => 'col-md-12',
+                        'content' => [
+                            'backend\widgets\dashboard\Quick',
+                        ],
+                    ],
+                ],
                 [
                     [
                         'class' => 'col-md-8',
                         'content' => [
-                            'backend\widgets\dashboard\Student',
                             'artsoft\user\widgets\dashboard\UsersVisitMap',
                         ],
                     ],
@@ -35,16 +42,16 @@ class DashboardController extends BaseController
                 ],
                 [
                     [
-                    'class' => 'col-md-6',
-                    'content' => [
+                        'class' => 'col-md-6',
+                        'content' => [
 //                        'artsoft\post\widgets\dashboard\Posts',
 //                        'artsoft\comment\widgets\dashboard\Comments',
+                        ],
                     ],
-                ],
-                    
+
                     [
                         'class' => 'col-md-6',
-                        'content' => [                          
+                        'content' => [
                             'artsoft\user\widgets\dashboard\Users',
 //                            'artsoft\media\widgets\dashboard\Media',
                         ],

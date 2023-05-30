@@ -49,7 +49,7 @@ class EntrantPreregistrationsSearch extends EntrantPreregistrations
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'id' => SORT_DESC,
+                    'entrant_programm_id' => SORT_ASC,
                 ],
             ],
         ]);

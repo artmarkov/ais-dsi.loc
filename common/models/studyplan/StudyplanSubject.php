@@ -315,7 +315,7 @@ SQL;
         $this->studyplan_id = $model->id;
         $this->subject_cat_id = $modelSubTime->subject_cat_id;
         $this->subject_id = $modelSubTime->subject_id;
-//        $this->subject_type_id = $model->subject_type_id;
+        $this->subject_type_id = $model->subject_form_id == 1001 ? 1001 : 1000;
         $this->subject_vid_id = $modelSubTime->subject_vid_id;
         $this->week_time = $modelSubTime->week_time;
         $this->year_time = $modelSubTime->year_time;

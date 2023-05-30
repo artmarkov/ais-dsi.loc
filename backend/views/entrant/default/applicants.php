@@ -112,14 +112,21 @@ use artsoft\grid\GridPageSize;
                         'options' => ['style' => 'width:350px'],
                         'format' => 'raw',
                     ],
-                    'last_experience',
+                   /* [
+                        'attribute' => 'last_experience',
+                        'value' => function (Entrant $model) {
+                            return $model->last_experience;
+                        },
+                        'format' => 'raw',
+                        'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
+                    ],*/
                     [
                         'attribute' => 'mid_mark',
                         'value' => function (\common\models\entrant\EntrantView $model) {
                             return round($model->mid_mark, 2);
                         },
                         'format' => 'raw',
-                        'visible' => User::hasPermission('fullEntrantAccess'),
+                        'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
                     ],
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',

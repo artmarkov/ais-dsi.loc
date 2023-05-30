@@ -119,7 +119,7 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
             'reason' => $this->string(1024)->comment('Причина комиссии'),
             'programm_id' => $this->integer()->comment('Назначена программа'),
             'course' => $this->integer()->comment('Назначен курс'),
-            'type_id' => $this->integer()->comment('Назначен вид обучения(бюджет, внебюджет)'),
+            'subject_form_id' => $this->integer()->comment('Назначена форма обучения(бюджет, внебюджет, бюджет с оплатой)'),
             'status' => $this->smallInteger()->notNull()->defaultValue(0)->comment('Статус (В ожидании испытаний, Испытания открыты, Испытания завершены)'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
@@ -185,7 +185,7 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
     entrant.reason,
     entrant.programm_id,
     entrant.course,
-    entrant.type_id,
+    entrant.subject_form_id,
     entrant.status,
     entrant_group.timestamp_in,
     ( SELECT avg(guide_lesson_mark.mark_value) AS avg

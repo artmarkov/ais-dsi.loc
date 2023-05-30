@@ -55,6 +55,8 @@ class m230525_123245_add_entrant_permissions extends PermissionsMigration
                 'fullEntrantAccess' => [
                     'title' => 'Полный доступ к испытаниям',
                     'links' => [
+                        '/entrant/default/applicants?mode=activate',
+                        '/entrant/default/applicants?mode=deactivate',
                         '/admin/entrant/default/index',
                         '/admin/entrant/default/view',
                         '/admin/entrant/default/history',

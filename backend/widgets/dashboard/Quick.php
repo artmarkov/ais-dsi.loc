@@ -4,10 +4,10 @@ namespace backend\widgets\dashboard;
 
 use artsoft\widgets\DashboardWidget;
 
-class Student extends DashboardWidget
+class Quick extends DashboardWidget
 {
     public function run()
     {
-        return $this->render('student');
+        return $this->render('quick');
     }
 }

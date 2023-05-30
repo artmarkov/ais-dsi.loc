@@ -64,21 +64,34 @@ $this->params['breadcrumbs'][] = $this->title;
                         'options' => ['style' => 'width:100px']
                     ],
                     [
+                        'attribute' => 'entrant_programm_id',
+                        'filter' => \common\models\education\EntrantProgramm::getEntrantProgrammList(),
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => ['allowClear' => true],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                        'value' => function (EntrantPreregistrations $model) {
+                            return \common\models\education\EntrantProgramm::getEntrantProgrammValue($model->entrant_programm_id) ?? '';
+                        },
+                        'options' => ['style' => 'width:350px'],
+                        'format' => 'raw',
+                        'group' => true,
+                    ],
+                    [
                         'attribute' => 'student_id',
-                        'filter' => false,
+                        'filter' => EntrantPreregistrations::getEntrantPreregistrationList(),
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => ['allowClear' => true],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                         'value' => function (EntrantPreregistrations $model) {
                             return RefBook::find('students_fullname')->getValue($model->student_id);
                         },
                         'format' => 'raw'
                     ],
-                    [
-                        'attribute' => 'entrant_programm_id',
-                        'filter' => \common\models\education\EntrantProgramm::getEntrantProgrammList(),
-                        'value' => function (EntrantPreregistrations $model) {
-                            return \common\models\education\EntrantProgramm::getEntrantProgrammValue($model->entrant_programm_id) ?? '';
-                        },
-                        'format' => 'raw',
-                    ],
+
                     /*[
                         'attribute' => 'plan_year',
                         'filter' => false,

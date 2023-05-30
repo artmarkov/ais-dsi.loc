@@ -2,11 +2,13 @@
 
 namespace common\models\entrant;
 
+use artsoft\Art;
 use artsoft\behaviors\ArrayFieldBehavior;
 use common\models\education\EducationProgrammLevel;
 use common\models\students\Student;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\subject\SubjectForm;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -28,7 +30,7 @@ use yii\web\NotFoundHttpException;
  * @property string|null $reason Причина комиссии
  * @property int|null $programm_id Назначена программа
  * @property int|null $course Назначен курс
- * @property int|null $type_id Назначен вид обучения(бюджет, внебюджет)
+ * @property int|null $subject_form_id Назначен вид обучения(бюджет, внебюджет)
  * @property int $status Статус (В ожидании испытаний, Испытания открыты, Испытания завершены)
  * @property int $created_at
  * @property int|null $created_by
@@ -77,14 +79,14 @@ class Entrant extends \artsoft\db\ActiveRecord
     {
         return [
             [['student_id', 'comm_id', 'group_id'], 'required'],
-            [['student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'course', 'type_id', 'status', 'version'], 'integer'],
+            [['student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'course', 'subject_form_id', 'status', 'version'], 'integer'],
             [['last_experience', 'remark'], 'string', 'max' => 127],
             [['decision_id'], 'default', 'value' => 0],
             [['status'], 'default', 'value' => 0],
             [['subject_list'], 'safe'],
             [['student_id'], 'unique', 'targetAttribute' => ['student_id', 'comm_id'], 'message' => 'Ученик уже записан на экзамен.'],
             [['reason'], 'string', 'max' => 1024],
-            [['programm_id', 'course', 'type_id'], 'required', 'when' => function ($model) {
+            [['programm_id', 'course', 'subject_form_id'], 'required', 'when' => function ($model) {
                 return $model->decision_id === '1';
             },
                 'whenClient' => "function (attribute, value) {
@@ -100,6 +102,7 @@ class Entrant extends \artsoft\db\ActiveRecord
             [['group_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantGroup::className(), 'targetAttribute' => ['group_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::className(), 'targetAttribute' => ['student_id' => 'id']],
             [['programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => Studyplan::className(), 'targetAttribute' => ['programm_id' => 'id']],
+            [['subject_form_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectForm::class, 'targetAttribute' => ['subject_form_id' => 'id']],
         ];
     }
 
@@ -120,7 +123,7 @@ class Entrant extends \artsoft\db\ActiveRecord
             'reason' => Yii::t('art/guide', 'Reason'),
             'programm_id' => Yii::t('art/guide', 'Plan Reason'),
             'course' => Yii::t('art/guide', 'Course Reason'),
-            'type_id' => Yii::t('art/guide', 'Type Reason'),
+            'subject_form_id' => Yii::t('art/guide', 'Subject Form'),
             'status' => Yii::t('art', 'Status'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -217,7 +220,7 @@ class Entrant extends \artsoft\db\ActiveRecord
         $modelComm = $this->comm;
         $userId = Yii::$app->user->identity->getId();
 
-        if (\artsoft\models\User::hasPermission('fullEntrantAccess')) {
+        if (\artsoft\models\User::hasPermission('fullEntrantAccess') && Art::isBackend()) {
             $modelsComm = $modelComm->members_list;
         } elseif (in_array($userId, $modelComm->members_list)) {
             $modelsComm = [$userId];
@@ -361,12 +364,12 @@ SQL;
         } elseif ($this->decision_id == 2) {
             $this->programm_id = null;
             $this->course = null;
-            $this->type_id = null;
+            $this->subject_form_id = null;
         } else {
             $this->reason = null;
             $this->programm_id = null;
             $this->course = null;
-            $this->type_id = null;
+            $this->subject_form_id = null;
         }
         return parent::beforeSave($insert);
     }
@@ -384,7 +387,7 @@ SQL;
             $model->setAttributes(
                 [
                     'programm_id' => $this->programm_id,
-                    'subject_type_id' => $this->type_id,
+                    'subject_form_id' => $this->subject_form_id,
                     'course' => $this->course,
                     'student_id' => $this->student_id,
                     'plan_year' => $this->comm->plan_year,

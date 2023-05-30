@@ -8,6 +8,7 @@ use artsoft\widgets\Notice;
 use common\models\students\Student;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -144,6 +145,20 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
     {
         $ar = self::getRegStatusList();
         return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getEntrantPreregistrationList()
+    {
+       $query = self::find()->innerJoin('students', 'entrant_preregistrations.student_id = students.id')
+            ->innerJoin('user_common', 'user_common.id = students.user_common_id')
+            ->andWhere(['in', 'user_common.user_category', UserCommon::USER_CATEGORY_STUDENTS])// только ученики
+            ->select(['students.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
+            ->orderBy('user_common.last_name')
+            ->asArray()->all();
+        return ArrayHelper::map($query, 'id', 'name');
     }
 
     public function sendMessage($email)
