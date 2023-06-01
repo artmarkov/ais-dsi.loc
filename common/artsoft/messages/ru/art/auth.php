@@ -7,6 +7,7 @@ return [
     'Authorized Services' => 'Услуги Авторизации',
     'Captcha' => 'Captcha',
     'Change profile picture' => 'Изменить изображение профиля',
+    'Check your E-mail for further instructions' => 'Проверьте свою электронную почту для получения дальнейших инструкций',
     'Check your E-mail {email} for further instructions' => 'Проверьте свою электронную почту {email} для получения дальнейших инструкций',
     'Check your e-mail {email} for instructions to activate account' => 'Проверьте свой e-mail {email} для получения инструкций по активации аккаунта',
     'Click to connect with service' => 'Нажмите, чтобы подключиться к службе',

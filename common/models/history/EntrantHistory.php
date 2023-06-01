@@ -5,6 +5,7 @@ namespace common\models\history;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use common\models\entrant\Entrant;
+use common\models\subject\SubjectForm;
 use common\models\subject\SubjectType;
 use common\widgets\history\BaseHistory;
 use yii\helpers\Json;
@@ -33,7 +34,7 @@ class EntrantHistory extends BaseHistory
             'reason',
             'programm_id',
             'course',
-            'type_id',
+            'subject_form_id',
             'status',
         ];
     }
@@ -51,8 +52,8 @@ class EntrantHistory extends BaseHistory
                 return isset($model->programm_id) ? RefBook::find('education_programm_name')->getValue($model->programm_id) : $value;
             case 'course':
                 return isset($model->course) ? ArtHelper::getCourseList()[$model->course] : $value;
-            case 'type_id':
-                return isset($model->type_id) ? SubjectType::findOne($model->type_id)->name : $value;
+            case 'subject_form_id':
+                return isset($model->subject_form_id) ? SubjectForm::findOne($model->subject_form_id)->name : $value;
             case 'subject_list':
                 if (isset($model->subject_list)) {
                     $v = [];

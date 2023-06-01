@@ -68,7 +68,7 @@ class EntrantMembers extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/guide', 'ID'),
             'entrant_id' => Yii::t('art/guide', 'Entrant'),
-            'members_id' => Yii::t('art/guide', 'Member'),
+            'members_id' => Yii::t('art/guide', 'Members Item'),
             'mark_rem' => Yii::t('art/guide', 'Mark Rem'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),

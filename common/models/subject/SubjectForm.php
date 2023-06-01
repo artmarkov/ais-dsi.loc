@@ -65,4 +65,13 @@ class SubjectForm extends ActiveRecord
             ->asArray()->all(), 'id', 'name');
     }
 
+    /**
+     * @param $val
+     * @return mixed
+     */
+    public static function getFormValue($val)
+    {
+        $ar = self::getFormList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
 }

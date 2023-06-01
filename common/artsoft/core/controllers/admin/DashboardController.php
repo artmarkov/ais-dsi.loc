@@ -40,7 +40,7 @@ class DashboardController extends BaseController
                         ],
                     ],
                 ],
-                [
+               /* [
                     [
                         'class' => 'col-md-6',
                         'content' => [
@@ -52,11 +52,11 @@ class DashboardController extends BaseController
                     [
                         'class' => 'col-md-6',
                         'content' => [
-                            'artsoft\user\widgets\dashboard\Users',
+//                            'artsoft\user\widgets\dashboard\Users',
 //                            'artsoft\media\widgets\dashboard\Media',
                         ],
                     ],
-                ],
+                ],*/
             ];
         }
 

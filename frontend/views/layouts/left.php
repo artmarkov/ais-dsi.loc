@@ -9,6 +9,7 @@ use artsoft\widgets\Nav;
     $pre_status = Yii::$app->settings->get('module.pre_status');
     $pre_date_in = Yii::$app->formatter->asTimestamp(Yii::$app->settings->get('module.pre_date_in'));
     $pre_date_out = Yii::$app->formatter->asTimestamp(Yii::$app->settings->get('module.pre_date_out'));
+//    print_r([$pre_status,$pre_date_in,$pre_date_out,time()]);
     ?>
     <?= Nav::widget([
         'encodeLabels' => false,
@@ -28,7 +29,7 @@ use artsoft\widgets\Nav;
                 'label' => 'Запись на обучение',
                 'icon' => 'fa fa-th',
                 'url' => ['/preregistration/default/finding'],
-                'visible' => (Yii::$app->user->isGuest && $pre_status == \common\models\education\EntrantProgramm::STATUS_ACTIVE && $pre_date_in < time() && $pre_date_out > time())
+                'visible' => (Yii::$app->user->isGuest && $pre_status == 1 && $pre_date_in < time() && $pre_date_out > time())
             ],
             [
                 'label' => 'Информационный ресурс',

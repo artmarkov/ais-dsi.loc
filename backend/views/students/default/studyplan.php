@@ -59,10 +59,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     'education_programm_name',
                     [
-                        'attribute' => 'subject_type_id',
-                        'filter' => RefBook::find('subject_type_name')->getList(),
+                        'attribute' => 'subject_form_id',
+                        'filter' => RefBook::find('subject_form_name')->getList(),
                         'value' => function (StudyplanView $model) {
-                            return $model->subject_type_name;
+                            return $model->subject_form_name;
                         },
                         'options' => ['style' => 'width:100px'],
                         'format' => 'raw',

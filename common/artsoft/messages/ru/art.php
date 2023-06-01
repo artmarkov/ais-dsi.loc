@@ -18,6 +18,7 @@ return [
     'Banned' => 'Заблокирован',
     'Bind to IP' => 'Привязка к IP',
     'Birth Date' => 'Дата рождения',
+    'Birth Date Age' => 'Возраст',
     'Browse' => 'Выбрать',
     'Browser' => 'Браузер',
     'Cancel' => 'Отменить',

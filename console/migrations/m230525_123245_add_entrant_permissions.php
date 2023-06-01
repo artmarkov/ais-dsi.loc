@@ -80,6 +80,7 @@ class m230525_123245_add_entrant_permissions extends PermissionsMigration
                         '/admin/entrant/default/applicants?mode=history',
                         '/admin/entrant/default/applicants?mode=activate',
                         '/admin/entrant/default/applicants?mode=deactivate',
+                        '/admin/entrant/default/protocol',
                     ],
                     'roles' => [
                         self::ROLE_ADMIN,

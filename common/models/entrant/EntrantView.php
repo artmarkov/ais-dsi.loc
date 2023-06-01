@@ -11,6 +11,7 @@ use Yii;
  * @property string $fio
  * @property int $timestamp_in
  * @property int $birth_date
+ * @property int $birth_date_age
  */
 class EntrantView extends Entrant
 {
@@ -33,6 +34,7 @@ class EntrantView extends Entrant
         $attr['fullname'] = Yii::t('art/student', 'Student');
         $attr['fio'] = Yii::t('art/student', 'Student');
         $attr['birth_date'] = Yii::t('art', 'Birth Date');
+        $attr['birth_date_age'] = Yii::t('art', 'Birth Date Age');
 
         return $attr;
     }

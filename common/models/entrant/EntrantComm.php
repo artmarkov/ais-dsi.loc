@@ -4,11 +4,16 @@ namespace common\models\entrant;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\ExcelObjectList;
+use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\own\Division;
+use common\models\subject\SubjectForm;
+use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
@@ -68,6 +73,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
             ],
         ];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -173,12 +179,27 @@ class EntrantComm extends \artsoft\db\ActiveRecord
         return \yii\helpers\ArrayHelper::map(self::find()->all(), 'id', 'name');
 
     }
+
     /**
      * @return array
      */
     public function getEntrantGroupsList()
     {
         return ArrayHelper::map($this->entrantGroups, 'id', 'name');
+    }
+
+    /**
+     * Список членов комиссии
+     * @return array
+     */
+    public function getEntrantMembersList()
+    {
+        return \yii\helpers\ArrayHelper::map(UserCommon::find()
+            ->innerJoin('users', "user_common.user_id = users.id")
+            ->where(['in', 'users.id', $this->members_list])
+            ->select(['users.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
+            ->orderBy('user_common.last_name')
+            ->asArray()->all(), 'id', 'name');
     }
 
     /**
@@ -196,4 +217,100 @@ class EntrantComm extends \artsoft\db\ActiveRecord
         return GuideEntrantTest::findAll(['id' => $ids]);
     }
 
+    /**
+     * @param $model_date
+     * @return array
+     */
+    public function getSummaryData($model_date)
+    {
+        $members_id = $model_date->members_id;
+        $free_flag = $model_date->free_flag;
+        $prep_flag = $model_date->prep_flag;
+        $prep_list = $prep_flag == 0 ? $this->prep_off_test_list : $this->prep_on_test_list;
+
+        $testsNames = \yii\helpers\ArrayHelper::map(GuideEntrantTest::find()
+            ->where(['in', 'id', $prep_list])
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->asArray()->all(), 'id', 'name');
+
+        $models = (new Query())->from('entrant_members_view')
+            ->where(['in', 'members_id', $members_id != 0 ? $members_id : $this->members_list])
+            ->andWhere(['=', 'prep_flag', $prep_flag])
+//            ->andWhere(['=', 'student_id', 11130])
+            ->orderBy('mid_mark DESC')->all();
+        $models = ArrayHelper::index($models, null, ['student_id', 'entrant_test_id']);
+        $modelsEntrant = (new Query())->from('entrant_view')
+            ->where(['=', 'comm_id', $this->id])
+            ->andWhere(['=', 'prep_flag', $prep_flag])
+//            ->andWhere(['=', 'student_id', 11130])
+            ->orderBy('mid_mark DESC')->distinct()->all();
+
+//        echo '<pre>' . print_r([ $testsNames,  $models ], true) . '</pre>'; die();
+        $attributes = ['name' => 'Фамилия И.О.'];
+        $attributes += ['group' => 'Группа'];
+        $attributes += $testsNames;
+        $attributes += ['mid_mark' => 'Средняя оценка'];
+        $attributes += ['decision' => 'Решение комиссии'];
+        $attributes += ['programm' => 'Назначен учебный план'];
+        $attributes += ['course' => 'Назначен клвсс'];
+        $attributes += ['subject_form' => 'Форма обучения'];
+
+        $res = [];
+        $all_summ = 0;
+        // print_r($models);
+        $data = [];
+        foreach ($modelsEntrant as $id => $model) {
+            $mid_mark = [];
+            $data[$id]['name'] = $model['fullname'];
+            $data[$id]['group'] = $model['group_name'];
+            $data[$id]['decision'] = !$free_flag ? Entrant::getDecisionValue($model['decision_id']) : null;
+            $data[$id]['programm'] = !$free_flag ? RefBook::find('education_programm_name')->getValue($model['programm_id']) : null;
+            $data[$id]['course'] = !$free_flag ? $model['course'] : null;
+            $data[$id]['subject_form'] = !$free_flag ? SubjectForm::getFormValue($model['subject_form_id']) : null;
+            foreach ($testsNames as $ids => $name) {
+                if (isset($models[$model['student_id']][$ids])) {
+                    $mark = [];
+                    foreach ($models[$model['student_id']][$ids] as $item => $value) {
+                        $mark[] = $value['mark_value'];
+                    }
+                    $data[$id][$ids] = (!empty($mark) && !$free_flag) ? round((array_sum($mark) / count($mark)), 2) : '';
+                    $mid_mark[] = $data[$id][$ids];
+                }
+            }
+            $data[$id]['mid_mark'] = (!empty($mid_mark) && !$free_flag) ? round((array_sum($mid_mark) / count($mid_mark)), 2) : '';
+        }
+//        usort($data, function ($a, $b) {
+//            return $b['total'] <=> $a['total'];
+//        });
+
+        return ['data' => $data, 'attributes' => $attributes];
+    }
+
+    /**
+     * @param $data
+     * @return bool
+     * @throws \yii\base\Exception
+     */
+    public function sendXlsx($data)
+    {
+        ini_set('memory_limit', '512M');
+        try {
+            $x = new ExcelObjectList($data['attributes']);
+            foreach ($data['data'] as $item) { // данные
+                $x->addData($item);
+            }
+//            $x->addData(['stake' => 'Итого', 'total' => $data['all_summ']]);
+
+            \Yii::$app->response
+                ->sendContentAsFile($x, strtotime('now') . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '_entrant_result.xlsx', ['mimeType' => 'application/vnd.ms-excel'])
+                ->send();
+            exit;
+        } catch (\PhpOffice\PhpSpreadsheet\Exception | \yii\web\RangeNotSatisfiableHttpException $e) {
+            \Yii::error('Ошибка формирования xlsx: ' . $e->getMessage());
+            \Yii::error($e);
+            Yii::$app->session->setFlash('error', 'Ошибка формирования xlsx-выгрузки');
+            return true;
+        }
+    }
 }

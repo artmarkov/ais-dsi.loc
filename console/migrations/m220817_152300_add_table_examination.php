@@ -174,7 +174,7 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
         $this->addForeignKey('entrant_test_ibfk_5', 'entrant_test', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('entrant_view', '
-          SELECT entrant.id,
+ SELECT entrant.id,
     entrant.student_id,
     entrant.comm_id,
     entrant.group_id,
@@ -188,6 +188,7 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
     entrant.subject_form_id,
     entrant.status,
     entrant_group.timestamp_in,
+	entrant_group.prep_flag,
     ( SELECT avg(guide_lesson_mark.mark_value) AS avg
            FROM entrant_members
              JOIN entrant_test ON entrant_test.entrant_members_id = entrant_members.id
@@ -195,13 +196,52 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
           WHERE entrant_members.entrant_id = entrant.id) AS mid_mark,
     concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name) AS fullname,
     concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS fio,
-    user_common.birth_date
+    user_common.birth_date,
+    date_part(\'year\'::text, age(to_timestamp(user_common.birth_date::double precision)::date::timestamp with time zone))::integer AS birth_date_age
    FROM entrant
      JOIN students ON students.id = entrant.student_id
      JOIN user_common ON user_common.id = students.user_common_id
      JOIN entrant_group ON entrant_group.id = entrant.group_id
      JOIN entrant_comm ON entrant_comm.id = entrant.comm_id
-  ORDER BY entrant.comm_id;     
+  ORDER BY entrant.comm_id;
+        ')->execute();
+
+        $this->db->createCommand()->createView('entrant_members_view', '
+ SELECT entrant.id,
+    entrant.comm_id,
+    entrant.group_id,
+    concat(entrant_group.name, \' - \', to_char(to_timestamp(entrant_group.timestamp_in::double precision), \'DD.MM.YYYY HH24:mi\'::text)) AS group_name,
+    entrant.subject_list,
+    entrant.last_experience,
+    entrant_group.timestamp_in,
+    entrant_group.prep_flag,
+    concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name) AS fullname,
+    user_common.birth_date,
+    date_part(\'year\'::text, age(to_timestamp(user_common.birth_date::double precision)::date::timestamp with time zone))::integer AS birth_date_age,
+    entrant_members.members_id,
+    entrant.student_id,
+    entrant_test.entrant_test_id,
+    guide_lesson_mark.mark_value,
+    ( SELECT avg(guide_lesson_mark_1.mark_value) AS avg
+           FROM entrant_members entrant_members_1
+             JOIN entrant_test entrant_test_1 ON entrant_test_1.entrant_members_id = entrant_members_1.id
+             JOIN guide_lesson_mark guide_lesson_mark_1 ON guide_lesson_mark_1.id = entrant_test_1.entrant_mark_id
+          WHERE entrant_members_1.entrant_id = entrant.id AND entrant_members_1.members_id = entrant_members.members_id) AS mid_mark,
+    entrant.decision_id,
+    entrant.reason,
+    entrant.programm_id,
+    entrant.course,
+    entrant.subject_form_id,
+    entrant.status
+   FROM entrant
+     JOIN students ON students.id = entrant.student_id
+     JOIN user_common ON user_common.id = students.user_common_id
+     JOIN entrant_group ON entrant_group.id = entrant.group_id
+     JOIN entrant_comm ON entrant_comm.id = entrant.comm_id
+     JOIN entrant_members ON entrant_members.entrant_id = entrant.id
+     JOIN entrant_test ON entrant_test.entrant_members_id = entrant_members.id
+     JOIN guide_lesson_mark ON guide_lesson_mark.id = entrant_test.entrant_mark_id
+  ORDER BY entrant_members.members_id, entrant.student_id, entrant_test.entrant_test_id;
         ')->execute();
     }
 

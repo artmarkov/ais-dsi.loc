@@ -39,7 +39,7 @@ JS;
 
 $this->registerJs($js, \yii\web\View::POS_LOAD);
 
-$readonly = $model->decision_id != 0 ? true : $readonly;
+//$readonly = $model->decision_id != 0 ? true : $readonly;
 $readonlyMarks = $model->status != 1 ? true : $readonly;
 $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermission('fullEntrantAccess') ? true : $readonly;
 
@@ -73,7 +73,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                     }
                     ?>
                     <?= $form->field($model, 'student_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => RefBook::find('students_fullname')->getList(),
+                        'data' => Entrant::getEntrantList(),
                         'options' => [
                             'disabled' => $model->student_id ? true : false,
                             'placeholder' => Yii::t('art', 'Select...'),
@@ -129,7 +129,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
 
                     <?= $form->field($model, 'last_experience')->textInput(['maxlength' => true, 'disabled' => $readonlyBase]) ?>
 
-                    <?= $form->field($model, 'remark')->textarea(['rows' => 6, 'disabled' => $readonlyBase]) ?>
+                    <?= $form->field($model, 'remark')->textarea(['rows' => 3, 'disabled' => $readonlyBase]) ?>
 
                     <?= $form->field($model, 'status')->dropDownList(Entrant::getStatusList(), ['disabled' => !Yii::$app->user->isSuperadmin]) ?>
 
@@ -219,7 +219,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
-                                                    <?= \yii\helpers\Html::activeTextInput($modelMembers, "[{$index}]mark_rem", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                                                    <?= \yii\helpers\Html::activeTextarea($modelMembers, "[{$index}]mark_rem", ['rows' => 3,'class' => 'form-control', 'disabled' => $readonly]); ?>
                                                     <p class="help-block help-block-error"></p>
                                                 </div>
                                                 <?= $field->end(); ?>

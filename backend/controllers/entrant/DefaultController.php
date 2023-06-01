@@ -16,6 +16,7 @@ use common\models\history\EntrantGroupHistory;
 use common\models\history\EntrantHistory;
 use common\models\own\Department;
 use Yii;
+use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
@@ -409,7 +410,34 @@ class DefaultController extends MainController
         }
     }
 
-    public function actionGroups()
+    public function actionProtocol($id)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Entrant Comms'), 'url' => ['index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['entrant/default/view', 'id' => $id]];
+
+        $this->view->params['breadcrumbs'][] = Yii::t('art/guide', 'Entrant Result');
+
+        $model_date = new DynamicModel(['members_id', 'free_flag', 'prep_flag']);
+        $model_date->addRule(['members_id', 'prep_flag'], 'required')
+            ->addRule(['members_id'], 'integer')
+            ->addRule(['free_flag'], 'boolean')
+            ->addRule(['prep_flag'], 'integer');
+
+        if ($model_date->load(Yii::$app->request->post()) && $model_date->validate()) {
+            if (Yii::$app->request->post('submitAction') == 'excel') {
+                $data = $model->getSummaryData($model_date);
+                $model->sendXlsx($data);
+            }
+        }
+
+        return $this->renderIsAjax('protocol', compact( 'model_date', 'model', 'id'));
+
+    }
+
+    public
+    function actionGroups()
     {
         $out = [];
         if (isset($_POST['depdrop_parents'])) {
@@ -425,7 +453,8 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
-    public function actionDepartment()
+    public
+    function actionDepartment()
     {
         $out = [];
         if (isset($_POST['depdrop_parents'])) {
@@ -441,7 +470,8 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
-    public function actionSubject()
+    public
+    function actionSubject()
     {
         $out = [];
         if (isset($_POST['depdrop_parents'])) {
@@ -457,7 +487,8 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
-    public function actionActivate($id)
+    public
+    function actionActivate($id)
     {
         if ($this->modelClass::runActivate($id)) {
             Yii::$app->session->setFlash('success', Yii::t('art/queue', 'The schedule is successfully activated.'));
@@ -467,12 +498,14 @@ class DefaultController extends MainController
 
         return $this->redirect($this->getRedirectPage('index', $this->modelClass));
     }
+
     /**
      *
      * @param type $id
      * @return type
      */
-    public function actionDeactivate($id)
+    public
+    function actionDeactivate($id)
     {
         if ($this->modelClass::runDeactivate($id)) {
             Yii::$app->session->setFlash('success', Yii::t('art/queue', 'The schedule is successfully deactivated.'));
@@ -482,18 +515,21 @@ class DefaultController extends MainController
 
         return $this->redirect($this->getRedirectPage('index', $this->modelClass));
     }
+
     /**
      * @param $id
      * @return array
      * @throws \yii\web\NotFoundHttpException
      */
-    public function getMenu($id)
+    public
+    function getMenu($id)
     {
         $model = $this->findModel($id);
         return [
             ['label' => 'Карточка вступительных экзаменов', 'url' => ['/entrant/default/update', 'id' => $id]],
             ['label' => 'Экзаменационные группы', 'url' => ['/entrant/default/group', 'id' => $id]],
             ['label' => 'Экзаменационная ведомость', 'url' => ['/entrant/default/applicants', 'id' => $id]],
+            ['label' => 'Результаты испытаний', 'url' => ['/entrant/default/protocol', 'id' => $id]],
         ];
 
     }

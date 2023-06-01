@@ -13,8 +13,7 @@ use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Exception;
-use yii\helpers\ArrayHelper;
-use yii\web\NotFoundHttpException;
+use yii\db\Query;
 
 /**
  * This is the model class for table "entrant".
@@ -46,8 +45,6 @@ use yii\web\NotFoundHttpException;
  */
 class Entrant extends \artsoft\db\ActiveRecord
 {
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
 
     /**
      * {@inheritdoc}
@@ -305,6 +302,19 @@ class Entrant extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @return array
+     */
+    public static function getEntrantList()
+    {
+        $qyery = (new Query())->from('entrant_view')
+            ->select(['student_id', 'CONCAT(fullname, \' - \', to_char(to_timestamp(birth_date), \'DD.MM.YYYY\'), \' (\', birth_date_age, \' лет)\') as fio'])
+            ->distinct()
+            ->all();
+        return \yii\helpers\ArrayHelper::map($qyery, 'student_id', 'fio');
+
+    }
+
+    /**
      * @param $comm_id
      * @param $val
      * @return mixed
@@ -360,18 +370,35 @@ SQL;
     {
         if ($this->decision_id == 1) {
             $this->reason = null;
+            $this->status = 2;
             $this->makeStadylan();
         } elseif ($this->decision_id == 2) {
             $this->programm_id = null;
             $this->course = null;
             $this->subject_form_id = null;
+            $this->status = 2;
+            $this->deleteStadylan();
         } else {
             $this->reason = null;
             $this->programm_id = null;
             $this->course = null;
             $this->subject_form_id = null;
+            $this->status = 0;
+            $this->deleteStadylan();
         }
         return parent::beforeSave($insert);
+    }
+
+    public function deleteStadylan()
+    {
+        $model = Studyplan::find()->where(['=', 'programm_id', $this->programm_id])
+            ->andWhere(['=', 'plan_year', $this->comm->plan_year])
+            ->andWhere(['=', 'course', $this->course])
+            ->andWhere(['=', 'student_id', $this->student_id])->one();
+
+        if ($model) {
+            $model->delete();
+        }
     }
 
     public function makeStadylan()
