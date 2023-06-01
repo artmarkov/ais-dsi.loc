@@ -288,7 +288,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                                         'data' => RefBook::find('education_programm_name', $model->isNewRecord ? \common\models\education\EducationProgramm::STATUS_ACTIVE : '')->getList(),
                                         'options' => [
                                             'id' => 'programm_id',
-                                            'disabled' => $model->decision_id != 0 ? true : $readonly,
+                                            'disabled' => $readonly,
                                             'placeholder' => Yii::t('art/studyplan', 'Select Education Programm...'),
                                             'multiple' => false,
                                         ],

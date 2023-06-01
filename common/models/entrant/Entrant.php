@@ -369,40 +369,43 @@ SQL;
     public function beforeSave($insert)
     {
         if ($this->decision_id == 1) {
-            $this->reason = null;
-            $this->status = 2;
             $this->makeStadylan();
+            $this->reason = null;
+            $this->status = 2;
         } elseif ($this->decision_id == 2) {
+            $this->deleteStadylan();
             $this->programm_id = null;
             $this->course = null;
             $this->subject_form_id = null;
             $this->status = 2;
-            $this->deleteStadylan();
         } else {
+            $this->deleteStadylan();
             $this->reason = null;
             $this->programm_id = null;
             $this->course = null;
             $this->subject_form_id = null;
-            $this->status = 0;
-            $this->deleteStadylan();
         }
         return parent::beforeSave($insert);
     }
 
     public function deleteStadylan()
     {
+        if (!$this->course || !$this->programm_id) {
+            return false;
+        }
         $model = Studyplan::find()->where(['=', 'programm_id', $this->programm_id])
             ->andWhere(['=', 'plan_year', $this->comm->plan_year])
             ->andWhere(['=', 'course', $this->course])
             ->andWhere(['=', 'student_id', $this->student_id])->one();
 
         if ($model) {
-            $model->delete();
+            $model->delete(false);
         }
     }
 
     public function makeStadylan()
     {
+        ini_set('memory_limit', '1024');
         $exists = Studyplan::find()->where(['=', 'programm_id', $this->programm_id])
             ->andWhere(['=', 'plan_year', $this->comm->plan_year])
             ->andWhere(['=', 'course', $this->course])
@@ -428,8 +431,8 @@ SQL;
                 if ($modelProgrammLevel) {
                     $model->copyAttributes($modelProgrammLevel);
                 }
+
                 if ($flag = $model->save(false)) {
-//                echo '<pre>' . print_r($model, true) . '</pre>';
 
                     if (isset($modelProgrammLevel->educationProgrammLevelSubject)) {
                         $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;
