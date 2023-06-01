@@ -23,7 +23,7 @@ use artsoft\widgets\ActiveForm;
                 <div class="row">
                     <div class="col-sm-12">
                         <?= $form->field($model_date, 'members_id')->widget(\kartik\select2\Select2::className(), [
-                            'data' => ['0' => '-- Все члены комисии --'] + $model->getEntrantMembersList(),
+                            'data' => ['0' => '-- Все члены комиссии --'] + $model->getEntrantMembersList(),
                             'options' => [
 //                                'placeholder' => Yii::t('art', 'Select...'),
                                 'multiple' => false,
