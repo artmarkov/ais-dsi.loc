@@ -9,14 +9,16 @@ use artsoft\widgets\ActiveForm;
 /* @var $model */
 ?>
 
-<?php
-$form = ActiveForm::begin([
-    'id' => 'entrant-result-search',
-    'validateOnBlur' => false,
-])
-?>
-    <div class="sect-search">
+    <div class="entrant-result-search">
+        <?php
+        $form = ActiveForm::begin([
+            'id' => 'entrant-result-search',
+            'validateOnBlur' => false,
+        ])
+        ?>
         <div class="panel">
+            <div class="panel-heading">
+            </div>
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
@@ -32,17 +34,18 @@ $form = ActiveForm::begin([
                         ])->label(Yii::t('art/guide', 'Members Item'));
                         ?>
                         <?= $form->field($model_date, 'prep_flag')->radioList(\common\models\entrant\EntrantGroup::getPrepList())->label(Yii::t('art/guide', 'Prep Flag')); ?>
-                        <?= $form->field($model_date, "free_flag")->checkbox(['value' => true])->label('Напечатать бланк'); ?>
-
-<!--                        Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); -->
-                        <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
-
+                        <?= $form->field($model_date, 'free_flag')->checkbox()->label('Чистый бланк (очистить данные)'); ?>
                     </div>
                 </div>
             </div>
+            <div class="panel-footer">
+                <!--                        Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); -->
+                <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
+
+            </div>
         </div>
+        <?php ActiveForm::end(); ?>
     </div>
-<?php ActiveForm::end(); ?>
 
 <?php
 $js = <<<JS
