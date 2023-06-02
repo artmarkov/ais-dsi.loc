@@ -27,36 +27,35 @@ class m230525_123245_add_entrant_permissions extends PermissionsMigration
                     '/admin/entrant/default/applicants/*',
                 ],
                 'viewEntrant' => [
-                    'title' => 'Просмотр испытаний',
+                    'title' => 'Участники экзаменационной комиссии',
                     'links' => [
                         '/entrant/default/index',
                         '/entrant/default/view',
                         '/entrant/default/grid-sort',
                         '/entrant/default/grid-page-size',
                         '/entrant/default/applicants',
-                        '/entrant/default/applicants?mode=view',
+                        '/entrant/default/applicants?mode=update',
                     ],
                     'roles' => [
                         self::ROLE_DEPARTMENT,
                     ],
                 ],
-                'editEntrant' => [
-                    'title' => 'Редактирование испытаний',
+                'adminEntrant' => [
+                    'title' => 'Администратор экзаменационной комиссии',
                     'links' => [
-                        '/entrant/default/applicants?mode=update',
+                        '/entrant/default/applicants?mode=activate',
+                        '/entrant/default/applicants?mode=deactivate',
                     ],
                     'roles' => [
-                        self::ROLE_DEPARTMENT,
+                        self::ROLE_ADMIN,
                     ],
                     'childs' => [
                         'viewEntrant',
                     ],
                 ],
                 'fullEntrantAccess' => [
-                    'title' => 'Полный доступ к испытаниям',
+                    'title' => 'Полный доступ к экзаменам',
                     'links' => [
-                        '/entrant/default/applicants?mode=activate',
-                        '/entrant/default/applicants?mode=deactivate',
                         '/admin/entrant/default/index',
                         '/admin/entrant/default/view',
                         '/admin/entrant/default/history',

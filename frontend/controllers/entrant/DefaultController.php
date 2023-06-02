@@ -74,17 +74,15 @@ class DefaultController extends \frontend\controllers\DefaultController
         if ('activate' == $mode && $objectId) {
             if (Entrant::runActivate($objectId)) {
                 Yii::$app->session->setFlash('success', 'Форма подключена к испытаниям.');
+                return  $this->getSubmitAction($model);
             }
-            return $this->getSubmitAction($model);
         } elseif ('deactivate' == $mode && $objectId) {
             if (Entrant::runDeactivate($objectId)) {
                 Yii::$app->session->setFlash('warning', 'Форма отключена от испытаний.');
+                return  $this->getSubmitAction($model);
             }
-            return $this->getSubmitAction($model);
         } elseif ($objectId) {
-            if ('view' == $mode) {
-                $readonly = true;
-            }
+
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Applicants'), 'url' => ['/entrant/default/applicants', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $model = Entrant::findOne($objectId);
@@ -129,7 +127,6 @@ class DefaultController extends \frontend\controllers\DefaultController
                         }
                     }
                 }
-
                 if ($valid) {
                     $transaction = Yii::$app->db->beginTransaction();
                     try {
@@ -188,33 +185,6 @@ class DefaultController extends \frontend\controllers\DefaultController
 
             return $this->renderIsAjax('applicants', compact('dataProvider', 'searchModel', 'id'));
         }
-    }
-
-    public function actionActivate($id)
-    {
-        if ($this->modelClass::runActivate($id)) {
-            Yii::$app->session->setFlash('success', Yii::t('art/queue', 'The schedule is successfully activated.'));
-        } else {
-            Yii::$app->session->setFlash('error', Yii::t('art/queue', 'Schedule activation error.'));
-        }
-
-        return $this->redirect($this->getRedirectPage('index', $this->modelClass));
-    }
-
-    /**
-     *
-     * @param type $id
-     * @return type
-     */
-    public function actionDeactivate($id)
-    {
-        if ($this->modelClass::runDeactivate($id)) {
-            Yii::$app->session->setFlash('success', Yii::t('art/queue', 'The schedule is successfully deactivated.'));
-        } else {
-            Yii::$app->session->setFlash('error', Yii::t('art/queue', 'Schedule deactivation error.'));
-        }
-
-        return $this->redirect($this->getRedirectPage('index', $this->modelClass));
     }
 
     /**

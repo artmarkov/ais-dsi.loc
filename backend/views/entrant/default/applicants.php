@@ -123,7 +123,7 @@ use artsoft\grid\GridPageSize;
                     [
                         'attribute' => 'mid_mark',
                         'value' => function (\common\models\entrant\EntrantView $model) {
-                            return round($model->mid_mark, 2);
+                            return str_replace('.',',', round($model->mid_mark, 2)); // str_replace для импорта в xlsx
                         },
                         'format' => 'raw',
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),

@@ -246,25 +246,23 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                     <div class="panel-footer">
                         <div class="row">
                             <div class="form-group btn-group">
-                                <?php if (\artsoft\models\User::hasPermission('fullEntrantAccess')): ?>
-                                    <?php $Url = Yii::$app->request->resolve(); ?>
-                                    <?= \artsoft\helpers\Html::a('<i class="fa fa-hourglass-start" aria-hidden="true"></i> Начать испытания',
-                                        [$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'activate'], [
-                                            'class' => 'btn btn-success btn-md',
-                                            'data-method' => 'post',
-                                            'data-pjax' => '0',
-                                            'disabled' => !$readonlyMarks
-                                        ]
-                                    ) ?>
-                                    <?= \yii\helpers\Html::a('<i class="fa fa-hourglass-end" aria-hidden="true"></i> Завершить испытания',
-                                        [$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'deactivate'], [
-                                            'class' => 'btn btn-warning btn-md',
-                                            'data-method' => 'post',
-                                            'data-pjax' => '0',
-                                            'disabled' => $readonlyMarks
-                                        ]
-                                    ); ?>
-                                <?php endif; ?>
+                                <?php $Url = Yii::$app->request->resolve(); ?>
+                                <?= \artsoft\helpers\Html::a('<i class="fa fa-hourglass-start" aria-hidden="true"></i> Начать испытания',
+                                    [$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'activate'], [
+                                        'class' => 'btn btn-success btn-md',
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                        'disabled' => !$readonlyMarks
+                                    ]
+                                ) ?>
+                                <?= \yii\helpers\Html::a('<i class="fa fa-hourglass-end" aria-hidden="true"></i> Завершить испытания',
+                                    [$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'deactivate'], [
+                                        'class' => 'btn btn-warning btn-md',
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                        'disabled' => $readonlyMarks
+                                    ]
+                                ); ?>
                             </div>
                         </div>
                     </div>

@@ -30,8 +30,8 @@ class StudyplanView extends Studyplan
 
         $attr = parent::attributeLabels();
 
-        $attr['education_programm_name'] = 'Список программ';
-        $attr['education_programm_short_name'] = 'Список программ';
+        $attr['education_programm_name'] = 'Программа';
+        $attr['education_programm_short_name'] = 'Программа';
         $attr['education_cat_name'] = 'Категория программы';
         $attr['education_cat_short_name'] = 'Категория программы';
         $attr['student_fio'] = 'Ученик';

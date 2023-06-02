@@ -5,6 +5,7 @@ namespace common\models\history;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use common\models\entrant\Entrant;
+use common\models\entrant\EntrantGroup;
 use common\models\subject\SubjectForm;
 use common\models\subject\SubjectType;
 use common\widgets\history\BaseHistory;
@@ -45,7 +46,7 @@ class EntrantHistory extends BaseHistory
             case 'student_id':
                 return isset($model->student_id) ? $model->student->fullName : $value;
             case 'group_id':
-                return isset($model->group_id) ? $model->group->name : $value;
+                return $model->group ? $model->group->name : $value;
             case 'decision_id':
                 return isset($model->decision_id) ? Entrant::getDecisionValue($model->decision_id) : $value;
             case 'programm_id':
