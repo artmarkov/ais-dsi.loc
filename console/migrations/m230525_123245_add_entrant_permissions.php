@@ -8,11 +8,13 @@ class m230525_123245_add_entrant_permissions extends PermissionsMigration
     public function beforeUp()
     {
         $this->addPermissionsGroup('entrantManagement', 'Управление испытаниями');
+        $this->addRole('entrantAdmin', 'Администратор приемной комиссии');
     }
 
     public function afterDown()
     {
         $this->deletePermissionsGroup('entrantManagement');
+        $this->deleteRole('entrantAdmin');
     }
 
     public function getPermissions()
@@ -27,7 +29,7 @@ class m230525_123245_add_entrant_permissions extends PermissionsMigration
                     '/admin/entrant/default/applicants/*',
                 ],
                 'viewEntrant' => [
-                    'title' => 'Участники экзаменационной комиссии',
+                    'title' => 'Доступ участников Комиссии к Экзаменам',
                     'links' => [
                         '/entrant/default/index',
                         '/entrant/default/view',
@@ -41,20 +43,20 @@ class m230525_123245_add_entrant_permissions extends PermissionsMigration
                     ],
                 ],
                 'adminEntrant' => [
-                    'title' => 'Администратор экзаменационной комиссии',
+                    'title' => 'Управление доступом к Экзаменам',
                     'links' => [
                         '/entrant/default/applicants?mode=activate',
                         '/entrant/default/applicants?mode=deactivate',
                     ],
                     'roles' => [
-                        self::ROLE_ADMIN,
+                        'entrantAdmin',
                     ],
                     'childs' => [
                         'viewEntrant',
                     ],
                 ],
                 'fullEntrantAccess' => [
-                    'title' => 'Полный доступ к экзаменам',
+                    'title' => 'Администрирование Экзаменов',
                     'links' => [
                         '/admin/entrant/default/index',
                         '/admin/entrant/default/view',
