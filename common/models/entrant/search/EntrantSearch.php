@@ -2,6 +2,7 @@
 
 namespace common\models\entrant\search;
 
+use artsoft\traits\ParamsTrimable;
 use common\models\entrant\EntrantView;
 use Yii;
 use yii\base\Model;
@@ -13,6 +14,7 @@ use common\models\entrant\Entrant;
  */
 class EntrantSearch extends EntrantView
 {
+    use ParamsTrimable;
     /**
      * @inheritdoc
      */
@@ -57,7 +59,7 @@ class EntrantSearch extends EntrantView
                 ],
             ],
         ]);
-
+        $params = $this->trimParams($params, static::class);
         $this->load($params);
 
         if (!$this->validate()) {
