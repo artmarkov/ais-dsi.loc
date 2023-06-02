@@ -50,9 +50,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'name',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/user/permission-groups',
-                                'title' => function ($model) {
+//                                'class' => 'artsoft\grid\columns\TitleActionColumn',
+//                                'controller' => '/user/permission-groups',
+                                'value' => function ($model) {
                                     if (User::hasPermission('manageRolesAndPermissions')) {
                                         return Html::a(
                                             $model->name, ['update', 'id' => $model->code],
@@ -63,9 +63,18 @@ $this->params['breadcrumbs'][] = $this->title;
                                     }
 
                                 },
-                                'buttonsTemplate' => '{update} {delete}',
+                                'format' => 'raw'
                             ],
                             'code',
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->code];
+                                },
+                                'controller' => '/user/permission-groups',
+                                'template' => '{update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                            ],
                         ],
                     ]);
                     ?>

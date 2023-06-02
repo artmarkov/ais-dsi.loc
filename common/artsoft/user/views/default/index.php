@@ -6,7 +6,6 @@ use artsoft\grid\GridView;
 use artsoft\helpers\Html;
 use artsoft\models\Role;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\models\User;
 
@@ -73,61 +72,21 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw'
                             ],
                             [
-                                'attribute' => 'username',
-                                'controller' => '/user/default',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'title' => function (User $model) {
+                                'attribute' => 'user_name',
+                                'value' => function (\common\models\user\UsersView $model) {
                                     if (User::hasPermission('editUsers')) {
-                                        return Html::a($model->username, ['/user/default/update', 'id' => $model->id], ['data-pjax' => 0]);
+                                        return Html::a($model->user_name, ['/user/default/update', 'id' => $model->id], ['data-pjax' => 0]);
                                     } else {
-                                        return $model->username;
+                                        return $model->user_name;
                                     }
                                 },
-                                'buttonsTemplate' => '{update} {delete} {permissions} {password}',
-                                'buttons' => [
-                                    'update' => function ($url, $model, $key) {
-                                        return Html::a(Yii::t('art', 'Edit'),
-                                            ['/user/default/update', 'id' => $model->id], [
-                                                'title' => Yii::t('art', 'Edit'),
-                                                'data-pjax' => '0'
-                                            ]
-                                        );
-                                    },
-                                    'delete' => function ($url, $model, $key) {
-                                        return !$model->user_common_id ? Html::a(Yii::t('art', 'Delete'),
-                                            Url::to(['delete', 'id' => $model->id]), [
-                                                'title' => Yii::t('art', 'Delete'),
-                                                'aria-label' => Yii::t('art', 'Delete'),
-                                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                                'data-method' => 'post',
-                                                'data-pjax' => '0',
-                                            ]
-                                        ) : Yii::t('art', 'Delete');
-                                    },
-                                    'permissions' => function ($url, $model, $key) {
-                                        return Html::a(Yii::t('art/user', 'Permissions'),
-                                            ['user-permission/set', 'id' => $model->id], [
-                                                'title' => Yii::t('art/user', 'Permissions'),
-                                                'data-pjax' => '0'
-                                            ]
-                                        );
-                                    },
-                                    'password' => function ($url, $model, $key) {
-                                        return Html::a(Yii::t('art/user', 'Password'),
-                                            ['/user/default/change-password', 'id' => $model->id], [
-                                                'title' => Yii::t('art/user', 'Password'),
-                                                'data-pjax' => '0'
-                                            ]
-                                        );
-                                    }
-                                ],
-                                'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
+                                'options' => ['style' => 'min-width:250px']
                             ],
                             'user_category_name',
                             [
-                                'attribute' => 'user_name',
-                                'options' => ['style' => 'width:150px']
+                                'attribute' => 'username',
+                                'options' => ['style' => 'width:200px']
                             ],
                             [
                                 'attribute' => 'email',
@@ -149,16 +108,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                                 'visible' => User::hasPermission('viewUserRoles'),
                             ],
-                            [
-                                'attribute' => 'registration_ip',
-                                'value' => function (User $model) {
-                                    return Html::a($model->registration_ip,
-                                        "http://ipinfo.io/" . $model->registration_ip,
-                                        ["target" => "_blank"]);
-                                },
-                                'format' => 'raw',
-                                'visible' => User::hasPermission('viewRegistrationIp'),
-                            ],
+//                            [
+//                                'attribute' => 'registration_ip',
+//                                'value' => function (User $model) {
+//                                    return Html::a($model->registration_ip,
+//                                        "http://ipinfo.io/" . $model->registration_ip,
+//                                        ["target" => "_blank"]);
+//                                },
+//                                'format' => 'raw',
+//                                'visible' => User::hasPermission('viewRegistrationIp'),
+//                            ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'superadmin',
@@ -174,6 +133,52 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [User::STATUS_BANNED, Yii::t('art', 'Banned'), 'danger'],
                                 ],
                                 'options' => ['style' => 'width:60px']
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/user/default',
+                                'template' => '{update} {delete} {permissions} {password}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                'buttons' => [
+                                    'update' => function ($url, $model, $key) {
+                                        return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                                            ['/user/default/update', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Edit'),
+                                                'data-pjax' => '0'
+                                            ]
+                                        );
+                                    },
+                                    'delete' => function ($url, $model, $key) {
+                                        return !$model->user_common_id ? Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                                            ['delete', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Delete'),
+                                                'aria-label' => Yii::t('art', 'Delete'),
+                                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        ) : '<span class="glyphicon glyphicon-trash font-weight-lighter" style="cursor: not-allowed;" aria-hidden="true"></span>';
+                                    },
+                                    'permissions' => function ($url, $model, $key) {
+                                        return Html::a('<span class="glyphicon glyphicon-user" aria-hidden="true"></span>',
+                                            ['user-permission/set', 'id' => $model->id], [
+                                                'title' => Yii::t('art/user', 'Permissions'),
+                                                'data-pjax' => '0'
+                                            ]
+                                        );
+                                    },
+                                    'password' => function ($url, $model, $key) {
+                                        return Html::a('<span class="glyphicon glyphicon-lock" aria-hidden="true"></span>',
+                                            ['/user/default/change-password', 'id' => $model->id], [
+                                                'title' => Yii::t('art/user', 'Password'),
+                                                'data-pjax' => '0'
+                                            ]
+                                        );
+                                    }
+                                ],
                             ],
                         ],
                     ]);

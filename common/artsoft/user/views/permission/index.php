@@ -53,30 +53,17 @@ $this->params['breadcrumbs'][] = $this->title;
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'description',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/user/permission',
-                                'title' => function ($model) {
+                                'value' => function ($model) {
                                     if (\artsoft\models\User::hasPermission('manageRolesAndPermissions')) {
-                                        return Html::a(
-                                            $model->description,
-                                            ['view', 'id' => $model->name],
-                                            (($model->name == Yii::$app->art->commonPermissionName)) ? ['data-pjax' => 0, 'class' => 'label label-primary'] : ['data-pjax' => 0]
+                                        return Html::a($model->description, ['view', 'id' => $model->name],
+                                            (($model->name == Yii::$app->art->commonPermissionName)) ?
+                                                ['data-pjax' => 0, 'class' => 'label label-primary'] : ['data-pjax' => 0]
                                         );
                                     } else {
                                         return $model->description;
                                     }
                                 },
-                                'buttons' => [
-                                    'view' => function ($url, $model, $key) {
-                                        $options = array_merge([
-                                            'title' => Yii::t('art', 'Settings'),
-                                            'aria-label' => Yii::t('art', 'Settings'),
-                                            'data-pjax' => '0',
-                                        ]);
-                                        return Html::a(Yii::t('art', 'Settings'), $url, $options);
-                                    }
-                                ],
-
+                                'format' => 'raw'
                             ],
                             [
                                 'attribute' => 'name',
@@ -89,7 +76,26 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function (Permission $model) {
                                     return $model->group_code ? $model->group->name : '';
                                 },
-                                'options' => ['style' => 'width:200px'],
+                                'options' => ['style' => 'width:300px'],
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->name];
+                                },
+                                'controller' => '/user/permission',
+                                'template' => '{update} {view} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                'buttons' => [
+                                    'view' => function ($url, $model, $key) {
+                                        $options = array_merge([
+                                            'title' => Yii::t('art', 'Settings'),
+                                            'aria-label' => Yii::t('art', 'Settings'),
+                                            'data-pjax' => '0',
+                                        ]);
+                                        return Html::a('<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>', $url, $options);
+                                    }
+                                ],
                             ],
                         ],
                     ]);

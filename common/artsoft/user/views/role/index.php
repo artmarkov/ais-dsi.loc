@@ -46,9 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'description',
-                                'class' => 'artsoft\grid\columns\TitleActionColumn',
-                                'controller' => '/user/role',
-                                'title' => function (Role $model) {
+                                'value' => function (Role $model) {
                                     if (\artsoft\models\User::hasPermission('manageRolesAndPermissions')) {
                                         return Html::a($model->description,
                                             ['view', 'id' => $model->name],
@@ -57,6 +55,21 @@ $this->params['breadcrumbs'][] = $this->title;
                                         return $model->description;
                                     }
                                 },
+                                'format' => 'raw'
+
+                            ],
+                            [
+                                'attribute' => 'name',
+                                'options' => ['style' => 'width:200px'],
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->name];
+                                },
+                                'controller' => '/user/role',
+                                'template' => '{update} {view} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
                                 'buttons' => [
                                     'view' => function ($url, $model, $key) {
                                         $options = array_merge([
@@ -64,13 +77,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                             'aria-label' => Yii::t('art', 'Settings'),
                                             'data-pjax' => '0',
                                         ]);
-                                        return Html::a(Yii::t('art', 'Settings'), $url, $options);
+                                        return Html::a('<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>', $url, $options);
                                     }
                                 ],
-                            ],
-                            [
-                                'attribute' => 'name',
-                                'options' => ['style' => 'width:200px'],
                             ],
                         ],
                     ]);

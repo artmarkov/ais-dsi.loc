@@ -9,6 +9,7 @@ use yii\helpers\Html;
  */
 $this->title = Yii::t('art/user', 'Update Password for "{user}"', ['user' => $model->username]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('art/user', 'Users'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/user', $model->username), 'url' => ['/user/default/update', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
