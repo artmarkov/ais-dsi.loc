@@ -108,16 +108,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                                 'visible' => User::hasPermission('viewUserRoles'),
                             ],
-//                            [
-//                                'attribute' => 'registration_ip',
-//                                'value' => function (User $model) {
-//                                    return Html::a($model->registration_ip,
-//                                        "http://ipinfo.io/" . $model->registration_ip,
-//                                        ["target" => "_blank"]);
-//                                },
-//                                'format' => 'raw',
-//                                'visible' => User::hasPermission('viewRegistrationIp'),
-//                            ],
+                            [
+                                'attribute' => 'registration_ip',
+                                'value' => function (User $model) {
+                                    return Html::a($model->registration_ip,
+                                        "http://ipinfo.io/" . $model->registration_ip,
+                                        ["target" => "_blank"]);
+                                },
+                                'format' => 'raw',
+                                'visible' => User::hasPermission('viewRegistrationIp'),
+                            ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'superadmin',
