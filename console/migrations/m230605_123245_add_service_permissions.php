@@ -29,7 +29,7 @@ class m230605_123245_add_service_permissions extends PermissionsMigration
                     '/admin/service/attendlog/*',
                     '/admin/service/sigur/*',
                 ],
-                'viewservice' => [
+                'viewService' => [
                     'title' => 'Администрирование сервисов СКУД',
                     'links' => [
                         '/service/default/index',
@@ -55,7 +55,7 @@ class m230605_123245_add_service_permissions extends PermissionsMigration
                         'serviceAdmin',
                     ],
                 ],
-                'fullserviceAccess' => [
+                'fullServiceAccess' => [
                     'title' => 'Полный доступ к СКУД',
                     'links' => [
                         '/admin/service/default/index',

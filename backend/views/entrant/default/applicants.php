@@ -75,7 +75,10 @@ use artsoft\grid\GridPageSize;
                     ],
                     [
                         'attribute' => 'fullname',
-                        'options' => ['style' => 'width:350px'],
+                        'value' => function (\common\models\entrant\EntrantView $model) {
+                            return Html::a($model->fullname,
+                                ['/students/default/view', 'id' => $model->student_id], ['title' => 'Перейти в реестр', 'target' => '_blank', 'data-pjax' => 0]);
+                        },
                         'format' => 'raw'
                     ],
                     [

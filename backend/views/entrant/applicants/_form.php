@@ -63,6 +63,14 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
             <?php if (!$model->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
             <?php endif; ?>
+            <span class="pull-right">
+            <?= Html::a('<i class="fa fa-user-o" aria-hidden="true"></i> Открыть в новом окне',
+                ['/students/default/view', 'id' => $model->student_id],
+                [
+                    'target' => '_blank',
+                    'class' => 'btn btn-info',
+                ]); ?>
+            </span>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -219,7 +227,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
-                                                    <?= \yii\helpers\Html::activeTextarea($modelMembers, "[{$index}]mark_rem", ['rows' => 3,'class' => 'form-control', 'disabled' => $readonly]); ?>
+                                                    <?= \yii\helpers\Html::activeTextarea($modelMembers, "[{$index}]mark_rem", ['rows' => 3, 'class' => 'form-control', 'disabled' => $readonly]); ?>
                                                     <p class="help-block help-block-error"></p>
                                                 </div>
                                                 <?= $field->end(); ?>
@@ -246,7 +254,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                     <div class="panel-footer">
                         <div class="row">
                             <div class="form-group btn-group">
-                                 <?php if (\artsoft\models\User::hasPermission('adminEntrant')): ?>
+                                <?php if (\artsoft\models\User::hasPermission('adminEntrant')): ?>
                                     <?php $Url = Yii::$app->request->resolve(); ?>
                                     <?= \artsoft\helpers\Html::a('<i class="fa fa-hourglass-start" aria-hidden="true"></i> Начать испытания',
                                         [$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'activate'], [
@@ -327,7 +335,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                                     <?= $form->field($model, 'subject_form_id')->widget(\kartik\select2\Select2::class, [
                                         'data' => \common\models\subject\SubjectForm::getFormList(),
                                         'options' => [
-                                            'disabled' =>  $readonly,
+                                            'disabled' => $readonly,
                                             'placeholder' => Yii::t('art', 'Select...'),
                                             'multiple' => false,
                                         ],
