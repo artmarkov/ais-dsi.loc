@@ -96,6 +96,16 @@ use artsoft\widgets\Nav;
 //                ],
 //            ],
             [
+                'label' => 'Сервис',
+                'icon' => 'fa fa-industry',
+                'url' => '#',
+                'items' => [
+                    ['label' => 'Журнал пропусков', 'icon' => 'fa fa-minus', 'url' => ['/service/default/index']],
+                    ['label' => 'Журнал выдачи ключей', 'icon' => 'fa fa-minus', 'url' => ['/service/attendlog/index']],
+                    ['label' => 'Журнал СКУД', 'icon' => 'fa fa-minus', 'url' => ['/service/sigur/index']],
+                ],
+            ],
+            [
                 'label' => 'Помощь',
                 'icon' => 'fa fa-question-circle',
                 'url' => '#',

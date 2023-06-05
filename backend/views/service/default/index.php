@@ -60,7 +60,7 @@ $columns = [
         'buttons' => [
             'create' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                    Url::to(['/service/default/create', 'user_common_id' => $model->user_common_id]), [
+                    ['/service/default/create', 'user_common_id' => $model->user_common_id], [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -70,7 +70,7 @@ $columns = [
             },
             'update' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                    Url::to(['/service/default/update', 'id' => $model->users_card_id]), [
+                    ['/service/default/update', 'id' => $model->users_card_id], [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -79,7 +79,7 @@ $columns = [
             },
             'delete' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                    Url::to(['/service/default/delete', 'id' => $model->users_card_id]), [
+                    ['/service/default/delete', 'id' => $model->users_card_id], [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),

@@ -30,7 +30,7 @@ $columns = [
         'attribute' => 'user_name',
         'value' => function (UsersAttendlogView $model) {
           return  Html::a($model->user_name,
-                Url::to(['/service/attendlog/update', 'id' => $model->users_attendlog_id]), [
+                ['/service/attendlog/update', 'id' => $model->users_attendlog_id], [
                     'title' => Yii::t('art', 'Edit'),
                     'data-method' => 'post',
                     'data-pjax' => '0',
@@ -71,7 +71,7 @@ $columns = [
         'attribute' => 'timestamp_over',
         'value' => function (UsersAttendlogView $model) {
             return $model->timestamp_over ? Yii::$app->formatter->asDatetime($model->timestamp_over) : Html::a('<i class="fa fa-key" aria-hidden="true"></i> Вернуть ключ',
-                Url::to(['/service/attendlog/over', 'id' => $model->id]), [
+                ['/service/attendlog/over', 'id' => $model->id], [
                     'class' => 'btn btn-sm btn-primary',
                     'title' => 'Вернуть ключ',
                     'data-method' => 'post',
@@ -128,7 +128,7 @@ $columns = [
                         'toolbar' => [
                             [
                                 'content' => Html::a('Очистить',
-                                    Url::to(['/service/attendlog']), [
+                                    ['/service/attendlog'], [
                                         'title' => 'Очистить',
                                         'data-pjax' => '0',
                                         'class' => 'btn btn-default'
