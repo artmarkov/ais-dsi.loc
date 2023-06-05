@@ -97,10 +97,10 @@ class EntrantController extends Controller
         $position_id = null;
         switch ($id) {
             case '31' :
-                $position_id = 1001;
+                $position_id = 1000;
                 break;
             case '32' :
-                $position_id = 1002;
+                $position_id = 1001;
                 break;
         }
         return $position_id;

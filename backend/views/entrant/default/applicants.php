@@ -2,6 +2,7 @@
 
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
+use common\models\education\EntrantProgramm;
 use common\models\subject\Subject;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
@@ -127,6 +128,47 @@ use artsoft\grid\GridPageSize;
                         },
                         'format' => 'raw',
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
+                    ],
+                    [
+                        'attribute' => 'programm_id',
+                        'filter' => RefBook::find('education_programm_short_name')->getList(),
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => ['allowClear' => true],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                        'value' => function (\common\models\entrant\EntrantView $model) {
+                            return RefBook::find('education_programm_short_name')->getValue($model->programm_id) ?? '';
+                        },
+                        'format' => 'raw',
+                        'label' => 'План'
+                    ],
+                    [
+                        'attribute' => 'subject_id',
+                        'filter' =>  \common\models\subject\Subject::getSubjectByCategory(1000),
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => ['allowClear' => true],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                        'value' => function (\common\models\entrant\EntrantView $model) {
+                            return RefBook::find('subject_name')->getValue($model->subject_id) ?? '';
+                        },
+                        'format' => 'raw',
+                    ],
+                    [
+                        'attribute' => 'course',
+                        'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => ['allowClear' => true],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                        'value' => function (\common\models\entrant\EntrantView $model) {
+                            return \artsoft\helpers\ArtHelper::getCourseList()[$model->course] ?? '';
+                        },
+                        'format' => 'raw',
+                        'label' => 'Курс'
                     ],
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',

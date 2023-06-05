@@ -28,6 +28,7 @@ use yii\db\Query;
  * @property int|null $decision_id Решение комиссии (Рекомендован, Не рекомендован)
  * @property string|null $reason Причина комиссии
  * @property int|null $programm_id Назначена программа
+ * @property int|null $subject_id, Назначена специальность
  * @property int|null $course Назначен курс
  * @property int|null $subject_form_id Назначен вид обучения(бюджет, внебюджет)
  * @property int $status Статус (В ожидании испытаний, Испытания открыты, Испытания завершены)
@@ -76,7 +77,7 @@ class Entrant extends \artsoft\db\ActiveRecord
     {
         return [
             [['student_id', 'comm_id', 'group_id'], 'required'],
-            [['student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'course', 'subject_form_id', 'status', 'version'], 'integer'],
+            [['student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'subject_id', 'course', 'subject_form_id', 'status', 'version'], 'integer'],
             [['last_experience', 'remark'], 'string', 'max' => 127],
             [['decision_id'], 'default', 'value' => 0],
             [['status'], 'default', 'value' => 0],
@@ -119,6 +120,7 @@ class Entrant extends \artsoft\db\ActiveRecord
             'decision_id' => Yii::t('art/guide', 'Decision'),
             'reason' => Yii::t('art/guide', 'Reason'),
             'programm_id' => Yii::t('art/guide', 'Plan Reason'),
+            'subject_id' => Yii::t('art/guide', 'Education Specializations'),
             'course' => Yii::t('art/guide', 'Course Reason'),
             'subject_form_id' => Yii::t('art/guide', 'Subject Form'),
             'status' => Yii::t('art', 'Status'),
@@ -375,6 +377,7 @@ SQL;
         } elseif ($this->decision_id == 2) {
             $this->deleteStadylan();
             $this->programm_id = null;
+            $this->subject_id = null;
             $this->course = null;
             $this->subject_form_id = null;
             $this->status = 2;
@@ -382,6 +385,7 @@ SQL;
             $this->deleteStadylan();
             $this->reason = null;
             $this->programm_id = null;
+            $this->subject_id = null;
             $this->course = null;
             $this->subject_form_id = null;
         }
@@ -438,6 +442,9 @@ SQL;
                         $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;
                         foreach ($modelsSubTime as $modelSubTime) {
                             $modelSub = new StudyplanSubject();
+                            if($modelSubTime->subject_cat_id = 1000) {
+                                $modelSubTime->subject_id = $this->subject_id;
+                            }
                             $modelSub->copyAttributes($model, $modelSubTime);
 
                             if (!($flag = $modelSub->save(false))) {

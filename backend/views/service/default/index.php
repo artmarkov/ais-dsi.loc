@@ -32,7 +32,11 @@ $columns = [
         'value' => function (ServiceCardView $model) {
 
             $user = \common\models\user\UserCommon::findOne($model->user_common_id);
-            return Html::a($model->user_name, $user->getRelatedUrl(), ['title' => 'Перейти в реестр', 'target' => '_blank', 'data-pjax' => 0]);
+            if (\artsoft\Art::isBackend()) {
+                return Html::a($model->user_name, $user->getRelatedUrl(), ['title' => 'Перейти в реестр', 'target' => '_blank', 'data-pjax' => 0]);
+            } else {
+                return $model->user_name;
+            }
         },
         'format' => 'raw'
     ],

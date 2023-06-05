@@ -297,6 +297,19 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                                         ]
                                     ]);
                                     ?>
+                                    <?= $form->field($model, "subject_id")->widget(\kartik\select2\Select2::class, [
+                                        'data' => \common\models\subject\Subject::getSubjectByCategory(1000),
+                                        'options' => [
+                                            'id' => 'subject_id',
+                                            'disabled' => $readonly,
+                                            'placeholder' => Yii::t('art/guide', 'Select Education Specializations...'),
+                                            'multiple' => false,
+                                        ],
+                                        'pluginOptions' => [
+                                            'allowClear' => true
+                                        ]
+                                    ]);
+                                    ?>
 
                                     <?= $form->field($model, 'course')->widget(\kartik\select2\Select2::class, [
                                         'data' => \artsoft\helpers\ArtHelper::getCourseList(),

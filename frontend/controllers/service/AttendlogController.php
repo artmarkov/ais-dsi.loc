@@ -169,7 +169,7 @@ class AttendlogController extends \frontend\controllers\DefaultController
         } else {
             Yii::$app->session->setFlash('danger', 'Ошибка процедуры возврата ключа.');
         }
-        return $this->redirect(Url::to('/admin/service/attendlog'));
+        return $this->redirect('/service/attendlog/index');
     }
 
     public function actionFind()

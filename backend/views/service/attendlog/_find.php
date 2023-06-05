@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= $form->field($model, 'key_hex', $options1)->textInput(['maxlength' => true])->label('Пропуск') ?>
 
                     <?= $form->field($model, 'user_common_id', $options0)->widget(\kartik\select2\Select2::class, [
-                        'data' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees', 'students']),
+                        'data' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees']),
                         'showToggleAll' => false,
                         'options' => [
                           //  'disabled' => true,
@@ -49,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'pluginOptions' => [
                             'allowClear' => false,
-                            'minimumInputLength' => 3,
+//                            'minimumInputLength' => 3,
                         ],
 
                     ])->label(Yii::t('art', 'Username'));

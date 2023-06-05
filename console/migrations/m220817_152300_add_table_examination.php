@@ -184,16 +184,24 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
     entrant.decision_id,
     entrant.reason,
     entrant.programm_id,
+    entrant.subject_id,
     entrant.course,
     entrant.subject_form_id,
     entrant.status,
     entrant_group.timestamp_in,
-	entrant_group.prep_flag,
-    ( SELECT avg(guide_lesson_mark.mark_value) AS avg
-           FROM entrant_members
-             JOIN entrant_test ON entrant_test.entrant_members_id = entrant_members.id
-             JOIN guide_lesson_mark ON guide_lesson_mark.id = entrant_test.entrant_mark_id
-          WHERE entrant_members.entrant_id = entrant.id) AS mid_mark,
+    entrant_group.prep_flag,
+        CASE
+            WHEN (( SELECT avg(guide_lesson_mark.mark_value) AS avg
+               FROM entrant_members
+                 JOIN entrant_test ON entrant_test.entrant_members_id = entrant_members.id
+                 JOIN guide_lesson_mark ON guide_lesson_mark.id = entrant_test.entrant_mark_id
+              WHERE entrant_members.entrant_id = entrant.id)) IS NULL THEN 0::double precision
+            ELSE ( SELECT avg(guide_lesson_mark.mark_value) AS avg
+               FROM entrant_members
+                 JOIN entrant_test ON entrant_test.entrant_members_id = entrant_members.id
+                 JOIN guide_lesson_mark ON guide_lesson_mark.id = entrant_test.entrant_mark_id
+              WHERE entrant_members.entrant_id = entrant.id)
+        END AS mid_mark,
     concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name) AS fullname,
     concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS fio,
     user_common.birth_date,

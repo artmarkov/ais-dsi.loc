@@ -237,28 +237,23 @@ class EntrantComm extends \artsoft\db\ActiveRecord
         $models = (new Query())->from('entrant_members_view')
             ->where(['in', 'members_id', $members_id != 0 ? $members_id : $this->members_list])
             ->andWhere(['=', 'prep_flag', $prep_flag])
-//            ->andWhere(['=', 'student_id', 11130])
             ->orderBy('mid_mark DESC')->all();
         $models = ArrayHelper::index($models, null, ['student_id', 'entrant_test_id']);
         $modelsEntrant = (new Query())->from('entrant_view')
             ->where(['=', 'comm_id', $this->id])
             ->andWhere(['=', 'prep_flag', $prep_flag])
-//            ->andWhere(['=', 'student_id', 11130])
             ->orderBy('mid_mark DESC')->distinct()->all();
 
-//        echo '<pre>' . print_r([ $testsNames,  $models ], true) . '</pre>'; die();
         $attributes = ['name' => 'Фамилия И.О.'];
         $attributes += ['group' => 'Группа'];
         $attributes += $testsNames;
         $attributes += ['mid_mark' => 'Средняя оценка'];
         $attributes += ['decision' => 'Решение комиссии'];
         $attributes += ['programm' => 'Назначен учебный план'];
+        $attributes += ['subject' => 'Специальность'];
         $attributes += ['course' => 'Назначен клвсс'];
         $attributes += ['subject_form' => 'Форма обучения'];
 
-        $res = [];
-        $all_summ = 0;
-        // print_r($models);
         $data = [];
         foreach ($modelsEntrant as $id => $model) {
             $mid_mark = [];
@@ -266,6 +261,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
             $data[$id]['group'] = $model['group_name'];
             $data[$id]['decision'] = !$free_flag ? Entrant::getDecisionValue($model['decision_id']) : null;
             $data[$id]['programm'] = !$free_flag ? RefBook::find('education_programm_name')->getValue($model['programm_id']) : null;
+            $data[$id]['subject'] = !$free_flag ? RefBook::find('subject_name')->getValue($model['subject_id']) : null;
             $data[$id]['course'] = !$free_flag ? $model['course'] : null;
             $data[$id]['subject_form'] = !$free_flag ? SubjectForm::getFormValue($model['subject_form_id']) : null;
             foreach ($testsNames as $ids => $name) {
