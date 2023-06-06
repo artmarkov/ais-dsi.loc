@@ -42,7 +42,7 @@ use yii\widgets\Pjax;
                 <div class="form-group">
                     <div class="form-group btn-group">
                         <?= \artsoft\helpers\ButtonHelper::closeButton('cancel-event');?>
-                        <?= \artsoft\helpers\ButtonHelper::saveButton();?>
+                        <?= \artsoft\models\User::hasPermission('editRoutine') ? \artsoft\helpers\ButtonHelper::saveButton() : null;?>
                     </div>
                 </div>
             </div>

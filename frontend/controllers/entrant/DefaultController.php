@@ -13,7 +13,6 @@ use common\models\entrant\Entrant;
 use common\models\entrant\search\EntrantCommSearch;
 use common\models\entrant\search\EntrantSearch;
 use Yii;
-use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;

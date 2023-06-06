@@ -205,8 +205,7 @@ use artsoft\grid\GridPageSize;
                                         'title' => Yii::t('art', 'Edit'),
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
-                                    ],
-
+                                    ]
                                 );
                             },
                             'view' => function ($url, $model, $key) {

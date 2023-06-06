@@ -1,6 +1,7 @@
 <?php
 
 use common\widgets\yearcalendar\widgets\ActiveCalendar;
+use artsoft\models\User;
 
 $JSRange = <<<EOF
         function(e) {
@@ -94,6 +95,13 @@ EOF;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
+                    <?= \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-info-circle"></i> Наведите мышкой на выбранную дату.',
+                        'options' => ['class' => 'alert-info'],
+                    ]);
+                    ?>
+                </div>
+                <div class="col-sm-12">
                     <?= ActiveCalendar::widget([
                         'id' => 'calendar',
                         'language' => Yii::$app->language,
@@ -108,8 +116,8 @@ EOF;
                             'disabledDays' => [],
                         ],
                         'clientEvents' => [
-                            'clickDay' => new \yii\web\JsExpression($JSClick),
-                            'selectRange' => new \yii\web\JsExpression($JSRange),
+                            'clickDay' => User::hasPermission('editRoutine') && \artsoft\Art::isBackend() ? new \yii\web\JsExpression($JSClick) : false,
+                            'selectRange' => User::hasPermission('editRoutine') && \artsoft\Art::isBackend() ? new \yii\web\JsExpression($JSRange) : false,
                             'mouseOnDay' => new \yii\web\JsExpression($JSOnDay),
                             'mouseOutDay' => new \yii\web\JsExpression($JSOutDay),
                         ]

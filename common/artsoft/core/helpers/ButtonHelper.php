@@ -113,7 +113,7 @@ class ButtonHelper
     {
 
         return Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Cancel'),
-            ['#'],
+            null,
             [
                 'class' => 'btn btn-default ' . $buttonClass . ' ' . $class
             ]);

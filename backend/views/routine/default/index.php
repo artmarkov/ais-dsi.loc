@@ -103,6 +103,28 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'controller' => '/routine/default',
                                 'template' => '{update} {delete}',
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                'buttons' => [
+                                    'update' => function ($url, $model, $key) {
+                                        return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                                            ['/routine/default/update', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Edit'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                    'delete' => function ($url, $model, $key) {
+                                        return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                                            ['/routine/default/delete', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Delete'),
+                                                'aria-label' => Yii::t('art', 'Delete'),
+                                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
 
                             ],
                         ],
