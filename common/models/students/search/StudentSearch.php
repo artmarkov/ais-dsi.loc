@@ -2,6 +2,7 @@
 
 namespace common\models\students\search;
 
+use artsoft\traits\ParamsTrimable;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -12,6 +13,8 @@ use common\models\students\Student;
  */
 class StudentSearch extends Student
 {
+    use ParamsTrimable;
+
     public $fullName;
     public $userStatus;
     public $userBirthDate;
@@ -76,6 +79,7 @@ class StudentSearch extends Student
                 ]
             ]
         ]);
+        $params = $this->trimParams($params, static::class);
         $this->load($params);
 
         if (!$this->validate()) {

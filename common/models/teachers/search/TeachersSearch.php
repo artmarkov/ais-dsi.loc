@@ -2,6 +2,7 @@
 
 namespace common\models\teachers\search;
 
+use artsoft\traits\ParamsTrimable;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -12,6 +13,8 @@ use common\models\teachers\Teachers;
  */
 class TeachersSearch extends Teachers
 {
+    use ParamsTrimable;
+
     public $fullName;
     public $userStatus;
 
@@ -83,6 +86,7 @@ class TeachersSearch extends Teachers
                 ]
             ]
         ]);
+        $params = $this->trimParams($params, static::class);
         $this->load($params);
 
         if (!$this->validate()) {

@@ -2,6 +2,7 @@
 
 namespace common\models\parents\search;
 
+use artsoft\traits\ParamsTrimable;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -12,6 +13,8 @@ use common\models\parents\Parents;
  */
 class ParentsSearch extends Parents
 {
+    use ParamsTrimable;
+
     public $fullName;
     public $userStatus;
 
@@ -76,6 +79,7 @@ class ParentsSearch extends Parents
                 ]
             ]
         ]);
+        $params = $this->trimParams($params, static::class);
         $this->load($params);
 
         if (!$this->validate()) {

@@ -2,6 +2,7 @@
 
 namespace common\models\user\search;
 
+use artsoft\traits\ParamsTrimable;
 use common\models\user\UsersView;
 use Yii;
 use yii\base\Model;
@@ -12,6 +13,7 @@ use yii\data\ActiveDataProvider;
  */
 class UsersViewSearch extends UsersView
 {
+    use ParamsTrimable;
 
     public function rules()
     {
@@ -47,6 +49,8 @@ class UsersViewSearch extends UsersView
                 ],
             ],
         ]);
+
+        $params = $this->trimParams($params, static::class);
 
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;

@@ -2,6 +2,7 @@
 
 namespace common\models\employees\search;
 
+use artsoft\traits\ParamsTrimable;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -12,6 +13,8 @@ use common\models\employees\Employees;
  */
 class EmployeesSearch extends Employees
 {
+    use ParamsTrimable;
+
     public $fullName;
     public $userStatus;
     /**
@@ -71,6 +74,7 @@ class EmployeesSearch extends Employees
                 ]
             ]
         ]);
+        $params = $this->trimParams($params, static::class);
         $this->load($params);
 
         if (!$this->validate()) {
