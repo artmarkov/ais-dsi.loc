@@ -245,6 +245,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
             ->orderBy('mid_mark DESC')->distinct()->all();
 
         $attributes = ['name' => 'Фамилия И.О.'];
+        $attributes += ['birth_date' => 'Дата рождения (возраст)'];
         $attributes += ['group' => 'Группа'];
         $attributes += $testsNames;
         $attributes += ['mid_mark' => 'Средняя оценка'];
@@ -257,7 +258,9 @@ class EntrantComm extends \artsoft\db\ActiveRecord
         $data = [];
         foreach ($modelsEntrant as $id => $model) {
             $mid_mark = [];
+            $age = \artsoft\helpers\ArtHelper::age($model['birth_date']);
             $data[$id]['name'] = $model['fullname'];
+            $data[$id]['birth_date'] = Yii::$app->formatter->asDate($model['birth_date']) . ' (' . $age['age_year'] . ' лет ' . $age['age_month'] . ' мес.)';
             $data[$id]['group'] = $model['group_name'];
             $data[$id]['decision'] = !$free_flag ? Entrant::getDecisionValue($model['decision_id']) : null;
             $data[$id]['programm'] = !$free_flag ? RefBook::find('education_programm_name')->getValue($model['programm_id']) : null;

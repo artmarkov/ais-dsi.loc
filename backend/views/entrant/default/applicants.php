@@ -71,7 +71,8 @@ use artsoft\grid\GridPageSize;
                         'value' => function (Entrant $model) {
                             return sprintf('#%06d', $model->id);
                         },
-                        'options' => ['style' => 'width:100px']
+                        'options' => ['style' => 'width:100px'],
+                        'visible' => Yii::$app->user->isSuperadmin,
                     ],
                     [
                         'attribute' => 'fullname',
@@ -172,6 +173,19 @@ use artsoft\grid\GridPageSize;
                         },
                         'format' => 'raw',
                         'label' => 'Курс'
+                    ],
+                    [
+                        'attribute' => 'subject_form_id',
+                        'filter' => \common\models\subject\SubjectForm::getFormList(),
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => ['allowClear' => true],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                        'value' => function (\common\models\entrant\EntrantView $model) {
+                            return\common\models\subject\SubjectForm::getFormValue($model->subject_form_id) ?? '';
+                        },
+                        'format' => 'raw',
                     ],
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',
