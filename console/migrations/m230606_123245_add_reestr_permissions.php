@@ -87,6 +87,8 @@ class m230606_123245_add_reestr_permissions extends PermissionsMigration
                         '/admin/teachers/default/create',
                         '/admin/teachers/default/update',
                         '/admin/teachers/default/history',
+                        '/admin/students/default/finding',
+                        '/admin/students/default/registration',
                         '/admin/students/default/create',
                         '/admin/students/default/update',
                         '/admin/students/default/history',

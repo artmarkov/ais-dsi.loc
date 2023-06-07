@@ -27,7 +27,7 @@ class SigurController extends Controller
     public function actionIndex()
     {
         $reader = ReaderEntityFactory::createXLSXReader();
-        $reader->open('data/sigur/tc-tmp5884886171455644337.xlsx');
+        $reader->open('data/sigur/tc-tmp2140989533356398997.xlsx');
 
         foreach ($reader->getSheetIterator() as $k => $sheet) {
             if (1 != $k) {
@@ -46,21 +46,23 @@ class SigurController extends Controller
 
                 $model = $this->findUser($last_name, $first_name, $middle_name);
                 if ($model) {
-                    \Yii::$app->db->createCommand('INSERT INTO users_card (user_common_id, key_hex, timestamp_deny, photo_bin, created_at, created_by, updated_at, updated_by) 
+                    if(!$this->findCard($model['id'], trim(str_replace(',','', $v[6])))) {
+                        \Yii::$app->db->createCommand('INSERT INTO users_card (user_common_id, key_hex, timestamp_deny, photo_bin, created_at, created_by, updated_at, updated_by) 
                                                         VALUES (:user_common_id, :key_hex, :timestamp_deny, :photo_bin, :created_at, :created_by, :updated_at, :updated_by)',
-                        [
-                            'user_common_id' => $model['id'],
-                            'key_hex' => trim(str_replace(',','', $v[6])),
-                            'timestamp_deny' => $v[8] != 'не ограничен' ? \Yii::$app->formatter->asDate($v[8], 'php:Y-m-d H:i:s') : null,
-                            'photo_bin' => $model['id'] == 1020 ? base64_encode(file_get_contents(Yii::getAlias('data/sigur/test.jpg'))) : null,
-                            'created_at' => \Yii::$app->formatter->asTimestamp($v[7]),
-                            'created_by' => 10000,
-                            'updated_at' => \Yii::$app->formatter->asTimestamp($v[7]),
-                            'updated_by' => 10000,
-                        ])->execute();
+                            [
+                                'user_common_id' => $model['id'],
+                                'key_hex' => trim(str_replace(',', '', $v[6])),
+                                'timestamp_deny' => $v[8] != 'не ограничен' ? \Yii::$app->formatter->asDate($v[8], 'php:Y-m-d H:i:s') : null,
+                                'photo_bin' => $model['id'] == 1020 ? base64_encode(file_get_contents(Yii::getAlias('data/sigur/test.jpg'))) : null,
+                                'created_at' => \Yii::$app->formatter->asTimestamp($v[7]),
+                                'created_by' => 10000,
+                                'updated_at' => \Yii::$app->formatter->asTimestamp($v[7]),
+                                'updated_by' => 10000,
+                            ])->execute();
 
-                    $this->stdout('Добавлен пропуск для записи user_common_id: ' . $model['id'], Console::FG_GREY);
-                    $this->stdout("\n");
+                        $this->stdout('Добавлен пропуск для записи user_common_id: ' . $model['id'], Console::FG_GREY);
+                        $this->stdout("\n");
+                    }
                 }
             }
         }
@@ -85,7 +87,17 @@ class SigurController extends Controller
             ])->queryOne();
         return $user ?: false;
     }
-
+    public function findCard($user_common_id,$key_hex)
+    {
+        return \Yii::$app->db->createCommand('SELECT * 
+                                                    FROM users_card 
+                                                    WHERE user_common_id=:user_common_id 
+                                                    AND key_hex=:key_hex',
+            [
+                'user_common_id' => $user_common_id,
+                'key_hex' => $key_hex
+            ])->queryColumn() ?? false;
+    }
     protected function lat2cyr($text) {
         $arr = array(
             'A' => 'А',
