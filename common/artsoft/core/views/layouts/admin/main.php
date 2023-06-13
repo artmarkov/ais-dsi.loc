@@ -61,7 +61,7 @@ MetisMenuAsset::register($this);
         } elseif (!Yii::$app->session->has(DefaultController::ORIGINAL_USER_SESSION_KEY)) {
             $menuItems[] = [
                 'label' => '<i class="fa fa-sign-out" style="margin-right: 5px;"></i>' . Yii::t('art', 'Logout {username}', ['username' => Yii::$app->user->identity->username]),
-                'url' => Yii::$app->urlManager->hostInfo . '/auth/logout',
+                'url' => '/auth/logout',
                 'linkOptions' => ['data-method' => 'post']
             ];
         } else {
