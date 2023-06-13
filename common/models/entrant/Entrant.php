@@ -373,14 +373,14 @@ SQL;
         if ($this->decision_id == 1) {
             $this->makeStadylan();
             $this->reason = null;
-            $this->status = 2;
+//            $this->status = 2;
         } elseif ($this->decision_id == 2) {
             $this->deleteStadylan();
             $this->programm_id = null;
             $this->subject_id = null;
             $this->course = null;
             $this->subject_form_id = null;
-            $this->status = 2;
+//            $this->status = 2;
         } else {
             $this->deleteStadylan();
             $this->reason = null;

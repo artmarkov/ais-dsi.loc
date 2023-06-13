@@ -40,7 +40,7 @@ JS;
 $this->registerJs($js, \yii\web\View::POS_LOAD);
 
 //$readonly = $model->decision_id != 0 ? true : $readonly;
-$readonlyMarks = $model->status != 1 ? true : $readonly;
+$readonlyMarks = $model->status == 2 ? true : $readonly;
 $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermission('fullEntrantAccess') ? true : $readonly;
 
 ?>
