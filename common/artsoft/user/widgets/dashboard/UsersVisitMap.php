@@ -28,7 +28,7 @@ class UsersVisitMap extends DashboardWidget
                 {
                     $values[] = $visit->geoLocation['country']['iso'];
                 }
-                $sity_id = $visit->geoLocation['city']['id'];
+                $sity_id = $visit->geoLocation['city']['id'] ?? false;
                 if (!empty($sity_id))
                 {
                     $markers_id[] = $sity_id;
