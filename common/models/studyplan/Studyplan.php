@@ -19,6 +19,7 @@ use yii\behaviors\TimestampBehavior;
 use Yii;
 
 use yii\helpers\ArrayHelper;
+use yii\web\NotFoundHttpException;
 use function morphos\Russian\inflectName;
 
 /**
@@ -87,9 +88,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
     {
         return [
             [['student_id', 'programm_id', 'subject_form_id', 'course', 'plan_year'], 'required'],
-//            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) {
-//                return !$model->isNewRecord;
-//            }],
+            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) {
+                return !$model->isNewRecord;
+            }],
             [['student_id', 'programm_id',  'course', 'plan_year', 'subject_form_id', 'status', 'version'], 'integer'],
             [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
@@ -245,6 +246,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function makeDocx($template)
     {
         $model = $this;
+        if(!isset($model->parent)) {
+            throw new NotFoundHttpException("The Parent was not found.");
+        }
         $modelsDependence = $model->studyplanSubject;
         $modelProgrammLevel = EducationProgrammLevel::find()
             ->where(['programm_id' => $model->programm_id])
