@@ -442,7 +442,7 @@ SQL;
                         $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;
                         foreach ($modelsSubTime as $modelSubTime) {
                             $modelSub = new StudyplanSubject();
-                            if($modelSubTime->subject_cat_id = 1000) {
+                            if($modelSubTime->subject_cat_id == 1000) {
                                 $modelSubTime->subject_id = $this->subject_id;
                             }
                             $modelSub->copyAttributes($model, $modelSubTime);
