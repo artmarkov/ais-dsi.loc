@@ -253,6 +253,7 @@ use common\models\user\UserCommon;
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="panel panel-default">
@@ -279,7 +280,7 @@ use common\models\user\UserCommon;
                                         ?>
                                         <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(Schoolplan::getDocStatusList(), ['disabled' => $readonly]) ?>
 
-                                        <?php if ($model->category->bars_flag) : ?>
+                                        <?php if (!$model->isNewRecord && $model->category->bars_flag) : ?>
 
                                             <?= $form->field($model, 'bars_flag')->checkbox(['disabled' => $readonly]) ?>
 
@@ -304,7 +305,6 @@ use common\models\user\UserCommon;
                     </div>
                 </div>
             </div>
-            <?php endif; ?>
             <div class="panel-footer">
                 <div class="form-group btn-group">
                     <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
