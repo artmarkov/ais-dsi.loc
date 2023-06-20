@@ -94,7 +94,7 @@ class Art extends Component
      *
      * @var string
      */
-    public $cyrillicRegexp = '/^[а-яёА-ЯЁ\s]+$/iu';
+    public $cyrillicRegexp = '/^[а-яёА-ЯЁ\-\s]+$/iu';
     
     /**
      * Pattern that describe what names should not be allowed for username on 
