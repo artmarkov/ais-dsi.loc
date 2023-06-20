@@ -259,7 +259,7 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
                 $model->setAttributes(
                     [
                         'programm_id' => $entrantProgramm->programm_id,
-                        'subject_type_id' => $entrantProgramm->subject_type_id,
+                        'subject_form_id' => $entrantProgramm->subject_type_id,
                         'course' => $entrantProgramm->course,
                         'student_id' => $this->student_id,
                         'plan_year' => $this->plan_year,
@@ -274,7 +274,6 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
                         $model->copyAttributes($modelProgrammLevel);
                     }
                     if ($flag = $model->save(false)) {
-//                echo '<pre>' . print_r($model, true) . '</pre>';
 
                         if (isset($modelProgrammLevel->educationProgrammLevelSubject)) {
                             $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;

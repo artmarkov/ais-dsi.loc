@@ -56,6 +56,7 @@ class UserCommon extends ActiveRecord
 
     const SCENARIO_DEFAULT = 'default';
     const SCENARIO_REG = 'registration';
+    const SCENARIO_STUDENT = 'student';
 
     /**
      * @inheritdoc
@@ -86,7 +87,8 @@ class UserCommon extends ActiveRecord
     public function rules()
     {
         return [
-            [['first_name', 'last_name', 'birth_date'], 'required'],
+            [['first_name', 'last_name'], 'required'],
+            [['birth_date'], 'required', 'on'=> self::SCENARIO_STUDENT, 'enableClientValidation' => false],
             [['gender', 'status', 'version'], 'integer'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['user_category', 'first_name', 'middle_name', 'last_name', 'address', 'email'], 'string', 'max' => 124],

@@ -101,7 +101,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $user = new User();
-        $userCommon = new UserCommon();
+        $userCommon = new UserCommon(['scenario' => UserCommon::SCENARIO_STUDENT]);
         $userCard = new UsersCard();
         // $userCommon->scenario = UserCommon::SCENARIO_NEW;
         $model = new $this->modelClass;
@@ -182,6 +182,7 @@ class DefaultController extends MainController
 
         $model = $this->findModel($id);
         $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_STUDENTS]);
+        $userCommon->scenario = UserCommon::SCENARIO_STUDENT;
         $userCard = UsersCard::findOne(['user_common_id' => $model->user_common_id]) ?: new UsersCard();
         // $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
 

@@ -72,7 +72,7 @@ class m230127_092207_add_subject_view extends Migration
      JOIN user_common ON user_common.id = students.user_common_id
      JOIN education_programm ON education_programm.id = studyplan.programm_id
      JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id
-     JOIN guide_subject_form ON guide_subject_form.id = studyplan.subject_form_id;
+     LEFT JOIN guide_subject_form ON guide_subject_form.id = studyplan.subject_form_id;
         ')->execute();
 
     }
