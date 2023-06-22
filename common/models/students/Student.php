@@ -4,12 +4,9 @@ namespace common\models\students;
 
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\db\ActiveRecord;
-use artsoft\widgets\Notice;
 use common\models\studyplan\Studyplan;
 use common\models\user\UserCommon;
-use common\models\students\StudentPosition;
 use Yii;
-use artsoft\models\User;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 
@@ -72,12 +69,12 @@ class Student extends ActiveRecord
             [['sert_name', 'sert_series', 'sert_num'], 'string', 'max' => 32],
             [['sert_organ'], 'string', 'max' => 127],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
-            [['sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+            [['sert_num',  'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_series != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#student-sert_series').val() != NULL;
                     }"],
-            [['sert_series', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
+            [['sert_series', 'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_num != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#student-sert_num').val() != NULL;
@@ -87,7 +84,7 @@ class Student extends ActiveRecord
             }, 'whenClient' => "function (attribute, value) {
                         return $('#student-sert_organ').val() != NULL;
                     }"],
-            [['sert_num', 'sert_series', 'sert_organ'], 'required', 'when' => function ($model) {
+            [['sert_num', 'sert_series'], 'required', 'when' => function ($model) {
                 return $model->sert_date != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#student-sert_date').val() != NULL;

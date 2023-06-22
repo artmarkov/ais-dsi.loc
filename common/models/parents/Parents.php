@@ -70,17 +70,17 @@ class Parents extends \artsoft\db\ActiveRecord
             [['sert_name', 'sert_series', 'sert_num', 'sert_code'], 'string', 'max' => 32],
             [['sert_organ'], 'string', 'max' => 127],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
-            [['sert_num', 'sert_organ', 'sert_code','sert_date'], 'required', 'when' => function ($model) {
+            [['sert_num', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_series != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#parents-sert_series').val() != NULL;
                     }"],
-            [['sert_series', 'sert_organ', 'sert_code','sert_date'], 'required', 'when' => function ($model) {
+            [['sert_series', 'sert_organ', 'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_num != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#parents-sert_num').val() != NULL;
                     }"],
-            [['sert_series', 'sert_num', 'sert_code','sert_date'], 'required', 'when' => function ($model) {
+            [['sert_series', 'sert_num', 'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_organ != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#parents-sert_organ').val() != NULL;
@@ -90,7 +90,7 @@ class Parents extends \artsoft\db\ActiveRecord
             }, 'whenClient' => "function (attribute, value) {
                         return $('#parents-sert_code').val() != NULL;
                     }"],
-            [['sert_series', 'sert_num', 'sert_organ', 'sert_code'], 'required', 'when' => function ($model) {
+            [['sert_series', 'sert_num', 'sert_organ'], 'required', 'when' => function ($model) {
                 return $model->sert_date != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#parents-sert_date').val() != NULL;
