@@ -100,6 +100,7 @@ class UserCommon extends ActiveRecord
             [['snils'], 'string', 'max' => 16],
             ['info', 'string'],
             ['email', 'email'],
+            ['birth_date', 'safe'],
         ];
     }
 

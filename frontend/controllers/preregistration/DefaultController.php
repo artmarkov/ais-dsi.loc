@@ -78,8 +78,7 @@ class DefaultController extends \frontend\controllers\DefaultController
         $pre_date_start = Yii::$app->settings->get('module.pre_date_start', time());
         $model->plan_year = $pre_plan_year;
         $model->status = EntrantPreregistrations::REG_STATUS_DRAFT;
-
-        $age = ArtHelper::age(Yii::$app->formatter->asTimestamp($modelStudent->userBirthDate, $pre_date_start)); // полных лет на начало обучения
+        $age = ArtHelper::age(Yii::$app->formatter->asTimestamp($modelStudent->userBirthDate), Yii::$app->formatter->asTimestamp($pre_date_start)); // полных лет на начало обучения
         if ($model->load(Yii::$app->request->post())) {
             $entrant_programm_id = $_POST['EntrantPreregistrations']['entrant_programm_id'];
             $model->reg_vid = EntrantProgramm::getEntrantRegVid($entrant_programm_id, $model->plan_year);

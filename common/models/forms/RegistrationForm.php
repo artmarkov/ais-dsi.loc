@@ -69,7 +69,7 @@ class RegistrationForm extends Model
             [['parent_first_name', 'parent_middle_name', 'parent_last_name'], 'string', 'max' => 124],
             [['student_first_name', 'student_middle_name', 'student_last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             [['parent_first_name', 'parent_middle_name', 'parent_last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
-            [['student_birth_date'], 'safe'],
+            [['student_birth_date', 'parent_birth_date'], 'date'],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             [['student_snils', 'parent_snils'], 'string', 'max' => 16],
             ['email', 'email'],
