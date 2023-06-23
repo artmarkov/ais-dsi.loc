@@ -122,11 +122,15 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/view', 'id' => $model->id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
-//        echo '<pre>' . print_r(Yii::$app->request->post(), true) . '</pre>'; die();
             $model_date = $this->modelDate;
+            $model_distribution = new DynamicModel(['sect_list', 'distr_flag']);
+            $model_distribution->addRule(['sect_list'], 'safe');
+
             $modelsSubjectSectStudyplan = $model->setSubjectSect($model_date);
 
             if (isset($_POST['SubjectSectStudyplan'])) {
+//        echo '<pre>' . print_r($model, true) . '</pre>';
+//        echo '<pre>' . print_r(Yii::$app->request->post(), true) . '</pre>'; die();
                 $modelsSubjectSectStudyplan = $model->getSubjectSectStudyplans($model_date->plan_year);
                 $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
 
@@ -150,9 +154,11 @@ class DefaultController extends MainController
                                 break;
                             }
                         }
-
                         if ($flag) {
                             $transaction->commit();
+                            if (isset($_POST['DynamicModel']) && $_POST['DynamicModel']['distr_flag'] == 1 && count($_POST['DynamicModel']['sect_list']) != 0) {
+                                $model->cloneDistribution($_POST['DynamicModel']['sect_list'], $model_date);
+                            }
                             $this->getSubmitAction();
                         }
                     } catch (Exception $e) {
@@ -163,7 +169,7 @@ class DefaultController extends MainController
             }
 
             $readonly = false;
-            return $this->renderIsAjax('distribution', compact('model', 'modelsSubjectSectStudyplan', 'model_date', 'readonly'));
+            return $this->renderIsAjax('distribution', compact('model', 'modelsSubjectSectStudyplan', 'model_date', 'model_distribution', 'readonly'));
 
     }
 

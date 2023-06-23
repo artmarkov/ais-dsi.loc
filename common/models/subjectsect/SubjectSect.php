@@ -6,6 +6,7 @@ use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use backend\models\Model;
 use common\models\schedule\SubjectScheduleView;
 use common\models\subject\Subject;
 use common\models\subject\SubjectCategory;
@@ -460,6 +461,81 @@ SQL;
 
     }
 
+    /**
+     * ПОлучаем возможные группы для клонирования состава группы
+     * @param $model
+     * @return array
+     */
+    public function getSubjectSectCopyAvailable()
+    {
+        $models = self::find()->select(['id', 'sect_name'])
+            ->where(['subject_cat_id' => $this->subject_cat_id])
+            ->andWhere(['=', 'subject_vid_id', $this->subject_vid_id])
+            ->andWhere(['=', 'term_mastering', $this->term_mastering])
+            ->andWhere(['=', 'course_list', implode(',',  $this->course_list)])
+            ->andWhere(['=', 'subject_type_id', $this->subject_type_id])
+            ->andWhere(['!=', 'subject_id', $this->subject_id])
+            ->andWhere(['programm_list' => implode(',',  $this->programm_list)])
+            ->asArray()
+            ->all();
+
+        return  ArrayHelper::map($models, 'id', 'sect_name');
+
+    }
+
+    /**
+     * @param $ids
+     * @param $model_date
+     * @throws \yii\db\Exception
+     */
+    public function cloneDistribution($ids, $model_date)
+    {
+            echo '<pre>' . print_r($ids, true) . '</pre>'; die();
+        foreach ($ids as $item => $id) {
+            $model = self::findOne($id);
+            $modelsSubjectSectStudyplan = $model->getSubjectSectStudyplans($model_date->plan_year);
+            $data = Yii::$app->request->post();
+            $output = array_map(
+                function ($itm) use ($model) {
+                    $itm['subject_sect_id'] = $model->id;
+
+                    return $itm;
+                },
+                $data['SubjectSectStudyplan']
+            );
+            $data['SubjectSectStudyplan'] = $output;
+          //  $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
+
+            $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
+            Model::loadMultiple($modelsSubjectSectStudyplan, $data);
+          //  $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
+
+            // validate all models
+            $valid = Model::validateMultiple($modelsSubjectSectStudyplan);
+                $valid = true;
+            if ($valid) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try {
+                    $flag = true;
+//                    if (!empty($deletedIDs)) {
+//                        SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
+//                    }
+                    foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
+                        if (!($flag = $modelSubjectSectStudyplan->save(false))) {
+                            $transaction->rollBack();
+                            break;
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                }
+
+            }
+        }
+    }
     /**
      * @param bool $insert
      * @return bool
