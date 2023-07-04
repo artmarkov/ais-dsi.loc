@@ -127,8 +127,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'artsoft\grid\columns\StatusColumn',
                         'attribute' => 'status',
                         'optionsArray' => [
-                            [Studyplan::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
-                            [Studyplan::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
+                            [Studyplan::STATUS_ACTIVE, 'План открыт', 'info'],
+                            [Studyplan::STATUS_INACTIVE, 'План закрыт', 'danger'],
                         ],
                         'options' => ['style' => 'width:120px']
                     ],
