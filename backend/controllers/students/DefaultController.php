@@ -756,7 +756,7 @@ class DefaultController extends MainController
             ['label' => 'Карточка ученика', 'url' => ['/students/default/update', 'id' => $id]],
             ['label' => 'Планы учащегося', 'url' => ['/students/default/studyplan', 'id' => $id]],
             ['label' => 'Испытания', 'url' => ['/students/default/entrant', 'id' => $id]],
-            ['label' => 'История обучения', 'url' => ['/students/default/education-history', 'id' => $id]],
+//            ['label' => 'История обучения', 'url' => ['/students/default/education-history', 'id' => $id]],
             ['label' => 'Документы', 'url' => ['/students/default/document', 'id' => $id]],
         ];
     }
