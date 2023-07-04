@@ -632,6 +632,12 @@ class DefaultController extends MainController
                     }
                 }
             }
+            if (Yii::$app->request->post('submitAction') == 'doc_contract' || Yii::$app->request->post('submitAction') == 'doc_statement') {
+                if (!isset($model->parent) || !$model->doc_date || !$model->contract_start || !$model->contract_end) {
+                    Yii::$app->session->setFlash('warning', 'Заполните поля раздела "Документы"');
+                    return $this->getSubmitAction($model);
+                }
+            }
             if (Yii::$app->request->post('submitAction') == 'doc_contract') {
                 if ($model->subject_type_id == SubjectType::BASIS_FREE) {
                     $model->makeDocx(Studyplan::template_csf);
