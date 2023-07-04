@@ -31,6 +31,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'updated_at' => $this->integer()->notNull(),
             'updated_by' => $this->integer(),
             'status' => $this->smallInteger()->notNull()->defaultValue(1),
+            'status_reason' => $this->integer()->defaultValue(0),
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 

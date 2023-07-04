@@ -18,6 +18,7 @@ use common\models\info\Document;
 use common\models\info\search\DocumentSearch;
 use common\models\service\UsersCard;
 use common\models\students\StudentDependence;
+use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\search\StudyplanViewSearch;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
@@ -588,6 +589,19 @@ class DefaultController extends MainController
                 Model::loadMultiple($modelsDependence, Yii::$app->request->post());
                 $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsDependence, 'id', 'id')));
 
+                if (Yii::$app->request->post('submitAction') == 'next_class') {
+                    $model->status = 0;
+                    $model->status_reason = 1;
+                } elseif (Yii::$app->request->post('submitAction') == 'repeat_class') {
+                    $model->status = 0;
+                    $model->status_reason = 2;
+                } elseif (Yii::$app->request->post('submitAction') == 'finish_plan') {
+                    $model->status = 0;
+                    $model->status_reason = 3;
+                } elseif (Yii::$app->request->post('submitAction') == 'restore') {
+                    $model->status = 1;
+                }
+
                 // validate all models
                 $valid = $model->validate();
                 $valid = Model::validateMultiple($modelsDependence) && $valid;
@@ -636,7 +650,7 @@ class DefaultController extends MainController
         } else {
             $this->view->params['breadcrumbs'][] = Yii::t('art/studyplan', 'Individual student plans');
             $modelClass = 'common\models\studyplan\Studyplan';
-            $searchModel = new StudyplanViewSearch();
+            $searchModel = new StudyplanSearch();
 
             $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
                 && !User::hasPermission($modelClass::getFullAccessPermission()));

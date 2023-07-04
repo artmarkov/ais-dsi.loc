@@ -7,6 +7,7 @@ use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
 use common\models\studyplan\StudyplanView;
 use artsoft\grid\GridPageSize;
+use common\models\studyplan\Studyplan;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\studyplan\search\StudyplanViewSearch */
@@ -49,26 +50,57 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filterModel' => $searchModel,
                 'bulkActionOptions' => [
                     'gridId' => 'studyplan-grid',
-                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
+                    'actions' => [
+                        Url::to(['bulk-next-class']) => 'Перевести в следующий класс',
+                        Url::to(['bulk-repeat-class']) => 'Повторить учебную программу',
+                        Url::to(['bulk-finish-plan']) => 'Завершить учебную программу',
+                        /*Url::to(['bulk-delete']) => Yii::t('yii', 'Delete'),*/
+                    ]
                 ],
                 'columns' => [
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
                         'attribute' => 'id',
-                        'value' => function (StudyplanView $model) {
+                        'value' => function (Studyplan $model) {
                             return sprintf('#%06d', $model->id);
                         },
-                        'contentOptions' => function (StudyplanView $model) {
+                        'contentOptions' => function (Studyplan $model) {
                             return [];
                         },
+                        'options' => ['style' => 'width:50px'],
                     ],
-                    'student_fio',
-                    'education_programm_name',
+                    [
+                        'attribute' => 'student_id',
+                        'filter' => RefBook::find('students_fullname')->getList(),
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => ['allowClear' => true],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                        'value' => function (Studyplan $model) {
+                            return $model->studentFio;
+                        },
+                        'format' => 'raw',
+                    ],
+                    [
+                        'attribute' => 'programm_id',
+                        'filter' =>\common\models\education\EducationProgramm::getProgrammList(),
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => ['allowClear' => true],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                        'value' => function (Studyplan $model) {
+                            return $model->programmName;
+                        },
+                        'options' => ['style' => 'width:100px'],
+                        'format' => 'raw',
+                    ],
                     [
                         'attribute' => 'subject_form_id',
                         'filter' => RefBook::find('subject_form_name')->getList(),
-                        'value' => function (StudyplanView $model) {
-                            return $model->subject_form_name;
+                        'value' => function (Studyplan $model) {
+                            return $model->getSubjectFormName();
                         },
                         'options' => ['style' => 'width:100px'],
                         'format' => 'raw',
@@ -76,7 +108,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'course',
                         'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
-                        'value' => function (StudyplanView $model) {
+                        'value' => function (Studyplan $model) {
                             return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
                         },
                         'options' => ['style' => 'width:100px'],
@@ -85,7 +117,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'plan_year',
                         'filter' => false,
-                        'value' => function (StudyplanView $model) {
+                        'value' => function (Studyplan $model) {
                             return \artsoft\helpers\ArtHelper::getStudyYearsList()[$model->plan_year];
                         },
                         'options' => ['style' => 'width:100px'],
@@ -95,8 +127,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'artsoft\grid\columns\StatusColumn',
                         'attribute' => 'status',
                         'optionsArray' => [
-                            [StudyplanView::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
-                            [StudyplanView::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
+                            [Studyplan::STATUS_ACTIVE, Yii::t('art', 'Active'), 'info'],
+                            [Studyplan::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'danger'],
                         ],
                         'options' => ['style' => 'width:120px']
                     ],

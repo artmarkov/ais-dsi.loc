@@ -30,5 +30,6 @@ return [
     'Middle Avg Mark' => 'Средняя оценка ПА',
     'Finish Avg Mark' => 'Средняя оценка ИА',
     'Lesson Tests' => 'Виды испытвний',
+    'Status Reason' => 'Причина закрытия',
 
 ];

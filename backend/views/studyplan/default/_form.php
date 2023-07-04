@@ -76,7 +76,7 @@ JS
                     <?= $form->field($model, 'subject_form_id')->widget(\kartik\select2\Select2::class, [
                         'data' => \common\models\subject\SubjectForm::getFormList(),
                         'options' => [
-                            'disabled' =>  $readonly,
+                            'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
                             'multiple' => false,
                         ],
@@ -108,8 +108,6 @@ JS
                     ?>
 
                     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
-
-                    <?= $form->field($model, 'status')->dropDownList(Studyplan::getStatusList(), ['disabled' => $readonly]) ?>
 
                 </div>
             </div>
@@ -146,7 +144,9 @@ JS
                                 <table class="table table-bordered table-striped">
                                     <thead class="bg-warning">
                                     <tr>
-                                        <th class="text-center" style="min-width: 100px">Раздел</br>учебных</br>предметов</th>
+                                        <th class="text-center" style="min-width: 100px">Раздел</br>учебных</br>
+                                            предметов
+                                        </th>
                                         <th class="text-center" style="min-width: 150px">Предмет</th>
                                         <th class="text-center" style="min-width: 150px">Тип</br>занятий</th>
                                         <th class="text-center" style="min-width: 150px">Вид</br>занятий</th>
@@ -200,7 +200,7 @@ JS
                                                             'attribute' => "[{$index}]subject_cat_id",
                                                             'data' => \artsoft\helpers\RefBook::find('subject_category_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
                                                             'options' => [
-                                                            'id' => 'studyplansubject-' . $index . '-subject_cat_id',
+                                                                'id' => 'studyplansubject-' . $index . '-subject_cat_id',
 
                                                                 'disabled' => $readonly,
                                                                 'placeholder' => Yii::t('art', 'Select...'),
@@ -378,12 +378,12 @@ JS
                                         <td></td>
                                         <td></td>
                                         <td></td>
-                                        <td><?= $sum_week_time;?></td>
-                                        <td><?= $sum_year_time;?></td>
+                                        <td><?= $sum_week_time; ?></td>
+                                        <td><?= $sum_year_time; ?></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
-                                        <td><?= $sum_year_time_consult;?></td>
+                                        <td><?= $sum_year_time_consult; ?></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -400,6 +400,35 @@ JS
                             <?= $form->field($model, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
 
                             <?= $form->field($model, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Статус учебного плана
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <?= $form->field($model, 'status')->dropDownList(Studyplan::getStatusList(), ['disabled' => true]) ?>
+
+                            <?= $form->field($model, 'status_reason')->dropDownList(Studyplan::getStatusReasonList(), ['disabled' => true]) ?>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <?php if (!$model->isNewRecord): ?>
+                            <?php echo \yii\bootstrap\Alert::widget([
+                                'body' => '<i class="fa fa-info-circle"></i> При отсутствии учебной программы при переводе, будет закрыт текущий учебный план без формирования нового.',
+                                'options' => ['class' => 'alert-info'],
+                            ]);
+                            ?>
+                        <?php endif; ?>
+                        <div class="form-group btn-group">
+                            <?php if (!$model->isNewRecord): ?>
+                                <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Перевести в следующий класс', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'next_class', 'disabled' => $model->status == 0]); ?>
+                                <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Повторить учебную программу', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'repeat_class', 'disabled' => $model->status == 0]); ?>
+                                <?= Html::submitButton('<i class="fa fa-arrow-down" aria-hidden="true"></i> Завершить учебную программу', ['class' => 'btn btn-sm btn-default', 'name' => 'submitAction', 'value' => 'finish_plan', 'disabled' => $model->status == 0]); ?>
+                                <?= Html::submitButton('<i class="fa fa-arrow-left" aria-hidden="true"></i> Отменить решение', ['class' => 'btn btn-sm btn-danger', 'name' => 'submitAction', 'value' => 'restore', 'disabled' => $model->status == 1]); ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -459,3 +488,13 @@ JS
     <?php ActiveForm::end(); ?>
 
 </div>
+<?php
+$js = <<<JS
+$("select[name='Studyplan[status]']").find(":selected").val() === '0' ? $('.field-studyplan-status_reason').show() : $('.field-studyplan-status_reason').hide();
+document.getElementById("studyplan-status").onchange = function () {
+ $(this).val() === '0' ? $('.field-studyplan-status_reason').show() : $('.field-studyplan-status_reason').hide();
+}
+JS;
+
+$this->registerJs($js, \yii\web\View::POS_LOAD);
+?>

@@ -47,7 +47,7 @@ class DefaultController extends MainController
 
     public function actionIndex()
     {
-        $modelSearchClass = 'common\models\studyplan\search\StudyplanViewSearch';
+        $modelSearchClass = 'common\models\studyplan\search\StudyplanSearch';
         $model_date = $this->modelDate;
 
         $searchName = StringHelper::basename($modelSearchClass::className());
@@ -143,7 +143,18 @@ class DefaultController extends MainController
         $modelsStudyplanSubject = $model->studyplanSubject;
 
         if ($model->load(Yii::$app->request->post())) {
-
+            if (Yii::$app->request->post('submitAction') == 'next_class') {
+               $model->status = 0;
+               $model->status_reason = 1;
+            } elseif (Yii::$app->request->post('submitAction') == 'repeat_class') {
+                $model->status = 0;
+                $model->status_reason = 2;
+            } elseif (Yii::$app->request->post('submitAction') == 'finish_plan') {
+                $model->status = 0;
+                $model->status_reason = 3;
+            } elseif (Yii::$app->request->post('submitAction') == 'restore') {
+                $model->status = 1;
+            }
             $oldIDs = ArrayHelper::map($modelsStudyplanSubject, 'id', 'id');
             $modelsStudyplanSubject = Model::createMultiple(StudyplanSubject::class, $modelsStudyplanSubject);
             Model::loadMultiple($modelsStudyplanSubject, Yii::$app->request->post());
@@ -1022,6 +1033,68 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
+    /**
+     * @return \yii\web\Response
+     */
+    public function actionBulkNextClass() {
+        if (Yii::$app->request->post('selection')) {
+            $models = $this->modelClass::find()->where( ['id' => Yii::$app->request->post('selection', [])])->all();
+            $ret = false;
+            foreach ($models as $model) {
+                     $model->status = $this->modelClass::STATUS_INACTIVE;
+                     $model->status_reason = 1;
+                     $ret = $model->update(false);
+                 }
+            if ($ret) {
+                Yii::$app->session->setFlash('success', 'Все выбранные учебные планы успешно обработаны.');
+            } else {
+                Yii::$app->session->setFlash('error','Ошибка пакетной обработки учебных планов');
+            }
+            return $this->redirect('studyplan/default/index');
+        }
+    }
+
+    /**
+     * @return \yii\web\Response
+     */
+    public function actionBulkRepeatClass() {
+        if (Yii::$app->request->post('selection')) {
+            $models = $this->modelClass::find()->where( ['id' => Yii::$app->request->post('selection', [])])->all();
+            $ret = false;
+            foreach ($models as $model) {
+                $model->status = $this->modelClass::STATUS_INACTIVE;
+                $model->status_reason = 2;
+                $ret = $model->update(false);
+            }
+            if ($ret) {
+                Yii::$app->session->setFlash('success', 'Все выбранные учебные планы успешно обработаны.');
+            } else {
+                Yii::$app->session->setFlash('error','Ошибка пакетной обработки учебных планов');
+            }
+            return $this->redirect('studyplan/default/index');
+        }
+    }
+
+    /**
+     * @return \yii\web\Response
+     */
+    public function actionBulkFinishPlan() {
+        if (Yii::$app->request->post('selection')) {
+            $models = $this->modelClass::find()->where( ['id' => Yii::$app->request->post('selection', [])])->all();
+            $ret = false;
+            foreach ($models as $model) {
+                $model->status = $this->modelClass::STATUS_INACTIVE;
+                $model->status_reason = 3;
+                $ret = $model->update(false);
+            }
+            if ($ret) {
+                Yii::$app->session->setFlash('success', 'Все выбранные учебные планы успешно обработаны.');
+            } else {
+                Yii::$app->session->setFlash('error','Ошибка пакетной обработки учебных планов');
+            }
+            return $this->redirect('studyplan/default/index');
+        }
+    }
     /**
      * @param $id
      * @return array

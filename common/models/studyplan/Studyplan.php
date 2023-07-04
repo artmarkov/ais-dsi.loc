@@ -18,6 +18,7 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
 
+use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use function morphos\Russian\inflectName;
@@ -47,6 +48,7 @@ use function morphos\Russian\inflectName;
  * @property int|null $updated_by
  * @property int $status
  * @property int $version
+ * @property int $status_reason
  *
  * @property EducationProgramm $programm
  * @property Student $student
@@ -88,10 +90,10 @@ class Studyplan extends \artsoft\db\ActiveRecord
     {
         return [
             [['student_id', 'programm_id', 'subject_form_id', 'course', 'plan_year'], 'required'],
-            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) {
-                return !$model->isNewRecord;
-            }],
-            [['student_id', 'programm_id',  'course', 'plan_year', 'subject_form_id', 'status', 'version'], 'integer'],
+//            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) {
+//                return !$model->isNewRecord;
+//            }],
+            [['student_id', 'programm_id', 'course', 'plan_year', 'subject_form_id', 'status', 'version', 'status_reason'], 'integer'],
             [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
             ['doc_date', 'default', 'value' => date('d.m.Y')],
@@ -133,12 +135,61 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'updated_by' => Yii::t('art', 'Updated By'),
             'status' => Yii::t('art', 'Status'),
             'version' => Yii::t('art', 'Version'),
+            'status_reason' => Yii::t('art/studyplan', 'Status Reason'),
         ];
     }
 
     public function optimisticLock()
     {
         return 'version';
+    }
+
+    /**
+     * getStatusList
+     * @return array
+     */
+    public static function getStatusList()
+    {
+        return array(
+            self::STATUS_ACTIVE => 'План открыт',
+            self::STATUS_INACTIVE => 'План закрыт',
+        );
+    }
+
+    /**
+     * getStatusList
+     * @return array
+     */
+    public static function getStatusReasonList()
+    {
+        return array(
+            0 => 'Не задано',
+            1 => 'Переведен в следующий класс',
+            2 => 'Повторение учебной программы',
+            3 => 'Окончание учебной программы',
+        );
+    }
+
+    /**
+     * getStatusValue
+     * @param string $val
+     * @return string
+     */
+    public static function getStatusValue($val)
+    {
+        $ar = self::getStatusList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    /**
+     * getStatusValue
+     * @param string $val
+     * @return string
+     */
+    public static function getStatusReasonValue($val)
+    {
+        $ar = self::getStatusReasonList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     /**
@@ -151,9 +202,19 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $this->hasOne(EducationProgramm::class, ['id' => 'programm_id']);
     }
 
+    public function getProgrammName()
+    {
+        return $this->programm->short_name;
+    }
+
     public function getSubjectForm()
     {
         return $this->hasOne(SubjectForm::class, ['id' => 'subject_form_id']);
+    }
+
+    public function getSubjectFormName()
+    {
+        return $this->subjectForm->name;
     }
 
     /**
@@ -196,6 +257,11 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function getStudent()
     {
         return $this->hasOne(Student::class, ['id' => 'student_id']);
+    }
+
+    public function getStudentFio()
+    {
+        return $this->student->user->getFullName();
     }
 
     public function getParent()
@@ -246,7 +312,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function makeDocx($template)
     {
         $model = $this;
-        if(!isset($model->parent)) {
+        if (!isset($model->parent)) {
             throw new NotFoundHttpException("The Parent was not found.");
         }
         $modelsDependence = $model->studyplanSubject;
@@ -349,27 +415,27 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $data = [];
 
         foreach ($models as $item => $modelSchedule) {
-                $data[] = [
-                    'week_day' => $modelSchedule->week_day,
-                    'time_in' => $modelSchedule->time_in,
-                    'time_out' => $modelSchedule->time_out,
-                    'title' => $modelSchedule->sect_name,
-                    'data' => [
-                        'studyplan_id' => $this->id,
-                        'schedule_id' => $modelSchedule->subject_schedule_id,
-                        'teachers_load_id' => $modelSchedule->teachers_load_id,
-                        'direction_id' => $modelSchedule->direction_id,
-                        'teachers_id' => $modelSchedule->teachers_id,
-                        'description' => $modelSchedule->description,
-                        'week_num' => $modelSchedule->week_num,
-                        'auditory_id' => $modelSchedule->auditory_id,
-                        'style' => [
-                            'background' => '#0000ff',
-                            'color' => '#00ff00',
-                            'border' => '#ff0000',
-                        ]
+            $data[] = [
+                'week_day' => $modelSchedule->week_day,
+                'time_in' => $modelSchedule->time_in,
+                'time_out' => $modelSchedule->time_out,
+                'title' => $modelSchedule->sect_name,
+                'data' => [
+                    'studyplan_id' => $this->id,
+                    'schedule_id' => $modelSchedule->subject_schedule_id,
+                    'teachers_load_id' => $modelSchedule->teachers_load_id,
+                    'direction_id' => $modelSchedule->direction_id,
+                    'teachers_id' => $modelSchedule->teachers_id,
+                    'description' => $modelSchedule->description,
+                    'week_num' => $modelSchedule->week_num,
+                    'auditory_id' => $modelSchedule->auditory_id,
+                    'style' => [
+                        'background' => '#0000ff',
+                        'color' => '#00ff00',
+                        'border' => '#ff0000',
                     ]
-                ];
+                ]
+            ];
 
         }
         return $data;
@@ -410,4 +476,117 @@ class Studyplan extends \artsoft\db\ActiveRecord
 //        return $data;
 //
 //    }
+
+    /**
+     * Формируем инд. план на след год
+     * @param int $next
+     * @return bool
+     */
+    public function makeStadylan($next = 1)
+    {
+        ini_set('memory_limit', '128M');
+
+        $plan_year = $this->plan_year + 1;
+        $course = $this->course + $next;
+
+        $exists = Studyplan::find()->where(['=', 'programm_id', $this->programm_id])
+            ->andWhere(['=', 'plan_year', $plan_year])
+            ->andWhere(['=', 'course', $course])
+            ->andWhere(['=', 'student_id', $this->student_id])->exists();
+
+        $modelProgrammLevel = EducationProgrammLevel::find()
+            ->where(['programm_id' => $this->programm_id])
+            ->andWhere(['course' => $course])
+            ->one();
+        if (!$exists && $modelProgrammLevel) {
+            $transaction = \Yii::$app->db->beginTransaction();
+            $model = new Studyplan();
+            $model->setAttributes(
+                [
+                    'programm_id' => $this->programm_id,
+                    'subject_form_id' => $this->subject_form_id,
+                    'course' => $course,
+                    'student_id' => $this->student_id,
+                    'plan_year' => $plan_year,
+                ]
+            );
+            try {
+                $model->copyAttributes($modelProgrammLevel);
+
+                if ($flag = $model->save(false)) {
+
+                    if (isset($modelProgrammLevel->educationProgrammLevelSubject)) {
+                        $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;
+                        foreach ($modelsSubTime as $modelSubTime) {
+                            $modelSub = new StudyplanSubject();
+
+                            $modelSub->copyAttributes($model, $modelSubTime);
+
+                            if (!($flag = $modelSub->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if ($flag) {
+                    $transaction->commit();
+                    return true;
+                }
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                echo '<pre>' . print_r($e, true) . '</pre>';
+                return false;
+            }
+        }
+
+    }
+
+    /**
+     * @param int $next
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function deleteStadylan($next = 1)
+    {
+        $plan_year = $this->plan_year + 1;
+        $course = $this->course + $next;
+
+        $model = Studyplan::find()->where(['=', 'programm_id', $this->programm_id])
+            ->andWhere(['=', 'plan_year', $plan_year])
+            ->andWhere(['=', 'course', $course])
+            ->andWhere(['=', 'student_id', $this->student_id])->one();
+
+        if ($model) {
+            $model->delete(false);
+        }
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     * @throws Exception
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function beforeSave($insert)
+    {
+        if ($this->status == self::STATUS_ACTIVE) {
+            if($this->status_reason == 1) {
+                $this->deleteStadylan();
+            } elseif ($this->status_reason == 2) {
+                $this->deleteStadylan(0);
+            }
+            $this->status_reason = 0;
+        }
+        else {
+            if($this->status_reason == 1) {
+                $this->makeStadylan();
+            } elseif ($this->status_reason == 2) {
+                $this->makeStadylan(0);
+            }
+        }
+        return parent::beforeSave($insert);
+    }
 }

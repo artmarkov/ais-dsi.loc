@@ -13,6 +13,7 @@ use common\models\studyplan\Studyplan;
 class StudyplanSearch extends Studyplan
 {
     public $programmName;
+    public $studentFio;
 
     /**
      * @inheritdoc
@@ -20,8 +21,8 @@ class StudyplanSearch extends Studyplan
     public function rules()
     {
         return [
-            [['id', 'student_id', 'course', 'plan_year', 'status', 'programm_id'], 'integer'],
-            [['description', 'programmName'], 'safe'],
+            [['id', 'student_id', 'course', 'plan_year', 'status', 'programm_id', 'subject_form_id'], 'integer'],
+            [['description', 'programmName', 'studentFio'], 'safe'],
         ];
     }
 
@@ -44,7 +45,7 @@ class StudyplanSearch extends Studyplan
     public function search($params)
     {
         $query = Studyplan::find();
-        $query->joinWith(['programm','student']);
+        $query->joinWith(['programm','student'])->innerJoin('user_common', 'user_common.id = students.user_common_id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -62,12 +63,15 @@ class StudyplanSearch extends Studyplan
                 'plan_year',
                 'course',
                 'student_id',
-
+                'subject_form_id',
                 'programmName' => [
                     'asc' => ['education_programm.name' => SORT_ASC],
                     'desc' => ['education_programm.name' => SORT_DESC],
                 ],
-
+                'studentFio' => [
+                    'asc' => ['user_common.last_name' => SORT_ASC, 'user_common.first_name' => SORT_ASC],
+                    'desc' => ['user_common.last_name' => SORT_DESC, 'user_common.first_name' => SORT_DESC],
+                ],
             ]
         ]);
         $this->load($params);
@@ -90,12 +94,12 @@ class StudyplanSearch extends Studyplan
             'updated_by' => $this->updated_by,
             'studyplan.status' => $this->status,
             'version' => $this->version,
+            'subject_form_id' => $this->subject_form_id,
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);
         if ($this->programmName) {
             $query->andFilterWhere(['like', 'education_programm.name', $this->programmName]);
-
         }
 
         return $dataProvider;

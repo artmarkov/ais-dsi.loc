@@ -185,4 +185,16 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             }
         }
     }
+
+    /**
+     * @return array
+     */
+    public static function getProgrammList()
+    {
+        return ArrayHelper::map(self::find()
+            ->where(['status' => self::STATUS_ACTIVE])
+            ->select('id, short_name as name')
+            ->orderBy('short_name')
+            ->asArray()->all(), 'id', 'name');
+    }
 }
