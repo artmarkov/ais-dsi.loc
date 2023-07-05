@@ -11,6 +11,7 @@ use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
 use common\models\history\EfficiencyHistory;
 use common\models\history\SchoolplanProtocolHistory;
+use common\models\schoolplan\Schoolplan;
 use common\models\schoolplan\SchoolplanProtocol;
 use common\models\schoolplan\SchoolplanProtocolItems;
 use common\models\schoolplan\SchoolplanView;
@@ -115,6 +116,8 @@ class DefaultController extends MainController
             }
         }
         if (Yii::$app->request->post('submitAction') == 'send_admin_message') {
+            $model->doc_status = Schoolplan::DOC_STATUS_DRAFT;
+            $model->save(false);
             if ($model->sendAdminMessage($_POST['Schoolplan'])) {
            // print_r($_POST['Schoolplan']);
                 Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));

@@ -280,26 +280,30 @@ use common\models\user\UserCommon;
                                         ?>
                                         <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(Schoolplan::getDocStatusList(), ['disabled' => \artsoft\Art::isFrontend() ? true : $readonly]) ?>
 
-                                        <?php if (!$model->isNewRecord && $model->category->bars_flag) : ?>
-
+                                        <?php if (!$model->isNewRecord && $model->category->bars_flag && \artsoft\Art::isBackend()) : ?>
                                             <?= $form->field($model, 'bars_flag')->checkbox(['disabled' => $readonly]) ?>
-
                                         <?php endif; ?>
                                     </div>
                                 </div>
                                 <?php if (!$model->isNewRecord && \artsoft\Art::isBackend()) : ?>
                                     <div class="row">
                                         <div class="col-sm-12">
+                                            <?= $form->field($model, 'admin_flag')->checkbox(['disabled' => $readonly])->label('Отправить на доработку') ?>
+
                                             <div id="send_admin_message">
-                                            <?= $form->field($model, 'admin_flag')->checkbox(['disabled' => $readonly])->label('Отправить сообщение автору') ?>
+                                                <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора мароприятия и нажмите "Отправить на доработку"') ?>
 
-                                                <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора мароприятия и нажмите "Отправить сообщение"') ?>
-
-                                                <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить сообщение', ['class' => 'btn btn-sm btn-default pull-right', 'name' => 'submitAction', 'value' => 'send_admin_message']); ?>
+                                                <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-default pull-right', 'name' => 'submitAction', 'value' => 'send_admin_message']); ?>
                                             </div>
                                         </div>
                                     </div>
                                 <?php endif; ?>
+                                <div class="form-group btn-group">
+                                    <?php if (!$model->isNewRecord && \artsoft\Art::isFrontend()): ?>
+                                        <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => $model->isAuthor() ? $model->doc_status != 0 : $readonly]); ?>
+                                        <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => $model->isAuthor() ? $model->doc_status != 1 : $readonly]); ?>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -307,7 +311,7 @@ use common\models\user\UserCommon;
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : ($model->isAuthor() ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton()); ?>
+                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : ($model->isAuthor() && $model->doc_status == Schoolplan::DOC_STATUS_DRAFT ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton()); ?>
                 </div>
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>

@@ -77,18 +77,18 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function (Schoolplan $model) {
                                     return sprintf('#%06d', $model->id);
                                 },
-                                'contentOptions' => function (Schoolplan $model) {
-                                    switch ($model->doc_status) {
-                                        case Schoolplan::DOC_STATUS_DRAFT:
-                                            return ['class' => 'default'];
-                                        case Schoolplan::DOC_STATUS_AGREED:
-                                            return ['class' => 'success'];
-                                        case Schoolplan::DOC_STATUS_WAIT:
-                                            return ['class' => 'warning'];
-                                        case Schoolplan::DOC_STATUS_CANCEL:
-                                            return ['class' => 'danger'];
-                                    }
-                                },
+//                                'contentOptions' => function (Schoolplan $model) {
+//                                    switch ($model->doc_status) {
+//                                        case Schoolplan::DOC_STATUS_DRAFT:
+//                                            return ['class' => 'default'];
+//                                        case Schoolplan::DOC_STATUS_AGREED:
+//                                            return ['class' => 'success'];
+//                                        case Schoolplan::DOC_STATUS_WAIT:
+//                                            return ['class' => 'warning'];
+//                                        case Schoolplan::DOC_STATUS_CANCEL:
+//                                            return ['class' => 'danger'];
+//                                    }
+//                                },
                             ],
                             [
                                 'attribute' => 'title',
@@ -142,6 +142,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                             ],
                             [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'doc_status',
+                                'optionsArray' => [
+                                    [Schoolplan::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
+                                    [Schoolplan::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
+                                    [Schoolplan::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
+                                    [Schoolplan::DOC_STATUS_CANCEL, Yii::t('art', 'Canceled'), 'danger'],
+                                ],
+                                'options' => ['style' => 'width:150px']
+                            ],
+                            [
                                 'class' => 'kartik\grid\ActionColumn',
                                 'urlCreator' => function ($action, $model, $key, $index) {
                                     return [$action, 'id' => $model->id];
@@ -151,10 +162,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
                                 'visibleButtons' => [
                                     'update' => function ($model) {
-                                        return $model->isAuthor();
+                                        return ($model->isAuthor() && $model->doc_status == Schoolplan::DOC_STATUS_DRAFT) || \artsoft\Art::isBackend();
                                     },
                                     'delete' => function ($model) {
-                                        return $model->isAuthor();
+                                        return ($model->isAuthor() && $model->doc_status == Schoolplan::DOC_STATUS_DRAFT) || \artsoft\Art::isBackend();
                                     },
                                     'view' => function ($model) {
                                         return true;

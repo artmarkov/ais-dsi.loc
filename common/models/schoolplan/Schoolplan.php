@@ -523,8 +523,8 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 
             $textBody .= 'Прошу Вас внести уточнения в мероприятие: ' . strip_tags($post['title']) . ' от ' . strip_tags($post['datetime_in']) . PHP_EOL;
             $htmlBody .= '<p>Прошу Вас внести уточнения в мероприятие:' . strip_tags($post['title']) . ' от ' . strip_tags($post['datetime_in']) . '</p>';
-            $textBody .= $post['admin_message'];
-            $htmlBody .= $post['admin_message'];
+            $textBody .= $post['admin_message'] . PHP_EOL;
+            $htmlBody .= '<p>' . $post['admin_message'] . '</p>';
             $textBody .= '--------------------------' . PHP_EOL;
             $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
             $htmlBody .= '<hr>';
@@ -540,6 +540,9 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         }
     }
 
+    /**
+     * @return |null
+     */
     public static function getAuthorId()
     {
         $id = \Yii::$app->user->id;
@@ -552,6 +555,6 @@ class Schoolplan extends \artsoft\db\ActiveRecord
      */
     public function isAuthor()
     {
-        return $this->author_id == self::getAuthorId() && \artsoft\Art::isFrontend();
+        return  $this->author_id == self::getAuthorId();
     }
 }

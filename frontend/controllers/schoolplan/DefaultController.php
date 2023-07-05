@@ -120,6 +120,9 @@ class DefaultController extends MainController
         if (!$model->isAuthor() && $readonly == false) {
             throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
         }
+        if ($model->doc_status != Schoolplan::DOC_STATUS_DRAFT) {
+            $readonly = true;
+        }
         $model->initActivitiesOver();
         if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
@@ -130,10 +133,16 @@ class DefaultController extends MainController
                 }
             }
         }
-        if (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-            if ($model->sendAdminMessage($_POST['Schoolplan'])) {
-           // print_r($_POST['Schoolplan']);
-                Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+        if (Yii::$app->request->post('submitAction') == 'send_approve') {
+            $model->doc_status = Schoolplan::DOC_STATUS_WAIT;
+            if ($model->save(false)) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
+                $this->getSubmitAction($model);
+            }
+        } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
+            $model->doc_status = Schoolplan::DOC_STATUS_DRAFT;
+            if ($model->save(false)) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
                 $this->getSubmitAction($model);
             }
         }
