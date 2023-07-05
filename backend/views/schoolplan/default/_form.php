@@ -267,7 +267,7 @@ use common\models\user\UserCommon;
                                             'data' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees']),
                                             'showToggleAll' => false,
                                             'options' => [
-                                                'disabled' => $readonly,
+                                                'disabled' => \artsoft\Art::isFrontend() ? true : $readonly,
                                                 'placeholder' => Yii::t('art', 'Select...'),
                                                 'multiple' => false,
                                             ],
@@ -278,7 +278,7 @@ use common\models\user\UserCommon;
 
                                         ]);
                                         ?>
-                                        <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(Schoolplan::getDocStatusList(), ['disabled' => $readonly]) ?>
+                                        <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(Schoolplan::getDocStatusList(), ['disabled' => \artsoft\Art::isFrontend() ? true : $readonly]) ?>
 
                                         <?php if (!$model->isNewRecord && $model->category->bars_flag) : ?>
 
@@ -287,12 +287,12 @@ use common\models\user\UserCommon;
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <?php if (!$model->isNewRecord) : ?>
+                                <?php if (!$model->isNewRecord && \artsoft\Art::isBackend()) : ?>
                                     <div class="row">
                                         <div class="col-sm-12">
+                                            <div id="send_admin_message">
                                             <?= $form->field($model, 'admin_flag')->checkbox(['disabled' => $readonly])->label('Отправить сообщение автору') ?>
 
-                                            <div id="send_admin_message">
                                                 <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора мароприятия и нажмите "Отправить сообщение"') ?>
 
                                                 <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить сообщение', ['class' => 'btn btn-sm btn-default pull-right', 'name' => 'submitAction', 'value' => 'send_admin_message']); ?>
@@ -307,7 +307,7 @@ use common\models\user\UserCommon;
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : ($model->isAuthor() ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton()); ?>
                 </div>
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>

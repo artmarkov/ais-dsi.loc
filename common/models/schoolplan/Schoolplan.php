@@ -5,6 +5,7 @@ namespace common\models\schoolplan;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\fileinput\behaviors\FileManagerBehavior;
+use artsoft\models\User;
 use common\models\activities\ActivitiesOver;
 use common\models\auditory\Auditory;
 use common\models\efficiency\TeachersEfficiency;
@@ -522,7 +523,8 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 
             $textBody .= 'Прошу Вас внести уточнения в мероприятие: ' . strip_tags($post['title']) . ' от ' . strip_tags($post['datetime_in']) . PHP_EOL;
             $htmlBody .= '<p>Прошу Вас внести уточнения в мероприятие:' . strip_tags($post['title']) . ' от ' . strip_tags($post['datetime_in']) . '</p>';
-
+            $textBody .= $post['admin_message'];
+            $htmlBody .= $post['admin_message'];
             $textBody .= '--------------------------' . PHP_EOL;
             $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
             $htmlBody .= '<hr>';
@@ -538,4 +540,18 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         }
     }
 
+    public static function getAuthorId()
+    {
+        $id = \Yii::$app->user->id;
+        $user = User::findOne($id);
+        return $user->userCommon ? $user->userCommon->id : null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAuthor()
+    {
+        return $this->author_id == self::getAuthorId() && \artsoft\Art::isFrontend();
+    }
 }

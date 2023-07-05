@@ -1,8 +1,9 @@
 <?php
 
-namespace backend\controllers\schoolplan;
+namespace frontend\controllers\schoolplan;
 
 use artsoft\helpers\ArtHelper;
+use artsoft\helpers\RefBook;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use backend\models\Model;
@@ -11,11 +12,13 @@ use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
 use common\models\history\EfficiencyHistory;
 use common\models\history\SchoolplanProtocolHistory;
+use common\models\schoolplan\Schoolplan;
 use common\models\schoolplan\SchoolplanProtocol;
 use common\models\schoolplan\SchoolplanProtocolItems;
 use common\models\schoolplan\SchoolplanView;
 use common\models\schoolplan\search\SchoolplanProtocolSearch;
 use common\models\schoolplan\search\SchoolplanViewSearch;
+use common\models\studyplan\Studyplan;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadView;
@@ -24,6 +27,7 @@ use yii\base\DynamicModel;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
+use yii\web\ForbiddenHttpException;
 
 /**
  * DefaultController implements the CRUD actions for common\models\schoolplan\Schoolplan model.
@@ -34,7 +38,13 @@ class DefaultController extends MainController
     public $modelSearchClass = 'common\models\schoolplan\search\SchoolplanViewSearch';
     public $modelHistoryClass = 'common\models\history\SchoolplanHistory';
 
-    public $freeAccessActions = ['select'];
+    public $author_id;
+
+    public function init()
+    {
+        $this->viewPath = '@backend/views/schoolplan/default';
+        parent::init();
+    }
 
     public function actionIndex()
     {
@@ -76,7 +86,9 @@ class DefaultController extends MainController
 
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
-
+        if (\artsoft\Art::isFrontend()) {
+           $model->author_id = Schoolplan::getAuthorId();
+        }
         if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
             if ($valid) {
@@ -97,6 +109,7 @@ class DefaultController extends MainController
      * @param int $id
      * @param bool $readonly
      * @return mixed|string
+     * @throws ForbiddenHttpException
      * @throws \yii\web\NotFoundHttpException
      */
     public function actionUpdate($id, $readonly = false)
@@ -104,6 +117,9 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
         /* @var $model \artsoft\db\ActiveRecord */
         $model = $this->findModel($id);
+        if (!$model->isAuthor() && $readonly == false) {
+            throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
+        }
         $model->initActivitiesOver();
         if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
@@ -340,18 +356,7 @@ class DefaultController extends MainController
             ['label' => 'Протоколы мероприятия', 'url' => ['/schoolplan/default/protocol-event', 'id' => $id], 'visible' => !($model->category->commission_sell == 1 && $model->category->commission_sell == 2)],
 //            ['label' => 'Протоколы аттестационной комиссии', 'url' => ['/schoolplan/default/protocol-attestations', 'id' => $id], 'visible' => $model->category->commission_sell == 1],
 //            ['label' => 'Протоколы приемной комиссии', 'url' => ['/schoolplan/default/protocol-reception', 'id' => $id], 'visible' => $model->category->commission_sell == 2],
-            ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id], 'visible' => $model->category->efficiency_flag],
+//            ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id], 'visible' => $model->category->efficiency_flag],
         ];
-    }
-
-    /**
-     * @return mixed
-     */
-    public function actionSelect()
-    {
-        $id = \Yii::$app->request->post('id');
-        $model = GuidePlanTree::find()->where(['id' => $id])->asArray()->one();
-
-        return $model['category_sell'];
     }
 }

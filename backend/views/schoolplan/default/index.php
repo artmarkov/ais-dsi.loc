@@ -24,6 +24,13 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
             <?= $this->render('_search', compact('model_date')) ?>
         <div class="panel-body">
+            <?php if (\artsoft\Art::isFrontend()): ?>
+                <?php echo \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info-circle"></i> Этим цветом помечены авторские записи',
+                    'options' => ['class' => 'alert-warning'],
+                ]);
+                ?>
+            <?php endif; ?>
             <div class="panel panel-default">
                 <div class="panel-body">
                     <div class="row">
@@ -53,18 +60,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'schoolplan-plan-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                        'bulkActionOptions' => [
-                            'gridId' => 'schoolplan-plan-grid',
-                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-                        ],
-//                        'rowOptions' => function(Schoolplan $model) {
-//                            if($model->doc_status == Schoolplan::DOC_STATUS_CANCEL) {
-//                                return ['class' => 'danger'];
-//                            }
-//                            return [];
-//                        },
+//                        'bulkActionOptions' => [
+//                            'gridId' => 'schoolplan-plan-grid',
+//                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
+//                        ],
+                        'rowOptions' => function(Schoolplan $model) {
+                            if($model->isAuthor()) {
+                                return ['class' => 'warning'];
+                            }
+                            return [];
+                        },
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+//                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
                                 'value' => function (Schoolplan $model) {
@@ -142,6 +149,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'controller' => '/schoolplan/default',
                                 'template' => '{view} {update} {delete}',
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                'visibleButtons' => [
+                                    'update' => function ($model) {
+                                        return $model->isAuthor();
+                                    },
+                                    'delete' => function ($model) {
+                                        return $model->isAuthor();
+                                    },
+                                    'view' => function ($model) {
+                                        return true;
+                                    }
+                                ],
                             ],
                         ],
                     ]);
