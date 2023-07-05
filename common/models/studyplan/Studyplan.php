@@ -52,6 +52,7 @@ use function morphos\Russian\inflectName;
  *
  * @property EducationProgramm $programm
  * @property Student $student
+ * @property SubjectForm $subjectForm
  */
 class Studyplan extends \artsoft\db\ActiveRecord
 {
@@ -214,7 +215,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
     public function getSubjectFormName()
     {
-        return $this->subjectForm->name;
+        return $this->subjectForm ? $this->subjectForm->name : null;
     }
 
     /**
