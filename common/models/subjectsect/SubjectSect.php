@@ -383,7 +383,7 @@ SQL;
                         ->andWhere(['=', 'group_num', $group])
                         ->andWhere(['=', 'plan_year', $model_date->plan_year])->one();
                 if(!$m) {
-                    new SubjectSectStudyplan();
+                    $m = new SubjectSectStudyplan();
                     $m->subject_sect_id = $this->id;
                     $m->group_num = $group;
                     $m->plan_year = $model_date->plan_year;

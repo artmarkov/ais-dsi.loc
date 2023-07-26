@@ -111,7 +111,10 @@ class EducationProgrammLevel extends \artsoft\db\ActiveRecord
      */
     public function getEducationProgrammLevelSubject()
     {
-        return $this->hasMany(EducationProgrammLevelSubject::class, ['programm_level_id' => 'id'])->innerJoin('guide_subject_category', 'guide_subject_category.id = education_programm_level_subject.subject_cat_id')->orderBy('sort_order');
+        return $this->hasMany(EducationProgrammLevelSubject::class, ['programm_level_id' => 'id'])
+            ->innerJoin('guide_subject_category', 'guide_subject_category.id = education_programm_level_subject.subject_cat_id')
+            ->innerJoin('subject', 'subject.id = education_programm_level_subject.subject_id')
+            ->orderBy('guide_subject_category.sort_order ASC, subject.name');
     }
 
     /**

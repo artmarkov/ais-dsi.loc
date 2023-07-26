@@ -75,7 +75,7 @@ $group = 0;
                                     echo '<td>';
                                     echo RefBook::find('sect_name_2')->getValue($modelSubjectSectStudyplan->id);
                                     $items = $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
-                                    echo ' -' . count($items);
+                                    echo ' - ' . count($items) . ' уч-ся.';
                                     // necessary for update action.
                                     if (!$modelSubjectSectStudyplan->isNewRecord) {
                                         echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]id");
@@ -149,6 +149,8 @@ $group = 0;
                                 <?php foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan): ?>
                                     <?php
                                     $class_name = RefBook::find('sect_name_2')->getValue($modelSubjectSectStudyplan->id);
+                                    $items = $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
+                                    $class_name .= ' - ' . count($items) . ' уч-ся.';
                                     echo '<tr>
                             <td class="text-center" style="vertical-align: middle;">' . $class_name . '</td>';
 
@@ -160,7 +162,6 @@ $group = 0;
                                     echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_sect_id");
                                     echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]group_num");
                                     echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]plan_year");
-                                    echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]course");
                                     echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_type_id");
 
                                     echo SortableInput::widget([

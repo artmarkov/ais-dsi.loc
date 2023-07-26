@@ -1056,7 +1056,7 @@ class DefaultController extends MainController
             } else {
                 Yii::$app->session->setFlash('error','Ошибка пакетной обработки учебных планов');
             }
-            return $this->redirect('studyplan/default/index');
+            return $this->redirect(Yii::$app->request->referrer);
         }
     }
 
@@ -1077,7 +1077,7 @@ class DefaultController extends MainController
             } else {
                 Yii::$app->session->setFlash('error','Ошибка пакетной обработки учебных планов');
             }
-            return $this->redirect('studyplan/default/index');
+            return $this->redirect(Yii::$app->request->referrer);
         }
     }
 
@@ -1098,7 +1098,7 @@ class DefaultController extends MainController
             } else {
                 Yii::$app->session->setFlash('error','Ошибка пакетной обработки учебных планов');
             }
-            return $this->redirect('studyplan/default/index');
+            return $this->redirect(Yii::$app->request->referrer);
         }
     }
     /**
