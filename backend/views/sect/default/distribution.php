@@ -24,21 +24,22 @@ $course_flag = $model->course_flag;
 $group = 0;
 ?>
     <div class="subject-sect-form">
-        <?php
-        $form = ActiveForm::begin([
-            'fieldConfig' => [
-                'inputOptions' => ['readonly' => $readonly]
-            ],
-            'id' => 'subject-sect-form',
-            'validateOnBlur' => false,
-        ]);
 
-        ?>
         <div class="panel">
             <div class="panel-heading">
                 Распределение по группам <?= RefBook::find('subject_name')->getValue($model->subject_id); ?>
                 <?= $this->render('_search', compact('model_date')) ?>
             </div>
+            <?php
+            $form = ActiveForm::begin([
+                'fieldConfig' => [
+                    'inputOptions' => ['readonly' => $readonly]
+                ],
+                'id' => 'subject-sect-form',
+                'validateOnBlur' => false,
+            ]);
+
+            ?>
             <div class="panel-body">
                 <?php if ($course_flag) : ?>
                     <div class="row">

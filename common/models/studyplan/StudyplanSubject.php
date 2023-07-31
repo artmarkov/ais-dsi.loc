@@ -77,6 +77,7 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
             [['subject_cat_id', 'subject_id', /*'subject_type_id',*/ 'subject_vid_id', 'week_time', 'year_time'], 'required'],
             [['studyplan_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'status', 'version'], 'integer'],
             [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'number'],
+            [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'default', 'value' => 0],
             [['med_cert', 'fin_cert'], 'boolean'],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
@@ -325,6 +326,29 @@ SQL;
         $this->year_time_consult = $modelSubTime->year_time_consult;
         $this->med_cert = $modelSubTime->med_cert;
         $this->fin_cert = $modelSubTime->fin_cert;
+    }
+
+    /**
+     * Удаляем ученика из списка группы при удалении инд плана
+     * @return bool
+     * @throws \yii\db\Exception
+     */
+    public function beforeDelete()
+    {
+        $funcSql =  <<< SQL
+            select subject_sect_studyplan_id as id
+            from studyplan_subject_view
+            where studyplan_subject_id = {$this->id}
+            AND subject_sect_studyplan_id IS NOT NULL
+SQL;
+        $models = Yii::$app->db->createCommand($funcSql)->queryColumn();
+        if($models) {
+            foreach ($models as $id) {
+                $model = SubjectSectStudyplan::findOne($id);
+                $model->removeStudyplanSubject();
+            }
+        }
+        return parent::beforeDelete();
     }
 
 }

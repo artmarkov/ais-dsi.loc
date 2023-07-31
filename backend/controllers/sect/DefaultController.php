@@ -475,7 +475,7 @@ class DefaultController extends MainController
                 $timestamp_in = $timestamp[0];
                 $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
                 $model_date->subject_sect_studyplan_id = $session->get('_progress_subject_sect_studyplan_id') ?? SubjectSect::getSectFirstValue($id, $plan_year);
-//                print_r($plan_year); die();
+//                print_r($model_date); die();
             }
             $session->set('_progress_date_in', $model_date->date_in);
             $session->set('_progress_subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id);

@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'options' => ['style' => 'width:50px'],
                     ],
                     [
-                        'attribute' => 'student_id',
+                        'attribute' => 'studentFio',
                         'filter' => RefBook::find('students_fullname')->getList(),
                         'filterType' => GridView::FILTER_SELECT2,
                         'filterWidgetOptions' => [
@@ -83,8 +83,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                     ],
                     [
-                        'attribute' => 'programm_id',
-                        'filter' =>\common\models\education\EducationProgramm::getProgrammList(),
+                        'attribute' => 'programmName',
+                        'filter' => \common\models\education\EducationProgramm::getProgrammList(),
                         'filterType' => GridView::FILTER_SELECT2,
                         'filterWidgetOptions' => [
                             'pluginOptions' => ['allowClear' => true],

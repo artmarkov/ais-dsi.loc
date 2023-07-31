@@ -115,6 +115,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/studyplan', 'ID'),
             'student_id' => Yii::t('art/student', 'Student'),
+            'studentFio' => Yii::t('art/student', 'Student'),
             'programm_id' => Yii::t('art/studyplan', 'Education Programm'),
             'programmName' => Yii::t('art/studyplan', 'Education Programm'),
             'subject_form_id' => Yii::t('art/guide', 'Subject Form'),

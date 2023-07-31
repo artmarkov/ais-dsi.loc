@@ -14,7 +14,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
     'widgetContainer' => 'dynamicform_inner',
     'widgetBody' => '.container-time',
     'widgetItem' => '.room-item',
-    'limit' => 8,
+    'limit' => 20,
     'min' => 1,
     'insertButton' => '.add-time',
     'deleteButton' => '.remove-time',

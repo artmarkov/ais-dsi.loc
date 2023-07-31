@@ -59,7 +59,9 @@ class ConsultScheduleViewSearch extends ConsultScheduleView
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],
             'sort' => [
-                'defaultOrder' => false,
+                'defaultOrder' => [
+                    'sect_name' => SORT_ASC,
+                ],
             ],
         ]);
 
@@ -89,6 +91,7 @@ class ConsultScheduleViewSearch extends ConsultScheduleView
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);
+        $query->andFilterWhere(['like', 'sect_name', $this->sect_name]);
 
         return $dataProvider;
     }

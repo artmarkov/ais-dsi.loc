@@ -151,7 +151,7 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->createView('teachers_load_view', '
-  SELECT studyplan_subject.id AS studyplan_subject_id,
+   SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
     0 AS subject_sect_id,
@@ -189,16 +189,12 @@ UNION ALL
         END AS studyplan_subject_list,
     subject_sect.id AS subject_sect_id,
     subject_sect_studyplan.plan_year,
-    ( SELECT max(education_programm_level_subject.week_time) AS max
-           FROM education_programm
-             JOIN education_programm_level ON education_programm_level.programm_id = education_programm.id
-             JOIN education_programm_level_subject ON education_programm_level_subject.programm_level_id = education_programm_level.id
-          WHERE (education_programm.id = ANY (string_to_array(subject_sect.programm_list, \',\'::text)::integer[])) AND education_programm_level_subject.subject_id = subject_sect.subject_id AND education_programm_level_subject.subject_cat_id = subject_sect.subject_cat_id) AS week_time,
-    ( SELECT max(education_programm_level_subject.year_time_consult) AS max
-           FROM education_programm
-             JOIN education_programm_level ON education_programm_level.programm_id = education_programm.id
-             JOIN education_programm_level_subject ON education_programm_level_subject.programm_level_id = education_programm_level.id
-          WHERE (education_programm.id = ANY (string_to_array(subject_sect.programm_list, \',\'::text)::integer[])) AND education_programm_level_subject.subject_id = subject_sect.subject_id AND education_programm_level_subject.subject_cat_id = subject_sect.subject_cat_id) AS year_time_consult,
+    ( SELECT max(studyplan_subject.week_time) AS max
+           FROM studyplan_subject
+          WHERE (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))) AS week_time,
+    ( SELECT max(studyplan_subject.year_time_consult) AS max
+           FROM studyplan_subject
+          WHERE (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))) AS year_time_consult,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
     teachers_load.teachers_id,

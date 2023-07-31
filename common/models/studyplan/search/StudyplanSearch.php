@@ -99,7 +99,10 @@ class StudyplanSearch extends Studyplan
 
         $query->andFilterWhere(['like', 'description', $this->description]);
         if ($this->programmName) {
-            $query->andFilterWhere(['like', 'education_programm.name', $this->programmName]);
+            $query->andFilterWhere(['=', 'programm_id', $this->programmName]);
+        }
+        if ($this->studentFio) {
+            $query->andFilterWhere(['=', 'student_id', $this->studentFio]);
         }
 
         return $dataProvider;

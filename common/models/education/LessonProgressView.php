@@ -63,6 +63,11 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $attributes = ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
         $attributes += ['student_id' => Yii::t('art/student', 'Student')];
 
+        if($model_date->subject_sect_studyplan_id == '') {
+            $lessonDates = [];
+            $modelsProgress = [];
+            $modelsMarks = [];
+        } else {
         $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
             ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
             ->andWhere(['=', 'subject_sect_id', $subject_sect_id])
@@ -78,6 +83,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->andWhere(['subject_sect_id' => $subject_sect_id])
             ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
             ->all(), null, 'studyplan_subject_id');
+        }
 
         // echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
         foreach ($lessonDates as $id => $lessonDate) {

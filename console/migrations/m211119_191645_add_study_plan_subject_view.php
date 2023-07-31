@@ -24,7 +24,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ])->execute();
 
         $this->db->createCommand()->createView('studyplan_subject_view', '
-             SELECT DISTINCT tmp_table.studyplan_subject_id,
+              SELECT DISTINCT tmp_table.studyplan_subject_id,
     tmp_table.subject_sect_studyplan_id,
     tmp_table.subject_sect_id,
     tmp_table.studyplan_id,
@@ -52,6 +52,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
     tmp_table.education_cat_short_name,
     tmp_table.status,
     tmp_table.student_fio,
+    tmp_table.student_fullname,
     tmp_table.memo_1,
     tmp_table.memo_2,
     tmp_table.memo_3,
@@ -84,6 +85,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             guide_education_cat.short_name AS education_cat_short_name,
             studyplan.status,
             concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
+            concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name, \' \') AS student_fullname,
             concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_1,
             concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \')\') AS memo_2,
             concat(subject.name, \'(\', guide_subject_category.slug, \'&nbsp;\', guide_subject_type.slug, \')&nbsp;-&nbsp;\', guide_subject_vid.slug, \'&nbsp;\', studyplan_subject.week_time * 4::double precision, \'&nbsp;час/мес\') AS memo_3,
@@ -127,6 +129,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             guide_education_cat.short_name AS education_cat_short_name,
             user_common.status,
             concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
+            concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name, \' \') AS student_fullname,
             concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_1,
             concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \')\') AS memo_2,
             concat(subject.name, \'(\', guide_subject_category.slug, \'&nbsp;\', guide_subject_type.slug, \')&nbsp;-&nbsp;\', guide_subject_vid.slug, \'&nbsp;\', studyplan_subject.week_time * 4::double precision, \'&nbsp;час/мес\') AS memo_3,

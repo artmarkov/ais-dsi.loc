@@ -142,6 +142,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
                 ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
                 ->orderBy('student_fio')
                 ->all();
+           // print_r($this->studyplan_subject_list); die();
             foreach ($modelsItems as $item => $model) {
                 $data[$model['studyplan_subject_id']] = [
                     'content' => $this->getSubjectSectStudyplanContent($model),
@@ -163,8 +164,8 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
 //                <div class="pull-left">' . RefBook::find('students_fio')->getValue($student_id) . '</div>' .
 //               '<div class="fa-pull-right">' . RefBook::find('subject_memo_1')->getValue($studyplan_subject_id) . '</div></div>';
      return '<div style="overflow: hidden;">
-                <div class="pull-left">' . $model['student_fio'] . '</div>' .
-               '<div class="fa-pull-right">' . $model['memo_1'] . '</div></div>';
+                <div class="pull-left">' . $model['student_fullname'] . '</div>' .
+               '<div class="fa-pull-right">' . $model['memo_2'] . ' ' . $model['education_programm_short_name'] . ' ' . $model['course'] . ' кл.</div></div>';
     }
 
     /**

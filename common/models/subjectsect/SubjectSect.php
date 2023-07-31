@@ -102,7 +102,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
 
     public function checkCourseAndTerm($attribute, $params)
     {
-        if($this->course_list[0] != '') {
+        if($this->course_list[0] != '' && $this->course_flag) {
             if ($this->$attribute < max($this->course_list)) {
                 $this->addError($attribute, 'Некорректно заданы атрибуты \'Ограничение по классам\' и \'Срок обучения\'.');
             }
@@ -241,6 +241,8 @@ class SubjectSect extends \artsoft\db\ActiveRecord
         // $this->subject_type_id = $this->subject_type_id == null ? 0 : $this->subject_type_id;
         $course = $course == null ? 0 : $course;
         $programm_list = implode(',', $this->programm_list);
+        $course_list = implode(',', $this->course_list);
+        $qtyFlag = $course_list == '' ? 0 : 1;
         $funcSql = <<< SQL
             select *
             from studyplan_subject_view
@@ -251,6 +253,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
                 and subject_id = {$this->subject_id}
                 and subject_vid_id = {$this->subject_vid_id}
                 and case when {$course} != 0 then course = {$course} else true end
+                and case when {$qtyFlag} != 0 then course = any (string_to_array('{$course_list}', ',')::int[]) else true end
                 and status = 1
                 order by student_fio
 		
