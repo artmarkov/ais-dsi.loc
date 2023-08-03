@@ -84,7 +84,7 @@ $columns = [
 <div class="subject-characteristic-index">
     <div class="panel">
         <div class="panel-heading">
-            Характерисики по предметам: <?= RefBook::find('students_fio')->getValue($model->student_id);?>
+            Характерисики по предметам: <?= RefBook::find('students_fullname')->getValue($model->student_id);?>
         </div>
         <div class="panel-body">
             <div class="row">

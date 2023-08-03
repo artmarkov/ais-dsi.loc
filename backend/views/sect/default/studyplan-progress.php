@@ -71,7 +71,11 @@ $columns = [
         'attribute' => 'student_id',
         'label' => $models['attributes']['student_id'],
         'value' => function ($models) {
-            return $models['student_fio'];
+            return Html::a($models['student_fio'],
+                ['/students/default/view', 'id' => $models['student_id']],
+                [
+                    'title' => 'Открыть карточку ученика'
+                ]);
         },
         'format' => 'raw',
     ],

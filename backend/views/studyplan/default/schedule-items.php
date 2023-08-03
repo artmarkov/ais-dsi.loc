@@ -132,7 +132,7 @@ $columns = [
 <div class="subject-schedule-index">
     <div class="panel">
         <div class="panel-heading">
-            Элементы расписания: <?= RefBook::find('students_fio')->getValue($model->student_id);?>
+            Элементы расписания: <?= RefBook::find('students_fullname')->getValue($model->student_id);?>
         </div>
         <div class="panel-body">
             <div class="row">

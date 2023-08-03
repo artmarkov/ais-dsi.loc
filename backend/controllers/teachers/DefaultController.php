@@ -264,8 +264,8 @@ class DefaultController extends MainController
             if (!empty($parents)) {
                 $cat_id = $parents[0];
                 $out = TeachersActivity::getDirectionListById($cat_id);
-
-                return json_encode(['output' => $out, 'selected' => '']);
+                $sel = TeachersActivity::getDirectionInitForTeachers($cat_id);
+                return json_encode(['output' => $out, 'selected' => $sel]);
             }
         }
         return json_encode(['output' => '', 'selected' => '']);
@@ -280,8 +280,8 @@ class DefaultController extends MainController
                 $cat_id = $parents[0];
                 $cat_id2 = $parents[1];
                 $out = TeachersActivity::getDirectionVidListById($cat_id, $cat_id2);
-
-                return json_encode(['output' => $out, 'selected' => '']);
+                $sel = TeachersActivity::getDirectionVidInitForTeachers($cat_id, $cat_id2);
+                return json_encode(['output' => $out, 'selected' => $sel]);
             }
         }
         return json_encode(['output' => '', 'selected' => '']);

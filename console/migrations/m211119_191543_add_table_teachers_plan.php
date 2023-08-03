@@ -38,7 +38,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
 
 
         $this->db->createCommand()->createView('teachers_load_studyplan_view', '
-      SELECT studyplan_subject.id AS studyplan_subject_id,
+       SELECT studyplan_subject.id AS studyplan_subject_id,
     studyplan_subject.week_time,
     studyplan_subject.year_time_consult,
     0 AS subject_sect_studyplan_id,
@@ -58,6 +58,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
     studyplan_subject.subject_vid_id,
     studyplan_subject.subject_id,
     \'Индивидуально\'::text AS sect_name,
+	subject.name as subject_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject
    FROM studyplan
      JOIN studyplan_subject ON studyplan_subject.studyplan_id = studyplan.id
@@ -95,6 +96,7 @@ UNION ALL
             WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
             ELSE \'\'::text
         END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
+		subject.name as subject_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
    FROM studyplan
      JOIN studyplan_subject ON studyplan.id = studyplan_subject.studyplan_id
@@ -128,6 +130,7 @@ UNION ALL
     studyplan_subject.subject_vid_id,
     studyplan_subject.subject_id,
     NULL::text AS sect_name,
+	subject.name as subject_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
    FROM studyplan_subject
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
@@ -147,7 +150,7 @@ UNION ALL
              JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject_1.subject_cat_id AND subject_sect.subject_id = studyplan_subject_1.subject_id AND subject_sect.subject_vid_id = studyplan_subject_1.subject_vid_id
              JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject_1.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
              LEFT JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0))
-  ORDER BY 20, 21, 13, 14;
+  ORDER BY sort_order, subject_name;
         ')->execute();
 
         $this->db->createCommand()->createView('teachers_load_view', '

@@ -43,6 +43,7 @@ $columns = [
                 $sectList =  \yii\helpers\ArrayHelper::map((new \yii\db\Query())->select('id, sect_name_1')
                     ->from('subject_sect_view')
                     ->where(['=', 'subject_id', $model->subject_id])
+                    ->andWhere(['=', 'plan_year', $model->plan_year])
                     ->orderBy('sect_name_1')->all(), 'id', 'sect_name_1');
 
                 return Editable::widget([
@@ -78,6 +79,8 @@ $columns = [
         },
         'group' => true,
         'subGroupOf' => 1,
+        'pageSummary' => true,
+        'format' => ['decimal', 2],
     ],
     [
         'attribute' => 'year_time_consult',
@@ -182,7 +185,7 @@ $columns = [
 <div class="teachers-load-index">
     <div class="panel">
         <div class="panel-heading">
-            Нагрузка: <?= RefBook::find('students_fio')->getValue($model->student_id);?>
+            Нагрузка: <?= RefBook::find('students_fullname')->getValue($model->student_id);?>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -209,7 +212,7 @@ $columns = [
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
                // 'filterModel' => $searchModel,
-                'showPageSummary' => false,
+                'showPageSummary' => true,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

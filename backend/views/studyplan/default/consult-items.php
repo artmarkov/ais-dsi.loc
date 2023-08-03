@@ -178,7 +178,7 @@ $columns = [
 <div class="consult-schedule-index">
     <div class="panel">
         <div class="panel-heading">
-            Расписание консультаций: <?= RefBook::find('students_fio')->getValue($model->student_id);?>
+            Расписание консультаций: <?= RefBook::find('students_fullname')->getValue($model->student_id);?>
         </div>
         <div class="panel-body">
             <div class="row">
