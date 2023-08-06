@@ -45,6 +45,7 @@ $columns = [
         'value' => function ($model) {
             return $model->week_time;
         },
+        'pageSummary' => true,
 
     ],
     [
@@ -53,7 +54,7 @@ $columns = [
         'value' => function ($model) {
             return $model->year_time_consult;
         },
-
+        'pageSummary' => true,
     ],
     [
         'attribute' => 'direction_id',
@@ -80,6 +81,34 @@ $columns = [
             return $model->load_time . ' ' . $model->getItemLoadNotice();
         },
         'format' => 'raw',
+        'pageSummary' => true,
+//        'format' => ['decimal', 2],
+    ],
+    [
+        'attribute' => 'load_time_0',
+        'filter' => false,
+        'value' => function ($model) {
+            return $model->load_time_0;
+        },
+        'format' => 'raw',
+        'pageSummary' => true,
+//        'format' => ['decimal', 2],
+        'contentOptions' => function ($model) {
+            return ['class' => 'success'];
+        },
+    ],
+    [
+        'attribute' => 'load_time_1',
+        'filter' => false,
+        'value' => function ($model) {
+            return $model->load_time_1;
+        },
+        'format' => 'raw',
+        'pageSummary' => true,
+//        'format' => ['decimal', 2],
+        'contentOptions' => function ($model) {
+            return ['class' => 'warning'];
+        },
     ],
     [
         'attribute' => 'load_time_consult',
@@ -88,6 +117,10 @@ $columns = [
             return $model->load_time_consult . ' ' . $model->getItemLoadConsultNotice();
         },
         'format' => 'raw',
+        'pageSummary' => true,
+        'contentOptions' => function ($model) {
+            return ['class' => 'info'];
+        },
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -183,13 +216,13 @@ $columns = [
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
 //                'filterModel' => $searchModel,
-                'showPageSummary' => false,
+                'showPageSummary' => true,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [
                         'columns' => [
                             ['content' => 'Учебный предмет/Группа/Ученик', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
-                            ['content' => 'Нагрузка', 'options' => ['colspan' => 6, 'class' => 'text-center info']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 8, 'class' => 'text-center info']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

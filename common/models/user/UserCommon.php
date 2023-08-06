@@ -152,7 +152,7 @@ class UserCommon extends ActiveRecord
         return $this->last_name . ' ' . mb_substr((string)$this->first_name, 0, 1) . '.' . mb_substr((string)$this->middle_name, 0, 1) . '.';
     }
 
-    public function generateUsername()
+    public function generateUsername($userName = null)
     {
         $last_name = $this->slug($this->last_name);
         $first_name = $this->slug($this->first_name);
@@ -162,7 +162,7 @@ class UserCommon extends ActiveRecord
 
         do {
             $username = $last_name . '-' . substr($first_name, 0, ++$i) . substr($middle_name, 0, 1);
-        } while (User::findByUsername($username));
+        } while (User::findByUsername($username) or $username == $userName);
 
         return $username;
     }

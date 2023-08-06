@@ -2,7 +2,7 @@
 
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
-use kartik\sortinput\SortableInput;
+use common\widgets\SortableInput;
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */

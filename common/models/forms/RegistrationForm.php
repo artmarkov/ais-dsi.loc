@@ -249,7 +249,7 @@ class RegistrationForm extends Model
             $userStudent->email = $userCommonStudent->email;
             $userStudent->generateAuthKey();
 
-            $userParent->username = $userCommonParent->generateUsername();
+            $userParent->username = $userCommonParent->generateUsername($userStudent->username);
             $userParent->email = $userCommonParent->email;
             $userParent->generateAuthKey();
 
@@ -285,7 +285,7 @@ class RegistrationForm extends Model
                 return $modelStudent->id;
             }
         } catch (\Exception $e) {
-            print_r($e);
+            echo '<pre>' . print_r($e->getMessage(), true) . '</pre>';
             $transaction->rollBack();
             return false;
         }

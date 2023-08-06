@@ -255,6 +255,7 @@ class TeachersTimesheet
             ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['subject_type_id' => $this->subject_type_id])
+            ->andWhere(['status' => 1])
             ->all();
         $models = ArrayHelper::index($models, null, ['studyplan_subject_id','subject_sect_studyplan_id','direction_id','subject_type_id']);
 
@@ -263,6 +264,7 @@ class TeachersTimesheet
             ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['subject_type_id' => $this->subject_type_id])
             ->andWhere(['and', ['>=', 'datetime_in', $timestamp_up], ['<=', 'datetime_in', $timestamp_end]])
+            ->andWhere(['status' => 1])
             ->all();
         $modelsConsult = ArrayHelper::index($modelsConsult, null, ['studyplan_subject_id','subject_sect_studyplan_id','direction_id','subject_type_id']);
 
@@ -272,6 +274,7 @@ class TeachersTimesheet
             ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['subject_type_id' => $this->subject_type_id])
+            ->andWhere(['status' => 1])
             ->all();
         foreach ($modelsLoad as $i => $items) {
             $data[$i]['subject'] = $items['subject'];

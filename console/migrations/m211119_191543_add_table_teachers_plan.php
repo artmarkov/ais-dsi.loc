@@ -99,7 +99,7 @@ UNION ALL
 		subject.name as subject_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
    FROM studyplan
-     JOIN studyplan_subject ON studyplan.id = studyplan_subject.studyplan_id
+     JOIN studyplan_subject ON studyplan.id = studyplan_subject.studyplan_id AND studyplan.status = 1
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
      JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
      JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
@@ -154,7 +154,7 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->createView('teachers_load_view', '
-   SELECT studyplan_subject.id AS studyplan_subject_id,
+    SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
     0 AS subject_sect_id,
@@ -165,6 +165,14 @@ UNION ALL
     teachers_load.direction_id,
     teachers_load.teachers_id,
     teachers_load.load_time,
+	CASE
+		WHEN studyplan_subject.subject_type_id = 1000 THEN teachers_load.load_time
+		ELSE 0
+    END AS load_time_0,
+	CASE
+		WHEN studyplan_subject.subject_type_id = 1001 THEN teachers_load.load_time
+		ELSE 0
+    END AS load_time_1,
     teachers_load.load_time_consult,
     concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
@@ -194,14 +202,22 @@ UNION ALL
     subject_sect_studyplan.plan_year,
     ( SELECT max(studyplan_subject.week_time) AS max
            FROM studyplan_subject
-          WHERE (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))) AS week_time,
+          WHERE studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])) AS week_time,
     ( SELECT max(studyplan_subject.year_time_consult) AS max
            FROM studyplan_subject
-          WHERE (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))) AS year_time_consult,
+          WHERE studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])) AS year_time_consult,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
     teachers_load.teachers_id,
     teachers_load.load_time,
+	CASE
+		WHEN subject_sect_studyplan.subject_type_id = 1000 THEN teachers_load.load_time
+		ELSE 0
+    END AS load_time_0,
+	CASE
+		WHEN subject_sect_studyplan.subject_type_id = 1001 THEN teachers_load.load_time
+		ELSE 0
+    END AS load_time_1,
     teachers_load.load_time_consult,
     concat(subject_sect.sect_name, \' (\',
         CASE
@@ -220,7 +236,7 @@ UNION ALL
      JOIN guide_subject_category ON guide_subject_category.id = subject_sect.subject_cat_id
      LEFT JOIN guide_subject_type ON guide_subject_type.id = subject_sect_studyplan.subject_type_id
      JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
-  ORDER BY 13, 14, 9, 10;
+  ORDER BY 15, 16, 9, 10;
         ')->execute();
 
         $this->createTableWithHistory('subject_schedule', [

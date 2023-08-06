@@ -162,37 +162,6 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
         return \yii\helpers\ArrayHelper::map(self::getDirectionListById($teachers_id), 'id', 'name');
     }
 
-    /**
-     * По умолчанию для depdrop
-     * @param null $teachers_id
-     * @return mixed|null
-     */
-    public static function getDirectionInitForTeachers($teachers_id = null)
-    {
-        $modelsDir = self::getDirectionListById($teachers_id);
-        if(count($modelsDir) != 1) {
-            return null;
-        }
-        $direction_id = $modelsDir[0]['id'];
-        return $direction_id;
-    }
-
-    /**
-     * По умолчанию для depdrop
-     * @param $teachers_id
-     * @param $direction_id
-     * @return mixed|null
-     */
-    public static function getDirectionVidInitForTeachers($teachers_id, $direction_id)
-    {
-        if (!$teachers_id && !$direction_id) {
-            return null;
-        }
-        $modelsVid = self::getDirectionVidListById($teachers_id, $direction_id);
-        $direction_vid_id = $modelsVid[0]['id'] ?? null;
-        return $direction_vid_id;
-    }
-
     public static function getDirectionVidListById($teachers_id, $direction_id)
     {
         if (!$teachers_id && !$direction_id) {

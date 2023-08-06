@@ -28,7 +28,7 @@ class TeachersLoadViewSearch extends TeachersLoadView
     {
         return [
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'subject_sect_id', 'plan_year', 'teachers_load_id', 'direction_id', 'teachers_id'], 'integer'],
-            [['load_time', 'load_time_consult', 'week_time', 'year_time_consult'], 'number'],
+            [['load_time', 'load_time_0', 'load_time_1','load_time_consult', 'week_time', 'year_time_consult'], 'number'],
             [['studyplan_subject_list', 'sect_name', 'subject'], 'string'],
         ];
     }
@@ -82,6 +82,8 @@ class TeachersLoadViewSearch extends TeachersLoadView
             'direction_id' => $this->direction_id,
             'teachers_id' => $this->teachers_id,
             'load_time' => $this->load_time,
+            'load_time_0' => $this->load_time_0,
+            'load_time_1' => $this->load_time_1,
             'load_time_consult' => $this->load_time_consult,
         ]);
         if($this->studyplan_subject_list) {
