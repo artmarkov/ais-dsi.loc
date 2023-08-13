@@ -26,6 +26,7 @@ class StudentSearch extends Student
     {
         return [
             [['id', 'userStatus'], 'integer'],
+            [['limited_status_list'], 'string'],
             [['fullName', 'userBirthDate', 'userBirthDate_operand'], 'string'],
         ];
     }
@@ -65,6 +66,7 @@ class StudentSearch extends Student
             ],
             'attributes' => [
                 'id',
+                'limited_status_list',
                 'userBirthDate' => [
                     'asc' => ['birth_date' => SORT_ASC],
                     'desc' => ['birth_date' => SORT_DESC],
@@ -97,7 +99,7 @@ class StudentSearch extends Student
         ]);
 
         $query->andFilterWhere([($this->userBirthDate_operand) ? $this->userBirthDate_operand : '=', 'birth_date', ($this->userBirthDate) ? strtotime($this->userBirthDate) : null]);
-        
+        $query->andFilterWhere(['like', 'limited_status_list', $this->limited_status_list]);
 
         if ($this->fullName) {
             $query->andFilterWhere(['like', 'first_name', $this->fullName])

@@ -79,7 +79,29 @@ JS
         <div class="panel-body">
 
             <?= $this->render('/user/_form', ['form' => $form, 'model' => $userCommon, 'readonly' => $readonly]) ?>
-
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Дополнительные сведения
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <?= $form->field($model, "limited_status_list")->widget(\kartik\select2\Select2::class, [
+                                'data' => \common\models\students\Student::getLimitedStatusList(),
+                                'options' => [
+                                    'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                    'multiple' => true,
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ]
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Документ

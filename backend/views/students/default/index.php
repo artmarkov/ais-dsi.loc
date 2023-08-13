@@ -92,6 +92,22 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:150px'],
                             ],
                             [
+                                'attribute' => 'limited_status_list',
+                                'filter' => \common\models\students\Student::getLimitedStatusList(),
+                                'value' => function (Student $model) {
+                                    $v = [];
+                                    foreach ($model->limited_status_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = \common\models\students\Student::getLimitedStatusValue($id);
+                                    }
+                                    return implode(',<br/> ', $v);
+                                },
+                                'options' => ['style' => 'width:150px'],
+                                'format' => 'raw',
+                            ],
+                            [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'userStatus',
                                 'optionsArray' => [

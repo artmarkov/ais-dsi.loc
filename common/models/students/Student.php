@@ -2,6 +2,7 @@
 
 namespace common\models\students;
 
+use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\db\ActiveRecord;
 use common\models\studyplan\Studyplan;
@@ -15,6 +16,7 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property int $id
  * @property int $user_common_id
+ * @property string $limited_status_list
  * @property string $sert_name
  * @property string $sert_series
  * @property string $sert_num
@@ -30,6 +32,12 @@ class Student extends ActiveRecord
     const STUDENT_DOC = [
         'password' => 'Паспорт',
         'birth_cert' => 'Свидетельство о рождении',
+    ];
+
+    const LIMITED_STATUS = [
+        1000 => 'Ребенок-инвалид',
+        2000 => 'Ребенок с ОВЗ',
+        3000 => 'Ребенок под опекой',
     ];
 
     /**
@@ -55,6 +63,10 @@ class Student extends ActiveRecord
             [
                 'class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class,
             ],
+            [
+                'class' => ArrayFieldBehavior::class,
+                'attributes' => ['limited_status_list'],
+            ],
         ];
     }
 
@@ -66,6 +78,7 @@ class Student extends ActiveRecord
         return [
             [['user_common_id'], 'required'],
             [['sert_date'], 'safe'],
+            [['limited_status_list'], 'safe'],
             [['sert_name', 'sert_series', 'sert_num'], 'string', 'max' => 32],
             [['sert_organ'], 'string', 'max' => 127],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
@@ -113,6 +126,7 @@ class Student extends ActiveRecord
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
             'userStatus' => Yii::t('art', 'Status'),
+            'limited_status_list' => Yii::t('art/student', 'Limited status list'),
         ];
     }
 
@@ -187,6 +201,17 @@ class Student extends ActiveRecord
     {
         return StudentDependence::find(['student_id' => $student_id])
             ->innerJoin('userRelation');
+    }
+
+    public static function getLimitedStatusList()
+    {
+        return self::LIMITED_STATUS;
+    }
+
+    public static function getLimitedStatusValue($val)
+    {
+        $ar = self::getLimitedStatusList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     /**

@@ -42,6 +42,14 @@ JS
             <?php if (!$model->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
             <?php endif; ?>
+            <span class="pull-right">
+            <?= Html::a('<i class="fa fa-user-o" aria-hidden="true"></i> Открыть в новом окне',
+                ['/students/default/view', 'id' => $model->student_id],
+                [
+                    'target' => '_blank',
+                    'class' => 'btn btn-info',
+                ]); ?>
+            </span>
         </div>
         <div class="panel-body">
             <div class="row">

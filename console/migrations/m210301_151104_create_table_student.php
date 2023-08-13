@@ -37,6 +37,7 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
             'sert_num' => $this->string(32),
             'sert_organ' => $this->string(512),
             'sert_date' => $this->integer(),
+            'limited_status_list' => $this->string(1024),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
