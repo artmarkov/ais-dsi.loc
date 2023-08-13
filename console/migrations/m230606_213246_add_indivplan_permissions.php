@@ -24,7 +24,7 @@ class m230606_213246_add_indivplan_permissions extends PermissionsMigration
                 'links' => [
                     '/admin/indivplan/default/*',
                     '/admin/teachers/default/teachers-plan/*',
-                    '/teachers/default/teachers-plan/*',
+                    '/teachers/teachers-plan/*',
                 ],
                 'viewIndivplanBackend' => [
                     'title' => 'Просмотр планирования инд.занятий(backend)',
@@ -45,9 +45,9 @@ class m230606_213246_add_indivplan_permissions extends PermissionsMigration
                 'viewIndivplanFrontend' => [
                     'title' => 'Просмотр планирования инд.занятий(frontend)',
                     'links' => [
-                        '/teachers/default/teachers-plan',
-                        '/teachers/default/teachers-plan/grid-sort',
-                        '/teachers/default/teachers-plan/grid-page-size',
+                        '/teachers/teachers-plan/index',
+                        '/teachers/teachers-plan/index/grid-sort',
+                        '/teachers/teachers-plan/index/grid-page-size',
 
                     ],
                     'roles' => [

@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="teachers-plan-index">
     <div class="panel">
         <div class="panel-heading">
-            Планирование инд.занятий: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+            Планирование индивидуальных занятий: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>
@@ -111,6 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
                         'controller' => '/teachers/teachers-plan',
                         'template' => '{view} {update} {delete}',
+                        'visible' => \artsoft\Art::isBackend(),
                         'buttons' => [
                             'view' => function ($key, $model) {
                                 return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
