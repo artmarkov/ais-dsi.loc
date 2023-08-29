@@ -12,6 +12,7 @@ use yii\behaviors\TimestampBehavior;
 class GuidePlanTree extends \kartik\tree\models\Tree
 {
     const CATEGORY_SELL = [
+        0 => 'Право выбора категории мероприятия',
         1 => 'Внутреннее мероприятие',
         2 => 'Внешнее мероприятие',
     ];
