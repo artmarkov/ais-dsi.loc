@@ -125,6 +125,11 @@ Pjax::begin([
                     </div>
                 </div>
             </div>
+            <div class="panel-footer">
+                <div class="form-group btn-group">
+                    <?= \artsoft\helpers\ButtonHelper::exitButton('/admin/sect/default') ?>
+                </div>
+            </div>
         </div>
     </div>
 <?php Pjax::end() ?>

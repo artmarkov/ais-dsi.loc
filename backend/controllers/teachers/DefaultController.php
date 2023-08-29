@@ -58,6 +58,25 @@ class DefaultController extends MainController
     public $modelSearchClass = 'common\models\teachers\search\TeachersSearch';
     public $modelHistoryClass = 'common\models\history\TeachersHistory';
 
+    public function beforeAction($action)
+    {
+        if (parent::beforeAction($action)) {
+
+            if (isset($_GET['id'])) {
+                $id = $_GET['id'];
+                $model_date = $this->modelDate;
+                if (!$model_date->teachers_id) {
+                    $model_date->teachers_id = $id;
+                } elseif($model_date->teachers_id != $id) {
+                    $id = $model_date->teachers_id;
+//                print_r($action->id); die();
+                    $this->redirect(['/teachers/' . $id . '/' . $action->id]);
+                }
+            }
+        }
+        return true;
+    }
+
     /**
      * @return mixed|string|\yii\web\Response
      * @throws \yii\db\Exception
@@ -270,6 +289,23 @@ class DefaultController extends MainController
         }
         return json_encode(['output' => '', 'selected' => '']);
     }
+
+    public function actionTeachers()
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $cat_id = $parents[0];
+                $out = Teachers::getTeachersById($cat_id);
+                $sel = count($out) == 1 ? $out[0]['id'] : '';
+                return json_encode(['output' => $out, 'selected' => $sel]);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
+
     public function actionDirectionVid()
     {
         $out = [];
@@ -470,7 +506,6 @@ class DefaultController extends MainController
 
         } else {
             $model_date = $this->modelDate;
-
             $query = TeachersLoadView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)])->andWhere(['=', 'plan_year', $model_date->plan_year]);
             $searchModel = new TeachersLoadViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
@@ -836,35 +871,37 @@ class DefaultController extends MainController
 
         } else {
             $session = Yii::$app->session;
-            if($session->get('_progress_teachers_id') != $id) {
+            if ($session->get('_progress_teachers_id') && $session->get('_progress_teachers_id') != $modelTeachers->id) {
                 $session->remove('_progress_subject_sect_studyplan_id');
             }
-            $model_date = new DynamicModel(['date_in', 'subject_sect_studyplan_id']);
-            $model_date->addRule(['date_in', 'subject_sect_studyplan_id'], 'required')
-                ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
+            $model_date = new DynamicModel(['date_in', 'subject_sect_studyplan_id', 'teachers_id']);
+            $model_date->addRule(['date_in'], 'required')
+                ->addRule(['date_in'], 'date', ['format' => 'php:m.Y'])
+                ->addRule('teachers_id', 'integer')
+                ->addRule('subject_sect_studyplan_id', 'integer');
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
                 $mon = date('m');
                 $year = date('Y');
-
                 $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
                 $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
                 $timestamp_in = $timestamp[0];
                 $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
                 $model_date->subject_sect_studyplan_id = $session->get('_progress_subject_sect_studyplan_id') ?? LessonProgressView::getSecListForTeachersDefault($id, $plan_year);
+                $model_date->teachers_id = $modelTeachers->id;
             }
             $session->set('_progress_date_in', $model_date->date_in);
             $session->set('_progress_subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id);
 
-            $session->set('_progress_teachers_id', $id);
+            $session->set('_progress_teachers_id', $modelTeachers->id);
 
             $model = LessonProgressView::getDataTeachers($model_date, $id);
             $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
             $timestamp_in = $timestamp[0];
             $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
-            if (Yii::$app->request->post('submitAction') == 'excel') {
-                // TeachersEfficiency::sendXlsx($data);
-            }
+//            if (Yii::$app->request->post('submitAction') == 'excel') {
+//                // TeachersEfficiency::sendXlsx($data);
+//            }
 
             return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
         }
@@ -1053,9 +1090,11 @@ class DefaultController extends MainController
             if($session->get('_progress_teachers_id') != $id) {
                 $session->remove('_progress_subject_key');
             }
-            $model_date = new DynamicModel(['date_in', 'subject_key']);
-            $model_date->addRule(['date_in', 'subject_key'], 'required')
-                ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
+            $model_date = new DynamicModel(['date_in', 'subject_key', 'teachers_id']);
+            $model_date->addRule(['date_in'], 'required')
+                ->addRule(['date_in'], 'date', ['format' => 'php:m.Y'])
+                ->addRule('teachers_id', 'integer')
+                ->addRule('subject_key', 'string');
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
                 $mon = date('m');
@@ -1066,6 +1105,7 @@ class DefaultController extends MainController
                 $timestamp_in = $timestamp[0];
                 $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
                 $model_date->subject_key = $session->get('_progress_subject_key') ?? LessonProgressView::getIndivListForTeachersDefault($id, $plan_year);
+                $model_date->teachers_id = $id;
 //                print_r(LessonProgressView::getIndivListForTeachers($id, $plan_year)); die();
             }
 
@@ -1289,9 +1329,10 @@ class DefaultController extends MainController
 
         $session = Yii::$app->session;
 
-        $model_date = new DynamicModel(['date_in', 'date_out', 'subject_type_id', 'activity_list']);
+        $model_date = new DynamicModel(['date_in', 'date_out', 'subject_type_id', 'activity_list', 'teachers_id']);
         $model_date->addRule(['date_in', 'date_out'], 'required')
-            ->addRule(['date_in', 'date_out'], 'date');
+            ->addRule(['date_in', 'date_out'], 'date')
+            ->addRule('teachers_id', 'integer');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $m = date('m');
             $y = date('Y');
@@ -1299,22 +1340,24 @@ class DefaultController extends MainController
 
             $model_date->date_in = $session->get('_timesheet_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $m, 1, $y), 'php:d.m.Y');
             $model_date->date_out = $session->get('_timesheet_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $m, $t, $y), 'php:d.m.Y');
+            $model_date->teachers_id = $id;
         }
         $session->set('_timesheet_date_in', $model_date->date_in);
         $session->set('_timesheet_date_out', $model_date->date_out);
 
         $model_date->activity_list = TeachersActivity::find()->where(['=', 'teachers_id', $id])->column();
         $model_date->subject_type_id = SubjectType::find()->column();
+
 //        echo '<pre>' . print_r($model_date->activity_list, true) . '</pre>'; die();
         $model = [];
-        $model =  new TeachersTimesheet($model_date);
+        $model = new TeachersTimesheet($model_date);
         $model = $model->getTeachersCheetData();
-       // $model = LessonProgressView::getDataIndivTeachers($model_date, $id);
+        // $model = LessonProgressView::getDataIndivTeachers($model_date, $id);
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
         $timestamp_in = $timestamp[0];
         $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
 
-            return $this->renderIsAjax('cheet-account', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
+        return $this->renderIsAjax('cheet-account', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
 
     }
 

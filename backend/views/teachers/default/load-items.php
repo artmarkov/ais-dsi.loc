@@ -45,7 +45,7 @@ $columns = [
         'value' => function ($model) {
             return $model->week_time;
         },
-        'pageSummary' => true,
+        'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'week_time', $model->id),
 
     ],
     [
@@ -54,7 +54,7 @@ $columns = [
         'value' => function ($model) {
             return $model->year_time_consult;
         },
-        'pageSummary' => true,
+        'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'year_time_consult', $model->id),
     ],
     [
         'attribute' => 'direction_id',
@@ -81,8 +81,7 @@ $columns = [
             return $model->load_time . ' ' . $model->getItemLoadNotice();
         },
         'format' => 'raw',
-        'pageSummary' => true,
-//        'format' => ['decimal', 2],
+        'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'load_time', $model->id),
     ],
     [
         'attribute' => 'load_time_0',
@@ -91,8 +90,7 @@ $columns = [
             return $model->load_time_0;
         },
         'format' => 'raw',
-        'pageSummary' => true,
-//        'format' => ['decimal', 2],
+        'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'load_time_0', $model->id),
         'contentOptions' => function ($model) {
             return ['class' => 'success'];
         },
@@ -104,8 +102,7 @@ $columns = [
             return $model->load_time_1;
         },
         'format' => 'raw',
-        'pageSummary' => true,
-//        'format' => ['decimal', 2],
+        'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'load_time_1', $model->id),
         'contentOptions' => function ($model) {
             return ['class' => 'warning'];
         },
@@ -117,7 +114,7 @@ $columns = [
             return $model->load_time_consult . ' ' . $model->getItemLoadConsultNotice();
         },
         'format' => 'raw',
-        'pageSummary' => true,
+        'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'load_time_consult', $model->id),
         'contentOptions' => function ($model) {
             return ['class' => 'info'];
         },
@@ -126,6 +123,7 @@ $columns = [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
+        'visible' => \artsoft\Art::isBackend(),
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
@@ -216,7 +214,8 @@ $columns = [
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
 //                'filterModel' => $searchModel,
-                'showPageSummary' => true,
+                'showPageSummary' => false,
+                'showFooter' => true,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

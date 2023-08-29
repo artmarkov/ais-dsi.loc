@@ -22,7 +22,7 @@ class ExcelObjectList
     {
         $this->cc=range('A', 'Z');
         $c=range('A', 'Z');
-        //foreach ($c as $ic) $this->cc[]='A'.$ic;
+        foreach ($c as $ic) $this->cc[]='A'.$ic;
 
         $this->spreadsheet = new Spreadsheet();
         $this->spreadsheet->setActiveSheetIndex(0);
@@ -30,7 +30,7 @@ class ExcelObjectList
         $this->columns = $columns;
         $this->columnsLength = array_combine(array_keys($this->columns), array_fill(0, count($this->columns), 0));
         if (count($columns) > count($this->cc)) {
-            throw new RuntimeException('maximum column count limit exceed');
+            throw new \RuntimeException('maximum column count limit exceed');
         }
         foreach (array_keys($columns) as $k => $name) {
             $this->spreadsheet->getActiveSheet()->setCellValue($this->cc[$k] . '1', $columns[$name]);

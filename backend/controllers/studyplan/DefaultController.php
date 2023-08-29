@@ -18,6 +18,7 @@ use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
 use common\models\schoolplan\SchoolplanProtocolItems;
 use common\models\schoolplan\search\SchoolplanProtocolItemsViewSearch;
+use common\models\students\Student;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
@@ -1101,6 +1102,16 @@ class DefaultController extends MainController
             return $this->redirect(Yii::$app->request->referrer);
         }
     }
+
+    public function actionStudentsView($id){
+        $model = $this->findModel($id);
+        $modelStudent = Student::findOne($model->student_id);
+        $studentDependence = $modelStudent->studentDependence;
+        $this->view->params['breadcrumbs'][] = ['label' => 'Карточка ученика'];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        return $this->renderIsAjax('students_view', compact('modelStudent', 'studentDependence'));
+    }
+
     /**
      * @param $id
      * @return array
@@ -1108,6 +1119,7 @@ class DefaultController extends MainController
     public function getMenu($id)
     {
         return [
+            ['label' => 'Карточка ученика', 'url' => ['/studyplan/default/students-view', 'id' => $id]],
             ['label' => 'Карточка плана учащегося', 'url' => ['/studyplan/default/update', 'id' => $id]],
             ['label' => 'Нагрузка', 'url' => ['/studyplan/default/load-items', 'id' => $id]],
             ['label' => 'Элементы расписания', 'url' => ['/studyplan/default/schedule-items', 'id' => $id]],

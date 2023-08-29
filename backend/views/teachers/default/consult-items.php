@@ -31,7 +31,7 @@ $columns = [
         'value' => function ($model, $key, $index, $widget) {
             return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
         },
-        'label' =>  Yii::t('art/guide', 'Sect').'/'.Yii::t('art/student', 'Student'),
+        'label' => Yii::t('art/guide', 'Sect') . '/' . Yii::t('art/student', 'Student'),
         'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
@@ -97,6 +97,7 @@ $columns = [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
+        'visible' => \artsoft\Art::isBackend(),
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
@@ -121,6 +122,56 @@ $columns = [
             'delete' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     Url::to(['/teachers/default/consult-items', 'id' => $model->teachers_id, 'objectId' => $model->consult_schedule_id, 'mode' => 'delete']), [
+                        'title' => Yii::t('art', 'Delete'),
+                        'aria-label' => Yii::t('art', 'Delete'),
+                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            },
+        ],
+        'visibleButtons' => [
+            'create' => function ($model) {
+                return $model->getTeachersConsultNeed();
+            },
+            'delete' => function ($model) {
+                return $model->consult_schedule_id !== null;
+            },
+            'update' => function ($model) {
+                return $model->consult_schedule_id !== null;
+            }
+        ],
+    ],
+    [
+        'class' => 'kartik\grid\ActionColumn',
+        'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+        'width' => '90px',
+        'visible' => \artsoft\Art::isFrontend(),
+        'template' => '{create} {update} {delete}',
+        'buttons' => [
+            'create' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
+                    Url::to(['/teachers/consult-items/create', 'load_id' => $model->teachers_load_id]), [
+                        'title' => Yii::t('art', 'Create'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                        'disabled' => true
+                    ]
+                );
+            },
+            'update' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                    Url::to(['/teachers/consult-items/update', 'objectId' => $model->consult_schedule_id]), [
+                        'title' => Yii::t('art', 'Edit'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            },
+            'delete' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                    Url::to(['/teachers/consult-items/delete', 'objectId' => $model->consult_schedule_id]), [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),

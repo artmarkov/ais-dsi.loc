@@ -255,6 +255,21 @@ class SubjectSect extends \artsoft\db\ActiveRecord
                 and case when {$course} != 0 then course = {$course} else true end
                 and case when {$qtyFlag} != 0 then course = any (string_to_array('{$course_list}', ',')::int[]) else true end
                 and status = 1
+                and subject_sect_studyplan_id is null
+                and studyplan_subject_id != all( 
+                select studyplan_subject_id
+            from studyplan_subject_view
+            where education_programm_id = any (string_to_array('{$programm_list}', ',')::int[])
+                and studyplan_subject_id != all(string_to_array('{$this->getStudyplanList($plan_year)}', ',')::int[])
+                and plan_year = {$plan_year}
+                and subject_category_id = {$this->subject_cat_id}
+                and subject_id = {$this->subject_id}
+                and subject_vid_id = {$this->subject_vid_id}
+                and case when {$course} != 0 then course = {$course} else true end
+                and case when {$qtyFlag} != 0 then course = any (string_to_array('{$course_list}', ',')::int[]) else true end
+                and status = 1
+                and subject_sect_studyplan_id is not null
+                )
                 order by student_fio
 		
 SQL;
@@ -546,6 +561,9 @@ SQL;
      */
     public function beforeSave($insert)
     {
+//        if($this->attributes['sub_group_qty'] < $this->oldAttributes['sub_group_qty']) {
+//
+//        }
         if ($this->course_flag == 0) {
             $this->term_mastering = null;
 

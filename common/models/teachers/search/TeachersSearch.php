@@ -2,6 +2,7 @@
 
 namespace common\models\teachers\search;
 
+use artsoft\helpers\StringHelper;
 use artsoft\traits\ParamsTrimable;
 use Yii;
 use yii\base\Model;
@@ -112,6 +113,7 @@ class TeachersSearch extends Teachers
         $query->andFilterWhere(['like', 'tab_num', $this->tab_num]);
 
         if ($this->fullName) {
+            $this->fullName  = StringHelper::ucfirst($this->fullName);
             $query->andFilterWhere(['like', 'first_name', $this->fullName])
                 ->orFilterWhere(['like', 'last_name', $this->fullName])
                 ->orFilterWhere(['like', 'middle_name', $this->fullName]);

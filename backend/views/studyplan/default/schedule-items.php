@@ -83,6 +83,7 @@ $columns = [
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
         'template' => '{create} {update} {delete}',
+        'visible' => \artsoft\Art::isBackend(),
         'buttons' => [
             'create' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
@@ -133,6 +134,7 @@ $columns = [
     <div class="panel">
         <div class="panel-heading">
             Элементы расписания: <?= RefBook::find('students_fullname')->getValue($model->student_id);?>
+            <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.';?>
         </div>
         <div class="panel-body">
             <div class="row">

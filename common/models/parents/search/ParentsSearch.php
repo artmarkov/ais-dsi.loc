@@ -2,6 +2,7 @@
 
 namespace common\models\parents\search;
 
+use artsoft\helpers\StringHelper;
 use artsoft\traits\ParamsTrimable;
 use Yii;
 use yii\base\Model;
@@ -104,6 +105,7 @@ class ParentsSearch extends Parents
             ->andFilterWhere(['like', 'sert_organ', $this->sert_organ]);
 
         if ($this->fullName) {
+            $this->fullName  = StringHelper::ucfirst($this->fullName);
             $query->andFilterWhere(['like', 'first_name', $this->fullName])
                 ->orFilterWhere(['like', 'last_name', $this->fullName])
                 ->orFilterWhere(['like', 'middle_name', $this->fullName]);

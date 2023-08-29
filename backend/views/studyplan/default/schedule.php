@@ -65,6 +65,7 @@ Pjax::begin([
         <div class="panel">
             <div class="panel-heading">
                 Расписание занятий: <?php echo \artsoft\helpers\RefBook::find('students_fullname')->getValue($model->student_id); ?>
+                <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.';?>
             </div>
             <div class="panel-body">
                 <div class="panel panel-default">

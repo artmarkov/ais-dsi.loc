@@ -75,8 +75,8 @@ Pjax::begin([
                         'readonly' => $readonly,
                         'data' => $model->getTeachersSchedule($model_date->plan_year),
                         'events' => [
-                            'onChange' => new JsExpression($JSChange),
-                            'onClick' => new JsExpression($JSEventClick),
+//                            'onChange' => new JsExpression($JSChange),
+//                            'onClick' => new JsExpression($JSEventClick),
                             // 'onScheduleClick' => new JsExpression($JSScheduleClick),
                         ]
                     ]);

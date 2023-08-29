@@ -27,7 +27,15 @@ use artsoft\grid\GridPageSize;
             <div class="row">
                 <div class="col-sm-6">
                     <?= \artsoft\helpers\ButtonHelper::createButton(isset($modelTeachers->id) ? ['/teachers/default/efficiency', 'id' => $modelTeachers->id, 'mode' => 'create'] : ''); ?>
-                    <span class="pull-left"> <?= Html::a('<i class="fa fa-bar-chart" aria-hidden="true"></i> График эффективности ', ['/teachers/default/efficiency', 'id' => $modelTeachers->id, 'mode' => 'bar'], ['class' => 'btn btn-sm btn-info']); ?></span>
+                    <span class="pull-left">
+                        <?php
+                        if (\artsoft\Art::isBackend()) {
+                            Html::a('<i class="fa fa-bar-chart" aria-hidden="true"></i> График эффективности ', ['/teachers/default/efficiency', 'id' => $modelTeachers->id, 'mode' => 'bar'], ['class' => 'btn btn-sm btn-info']);
+                        } else {
+                            Html::a('<i class="fa fa-bar-chart" aria-hidden="true"></i> График эффективности ', ['/teachers/efficiency/bar'], ['class' => 'btn btn-sm btn-info']);
+                        }
+                        ?>
+                    </span>
                     <?php
                     /* Uncomment this to activate GridQuickLinks */
                     /* echo GridQuickLinks::widget([
@@ -58,43 +66,10 @@ use artsoft\grid\GridPageSize;
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
                         'attribute' => 'id',
-                        'class' => 'artsoft\grid\columns\TitleActionColumn',
-                        'controller' => '/teachers/efficiency',
-                        'title' => function (TeachersEfficiency $model) {
-                            return Html::a(sprintf('#%06d', $model->id), ['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'view'], ['data-pjax' => 0]);
+                        'options' => ['style' => 'width:10px'],
+                        'value' => function (TeachersEfficiency $model) {
+                            return sprintf('#%06d', $model->id);
                         },
-                        'buttonsTemplate' => '{update} {view} {delete}',
-                        'buttons' => [
-                            'update' => function ($key, $model) {
-                                return Html::a(Yii::t('art', 'Edit'),
-                                    Url::to(['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update']), [
-                                        'title' => Yii::t('art', 'Edit'),
-                                        'data-method' => 'post',
-                                        'data-pjax' => '0',
-                                    ]
-                                );
-                            },
-                            'view' => function ($key, $model) {
-                                return Html::a(Yii::t('art', 'View'),
-                                    Url::to(['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'view']), [
-                                        'title' => Yii::t('art', 'Edit'),
-                                        'data-method' => 'post',
-                                        'data-pjax' => '0',
-                                    ]
-                                );
-                            },
-                            'delete' => function ($key, $model) {
-                                return Html::a(Yii::t('art', 'Delete'),
-                                    Url::to(['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'delete']), [
-                                        'title' => Yii::t('art', 'Delete'),
-                                        'aria-label' => Yii::t('art', 'Delete'),
-                                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                        'data-method' => 'post',
-                                        'data-pjax' => '0',
-                                    ]
-                                );
-                            },
-                        ],
                     ],
                     [
                         'attribute' => 'efficiency_id',
@@ -130,7 +105,47 @@ use artsoft\grid\GridPageSize;
                         },
                         'options' => ['style' => 'width:150px'],
                     ],
-
+                    [
+                        'class' => 'kartik\grid\ActionColumn',
+                        'urlCreator' => function ($action, $model, $key, $index) {
+                            return [$action, 'id' => $model->id];
+                        },
+                        'controller' => '/teachers/efficiency',
+                        'template' => '{view} {update} {delete}',
+                        'headerOptions' => ['class' => 'kartik-sheet-style'],
+                        'visible' => \artsoft\Art::isBackend(),
+                        'buttons' => [
+                            'update' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                                    Url::to(['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update']), [
+                                        'title' => Yii::t('art', 'Edit'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                            'view' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                                    Url::to(['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'view']), [
+                                        'title' => Yii::t('art', 'Edit'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                            'delete' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                                    Url::to(['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'delete']), [
+                                        'title' => Yii::t('art', 'Delete'),
+                                        'aria-label' => Yii::t('art', 'Delete'),
+                                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                        ],
+                    ],
                 ],
             ]);
             ?>

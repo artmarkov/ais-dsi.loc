@@ -87,7 +87,12 @@ $columns = [
         'attribute' => 'student_id',
         'label' => $model['attributes']['student_id'],
         'value' => function ($model) {
-            return $model['student_fio'];
+            return Html::a($model['student_fio'],
+                ['/studyplan/default/schedule-items', 'id' => $model['studyplan_id']],
+                [
+                    'target' => '_blank',
+//                    'class' => 'btn btn-link',
+                ]);
         },
         'format' => 'raw',
     ],

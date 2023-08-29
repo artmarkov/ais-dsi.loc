@@ -110,6 +110,17 @@ class SubjectScheduleView extends SubjectSchedule
                 $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
             }
 
+            $model = SubjectScheduleStudyplanView::find()->where(['=', 'subject_schedule_id', $this->subject_schedule_id])->one();
+            if (self::getStudentScheduleOverLapping($model)->exists() === true) {
+                $info = [];
+                foreach (self::getStudentScheduleOverLapping($model)->all() as $itemModel) {
+                    $info[] = $itemModel->student_fio . '(' . $itemModel->sect_name . ' ' .$itemModel->subject . ')';
+                }
+                $message = 'Ученик не может в одно и то же время находиться в разных аудиториях! ' . implode(', ', $info);
+                //  Notice::registerDanger($message);
+                $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
+            }
+
             return implode('', $tooltip);
         }
         return null;
@@ -163,6 +174,34 @@ class SubjectScheduleView extends SubjectSchedule
                 ['teachers_id' => $model->teachersId],
                 ['!=', 'auditory_id', $model->auditory_id],
                 ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->id)],
+                ['OR',
+                    ['AND',
+                        ['<', 'time_in', Schedule::encodeTime($model->time_out)],
+                        ['>=', 'time_in', Schedule::encodeTime($model->time_in)],
+                    ],
+
+                    ['AND',
+                        ['<=', 'time_out', Schedule::encodeTime($model->time_out)],
+                        ['>', 'time_out', Schedule::encodeTime($model->time_in)],
+                    ],
+                ],
+                ['=', 'week_day', $model->week_day]
+            ]);
+        if ($model->getAttribute($model->week_num) !== 0) {
+            $thereIsAnOverlapping->andWhere(['=', 'week_num', $model->week_num]);
+        }
+
+        return $thereIsAnOverlapping;
+    }
+
+    public static function getStudentScheduleOverLapping($model)
+    {
+        $thereIsAnOverlapping = SubjectScheduleStudyplanView::find()->where(
+            ['AND',
+                ['!=', 'subject_schedule_id', $model->subject_schedule_id],
+                ['!=', 'direction_id', 1001], // не конц
+                ['student_id' => $model->student_id],
+                ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->subject_schedule_id)],
                 ['OR',
                     ['AND',
                         ['<', 'time_in', Schedule::encodeTime($model->time_out)],

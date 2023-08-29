@@ -112,6 +112,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
         <div class="panel">
             <div class="panel-heading">
                 Дневник успеваемости: <?= RefBook::find('students_fullname')->getValue($modelStudent->student_id); ?>
+                <?= $modelStudent->getProgrammName() . ' - ' . $modelStudent->course . ' класс.';?>
             </div>
             <div class="panel-body">
                 <?= $this->render('_search-progress', compact('model_date')) ?>

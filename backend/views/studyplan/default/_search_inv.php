@@ -29,6 +29,7 @@ $form = ActiveForm::begin([
                         <?= $form->field($model_date, "date_out")->widget(DatePicker::class)->label('Дата окончания периода'); ?>
                     </div>
                 </div>
+                <?php if (\artsoft\Art::isBackend()): ?>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="panel panel-info">
@@ -90,6 +91,7 @@ $form = ActiveForm::begin([
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

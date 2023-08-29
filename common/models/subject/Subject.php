@@ -158,6 +158,7 @@ SQL;
             WHERE guide_subject_vid.id = ANY(string_to_array(subject.vid_list, ',')::int[]) 
             AND guide_subject_vid.qty_min <> 1 
             AND guide_subject_vid.qty_max <> 1
+            AND subject.status = 1
             ORDER BY subject.name;
 		
 SQL;

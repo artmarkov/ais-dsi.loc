@@ -11,6 +11,7 @@ use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\teachers\search\TeachersLoadStudyplanViewSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $model  common\models\studyplan\Studyplan */
 
 $this->title = Yii::t('art/guide', 'Teachers Load');
 $this->params['breadcrumbs'][] = $this->title;
@@ -186,6 +187,7 @@ $columns = [
     <div class="panel">
         <div class="panel-heading">
             Нагрузка: <?= RefBook::find('students_fullname')->getValue($model->student_id);?>
+            <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.';?>
         </div>
         <div class="panel-body">
             <div class="row">

@@ -126,6 +126,7 @@ $columns = [
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
+        'visible' => \artsoft\Art::isBackend(),
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
         'template' => '{create} {update} {delete}',
@@ -179,6 +180,7 @@ $columns = [
     <div class="panel">
         <div class="panel-heading">
             Расписание консультаций: <?= RefBook::find('students_fullname')->getValue($model->student_id);?>
+            <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.';?>
         </div>
         <div class="panel-body">
             <div class="row">

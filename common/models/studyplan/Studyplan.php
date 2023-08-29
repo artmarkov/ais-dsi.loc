@@ -236,6 +236,11 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $this->hasMany(StudyplanSubject::class, ['studyplan_id' => 'id'])->innerJoin('guide_subject_category', 'guide_subject_category.id = studyplan_subject.subject_cat_id')->orderBy('sort_order, subject_vid_id');
     }
 
+    public function getSpeciality()
+    {
+        $subject_id = $this->getStudyplanSubject()->select('subject_id')->andWhere(['=', 'subject_cat_id', 1000])->scalar();
+        return $subject_id ? RefBook::find('subject_name')->getValue($subject_id) : '';
+    }
 
 //    /**
 //     * Список нагрузок преподавателей

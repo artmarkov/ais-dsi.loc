@@ -6,5 +6,6 @@ class MainController extends \backend\controllers\DefaultController
 {
     public $tabMenu = [
         ['label' => 'Табель учета пед.часов', 'url' => ['/reports/default/index']],
+        ['label' => 'Контингент учащихся', 'url' => ['/reports/default/studyplan-stat']],
     ];
 }

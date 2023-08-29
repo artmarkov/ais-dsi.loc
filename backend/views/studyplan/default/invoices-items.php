@@ -103,6 +103,7 @@ $columns = [
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
+        'visible' => \artsoft\Art::isBackend(),
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
         'template' => '{create} {update} {delete}',

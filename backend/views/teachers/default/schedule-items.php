@@ -86,6 +86,7 @@ $columns = [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
+        'visible' => \artsoft\Art::isBackend(),
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
@@ -128,6 +129,56 @@ $columns = [
             },
             'update' => function ($model) {
                 return $model->subject_schedule_id !== null;
+            }
+        ]
+    ],
+    [
+        'class' => 'kartik\grid\ActionColumn',
+        'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+        'width' => '90px',
+        'visible' => \artsoft\Art::isFrontend(),
+        'template' => '{create} {update} {delete}',
+        'buttons' => [
+            'create' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
+                    Url::to(['/teachers/schedule-items/create', 'load_id' => $model->teachers_load_id]), [
+                        'title' => Yii::t('art', 'Create'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                        'disabled' => true
+                    ]
+                );
+            },
+            'update' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                    Url::to(['/teachers/schedule-items/update', 'objectId' => $model->subject_schedule_id]), [
+                        'title' => Yii::t('art', 'Edit'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            },
+            'delete' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                    Url::to(['/teachers/schedule-items/delete', 'objectId' => $model->subject_schedule_id]), [
+                        'title' => Yii::t('art', 'Delete'),
+                        'aria-label' => Yii::t('art', 'Delete'),
+                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            },
+        ],
+        'visibleButtons' => [
+           'create' => function ($model) {
+                return $model->getTeachersScheduleNeed() && $model->subject_sect_id == 0;
+            },
+            'delete' => function ($model) {
+                return $model->subject_schedule_id && $model->subject_sect_id == 0;
+            },
+            'update' => function ($model) {
+                return $model->subject_schedule_id && $model->subject_sect_id == 0;
             }
         ]
     ],

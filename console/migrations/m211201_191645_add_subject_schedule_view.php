@@ -76,7 +76,7 @@ UNION ALL
      LEFT JOIN guide_subject_type ON guide_subject_type.id = subject_sect.subject_type_id
      LEFT JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
      LEFT JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-  ORDER BY 19, 20, 9, 10;
+  ORDER BY 19, 20, 9, 10, 13, 14;
         ')->execute();
 
 

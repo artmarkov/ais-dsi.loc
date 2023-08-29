@@ -198,8 +198,8 @@ $columns = [
                     'gridId' => 'studyplan-invoices-grid',
                     'actions' => [
                         Url::to(['bulk-delete']) => 'Удалить квитанции',
-                       /* Url::to(['bulk-load']) => 'Выгрузить квитанции в Word',
-                        Url::to(['bulk-new']) => 'Создать новые квитанции',*/
+//                        Url::to(['bulk-load']) => 'Выгрузить квитанции в Word',
+                        Url::to(['bulk-new']) => 'Создать новые квитанции',
                     ] //Configure here you bulk actions
                 ],
                 'columns' => $columns,

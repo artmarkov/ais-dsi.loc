@@ -236,6 +236,7 @@ $group = 0;
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
+                    <?= \artsoft\helpers\ButtonHelper::exitButton('/admin/sect/default') ?>
                     <?= !$readonly ? \artsoft\helpers\ButtonHelper::saveButton() : \artsoft\helpers\ButtonHelper::updateButton($model); ?>
                 </div>
             </div>

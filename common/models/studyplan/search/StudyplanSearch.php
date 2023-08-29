@@ -2,6 +2,7 @@
 
 namespace common\models\studyplan\search;
 
+use artsoft\helpers\StringHelper;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -15,6 +16,13 @@ class StudyplanSearch extends Studyplan
     public $programmName;
     public $studentFio;
 
+    public $query;
+
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: Studyplan::find();
+        parent::__construct();
+    }
     /**
      * @inheritdoc
      */
@@ -44,7 +52,8 @@ class StudyplanSearch extends Studyplan
      */
     public function search($params)
     {
-        $query = Studyplan::find();
+        $query = $this->query;
+
         $query->joinWith(['programm','student'])->innerJoin('user_common', 'user_common.id = students.user_common_id');
 
         $dataProvider = new ActiveDataProvider([
@@ -102,6 +111,7 @@ class StudyplanSearch extends Studyplan
             $query->andFilterWhere(['=', 'programm_id', $this->programmName]);
         }
         if ($this->studentFio) {
+            $this->studentFio  = StringHelper::ucfirst($this->studentFio);
             $query->andFilterWhere(['=', 'student_id', $this->studentFio]);
         }
 

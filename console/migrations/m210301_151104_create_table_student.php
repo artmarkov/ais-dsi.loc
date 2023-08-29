@@ -81,6 +81,9 @@ class m210301_151104_create_table_student extends \artsoft\db\BaseMigration
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['students_users', 'students_view', 'students_id', 'user_id', 'students_id', 'status', null, 'Ученики (ссылка на id учетной записи)'],
         ])->execute();
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['users_students', 'students_view', 'user_id', 'students_id', 'user_id', 'status', null, 'Ученики (ссылка на students_id)'],
+        ])->execute();
     }
 
     public function down()

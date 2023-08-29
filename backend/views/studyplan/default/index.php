@@ -47,18 +47,18 @@ $this->params['breadcrumbs'][] = $this->title;
             GridView::widget([
                 'id' => 'studyplan-grid',
                 'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
-                'bulkActionOptions' => [
+                'filterModel' => \artsoft\Art::isBackend() ? $searchModel : false,
+                'bulkActionOptions' =>  \artsoft\Art::isBackend() ? [
                     'gridId' => 'studyplan-grid',
-                    'actions' => [
+                    'actions' =>  [
                         Url::to(['bulk-next-class']) => 'Перевести в следующий класс',
                         Url::to(['bulk-repeat-class']) => 'Повторить учебную программу',
                         Url::to(['bulk-finish-plan']) => 'Завершить учебную программу',
                         /*Url::to(['bulk-delete']) => Yii::t('yii', 'Delete'),*/
                     ]
-                ],
+                ] : false,
                 'columns' => [
-                    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                    ['class' => 'artsoft\grid\CheckboxColumn',  'visible' => \artsoft\Art::isBackend(), 'options' => ['style' => 'width:10px']],
                     [
                         'attribute' => 'id',
                         'value' => function (Studyplan $model) {
@@ -115,6 +115,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                     ],
                     [
+                        'value' => function (Studyplan $model) {
+                            return $model->getSpeciality();
+                        },
+                        'label' => 'Специальность'
+
+],
+                    /*[
                         'attribute' => 'plan_year',
                         'filter' => false,
                         'value' => function (Studyplan $model) {
@@ -122,7 +129,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'options' => ['style' => 'width:100px'],
                         'format' => 'raw',
-                    ],
+                    ],*/
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',
                         'attribute' => 'status',
@@ -138,7 +145,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return [$action, 'id' => $model->id];
                         },
                         'controller' => '/studyplan/default',
-                        'template' => '{view} {update} {delete}',
+                        'template' => \artsoft\Art::isBackend() ? '{view} {update} {delete}' : '{view}',
                         'headerOptions' => ['class' => 'kartik-sheet-style'],
                     ],
                 ],

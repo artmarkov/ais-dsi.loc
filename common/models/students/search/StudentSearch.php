@@ -2,6 +2,7 @@
 
 namespace common\models\students\search;
 
+use artsoft\helpers\StringHelper;
 use artsoft\traits\ParamsTrimable;
 use Yii;
 use yii\base\Model;
@@ -102,6 +103,7 @@ class StudentSearch extends Student
         $query->andFilterWhere(['like', 'limited_status_list', $this->limited_status_list]);
 
         if ($this->fullName) {
+            $this->fullName  = StringHelper::ucfirst($this->fullName);
             $query->andFilterWhere(['like', 'first_name', $this->fullName])
                 ->orFilterWhere(['like', 'last_name', $this->fullName])
                 ->orFilterWhere(['like', 'middle_name', $this->fullName]);

@@ -14,10 +14,6 @@ class TeachersPlanController extends MainController
     public $modelSearchClass = 'common\models\teachers\search\TeachersPlanSearch';
     public $modelHistoryClass = 'common\models\history\teachersPlanHistory';
 
-    public $tabMenu = [
-        ['label' => 'Планирование индивидуальных занятий',  'url' => ['/teachers/teachers-plan/index']],
-    ];
-
     public function actionIndex()
     {
         $model_date = $this->modelDate;

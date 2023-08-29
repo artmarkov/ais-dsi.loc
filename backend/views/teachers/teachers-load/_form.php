@@ -40,7 +40,7 @@ use artsoft\helpers\RefBook;
                         'data' => \common\models\teachers\Teachers::getTeachersAll($model->isNewRecord ? \common\models\teachers\Teachers::STATUS_ACTIVE : null),
                         'options' => [
                             'id' => 'teachers_id',
-                            'disabled' => !$model->isNewRecord,
+                            'disabled' => false,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [

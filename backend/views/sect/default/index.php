@@ -72,6 +72,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'subject_id',
                                 'filter' => \common\models\subject\Subject::getSubjectListGroup(),
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'value' => function (SubjectSect $model) {
                                     return RefBook::find('subject_name')->getValue($model->subject_id);
                                 },
@@ -97,6 +102,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'programm_list',
                                 'filter' => RefBook::find('education_programm_short_name', \common\models\education\EducationProgramm::STATUS_ACTIVE)->getList(),
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'value' => function (SubjectSect $model) {
                                     $v = [];
                                     foreach ($model->programm_list as $id) {
@@ -113,6 +123,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'subject_cat_id',
                                 'filter' => RefBook::find('subject_category_name_dev')->getList(),
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'value' => function (SubjectSect $model) {
                                     return RefBook::find('subject_category_name_dev')->getValue($model->subject_cat_id);
                                 },
@@ -123,6 +138,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'subject_type_id',
                                 'filter' => RefBook::find('subject_type_name')->getList(),
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'value' => function (SubjectSect $model) {
                                     return RefBook::find('subject_type_name')->getValue($model->subject_type_id);
                                 },
@@ -132,6 +152,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'subject_vid_id',
                                 'filter' => \common\models\subject\SubjectVid::getVidListGroup(),
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'value' => function (SubjectSect $model) {
                                     return RefBook::find('subject_vid_name')->getValue($model->subject_vid_id);
                                 },

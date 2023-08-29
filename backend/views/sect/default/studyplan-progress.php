@@ -152,5 +152,10 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                 </div>
             </div>
         </div>
+        <div class="panel-footer">
+            <div class="form-group btn-group">
+                <?= \artsoft\helpers\ButtonHelper::exitButton('/admin/sect/default') ?>
+            </div>
+        </div>
     </div>
 </div>

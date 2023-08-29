@@ -61,7 +61,7 @@ JS
     <div class="panel">
         <div class="panel-heading">
             Информация об ученике
-            <?php if (!$userCommon->isNewRecord): ?>
+            <?php if (!$userCommon->isNewRecord && \artsoft\Art::isBackend()): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
                 <?php $user_id = RefBook::find('students_users')->getValue($model->id); ?>
                 <?php if ($user_id): ?>
@@ -78,7 +78,7 @@ JS
         </div>
         <div class="panel-body">
 
-            <?= $this->render('/user/_form', ['form' => $form, 'model' => $userCommon, 'readonly' => $readonly]) ?>
+            <?= $this->render('@backend/views/user/_form', ['form' => $form, 'model' => $userCommon, 'readonly' => $readonly]) ?>
             <div class="panel panel-info">
                 <div class="panel-heading">
                     Дополнительные сведения
@@ -223,7 +223,9 @@ JS
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
+                <?php if(\artsoft\Art::isBackend()): ?>
                 <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+                <?php endif;?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

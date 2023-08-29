@@ -43,7 +43,18 @@ class TeachersLoadView extends TeachersLoad
         ];
     }
 
+    public static function getTotal($provider, $fieldName, $teachers_id)
+    {
+        $total = 0;
 
+        foreach ($provider as $item) {
+            if ($item['teachers_id'] == $teachers_id) {
+                $total += $item[$fieldName];
+            }
+        }
+
+        return $total;
+    }
 
 //    public function getStudyplanWeekTime()
 //    {

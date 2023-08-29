@@ -73,17 +73,22 @@ use artsoft\widgets\Nav;
                 'url' => '#',
                 'items' => [
                     ['label' => 'Карточка преподавателя', 'icon' => 'fa fa-minus', 'url' => ['/teachers/default/index']],
+                    ['label' => 'Мои ученики', 'icon' => 'fa fa-minus', 'url' => ['/teachers/students/index']],
                     ['label' => 'Нагрузка', 'icon' => 'fa fa-minus', 'url' => ['/teachers/load-items/index']],
                     ['label' => 'Табель учета', 'icon' => 'fa fa-minus', 'url' => ['/teachers/cheet-account/index']],
                     ['label' => 'Планирование индивидуальных занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/teachers-plan/index']],
-                    ['label' => 'Элементы расписания', 'icon' => 'fa fa-minus', 'url' => ['/teachers/schedule-items/index']],
+                    ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/schedule-items/index']],
                     ['label' => 'Расписание консультаций', 'icon' => 'fa fa-minus', 'url' => ['/teachers/consult-items/index']],
                     ['label' => 'Журнал успеваемости группы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/studyplan-progress/index']],
                     ['label' => 'Журнал успеваемости индивидуальных занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/studyplan-progress-indiv/index']],
                     ['label' => 'Показатели эффективности', 'icon' => 'fa fa-minus', 'url' => ['/teachers/efficiency/index']],
-                    ['label' => 'Портфолио', 'icon' => 'fa fa-minus', 'url' => ['/teachers/portfolio/index']],
+//                    ['label' => 'Портфолио', 'icon' => 'fa fa-minus', 'url' => ['/teachers/portfolio/index']],
                     ['label' => 'Документы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/document/index']],
                     ['label' => 'Вступительные экзамены', 'icon' => 'fa fa-minus', 'url' => ['/entrant/default/index']],
+
+                    ['label' => 'Карточка ученика', 'icon' => 'fa fa-minus', 'url' => ['/student/default/index']],
+                    ['label' => 'Учебные планы', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
+
                 ],
             ],
 //            [

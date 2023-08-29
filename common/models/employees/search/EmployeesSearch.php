@@ -2,6 +2,7 @@
 
 namespace common\models\employees\search;
 
+use artsoft\helpers\StringHelper;
 use artsoft\traits\ParamsTrimable;
 use Yii;
 use yii\base\Model;
@@ -93,6 +94,7 @@ class EmployeesSearch extends Employees
 
         $query->andFilterWhere(['like', 'position', $this->position]);
         if ($this->fullName) {
+            $this->fullName  = StringHelper::ucfirst($this->fullName);
             $query->andFilterWhere(['like', 'first_name', $this->fullName])
                 ->orFilterWhere(['like', 'last_name', $this->fullName])
                 ->orFilterWhere(['like', 'middle_name', $this->fullName]);
