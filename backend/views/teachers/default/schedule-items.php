@@ -66,6 +66,8 @@ $columns = [
             return $model->load_time . ' ' . $model->getItemLoadNotice();
         },
         'format' => 'raw',
+        'group' => true,  // enable grouping
+        'subGroupOf' => 4
     ],
     [
         'attribute' => 'scheduleDisplay',
@@ -203,7 +205,7 @@ $columns = [
                 </div>
 
                 <div class="col-sm-6 text-right">
-                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'subject-schedule-grid-pjax']) ?>
+                    <?php /*\artsoft\grid\GridPageSize::widget(['pjaxId' => 'subject-schedule-grid-pjax']) */?>
                 </div>
             </div>
 

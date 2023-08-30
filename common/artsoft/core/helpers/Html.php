@@ -86,4 +86,41 @@ class Html extends \yii\helpers\Html
 
         return $hidden . static::input($type, $name, $value, $options);
     }
+
+    /**
+     * Generates list of hidden input tags for the given model attribute when the attribute value is an array.
+     *
+     * @param Model $model
+     * @param string $attribute
+     * @param array $options
+     * @return string
+     */
+    public static function activeHiddenInputList($model, $attribute, $options = [])
+    {
+        $str = '';
+        $flattenedList = static::getflatInputNames($attribute, $model->$attribute);
+        foreach ($flattenedList as $flattenAttribute) {
+            $str.= static::activeHiddenInput($model, $flattenAttribute, $options);
+        }
+        return $str;
+    }
+
+    /**
+     * @param string $name
+     * @param array $values
+     * @return array
+     */
+    private static function getflatInputNames($name, array $values)
+    {
+        $flattened = [];
+        foreach ($values as $key => $val) {
+            $nameWithKey = $name . '[' . $key . ']';
+            if (is_array($val)) {
+                $flattened += static::getflatInputNames($nameWithKey, $val);
+            } else {
+                $flattened[] = $nameWithKey;
+            }
+        }
+        return $flattened;
+    }
 }

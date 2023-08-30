@@ -29,7 +29,7 @@ use artsoft\helpers\Html;
                     <?= \nex\chosen\Chosen::widget([
                         'model' => $model,
                         'attribute' => 'receivers_ids',
-                        'items' => User::getUsersList(),
+                        'items' => User::getUsersListByCategory(['teachers', 'employees', 'students', 'parents']), /*User::getUsersList(),*/
                         'multiple' => true,
                         'placeholder' => Yii::t('art/mailbox', 'To:'),
                     ]); ?>

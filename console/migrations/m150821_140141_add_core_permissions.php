@@ -23,9 +23,9 @@ class m150821_140141_add_core_permissions extends PermissionsMigration
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'employees', 'child' => 'user']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'teacher', 'child' => 'user']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'department', 'child' => 'teacher']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'user']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'student']);
-        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'parents']);
+//        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'user']);
+//        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'student']);
+//        $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'administrator', 'child' => 'parents']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'system', 'child' => 'administrator']);
         $this->insert(self::AUTH_ITEM_CHILD_TABLE, ['parent' => 'developer', 'child' => 'system']);
     }

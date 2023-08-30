@@ -105,23 +105,27 @@ class SubjectScheduleView extends SubjectSchedule
                 //   Notice::registerDanger($message);
                 $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
             }
-             if ($this->subject_sect_studyplan_id === 0 && self::getTeachersPlanScheduleOverLapping($model)->exists() === false) { // если занятия инд-е
+            if ($this->subject_sect_studyplan_id === 0 && self::getTeachersPlanScheduleOverLapping($model)->exists() === false) { // если занятия инд-е
                 $message = 'Заданное расписание не соответствует планированию индивидуальных занятий!';
                 $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
             }
 
             $model = SubjectScheduleStudyplanView::find()->where(['=', 'subject_schedule_id', $this->subject_schedule_id])->one();
-            if (self::getStudentScheduleOverLapping($model)->exists() === true) {
-                $info = [];
-                foreach (self::getStudentScheduleOverLapping($model)->all() as $itemModel) {
-                    $info[] = $itemModel->student_fio . '(' . $itemModel->sect_name . ' ' .$itemModel->subject . ')';
+            if ($model) {
+                $studentsIds = SubjectScheduleStudyplanView::find()->select('student_id')
+                    ->where(['=', 'subject_schedule_id', $this->subject_schedule_id])->column();
+                if (self::getStudentScheduleOverLapping($model, $studentsIds)->exists() === true) {
+                    $info = [];
+                    foreach (self::getStudentScheduleOverLapping($model, $studentsIds)->all() as $itemModel) {
+                        $info[] = $itemModel->student_fio . '(' . $itemModel->sect_name . ' ' . $itemModel->subject . ')';
+                    }
+                    $message = 'Ученик не может в одно и то же время находиться в разных аудиториях! ' . implode(', ', $info);
+                    //  Notice::registerDanger($message);
+                    $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
                 }
-                $message = 'Ученик не может в одно и то же время находиться в разных аудиториях! ' . implode(', ', $info);
-                //  Notice::registerDanger($message);
-                $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
-            }
 
-            return implode('', $tooltip);
+                return implode('', $tooltip);
+            }
         }
         return null;
     }
@@ -194,13 +198,14 @@ class SubjectScheduleView extends SubjectSchedule
         return $thereIsAnOverlapping;
     }
 
-    public static function getStudentScheduleOverLapping($model)
+    public static function getStudentScheduleOverLapping($model, $studentsIds)
     {
+
         $thereIsAnOverlapping = SubjectScheduleStudyplanView::find()->where(
             ['AND',
                 ['!=', 'subject_schedule_id', $model->subject_schedule_id],
-                ['!=', 'direction_id', 1001], // не конц
-                ['student_id' => $model->student_id],
+                ['=', 'direction_id', $model->direction_id],
+                ['student_id' => $studentsIds],
                 ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->subject_schedule_id)],
                 ['OR',
                     ['AND',
@@ -220,6 +225,7 @@ class SubjectScheduleView extends SubjectSchedule
         }
 
         return $thereIsAnOverlapping;
+
     }
 
     /**
@@ -232,18 +238,17 @@ class SubjectScheduleView extends SubjectSchedule
         $thereIsAnOverlapping = TeachersPlan::find()
             ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = teachers_plan.direction_id')
             ->where(
-            ['AND',
-                ['is', 'parent', null],
-                ['=', 'teachers_id', $model->teachersId],
-                ['auditory_id' => $model->auditory_id],
-                ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->id)],
                 ['AND',
-                    ['<=', 'time_plan_in', Schedule::encodeTime($model->time_in)],
-                    ['>=', 'time_plan_out', Schedule::encodeTime($model->time_out)],
-                ],
-                ['=', 'week_day', $model->week_day]
-            ])->andWhere(new \yii\db\Expression('CASE WHEN week_num != 0 THEN week_num = :week_num ELSE TRUE END', [':week_num' => $model->week_num]));
-        ;
+                    ['is', 'parent', null],
+                    ['=', 'teachers_id', $model->teachersId],
+                    ['auditory_id' => $model->auditory_id],
+                    ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->id)],
+                    ['AND',
+                        ['<=', 'time_plan_in', Schedule::encodeTime($model->time_in)],
+                        ['>=', 'time_plan_out', Schedule::encodeTime($model->time_out)],
+                    ],
+                    ['=', 'week_day', $model->week_day]
+                ])->andWhere(new \yii\db\Expression('CASE WHEN week_num != 0 THEN week_num = :week_num ELSE TRUE END', [':week_num' => $model->week_num]));;
 
 
         return $thereIsAnOverlapping;

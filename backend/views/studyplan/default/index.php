@@ -83,6 +83,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                     ],
                     [
+                        'value' => function (Studyplan $model) {
+                            return $model->studentPhone;
+                        },
+                        'label' =>  'Телефон'
+                    ],
+                    [
                         'attribute' => 'programmName',
                         'filter' => \common\models\education\EducationProgramm::getProgrammList(),
                         'filterType' => GridView::FILTER_SELECT2,

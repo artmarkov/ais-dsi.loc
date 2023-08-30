@@ -80,7 +80,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['studyplan_id', 'invoices_id', 'type_id', 'invoices_summ', 'invoices_app'], 'required'],
+            [['invoices_id', 'type_id', 'invoices_summ', 'invoices_app', 'status'], 'required'],
             [['studyplan_id', 'invoices_id', 'direction_id', 'teachers_id', 'type_id', 'vid_id', 'month_time_fact', 'invoices_tabel_flag', 'status'], 'integer'],
             [['invoices_date', 'payment_time', 'payment_time_fact'], 'safe'],
             [['invoices_summ'], 'number'],

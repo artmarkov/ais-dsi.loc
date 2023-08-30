@@ -281,7 +281,10 @@ class User extends UserIdentity
      */
     public static function getUsersList()
     {
-        $users = static::find()->select(['id', 'username'])->asArray()->all();
+        $users = static::find()->select(['id', 'username'])
+            ->where(['=', 'status', User::STATUS_ACTIVE])
+            ->where(['=', 'superadmin',0])
+            ->asArray()->all();
         return ArrayHelper::map($users, 'id', 'username');
     }
 

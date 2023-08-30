@@ -14,6 +14,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="studyplan-invoices-create">    
     <?=  $this->render('_form', [
         'model' => $model,
-//        'studyplanIds' => $studyplanIds,
+        'studyplanIds' => $studyplanIds,
     ]); ?>
 </div>

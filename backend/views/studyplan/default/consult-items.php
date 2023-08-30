@@ -77,8 +77,15 @@ $columns = [
 //        'filterType' => GridView::FILTER_SELECT2,
 //        'filter' => false /*RefBook::find('teachers_fio')->getList()*/,
         'value' => function ($model) {
-            return RefBook::find('teachers_fio')->getValue($model->teachers_id);
+            return \artsoft\Art::isBackend() ?  Html::a(RefBook::find('teachers_fio')->getValue($model->teachers_id),
+                ['/teachers/default/consult-items', 'id' => $model->teachers_id],
+                [
+                    'target' => '_blank',
+                    'data-pjax' => '0',
+//                    'class' => 'btn btn-info',
+                ]) : RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
+        'format' => 'raw',
 //        'filterWidgetOptions' => [
 //            'pluginOptions' => ['allowClear' => true],
 //        ],

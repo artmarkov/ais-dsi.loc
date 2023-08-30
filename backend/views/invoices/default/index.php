@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $columns = [
     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
-        return ['value' => $model->studyplan_invoices_id];
+        return ['value' => $model->studyplan_id];
     }
     ],
     [
@@ -197,7 +197,7 @@ $columns = [
                 'bulkActionOptions' => [
                     'gridId' => 'studyplan-invoices-grid',
                     'actions' => [
-                        Url::to(['bulk-delete']) => 'Удалить квитанции',
+//                        Url::to(['bulk-delete']) => 'Удалить квитанции',
 //                        Url::to(['bulk-load']) => 'Выгрузить квитанции в Word',
                         Url::to(['bulk-new']) => 'Создать новые квитанции',
                     ] //Configure here you bulk actions

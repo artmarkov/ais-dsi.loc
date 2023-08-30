@@ -72,11 +72,14 @@ use artsoft\widgets\Nav;
                 'icon' => 'fa fa-graduation-cap',
                 'url' => '#',
                 'items' => [
+                        // Преподаватели
                     ['label' => 'Карточка преподавателя', 'icon' => 'fa fa-minus', 'url' => ['/teachers/default/index']],
-                    ['label' => 'Мои ученики', 'icon' => 'fa fa-minus', 'url' => ['/teachers/students/index']],
+                    ['label' => 'Мои ученики', 'icon' => 'fa fa-minus', 'url' => ['/teachers/studyplan/index']],
                     ['label' => 'Нагрузка', 'icon' => 'fa fa-minus', 'url' => ['/teachers/load-items/index']],
                     ['label' => 'Табель учета', 'icon' => 'fa fa-minus', 'url' => ['/teachers/cheet-account/index']],
                     ['label' => 'Планирование индивидуальных занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/teachers-plan/index']],
+                    ['label' => 'Сетка расписания школы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/schedule/index']],
+                 //   ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/calendar']],
                     ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/schedule-items/index']],
                     ['label' => 'Расписание консультаций', 'icon' => 'fa fa-minus', 'url' => ['/teachers/consult-items/index']],
                     ['label' => 'Журнал успеваемости группы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/studyplan-progress/index']],
@@ -85,25 +88,25 @@ use artsoft\widgets\Nav;
 //                    ['label' => 'Портфолио', 'icon' => 'fa fa-minus', 'url' => ['/teachers/portfolio/index']],
                     ['label' => 'Документы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/document/index']],
                     ['label' => 'Вступительные экзамены', 'icon' => 'fa fa-minus', 'url' => ['/entrant/default/index']],
-
+                    // ученики
                     ['label' => 'Карточка ученика', 'icon' => 'fa fa-minus', 'url' => ['/student/default/index']],
                     ['label' => 'Учебные планы', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
 
                 ],
             ],
-//            [
-//                'label' => 'Аналитика',
-//                'icon' => 'fa fa-bar-chart',
-//                'url' => '#',
-//                'items' => [
+            [
+                'label' => 'Аналитика',
+                'icon' => 'fa fa-bar-chart',
+                'url' => '#',
+                'items' => [
 //                    ['label' => 'Отчеты', 'icon' => 'fa fa-minus', 'url' => ['/reports/default/index']],
 //                    ['label' => 'Журнал посещений', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/default/index']],
 //                    ['label' => 'Показатели эфективности', 'icon' => 'fa fa-minus', 'url' => ['/efficiency/default/index']],
 //                    ['label' => 'Портфолио преподавателей', 'icon' => 'fa fa-minus', 'url' => ['/portfolio/default/index']],
-//                    ['label' => 'Контроль исполнения', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/index']],
+                    ['label' => 'Контроль исполнения', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/index']],
 //                    ['label' => 'Сводная успеваемость', 'icon' => 'fa fa-minus', 'url' => ['/summary-progress/default/index']],
-//                ],
-//            ],
+                ],
+            ],
             [
                 'label' => 'Сервис',
                 'icon' => 'fa fa-industry',

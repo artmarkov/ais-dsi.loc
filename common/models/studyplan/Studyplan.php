@@ -268,7 +268,12 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
     public function getStudentFio()
     {
-        return $this->student->user->getFullName();
+        return $this->student->getFullName();
+    }
+
+    public function getStudentPhone()
+    {
+        return $this->student->getUserPhone();
     }
 
     public function getParent()

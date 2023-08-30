@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\models\User;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -77,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                                     [
                                         'attribute' => 'gridReceiverSearch',
-                                        'filter' => artsoft\models\User::getUsersList(),
+                                        'filter' => User::getUsersListByCategory(['teachers', 'employees', 'students', 'parents']), /*artsoft\models\User::getUsersList(),*/
                                         'class' => 'artsoft\grid\columns\TitleActionColumn',
                                         'controller' => '/mailbox/default',
                                         'title' => function (Mailbox $model) {

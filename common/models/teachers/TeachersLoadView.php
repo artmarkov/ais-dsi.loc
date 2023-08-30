@@ -45,15 +45,19 @@ class TeachersLoadView extends TeachersLoad
 
     public static function getTotal($provider, $fieldName, $teachers_id)
     {
-        $total = 0;
+        $total = [0, 0];
 
         foreach ($provider as $item) {
             if ($item['teachers_id'] == $teachers_id) {
-                $total += $item[$fieldName];
+                if($item['direction_id'] == 1000) {
+                $total[0] += $item[$fieldName];
+                } else {
+                $total[1] += $item[$fieldName];
+                }
             }
         }
 
-        return $total;
+        return $total[0] . '/' . $total[1];
     }
 
 //    public function getStudyplanWeekTime()

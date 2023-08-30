@@ -6,6 +6,7 @@ use artsoft\behaviors\TimeFieldBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use artsoft\models\User;
 use artsoft\widgets\Notice;
 use common\models\auditory\Auditory;
 use common\models\guidejob\Direction;
@@ -224,5 +225,62 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             ->andWhere(['is', 'guide_teachers_direction.parent', null])
             ->all();
     }
+   /* public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
 
+        $model = TeachersLoad::find()
+            ->where(['=', 'id', $this->teachers_load_id])
+            ->andWhere(['=', 'direction_id', 1000])
+            ->one();
+        if ($model) {
+            $modelFind = TeachersLoad::find()
+                ->where(['=', 'studyplan_subject_id', $model->studyplan_subject_id])
+                ->andWhere(['=', 'load_time', $model->load_time])
+                ->andWhere(['=', 'direction_id', 1001])
+                ->one();
+            if ($modelFind) {
+                $m = new SubjectSchedule();
+                $m->teachers_load_id = $modelFind->id;
+                $m->week_num = $this->week_num;
+                $m->week_day = $this->week_day;
+                $m->time_in = $this->time_in;
+                $m->time_out = $this->time_out;
+                $m->auditory_id = $this->auditory_id;
+                $m->save(false);
+            }
+        }
+    }*/
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($insert) {
+                $model = TeachersLoad::find()
+                    ->where(['=', 'id', $this->teachers_load_id])
+                    ->andWhere(['=', 'direction_id', 1000])
+                    ->one();
+                if ($model) {
+                    $modelFind = TeachersLoad::find()
+                        ->where(['=', 'studyplan_subject_id', $model->studyplan_subject_id])
+                        ->where(['=', 'subject_sect_studyplan_id', $model->subject_sect_studyplan_id])
+                        ->andWhere(['=', 'load_time', $model->load_time])
+                        ->andWhere(['=', 'direction_id', 1001])
+                        ->one();
+                    if ($modelFind) {
+                        $m = new SubjectSchedule();
+                        $m->teachers_load_id = $modelFind->id;
+                        $m->week_num = $this->week_num;
+                        $m->week_day = $this->week_day;
+                        $m->time_in = Schedule::decodeTime($this->time_in);
+                        $m->time_out = Schedule::decodeTime($this->time_out);
+                        $m->auditory_id = $this->auditory_id;
+                        $m->save(false);
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

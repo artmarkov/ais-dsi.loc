@@ -8,9 +8,12 @@ use artsoft\models\User;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanInvoicesView;
+use common\models\studyplan\StudyplanSubject;
 use Yii;
 use artsoft\controllers\admin\BaseController;
 use yii\base\DynamicModel;
+use yii\db\Exception;
+use yii\db\Transaction;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
@@ -20,7 +23,7 @@ use yii\web\NotFoundHttpException;
  */
 class DefaultController extends BaseController
 {
-    public $modelClass       = 'common\models\studyplan\StudyplanInvoices';
+    public $modelClass = 'common\models\studyplan\StudyplanInvoices';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanInvoicesViewSearch';
     public $modelHistoryClass = 'common\models\history\StudyplanInvoicesHistory';
 
@@ -32,7 +35,7 @@ class DefaultController extends BaseController
         $day_out = date("t");
 
         $model_date = new DynamicModel(['date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
-        $model_date->addRule(['date_in', 'date_out' ], 'required')
+        $model_date->addRule(['date_in', 'date_out'], 'required')
             ->addRule(['date_in', 'date_out'], 'string')
             ->addRule(['programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
@@ -72,46 +75,61 @@ class DefaultController extends BaseController
 
     public function actionCreate()
     {
-        if (!Yii::$app->request->get('studyplan_id')) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_id.");
-        }
         $this->view->params['tabMenu'] = $this->tabMenu;
+        $studyplanIds = new DynamicModel(['ids']);
+        $studyplanIds->addRule(['ids'], 'safe');
 
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
-        $model->studyplan_id = Yii::$app->request->get('studyplan_id');
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
-            $this->getSubmitAction($model);
+
+        if (!Yii::$app->request->get('studyplan_id') && !Yii::$app->request->get('ids')) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_id.");
+        }
+        if (Yii::$app->request->get('ids')) {
+            $studyplanIds->ids = Yii::$app->request->get('ids');
+        }
+        if (Yii::$app->request->get('studyplan_id')) {
+            $studyplanIds->ids = [Yii::$app->request->get('studyplan_id')];
         }
 
-        return $this->renderIsAjax($this->createView, compact('model'));
+        if ($model->load(Yii::$app->request->post()) && $studyplanIds->load(Yii::$app->request->post()) && $model->validate()) {
+            $flag = true;
+            $transaction = \Yii::$app->db->beginTransaction();
+            try {
+                foreach ($studyplanIds['ids'] as $item => $studyplan_id) {
+                    $m = new $this->modelClass;
+                    $m->setAttributes($model->getAttributes());
+                    $m->studyplan_id = $studyplan_id;
+                    if (!($flag = $m->save(false))) {
+                        $transaction->rollBack();
+                        break;
+                    }
+                }
+                if ($flag) {
+                    $transaction->commit();
+                    Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+                    $this->getSubmitAction($model);
+                }
+            } catch (Exception $e) {
+                $transaction->rollBack();
+            }
+        }
+
+        return $this->renderIsAjax($this->createView, compact('model', 'studyplanIds'));
     }
 
-    public function actionMakeInvoices($id) {
+    public function actionMakeInvoices($id)
+    {
         $model = $this->findModel($id);
-      return  $model->makeDocx();
+        return $model->makeDocx();
     }
 
     public function actionBulkNew()
     {
-       // print_r(Yii::$app->request->post('selection', [])); die();
-        $model = new $this->modelClass;
-        if (!Yii::$app->request->post('selection')) {
+        if (!Yii::$app->request->post('selection', [])) {
             throw new NotFoundHttpException("Отсутствует обязательный параметр POST selection.");
         }
-            $studyplanIds = Yii::$app->request->post('selection', []);
-//        if (Yii::$app->request->post('selection')) {
-//            $modelClass = $this->modelClass;
-//            foreach (Yii::$app->request->post('selection', []) as $id) {
-//                $where = ['id' => $id];
-//
-//
-//            }
-//        }
-        return $this->renderIsAjax($this->createView, [
-            'model' => $model,
-            'studyplanIds' => $studyplanIds,
-        ]);
+        $ids = Yii::$app->request->post('selection', []);
+        return $this->redirect(['create', 'ids' => $ids]);
     }
 }

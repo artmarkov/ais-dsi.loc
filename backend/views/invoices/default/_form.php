@@ -20,7 +20,7 @@ use yii\helpers\Url;
 
     <div class="panel">
         <div class="panel-heading">
-            Карточка платежа: <?= $model->studyplan->student->fullName?>
+            Карточка платежа
             <?php if (!$model->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
             <?php endif; ?>
@@ -28,15 +28,12 @@ use yii\helpers\Url;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                   <!-- --><?php
-/*                    foreach ($studyplanIds as $index => $studyplan_id) {
-                        echo \yii\helpers\Html::activeHiddenInput($model, "[{$index}]studyplan_id");
+                    <?php if ($model->isNewRecord): ?>
+                        <?php
+                        echo Html::activeHiddenInputList($studyplanIds, 'ids');
+                        ?>
+                    <?php endif; ?>
 
-                    }
-                    */?>
-                    <?php
-                    echo \yii\helpers\Html::activeHiddenInput($model, 'studyplan_id');
-                    ?>
                     <?= $form->field($model, 'invoices_id')->dropDownList(\common\models\own\Invoices::getInvoicesList(), [
                         'prompt' => Yii::t('art', 'Select...'),
                         //  'disabled' => $readonly,

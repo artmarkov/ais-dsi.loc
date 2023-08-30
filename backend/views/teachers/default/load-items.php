@@ -37,6 +37,7 @@ $columns = [
         'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
+        'footer' => 'Пед./Конц.',
         'label' =>  Yii::t('art/guide', 'Sect').'/'.Yii::t('art/student', 'Student'),
     ],
     [
@@ -72,7 +73,7 @@ $columns = [
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 5
+        'subGroupOf' => 5,
     ],
     [
         'attribute' => 'load_time',
@@ -200,7 +201,7 @@ $columns = [
                 </div>
 
                 <div class="col-sm-6 text-right">
-                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'subject-load-grid-pjax']) ?>
+                    <?php /*\artsoft\grid\GridPageSize::widget(['pjaxId' => 'subject-load-grid-pjax'])*/ ?>
                 </div>
             </div>
             <?php

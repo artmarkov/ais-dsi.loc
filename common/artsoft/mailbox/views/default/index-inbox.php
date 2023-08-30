@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\models\User;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -81,7 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [
                                         'attribute' => 'mailboxSenderId',
                                         'label' => Yii::t('art/mailbox', 'Sender'),
-                                        'filter' => artsoft\models\User::getUsersList(),
+                                        'filter' =>  User::getUsersListByCategory(['teachers', 'employees', 'students', 'parents']), /*artsoft\models\User::getUsersList(),*/
                                         'class' => 'artsoft\grid\columns\TitleActionColumn',
                                         'controller' => '/mailbox/default',
                                         'title' => function (MailboxInbox $model) {

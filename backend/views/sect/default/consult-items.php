@@ -37,8 +37,15 @@ $columns = [
     [
         'attribute' => 'teachers_id',
         'value' => function ($model) {
-            return RefBook::find('teachers_fio')->getValue($model->teachers_id);
+            return \artsoft\Art::isBackend() ?  Html::a(RefBook::find('teachers_fio')->getValue($model->teachers_id),
+                ['/teachers/default/consult-items', 'id' => $model->teachers_id],
+                [
+                    'target' => '_blank',
+                    'data-pjax' => '0',
+//                    'class' => 'btn btn-info',
+                ]) : RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
+        'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1
     ],

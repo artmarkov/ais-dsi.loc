@@ -34,24 +34,35 @@ class m230705_153245_add_schoolplan_permissions extends PermissionsMigration
                     '/admin/schoolplan/default/teachers-efficiency/*',
                 ],
                 'viewschoolplan' => [
-                    'title' => 'Доступ к Плану работы',
+                    'title' => 'Доступ к Плану работы(просмотр)',
                     'links' => [
                         '/schoolplan/default/index',
                         '/schoolplan/default/view',
-                        '/schoolplan/default/create',
-                        '/schoolplan/default/update',
-                        '/schoolplan/default/delete',
                         '/schoolplan/default/grid-sort',
                         '/schoolplan/default/grid-page-size',
                         '/schoolplan/default/protocol-event',
-                        '/schoolplan/default/protocol-event?mode=create',
                         '/schoolplan/default/protocol-event?mode=view',
+                    ],
+                    'roles' => [
+                        self::ROLE_TEACHER,
+                    ],
+                ],
+                'editschoolplan' => [
+                    'title' => 'Доступ к Плану работы(редактирование)',
+                    'links' => [
+                        '/schoolplan/default/create',
+                        '/schoolplan/default/update',
+                        '/schoolplan/default/delete',
+                        '/schoolplan/default/protocol-event?mode=create',
                         '/schoolplan/default/protocol-event?mode=update',
                         '/schoolplan/default/protocol-event?mode=delete',
 
                     ],
                     'roles' => [
                         self::ROLE_DEPARTMENT,
+                    ],
+                    'childs' => [
+                        'viewschoolplan',
                     ],
                 ],
                 'fullschoolplanAccess' => [

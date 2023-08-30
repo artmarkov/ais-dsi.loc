@@ -19,6 +19,7 @@ use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\TeachersLoad;
+use common\models\teachers\TeachersLoadView;
 use Yii;
 use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
@@ -236,12 +237,12 @@ class DefaultController extends MainController
         } else {
             $model_date = $this->modelDate;
 
-            $searchModel = new TeachersLoadViewSearch();
-
-            $searchName = StringHelper::basename($searchModel::className());
+            $query = TeachersLoadView::find()
+                ->where(['=', 'subject_sect_id', $id])
+                ->andWhere(['=', 'plan_year', $model_date->plan_year])
+                ->andWhere(['is not', 'studyplan_subject_list', NULL]);
+            $searchModel = new TeachersLoadViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['subject_sect_id'] = $id;
-            $params[$searchName]['plan_year'] = $model_date->plan_year;
             $dataProvider = $searchModel->search($params);
 
             return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
