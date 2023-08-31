@@ -96,7 +96,10 @@ use yii\helpers\Url;
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                <?=  \artsoft\helpers\ButtonHelper::exitButton(); ?>
+                <?=  \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit', 'btn-md');?>
+                <?=  $model->isNewRecord ? null  : \artsoft\helpers\ButtonHelper::deleteButton();?>
+
             </div>
             <?php if (!$model->isNewRecord): ?>
                 <div class="pull-right">
