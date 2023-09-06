@@ -409,11 +409,11 @@ JS
                         </div>
                         <div class="row">
 
-                            <?= $form->field($model, "[{$index}]year_time_total")->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
+                            <?= $form->field($model, 'year_time_total')->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
 
-                            <?= $form->field($model, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
+                            <?= $form->field($model, 'cost_month_total')->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
 
-                            <?= $form->field($model, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
+                            <?= $form->field($model, 'cost_year_total')->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
                         </div>
                     </div>
                 </div>

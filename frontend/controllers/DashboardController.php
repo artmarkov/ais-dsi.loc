@@ -23,6 +23,12 @@ class DashboardController extends BaseController
             $this->widgets = [  
                 [
                     [
+                        'class' => 'col-md-12',
+                        'content' => [
+                            'frontend\widgets\dashboard\Quick',
+                        ],
+                    ],
+                    [
                         'class' => 'col-md-8',
                         'content' => [
                            // 'artsoft\user\widgets\dashboard\UsersVisitMap',

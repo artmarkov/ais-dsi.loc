@@ -55,13 +55,9 @@ class ScheduleItemsController extends MainController
         ]);
     }
 
-    public function actionUpdate($id = null)
+    public function actionUpdate($id)
     {
-        if (!Yii::$app->request->get('objectId')) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр GET objectId.");
-        }
-        $objectId = Yii::$app->request->get('objectId');
-        $model = SubjectSchedule::findOne($objectId);
+        $model = SubjectSchedule::findOne($id);
         $teachersLoadModel = TeachersLoad::findOne($model->teachers_load_id);
         if (!isset($model)) {
             throw new NotFoundHttpException("The SubjectSchedule was not found.");

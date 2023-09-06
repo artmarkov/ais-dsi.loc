@@ -25,8 +25,25 @@ $form = ActiveForm::begin([
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= $form->field($model_date, "date_in")->widget(DatePicker::class)->label('Дата начала периода'); ?>
-                        <?= $form->field($model_date, "date_out")->widget(DatePicker::class)->label('Дата окончания периода'); ?>
+                        <?= $form->field($model_date, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
+                            [
+                                'disabled' => false,
+                                'onchange'=>'js: $(this).closest("form").submit()',
+//                                'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' =>  true ],
+//                                ],
+                            ])->label(Yii::t('art/studyplan', 'Plan Year'));
+                        ?>
+                        <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [
+                            'pluginEvents' => ['changeDate' => "function(e){
+                                           $(e.target).closest('form').submit();
+                                        }" ]
+                        ])->label('Дата начала выборки')->hint('Учитывается дата выставления счета.'); ?>
+                        <?= $form->field($model_date, "date_out")->widget(DatePicker::class, [
+                            'pluginEvents' => ['changeDate' => "function(e){
+                                           $(e.target).closest('form').submit();
+                                        }" ]
+                        ])->label('Дата окончания выборки'); ?>
+
                     </div>
                 </div>
                 <div class="row">
@@ -105,13 +122,13 @@ $form = ActiveForm::begin([
                                             ],
                                         ])->label(Yii::t('art/guide', 'Subject Name')); ?>
 
-                                        <?= $form->field($model_date, "subject_type_id")->dropDownList(RefBook::find('subject_type_name')->getList(), ['prompt' => Yii::t('art/guide', 'Select...')])->label(Yii::t('art/guide', 'Subject Type')); ?>
+                                        <?= $form->field($model_date, "subject_type_id")->dropDownList(RefBook::find('subject_type_name')->getList(), ['prompt' => Yii::t('art', 'Select...')])->label(Yii::t('art/guide', 'Subject Type')); ?>
 
-                                        <?= $form->field($model_date, "subject_type_sect_id")->dropDownList(RefBook::find('subject_type_name')->getList(), ['prompt' => Yii::t('art/guide', 'Select...')])->label(Yii::t('art/guide', 'Subject Type Sect')); ?>
+                                        <?= $form->field($model_date, "subject_type_sect_id")->dropDownList(RefBook::find('subject_type_name')->getList(), ['prompt' => Yii::t('art', 'Select...')])->label(Yii::t('art/guide', 'Subject Type Sect')); ?>
 
-                                        <?= $form->field($model_date, "subject_vid_id")->dropDownList(RefBook::find('subject_vid_name')->getList(), ['prompt' => Yii::t('art/guide', 'Select...')])->label(Yii::t('art/guide', 'Subject Vid')); ?>
+                                        <?= $form->field($model_date, "subject_vid_id")->dropDownList(RefBook::find('subject_vid_name')->getList(), ['prompt' => Yii::t('art', 'Select...')])->label(Yii::t('art/guide', 'Subject Vid')); ?>
 
-                                        <?= $form->field($model_date, "studyplan_invoices_status")->dropDownList(\common\models\studyplan\StudyplanInvoices::getStatusList(), ['prompt' => Yii::t('art/guide', 'Select...')])->label('Статус платежа'); ?>
+                                        <?= $form->field($model_date, "studyplan_invoices_status")->dropDownList(\common\models\studyplan\StudyplanInvoices::getStatusList(), ['prompt' => Yii::t('art', 'Select...')])->label('Статус платежа'); ?>
 
                                         <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); ?>
                                         <?= Html::resetButton('Очистить форму', ['class' => 'btn btn-default']) ?>

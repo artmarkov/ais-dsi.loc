@@ -926,7 +926,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
         if ('create' == $mode) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $modelTeachers->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Indiv Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $modelTeachers->id]];
 
             if (!Yii::$app->request->get('subject_key')) {
                 throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_key");
@@ -1018,7 +1018,7 @@ class DefaultController extends MainController
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
             return $this->redirect($this->getRedirectPage('delete', $model));
         } elseif ($objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Indiv Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
 
             $subject_key = base64_decode($objectId);
@@ -1189,8 +1189,8 @@ class DefaultController extends MainController
             return $this->renderIsAjax('efficiency-bar', compact(['data', 'model_date', 'modelTeachers']));
 
         } elseif ('history' == $mode && $objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['teachers/default/efficiency', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['teachers/default/efficiency', 'id' => $model->id, 'objectId' => $objectId, 'mode' => 'update']];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['teachers/default/efficiency', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['teachers/default/efficiency', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
             $this->view->params['tabMenu'] = $this->getMenu($id);
 
             $model = TeachersEfficiency::findOne($objectId);

@@ -6,6 +6,7 @@ use artsoft\helpers\Schedule;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\ArtHelper;
 use artsoft\widgets\Notice;
+use common\models\studyplan\Studyplan;
 use common\models\teachers\TeachersPlan;
 use Yii;
 use artsoft\widgets\Tooltip;
@@ -113,7 +114,8 @@ class SubjectScheduleView extends SubjectSchedule
             $model = SubjectScheduleStudyplanView::find()->where(['=', 'subject_schedule_id', $this->subject_schedule_id])->one();
             if ($model) {
                 $studentsIds = SubjectScheduleStudyplanView::find()->select('student_id')
-                    ->where(['=', 'subject_schedule_id', $this->subject_schedule_id])->column();
+                    ->where(['=', 'subject_schedule_id', $this->subject_schedule_id])
+                    ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])->column();
                 if (self::getStudentScheduleOverLapping($model, $studentsIds)->exists() === true) {
                     $info = [];
                     foreach (self::getStudentScheduleOverLapping($model, $studentsIds)->all() as $itemModel) {
@@ -205,6 +207,7 @@ class SubjectScheduleView extends SubjectSchedule
             ['AND',
                 ['!=', 'subject_schedule_id', $model->subject_schedule_id],
                 ['=', 'direction_id', $model->direction_id],
+                ['=', 'status', Studyplan::STATUS_ACTIVE],
                 ['student_id' => $studentsIds],
                 ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->subject_schedule_id)],
                 ['OR',

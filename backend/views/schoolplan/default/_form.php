@@ -278,7 +278,21 @@ use common\models\user\UserCommon;
 
                                         ]);
                                         ?>
-                                        <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(Schoolplan::getDocStatusList(), ['disabled' => \artsoft\Art::isFrontend() ? true : $readonly]) ?>
+                                        <?= $form->field($model->loadDefaultValues(), 'doc_status')->widget(\kartik\select2\Select2::class, [
+                                            'data' => Schoolplan::getDocStatusList(),
+                                            'showToggleAll' => false,
+                                            'options' => [
+                                                'disabled' => \artsoft\Art::isFrontend() ? true : $readonly,
+                                                'placeholder' => Yii::t('art', 'Select...'),
+                                                'multiple' => false,
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => false,
+                                                //'minimumInputLength' => 3,
+                                            ],
+
+                                        ]);
+                                        ?>
 
                                         <?php if (!$model->isNewRecord && $model->category->bars_flag && \artsoft\Art::isBackend()) : ?>
                                             <?= $form->field($model, 'bars_flag')->checkbox(['disabled' => $readonly]) ?>

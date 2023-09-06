@@ -58,6 +58,7 @@ class m230823_193246_add_studyplan_permissions extends PermissionsMigration
                         '/studyplan/default/studyplan-perform',
                         '/studyplan/default/studyplan-perform/grid-sort',
                         '/studyplan/default/studyplan-perform/grid-page-size',
+                        '/studyplan/default/make-invoices',
 
                     ],
                     'roles' => [

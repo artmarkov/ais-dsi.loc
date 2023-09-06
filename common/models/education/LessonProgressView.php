@@ -335,16 +335,18 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
      */
     protected static function getEditableForm($date_label, $mark)
     {
+        $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::MARK,LessonMark::OFFSET_NONOFFSET,LessonMark::REASON_ABSENCE]);
+
         return Editable::widget([
             'buttonsTemplate' => "{reset}{submit}",
             'name' => 'lesson_mark_id',
             'asPopover' => true,
             'value' => $mark->lesson_mark_id,
             'header' => $date_label . ' - ' . $mark->test_name,
-            'displayValueConfig' => RefBook::find('lesson_mark')->getList(),
+            'displayValueConfig' => $mark_list,
             'format' => Editable::FORMAT_LINK,
             'inputType' => Editable::INPUT_DROPDOWN_LIST,
-            'data' => RefBook::find('lesson_mark')->getList(),
+            'data' => $mark_list,
             'size' => 'md',
             'options' => ['class' => 'form-control', 'placeholder' => Yii::t('art', 'Select...')],
             'formOptions' => [

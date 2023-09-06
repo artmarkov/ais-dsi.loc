@@ -20,7 +20,8 @@ $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
    // if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
             $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'subject_key' => base64_encode($model['subject_key'] . '||' . $model['timestamp_in']), 'mode' => 'create']),
+                \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'subject_key' => base64_encode($model['subject_key'] . '||' . $model['timestamp_in']), 'mode' => 'create'] :
+                    ['/teachers/studyplan-progress-indiv/create', 'subject_key' => base64_encode($model['subject_key'] . '||' . $model['timestamp_in'])],
                 [
                     'title' => 'Добавить занятие',
                     'data-method' => 'post',
@@ -33,14 +34,16 @@ $editMarks = function ($model, $key, $index, $widget) {
     foreach ($model['lesson_timestamp'] as $id => $item) {
 //        if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
             $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                    Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']),'mode' => 'update']), [
+                    \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']),'mode' => 'update'] :
+                        ['/teachers/studyplan-progress-indiv/update', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date'])], [
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
                         'class' => 'btn btn-xxs btn-link',
                     ])
                 . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                    Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']), 'mode' => 'delete']), [
+                    \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']), 'mode' => 'delete'] :
+                        ['/teachers/studyplan-progress-indiv/delete', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date'])], [
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xxs btn-link',
                         'data' => [
@@ -87,7 +90,12 @@ $columns = [
         'attribute' => 'student_id',
         'label' => $model['attributes']['student_id'],
         'value' => function ($model) {
-            return $model['student_fio'];
+            return Html::a($model['student_fio'],
+                \artsoft\Art::isBackend() ? ['/studyplan/default/schedule-items', 'id' => $model['studyplan_id']] : ['/teachers/studyplan/schedule-items', 'id' => $model['studyplan_id']],
+                [
+                    'target' => '_blank',
+//                    'class' => 'btn btn-link',
+                ]);
         },
         'format' => 'raw',
     ],

@@ -979,17 +979,20 @@ class DefaultController extends MainController
             $day_in = 1;
             $day_out = date("t");
 
-            $model_date = new DynamicModel(['date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
-            $model_date->addRule(['date_in', 'date_out' ], 'required')
+            $model_date = new DynamicModel(['plan_year','date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
+            $model_date->addRule(['plan_year','date_in', 'date_out'], 'required')
                 ->addRule(['date_in', 'date_out'], 'string')
-                ->addRule(['programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
+                ->addRule(['plan_year', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
                 $mon = date('m');
                 $year = date('Y');
 
                 $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:d.m.Y');
                 $model_date->date_out = $session->get('_invoices_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
+                $model_date->plan_year = $session->get('_invoices_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
             }
+
+            $session->set('_invoices_plan_year', $model_date->plan_year);
             $session->set('_invoices_date_in', $model_date->date_in);
             $session->set('_invoices_date_out', $model_date->date_out);
 

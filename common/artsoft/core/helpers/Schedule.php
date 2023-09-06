@@ -87,13 +87,13 @@ public static function astr2academ($astr_hour)
     public static function encodeTime($value)
     {
         $t = explode(":", $value);
-        return mktime($t[0], $t[1], 0, 1, 1, 70);
+        return  $value ? mktime($t[0], $t[1], 0, 1, 1, 70) : '';
 
     }
 
     public static function decodeTime($value)
     {
-        return  date('H:i', $value);
+        return  $value ? date('H:i', $value) : '';
     }
 
     public static function getWeekDay($day, $mon, $year)

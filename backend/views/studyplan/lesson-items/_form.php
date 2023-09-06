@@ -6,6 +6,7 @@ use common\models\education\LessonProgress;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
+use common\models\education\LessonMark;
 
 
 /* @var $this yii\web\View */
@@ -16,7 +17,8 @@ use yii\widgets\MaskedInput;
 /* @var $subject_sect_studyplan_id */
 
 $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($model->subject_sect_studyplan_id, $model->studyplan_subject_id);
-$mark_list = RefBook::find('lesson_mark')->getList();
+$mark_list = LessonMark::getMarkLabelForStudent([LessonMark::MARK,LessonMark::OFFSET_NONOFFSET,LessonMark::REASON_ABSENCE]);
+
 if ($model->subject_sect_studyplan_id != 0) {
     $studyplanSubjectList = \common\models\subjectsect\SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id)->studyplan_subject_list;
 } else {
@@ -180,7 +182,13 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                <?php if ($model->lesson_date && !empty($modelsItems)): ?>
+                    <?= \artsoft\helpers\ButtonHelper::exitButton();?>
+                    <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit');?>
+                <?php else: ?>
+                    <?= \artsoft\helpers\ButtonHelper::exitButton();?>
+                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'next']); ?>
+                <?php endif; ?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

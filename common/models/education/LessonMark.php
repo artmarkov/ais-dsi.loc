@@ -134,4 +134,13 @@ class LessonMark extends \artsoft\db\ActiveRecord
             ->orderBy('mark_value')
             ->asArray()->all(), 'id', 'mark_label');
     }
+
+    public static function getMarkLabelForStudent($mark_category = [self::MARK])
+    {
+        return ArrayHelper::map(self::find()
+            ->select('id, mark_label')
+            ->where(['mark_category' => $mark_category])
+            ->orderBy('mark_label')
+            ->asArray()->all(), 'id', 'mark_label');
+    }
 }

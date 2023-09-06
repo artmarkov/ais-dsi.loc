@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="row">
                             <?= $form->field($model, 'last_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124]) ?>
                             <?= $form->field($model, 'first_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124]) ?>
-                            <?= $form->field($model, 'middle_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124]) ?>
+                            <?= $form->field($model, 'middle_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Пропустите это поле, если действительно нет отчества!') ?>
                             <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(\kartik\date\DatePicker::classname()); ?>
 
                             <?= $form->field($model, 'captcha')->widget(Captcha::className(), [

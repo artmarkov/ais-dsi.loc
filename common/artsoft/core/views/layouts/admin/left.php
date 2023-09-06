@@ -54,6 +54,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Образовательные программы', 'icon' => 'fa fa-minus', 'url' => ['/education/default/index']],
                     ['label' => 'Работы и сертификаты', 'icon' => 'fa fa-minus', 'url' => ['/creative/default/index']],
                     ['label' => 'Счета за обучение', 'icon' => 'fa fa-minus', 'url' => ['/invoices/default/index']],
+                    ['label' => 'Тематические (репертуарные) планы', 'icon' => 'fa fa-minus', 'url' => ['/thematic/default/index']],
                 ],
             ],
             [

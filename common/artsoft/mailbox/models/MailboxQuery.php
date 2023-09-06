@@ -9,11 +9,6 @@ namespace artsoft\mailbox\models;
  */
 class MailboxQuery extends \yii\db\ActiveQuery
 {
-    public function readNew()
-    {
-        return $this->where(['=', 'status_read', Mailbox::STATUS_READ_NEW]);
-    }
-
     /**
      * {@inheritdoc}
      * @return Mailbox[]|array
