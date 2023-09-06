@@ -1,15 +1,14 @@
 <?php
 
-namespace frontend\controllers\teachers;
+namespace frontend\controllers\schedule;
 
 use artsoft\helpers\RefBook;
-use common\models\auditory\Auditory;
 use common\models\schedule\SubjectScheduleView;
 use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\helpers\ArrayHelper;
 
-class ScheduleController extends MainController
+class DefaultController extends MainController
 {
     public $modelClass = 'common\models\schedule\SubjectScheduleView';
     public $modelSearchClass = 'common\models\schedule\search\SubjectScheduleViewSearch';

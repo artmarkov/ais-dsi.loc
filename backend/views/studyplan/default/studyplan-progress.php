@@ -84,7 +84,7 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,
-        'groupFooter' => $editMarks
+        'groupFooter' => \artsoft\Art::isBackend() ? $editMarks : '',
     ],
     [
         'attribute' => 'subject_sect_studyplan_id',

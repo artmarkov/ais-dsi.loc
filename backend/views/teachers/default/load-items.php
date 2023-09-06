@@ -21,6 +21,7 @@ $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'subject',
+        'filter' => false,
         'width' => '310px',
         'value' => function ($model, $key, $index, $widget) {
             return $model->subject;
@@ -30,6 +31,7 @@ $columns = [
     ],
     [
         'attribute' => 'sect_name',
+        'filter' => false,
         'width' => '310px',
         'value' => function ($model, $key, $index, $widget) {
             return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
@@ -59,9 +61,31 @@ $columns = [
     ],
     [
         'attribute' => 'direction_id',
-        'filter' => false,
+        'filter' => \common\models\guidejob\Direction::getDirectionShortList(),
+        'filterType' => GridView::FILTER_SELECT2,
+        'filterWidgetOptions' => [
+            'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+
         'value' => function ($model, $key, $index, $widget) {
-            return $model->direction ? $model->direction->name : null;
+            return $model->direction ? $model->direction->slug : null;
+        },
+
+        'group' => true,  // enable grouping
+        'subGroupOf' => 2
+    ],
+    [
+        'attribute' => 'direction_vid_id',
+        'filter' => \common\models\guidejob\DirectionVid::getDirectionVidShortList(),
+        'filterType' => GridView::FILTER_SELECT2,
+        'filterWidgetOptions' => [
+            'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+
+        'value' => function ($model, $key, $index, $widget) {
+            return $model->directionVid ? $model->directionVid->slug : null;
         },
 
         'group' => true,  // enable grouping
@@ -69,6 +93,7 @@ $columns = [
     ],
     [
         'attribute' => 'teachers_id',
+        'filter' => false,
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
@@ -93,7 +118,7 @@ $columns = [
         'format' => 'raw',
         'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'load_time_0', $model->id),
         'contentOptions' => function ($model) {
-            return ['class' => 'success'];
+            return $model->direction_vid_id == 1000 ? ['class' => 'success'] : ['class' => 'text-right success'];
         },
     ],
     [
@@ -105,7 +130,8 @@ $columns = [
         'format' => 'raw',
         'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'load_time_1', $model->id),
         'contentOptions' => function ($model) {
-            return ['class' => 'warning'];
+            return $model->direction_vid_id == 1000 ? ['class' => 'warning'] : ['class' => 'text-right warning'];
+
         },
     ],
     [
@@ -117,7 +143,8 @@ $columns = [
         'format' => 'raw',
         'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'load_time_consult', $model->id),
         'contentOptions' => function ($model) {
-            return ['class' => 'info'];
+            return $model->direction_vid_id == 1000 ? ['class' => 'info'] : ['class' => 'text-right info'];
+
         },
     ],
     [
@@ -212,9 +239,9 @@ $columns = [
             <?=
             GridView::widget([
                 'id' => 'subject-load-grid',
-                'pjax' => false,
+                'pjax' => true,
                 'dataProvider' => $dataProvider,
-//                'filterModel' => $searchModel,
+                'filterModel' => $searchModel,
                 'showPageSummary' => false,
                 'showFooter' => true,
                 'columns' => $columns,

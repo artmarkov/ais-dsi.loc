@@ -24,6 +24,7 @@ class StudyplanThematicView extends StudyplanThematic
 
         $attr['sect_name'] = Yii::t('art/guide', 'Sect Name');
         $attr['subject'] = Yii::t('art/guide', 'Subject');
+        $attr['teachers_id'] = Yii::t('art/teachers', 'Teachers');
 
         return $attr;
     }

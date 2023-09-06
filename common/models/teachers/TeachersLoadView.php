@@ -31,6 +31,7 @@ class TeachersLoadView extends TeachersLoad
             'status' => Yii::t('art/guide', 'Status'),
             'teachers_load_id' => Yii::t('art/guide', 'Teachers Load'),
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
+            'direction_vid_id' => Yii::t('art/teachers', 'Name Direction Vid'),
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
             'load_time' => Yii::t('art/guide', 'Load Time'),
             'load_time_0' => 'Факт бюд.',

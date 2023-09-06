@@ -6,6 +6,7 @@ use artsoft\helpers\RefBook;
 use common\models\auditory\Auditory;
 use common\models\schedule\SubjectScheduleView;
 use common\models\teachers\TeachersLoad;
+use common\models\teachers\TeachersPlan;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -29,8 +30,16 @@ class DefaultController extends MainController
         }
         $models = $models->asArray()->orderBy('week_day,time_in')->all();
         $modelsAuditory = RefBook::find('auditory_memo_1', 1)->getList();
+
+        $modelsPlan = TeachersPlan::find()
+            ->where(['=', 'plan_year', $model_date->plan_year]);
+        if ($model_date->teachers_id) {
+            $modelsPlan = $modelsPlan->where(['=', 'teachers_id', $model_date->teachers_id]);
+        }
+        $modelsPlan = $modelsPlan->asArray()->orderBy('week_day,time_plan_in')->all();
+
         $data = ArrayHelper::index($models, null, ['auditory_id', 'week_day']);
-//        echo '<pre>' . print_r($models, true) . '</pre>';
+//        echo '<pre>' . print_r($modelsPlan, true) . '</pre>';
 //        echo '<pre>' . print_r($data, true) . '</pre>'; die();
         return $this->renderIsAjax('index', compact('model_date', 'data', 'modelsAuditory'));
 

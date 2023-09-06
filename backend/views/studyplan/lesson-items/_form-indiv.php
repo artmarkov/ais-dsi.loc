@@ -7,6 +7,7 @@ use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
 use common\models\education\LessonItems;
+use common\models\education\LessonMark;
 
 
 /* @var $this yii\web\View */
@@ -18,7 +19,7 @@ use common\models\education\LessonItems;
 /* @var $modelTeachers */
 
 $models_sch = \common\models\schedule\SubjectScheduleStudyplanView::getScheduleIndiv($subject_key, $modelTeachers->id, $timestamp_in);
-$mark_list = RefBook::find('lesson_mark')->getList();
+$mark_list = LessonMark::getMarkLabelForStudent([LessonMark::MARK,LessonMark::OFFSET_NONOFFSET,LessonMark::REASON_ABSENCE]);
 $subject = (new \yii\db\Query())->select('subject')
     ->from('lesson_progress_view')
     ->where(['=', 'subject_key', $subject_key])

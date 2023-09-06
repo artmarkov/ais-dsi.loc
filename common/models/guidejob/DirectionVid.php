@@ -64,4 +64,10 @@ class DirectionVid extends \yii\db\ActiveRecord
         return \yii\helpers\ArrayHelper::map(self::find()->all(), 'id', 'name');
 
     }
+
+    public static function getDirectionVidShortList()
+    {
+        return \yii\helpers\ArrayHelper::map(self::find()->all(), 'id', 'slug');
+
+    }
 }

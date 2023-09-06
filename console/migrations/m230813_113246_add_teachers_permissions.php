@@ -118,7 +118,6 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/teachers/cheet-account/index',
                         '/teachers/cheet-account/grid-sort',
                         '/teachers/cheet-account/grid-page-size',
-                        '/teachers/schedule/index',
                         '/teachers/schedule-items/index',
                         '/teachers/schedule-items/create',
                         '/teachers/schedule-items/update',

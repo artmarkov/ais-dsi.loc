@@ -157,7 +157,7 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->createView('teachers_load_view', '
-    SELECT studyplan_subject.id AS studyplan_subject_id,
+     SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
     0 AS subject_sect_id,
@@ -166,16 +166,17 @@ UNION ALL
     studyplan_subject.year_time_consult,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
+    teachers_load.direction_vid_id,
     teachers_load.teachers_id,
     teachers_load.load_time,
-	CASE
-		WHEN studyplan_subject.subject_type_id = 1000 THEN teachers_load.load_time
-		ELSE 0
-    END AS load_time_0,
-	CASE
-		WHEN studyplan_subject.subject_type_id = 1001 THEN teachers_load.load_time
-		ELSE 0
-    END AS load_time_1,
+        CASE
+            WHEN studyplan_subject.subject_type_id = 1000 THEN teachers_load.load_time
+            ELSE 0::double precision
+        END AS load_time_0,
+        CASE
+            WHEN studyplan_subject.subject_type_id = 1001 THEN teachers_load.load_time
+            ELSE 0::double precision
+        END AS load_time_1,
     teachers_load.load_time_consult,
     concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
@@ -184,7 +185,7 @@ UNION ALL
     studyplan_subject.subject_id,
     subject.name AS subject_name
    FROM studyplan_subject
-     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id AND studyplan.status = 1
      LEFT JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
      JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id
@@ -211,16 +212,17 @@ UNION ALL
           WHERE studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])) AS year_time_consult,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
+    teachers_load.direction_vid_id,
     teachers_load.teachers_id,
     teachers_load.load_time,
-	CASE
-		WHEN subject_sect_studyplan.subject_type_id = 1000 THEN teachers_load.load_time
-		ELSE 0
-    END AS load_time_0,
-	CASE
-		WHEN subject_sect_studyplan.subject_type_id = 1001 THEN teachers_load.load_time
-		ELSE 0
-    END AS load_time_1,
+        CASE
+            WHEN subject_sect_studyplan.subject_type_id = 1000 THEN teachers_load.load_time
+            ELSE 0::double precision
+        END AS load_time_0,
+        CASE
+            WHEN subject_sect_studyplan.subject_type_id = 1001 THEN teachers_load.load_time
+            ELSE 0::double precision
+        END AS load_time_1,
     teachers_load.load_time_consult,
     concat(subject_sect.sect_name, \' (\',
         CASE
@@ -239,7 +241,7 @@ UNION ALL
      JOIN guide_subject_category ON guide_subject_category.id = subject_sect.subject_cat_id
      LEFT JOIN guide_subject_type ON guide_subject_type.id = subject_sect_studyplan.subject_type_id
      JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
-  ORDER BY 15, 16, 9, 10;
+  ORDER BY 16, 17, 9, 10, 11;
         ')->execute();
 
         $this->createTableWithHistory('subject_schedule', [

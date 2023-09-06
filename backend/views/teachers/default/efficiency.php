@@ -58,12 +58,12 @@ use artsoft\grid\GridPageSize;
                 'id' => 'teachers-efficiency-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
-                'bulkActionOptions' => [
+                'bulkActionOptions' => \artsoft\Art::isBackend() ? [
                     'gridId' => 'teachers-efficiency-grid',
-                    'actions' => [Url::to(['bulk-delete']) => 'Delete'] //Configure here you bulk actions
-                ],
+                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
+                ] : false,
                 'columns' => [
-                    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'visible' => \artsoft\Art::isBackend()],
                     [
                         'attribute' => 'id',
                         'options' => ['style' => 'width:10px'],

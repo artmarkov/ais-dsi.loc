@@ -3,10 +3,16 @@
 namespace frontend\controllers\teachers;
 
 use artsoft\helpers\ArtHelper;
+use artsoft\widgets\Notice;
+use backend\models\Model;
+use common\models\education\LessonItems;
+use common\models\education\LessonItemsProgressView;
+use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
 use common\models\teachers\Teachers;
 use Yii;
 use yii\base\DynamicModel;
+use yii\web\NotFoundHttpException;
 
 /**
  * StudyplanProgressIndivController
@@ -53,4 +59,180 @@ class StudyplanProgressIndivController extends MainController
 
     }
 
+    public function actionCreate()
+    {
+        $modelTeachers = Teachers::findOne($this->teachers_id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Indiv Progress'), 'url' => ['teachers/studyplan-progress']];
+
+        if (!Yii::$app->request->get('subject_key')) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр GET subject_key");
+        }
+
+        $subject_key = base64_decode(Yii::$app->request->get('subject_key'));
+        $keyArray = explode('||', $subject_key);
+        $subject_key = $keyArray[0];
+        $timestamp_in = $keyArray[1];
+
+        $model = new LessonItems();
+        $modelsItems = [];
+        // предустановка учеников
+        if (isset($_POST['submitAction']) && $_POST['submitAction'] == 'next') {
+            $model->load(Yii::$app->request->post());
+            $modelsItems = $model->getLessonProgressTeachersNew($this->teachers_id, $subject_key, $timestamp_in, $model);
+            if (empty($modelsItems)) {
+                Notice::registerDanger('Дата занятия не соответствует расписанию!');
+            } else {
+                $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model->lesson_date);
+                if (empty($modelsItems)) {
+                    Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
+                }
+            }
+        } elseif ($model->load(Yii::$app->request->post())) {
+            $modelsItems = Model::createMultiple(LessonProgress::class);
+            Model::loadMultiple($modelsItems, Yii::$app->request->post());
+            // validate all models
+            $valid = $model->validate();
+            $valid = Model::validateMultiple($modelsItems) && $valid;
+            // $valid = true;
+            if ($valid) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try {
+                    $flag = true;
+                    foreach ($modelsItems as $modelItems) {
+                        $modelLesson = LessonItems::find()
+                                ->where(['=', 'subject_sect_studyplan_id', 0])
+                                ->andWhere(['=', 'studyplan_subject_id', $modelItems->studyplan_subject_id])
+                                ->andWhere(['=', 'lesson_date', strtotime($model->lesson_date)])
+                                ->one() ?? new LessonItems();
+                        $modelLesson->studyplan_subject_id = $modelItems->studyplan_subject_id;
+                        $modelLesson->lesson_date = $model->lesson_date;
+                        $modelLesson->lesson_test_id = $model->lesson_test_id;
+                        $modelLesson->lesson_topic = $model->lesson_topic;
+                        $modelLesson->lesson_rem = $model->lesson_rem;
+                        if (!($flag = $modelLesson->save(false))) {
+                            $transaction->rollBack();
+                            break;
+                        }
+                        $modelItems->lesson_items_id = $modelLesson->id;
+                        if (!($flag = $modelItems->save(false))) {
+                            $transaction->rollBack();
+                            break;
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                        $this->getSubmitAction($model);
+                    }
+                } catch (\Exception $e) {
+                    $transaction->rollBack();
+                }
+            }
+        }
+        return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form-indiv.php', [
+            'model' => $model,
+            'modelTeachers' => $modelTeachers,
+            'modelsItems' => $modelsItems,
+            'subject_key' => $subject_key,
+            'timestamp_in' => $timestamp_in,
+        ]);
+    }
+
+    public function actionUpdate($id)
+    {
+        if (!Yii::$app->request->get('objectId')) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр GET objectId");
+        }
+        $objectId = Yii::$app->request->get('objectId');
+        $modelTeachers = Teachers::findOne($this->teachers_id);
+        $subject_key = base64_decode($objectId);
+        $keyArray = explode('||', $subject_key);
+        $subject_key = $keyArray[0];
+        $timestamp_in = $keyArray[1];
+
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Indiv Progress'), 'url' => ['teachers/studyplan-progress-indiv', 'id' => $id]];
+        $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+
+
+        $modelLesson = LessonItemsProgressView::find()
+            ->where(['=', 'subject_key', $subject_key])
+            ->andWhere(['=', 'lesson_date', $timestamp_in])
+            ->one();
+        $model = LessonItems::findOne($modelLesson->lesson_items_id);
+        $modelsItems = $model->getLessonProgressTeachers($this->teachers_id, $subject_key, $timestamp_in);
+
+        if ($model->load(Yii::$app->request->post())) {
+            $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
+            Model::loadMultiple($modelsItems, Yii::$app->request->post());
+
+            // validate all models
+            $valid = $model->validate();
+            $valid = Model::validateMultiple($modelsItems) && $valid;
+
+            if ($valid) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try {
+                    $flag = true;
+                    foreach ($modelsItems as $modelItems) {
+                        $modelLesson = LessonItems::find()
+                                ->where(['=', 'subject_sect_studyplan_id', 0])
+                                ->andWhere(['=', 'studyplan_subject_id', $modelItems->studyplan_subject_id])
+                                ->andWhere(['=', 'lesson_date', strtotime($model->lesson_date)])
+                                ->one() ?? new LessonItems();
+                        $modelLesson->studyplan_subject_id = $modelItems->studyplan_subject_id;
+                        $modelLesson->lesson_date = $model->lesson_date;
+                        $modelLesson->lesson_test_id = $model->lesson_test_id;
+                        $modelLesson->lesson_topic = $model->lesson_topic;
+                        $modelLesson->lesson_rem = $model->lesson_rem;
+                        if (!($flag = $modelLesson->save(false))) {
+                            $transaction->rollBack();
+                            break;
+                        }
+                        $modelItems->lesson_items_id = $modelLesson->id;
+                        if (!($flag = $modelItems->save(false))) {
+                            $transaction->rollBack();
+                            break;
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                        $this->getSubmitAction($model);
+                    }
+                } catch
+                (\Exception $e) {
+                    $transaction->rollBack();
+                }
+            }
+        }
+
+        return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form-indiv.php', [
+            'model' => $model,
+            'modelTeachers' => $modelTeachers,
+            'modelsItems' => $modelsItems,
+            'subject_key' => $subject_key,
+            'timestamp_in' => $timestamp_in,
+        ]);
+    }
+    public function actionDelete($id)
+    {
+        if (!Yii::$app->request->get('objectId')) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр GET objectId");
+        }
+        $objectId = Yii::$app->request->get('objectId');
+        $subject_key = base64_decode($objectId);
+        $keyArray = explode('||', $subject_key);
+        $subject_key = $keyArray[0];
+        $timestamp_in = $keyArray[1];
+
+        $models = LessonItemsProgressView::find()
+            ->where(['=', 'subject_key', $subject_key])
+            ->andWhere(['=', 'lesson_date', $timestamp_in])
+            ->all();
+        foreach ($models as $model) {
+            $deletedIDs = LessonItems::find()->where(['=', 'id', $model->lesson_items_id])->column();
+            LessonItems::deleteAll(['id' => $deletedIDs]);
+        }
+        Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+        return $this->redirect($this->getRedirectPage('delete', $model));
+
+    }
 }

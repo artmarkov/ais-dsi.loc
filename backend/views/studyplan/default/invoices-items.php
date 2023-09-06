@@ -106,7 +106,7 @@ $columns = [
         'visible' => \artsoft\Art::isBackend(),
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
-        'template' => '{create} {update} {delete}',
+        'template' => '{create} {update} {delete} {print}',
         'buttons' => [
             'create' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
@@ -162,6 +162,28 @@ $columns = [
             }
         ],
     ],
+    [
+        'class' => 'kartik\grid\ActionColumn',
+        'visible' => \artsoft\Art::isFrontend(),
+        'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+        'template' => ' {print}',
+        'buttons' => [
+            'print' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-print" aria-hidden="true"></span>',
+                    ['/studyplan/default/make-invoices', 'id' => $model->studyplan_invoices_id], [
+                        'title' => Yii::t('art', 'Print'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            },
+        ],
+        'visibleButtons' => [
+            'print' => function ($model) {
+                return $model->studyplan_invoices_id !== null;
+            }
+        ],
+    ],
 ];
 ?>
 <div class="studyplan-invoices-index">
@@ -195,20 +217,19 @@ $columns = [
                 'pjax' => true,
                 'dataProvider' => $dataProvider,
                // 'filterModel' => $searchModel,
-                'bulkActionOptions' => [
-                    'gridId' => 'studyplan-invoices-grid',
-                    'actions' => [
-                        Url::to(['bulk-delete']) => 'Удалить квитанции',
-                       /* Url::to(['bulk-load']) => 'Выгрузить квитанции в Word',
-                        Url::to(['bulk-new']) => 'Создать новые квитанции',*/
-                    ] //Configure here you bulk actions
-                ],
+//                'bulkActionOptions' => [
+//                    'gridId' => 'studyplan-invoices-grid',
+//                    'actions' => [
+//                        Url::to(['bulk-delete']) => 'Удалить квитанции',
+//                       /* Url::to(['bulk-load']) => 'Выгрузить квитанции в Word',
+//                        Url::to(['bulk-new']) => 'Создать новые квитанции',*/
+//                    ] //Configure here you bulk actions
+//                ],
                 'columns' => $columns,
                 'beforeHeader' => [
                     [
                         'columns' => [
                             ['content' => 'Ученик/Программа', 'options' => ['colspan' => 7, 'class' => 'text-center warning']],
-                            ['content' => 'Учебный предмет/Преподаватель', 'options' => ['colspan' => 1, 'class' => 'text-center info']],
                             ['content' => 'Счета за обучение', 'options' => ['colspan' => 2, 'class' => 'text-center success']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export

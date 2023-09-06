@@ -64,7 +64,7 @@ class StudyplanSearch extends Studyplan
         ]);
         $dataProvider->setSort([
             'defaultOrder' => [
-                'id' => SORT_DESC,
+                'studentFio' => SORT_ASC,
             ],
             'attributes' => [
                 'id',

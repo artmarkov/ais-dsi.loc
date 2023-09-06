@@ -137,7 +137,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'datetime_in', 'datetime_out', 'category_id', 'author_id', 'doc_status'], 'required'],
+            [['title', 'datetime_in', 'datetime_out', 'category_id', 'author_id'], 'required'],
             [['department_list', 'executors_list'], 'required'],
             [['partic_price'], 'required', 'when' => function ($model) {
                 return $model->form_partic == '2';

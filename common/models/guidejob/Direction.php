@@ -82,6 +82,11 @@ class Direction extends ActiveRecord
         return \yii\helpers\ArrayHelper::map(self::find()->all(), 'id', 'name');
 
     }
+    public static function getDirectionShortList()
+    {
+        return \yii\helpers\ArrayHelper::map(self::find()->all(), 'id', 'slug');
+
+    }
 
     public static function isDirectionSlave($id)
     {

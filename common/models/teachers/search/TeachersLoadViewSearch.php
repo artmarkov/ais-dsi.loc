@@ -27,7 +27,7 @@ class TeachersLoadViewSearch extends TeachersLoadView
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'subject_sect_id', 'plan_year', 'teachers_load_id', 'direction_id', 'teachers_id'], 'integer'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'subject_sect_id', 'plan_year', 'teachers_load_id', 'direction_id','direction_vid_id', 'teachers_id'], 'integer'],
             [['load_time', 'load_time_0', 'load_time_1','load_time_consult', 'week_time', 'year_time_consult'], 'number'],
             [['studyplan_subject_list', 'sect_name', 'subject'], 'string'],
         ];
@@ -81,6 +81,7 @@ class TeachersLoadViewSearch extends TeachersLoadView
             'year_time_consult' => $this->year_time_consult,
             'teachers_load_id' => $this->teachers_load_id,
             'direction_id' => $this->direction_id,
+            'direction_vid_id' => $this->direction_vid_id,
             'teachers_id' => $this->teachers_id,
             'load_time' => $this->load_time,
             'load_time_0' => $this->load_time_0,

@@ -78,7 +78,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Нагрузка', 'icon' => 'fa fa-minus', 'url' => ['/teachers/load-items/index']],
                     ['label' => 'Табель учета', 'icon' => 'fa fa-minus', 'url' => ['/teachers/cheet-account/index']],
                     ['label' => 'Планирование индивидуальных занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/teachers-plan/index']],
-                    ['label' => 'Сетка расписания школы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/schedule/index']],
+                    ['label' => 'Сетка расписания школы', 'icon' => 'fa fa-minus', 'url' => ['/schedule/default/index']], // common permission
                  //   ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/calendar']],
                     ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/schedule-items/index']],
                     ['label' => 'Расписание консультаций', 'icon' => 'fa fa-minus', 'url' => ['/teachers/consult-items/index']],
@@ -90,7 +90,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Вступительные экзамены', 'icon' => 'fa fa-minus', 'url' => ['/entrant/default/index']],
                     // ученики
                     ['label' => 'Карточка ученика', 'icon' => 'fa fa-minus', 'url' => ['/student/default/index']],
-                    ['label' => 'Учебные планы', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
+                    ['label' => 'Планы учащихся', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
 
                 ],
             ],
