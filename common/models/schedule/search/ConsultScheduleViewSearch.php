@@ -55,14 +55,8 @@ class ConsultScheduleViewSearch extends ConsultScheduleView
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => [
-                'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
-            ],
-            'sort' => [
-                'defaultOrder' => [
-                    'sect_name' => SORT_ASC,
-                ],
-            ],
+            'pagination' => false,
+            'sort' => false,
         ]);
 
         $this->load($params);
