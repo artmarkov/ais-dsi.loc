@@ -65,14 +65,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'attribute' => 'entrant_programm_id',
-                        'filter' => \common\models\education\EntrantProgramm::getEntrantProgrammList(),
+                        'filter' => \common\models\education\EntrantProgramm::getEntrantProgrammList(false),
                         'filterType' => GridView::FILTER_SELECT2,
                         'filterWidgetOptions' => [
                             'pluginOptions' => ['allowClear' => true],
                         ],
                         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                         'value' => function (EntrantPreregistrations $model) {
-                            return \common\models\education\EntrantProgramm::getEntrantProgrammValue($model->entrant_programm_id) ?? '';
+                            return \common\models\education\EntrantProgramm::getEntrantProgrammValue($model->entrant_programm_id, false) ?? '';
                         },
                         'options' => ['style' => 'width:350px'],
                         'format' => 'raw',

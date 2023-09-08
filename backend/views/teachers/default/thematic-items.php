@@ -84,6 +84,7 @@ $columns = [
     [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+        'visible' => \artsoft\Art::isBackend(),
         'width' => '90px',
         'template' => '{create} {view} {update} {delete}',
         'buttons' => [
@@ -130,6 +131,71 @@ $columns = [
             'delete' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     ['/teachers/default/thematic-items', 'id' => $model->teachers_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'delete'], [
+                        'title' => Yii::t('art', 'Delete'),
+                        'aria-label' => Yii::t('art', 'Delete'),
+                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            },
+        ],
+        'visibleButtons' => [
+            'create' => function ($model) {
+                return true;
+            },
+            'delete' => function ($model) {
+                return $model->studyplan_thematic_id;
+            },
+            'update' => function ($model) {
+                return $model->studyplan_thematic_id;
+            },
+            'view' => function ($model) {
+                return $model->studyplan_thematic_id;
+            }
+        ],
+    ],
+    [
+        'class' => 'kartik\grid\ActionColumn',
+        'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+        'visible' => \artsoft\Art::isFrontend(),
+        'width' => '90px',
+        'template' => '{create} {update} {delete}',
+        'buttons' => [
+            'create' => function ($key, $model) {
+                if ($model->subject_sect_studyplan_id == null) {
+                    return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
+                        ['/teachers/thematic-items/create', 'studyplan_subject_id' => $model->studyplan_subject_id], [
+                            'title' => Yii::t('art', 'Create'),
+                            'data-method' => 'post',
+                            'data-pjax' => '0',
+                            'disabled' => true
+                        ]
+                    );
+                } else {
+                    return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
+                        ['/teachers/thematic-items/create', 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id], [
+                            'title' => Yii::t('art', 'Create'),
+                            'data-method' => 'post',
+                            'data-pjax' => '0',
+                            'disabled' => true
+                        ]
+                    );
+                }
+
+            },
+            'update' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                    ['/teachers/thematic-items/update', 'id' => $model->studyplan_thematic_id], [
+                        'title' => Yii::t('art', 'Edit'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            },
+            'delete' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                    ['/teachers/thematic-items/delete', 'id' => $model->studyplan_thematic_id], [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),

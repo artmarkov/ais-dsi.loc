@@ -55,7 +55,7 @@ $readonly = $model->status == EntrantPreregistrations::REG_STATUS_STUDENT;
                     ?>
 
                     <?= $form->field($model, 'entrant_programm_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \common\models\education\EntrantProgramm::getEntrantProgrammList(),
+                        'data' => \common\models\education\EntrantProgramm::getEntrantProgrammList($model->isNewRecord ? true : false),
                         'options' => [
                             'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),

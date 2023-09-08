@@ -114,18 +114,19 @@ class EntrantProgramm extends \artsoft\db\ActiveRecord
     /**
      * @return array
      */
-    public static function getEntrantProgrammList()
+    public static function getEntrantProgrammList($status = true)
     {
-        return ArrayHelper::map(self::find()
-            ->select('id, name')
-            ->where(['status' => self::STATUS_ACTIVE])
-            ->orderBy('name')
-            ->asArray()->all(), 'id', 'name');
+        $query = self::find()->select('id, name');
+        if ($status == true) {
+            $query = $query->where(['status' => self::STATUS_ACTIVE]);
+        }
+        $query = $query->orderBy('name')->asArray()->all();
+        return ArrayHelper::map($query, 'id', 'name');
     }
 
-    public static function getEntrantProgrammValue($val)
+    public static function getEntrantProgrammValue($val, $status = true)
     {
-        $ar = self::getEntrantProgrammList();
+        $ar = self::getEntrantProgrammList($status);
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
     /**

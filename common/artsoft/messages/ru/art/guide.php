@@ -227,7 +227,7 @@ return [
     'Distribution' => 'Распределение по группам',
     'Half Year' => 'Полугодие',
     'Doc Status' => 'Статус документа',
-    'Sign Teachers' => 'Подписант документа',
+    'Sign Teachers' => 'Отправить на согласование',
     'Sign Time' => 'Время согласования',
     'Entrant Programms' => 'Программа',
     'Entrant Preregistrations' => 'Предварительная запись',

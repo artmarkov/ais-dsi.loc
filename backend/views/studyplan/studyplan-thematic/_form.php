@@ -62,10 +62,10 @@ $this->registerJs($js);
 
                         <?= $form->field($model, 'half_year')->dropDownList(\artsoft\helpers\ArtHelper::getHalfYearList(), ['disabled' => $readonly]); ?>
 
-                        <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(\common\models\studyplan\StudyplanThematic::getDocStatusList(), ['disabled' => $readonly]) ?>
+                        <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(\common\models\studyplan\StudyplanThematic::getDocStatusList(), ['disabled' => \artsoft\Art::isFrontend() ? true : $readonly]) ?>
 
                         <?= $form->field($model, 'doc_sign_teachers_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => RefBook::find('teachers_fio')->getList(),
+                            'data' => RefBook::find('teachers_fio', \common\models\teachers\Teachers::STATUS_ACTIVE)->getList(),
                             'options' => [
                                 'disabled' => $readonly,
                                 'placeholder' => Yii::t('art', 'Select...'),
@@ -75,9 +75,29 @@ $this->registerJs($js);
                             ],
                         ])->hint('Время согласования:' . Yii::$app->formatter->asDatetime($model->doc_sign_timestamp)); ?>
 
-                        <?= $form->field($model, 'template_flag')->checkbox(['disabled' => $readonly]) ?>
+                        <?php
+                        if ($model->isNewRecord and \artsoft\Art::isFrontend()) {
 
-                        <?= $form->field($model, 'template_name')->textInput(['maxlength' => true])->hint('Используйте уникальное название. Пример: Сольфеджио 5/8 ПП') ?>
+                            echo $form->field($model, 'thematic_flag')->checkbox(['disabled' => $readonly])->label('Взять из шаблона');
+
+                            echo $form->field($model, 'thematic_list')->widget(\kartik\select2\Select2::class, [
+                                'data' => \common\models\studyplan\StudyplanThematic::getTemplateList(),
+                                'options' => [
+                                    'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
+                            ])->label('Список щаблонов');
+                        } else {
+
+                            echo $form->field($model, 'template_flag')->checkbox(['disabled' => $readonly]);
+
+                            echo $form->field($model, 'template_name')->textInput(['maxlength' => true])->hint('Используйте уникальное название. Пример: Сольфеджио 5/8 ПП');
+
+                        }
+                        ?>
 
                     </div>
                 </div>
@@ -234,6 +254,10 @@ $js = <<<JS
     $('input[id="studyplanthematic-template_flag"]').prop('checked') ? $('.field-studyplanthematic-template_name').show() : $('.field-studyplanthematic-template_name').hide();
     $('input[name="StudyplanThematic[template_flag]"]').click(function(){
        $(this).prop('checked') ? $('.field-studyplanthematic-template_name').show() : $('.field-studyplanthematic-template_name').hide();
+     });
+     $('input[id="studyplanthematic-thematic_flag"]').prop('checked') ? $('.field-studyplanthematic-thematic_list').show() : $('.field-studyplanthematic-thematic_list').hide();
+    $('input[name="StudyplanThematic[thematic_flag]"]').click(function(){
+       $(this).prop('checked') ? $('.field-studyplanthematic-thematic_list').show() : $('.field-studyplanthematic-thematic_list').hide();
      });
 JS;
 
