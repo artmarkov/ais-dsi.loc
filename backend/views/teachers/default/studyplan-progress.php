@@ -21,7 +21,7 @@ $editMarks = function ($model, $key, $index, $widget) {
     if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], 0)) {
             $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                 \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create'] :
-                    ['/teachers/studyplan-progress/create', 'id' => $model['teachers_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id']],
+                    ['/teachers/studyplan-progress/create', 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id']],
                 [
                     'title' => 'Добавить занятие',
                     'data-method' => 'post',
@@ -35,7 +35,7 @@ $editMarks = function ($model, $key, $index, $widget) {
         if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], 0, $item['lesson_date'])) {
             $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                 \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'update'] :
-                    ['/teachers/studyplan-progress/update', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id], [
+                    ['/teachers/studyplan-progress/update', 'id' => $model['teachers_id'], 'id' => $lesson_items_id], [
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -43,7 +43,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                     ])
                 . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                 \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete'] :
-                    ['/teachers/studyplan-progress/delete', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id], [
+                    ['/teachers/studyplan-progress/delete', 'id' => $model['teachers_id'], 'id' => $lesson_items_id], [
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xxs btn-link',
                         'data' => [

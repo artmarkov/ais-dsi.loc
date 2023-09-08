@@ -64,6 +64,7 @@ class ThematicViewSearch extends ThematicView
         $query->andFilterWhere([
             'studyplan_subject_id' => $this->studyplan_subject_id,
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
+            'subject_sect_id' => $this->subject_sect_id,
             'plan_year' => $this->plan_year,
 //            'course' => $this->course,
 //            'status' => $this->status,

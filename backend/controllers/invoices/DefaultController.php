@@ -45,11 +45,33 @@ class DefaultController extends BaseController
             $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon-1, $day_in, $year), 'php:d.m.Y');
             $model_date->date_out = $session->get('_invoices_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
             $model_date->plan_year = $session->get('_invoices_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            $model_date->programm_id = $session->get('_invoices_programm_id') ?? '';
+            $model_date->education_cat_id = $session->get('_invoices_education_cat_id') ?? '';
+            $model_date->course = $session->get('_invoices_course') ?? '';
+            $model_date->subject_id = $session->get('_invoices_subject_id') ?? '';
+            $model_date->subject_type_id = $session->get('_invoices_subject_type_id') ?? '';
+            $model_date->subject_type_sect_id = $session->get('_invoices_subject_type_sect_id') ?? '';
+            $model_date->subject_vid_id = $session->get('_invoices_subject_vid_id') ?? '';
+            $model_date->studyplan_invoices_status = $session->get('_invoices_studyplan_invoices_status') ?? '';
+            $model_date->student_id = $session->get('_invoices_student_id') ?? '';
+            $model_date->direction_id = $session->get('_invoices_direction_id') ?? '';
+            $model_date->teachers_id = $session->get('_invoices_teachers_id') ?? '';
         }
 
         $session->set('_invoices_plan_year', $model_date->plan_year);
         $session->set('_invoices_date_in', $model_date->date_in);
         $session->set('_invoices_date_out', $model_date->date_out);
+        $session->set('_invoices_programm_id', $model_date->programm_id);
+        $session->set('_invoices_education_cat_id', $model_date->education_cat_id);
+        $session->set('_invoices_course', $model_date->course);
+        $session->set('_invoices_subject_id', $model_date->subject_id);
+        $session->set('_invoices_subject_type_id', $model_date->subject_type_id);
+        $session->set('_invoices_subject_type_sect_id', $model_date->subject_type_sect_id);
+        $session->set('_invoices_subject_vid_id', $model_date->subject_vid_id);
+        $session->set('_invoices_studyplan_invoices_status', $model_date->studyplan_invoices_status);
+        $session->set('_invoices_student_id', $model_date->student_id);
+        $session->set('_invoices_direction_id', $model_date->direction_id);
+        $session->set('_invoices_teachers_id', $model_date->teachers_id);
 
         $searchName = StringHelper::basename($this->modelSearchClass::className());
         $searchModel = new $this->modelSearchClass;

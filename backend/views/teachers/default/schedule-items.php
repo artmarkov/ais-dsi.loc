@@ -14,7 +14,8 @@ use artsoft\grid\GridView;
 $this->title = Yii::t('art/guide', 'Subject Schedule');
 $this->params['breadcrumbs'][] = $this->title;
 
-//$sect_list = \common\models\teachers\Teachers::getSectListForTeachers($model->id, $model_date->plan_year);
+$teachers_list = RefBook::find('teachers_fio')->getList();
+$auditory_list = RefBook::find('auditory_memo_1')->getList();
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
@@ -54,8 +55,8 @@ $columns = [
     ],
     [
         'attribute' => 'teachers_id',
-        'value' => function ($model) {
-            return RefBook::find('teachers_fio')->getValue($model->teachers_id);
+        'value' => function ($model) use ($teachers_list){
+            return $teachers_list[$model->teachers_id] ?? '';
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 4
@@ -63,7 +64,7 @@ $columns = [
     [
         'attribute' => 'load_time',
         'value' => function ($model) {
-            return $model->load_time . ' ' . $model->getItemLoadNotice();
+            return $model->load_time /*. ' ' . $model->getItemLoadNotice()*/;
         },
         'format' => 'raw',
         'group' => true,  // enable grouping
@@ -80,8 +81,8 @@ $columns = [
     [
         'attribute' => 'auditory_id',
         'width' => '300px',
-        'value' => function ($model) {
-            return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
+        'value' => function ($model) use ($auditory_list){
+            return $auditory_list[$model->auditory_id] ?? '';
         },
     ],
     [

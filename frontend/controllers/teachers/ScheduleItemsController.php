@@ -73,13 +73,9 @@ class ScheduleItemsController extends MainController
         ]);
     }
 
-    public function actionDelete($id = null)
+    public function actionDelete($id)
     {
-        if (!Yii::$app->request->get('objectId')) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр GET objectId.");
-        }
-        $objectId = Yii::$app->request->get('objectId');
-        $model = SubjectSchedule::findOne($objectId);
+        $model = SubjectSchedule::findOne($id);
         $model->delete();
 
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));

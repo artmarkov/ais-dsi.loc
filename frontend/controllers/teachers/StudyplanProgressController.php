@@ -112,14 +112,10 @@ class StudyplanProgressController extends MainController
 
     public function actionUpdate($id)
     {
-        if (!Yii::$app->request->get('objectId')) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр GET objectId");
-        }
-        $objectId = Yii::$app->request->get('objectId');
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/studyplan-progress']];
-        $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+        $this->view->params['breadcrumbs'][] = sprintf('#%06d', $id);
 
-        $model = LessonItems::findOne($objectId);
+        $model = LessonItems::findOne($id);
         if (!isset($model)) {
             throw new NotFoundHttpException("The LessonItems was not found.");
         }
@@ -170,11 +166,7 @@ class StudyplanProgressController extends MainController
 
     public function actionDelete($id)
     {
-        if (!Yii::$app->request->get('objectId')) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр GET objectId");
-        }
-        $objectId = Yii::$app->request->get('objectId');
-        $model = LessonItems::findOne($objectId);
+        $model = LessonItems::findOne($id);
         $model->delete();
 
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));

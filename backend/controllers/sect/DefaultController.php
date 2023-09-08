@@ -14,6 +14,10 @@ use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleViewSearch;
 use common\models\schedule\search\SubjectScheduleViewSearch;
 use common\models\schedule\SubjectSchedule;
+use common\models\studyplan\search\StudyplanThematicViewSearch;
+use common\models\studyplan\search\ThematicViewSearch;
+use common\models\studyplan\StudyplanThematic;
+use common\models\studyplan\StudyplanThematicItems;
 use common\models\subjectsect\SubjectSect;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
@@ -22,6 +26,7 @@ use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadView;
 use Yii;
 use yii\base\DynamicModel;
+use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\helpers\StringHelper;
@@ -329,6 +334,150 @@ class DefaultController extends MainController
             $dataProvider = $searchModel->search($params);
 
             return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
+        }
+    }
+
+    public function actionThematicItems($id, $objectId = null, $mode = null, $readonly = false)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/view', 'id' => $model->id]];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Thematic plans'), 'url' => ['sect/default/thematic-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление плана';
+
+            if (!Yii::$app->request->get('studyplan_subject_id') && !Yii::$app->request->get('subject_sect_studyplan_id')) {
+                throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_subject_id или subject_sect_studyplan_id.");
+            }
+
+            $model = new StudyplanThematic();
+            $modelsItems = [new StudyplanThematicItems()];
+
+            $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
+            $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
+
+            if ($model->load(Yii::$app->request->post())) {
+                $modelsItems = Model::createMultiple(StudyplanThematicItems::class);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
+                //$valid = true;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+
+                        if ($flag = $model->save(false)) {
+                            foreach ($modelsItems as $modelItems) {
+                                $modelItems->studyplan_thematic_id = $model->id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction($model);
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+            }
+
+            return $this->renderIsAjax('@backend/views/studyplan/studyplan-thematic/_form.php', [
+                'model' => $model,
+                'modelsItems' => (empty($modelsItems)) ? [new StudyplanThematicItems] : $modelsItems,
+                'readonly' => $readonly
+            ]);
+
+        } elseif ('history' == $mode && $objectId) {
+            $model = StudyplanThematic::findOne($objectId);
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Thematic plans'), 'url' => ['sect/default/thematic-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/update', 'id' => $model->id]];
+            $data = new StudyplanThematicHistory($objectId);
+            return $this->renderIsAjax('/studyplan/default/history', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $model = StudyplanThematic::findOne($objectId);
+            $model->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $model));
+
+        } elseif ($objectId) {
+            if ('view' == $mode) {
+                $readonly = true;
+            }
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Thematic plans'), 'url' => ['sect/default/thematic-items', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $model = StudyplanThematic::findOne($objectId);
+            if (!isset($model)) {
+                throw new NotFoundHttpException("The StudyplanThematic was not found.");
+            }
+            $modelsItems = $model->studyplanThematicItems;
+
+            if ($model->load(Yii::$app->request->post())) {
+
+                $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
+                $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
+
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
+
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        if ($flag = $model->save(false)) {
+                            if (!empty($deletedIDs)) {
+                                StudyplanThematicItems::deleteAll(['id' => $deletedIDs]);
+                            }
+                            foreach ($modelsItems as $modelItems) {
+
+                                $modelItems->studyplan_thematic_id = $model->id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction($model);
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                    }
+                }
+            }
+
+            return $this->renderIsAjax('@backend/views/studyplan/studyplan-thematic/_form.php', [
+                'model' => $model,
+                'modelsItems' => (empty($modelsItems)) ? [new StudyplanThematicItems] : $modelsItems,
+                'readonly' => $readonly
+            ]);
+
+        } else {
+            $model_date = $this->modelDate;
+
+            $searchModel = new ThematicViewSearch();
+
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['subject_sect_id'] = $id;
+            $params[$searchName]['plan_year'] = $model_date->plan_year;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('thematic-items', compact('dataProvider', 'searchModel',  'model_date', 'model'));
         }
     }
 
