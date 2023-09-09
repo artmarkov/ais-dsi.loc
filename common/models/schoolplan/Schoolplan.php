@@ -154,7 +154,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ['description', 'string', 'max' => 4000, 'min' => 1000, 'when' => function ($model) {
                 return $model->category->description_flag && !$model->isNewRecord;
             }, 'enableClientValidation' => false, 'skipOnEmpty' => false, 'message' => 'Введите описание мероприятия минимум 1000 знаков, включая пробелы.'],
-            ['description', 'string', 'max' => 4000, 'min' => 500, 'when' => function ($model) {
+            ['description', 'string', 'max' => 4000, 'min' => 100, 'when' => function ($model) {
                 return !$model->category->description_flag && !$model->isNewRecord;
             }, 'enableClientValidation' => false, 'message' => 'Введите описание мероприятия минимум 500 знаков, включая пробелы.'],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],

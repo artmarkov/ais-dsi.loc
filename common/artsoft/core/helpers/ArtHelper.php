@@ -373,10 +373,17 @@ class ArtHelper
         ];
     }
 
-    public static function getHalfYearList()
+    public static function getHalfYearList($onlyHalf = false)
     {
+        if($onlyHalf) {
         return [
-//            0 => 'полный год',
+            1 => '1-е полугодие',
+            2 => '2-е полугодие',
+        ];
+
+        }
+        return [
+            0 => 'полный год',
             1 => '1-е полугодие',
             2 => '2-е полугодие',
         ];
