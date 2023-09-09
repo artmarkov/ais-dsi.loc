@@ -6,7 +6,7 @@ class m220202_150545_add_consult_schedule_view extends \artsoft\db\BaseMigration
     public function up()
     {
         $this->db->createCommand()->createView('consult_schedule_view', '
-  SELECT studyplan_subject.id AS studyplan_subject_id,
+   SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
     studyplan_subject.subject_type_id,
@@ -15,6 +15,7 @@ class m220202_150545_add_consult_schedule_view extends \artsoft\db\BaseMigration
     studyplan.plan_year,
     teachers_load.load_time_consult,
     teachers_load.direction_id,
+	teachers_load.direction_vid_id,
     teachers_load.teachers_id,
     teachers_load.id AS teachers_load_id,
     consult_schedule.id AS consult_schedule_id,
@@ -49,6 +50,7 @@ UNION ALL
     subject_sect_studyplan.plan_year,
     teachers_load.load_time_consult,
     teachers_load.direction_id,
+	teachers_load.direction_vid_id,
     teachers_load.teachers_id,
     teachers_load.id AS teachers_load_id,
     consult_schedule.id AS consult_schedule_id,
@@ -70,7 +72,8 @@ UNION ALL
      JOIN subject ON subject.id = subject_sect.subject_id
      LEFT JOIN guide_subject_type ON guide_subject_type.id = subject_sect.subject_type_id
      LEFT JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
-     LEFT JOIN consult_schedule ON consult_schedule.teachers_load_id = teachers_load.id;
+     LEFT JOIN consult_schedule ON consult_schedule.teachers_load_id = teachers_load.id
+  ORDER BY 19, 18, 9, 11, 14;
         ')->execute();
 
         $this->db->createCommand()->createView('consult_schedule_studyplan_view', '

@@ -57,8 +57,9 @@ class m230109_123114_add_activities_view extends BaseMigration
         ')->execute();*/
 
         $this->db->createCommand()->createView('activities_schedule_view', '
- SELECT data.subject_schedule_id,
+  SELECT data.subject_schedule_id,
     data.direction_id,
+    data.direction_vid_id,
     data.teachers_id,
     data.title,
     data.category_id,
@@ -73,6 +74,7 @@ class m230109_123114_add_activities_view extends BaseMigration
             subject_schedule_view.auditory_id,
             subject_schedule_view.description,
             subject_schedule_view.direction_id,
+            subject_schedule_view.direction_vid_id,
             subject_schedule_view.teachers_id,
             subject_schedule_view.plan_year,
             concat(subject_schedule_view.sect_name, \' - \', subject_schedule_view.subject) AS title,
