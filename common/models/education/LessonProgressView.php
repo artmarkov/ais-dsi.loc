@@ -168,7 +168,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
     }
 
-    public static function getDataTeachers($model_date, $teachers_id)
+    public static function getDataTeachers($model_date, $teachers_id, $plan_year)
     {
         $data = $dates = $modelsProgress = [];
 
@@ -191,6 +191,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
                 ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
                 ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->andWhere(['plan_year' => $plan_year])
                 ->all();
             foreach ($lessonDates as $id => $lessonDate) {
                 $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
@@ -248,7 +249,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         return $model->subject_sect_studyplan_id ?? 0;
     }
 
-    public static function getDataIndivTeachers($model_date, $teachers_id)
+    public static function getDataIndivTeachers($model_date, $teachers_id, $plan_year)
     {
         $data = $dates = [];
 
@@ -270,6 +271,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->andWhere(['=', 'subject_key', $model_date->subject_key])
             ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+            ->andWhere(['plan_year' => $plan_year])
             ->all();
 
         foreach ($lessonDates as $id => $lessonDate) {

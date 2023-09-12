@@ -38,7 +38,7 @@ $columns = [
         'attribute' => 'sect_name',
         'width' => '320px',
         'value' => function ($model) use ($JSSubmit){
-            if($model->subject_sect_studyplan_id == 0) {
+            if($model->subject_sect_studyplan_id === 0) {
                 return $model->sect_name ? $model->sect_name : null;
             } else {
                 $sectList =  \yii\helpers\ArrayHelper::map((new \yii\db\Query())->select('id, sect_name_1')
@@ -78,8 +78,8 @@ $columns = [
         'value' => function ($model) {
             return $model->week_time;
         },
-        'group' => true,
-        'subGroupOf' => 1,
+//        'group' => true,
+//        'subGroupOf' => 1,
         'pageSummary' => true,
         'format' => ['decimal', 2],
     ],
@@ -88,8 +88,8 @@ $columns = [
         'value' => function ($model) {
             return $model->year_time_consult;
         },
-        'group' => true,
-        'subGroupOf' => 1,
+//        'group' => true,
+//        'subGroupOf' => 1,
     ],
     [
         'attribute' => 'direction_id',

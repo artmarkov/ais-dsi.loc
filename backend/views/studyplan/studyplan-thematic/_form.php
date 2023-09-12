@@ -51,6 +51,11 @@ $this->registerJs($js);
                 <?php echo RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id); ?>
             </div>
             <div class="panel-body">
+                <?= \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info"></i> Составление плана проводится в 2 этапа. Сначала заполните основные поля формы и нажмите "Продолжить". Затем заполняйте элементы плана, добавляя строчки кнопкой "+".',
+                    'options' => ['class' => 'alert-info'],
+                ]);
+                ?>
                 <div class="row">
                     <div class="col-sm-12">
                         <?php
@@ -231,16 +236,18 @@ $this->registerJs($js);
                             </tbody>
                         </table>
                         <?php DynamicFormWidget::end(); ?>
-
-
                         <?php endif; ?>
-
                     </div>
                 </div>
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+                    <?php if (!$model->isNewRecord): ?>
+                        <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+                    <?php else: ?>
+                        <?= \artsoft\helpers\ButtonHelper::exitButton();?>
+                        <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-md btn-info', 'name' => 'submitAction', 'value' => 'next']); ?>
+                    <?php endif; ?>
                 </div>
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>

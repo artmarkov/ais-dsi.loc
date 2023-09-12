@@ -106,7 +106,7 @@ class SubjectScheduleView extends SubjectSchedule
                 //   Notice::registerDanger($message);
                 $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
             }
-            if ($this->subject_sect_studyplan_id === 0 && self::getTeachersPlanScheduleOverLapping($model)->exists() === false) { // если занятия инд-е
+            if ($this->direction_id === 1000 && $this->subject_sect_studyplan_id === 0 && self::getTeachersPlanScheduleOverLapping($model)->exists() === false) { // если занятия инд-е
                 $message = 'Заданное расписание не соответствует планированию индивидуальных занятий!';
                 $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
             }

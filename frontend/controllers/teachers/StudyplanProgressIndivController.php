@@ -47,10 +47,10 @@ class StudyplanProgressIndivController extends MainController
         $session->set('_progress_subject_key', $model_date->subject_key);
         $session->set('_progress_teachers_id', $this->teachers_id);
 
-        $model = LessonProgressView::getDataIndivTeachers($model_date, $this->teachers_id);
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
         $timestamp_in = $timestamp[0];
         $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
+        $model = LessonProgressView::getDataIndivTeachers($model_date, $this->teachers_id, $plan_year);
         if (Yii::$app->request->post('submitAction') == 'excel') {
             // TeachersEfficiency::sendXlsx($data);
         }

@@ -57,7 +57,9 @@ class m230109_123114_add_activities_view extends BaseMigration
         ')->execute();*/
 
         $this->db->createCommand()->createView('activities_schedule_view', '
-  SELECT data.subject_schedule_id,
+   SELECT data.subject_schedule_id,
+    data.studyplan_subject_id,
+    data.subject_sect_studyplan_id,
     data.direction_id,
     data.direction_vid_id,
     data.teachers_id,
@@ -69,6 +71,8 @@ class m230109_123114_add_activities_view extends BaseMigration
     data."timestamp" + data.time_out::double precision AS datetime_out
    FROM ( SELECT gen."timestamp",
             subject_schedule_view.subject_schedule_id,
+            subject_schedule_view.studyplan_subject_id,
+            subject_schedule_view.subject_sect_studyplan_id,
             subject_schedule_view.time_in,
             subject_schedule_view.time_out,
             subject_schedule_view.auditory_id,

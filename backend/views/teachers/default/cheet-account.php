@@ -12,56 +12,9 @@ use yii\widgets\Pjax;
 /* @var $model_date */
 /* @var $modelTeachers */
 
-$this->title = $this->title = Yii::t('art/guide', 'Indiv Progress');
+$this->title = $this->title = 'Табель учета';
 $this->params['breadcrumbs'][] = $this->title;
-//echo '<pre>' . print_r($modelTeachers, true) . '</pre>';
-//echo '<pre>' . print_r($model_date, true) . '</pre>'; die();
 
-//$editMarks = function ($model, $key, $index, $widget) {
-//    $content = [];
-//   // if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
-//            $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-//                Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'subject_key' => base64_encode($model['subject_key'] . '||' . $model['timestamp_in']), 'mode' => 'create']),
-//                [
-//                    'title' => 'Добавить занятие',
-//                    'data-method' => 'post',
-//                    'data-pjax' => '0',
-//                    'class' => 'btn btn-xxs btn-link'
-//
-//                ]
-//            )];
-////        }
-//    foreach ($model['lesson_timestamp'] as $id => $item) {
-////        if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
-//            $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-//                    Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']),'mode' => 'update']), [
-//                        'title' => Yii::t('art', 'Update'),
-//                        'data-method' => 'post',
-//                        'data-pjax' => '0',
-//                        'class' => 'btn btn-xxs btn-link',
-//                    ])
-//                . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-//                    Url::to(['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']), 'mode' => 'delete']), [
-//                        'title' => Yii::t('art', 'Delete'),
-//                        'class' => 'btn btn-xxs btn-link',
-//                        'data' => [
-//                            'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-//                            'pjax' => '0',
-//                            'method' => 'post',
-//                        ],
-//                    ]
-//                ),
-//            ];
-////        }
-//    }
-//    return [
-//        'content' => $content,
-//        'contentOptions' => [      // content html attributes for each summary cell
-//            3 => ['class' => 'text-right text-end'],
-//        ],
-//        'options' => ['class' => 'info h-25 text-left']
-//    ];
-//};
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
@@ -72,6 +25,7 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,
+        'footer' => 'Итого: бюд./внебюд.',
 //        'groupFooter' => $editMarks
     ],
     [
@@ -98,8 +52,11 @@ foreach ($model['directions'] as $id => $name) {
         'attribute' => $id,
         'label' => $model['attributes'][$id]['name'],
         'format' => 'raw',
-        'pageSummary' => true,
-        'pageSummaryFunc' => GridView::F_SUM
+        'footer' => \common\models\teachers\TeachersTimesheet::getTotal($model['data'], $id),
+        'contentOptions' => function ($model) {
+            return $model['subject_type_id'] == 1000 ? ['class' => 'success'] : ['class' => 'warning text-right'];
+
+        },
     ];
 }
 
@@ -135,7 +92,8 @@ foreach ($model['directions'] as $id => $name) {
             echo GridView::widget([
                 'id' => 'studyplan-progress-grid',
                 'pjax' => false,
-                'showPageSummary' => true,
+                'showPageSummary' => false,
+                'showFooter' => true,
                 'dataProvider' => new \yii\data\ArrayDataProvider([
                     'allModels' => $model['data'],
                     'sort' => false,
@@ -150,8 +108,8 @@ foreach ($model['directions'] as $id => $name) {
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Учебный предмет/Группа/Ученик', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-                            ['content' => 'Часов в неделю', 'options' => ['colspan' => count($model['directions']) + 1, 'class' => 'text-center danger']],
+                            ['content' => 'Учебный предмет/Группа/Ученик', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
+                            ['content' => 'Часов за период', 'options' => ['colspan' => count($model['directions']), 'class' => 'text-center danger']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]
