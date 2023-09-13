@@ -575,6 +575,12 @@ class Studyplan extends \artsoft\db\ActiveRecord
         }
     }
 
+    public static function getStudentStudyplanDefault($student_id) {
+        $plan_year = ArtHelper::getStudyYearDefault();
+        return self::find()->where(['=', 'student_id', $student_id])->andWhere(['=', 'plan_year', $plan_year])->scalar() ?? null;
+
+    }
+
     /**
      * @param bool $insert
      * @return bool

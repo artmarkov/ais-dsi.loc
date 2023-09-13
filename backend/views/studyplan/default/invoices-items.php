@@ -188,7 +188,7 @@ $columns = [
 ?>
 <div class="studyplan-invoices-index">
     <div class="panel">
-        <?= $this->render('_search_inv', compact('model_date')) ?>
+        <?= $this->render('_search_inv', compact('model_date', 'id')) ?>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-6">

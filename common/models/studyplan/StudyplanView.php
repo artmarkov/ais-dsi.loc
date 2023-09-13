@@ -2,6 +2,7 @@
 
 namespace common\models\studyplan;
 
+use artsoft\helpers\ArtHelper;
 use Yii;
 
 /**
@@ -39,4 +40,17 @@ class StudyplanView extends Studyplan
 
         return $attr;
     }
+
+    public static function getStudentStudyplanList($id) {
+        $model = self::find()->where(['=', 'id', $id])->one();
+
+        if(!$model) return [];
+
+        return \yii\helpers\ArrayHelper::map(self::find()->select('id,education_programm_short_name as name')
+            ->where(['=', 'student_id', $model->student_id])
+            ->andWhere(['=', 'plan_year', $model->plan_year])
+            ->asArray()->all(), 'id', 'name');
+    }
+
+
 }

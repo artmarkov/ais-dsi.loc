@@ -7,7 +7,7 @@ class m211201_191645_add_subject_schedule_view extends \artsoft\db\BaseMigration
     public function up()
     {
         $this->db->createCommand()->createView('subject_schedule_view', '
-    SELECT studyplan_subject.id AS studyplan_subject_id,
+ SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
     studyplan_subject.subject_type_id,
@@ -16,7 +16,7 @@ class m211201_191645_add_subject_schedule_view extends \artsoft\db\BaseMigration
     studyplan_subject.week_time,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
-	teachers_load.direction_vid_id,
+    teachers_load.direction_vid_id,
     teachers_load.teachers_id,
     teachers_load.load_time,
     subject_schedule.id AS subject_schedule_id,
@@ -53,7 +53,7 @@ UNION ALL
           WHERE studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])) AS week_time,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
-	teachers_load.direction_vid_id,
+    teachers_load.direction_vid_id,
     teachers_load.teachers_id,
     teachers_load.load_time,
     subject_schedule.id AS subject_schedule_id,

@@ -3,6 +3,12 @@
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
+
+if(\artsoft\models\User::hasRole(['student'])) {
+$userId = Yii::$app->user->identity->getId();
+$student_id = \artsoft\helpers\RefBook::find('users_students')->getValue($userId) ?? null;
+$studyplan_id = \common\models\studyplan\Studyplan::getStudentStudyplanDefault($student_id);
+}
 ?>
 
 <div class="panel panel-default dw-widget">
@@ -46,6 +52,14 @@ use artsoft\helpers\Html;
                 ['/studyplan/default/index'],
                 [
                     'class' => 'btn btn-default btn-lg',
+                ]
+            );
+            ?>
+            <?= Html::a(
+                '<i class="fa fa-money" aria-hidden="true"></i> Оплата за обучение',
+                ['/studyplan/default/studyplan-invoices', 'id' => $studyplan_id],
+                [
+                    'class' => 'btn btn-success btn-lg',
                 ]
             );
             ?>
