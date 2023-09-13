@@ -50,7 +50,7 @@ class TeachersTimesheet
     {
         $models = TeachersActivityView::find()
             ->where(new \yii\db\Expression("teachers_activity_id = any(string_to_array('{$this->activity_list}', ',')::int[])"))
-            ->orderBy('direction_id, direction_vid_id')
+            ->orderBy('last_name, first_name, middle_name, direction_id, direction_vid_id')
             ->all();
         return $models;
     }

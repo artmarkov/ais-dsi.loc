@@ -14,6 +14,12 @@ class AuditoryScheduleController extends MainController
     public $modelClass = 'common\models\activities\Activities';
     public $modelSearchClass = 'common\models\activities\search\ActivitiesSearch';
 
+    public function init()
+    {
+        $this->viewPath = '@backend/views/activities/auditory-schedule';
+
+        parent::init();
+    }
     /**
      * @return mixed|string
      */

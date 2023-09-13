@@ -14,6 +14,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="activities-index">
     <div class="panel">
         <div class="panel-body">
+            <?= \yii\bootstrap\Alert::widget([
+                'body' => '<i class="fa fa-info"></i> Кликните на мероприятие.',
+                'options' => ['class' => 'alert-info'],
+            ]);
+            ?>
             <div class="col-sm-12"
 
             <?php
@@ -59,6 +64,34 @@ EOF;
         console.log(e.event);
       $.ajax({
             url: '/admin/activities/schoolplan-outside/create-event',
+            type: 'POST',
+            data: {eventData: eventData},
+            success: function (res) {
+//                console.log(res);
+                $('#activities-modal .modal-body').html(res);
+                $('#activities-modal').modal();
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
+    }
+
+EOF;
+
+            // кликаем по событию
+            $JSEventClickFront = <<<EOF
+    function(e) {
+        eventData = {
+                id: e.event.id,              
+            };
+    // change the border color just for fun
+    e.el.style.borderColor = 'red';
+        
+        console.log('кликаем по событию ' + e.event.id);
+        console.log(e.event);
+      $.ajax({
+            url: '/activities/schoolplan-outside/create-event',
             type: 'POST',
             data: {eventData: eventData},
             success: function (res) {
@@ -173,7 +206,7 @@ EOF;
                     'slotDuration' => '00:15:00', // Частота отображения временных интервалов.
                     'eventDurationEditable' => false, // разрешить изменение размера
                     'eventOverlap' => true, // разрешить перекрытие событий
-                    'eventClick' => new JsExpression($JSEventClick),
+                    'eventClick' => new JsExpression(\artsoft\Art::isBackend() ? $JSEventClick : $JSEventClickFront),
 //                    'eventMouseEnter' => new JsExpression($JSOnDay),
 //                    'eventMouseLeave' => new JsExpression($JSOutDay),
 //                    'eventDrop' => new JsExpression($JSEventDrop),

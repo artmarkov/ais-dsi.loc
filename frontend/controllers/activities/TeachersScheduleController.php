@@ -13,6 +13,12 @@ class TeachersScheduleController extends MainController
 {
     public $modelClass = 'common\models\activities\ActivitiesTeachersView';
 
+    public function init()
+    {
+        $this->viewPath = '@backend/views/activities/teachers-schedule';
+
+        parent::init();
+    }
     /**
      * @return mixed|string
      */

@@ -19,9 +19,9 @@ class MainController extends \frontend\controllers\DefaultController
     }
 
     public $tabMenu = [
-        ['label' => 'Âíåøíèå ìåðîïðèÿòèÿ',  'url' => ['/activities/schoolplan-outside']],
-        ['label' => 'Êàëåíäàðü ìåðîïðèÿòèé',  'url' => ['/activities/default/calendar']],
-        ['label' => 'Åæåäíåâíèê ïî àóäèòîðèÿì',  'url' => ['/activities/auditory-schedule/index']],
-        ['label' => 'Åæåäíåâíèê ïî ïðåïîäàâàòåëÿì',  'url' => ['/activities/teachers-schedule/index']],
+        ['label' => 'Ð’Ð½ÐµÑˆÐ½Ð¸Ðµ Ð¼ÐµÑ€Ð¾Ð¿Ñ€Ð¸ÑÑ‚Ð¸Ñ',  'url' => ['/activities/schoolplan-outside/index']],
+        ['label' => 'ÐšÐ°Ð»ÐµÐ½Ð´Ð°Ñ€ÑŒ Ð¼ÐµÑ€Ð¾Ð¿Ñ€Ð¸ÑÑ‚Ð¸Ð¹',  'url' => ['/activities/default/calendar']],
+        ['label' => 'Ð•Ð¶ÐµÐ´Ð½ÐµÐ²Ð½Ð¸Ðº Ð¿Ð¾ Ð°ÑƒÐ´Ð¸Ñ‚Ð¾Ñ€Ð¸ÑÐ¼',  'url' => ['/activities/auditory-schedule/index']],
+        ['label' => 'Ð•Ð¶ÐµÐ´Ð½ÐµÐ²Ð½Ð¸Ðº Ð¿Ð¾ Ð¿Ñ€ÐµÐ¿Ð¾Ð´Ð°Ð²Ð°Ñ‚ÐµÐ»ÑÐ¼',  'url' => ['/activities/teachers-schedule/index']],
     ];
 }

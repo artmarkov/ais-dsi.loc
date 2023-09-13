@@ -19,6 +19,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::encode($this->title) ?>
         </div>
         <div class="panel-body">
+            <?= \yii\bootstrap\Alert::widget([
+                'body' => '<i class="fa fa-info"></i> Кликните на мероприятие.',
+                'options' => ['class' => 'alert-info'],
+            ]);
+            ?>
             <div class="col-sm-12"
 
             <?php
@@ -65,6 +70,34 @@ EOF;
         console.log('кликаем по событию ' + e.event.id);
        $.ajax({
             url: '/admin/activities/default/create-event',
+            type: 'POST',
+            data: {eventData: eventData},
+            success: function (res) {
+//                console.log(res);
+                $('#activities-modal .modal-body').html(res);
+                $('#activities-modal').modal();
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
+    }
+
+EOF;
+
+            $JSEventClickFront = <<<EOF
+    function(e) {
+        eventData = {
+                id: e.event.id,              
+                resource: e.event.extendedProps.source,           
+            };
+    // change the border color just for fun
+    e.el.style.borderColor = 'red';
+        
+        console.log('кликаем по событию ' + e.event.id);
+         console.log(e.event);
+      $.ajax({
+            url: '/activities/default/create-event',
             type: 'POST',
             data: {eventData: eventData},
             success: function (res) {
@@ -171,7 +204,7 @@ EOF;
                         ]
                     ],
 //                    'select' => new JsExpression($JSSelect),
-                    'eventClick' => new JsExpression($JSEventClick),
+                    'eventClick' => new JsExpression(\artsoft\Art::isBackend() ? $JSEventClick : $JSEventClickFront),
 //                    'eventResize' => new JsExpression($JSEventResize),
 //                    'eventDrop' => new JsExpression($JSEventDrop),
                     'resourceAreaHeaderContent' => Yii::t('art/calendar', 'Teachers'),

@@ -15,17 +15,14 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\activities\Activities';
     public $modelSearchClass = 'common\models\activities\search\ActivitiesSearch';
+
     public function init()
     {
         $this->viewPath = '@backend/views/activities/default';
 
-//        if(!User::hasRole(['teacher','department'])) {
-//            throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
-//        }
-//        $userId = Yii::$app->user->identity->getId();
-//        $this->teachers_id = RefBook::find('users_teachers')->getValue($userId) ?? null;
-//        parent::init();
+        parent::init();
     }
+
     public function actionIndex()
     {
         $session = Yii::$app->session;
@@ -51,14 +48,14 @@ class DefaultController extends MainController
         $searchModel = new ActivitiesSearch($query);
         $params = Yii::$app->request->getQueryParams();
         $dataProvider = $searchModel->search($params);
-        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel', 'model_date'));
+        return $this->renderIsAjax('index', compact('dataProvider', 'searchModel', 'model_date'));
     }
 
     public function actionView($id)
     {
         $resource = Yii::$app->request->get('resource');
         $this->view->params['tabMenu'] = $this->tabMenu;
-        return $this->renderIsAjax($this->viewView, [
+        return $this->renderIsAjax('view', [
             'model' => Activities::find()->where(['id' => $id])->andWhere(['resource' => $resource])->one(),
         ]);
     }

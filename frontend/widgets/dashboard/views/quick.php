@@ -3,7 +3,7 @@
 use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
-
+$studyplan_id = null;
 if(\artsoft\models\User::hasRole(['student'])) {
 $userId = Yii::$app->user->identity->getId();
 $student_id = \artsoft\helpers\RefBook::find('users_students')->getValue($userId) ?? null;
@@ -33,7 +33,7 @@ $studyplan_id = \common\models\studyplan\Studyplan::getStudentStudyplanDefault($
             ?>
             <?= Html::a(
                 '<i class="fa fa-calendar" aria-hidden="true"></i> ' . Yii::t('art/calendar', 'Activities calendar'),
-                ['/activities/default/index'],
+                ['/activities/default/calendar'],
                 [
                     'class' => 'btn btn-default btn-lg',
                 ]

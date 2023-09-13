@@ -15,6 +15,12 @@ class SchoolplanOutsideController extends MainController
     public $modelClass       = 'common\models\schoolplan\SchoolplanView';
     public $modelSearchClass = 'common\models\schoolplan\search\SchoolplanViewSearch';
 
+    public function init()
+    {
+        $this->viewPath = '@backend/views/activities/schoolplan-outside';
+
+        parent::init();
+    }
     /**
      * @return mixed|string
      */

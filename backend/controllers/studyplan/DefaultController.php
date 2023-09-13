@@ -186,6 +186,7 @@ class DefaultController extends MainController
                         $this->getSubmitAction();
                     }
                 } catch (Exception $e) {
+//                    print_r($e->errorInfo); die();
                     $transaction->rollBack();
                 }
             }
@@ -1013,7 +1014,7 @@ class DefaultController extends MainController
             ]);
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('invoices-items', compact('dataProvider', 'searchModel', 'model_date'));
+            return $this->renderIsAjax('invoices-items', compact('dataProvider', 'searchModel', 'model_date', 'id'));
         }
     }
 
