@@ -36,10 +36,9 @@ class StudyplanThematicItems extends \artsoft\db\ActiveRecord
     {
         return [
             [['studyplan_thematic_id', 'piece_category_id'], 'integer'],
-            [['task'], 'required'],
+            [['task'], 'string', 'max' => 1024],
             [['author', 'piece_name', 'piece_category_id'], 'required', 'when' => function () { return Yii::$app->request->post("StudyplanThematic")['thematic_category'] == StudyplanThematic::REPERTORY_PLAN; } ],
             [['author', 'piece_name'], 'string', 'max' => 256],
-            [['task'], 'string', 'max' => 1024],
             [['studyplan_thematic_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanThematic::className(), 'targetAttribute' => ['studyplan_thematic_id' => 'id']],
             [['piece_category_id'], 'exist', 'skipOnError' => true, 'targetClass' => PieceCategory::className(), 'targetAttribute' => ['piece_category_id' => 'id']],
         ];

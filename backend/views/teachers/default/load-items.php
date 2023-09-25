@@ -33,9 +33,16 @@ $columns = [
         'attribute' => 'sect_name',
         'filter' => false,
         'width' => '310px',
-        'value' => function ($model, $key, $index, $widget) {
-            return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
+        'value' => function ($model) {
+            return \artsoft\Art::isBackend() &&  $model->sect_name ? Html::a($model->sect_name . $model->getSectNotice(),
+                ['/studyplan/default/load-items', 'id' => $model->studyplan_id],
+                [
+                    'target' => '_blank',
+                    'data-pjax' => '0',
+//                    'class' => 'btn btn-info',
+                ])  : null;
         },
+
         'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1,

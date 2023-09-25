@@ -48,7 +48,7 @@ $studyplan_id = \common\models\studyplan\Studyplan::getStudentStudyplanDefault($
             );
             ?>
             <?= Html::a(
-                '<i class="fa fa-paper-plane-o" aria-hidden="true"></i> ' . Yii::t('art/studyplan', 'Individual plans'),
+                '<i class="fa fa-paper-plane-o" aria-hidden="true"></i> ' . Yii::t('art/studyplan', 'Individual student plans'),
                 ['/studyplan/default/index'],
                 [
                     'class' => 'btn btn-default btn-lg',

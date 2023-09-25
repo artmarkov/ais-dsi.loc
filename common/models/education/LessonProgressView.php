@@ -114,7 +114,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
     }
 
-    public static function getDataStudyplan($model_date, $studyplan_id)
+    public static function getDataStudyplan($model_date, $studyplan_id, $readonly = false)
     {
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
         $timestamp_in = $timestamp[0];
@@ -160,7 +160,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             if (isset($modelsMarks[$modelProgress->studyplan_subject_id])) {
                 foreach ($modelsMarks[$modelProgress->studyplan_subject_id] as $id => $mark) {
                     $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
-                    $data[$item][$date_label] = self::getEditableForm($date_label, $mark);
+                    $data[$item][$date_label] = !$readonly ? self::getEditableForm($date_label, $mark) : $mark->mark_label;
                 }
             }
         }

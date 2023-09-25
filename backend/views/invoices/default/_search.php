@@ -28,7 +28,7 @@ $form = ActiveForm::begin([
                         <?= $form->field($model_date, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                             [
                                 'disabled' => false,
-                                'onchange'=>'js: $(this).closest("form").submit()',
+                                'onchange' => 'js: $(this).closest("form").submit()',
 //                                'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' =>  true ],
 //                                ],
                             ])->label(Yii::t('art/studyplan', 'Plan Year'));
@@ -36,12 +36,12 @@ $form = ActiveForm::begin([
                         <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [
                             'pluginEvents' => ['changeDate' => "function(e){
                                            $(e.target).closest('form').submit();
-                                        }" ]
+                                        }"]
                         ])->label('Дата начала выборки')->hint('Учитывается дата выставления счета.'); ?>
                         <?= $form->field($model_date, "date_out")->widget(DatePicker::class, [
                             'pluginEvents' => ['changeDate' => "function(e){
                                            $(e.target).closest('form').submit();
-                                        }" ]
+                                        }"]
                         ])->label('Дата окончания выборки'); ?>
 
                     </div>
@@ -92,7 +92,9 @@ $form = ActiveForm::begin([
                                             'options' => [
                                                 'placeholder' => Yii::t('art', 'Select...'),
                                             ],
+                                            'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
                                             'pluginOptions' => [
+                                                'allowClear' => true,
                                                 'depends' => ['direction_id'],
                                                 'placeholder' => Yii::t('art', 'Select...'),
                                                 'url' => Url::to(['/teachers/default/teachers'])
@@ -110,7 +112,7 @@ $form = ActiveForm::begin([
                                             ],
                                         ])->label(Yii::t('art/student', 'Student')); ?>
 
-                                        <?= $form->field($model_date, "course")->dropDownList(\artsoft\helpers\ArtHelper::getCourseList(), ['prompt' => Yii::t('art/guide', 'Select...')])->label(Yii::t('art/studyplan', 'Course')); ?>
+                                        <?= $form->field($model_date, "course")->dropDownList(\artsoft\helpers\ArtHelper::getCourseList(), ['prompt' => Yii::t('art', 'Select...')])->label(Yii::t('art/studyplan', 'Course')); ?>
 
                                         <?= $form->field($model_date, "subject_id")->widget(\kartik\select2\Select2::class, [
                                             'data' => \common\models\subject\Subject::getSubjectByCategory(),
@@ -131,7 +133,7 @@ $form = ActiveForm::begin([
                                         <?= $form->field($model_date, "studyplan_invoices_status")->dropDownList(\common\models\studyplan\StudyplanInvoices::getStatusList(), ['prompt' => Yii::t('art', 'Select...')])->label('Статус платежа'); ?>
 
                                         <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); ?>
-                                        <?= Html::resetButton('Очистить форму', ['class' => 'btn btn-default']) ?>
+                                        <?= Html::submitButton('Очистить форму', ['class' => 'btn btn-default', 'name' => 'submitAction', 'id' => 'reset']) ?>
                                     </div>
                                 </div>
                             </div>
@@ -145,9 +147,22 @@ $form = ActiveForm::begin([
 
 <?php
 $js = <<<JS
-$('form').on('reset', function(e) {
-console.log(e);
-
-});
+document.querySelector('form').addEventListener('submit', (event) => {
+    if(event.submitter.id == 'reset') {
+        $("#dynamicmodel-programm_id").empty();
+        $("#dynamicmodel-education_cat_id").empty();
+        $("#dynamicmodel-direction_id").empty();
+        $("#dynamicmodel-teachers_id").empty();
+        $("#dynamicmodel-student_id").empty();
+        $("#dynamicmodel-course").empty();
+        $("#dynamicmodel-subject_id").empty();
+        $("#dynamicmodel-subject_type_id").empty();
+        $("#dynamicmodel-subject_type_sect_id").empty();
+        $("#dynamicmodel-subject_vid_id").empty();
+        $("#dynamicmodel-studyplan_invoices_status").empty();
+        
+    // console.log(event.submitter.id);
+    }
+  });
 JS;
 $this->registerJs($js);

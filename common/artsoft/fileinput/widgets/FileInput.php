@@ -21,7 +21,7 @@ class FileInput extends \yii\base\Widget
     public $options = [];
     public $pluginOptions = [];
     public $pluginEvents = [];
-    public $maxFileCount = 10;
+    public $maxFileCount = 50;
     public $allowedFileExtensions = ['txt', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', 'pdf', 'jpg', 'png', 'mp4', 'mp3'];
     public $maxFileSize = 3000;
 
@@ -62,7 +62,7 @@ class FileInput extends \yii\base\Widget
                 'browseOnZoneClick' => false,
                 'maxFileCount' => $this->maxFileCount,
                 'validateInitialCount' => true,
-                'deleteUrl' => Url::toRoute(['/fileinput/file-manager/delete-file']),
+                'deleteUrl' => Url::toRoute(['/fileinput/file-manager/delete-file'],'https'),
                 'initialPreview' => $this->model->filesLinks,
                 'initialPreviewAsData' => true,
                 'initialPreviewFileType' => 'image',
@@ -70,7 +70,7 @@ class FileInput extends \yii\base\Widget
                 'initialPreviewConfig' => $this->model->filesLinksData,
                 'maxFileSize' => $this->maxFileSize,
                 'allowedFileExtensions' => $this->allowedFileExtensions,
-                'uploadUrl' => Url::to(['/fileinput/file-manager/file-upload']),
+                'uploadUrl' => Url::toRoute(['/fileinput/file-manager/file-upload'],'https'),
                 'hideThumbnailContent' => false,
                 'preferIconicPreview' => false,
                 'previewFileIcon' => '<i class="fa fa-files"></i>',

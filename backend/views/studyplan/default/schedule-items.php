@@ -125,13 +125,13 @@ $columns = [
         ],
         'visibleButtons' => [
             'create' => function ($model) {
-                return $model->getTeachersScheduleNeed();
+                return $model->getTeachersScheduleNeed() && $model->subject_sect_studyplan_id === 0;
             },
             'delete' => function ($model) {
-                return $model->subject_schedule_id !== null;
+                return $model->subject_schedule_id !== null && $model->subject_sect_studyplan_id === 0;
             },
             'update' => function ($model) {
-                return $model->subject_schedule_id !== null;
+                return $model->subject_schedule_id !== null && $model->subject_sect_studyplan_id === 0;
             }
         ]
     ],

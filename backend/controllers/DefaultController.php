@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use common\models\teachers\Teachers;
 use Yii;
 use yii\base\DynamicModel;
 

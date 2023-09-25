@@ -236,6 +236,7 @@ return [
     'Reg Vid' => 'Вид регистрации',
     'Accepted for training' => 'Принят на обучение',
     'Refused admission' => 'Отказано в приеме',
+    'Plan closed' => 'План закрыт',
     'Entrant Result' => 'Результаты испытаний',
 
 ];

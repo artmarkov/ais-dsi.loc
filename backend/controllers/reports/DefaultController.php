@@ -4,9 +4,11 @@ namespace backend\controllers\reports;
 
 use common\models\studyplan\StudyplanStat;
 use common\models\subject\SubjectType;
+use common\models\teachers\Teachers;
 use common\models\teachers\TeachersTimesheet;
 use Yii;
 use yii\base\DynamicModel;
+use yii\helpers\ArrayHelper;
 
 class DefaultController extends MainController
 {
@@ -66,4 +68,28 @@ class DefaultController extends MainController
             'model_date' => $model_date,
         ]);
     }
+
+    public function actionTeachersSchedule()
+    {
+        $session = Yii::$app->session;
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $this->view->params['breadcrumbs'][] = 'Расписание преподавателя';
+
+        $model_date = $this->modelDate;
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->teachers_id = $session->get('_teachersScheduleReports') ?? Teachers::find()->joinWith(['user'])->where(['status' => Teachers::STATUS_ACTIVE])->scalar();
+        }
+        $session->set('_teachersScheduleReports', $model_date->teachers_id);
+//        echo '<pre>' . print_r($model_date->plan_year, true) . '</pre>';die();
+        $modelTeachers = Teachers::findOne($model_date->teachers_id);
+        $data = $modelTeachers->getTeachersScheduleQuery($model_date->plan_year);
+        $models = ArrayHelper::index($data, null,['week_day']);
+        return $this->render('teachers-schedule', [
+            'models' => $models,
+            'model_date' => $model_date,
+            'modelTeachers' => $modelTeachers,
+        ]);
+    }
+
 }

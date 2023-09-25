@@ -40,6 +40,7 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
     const REG_STATUS_DRAFT = 0;
     const REG_STATUS_STUDENT = 1;
     const REG_STATUS_OUTSIDE = 3;
+    const REG_PLAN_CLOSED = 4;
 
     /**
      * {@inheritdoc}
@@ -134,6 +135,7 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
             self::REG_STATUS_DRAFT => Yii::t('art', 'Draft'),
             self::REG_STATUS_STUDENT => Yii::t('art/guide', 'Accepted for training'),
             self::REG_STATUS_OUTSIDE => Yii::t('art/guide', 'Refused admission'),
+            self::REG_PLAN_CLOSED => Yii::t('art/guide', 'Plan closed'),
         );
     }
 

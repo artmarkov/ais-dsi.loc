@@ -113,7 +113,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = RefBook::find('education_programm_short_name', \common\models\education\EducationProgramm::STATUS_ACTIVE)->getValue($id);
+                                        $v[] = RefBook::find('education_programm_short_name')->getValue($id);
                                     }
                                     return implode('<br/> ', $v);
                                 },
@@ -165,12 +165,21 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'sub_group_qty',
                             [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'status',
+                                'optionsArray' => [
+                                    [SubjectSect::STATUS_ACTIVE, Yii::t('art', 'Active'), 'primary'],
+                                    [SubjectSect::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
+                                ],
+                                'options' => ['style' => 'width:60px']
+                            ],
+                            [
                                 'class' => 'kartik\grid\ActionColumn',
 //                                'urlCreator' => function ($action, $model, $key, $index) {
 //                                    return [$action, 'id' => $key];
 //                                },
                                 'controller' => '/sect/default',
-                                'template' => '{view} {update} {clone} {delete}',
+                                'template' => '{view} {update} {delete}',
                                 'buttons' => [
                                     'clone' => function ($key, $model) {
                                         return Html::a('<span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>',

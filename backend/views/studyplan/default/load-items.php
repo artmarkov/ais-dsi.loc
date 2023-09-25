@@ -178,13 +178,13 @@ $columns = [
         ],
         'visibleButtons' => [
             'create' => function ($model) {
-                return $model->subject_sect_studyplan_id !== null;
+                return $model->subject_sect_studyplan_id === 0;
             },
             'delete' => function ($model) {
-                return $model->teachers_load_id !== null;
+                return $model->teachers_load_id !== null && $model->subject_sect_studyplan_id === 0;
             },
             'update' => function ($model) {
-                return $model->teachers_load_id !== null;
+                return $model->teachers_load_id !== null && $model->subject_sect_studyplan_id === 0;
             }
         ],
     ],

@@ -91,7 +91,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Вступительные экзамены', 'icon' => 'fa fa-minus', 'url' => ['/entrant/default/index']],
                     // ученики
                     ['label' => 'Карточка ученика', 'icon' => 'fa fa-minus', 'url' => ['/student/default/index']],
-                    ['label' => 'Планы учащихся', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
+                    ['label' => 'Планы учащегося', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
 
                 ],
             ],

@@ -148,7 +148,7 @@ UNION ALL
     activities_schedule_view.description,
     activities_schedule_view.datetime_in AS start_time,
     activities_schedule_view.datetime_out AS end_time
-   FROM activities_schedule_view
+   FROM activities_schedule_view WHERE direction_id = 1000
   ORDER BY 9;
         ')->execute();
 

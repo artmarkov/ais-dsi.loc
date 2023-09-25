@@ -72,7 +72,7 @@ class RegistrationForm extends Model
             [['student_birth_date', 'parent_birth_date'], 'date'],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             [['student_snils', 'parent_snils'], 'string', 'max' => 16],
-            ['email', 'email'],
+            ['email', 'validateEmail'],
             [['student_sert_date'], 'date'],
             [['student_sert_name', 'student_sert_series', 'student_sert_num'], 'string', 'max' => 32],
             [['student_sert_organ'], 'string', 'max' => 127],
@@ -102,19 +102,19 @@ class RegistrationForm extends Model
             [['parent_sert_date'], 'date'],
             [['parent_sert_name', 'parent_sert_series', 'parent_sert_num', 'parent_sert_code'], 'string', 'max' => 32],
             [['parent_sert_organ'], 'string', 'max' => 127],
-            [['parent_sert_series', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_code','parent_sert_date'], 'required', 'on' => self::SCENARIO_FRONFEND],
+            [['parent_sert_series', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_code', 'parent_sert_date'], 'required', 'on' => self::SCENARIO_FRONFEND],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
-            [['parent_sert_num', 'parent_sert_organ', 'parent_sert_code','parent_sert_date'], 'required', 'when' => function ($model) {
+            [['parent_sert_num', 'parent_sert_organ', 'parent_sert_code', 'parent_sert_date'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_series != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#registrationform-parent_sert_series').val() != NULL;
                     }"],
-            [['parent_sert_series', 'parent_sert_organ', 'parent_sert_code','parent_sert_date'], 'required', 'when' => function ($model) {
+            [['parent_sert_series', 'parent_sert_organ', 'parent_sert_code', 'parent_sert_date'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_num != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#registrationform-parent_sert_num').val() != NULL;
                     }"],
-            [['parent_sert_series', 'parent_sert_num', 'parent_sert_code','parent_sert_date'], 'required', 'when' => function ($model) {
+            [['parent_sert_series', 'parent_sert_num', 'parent_sert_code', 'parent_sert_date'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_organ != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#registrationform-parent_sert_organ').val() != NULL;
@@ -156,6 +156,15 @@ class RegistrationForm extends Model
 
             if ($user->exists()) {
                 $this->addError($attribute, 'Ученик с введенными данными уже добавлен');
+            }
+        }
+    }
+
+    public function validateEmail($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            if (!preg_match("/^(?:[a-z0-9]+(?:[-_.]?[a-z0-9]+)?@[a-z0-9_.-]+(?:\.?[a-z0-9]+)?\.[a-z]{2,5})$/i", $this->email)) {
+                $this->addError($attribute, 'Значение "E-mail" не является правильным адресом.');
             }
         }
     }

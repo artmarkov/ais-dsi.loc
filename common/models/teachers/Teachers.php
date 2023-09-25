@@ -250,11 +250,21 @@ class Teachers extends ActiveRecord
 
     public static function getTeachersAll($status = null)
     {
-        $qyery =  (new Query())->from('teachers_view')
+        $qyery = (new Query())->from('teachers_view')
             ->select(['teachers_id', 'fio'])
-            ->where($status != null ? ['=', 'status', $status] : ['in', 'status', [0,1]])
+            ->where($status != null ? ['=', 'status', $status] : ['in', 'status', [0, 1]])
             ->all();
         return \yii\helpers\ArrayHelper::map($qyery, 'teachers_id', 'fio');
+    }
+
+    public function getTeachersScheduleQuery($plan_year)
+    {
+        return $models = SubjectScheduleView::find()
+            ->where(['teachers_id' => $this->id])
+            ->andWhere(['not', ['subject_schedule_id' => null]])
+            ->andWhere(['=', 'plan_year', $plan_year])
+            ->orderBy('week_day,time_in')
+            ->all();
     }
 
     /**
@@ -262,11 +272,7 @@ class Teachers extends ActiveRecord
      */
     public function getTeachersSchedule($plan_year)
     {
-        $models = SubjectScheduleView::find()
-            ->where(['teachers_id' => $this->id])
-            ->andWhere(['not', ['subject_schedule_id' => null]])
-            ->andWhere(['=', 'plan_year',$plan_year])
-            ->all();
+        $models = $this->getTeachersScheduleQuery($plan_year);
 
         $data = [];
 
@@ -294,7 +300,7 @@ class Teachers extends ActiveRecord
                 ]
             ];
         }
-//        print_r($data);
+        // echo '<pre>' . print_r($models, true) . '</pre>';
         return $data;
     }
 

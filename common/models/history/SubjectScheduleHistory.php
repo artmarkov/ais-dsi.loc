@@ -5,8 +5,7 @@ namespace common\models\history;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use common\models\guidejob\Direction;
-use common\models\subjectsect\SubjectSchedule;
-use common\models\teachers\TeachersLoad;
+use common\models\schedule\SubjectSchedule;
 use common\widgets\history\BaseHistory;
 
 class SubjectScheduleHistory extends BaseHistory

@@ -202,7 +202,7 @@ class DefaultController extends MainController
             }
             $session->set('_progress_date_in', $model_date->date_in);
 
-            $modelLessonProgress = LessonProgressView::getDataStudyplan($model_date, $id);
+            $modelLessonProgress = LessonProgressView::getDataStudyplan($model_date, $id, true);
 
             if (Yii::$app->request->post('submitAction') == 'excel') {
                 // TeachersEfficiency::sendXlsx($data);
@@ -285,7 +285,7 @@ class DefaultController extends MainController
            }
            $session->set('_invoices_studyplan_id', $model_date->studyplan_id);
            $session->set('_invoices_date_in', $model_date->date_in);
-           //$session->set('_invoices_date_out', $model_date->date_out);
+           $session->set('_invoices_date_out', $model_date->date_out);
 
            $searchModel = new StudyplanInvoicesViewSearch();
             $searchName = StringHelper::basename($searchModel::className());

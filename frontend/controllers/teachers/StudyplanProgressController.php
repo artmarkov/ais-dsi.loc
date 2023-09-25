@@ -137,7 +137,7 @@ class StudyplanProgressController extends MainController
                 try {
                     if ($flag = $model->save(false)) {
                         if (!empty($deletedIDs)) {
-                            LessonProgress::deleteAll(['id' => $deletedIDs]);
+                          //  LessonProgress::deleteAll(['id' => $deletedIDs]);
                         }
                         foreach ($modelsItems as $modelItems) {
                             $modelItems->lesson_items_id = $model->id;

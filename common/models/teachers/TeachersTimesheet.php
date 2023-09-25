@@ -45,6 +45,10 @@ class TeachersTimesheet
         $this->teachers_day_consult = $this->getTeachersDayConsult($this->teachers_list);
     }
 
+    protected function isAvans()
+    {
+        return date('d', strtotime($this->date_out)) == 15;
+    }
 
     protected function getTeachersActivities()
     {
@@ -136,7 +140,7 @@ class TeachersTimesheet
             $data['time'][$day] = '';
             $data['status'][$day] = '';
         }
-        $data['qty_15'] = $data['qty_31'] = $data['time_total'] = $data['time_total_15'] =  0;
+        $data['qty_15'] = $data['qty_31'] = $data['time_total'] = $data['time_total_15'] = null;
 
         $day_in = date('j', strtotime($this->date_in));
         $day_out = date('j', strtotime($this->date_out));
@@ -157,8 +161,10 @@ class TeachersTimesheet
             }
             if ($data['time'][$day] > 0 && !$isVocation && !$isDayOff) {
                 $data['status'][$day] = self::workday;
-                $data['time_total'] += $data['time'][$day];
-                $data['qty_31']++;
+                if (!$this->isAvans()) {
+                    $data['time_total'] += $data['time'][$day];
+                    $data['qty_31']++;
+                }
                 if ($day <= 15) {
                     $data['qty_15']++;
                     $data['time_total_15'] += $data['time'][$day];
@@ -179,6 +185,7 @@ class TeachersTimesheet
             }
             $v[] = Department::findOne($id)->name;
         }
+        sort($v);
         return implode(', ', $v);
     }
 
@@ -213,8 +220,6 @@ class TeachersTimesheet
                 'direction_slug' => $d->direction_slug . ' - ' . $d->direction_vid_slug,
                 'days' => $mega,
             ];
-            $total['summ_qty_15'] += $mega['qty_15'];
-            $total['summ_qty_31'] += $mega['qty_31'];
 
             $total['summ_time_15'] += $mega['time_total_15'];
             $total['summ_time_31'] += $mega['time_total'];
@@ -228,7 +233,7 @@ class TeachersTimesheet
             'period_out' => date('j', strtotime($this->date_out)),
             'period_month' => ArtHelper::getMonthsList()[$this->mon],
             'period_year' => date('Y', strtotime($this->date_in)),
-//            'subject_type_name' => RefBook::find('subject_type_name')->getValue($this->subject_type_id),
+            'subject_type_name' => RefBook::find('subject_type_name')->getValue($this->subject_type_id),
             'org_briefname' => Yii::$app->settings->get('own.shortname'),
             'departments' => $this->getDepartmentsString($departmentsIds),
             'leader_iof' => Yii::$app->settings->get('own.head'),
@@ -238,10 +243,8 @@ class TeachersTimesheet
             'data_doc' => Yii::$app->formatter->asDate(time(), 'php:d.m.Y'),
             'doc_accountant_post' => 'Бухгалтер',
             'doc_accountant_iof' => 'Гвоздева Н.Д.',
-            'summ_qty_15' => $total['summ_qty_15'],
-            'summ_qty_31' => $total['summ_qty_31'],
             'summ_time_15' => $total['summ_time_15'],
-            'summ_time_31' => $total['summ_time_31'],
+            'summ_time_31' => $this->isAvans() ? '' : $total['summ_time_31'],
         ];
 //        print_r($items); die();
 
@@ -275,15 +278,15 @@ class TeachersTimesheet
         $attributes += ['subject_type_id' => Yii::t('art/guide', 'Subject Type'),];
         $attributes += $directions;
         // Бюджет
-        $models0 = (new Query())->from('subject_schedule_view')
-            ->select(['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'teachers_id', 'subject_type_id', 'time_in', 'time_out'])
-            ->where(['in', 'teachers_id', $this->teachers_list])
-            ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['subject_type_id' => $this->subject_type_id])
-            ->andWhere(['status' => 1])
-            ->all();
-
-        $models0 = ArrayHelper::index($models0, null, ['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'subject_type_id']);
+//        $models0 = (new Query())->from('subject_schedule_view')
+//            ->select(['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'teachers_id', 'subject_type_id', 'time_in', 'time_out'])
+//            ->where(['in', 'teachers_id', $this->teachers_list])
+//            ->andWhere(['plan_year' => $this->plan_year])
+//            ->andWhere(['subject_type_id' => $this->subject_type_id])
+//            ->andWhere(['status' => 1])
+//            ->all();
+//
+//        $models0 = ArrayHelper::index($models0, null, ['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'subject_type_id']);
 
         // Внебюджет
         $models1 = (new Query())->from('activities_schedule_view')
@@ -321,17 +324,17 @@ class TeachersTimesheet
             $data[$i]['sect_name'] = $items['sect_name'];
             $data[$i]['subject_type_id'] = $items['subject_type_id'];
             // согласно расписанию
-            if ($items['subject_type_id'] == 1000) {
-                if (isset($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
-                    foreach ($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {
-                        if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']])) {
-                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] += Schedule::astr2academ($time['time_out'] - $time['time_in']) * 4;
-                        } else {
-                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] = Schedule::astr2academ($time['time_out'] - $time['time_in']) * 4;
-                        }
-                    }
-                }
-            } else {
+//            if ($items['subject_type_id'] == 1000) {
+//                if (isset($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
+//                    foreach ($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {
+//                        if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']])) {
+//                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] += Schedule::astr2academ($time['time_out'] - $time['time_in']) * 4;
+//                        } else {
+//                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] = Schedule::astr2academ($time['time_out'] - $time['time_in']) * 4;
+//                        }
+//                    }
+//                }
+//            } else {
                 if (isset($models1[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
                     foreach ($models1[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {
                         if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']])) {
@@ -341,7 +344,7 @@ class TeachersTimesheet
                         }
                     }
                 }
-            }
+//            }
             // консультации
             if (isset($modelsConsult[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
                 foreach ($modelsConsult[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {
@@ -364,11 +367,11 @@ class TeachersTimesheet
         $total = [0, 0];
 //        echo '<pre>' . print_r($provider, true) . '</pre>'; die();
         foreach ($provider as $item) {
-                if($item['subject_type_id'] == 1000) {
-                    $total[0] += $item[$fieldName] ?? 0;
-                } else {
-                    $total[1] += $item[$fieldName] ?? 0;
-                }
+            if ($item['subject_type_id'] == 1000) {
+                $total[0] += $item[$fieldName] ?? 0;
+            } else {
+                $total[1] += $item[$fieldName] ?? 0;
+            }
         }
 
         return $total[0] . '/' . $total[1];

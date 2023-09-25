@@ -43,7 +43,7 @@ use yii\helpers\Url;
                         'data' => \common\models\guidejob\Direction::getDirectionList(),
                         'options' => [
                             'id' => 'direction_id',
-                            'disabled' => $model->direction_id ? true : $readonly,
+                            'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [
@@ -58,6 +58,7 @@ use yii\helpers\Url;
                             'disabled' => $model->teachers_id ? true : $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
+                        'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
                         'pluginOptions' => [
                             'depends' => ['direction_id'],
                             'placeholder' => Yii::t('art', 'Select...'),

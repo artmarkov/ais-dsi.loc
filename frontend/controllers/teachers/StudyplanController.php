@@ -610,7 +610,7 @@ class StudyplanController extends MainController
             }
             $session->set('_progress_date_in', $model_date->date_in);
 
-            $modelLessonProgress = LessonProgressView::getDataStudyplan($model_date, $id);
+            $modelLessonProgress = LessonProgressView::getDataStudyplan($model_date, $id, true);
 
             if (Yii::$app->request->post('submitAction') == 'excel') {
                 // TeachersEfficiency::sendXlsx($data);
@@ -755,7 +755,7 @@ class StudyplanController extends MainController
             $day_in = 1;
             $day_out = date("t");
 
-            $model_date = new DynamicModel(['plan_year','date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
+            $model_date = new DynamicModel(['plan_year','date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id', 'studyplan_id']);
             $model_date->addRule(['plan_year','date_in', 'date_out'], 'required')
                 ->addRule(['date_in', 'date_out'], 'string')
                 ->addRule(['plan_year', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
@@ -791,7 +791,7 @@ class StudyplanController extends MainController
             ]);
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('@backend/views/studyplan/default/invoices-items', compact('dataProvider', 'searchModel', 'model_date'));
+            return $this->renderIsAjax('@backend/views/studyplan/default/invoices-items', compact('dataProvider', 'searchModel', 'model_date', 'id'));
         }
     }
 

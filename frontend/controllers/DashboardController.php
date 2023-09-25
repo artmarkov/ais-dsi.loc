@@ -18,7 +18,7 @@ class DashboardController extends BaseController
     {
 
         $id = \Yii::$app->user->id;
-        $teachers_id = RefBook::find('users_teachers')->getValue($id);
+       // $teachers_id = RefBook::find('users_teachers')->getValue($id);
         if ($this->widgets === NULL) {
             $this->widgets = [  
                 [
@@ -29,18 +29,18 @@ class DashboardController extends BaseController
                         ],
                     ],
                     [
-                        'class' => 'col-md-8',
+                        'class' => 'col-md-12',
                         'content' => [
-                           // 'artsoft\user\widgets\dashboard\UsersVisitMap',
+                            'frontend\widgets\board\BoardWidget',
                         ],   
                     ],
-                    [
-                        'class' => 'col-md-4',
-                        'content' => [
-                            'artsoft\widgets\dashboard\Info',
-                            //'artsoft\user\widgets\dashboard\UsersBrowser',
-                        ],
-                    ],
+//                    [
+//                        'class' => 'col-md-4',
+//                        'content' => [
+//                            'artsoft\widgets\dashboard\Info',
+//                            //'artsoft\user\widgets\dashboard\UsersBrowser',
+//                        ],
+//                    ],
                 ],
                 [
                     [

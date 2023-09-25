@@ -61,8 +61,8 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $query = SchoolplanView::find()->where(['between', 'datetime_in', Yii::$app->formatter->asTimestamp($model_date->date_in), Yii::$app->formatter->asTimestamp($model_date->date_out)]);
-        $searchModel = new SchoolplanViewSearch($query);
-        $params = Yii::$app->request->getQueryParams();
+        $searchModel = new $this->modelSearchClass($query);
+        $params = $this->getParams();
         $dataProvider = $searchModel->search($params);
         return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel', 'model_date'));
     }

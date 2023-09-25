@@ -76,7 +76,7 @@ $readonly = $model->status == EntrantPreregistrations::REG_STATUS_STUDENT;
                     ?>
                     <?= $form->field($model, 'reg_vid')->radioList(EntrantPreregistrations::getRegList()/*, ['itemOptions' => ['disabled' => $readonly]]*/) ?>
 
-                    <?= $form->field($model, 'status')->dropDownList(EntrantPreregistrations::getRegStatusList(), ['disabled' => $readonly])->hint('При смене статуса "Принят на обучение", будет создан учебный план автоматически.') ?>
+                    <?= $form->field($model, 'status')->dropDownList(EntrantPreregistrations::getRegStatusList(), ['disabled' => false])->hint('При смене статуса "Принят на обучение", будет создан учебный план автоматически.') ?>
                 </div>
             </div>
         </div>

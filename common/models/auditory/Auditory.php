@@ -132,4 +132,8 @@ class Auditory extends ActiveRecord
         return $this->building->name;
     }
 
+    public static function getAuditoryScalar() {
+        return self::find()->scalar();
+    }
+
 }

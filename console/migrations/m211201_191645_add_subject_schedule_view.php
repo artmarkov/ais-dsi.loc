@@ -26,7 +26,7 @@ class m211201_191645_add_subject_schedule_view extends \artsoft\db\BaseMigration
     subject_schedule.time_out,
     subject_schedule.auditory_id,
     subject_schedule.description,
-    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS sect_name,
+    concat(user_common.last_name, \' \', user_common.first_name, \' \', "left"(user_common.middle_name::text, 1), \'.\') AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
     studyplan_subject.subject_vid_id,
     studyplan.status

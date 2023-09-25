@@ -178,7 +178,7 @@ UNION ALL
             ELSE 0::double precision
         END AS load_time_1,
     teachers_load.load_time_consult,
-    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS sect_name,
+    concat(user_common.last_name, \' \', user_common.first_name, \' \', "left"(user_common.middle_name::text, 1), \'.\') AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
     studyplan_subject.subject_type_id,
     guide_subject_type.name AS subject_type_name,

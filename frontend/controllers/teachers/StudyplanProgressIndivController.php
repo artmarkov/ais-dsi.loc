@@ -229,7 +229,7 @@ class StudyplanProgressIndivController extends MainController
             ->all();
         foreach ($models as $model) {
             $deletedIDs = LessonItems::find()->where(['=', 'id', $model->lesson_items_id])->column();
-            LessonItems::deleteAll(['id' => $deletedIDs]);
+           // LessonItems::deleteAll(['id' => $deletedIDs]);
         }
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
         return $this->redirect($this->getRedirectPage('delete', $model));

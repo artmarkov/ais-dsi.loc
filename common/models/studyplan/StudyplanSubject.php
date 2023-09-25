@@ -4,6 +4,7 @@ namespace common\models\studyplan;
 
 use artsoft\helpers\RefBook;
 use common\models\education\EducationProgramm;
+use common\models\education\LessonItems;
 use common\models\subjectsect\SubjectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\subject\Subject;
@@ -74,7 +75,8 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_cat_id', 'subject_id', /*'subject_type_id',*/ 'subject_vid_id', 'week_time', 'year_time'], 'required'],
+            [['subject_cat_id', 'subject_id', /*'subject_type_id',*/
+                'subject_vid_id', 'week_time', 'year_time'], 'required'],
             [['studyplan_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'status', 'version'], 'integer'],
             [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'number'],
             [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'default', 'value' => 0],
@@ -335,19 +337,31 @@ SQL;
      */
     public function beforeDelete()
     {
-        $funcSql =  <<< SQL
+        $funcSql = <<< SQL
             select subject_sect_studyplan_id as id
             from studyplan_subject_view
             where studyplan_subject_id = {$this->id}
             AND subject_sect_studyplan_id IS NOT NULL
 SQL;
         $models = Yii::$app->db->createCommand($funcSql)->queryColumn();
-        if($models) {
+        if ($models) {
             foreach ($models as $id) {
                 $model = SubjectSectStudyplan::findOne($id);
                 $model->removeStudyplanSubject();
             }
         }
+        $loadIds = TeachersLoad::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
+            ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
+        TeachersLoad::deleteAll(['id' => $loadIds]);
+
+        $thematicIds = StudyplanThematic::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
+            ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
+        StudyplanThematic::deleteAll(['id' => $thematicIds]);
+
+        $lessonIds = LessonItems::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
+            ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
+        LessonItems::deleteAll(['id' => $lessonIds]);
+
         return parent::beforeDelete();
     }
 

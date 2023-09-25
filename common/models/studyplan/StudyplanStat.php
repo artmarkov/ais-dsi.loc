@@ -3,6 +3,8 @@
 namespace common\models\studyplan;
 
 use artsoft\helpers\ExcelObjectList;
+use common\models\parents\Parents;
+use common\models\students\Student;
 use common\models\user\UserCommon;
 use Yii;
 use yii\db\Query;
@@ -19,8 +21,8 @@ class StudyplanStat
     protected function getStudyplans()
     {
         $models = (new Query())->from('studyplan_stat_view')
-        ->andWhere(['plan_year' => $this->plan_year])
-        ->all();
+            ->andWhere(['plan_year' => $this->plan_year])
+            ->all();
         return $models;
     }
 
@@ -39,6 +41,7 @@ class StudyplanStat
             'education_programm_short_name' => 'Образовательная програма',
 //            'education_cat_name' => 'Категория обр. программы',
             'education_cat_short_name' => 'Категория обр. программы',
+            'speciality' => 'Специальность',
             'course' => 'Класс',
             'description' => 'Описание',
             'year_time_total' => 'Всего учебных часов в год',
@@ -85,12 +88,17 @@ class StudyplanStat
         $data = [];
         foreach ($this->getStudyplans() as $id => $model) {
             $age = \artsoft\helpers\ArtHelper::age($model['student_birth_date']);
+            $limit = [];
+            foreach (explode(',', $model['limited_status_list']) as $item => $status) {
+                $limit[] = Student::getLimitedStatusValue($status);
+            }
             $data[$id]['student_id'] = sprintf('#%06d', $model['student_id']);
             $data[$id]['student_fio'] = $model['student_fio'];
             $data[$id]['education_programm_name'] = $model['education_programm_name'];
             $data[$id]['education_programm_short_name'] = $model['education_programm_short_name'];
             $data[$id]['education_cat_name'] = $model['education_cat_name'];
             $data[$id]['education_cat_short_name'] = $model['education_cat_short_name'];
+            $data[$id]['speciality'] = $model['speciality'];
             $data[$id]['course'] = $model['course'];
             $data[$id]['subject_form_name'] = $model['subject_form_name'];
             $data[$id]['plan_year'] = $model['plan_year'];
@@ -111,9 +119,9 @@ class StudyplanStat
             $data[$id]['student_snils'] = $model['student_snils'];
             $data[$id]['student_info'] = $model['student_info'];
             $data[$id]['student_email'] = $model['student_email'];
-            $data[$id]['student_sert_name'] = $model['student_sert_name'];
+            $data[$id]['student_sert_name'] = Student::getDocumentValue($model['student_sert_name']);
             $data[$id]['student_sert_doc'] = 'серия ' . $model['student_sert_series'] . ' №' . $model['student_sert_num'] . ' выдан ' . $model['student_sert_organ'] . ' ' . Yii::$app->formatter->asDate($model['student_sert_date']);
-            $data[$id]['limited_status_list'] = $model['limited_status_list'];
+            $data[$id]['limited_status_list'] = implode(',', $limit);
             $data[$id]['signer_fio'] = $model['signer_fio'];
             $data[$id]['signer_address'] = $model['signer_address'];
             $data[$id]['signer_birth_date'] = Yii::$app->formatter->asDate($model['signer_birth_date']);
@@ -123,7 +131,7 @@ class StudyplanStat
             $data[$id]['signer_snils'] = $model['signer_snils'];
             $data[$id]['signer_info'] = $model['signer_info'];
             $data[$id]['signer_email'] = $model['signer_email'];
-            $data[$id]['signer_sert_name'] = $model['signer_sert_name'];
+            $data[$id]['signer_sert_name'] = Parents::getDocumentValue($model['signer_sert_name']);
             $data[$id]['signer_doc'] = 'серия ' . $model['signer_sert_series'] . ' №' . $model['signer_sert_num'] . ' выдан ' . $model['signer_sert_organ'] . ' ' . Yii::$app->formatter->asDate($model['signer_sert_date']) . ' код ' . $model['signer_sert_code'];
         }
 //        usort($data, function ($a, $b) {
@@ -132,6 +140,7 @@ class StudyplanStat
 
         return ['data' => $data, 'attributes' => $attributes];
     }
+
     /**
      * @param $data
      * @return bool

@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="panel">
         <div class="panel-body">
             <?= \yii\bootstrap\Alert::widget([
-                'body' => '<i class="fa fa-info"></i> Кликните на мероприятие.',
+                'body' => '<i class="fa fa-info"></i> Кликните на мероприятие для детализации.',
                 'options' => ['class' => 'alert-info'],
             ]);
             ?>

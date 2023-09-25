@@ -102,6 +102,7 @@ class FileManager extends ActiveRecord implements OwnerAccess {
          
         $model = new FileManager();
         $name = $file->name;
+       // $model->name = ArtHelper::slug($file->name) . '_' . strtotime('now') . '.' . $file->extension;
         $model->name = strtotime('now') . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '.' . $file->extension;
         $model->orig_name = $name;
         $model->alt = '';
@@ -177,7 +178,7 @@ class FileManager extends ActiveRecord implements OwnerAccess {
      */
     public function getFileUrl() {
 
-        $uploadDir = Url::to('/', true) . $this->getUploadDir();
+        $uploadDir = Url::to('/', 'https') . $this->getUploadDir();
 
         if ($this->name && file_exists($this->getRoutes())) {
             $path = "{$uploadDir}/{$this::getFolder($this->class)}/{$this->name}";

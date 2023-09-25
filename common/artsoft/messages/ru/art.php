@@ -49,6 +49,7 @@ return [
     'Description' => 'Описание',
     'E-mail confirmed' => 'E-mail подтвержден',
     'E-mail' => 'E-mail',
+    'Email for Mailing' => 'E-mail для Рассылки',
     'Edit' => 'Редактировать',
     'Error' => 'Ошибка',
     'Executors' => 'Исполнители',

@@ -123,7 +123,7 @@ class UserCommon extends ActiveRecord
             'phone_optional' => Yii::t('art', 'Phone Optional'),
             'snils' => Yii::t('art', 'Snils'),
             'info' => Yii::t('art', 'Info'),
-            'email' => Yii::t('art', 'E-mail'),
+            'email' => Yii::t('art', 'Email for Mailing'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
