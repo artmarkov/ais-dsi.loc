@@ -145,8 +145,8 @@ class DefaultController extends MainController
 
         if ($model->load(Yii::$app->request->post())) {
             if (Yii::$app->request->post('submitAction') == 'next_class') {
-               $model->status = 0;
-               $model->status_reason = 1;
+                $model->status = 0;
+                $model->status_reason = 1;
             } elseif (Yii::$app->request->post('submitAction') == 'repeat_class') {
                 $model->status = 0;
                 $model->status_reason = 2;
@@ -792,7 +792,7 @@ class DefaultController extends MainController
                     try {
                         if ($flag = $model->save(false)) {
                             if (!empty($deletedIDs)) {
-                               // LessonProgress::deleteAll(['id' => $deletedIDs]);
+                                // LessonProgress::deleteAll(['id' => $deletedIDs]);
                             }
                             foreach ($modelsItems as $modelItems) {
                                 $modelItems->lesson_items_id = $model->id;
@@ -927,16 +927,25 @@ class DefaultController extends MainController
         if ('create' == $mode) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Studyplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление карточки';
-            $modelStudyplanInvoices = new StudyplanInvoices();
-            $modelStudyplanInvoices->studyplan_id = $id;
-            if ($modelStudyplanInvoices->load(Yii::$app->request->post()) AND $modelStudyplanInvoices->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                $this->getSubmitAction($modelStudyplanInvoices);
+
+            $studyplanIds = new DynamicModel(['ids']);
+            $studyplanIds->addRule(['ids'], 'safe');
+
+            $studyplanIds->ids = [$id];
+            $m = new StudyplanInvoices();
+
+            if ($m->load(Yii::$app->request->post()) && $studyplanIds->load(Yii::$app->request->post()) && $m->validate()) {
+                $m->setAttributes($model->getAttributes());
+                $m->studyplan_id = $studyplanIds['ids'][0];
+                if ($m->save(false)) {
+                    Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+                    $this->getSubmitAction($m);
+                }
             }
 
             return $this->renderIsAjax('@backend/views/invoices/default/_form.php', [
-//                'model' => $model,
-                'model' => $modelStudyplanInvoices,
+                'model' => $m,
+                'studyplanIds' => $studyplanIds,
                 'readonly' => false,
             ]);
 
@@ -969,7 +978,7 @@ class DefaultController extends MainController
             }
 
             return $this->renderIsAjax('@backend/views/invoices/default/_form.php', [
-               // 'model' => $model,
+                // 'model' => $model,
                 'model' => $modelStudyplanInvoices,
                 'readonly' => false,
             ]);
@@ -983,12 +992,12 @@ class DefaultController extends MainController
             $model_date = new DynamicModel(['date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
             $model_date->addRule(['date_in', 'date_out'], 'required')
                 ->addRule(['date_in', 'date_out'], 'string')
-                ->addRule([ 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
+                ->addRule(['programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
                 $mon = date('m');
                 $year = date('Y');
 
-                $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:d.m.Y');
+                $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon - 1, $day_in, $year), 'php:d.m.Y');
                 $model_date->date_out = $session->get('_invoices_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
             }
 
@@ -1045,19 +1054,20 @@ class DefaultController extends MainController
     /**
      * @return \yii\web\Response
      */
-    public function actionBulkNextClass() {
+    public function actionBulkNextClass()
+    {
         if (Yii::$app->request->post('selection')) {
-            $models = $this->modelClass::find()->where( ['id' => Yii::$app->request->post('selection', [])])->all();
+            $models = $this->modelClass::find()->where(['id' => Yii::$app->request->post('selection', [])])->all();
             $ret = false;
             foreach ($models as $model) {
-                     $model->status = $this->modelClass::STATUS_INACTIVE;
-                     $model->status_reason = 1;
-                     $ret = $model->update(false);
-                 }
+                $model->status = $this->modelClass::STATUS_INACTIVE;
+                $model->status_reason = 1;
+                $ret = $model->update(false);
+            }
             if ($ret) {
                 Yii::$app->session->setFlash('success', 'Все выбранные учебные планы успешно обработаны.');
             } else {
-                Yii::$app->session->setFlash('error','Ошибка пакетной обработки учебных планов');
+                Yii::$app->session->setFlash('error', 'Ошибка пакетной обработки учебных планов');
             }
             return $this->redirect(Yii::$app->request->referrer);
         }
@@ -1066,9 +1076,10 @@ class DefaultController extends MainController
     /**
      * @return \yii\web\Response
      */
-    public function actionBulkRepeatClass() {
+    public function actionBulkRepeatClass()
+    {
         if (Yii::$app->request->post('selection')) {
-            $models = $this->modelClass::find()->where( ['id' => Yii::$app->request->post('selection', [])])->all();
+            $models = $this->modelClass::find()->where(['id' => Yii::$app->request->post('selection', [])])->all();
             $ret = false;
             foreach ($models as $model) {
                 $model->status = $this->modelClass::STATUS_INACTIVE;
@@ -1078,7 +1089,7 @@ class DefaultController extends MainController
             if ($ret) {
                 Yii::$app->session->setFlash('success', 'Все выбранные учебные планы успешно обработаны.');
             } else {
-                Yii::$app->session->setFlash('error','Ошибка пакетной обработки учебных планов');
+                Yii::$app->session->setFlash('error', 'Ошибка пакетной обработки учебных планов');
             }
             return $this->redirect(Yii::$app->request->referrer);
         }
@@ -1087,9 +1098,10 @@ class DefaultController extends MainController
     /**
      * @return \yii\web\Response
      */
-    public function actionBulkFinishPlan() {
+    public function actionBulkFinishPlan()
+    {
         if (Yii::$app->request->post('selection')) {
-            $models = $this->modelClass::find()->where( ['id' => Yii::$app->request->post('selection', [])])->all();
+            $models = $this->modelClass::find()->where(['id' => Yii::$app->request->post('selection', [])])->all();
             $ret = false;
             foreach ($models as $model) {
                 $model->status = $this->modelClass::STATUS_INACTIVE;
@@ -1099,13 +1111,14 @@ class DefaultController extends MainController
             if ($ret) {
                 Yii::$app->session->setFlash('success', 'Все выбранные учебные планы успешно обработаны.');
             } else {
-                Yii::$app->session->setFlash('error','Ошибка пакетной обработки учебных планов');
+                Yii::$app->session->setFlash('error', 'Ошибка пакетной обработки учебных планов');
             }
             return $this->redirect(Yii::$app->request->referrer);
         }
     }
 
-    public function actionStudentsView($id){
+    public function actionStudentsView($id)
+    {
         $model = $this->findModel($id);
         $modelStudent = Student::findOne($model->student_id);
         $studentDependence = $modelStudent->studentDependence;

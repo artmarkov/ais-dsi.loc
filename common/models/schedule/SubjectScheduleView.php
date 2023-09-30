@@ -148,11 +148,11 @@ class SubjectScheduleView extends SubjectSchedule
                 ['OR',
                     ['AND',
                         ['<', 'time_in', Schedule::encodeTime($model->time_out)],
-                        ['>=', 'time_in', Schedule::encodeTime($model->time_in)],
+                        ['>', 'time_in', Schedule::encodeTime($model->time_in)],
                     ],
 
                     ['AND',
-                        ['<=', 'time_out', Schedule::encodeTime($model->time_out)],
+                        ['<', 'time_out', Schedule::encodeTime($model->time_out)],
                         ['>', 'time_out', Schedule::encodeTime($model->time_in)],
                     ],
                 ],

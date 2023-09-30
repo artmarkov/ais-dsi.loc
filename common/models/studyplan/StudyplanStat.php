@@ -50,7 +50,8 @@ class StudyplanStat
             'doc_date' => 'Дата документов',
             'doc_contract_start' => 'Дата начала действия договора',
             'doc_contract_end' => 'Дата окончания действия договора',
-            'status_reason' => 'Статус учебного плана',
+            'status' => 'Статус учебного плана',
+            'status_reason' => 'Причина закрытия учебного плана',
             'subject_form_name' => 'Форма обучения',
             'student_address' => 'Адресс ученика',
             'student_birth_date' => 'Дата рождения ученика',
@@ -109,6 +110,7 @@ class StudyplanStat
             $data[$id]['doc_date'] = Yii::$app->formatter->asDate($model['doc_date']);
             $data[$id]['doc_contract_start'] = $model['doc_contract_start'];
             $data[$id]['doc_contract_end'] = $model['doc_contract_end'];
+            $data[$id]['status'] = Studyplan::getStatusValue($model['status']);
             $data[$id]['status_reason'] = Studyplan::getStatusReasonValue($model['status_reason']);
             $data[$id]['student_address'] = $model['student_address'];
             $data[$id]['student_birth_date'] = Yii::$app->formatter->asDate($model['student_birth_date']);
