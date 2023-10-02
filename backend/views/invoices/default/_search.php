@@ -161,7 +161,6 @@ document.querySelector('form').addEventListener('submit', (event) => {
         $("#dynamicmodel-subject_type_id").empty();
         $("#dynamicmodel-subject_type_sect_id").empty();
         $("#dynamicmodel-subject_vid_id").empty();
-        $("#dynamicmodel-subject_form_id").empty();
         $("#dynamicmodel-studyplan_invoices_status").empty();
         
     // console.log(event.submitter.id);

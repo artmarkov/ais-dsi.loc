@@ -29,8 +29,14 @@ $columns = [
     [
         'attribute' => 'sect_name',
         'width' => '310px',
-        'value' => function ($model, $key, $index, $widget) {
-            return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
+        'value' => function ($model) {
+            return $model->sect_name ? (\artsoft\Art::isBackend() && $model->studyplan_id != 0 ? Html::a($model->sect_name . $model->getSectNotice(),
+                ['/studyplan/default/load-items', 'id' => $model->studyplan_id],
+                [
+                    'target' => '_blank',
+                    'data-pjax' => '0',
+//                    'class' => 'btn btn-info',
+                ])  : $model->sect_name . $model->getSectNotice()) : null;
         },
         'label' =>  Yii::t('art/guide', 'Sect').'/'.Yii::t('art/student', 'Student'),
         'format' => 'raw',
@@ -174,7 +180,7 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-           'create' => function ($model) {
+            'create' => function ($model) {
                 return $model->getTeachersScheduleNeed() && $model->subject_sect_id == 0;
             },
             'delete' => function ($model) {

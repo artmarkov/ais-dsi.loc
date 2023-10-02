@@ -186,13 +186,13 @@ class DefaultController extends MainController
                         $this->getSubmitAction();
                     }
                 } catch (Exception $e) {
-//                    print_r($e->errorInfo); die();
+                    print_r($e->errorInfo); die();
                     $transaction->rollBack();
                 }
             }
         }
         if (Yii::$app->request->post('submitAction') == 'doc_contract' || Yii::$app->request->post('submitAction') == 'doc_statement') {
-            if (!isset($model->parent) || !$model->doc_date || !$model->contract_start || !$model->contract_end) {
+            if (!isset($model->parent) || !$model->doc_date || !$model->doc_contract_start || !$model->doc_contract_end) {
                 Yii::$app->session->setFlash('warning', 'Заполните поля раздела "Документы"');
                 return $this->getSubmitAction($model);
             }

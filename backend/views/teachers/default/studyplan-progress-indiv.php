@@ -18,42 +18,42 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
-   // if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
-            $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'subject_key' => base64_encode($model['subject_key'] . '||' . $model['timestamp_in']), 'mode' => 'create'] :
-                    ['/teachers/studyplan-progress-indiv/create', 'subject_key' => base64_encode($model['subject_key'] . '||' . $model['timestamp_in'])],
-                [
-                    'title' => 'Добавить занятие',
-                    'data-method' => 'post',
-                    'data-pjax' => '0',
-                    'class' => 'btn btn-xxs btn-link'
+    // if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
+    $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
+        \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'subject_key' => base64_encode($model['subject_key'] . '||' . $model['timestamp_in']), 'mode' => 'create'] :
+            ['/teachers/studyplan-progress-indiv/create', 'subject_key' => base64_encode($model['subject_key'] . '||' . $model['timestamp_in'])],
+        [
+            'title' => 'Добавить занятие',
+            'data-method' => 'post',
+            'data-pjax' => '0',
+            'class' => 'btn btn-xxs btn-link'
 
-                ]
-            )];
+        ]
+    )];
 //        }
     foreach ($model['lesson_timestamp'] as $id => $item) {
 //        if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
-            $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                    \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']),'mode' => 'update'] :
-                        ['/teachers/studyplan-progress-indiv/update', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date'])], [
-                        'title' => Yii::t('art', 'Update'),
-                        'data-method' => 'post',
-                        'data-pjax' => '0',
-                        'class' => 'btn btn-xxs btn-link',
-                    ])
-                . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                    \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']), 'mode' => 'delete'] :
-                        ['/teachers/studyplan-progress-indiv/delete', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date'])], [
-                        'title' => Yii::t('art', 'Delete'),
-                        'class' => 'btn btn-xxs btn-link',
-                        'data' => [
-                            'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                            'pjax' => '0',
-                            'method' => 'post',
-                        ],
-                    ]
-                ),
-            ];
+        $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']),'mode' => 'update'] :
+                    ['/teachers/studyplan-progress-indiv/update', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date'])], [
+                    'title' => Yii::t('art', 'Update'),
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                    'class' => 'btn btn-xxs btn-link',
+                ])
+            . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']), 'mode' => 'delete'] :
+                    ['/teachers/studyplan-progress-indiv/delete', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date'])], [
+                    'title' => Yii::t('art', 'Delete'),
+                    'class' => 'btn btn-xxs btn-link',
+                    'data' => [
+                        'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                        'pjax' => '0',
+                        'method' => 'post',
+                    ],
+                ]
+            ),
+        ];
 //        }
     }
     return [
@@ -85,6 +85,7 @@ $columns = [
         'format' => 'raw',
         'group' => true,
         'subGroupOf' => 1,
+        'footer' => 'ИТОГО: ак.час',
     ],
     [
         'attribute' => 'student_id',
@@ -102,9 +103,11 @@ $columns = [
 ];
 foreach ($model['lessonDates'] as $id => $name) {
     $columns[] = [
-        'attribute' => $name,
-        'label' => $model['attributes'][$name],
+        'attribute' => $name['date'],
+        'label' => $model['attributes'][$name['date']],
         'format' => 'raw',
+        'footer' => $name['dates_load'],
+
     ];
 }
 
@@ -154,6 +157,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                     'type' => '',
                     'footer' => $hints,
                 ],
+                'showFooter' => true,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

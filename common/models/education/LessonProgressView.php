@@ -2,12 +2,15 @@
 
 namespace common\models\education;
 
+use artsoft\Art;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
+use artsoft\helpers\Schedule;
 use common\models\studyplan\Studyplan;
 use common\models\teachers\TeachersLoadView;
 use common\widgets\editable\Editable;
 use Yii;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
@@ -68,21 +71,21 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $modelsProgress = [];
             $modelsMarks = [];
         } else {
-        $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
-            ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
-            ->andWhere(['=', 'subject_sect_id', $subject_sect_id])
-            ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
-            ->orderBy('lesson_date')
-            ->asArray()->all();
-        $modelsProgress = self::find()->where(['subject_sect_studyplan_id' => $model_date->subject_sect_studyplan_id])
-            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
-            ->orderBy('sect_name')->all();
+            $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
+                ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
+                ->andWhere(['=', 'subject_sect_id', $subject_sect_id])
+                ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
+                ->orderBy('lesson_date')
+                ->asArray()->all();
+            $modelsProgress = self::find()->where(['subject_sect_studyplan_id' => $model_date->subject_sect_studyplan_id])
+                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->orderBy('sect_name')->all();
 
-        $modelsMarks = ArrayHelper::index(LessonItemsProgressView::find()
-            ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
-            ->andWhere(['subject_sect_id' => $subject_sect_id])
-            ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
-            ->all(), null, 'studyplan_subject_id');
+            $modelsMarks = ArrayHelper::index(LessonItemsProgressView::find()
+                ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
+                ->andWhere(['subject_sect_id' => $subject_sect_id])
+                ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
+                ->all(), null, 'studyplan_subject_id');
         }
 
         // echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
@@ -251,7 +254,8 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
     public static function getDataIndivTeachers($model_date, $teachers_id, $plan_year)
     {
-        $data = $dates = [];
+        $data = $dates = $datesLoad = [];
+        $dates_load = 0;
 
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
         $timestamp_in = $timestamp[0];
@@ -274,11 +278,22 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->andWhere(['plan_year' => $plan_year])
             ->all();
 
+        $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress,'studyplan_subject_id');
+
         foreach ($lessonDates as $id => $lessonDate) {
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
             $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
             $attributes += [$date => $label];
-            $dates[] = $date;
+            if (Art::isBackend()) {
+                $dates_load = (new Query())->from('activities_schedule_view')
+                    ->select(new \yii\db\Expression('SUM(datetime_out) - SUM(datetime_in) AS time'))
+                    ->where(['in', 'studyplan_subject_id', $studyplanSubjectIds])
+                    ->andWhere(['and', ['>=', 'datetime_in', $lessonDate['lesson_date']], ['<', 'datetime_in', $lessonDate['lesson_date'] + 86400]])
+                    ->scalar();
+                $dates_load =  Schedule::astr2academ($dates_load);
+//                print_r($datesLoad);
+            }
+            $dates[] = ['date' => $date, 'dates_load' => $dates_load];
         }
         foreach ($modelsProgress as $item => $modelProgress) {
             $data[$item]['lesson_timestamp'] = $lessonDates;

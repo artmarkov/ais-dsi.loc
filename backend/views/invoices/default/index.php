@@ -148,7 +148,7 @@ $columns = [
         ],
         'visibleButtons' => [
             'create' => function ($model) {
-                return true;
+                return $model->studyplan_invoices_id == null;
             },
             'delete' => function ($model) {
                 return $model->studyplan_invoices_id !== null;

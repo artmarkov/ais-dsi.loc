@@ -34,13 +34,13 @@ $columns = [
         'filter' => false,
         'width' => '310px',
         'value' => function ($model) {
-            return \artsoft\Art::isBackend() && $model->sect_name ? Html::a($model->sect_name . $model->getSectNotice(),
+            return $model->sect_name ? (\artsoft\Art::isBackend() ? Html::a($model->sect_name . $model->getSectNotice(),
                 ['/studyplan/default/load-items', 'id' => $model->studyplan_id],
                 [
                     'target' => '_blank',
                     'data-pjax' => '0',
 //                    'class' => 'btn btn-info',
-                ])  : $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
+                ])  : $model->sect_name . $model->getSectNotice()) : null;
         },
 
         'format' => 'raw',

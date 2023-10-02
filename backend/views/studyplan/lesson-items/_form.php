@@ -182,13 +182,13 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?php if ($model->lesson_date && !empty($modelsItems)): ?>
                     <?= \artsoft\helpers\ButtonHelper::exitButton();?>
                     <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit');?>
-                <?php else: ?>
-                    <?= \artsoft\helpers\ButtonHelper::exitButton();?>
-                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-md btn-info', 'name' => 'submitAction', 'value' => 'next']); ?>
-                <?php endif; ?>
+               <!-- <?php /*if ($model->lesson_date && !empty($modelsItems)): */?>
+                <?php /*else: */?>
+                    <?/*= \artsoft\helpers\ButtonHelper::exitButton();*/?>
+                    <?/*= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-md btn-info', 'name' => 'submitAction', 'value' => 'next']); */?>
+                --><?php /*endif; */?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
