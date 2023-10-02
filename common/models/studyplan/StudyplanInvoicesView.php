@@ -13,6 +13,7 @@ use Yii;
  * @property int|null $plan_year
  * @property int|null $course
  * @property int|null $status
+ * @property int|null $subject_form_id
  * @property int|null $education_cat_id
  * @property int|null $programm_short_name
  * @property int|null $education_cat_short_name
@@ -58,6 +59,7 @@ class StudyplanInvoicesView extends StudyplanInvoices
             $attr['plan_year'] = Yii::t('art/studyplan', 'Plan Year');
             $attr['course'] = Yii::t('art/guide', 'Course');
             $attr['status'] = Yii::t('art/guide', 'Status');
+            $attr['subject_form_id'] = Yii::t('art/guide', 'Subject Form');
             $attr['education_cat_id'] = 'Вид программы';
             $attr['studyplan_subjects'] = 'Дисциплины';
             $attr['subject_list'] = 'Предметы';

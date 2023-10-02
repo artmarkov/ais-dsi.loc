@@ -130,6 +130,8 @@ $form = ActiveForm::begin([
 
                                         <?= $form->field($model_date, "subject_vid_id")->dropDownList(RefBook::find('subject_vid_name')->getList(), ['prompt' => Yii::t('art', 'Select...')])->label(Yii::t('art/guide', 'Subject Vid')); ?>
 
+                                        <?= $form->field($model_date, "subject_form_id")->dropDownList(RefBook::find('subject_form_name')->getList(), ['prompt' => Yii::t('art', 'Select...')])->label(Yii::t('art/guide', 'Subject Form')); ?>
+
                                         <?= $form->field($model_date, "studyplan_invoices_status")->dropDownList(\common\models\studyplan\StudyplanInvoices::getStatusList(), ['prompt' => Yii::t('art', 'Select...')])->label('Статус платежа'); ?>
 
                                         <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); ?>
@@ -159,6 +161,7 @@ document.querySelector('form').addEventListener('submit', (event) => {
         $("#dynamicmodel-subject_type_id").empty();
         $("#dynamicmodel-subject_type_sect_id").empty();
         $("#dynamicmodel-subject_vid_id").empty();
+        $("#dynamicmodel-subject_form_id").empty();
         $("#dynamicmodel-studyplan_invoices_status").empty();
         
     // console.log(event.submitter.id);

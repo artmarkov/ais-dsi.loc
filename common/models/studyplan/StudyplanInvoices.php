@@ -247,7 +247,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
             'rank' => 'doc',
             'invoices_date' => date('j', $model->invoices_date) . ' ' . ArtHelper::getMonthsList()[date('n', $model->invoices_date)] . ' ' . date('Y', $model->invoices_date), // дата платежа
             'invoices_summ' => $model->invoices_summ,
-            'invoices_app' => $model->invoices_app,
+            'invoices_app' => $studyplan->student->user->last_name . ' ' . $studyplan->student->user->first_name . ', л/сч. ' . sprintf('%06d', $model->studyplan_id) . ' (' . RefBook::find('education_programm_short_name')->getValue($studyplan->programm_id) . ' ' . $studyplan->course . ' класс) '. $model->invoices_app,
             'student' => $studyplan->student->getFullName(), // Полное имя ученика
             'last_name' => $studyplan->student->user->last_name,
             'first_name' => $studyplan->student->user->first_name,

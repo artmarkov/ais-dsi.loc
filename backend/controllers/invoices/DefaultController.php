@@ -34,10 +34,10 @@ class DefaultController extends BaseController
         $day_in = 1;
         $day_out = date("t");
 
-        $model_date = new DynamicModel(['plan_year','date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
+        $model_date = new DynamicModel(['plan_year','date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'subject_form_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
         $model_date->addRule(['plan_year','date_in', 'date_out'], 'required')
             ->addRule(['date_in', 'date_out'], 'string')
-            ->addRule(['plan_year', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
+            ->addRule(['plan_year', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'subject_form_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
@@ -52,6 +52,7 @@ class DefaultController extends BaseController
             $model_date->subject_type_id = $session->get('_invoices_subject_type_id') ?? '';
             $model_date->subject_type_sect_id = $session->get('_invoices_subject_type_sect_id') ?? '';
             $model_date->subject_vid_id = $session->get('_invoices_subject_vid_id') ?? '';
+            $model_date->subject_form_id = $session->get('_invoices_subject_form_id') ?? '';
             $model_date->studyplan_invoices_status = $session->get('_invoices_studyplan_invoices_status') ?? '';
             $model_date->student_id = $session->get('_invoices_student_id') ?? '';
             $model_date->direction_id = $session->get('_invoices_direction_id') ?? '';
@@ -68,6 +69,7 @@ class DefaultController extends BaseController
         $session->set('_invoices_subject_type_id', $model_date->subject_type_id);
         $session->set('_invoices_subject_type_sect_id', $model_date->subject_type_sect_id);
         $session->set('_invoices_subject_vid_id', $model_date->subject_vid_id);
+        $session->set('_invoices_subject_form_id', $model_date->subject_form_id);
         $session->set('_invoices_studyplan_invoices_status', $model_date->studyplan_invoices_status);
         $session->set('_invoices_student_id', $model_date->student_id);
         $session->set('_invoices_direction_id', $model_date->direction_id);
@@ -87,6 +89,7 @@ class DefaultController extends BaseController
                 'subject_type_id' => $model_date->subject_type_id,
                 'subject_type_sect_id' => $model_date->subject_type_sect_id,
                 'subject_vid_id' => $model_date->subject_vid_id,
+                'subject_form_id' => $model_date->subject_form_id,
                 'studyplan_invoices_status' => $model_date->studyplan_invoices_status,
                 'student_id' => $model_date->student_id,
                 'direction_id' => $model_date->direction_id,
