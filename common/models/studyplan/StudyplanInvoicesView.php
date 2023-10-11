@@ -53,14 +53,14 @@ class StudyplanInvoicesView extends StudyplanInvoices
 
         $attr = parent::attributeLabels();
             $attr['studyplan_id'] = Yii::t('art/guide', 'Studyplan');
-            $attr['programm_id'] = Yii::t('art/studyplan', 'Education Programm');
+            $attr['programm_id'] = 'Обр. программа';
             $attr['student_id'] = Yii::t('art/student', 'Student');
             $attr['student_fio'] = Yii::t('art/student', 'Student');
             $attr['plan_year'] = Yii::t('art/studyplan', 'Plan Year');
             $attr['course'] = Yii::t('art/guide', 'Course');
             $attr['status'] = Yii::t('art/guide', 'Status');
             $attr['subject_form_id'] = Yii::t('art/guide', 'Subject Form');
-            $attr['education_cat_id'] = 'Вид программы';
+            $attr['education_cat_id'] = 'Вид прогр.';
             $attr['studyplan_subjects'] = 'Дисциплины';
             $attr['subject_list'] = 'Предметы';
             $attr['subject_type_list'] = 'Тип занятия';
@@ -69,7 +69,7 @@ class StudyplanInvoicesView extends StudyplanInvoices
             $attr['direction_list'] = Yii::t('art/teachers', 'Direction');
             $attr['teachers_list'] = Yii::t('art/teachers', 'Teacher');
             $attr['studyplan_invoices_id'] ='ID';
-            $attr['studyplan_invoices_status'] = 'Статус платежа';
+            $attr['studyplan_invoices_status'] = 'Статус';
         return $attr;
     }
 }

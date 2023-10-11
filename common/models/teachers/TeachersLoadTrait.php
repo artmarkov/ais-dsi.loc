@@ -108,10 +108,10 @@ trait TeachersLoadTrait
                 //Notice::registerWarning($message);
                 $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
             } else {
-                $message = ' Группа (' . count($studentsFio) . '): ' . implode(', ', $studentsFio);
+                $message = 'Группа (' . count($studentsFio) . '): ' . implode(', ', $studentsFio);
                 $tooltip[] = Tooltip::widget(['type' => 'info', 'message' => $message]);
             }
-            return implode('', $tooltip);
+            return implode(' ', $tooltip);
         }
         return null;
     }
@@ -127,7 +127,7 @@ trait TeachersLoadTrait
                     $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
                 }
             }
-            return implode('', $tooltip);
+            return implode(' ', $tooltip);
         }
         return null;
     }
@@ -143,7 +143,7 @@ trait TeachersLoadTrait
                     $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
                 }
             }
-            return implode('', $tooltip);
+            return implode(' ', $tooltip);
         }
         return null;
     }
@@ -158,7 +158,7 @@ trait TeachersLoadTrait
                     $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
                 }
             }
-            return implode('', $tooltip);
+            return implode(' ', $tooltip);
         }
         return null;
     }
@@ -173,7 +173,7 @@ trait TeachersLoadTrait
                     $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
                 }
             }
-            return implode('', $tooltip);
+            return implode(' ', $tooltip);
         }
         return null;
     }

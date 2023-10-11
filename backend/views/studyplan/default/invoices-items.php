@@ -17,10 +17,11 @@ $this->title = Yii::t('art/studyplan', 'Studyplan Invoices');
 $this->params['breadcrumbs'][] = $this->title;
 
 $columns = [
-    ['class' => 'artsoft\grid\CheckboxColumn',  'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
+    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
         return ['value' => $model->studyplan_invoices_id];
-    }
-      ],
+    },
+        'visible' => false,
+    ],
     [
         'attribute' => 'student_id',
         'value' => function ($model) {
@@ -76,7 +77,7 @@ $columns = [
         },
         'width' => '400px',
         'format' => 'raw',
-        'noWrap' => true,
+        'noWrap' => false,
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
@@ -88,7 +89,7 @@ $columns = [
         'contentOptions' => function ($model) {
             switch ($model->studyplan_invoices_status) {
                 case StudyplanInvoices::STATUS_WORK:
-                    return ['class' => 'warning'];
+                    return ['class' => 'default'];
                 case StudyplanInvoices::STATUS_PAYD:
                     return ['class' => 'info'];
                 case StudyplanInvoices::STATUS_RECEIPT:
@@ -102,15 +103,30 @@ $columns = [
         'format' => 'raw',
     ],
     [
+        'attribute' => 'invoices_reporting_month',
+        'label' => 'Период'
+    ],
+    [
+        'class' => 'artsoft\grid\columns\StatusColumn',
+        'attribute' => 'studyplan_invoices_status',
+        'optionsArray' => [
+            [StudyplanInvoices::STATUS_WORK, 'Счет в работе', 'default'],
+            [StudyplanInvoices::STATUS_PAYD, 'Счет оплачен', 'info'],
+            [StudyplanInvoices::STATUS_RECEIPT, 'Поступили средства', 'success'],
+            [StudyplanInvoices::STATUS_ARREARS, 'Задолженность по оплате', 'danger'],
+        ],
+        'options' => ['style' => 'width:120px']
+    ],
+    [
         'class' => 'kartik\grid\ActionColumn',
         'visible' => \artsoft\Art::isBackend(),
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
-        'template' => '{create} {update} {delete} {print}',
+        'template' => '{create} {update} {delete} {view} {print}',
         'buttons' => [
             'create' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                    Url::to(['/studyplan/default/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id,  'mode' => 'create']), [
+                    ['/studyplan/default/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id, 'mode' => 'create'], [
                         'title' => Yii::t('art', 'Create'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -119,7 +135,7 @@ $columns = [
             },
             'update' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                    Url::to(['/studyplan/default/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id,  'mode' => 'update']), [
+                    ['/studyplan/default/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id, 'mode' => 'update'], [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -128,7 +144,7 @@ $columns = [
             },
             'delete' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                    Url::to(['/studyplan/default/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id,  'mode' => 'delete']), [
+                    ['/studyplan/default/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id, 'mode' => 'delete'], [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -138,14 +154,23 @@ $columns = [
                 );
             },
             'print' => function ($key, $model) {
-                return Html::a('<span class="glyphicon glyphicon-print" aria-hidden="true"></span>',
-                    Url::to(['/invoices/default/make-invoices', 'id' => $model->studyplan_invoices_id]), [
-                        'title' => Yii::t('art', 'Print'),
+                return Html::a('<span class="glyphicon glyphicon-print" aria-hidden="true" style="color: blue"></span>',
+                    ['/invoices/default/make-invoices', 'id' => $model->studyplan_invoices_id], [
+                        'title' => 'Скачать квитанцию',
                         'data-method' => 'post',
                         'data-pjax' => '0',
                     ]
                 );
             },
+            'view' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-qrcode" aria-hidden="true" style="color: red"></span>',
+                    ['/studyplan/default/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id, 'mode' => 'view'], [
+                        'title' => 'Оплатить по QR-коду',
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            }
         ],
         'visibleButtons' => [
             'create' => function ($model) {
@@ -159,6 +184,9 @@ $columns = [
             },
             'print' => function ($model) {
                 return $model->studyplan_invoices_id !== null;
+            },
+            'view' => function ($model) {
+                return $model->studyplan_invoices_id !== null;
             }
         ],
     ],
@@ -166,20 +194,32 @@ $columns = [
         'class' => 'kartik\grid\ActionColumn',
         'visible' => \artsoft\Art::isFrontend(),
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
-        'template' => ' {print}',
+        'template' => '{view}',
         'buttons' => [
             'print' => function ($key, $model) {
-                return Html::a('<span class="glyphicon glyphicon-print" aria-hidden="true"></span>',
-                    ['/studyplan/default/make-invoices', 'id' => $model->studyplan_invoices_id], [
-                        'title' => Yii::t('art', 'Print'),
+                return Html::a('<span class="glyphicon glyphicon-print" aria-hidden="true" style="color: blue"></span>',
+                    [\artsoft\models\User::hasRole(['student']) ? '/studyplan/default/make-invoices' : '/teachers/studyplan/make-invoices', 'id' => $model->studyplan_invoices_id], [
+                        'title' => 'Скачать квитанцию',
                         'data-method' => 'post',
                         'data-pjax' => '0',
                     ]
                 );
             },
+            'view' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-qrcode" aria-hidden="true" style="color: red"></span> Оплатить',
+                    [\artsoft\models\User::hasRole(['student']) ? '/studyplan/default/studyplan-invoices' : '/teachers/studyplan/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id, 'mode' => 'view'], [
+                        'title' => 'Оплатить по QR-коду',
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            }
         ],
         'visibleButtons' => [
             'print' => function ($model) {
+                return $model->studyplan_invoices_id !== null;
+            },
+            'view' => function ($model) {
                 return $model->studyplan_invoices_id !== null;
             }
         ],
@@ -216,7 +256,7 @@ $columns = [
                 'id' => 'studyplan-invoices-grid',
                 'pjax' => true,
                 'dataProvider' => $dataProvider,
-               // 'filterModel' => $searchModel,
+//                 'filterModel' => $searchModel,
 //                'bulkActionOptions' => [
 //                    'gridId' => 'studyplan-invoices-grid',
 //                    'actions' => [
@@ -229,8 +269,8 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 7, 'class' => 'text-center warning']],
-                            ['content' => 'Счета за обучение', 'options' => ['colspan' => 2, 'class' => 'text-center success']],
+                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
+                            ['content' => 'Счета за обучение', 'options' => ['colspan' => 4, 'class' => 'text-center success']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

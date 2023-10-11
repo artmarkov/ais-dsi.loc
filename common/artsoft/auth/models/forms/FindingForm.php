@@ -50,9 +50,8 @@ class FindingForm extends UserCommon
     {
         $birth_date = Yii::$app->formatter->asTimestamp($model->birth_date);
 
-        $user = UserCommon::find()->joinWith('user')
-            ->where(['=', 'users.status', User::STATUS_INACTIVE])
-            ->andWhere(['=', 'user_common.status', UserCommon::STATUS_ACTIVE])
+        $user = UserCommon::find()
+            ->where(['=', 'user_common.status', UserCommon::STATUS_ACTIVE])
             ->andWhere(['like', 'last_name', $model->last_name])
             ->andWhere(['like', 'first_name', $model->first_name]);
 

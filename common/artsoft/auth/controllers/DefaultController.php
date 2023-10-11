@@ -324,9 +324,16 @@ class DefaultController extends BaseController
         $model = new FindingForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $userCommon = FindingForm::findByFio($model);
-//            echo '<pre>' . print_r($userCommon, true) . '</pre>'; die();
             if ($userCommon) { // если нашли запись
-                return $this->redirect(['signup', 'auth_key' => $userCommon->user->auth_key]);
+                $user = User::findOne($userCommon->user_id);
+//                echo '<pre>' . print_r($user, true) . '</pre>';
+//                die();
+                if ($user->status == User::STATUS_ACTIVE) {
+                    Yii::$app->session->setFlash('info', Yii::t('art/auth', "The user with the entered data is already registered in the system and the account is active."));
+                    return $this->redirect(['reset-password', 'username' => $user->username]);
+                } else {
+                    return $this->redirect(['signup', 'auth_key' => $user->auth_key]);
+                }
             } else {
                 Yii::$app->session->setFlash('error', Yii::t('art/auth', "User not found or blocked in the system"));
             }
@@ -462,6 +469,7 @@ class DefaultController extends BaseController
         }
 
         $model = new ResetPasswordForm();
+        $model->username = $_GET['username'] ?? null;
 
         if (Yii::$app->request->isAjax AND $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;

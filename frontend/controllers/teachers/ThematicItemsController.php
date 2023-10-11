@@ -93,6 +93,23 @@ class ThematicItemsController extends MainController
         ]);
     }
 
+    public function actionView($id)
+    {
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Thematic plans'), 'url' => ['teachers/thematic-items/index']];
+        $this->view->params['breadcrumbs'][] = sprintf('#%06d', $id);
+        $model = StudyplanThematic::findOne($id);
+        if (!isset($model)) {
+            throw new NotFoundHttpException("The StudyplanThematic was not found.");
+        }
+        $modelsItems = $model->studyplanThematicItems;
+
+        return $this->renderIsAjax('@backend/views/studyplan/studyplan-thematic/_form.php', [
+            'model' => $model,
+            'modelsItems' => (empty($modelsItems)) ? [new StudyplanThematicItems] : $modelsItems,
+            'readonly' => true
+        ]);
+    }
+
     public function actionUpdate($id)
     {
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Thematic plans'), 'url' => ['teachers/thematic-items/index']];

@@ -5,6 +5,7 @@ namespace common\models\studyplan;
 use artsoft\helpers\RefBook;
 use common\models\education\EducationProgramm;
 use common\models\education\LessonItems;
+use common\models\education\LessonProgress;
 use common\models\subjectsect\SubjectSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\subject\Subject;
@@ -357,6 +358,9 @@ SQL;
         $thematicIds = StudyplanThematic::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
             ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
         StudyplanThematic::deleteAll(['id' => $thematicIds]);
+
+//        $progressIds = LessonProgress::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])->column();
+//        LessonProgress::deleteAll(['id' => $progressIds]);
 
         $lessonIds = LessonItems::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
             ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();

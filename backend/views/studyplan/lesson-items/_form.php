@@ -28,7 +28,7 @@ $modelsStudent = (new \yii\db\Query())->select('studyplan_subject_id,student_fio
     ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$studyplanSubjectList}', ',')::int[])"))
     ->all();
 $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subject_id');
-//print_r($modelsStudent);
+//print_r($modelsStudent);die();
 ?>
 <div class="lesson-items-form">
     <?php
@@ -121,6 +121,7 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                             </thead>
                             <tbody class="container-items">
                             <?php foreach ($modelsItems as $index => $modelItems): ?>
+                            <?php if (isset($modelsStudent[$modelItems->studyplan_subject_id])): ?>
                                 <tr class="item">
                                     <?php
                                     // necessary for update action.
@@ -133,7 +134,7 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                                     </td>
                                     <td>
                                         <?= Html::activeHiddenInput($modelItems, "[{$index}]studyplan_subject_id"); ?>
-                                        <?= $modelsStudent[$modelItems->studyplan_subject_id]['student_fio']; ?>
+                                        <?= isset($modelsStudent[$modelItems->studyplan_subject_id]) ? $modelsStudent[$modelItems->studyplan_subject_id]['student_fio'] : ''; ?>
                                     </td>
                                     <td>
                                         <?php
@@ -173,6 +174,7 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                                         <?= $field->end(); ?>
                                     </td>
                                 </tr>
+                            <?php endif; ?>
                             <?php endforeach; ?>
                             </tbody>
                         </table>

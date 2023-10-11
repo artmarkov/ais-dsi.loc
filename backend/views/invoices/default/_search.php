@@ -25,25 +25,34 @@ $form = ActiveForm::begin([
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= $form->field($model_date, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
-                            [
-                                'disabled' => false,
-                                'onchange' => 'js: $(this).closest("form").submit()',
-//                                'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' =>  true ],
-//                                ],
-                            ])->label(Yii::t('art/studyplan', 'Plan Year'));
-                        ?>
-                        <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [
-                            'pluginEvents' => ['changeDate' => "function(e){
-                                           $(e.target).closest('form').submit();
-                                        }"]
-                        ])->label('Дата начала выборки')->hint('Учитывается дата выставления счета.'); ?>
-                        <?= $form->field($model_date, "date_out")->widget(DatePicker::class, [
-                            'pluginEvents' => ['changeDate' => "function(e){
-                                           $(e.target).closest('form').submit();
-                                        }"]
-                        ])->label('Дата окончания выборки'); ?>
 
+                        <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [
+                                'type' => \kartik\date\DatePicker::TYPE_INPUT,
+                                'options' => ['placeholder' => ''],
+                                'convertFormat' => true,
+                                'pluginOptions' => [
+                                    'format' => 'MM.yyyy',
+                                    'autoclose' => true,
+                                    'minViewMode' => 1,
+                                    'todayBtn' => 'linked',
+                                    'todayHighlight' => true,
+                                ],
+                                'pluginEvents' => ['changeDate' => "function(e){
+                                           $(e.target).closest('form').submit();
+                                        }"]
+                            ]
+                        )->label('Месяц и год'); ?>
+
+                        <?= $form->field($model_date, "programm_id")->widget(\kartik\select2\Select2::class, [
+                            'data' => RefBook::find('education_programm_short_name')->getList(),
+                            'options' => [
+                                'onchange' => 'js: $(this).closest("form").submit()',
+                                'placeholder' => Yii::t('art', 'Select...'),
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ])->label(Yii::t('art/studyplan', 'Education Programm')); ?>
                     </div>
                 </div>
                 <div class="row">
@@ -55,15 +64,6 @@ $form = ActiveForm::begin([
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <?= $form->field($model_date, "programm_id")->widget(\kartik\select2\Select2::class, [
-                                            'data' => RefBook::find('education_programm_short_name')->getList(),
-                                            'options' => [
-                                                'placeholder' => Yii::t('art', 'Select...'),
-                                            ],
-                                            'pluginOptions' => [
-                                                'allowClear' => true
-                                            ],
-                                        ])->label(Yii::t('art/studyplan', 'Education Programm')); ?>
 
                                         <?= $form->field($model_date, "education_cat_id")->widget(\kartik\select2\Select2::class, [
                                             'data' => RefBook::find('education_cat_short')->getList(),
@@ -82,7 +82,8 @@ $form = ActiveForm::begin([
                                                 'placeholder' => Yii::t('art', 'Select...'),
                                             ],
                                             'pluginOptions' => [
-                                                'allowClear' => true
+                                                'allowClear' => true,
+                                                'placeholder' => Yii::t('art', 'Select...'),
                                             ],
                                         ])->label(Yii::t('art/teachers', 'Name Direction'));
                                         ?>
@@ -151,7 +152,6 @@ $form = ActiveForm::begin([
 $js = <<<JS
 document.querySelector('form').addEventListener('submit', (event) => {
     if(event.submitter.id == 'reset') {
-        $("#dynamicmodel-programm_id").empty();
         $("#dynamicmodel-education_cat_id").empty();
         $("#dynamicmodel-direction_id").empty();
         $("#dynamicmodel-teachers_id").empty();

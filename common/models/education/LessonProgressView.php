@@ -285,13 +285,15 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
             $attributes += [$date => $label];
             if (Art::isBackend()) {
-                $dates_load = (new Query())->from('activities_schedule_view')
-                    ->select(new \yii\db\Expression('SUM(datetime_out) - SUM(datetime_in) AS time'))
+                $datesArray = (new Query())->from('activities_schedule_view')
+                    ->select(new \yii\db\Expression('datetime_out - datetime_in AS time'))
                     ->where(['in', 'studyplan_subject_id', $studyplanSubjectIds])
                     ->andWhere(['and', ['>=', 'datetime_in', $lessonDate['lesson_date']], ['<', 'datetime_in', $lessonDate['lesson_date'] + 86400]])
-                    ->scalar();
-                $dates_load =  Schedule::astr2academ($dates_load);
-//                print_r($datesLoad);
+                    ->column();
+//                print_r($datesArray); die();
+                foreach ($datesArray as $index => $time) {
+                    $dates_load += Schedule::astr2academ($time);
+                }
             }
             $dates[] = ['date' => $date, 'dates_load' => $dates_load];
         }

@@ -197,4 +197,15 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             ->orderBy('short_name')
             ->asArray()->all(), 'id', 'name');
     }
+
+    /**
+     * @return false|int|null|string
+     */
+    public static function getProgrammScalar()
+    {
+        return self::find()
+            ->where(['status' => self::STATUS_ACTIVE])
+            ->select('id')
+            ->scalar();
+    }
 }

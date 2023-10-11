@@ -37,7 +37,7 @@ class StudyplanStat
             'student_id' => 'ФЛС',
             'student_fio' => 'ФИО ученика',
             'plan_year' => 'Учебный год',
-//            'education_programm_name' => 'Образовательная програма',
+            'education_programm_name' => 'Образовательная програма',
             'education_programm_short_name' => 'Образовательная програма',
 //            'education_cat_name' => 'Категория обр. программы',
             'education_cat_short_name' => 'Категория обр. программы',

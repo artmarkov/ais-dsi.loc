@@ -160,8 +160,17 @@ $columns = [
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'visible' => \artsoft\Art::isFrontend(),
         'width' => '90px',
-        'template' => '{create} {update} {delete}',
+        'template' => '{create} {view} {update} {delete}',
         'buttons' => [
+            'view' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                    ['teachers/thematic-items/', 'id' => $model->studyplan_thematic_id], [
+                        'title' => Yii::t('art', 'View'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            },
             'create' => function ($key, $model) {
                 if ($model->subject_sect_studyplan_id == null) {
                     return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',

@@ -5,6 +5,8 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridView;
+use artsoft\helpers\NoticeDisplay;
+use common\models\schedule\SubjectScheduleView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\schedule\search\SubjectScheduleSearch */
@@ -12,6 +14,7 @@ use artsoft\grid\GridView;
 
 $this->title = Yii::t('art/guide', 'Subject Schedule');
 $this->params['breadcrumbs'][] = $this->title;
+$noteModel = NoticeDisplay::getData($dataProvider->models, $model->plan_year);
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
@@ -66,7 +69,7 @@ $columns = [
     [
         'attribute' => 'load_time',
         'value' => function ($model) {
-            return $model->load_time . ' ' . $model->getItemLoadStudyplanNotice();
+            return $model->load_time /*. ' ' . $model->getItemLoadStudyplanNotice()*/;
         },
          'group' => true,  // enable grouping
         'subGroupOf' => 4,
@@ -74,8 +77,8 @@ $columns = [
     ],
     [
         'attribute' => 'scheduleDisplay',
-        'value' => function ($model) {
-            return $model->getScheduleDisplay();
+        'value' => function (SubjectScheduleView $model) use ($noteModel) {
+            return $model->getScheduleDisplay() . $noteModel->getScheduleNotice($model);
         },
         'format' => 'raw',
     ],
@@ -124,8 +127,8 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-            'create' => function ($model) {
-                return $model->getTeachersScheduleNeed() && $model->subject_sect_studyplan_id === 0;
+            'create' => function (SubjectScheduleView $model) use($noteModel) {
+                return $noteModel->getTeachersScheduleNeed($model) && $model->subject_sect_studyplan_id === 0;
             },
             'delete' => function ($model) {
                 return $model->subject_schedule_id !== null && $model->subject_sect_studyplan_id === 0;
