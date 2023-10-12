@@ -47,14 +47,14 @@ $columns = [
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
-    [
+   /* [
         'attribute' => 'education_cat_id',
         'value' => function ($model) {
             return $model->education_cat_short_name;
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 2
-    ],
+    ],*/
     [
         'attribute' => 'course',
         'value' => function ($model) {
@@ -238,7 +238,7 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 7, 'class' => 'text-center warning']],
+                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
                             ['content' => 'Счета за обучение', 'options' => ['colspan' => 4, 'class' => 'text-center success']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export

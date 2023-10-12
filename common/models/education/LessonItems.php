@@ -213,9 +213,11 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 ->all();
 
             foreach ($models as $item => $modelItems) {
-                $m = LessonProgress::find()->where(['=', 'id', $modelItems->lesson_progress_id])->one() ?? new LessonProgress();
-                $studyplan[] = $modelItems->studyplan_subject_id;
-                $modelsItems[] = $m;
+                $m = LessonProgress::find()->where(['=', 'id', $modelItems->lesson_progress_id])->one();
+                if($m) {
+                    $studyplan[] = $modelItems->studyplan_subject_id;
+                    $modelsItems[] = $m;
+                }
             }
             $models = LessonProgressView::find()->select('studyplan_subject_id')
                 ->andWhere(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
@@ -227,6 +229,8 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 }
                 $m = new LessonProgress();
                 $m->studyplan_subject_id = $studyplan_subject_id;
+                $m->lesson_items_id = $this->id;
+                $m->save(false);
                 $modelsItems[] = $m;
             }
         } else {
@@ -331,6 +335,8 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 ->one();
             $m = LessonProgress::findOne(['id' => $modelProgress['lesson_progress_id']]) ?? new LessonProgress();
             $m->studyplan_subject_id = $model->studyplan_subject_id;
+            $m->lesson_items_id = $modelProgress['lesson_items_id'];
+            $m->save(false);
             $modelsItems[] = $m;
         }
         return $modelsItems;

@@ -147,7 +147,7 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
             'id' => $this->primaryKey(),
             'lesson_items_id' => $this->integer(),
             'studyplan_subject_id' => $this->integer(),
-            'lesson_mark_id' => $this->integer()->notNull(),
+            'lesson_mark_id' => $this->integer(),
             'mark_rem' => $this->string(127),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),

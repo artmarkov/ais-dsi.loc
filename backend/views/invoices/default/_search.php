@@ -65,16 +65,6 @@ $form = ActiveForm::begin([
                                 <div class="row">
                                     <div class="col-sm-12">
 
-                                        <?= $form->field($model_date, "education_cat_id")->widget(\kartik\select2\Select2::class, [
-                                            'data' => RefBook::find('education_cat_short')->getList(),
-                                            'options' => [
-                                                'placeholder' => Yii::t('art', 'Select...'),
-                                            ],
-                                            'pluginOptions' => [
-                                                'allowClear' => true
-                                            ],
-                                        ])->label(Yii::t('art/guide', 'Education Cat')); ?>
-
                                         <?= $form->field($model_date, 'direction_id')->widget(\kartik\select2\Select2::class, [
                                             'data' => \common\models\guidejob\Direction::getDirectionList(),
                                             'options' => [
@@ -152,7 +142,6 @@ $form = ActiveForm::begin([
 $js = <<<JS
 document.querySelector('form').addEventListener('submit', (event) => {
     if(event.submitter.id == 'reset') {
-        $("#dynamicmodel-education_cat_id").empty();
         $("#dynamicmodel-direction_id").empty();
         $("#dynamicmodel-teachers_id").empty();
         $("#dynamicmodel-student_id").empty();

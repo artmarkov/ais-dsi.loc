@@ -140,8 +140,8 @@ class EntrantProgramm extends \artsoft\db\ActiveRecord
     {
         $query =\Yii::$app->db->createCommand('SELECT id, name, age_in, age_out, qty_entrant, qty_reserve, description, status, summ_entrant, summ_reserve
             FROM (SELECT id, name, age_in, age_out, qty_entrant, qty_reserve, description, status,
-                    (SELECT COUNT(entrant_preregistrations.id) FROM entrant_preregistrations where entrant_preregistrations.entrant_programm_id = entrant_programm.id AND reg_vid = 1 AND plan_year = :plan_year) as summ_entrant,
-                    (SELECT COUNT(entrant_preregistrations.id) FROM entrant_preregistrations where entrant_preregistrations.entrant_programm_id = entrant_programm.id AND reg_vid = 2 AND plan_year = :plan_year) as summ_reserve
+                    (SELECT COUNT(entrant_preregistrations.id) FROM entrant_preregistrations where entrant_preregistrations.entrant_programm_id = entrant_programm.id AND reg_vid = 1 AND (entrant_preregistrations.status = 0 OR entrant_preregistrations.status = 1) AND plan_year = :plan_year) as summ_entrant,
+                    (SELECT COUNT(entrant_preregistrations.id) FROM entrant_preregistrations where entrant_preregistrations.entrant_programm_id = entrant_programm.id AND reg_vid = 2 AND (entrant_preregistrations.status = 0 OR entrant_preregistrations.status = 1) AND plan_year = :plan_year) as summ_reserve
             FROM entrant_programm) data
             WHERE (qty_entrant > summ_entrant OR qty_reserve > summ_reserve)  AND age_in <= :age AND age_out >= :age AND status = :status ',
             [
@@ -166,6 +166,7 @@ class EntrantProgramm extends \artsoft\db\ActiveRecord
         return \Yii::$app->db->createCommand('SELECT COUNT(id) 
             FROM entrant_preregistrations 
             where entrant_programm_id = :entrant_programm_id 
+            AND (status = 0 OR status = 1)
             AND reg_vid = :reg_vid AND plan_year = :plan_year',
             [
                 'entrant_programm_id' => $entrant_programm_id,

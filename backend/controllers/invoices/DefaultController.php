@@ -33,17 +33,17 @@ class DefaultController extends BaseController
     {
         $session = Yii::$app->session;
 
-        $model_date = new DynamicModel(['date_in', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'subject_form_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
+        $model_date = new DynamicModel(['date_in', 'programm_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'subject_form_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
         $model_date->addRule(['date_in', 'programm_id'], 'required')
             ->addRule(['date_in'], 'safe')
-            ->addRule(['programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'subject_form_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
+            ->addRule(['programm_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'subject_form_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
 
             $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
             $model_date->programm_id = $session->get('_invoices_programm_id') ?? EducationProgramm::getProgrammScalar();
-            $model_date->education_cat_id = $session->get('_invoices_education_cat_id') ?? '';
+//            $model_date->education_cat_id = $session->get('_invoices_education_cat_id') ?? '';
             $model_date->course = $session->get('_invoices_course') ?? '';
             $model_date->subject_id = $session->get('_invoices_subject_id') ?? '';
             $model_date->subject_type_id = $session->get('_invoices_subject_type_id') ?? '';
@@ -58,7 +58,7 @@ class DefaultController extends BaseController
 
         $session->set('_invoices_date_in', $model_date->date_in);
         $session->set('_invoices_programm_id', $model_date->programm_id);
-        $session->set('_invoices_education_cat_id', $model_date->education_cat_id);
+//        $session->set('_invoices_education_cat_id', $model_date->education_cat_id);
         $session->set('_invoices_course', $model_date->course);
         $session->set('_invoices_subject_id', $model_date->subject_id);
         $session->set('_invoices_subject_type_id', $model_date->subject_type_id);
@@ -83,7 +83,7 @@ class DefaultController extends BaseController
                 'plan_year' => $plan_year,
                 'date_in' => $model_date->date_in,
                 'programm_id' => $model_date->programm_id,
-                'education_cat_id' => $model_date->education_cat_id,
+//                'education_cat_id' => $model_date->education_cat_id,
                 'course' => $model_date->course,
                 'subject_id' => $model_date->subject_id,
                 'subject_type_id' => $model_date->subject_type_id,

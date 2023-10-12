@@ -116,6 +116,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [EntrantPreregistrations::REG_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
                             [EntrantPreregistrations::REG_STATUS_STUDENT, Yii::t('art/guide', 'Accepted for training'), 'success'],
                             [EntrantPreregistrations::REG_STATUS_OUTSIDE, Yii::t('art/guide', 'Refused admission'), 'danger'],
+                            [EntrantPreregistrations::REG_PLAN_CLOSED, Yii::t('art/guide', 'Plan closed'), 'danger'],
                         ],
                         'options' => ['style' => 'width:120px']
                     ],
