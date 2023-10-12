@@ -13,7 +13,6 @@ use yii\data\ActiveDataProvider;
 class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
 {
     public $date_in;
-    public $date_out;
     public $subject_id;
     public $subject_type_id;
     public $subject_type_sect_id;
@@ -31,7 +30,7 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
             [['month_time_fact', 'invoices_date', 'payment_time', 'payment_time_fact'], 'integer'],
             [['invoices_summ'], 'number'],
             [['studyplan_subjects', 'subject_list', 'subject_type_list', 'subject_type_sect_list', 'subject_vid_list', 'direction_list', 'teachers_list'], 'string'],
-            [['date_in', 'date_out', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'subject_form_id', 'direction_id', 'teachers_id'], 'safe'],
+            [['date_in', 'invoices_reporting_month', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'subject_form_id', 'direction_id', 'teachers_id'], 'safe'],
         ];
     }
 
@@ -73,11 +72,17 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
             return $dataProvider;
         }
 
+        if ($this->date_in) {
+            $t = explode(".", $this->date_in);
+            $this->date_in = mktime(0, 0, 0, $t[0], 1, $t[1]);
+
+            $query->andWhere(['OR', ['=', 'invoices_reporting_month', $this->date_in], ['IS', 'invoices_reporting_month', NULL]]);
+
+        }
         $query->andFilterWhere([
             'studyplan_id' => $this->studyplan_id,
             'programm_id' => $this->programm_id,
             'student_id' => $this->student_id,
-            'plan_year' => $this->plan_year,
             'course' => $this->course,
             'status' => $this->status,
             'subject_form_id' => $this->subject_form_id,
@@ -91,11 +96,10 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
             'payment_time_fact' => $this->payment_time_fact,
             'invoices_summ' => $this->invoices_summ
         ]);
-        $query->andFilterWhere(['like', 'student_fio', $this->student_fio]);
-
-        if ($this->date_in && $this->date_out) {
-            $query->andWhere(['OR', ['between', 'invoices_date', Yii::$app->formatter->asTimestamp($this->date_in), Yii::$app->formatter->asTimestamp($this->date_out)], ['IS', 'invoices_date', NULL]]);
+        if ($this->student_fio) {
+            $query->andFilterWhere(['like', 'student_fio', $this->student_fio]);
         }
+
         if ($this->subject_id) {
             $query->andWhere(new \yii\db\Expression(":subject_id = any(string_to_array(subject_list, ',')::int[])"), [':subject_id' => $this->subject_id]);
         }

@@ -1,7 +1,7 @@
 <?php
 return [
     'Course' => 'Класс',
-    'Education Programm' => 'Образовательная програма',
+    'Education Programm' => 'Образовательная программа',
     'Individual plans' => 'Планы учащихся',
     'Individual student plans' => 'Планы учащегося',
     'Plan Year' => 'Учебный год',

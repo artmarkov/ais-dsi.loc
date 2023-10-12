@@ -26,8 +26,9 @@ class m220425_112414_add_table_stadyplan_invoices extends \artsoft\db\BaseMigrat
             'payment_time' => $this->integer()->comment('Время выполнения платежя'),
             'payment_time_fact' => $this->integer()->comment('Время поступления денег на счет'),
             'invoices_app' => $this->string(256)->comment('Назначение платежа'),
+            'invoices_reporting_month' => $this->integer()->comment('Отчетный период(месяц)'),
             'invoices_rem' => $this->string(512)->comment('Примечание к платежу'),
-            'status' => $this->smallInteger()->notNull()->defaultValue(1)->comment('Статус платежа(В работе,Оплачено,Задолженность по оплате)'),
+            'status' => $this->smallInteger()->notNull()->defaultValue(2)->comment('Статус платежа(В работе,Оплачено,Задолженность по оплате)'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -45,14 +46,133 @@ class m220425_112414_add_table_stadyplan_invoices extends \artsoft\db\BaseMigrat
 
 // Учитывает нагрузку преподавателей и наличие расписания занятий, дисциплины должны быть в активном статусе. Статус активности плана задать в контроллере.
 // Для фильтрации заданы все массивы
+        $this->db->createCommand()->createView('studyplan_info_view', '
+  SELECT studyplan.id AS studyplan_id,
+    studyplan.programm_id,
+    studyplan.student_id,
+    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
+    studyplan.plan_year,
+    studyplan.course,
+    studyplan.status,
+    studyplan.subject_form_id,
+    education_programm.education_cat_id,
+    education_programm.short_name AS programm_short_name,
+    guide_education_cat.short_name AS education_cat_short_name,
+    array_to_string(ARRAY( SELECT DISTINCT t.subject
+           FROM ( SELECT concat(subject.name, \'(\', guide_subject_category.slug, \'&nbsp;\', guide_subject_type.slug, \')&nbsp;-&nbsp;\', guide_subject_vid.slug, \'&nbsp;\', studyplan_subject.week_time * 4::double precision, \'&nbsp;час/мес\') AS subject
+                   FROM teachers_load
+                     JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                     JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
+                     JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
+                     JOIN subject ON subject.id = studyplan_subject.subject_id
+                     JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
+                UNION ALL
+                 SELECT concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \') - \', guide_subject_vid.slug, \' \', studyplan_subject.week_time * 4::double precision, \' час/мес\') AS subject
+                   FROM studyplan_subject
+                     JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
+                     JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
+                     JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                     JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id
+                     JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
+                     JOIN subject ON subject.id = studyplan_subject.subject_id
+                     JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS studyplan_subjects,
+    array_to_string(ARRAY( SELECT DISTINCT t.subject_id
+           FROM ( SELECT studyplan_subject.subject_id
+                   FROM teachers_load
+                     JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
+                UNION ALL
+                 SELECT studyplan_subject.subject_id
+                   FROM studyplan_subject
+                     JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
+                     JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
+                     JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS subject_list,
+    array_to_string(ARRAY( SELECT DISTINCT t.subject_type_id
+           FROM ( SELECT studyplan_subject.subject_type_id
+                   FROM teachers_load
+                     JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
+                UNION ALL
+                 SELECT studyplan_subject.subject_type_id
+                   FROM studyplan_subject
+                     JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
+                     JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
+                     JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS subject_type_list,
+    array_to_string(ARRAY( SELECT DISTINCT subject_sect_studyplan.subject_type_id
+           FROM studyplan_subject
+             LEFT JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
+             JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
+             JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
+          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0), \',\'::text) AS subject_type_sect_list,
+    array_to_string(ARRAY( SELECT DISTINCT t.subject_vid_id
+           FROM ( SELECT studyplan_subject.subject_vid_id
+                   FROM teachers_load
+                     JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
+                UNION ALL
+                 SELECT studyplan_subject.subject_vid_id
+                   FROM studyplan_subject
+                     JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
+                     JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
+                     JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS subject_vid_list,
+    array_to_string(ARRAY( SELECT DISTINCT t.direction_id
+           FROM ( SELECT teachers_load.direction_id
+                   FROM teachers_load
+                     JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
+                UNION ALL
+                 SELECT teachers_load.direction_id
+                   FROM studyplan_subject
+                     JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
+                     JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
+                     JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS direction_list,
+    array_to_string(ARRAY( SELECT DISTINCT t.teachers_id
+           FROM ( SELECT teachers_load.teachers_id
+                   FROM teachers_load
+                     JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
+                UNION ALL
+                 SELECT teachers_load.teachers_id
+                   FROM studyplan_subject
+                     JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
+                     JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
+                     JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
+                     JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
+                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS teachers_list
+   FROM studyplan
+     JOIN education_programm ON education_programm.id = studyplan.programm_id
+     JOIN guide_education_cat ON education_programm.education_cat_id = guide_education_cat.id
+     JOIN students ON students.id = studyplan.student_id
+     JOIN user_common ON user_common.id = students.user_common_id
+  WHERE studyplan.status = 1;
+        ')->execute();
+
         $this->db->createCommand()->createView('studyplan_invoices_view', '
- SELECT a.studyplan_id,
+  SELECT a.studyplan_id,
     a.programm_id,
     a.student_id,
     a.student_fio,
     a.plan_year,
     a.course,
     a.status,
+    a.subject_form_id,
     a.education_cat_id,
     a.programm_short_name,
     a.education_cat_short_name,
@@ -70,131 +190,67 @@ class m220425_112414_add_table_stadyplan_invoices extends \artsoft\db\BaseMigrat
     a.invoices_summ,
     a.invoices_date,
     a.payment_time,
-    a.payment_time_fact
-   FROM ( SELECT studyplan.id AS studyplan_id,
-            studyplan.programm_id,
-            studyplan.student_id,
-            concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
-            studyplan.plan_year,
-            studyplan.course,
-            studyplan.status,
-            education_programm.education_cat_id,
-            education_programm.short_name AS programm_short_name,
-            guide_education_cat.short_name AS education_cat_short_name,
-            array_to_string(ARRAY( SELECT DISTINCT t.subject
-                   FROM ( SELECT concat(subject.name, \'(\', guide_subject_category.slug, \'&nbsp;\', guide_subject_type.slug, \')&nbsp;-&nbsp;\', guide_subject_vid.slug, \'&nbsp;\', studyplan_subject.week_time * 4::double precision, \'&nbsp;час/мес\') AS subject
-                           FROM teachers_load
-                             JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                             JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
-                             JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
-                             JOIN subject ON subject.id = studyplan_subject.subject_id
-                             JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
-                        UNION ALL
-                         SELECT concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \') - \', guide_subject_vid.slug, \' \', studyplan_subject.week_time * 4::double precision, \' час/мес\') AS subject
-                           FROM studyplan_subject
-                             JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
-                             JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
-                             JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                             JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id
-                             JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
-                             JOIN subject ON subject.id = studyplan_subject.subject_id
-                             JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS studyplan_subjects,
-            array_to_string(ARRAY( SELECT DISTINCT t.subject_id
-                   FROM ( SELECT studyplan_subject.subject_id
-                           FROM teachers_load
-                             JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
-                        UNION ALL
-                         SELECT studyplan_subject.subject_id
-                           FROM studyplan_subject
-                             JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
-                             JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
-                             JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS subject_list,
-            array_to_string(ARRAY( SELECT DISTINCT t.subject_type_id
-                   FROM ( SELECT studyplan_subject.subject_type_id
-                           FROM teachers_load
-                             JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
-                        UNION ALL
-                         SELECT studyplan_subject.subject_type_id
-                           FROM studyplan_subject
-                             JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
-                             JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
-                             JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS subject_type_list,
-            array_to_string(ARRAY( SELECT DISTINCT subject_sect_studyplan.subject_type_id
-                   FROM studyplan_subject
-                     LEFT JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
-                     JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
-                     JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
-                  WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0), \',\'::text) AS subject_type_sect_list,
-            array_to_string(ARRAY( SELECT DISTINCT t.subject_vid_id
-                   FROM ( SELECT studyplan_subject.subject_vid_id
-                           FROM teachers_load
-                             JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
-                        UNION ALL
-                         SELECT studyplan_subject.subject_vid_id
-                           FROM studyplan_subject
-                             JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
-                             JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
-                             JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS subject_vid_list,
-            array_to_string(ARRAY( SELECT DISTINCT t.direction_id
-                   FROM ( SELECT teachers_load.direction_id
-                           FROM teachers_load
-                             JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
-                        UNION ALL
-                         SELECT teachers_load.direction_id
-                           FROM studyplan_subject
-                             JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
-                             JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
-                             JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS direction_list,
-            array_to_string(ARRAY( SELECT DISTINCT t.teachers_id
-                   FROM ( SELECT teachers_load.teachers_id
-                           FROM teachers_load
-                             JOIN studyplan_subject ON studyplan_subject.id = teachers_load.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0
-                        UNION ALL
-                         SELECT teachers_load.teachers_id
-                           FROM studyplan_subject
-                             JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
-                             JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
-                             JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0
-                             JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
-                          WHERE studyplan_subject.studyplan_id = studyplan.id AND studyplan_subject.status <> 0) t), \',\'::text) AS teachers_list,
-            studyplan_invoices.id AS studyplan_invoices_id,
+    a.payment_time_fact,
+    a.invoices_reporting_month
+   FROM ( SELECT studyplan_info_view.studyplan_id,
+            studyplan_info_view.programm_id,
+            studyplan_info_view.student_id,
+            studyplan_info_view.student_fio,
+            studyplan_info_view.plan_year,
+            studyplan_info_view.course,
+            studyplan_info_view.status,
+            studyplan_info_view.subject_form_id,
+            studyplan_info_view.education_cat_id,
+            studyplan_info_view.programm_short_name,
+            studyplan_info_view.education_cat_short_name,
+            studyplan_info_view.studyplan_subjects,
+            studyplan_info_view.subject_list,
+            studyplan_info_view.subject_type_list,
+            studyplan_info_view.subject_type_sect_list,
+            studyplan_info_view.subject_vid_list,
+            studyplan_info_view.direction_list,
+            studyplan_info_view.teachers_list,
+            NULL::integer AS studyplan_invoices_id,
+            NULL::smallint AS invoices_id,
+            NULL::smallint AS studyplan_invoices_status,
+            NULL::integer AS month_time_fact,
+            NULL::double precision AS invoices_summ,
+            NULL::integer AS invoices_date,
+            NULL::integer AS payment_time,
+            NULL::integer AS payment_time_fact,
+            NULL::integer AS invoices_reporting_month
+           FROM studyplan_info_view
+        UNION
+         SELECT studyplan_info_view.studyplan_id,
+            studyplan_info_view.programm_id,
+            studyplan_info_view.student_id,
+            studyplan_info_view.student_fio,
+            studyplan_info_view.plan_year,
+            studyplan_info_view.course,
+            studyplan_info_view.status,
+            studyplan_info_view.subject_form_id,
+            studyplan_info_view.education_cat_id,
+            studyplan_info_view.programm_short_name,
+            studyplan_info_view.education_cat_short_name,
+            studyplan_info_view.studyplan_subjects,
+            studyplan_info_view.subject_list,
+            studyplan_info_view.subject_type_list,
+            studyplan_info_view.subject_type_sect_list,
+            studyplan_info_view.subject_vid_list,
+            studyplan_info_view.direction_list,
+            studyplan_info_view.teachers_list,
+            studyplan_invoices.id,
             studyplan_invoices.invoices_id,
-            studyplan_invoices.status AS studyplan_invoices_status,
+            studyplan_invoices.status,
             studyplan_invoices.month_time_fact,
             studyplan_invoices.invoices_summ,
             studyplan_invoices.invoices_date,
             studyplan_invoices.payment_time,
-            studyplan_invoices.payment_time_fact
-           FROM studyplan
-             JOIN education_programm ON education_programm.id = studyplan.programm_id
-             JOIN guide_education_cat ON education_programm.education_cat_id = guide_education_cat.id
-             LEFT JOIN studyplan_invoices ON studyplan_invoices.studyplan_id = studyplan.id
-             JOIN students ON students.id = studyplan.student_id
-             JOIN user_common ON user_common.id = students.user_common_id) a
-  WHERE a.teachers_list <> \'\'::text AND a.studyplan_subjects <> \'\'::text
-  ORDER BY a.studyplan_id;
+            studyplan_invoices.payment_time_fact,
+            studyplan_invoices.invoices_reporting_month
+           FROM studyplan_info_view
+             JOIN studyplan_invoices ON studyplan_invoices.studyplan_id = studyplan_info_view.studyplan_id) a
+  ORDER BY a.student_fio, a.invoices_id;
         ')->execute();
     }
 

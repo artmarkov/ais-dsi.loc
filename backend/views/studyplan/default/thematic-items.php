@@ -84,6 +84,7 @@ $columns = [
     [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+        'visible' => \artsoft\Art::isBackend(),
         'width' => '90px',
         'template' => '{create} {view} {update} {delete}',
         'buttons' => [
@@ -149,6 +150,29 @@ $columns = [
             'update' => function ($model) {
                 return $model->studyplan_thematic_id;
             },
+            'view' => function ($model) {
+                return $model->studyplan_thematic_id;
+            }
+        ],
+    ],
+    [
+        'class' => 'kartik\grid\ActionColumn',
+        'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+        'visible' => \artsoft\Art::isFrontend(),
+        'width' => '90px',
+        'template' => '{view}',
+        'buttons' => [
+            'view' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                    ['/teachers/studyplan/thematic-items', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'view'], [
+                        'title' => Yii::t('art', 'View'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            },
+        ],
+        'visibleButtons' => [
             'view' => function ($model) {
                 return $model->studyplan_thematic_id;
             }

@@ -74,14 +74,14 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
 
-            $searchModel = new SubjectScheduleStudyplanViewSearch();
+        $searchModel = new SubjectScheduleStudyplanViewSearch();
 
-            $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['studyplan_id'] = $id;
-            $dataProvider = $searchModel->search($params);
+        $searchName = StringHelper::basename($searchModel::className());
+        $params = Yii::$app->request->getQueryParams();
+        $params[$searchName]['studyplan_id'] = $id;
+        $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'model'));
+        return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'model'));
 
     }
 
@@ -113,14 +113,14 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
 
-            $searchModel = new ConsultScheduleStudyplanViewSearch();
+        $searchModel = new ConsultScheduleStudyplanViewSearch();
 
-            $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['studyplan_id'] = $id;
-            $dataProvider = $searchModel->search($params);
+        $searchName = StringHelper::basename($searchModel::className());
+        $params = Yii::$app->request->getQueryParams();
+        $params[$searchName]['studyplan_id'] = $id;
+        $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel', 'model'));
+        return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel', 'model'));
 
     }
 
@@ -132,14 +132,14 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
 
-            $searchModel = new SubjectCharacteristicViewSearch();
+        $searchModel = new SubjectCharacteristicViewSearch();
 
-            $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['studyplan_id'] = $id;
-            $dataProvider = $searchModel->search($params);
+        $searchName = StringHelper::basename($searchModel::className());
+        $params = Yii::$app->request->getQueryParams();
+        $params[$searchName]['studyplan_id'] = $id;
+        $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('characteristic-items', compact('dataProvider', 'searchModel', 'model'));
+        return $this->renderIsAjax('characteristic-items', compact('dataProvider', 'searchModel', 'model'));
 
     }
 
@@ -150,7 +150,7 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
-       if ($objectId) {
+        if ($objectId) {
             if ('view' == $mode) {
                 $readonly = true;
             }
@@ -188,31 +188,31 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
 
-            $session = Yii::$app->session;
+        $session = Yii::$app->session;
 
-            $model_date = new DynamicModel(['date_in']);
-            $model_date->addRule(['date_in'], 'required')
-                ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
+        $model_date = new DynamicModel(['date_in']);
+        $model_date->addRule(['date_in'], 'required')
+            ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
 
-            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $mon = date('m');
-                $year = date('Y');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $mon = date('m');
+            $year = date('Y');
 
-                $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
-            }
-            $session->set('_progress_date_in', $model_date->date_in);
+            $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+        }
+        $session->set('_progress_date_in', $model_date->date_in);
 
-            $modelLessonProgress = LessonProgressView::getDataStudyplan($model_date, $id, true);
+        $modelLessonProgress = LessonProgressView::getDataStudyplan($model_date, $id, true);
 
-            if (Yii::$app->request->post('submitAction') == 'excel') {
-                // TeachersEfficiency::sendXlsx($data);
-            }
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            // TeachersEfficiency::sendXlsx($data);
+        }
 
-            return $this->renderIsAjax('studyplan-progress', [
-                'model' => $modelLessonProgress,
-                'model_date' => $model_date,
-                'modelStudent' => $model
-            ]);
+        return $this->renderIsAjax('studyplan-progress', [
+            'model' => $modelLessonProgress,
+            'model_date' => $model_date,
+            'modelStudent' => $model
+        ]);
 
     }
 
@@ -224,14 +224,14 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
 
-            $searchModel = new SchoolplanProtocolItemsViewSearch();
+        $searchModel = new SchoolplanProtocolItemsViewSearch();
 
-            $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['studyplan_id'] = $id;
-            $dataProvider = $searchModel->search($params);
+        $searchName = StringHelper::basename($searchModel::className());
+        $params = Yii::$app->request->getQueryParams();
+        $params[$searchName]['studyplan_id'] = $id;
+        $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('protocol-items', compact('dataProvider', 'searchModel'));
+        return $this->renderIsAjax('protocol-items', compact('dataProvider', 'searchModel'));
 
     }
 
@@ -242,7 +242,14 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
-       if ($objectId) {
+        if ('view' == $mode && $objectId) {
+            $modelStudyplanInvoices = StudyplanInvoices::findOne($objectId);
+            return $this->renderIsAjax('@backend/views/invoices/default/view.php', [
+                'model' => $modelStudyplanInvoices,
+            ]);
+
+        }
+        if ($objectId) {
 
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Studyplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
@@ -265,42 +272,26 @@ class DefaultController extends MainController
         } else {
             $session = Yii::$app->session;
 
-            $day_in = 1;
-            $day_out = date("t");
+            $model_date = new DynamicModel(['studyplan_id', 'plan_year']);
+            $model_date->addRule(['plan_year'], 'required')
+                ->addRule(['plan_year'], 'string')
+                ->addRule(['studyplan_id'], 'integer');
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+                $model_date->plan_year = $session->get('_invoices_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+                $model_date->studyplan_id = $id;
+            }
+            if ($model_date->studyplan_id != $id) {
+                $this->redirect(['/studyplan/default/' . $model_date->studyplan_id . '/studyplan-invoices']);
+            }
+            $session->set('_invoices_studyplan_id', $model_date->studyplan_id);
+            $session->set('_invoices_plan_year', $model->plan_year);
 
-           $model_date = new DynamicModel(['studyplan_id','date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id']);
-           $model_date->addRule(['date_in', 'date_out'], 'required')
-               ->addRule(['date_in', 'date_out'], 'string')
-               ->addRule(['studyplan_id','programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id'], 'integer');
-           if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-               $mon = date('m');
-               $year = date('Y');
-
-               $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon-1, $day_in, $year), 'php:d.m.Y');
-               $model_date->date_out = $session->get('_invoices_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
-               $model_date->studyplan_id = $id;
-           }
-           if ($model_date->studyplan_id != $id) {
-               $this->redirect(['/studyplan/default/' . $model_date->studyplan_id . '/studyplan-invoices']);
-           }
-           $session->set('_invoices_studyplan_id', $model_date->studyplan_id);
-           $session->set('_invoices_date_in', $model_date->date_in);
-           $session->set('_invoices_date_out', $model_date->date_out);
-
-           $searchModel = new StudyplanInvoicesViewSearch();
+            $searchModel = new StudyplanInvoicesViewSearch();
             $searchName = StringHelper::basename($searchModel::className());
             $params = ArrayHelper::merge(Yii::$app->request->getQueryParams(), [
                 $searchName => [
-                    'studyplan_id' => $id,
-                    'date_in' => $model_date->date_in,
-                    'date_out' => $model_date->date_out,
-                    'subject_id' => $model_date->subject_id,
-                    'subject_type_id' => $model_date->subject_type_id,
-                    'subject_type_sect_id' => $model_date->subject_type_sect_id,
-                    'subject_vid_id' => $model_date->subject_vid_id,
-                    'studyplan_invoices_status' => $model_date->studyplan_invoices_status,
-                    'direction_id' => $model_date->direction_id,
-                    'teachers_id' => $model_date->teachers_id,
+                    'studyplan_id' => $model_date->studyplan_id,
+                    'plan_year' => $model_date->plan_year,
                     'status' => Studyplan::STATUS_ACTIVE,
                 ]
             ]);
@@ -310,7 +301,8 @@ class DefaultController extends MainController
         }
     }
 
-    public function actionStudentsView($id){
+    public function actionStudentsView($id)
+    {
         $model = $this->findModel($id);
         $modelStudent = Student::findOne($model->student_id);
         $studentDependence = $modelStudent->studentDependence;
@@ -324,6 +316,7 @@ class DefaultController extends MainController
         $model = StudyplanInvoices::findOne($id);
         return $model->makeDocx();
     }
+
     /**
      * @param $id
      * @return array

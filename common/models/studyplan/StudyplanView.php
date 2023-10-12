@@ -49,6 +49,7 @@ class StudyplanView extends Studyplan
         return \yii\helpers\ArrayHelper::map(self::find()->select('id,education_programm_short_name as name')
             ->where(['=', 'student_id', $model->student_id])
             ->andWhere(['=', 'plan_year', $model->plan_year])
+            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
             ->asArray()->all(), 'id', 'name');
     }
 

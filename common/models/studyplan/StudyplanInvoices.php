@@ -2,6 +2,7 @@
 
 namespace common\models\studyplan;
 
+use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\RefBook;
@@ -30,6 +31,7 @@ use Yii;
  * @property int|null $month_time_fact Фактически оплаченные часы
  * @property int|null $invoices_tabel_flag Учесть в табеле фактически оплаченные часы
  * @property int|null $invoices_date Дата платежа
+ * @property int|null $invoices_reporting_month Отчетный период(месяц)
  * @property float|null $invoices_summ Сумма платежа
  * @property int|null $payment_time Время выполнения платежя
  * @property int|null $payment_time_fact Время поступления денег на счет
@@ -71,6 +73,11 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
         return [
             TimestampBehavior::class,
             BlameableBehavior::class,
+            [
+                'class' => DateFieldBehavior::class,
+                'attributes' => ['invoices_reporting_month'],
+                'timeFormat' => 'm.Y'
+            ],
         ];
     }
 
@@ -80,9 +87,9 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['invoices_id', 'type_id', 'invoices_summ', 'invoices_app', 'status'], 'required'],
+            [['invoices_id', 'type_id', 'invoices_summ', 'invoices_app', 'status', 'invoices_reporting_month'], 'required'],
             [['studyplan_id', 'invoices_id', 'direction_id', 'teachers_id', 'type_id', 'vid_id', 'month_time_fact', 'invoices_tabel_flag', 'status'], 'integer'],
-            [['invoices_date', 'payment_time', 'payment_time_fact'], 'safe'],
+            [['invoices_date', 'payment_time', 'payment_time_fact', 'invoices_reporting_month'], 'safe'],
             [['invoices_summ'], 'number'],
             ['status', 'default', 'value' => function () {
                 return self::STATUS_WORK;
@@ -126,12 +133,13 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
             'month_time_fact' => 'Фактически оплаченные часы',
             'invoices_tabel_flag' => 'Учесть в табеле',
             'invoices_date' => 'Дата платежа',
-            'invoices_summ' => 'Сумма платежа',
+            'invoices_reporting_month' => 'Отчетный период(месяц)',
+            'invoices_summ' => 'Сумма',
             'payment_time' => 'Время выполнения платежя',
             'payment_time_fact' => 'Время поступления денег на счет',
             'invoices_app' => 'Назначение платежа',
             'invoices_rem' => 'Примечание к платежу',
-            'status' => 'Статус платежа',
+            'status' => 'Статус',
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -230,30 +238,22 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
-    /**
-     * формирование квитанции
-     *
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function makeDocx()
-    {
-        $template = 'document/invoices_pd4.docx';
+    public function getInvoicesData() {
         $model = $this;
         $invoices = $model->invoices;
         $studyplan = $model->studyplan;
-        $save_as = str_replace(' ', '_', $model->studyplan_id);
 
-        $data[] = [
+        return [
             'rank' => 'doc',
             'invoices_date' => date('j', $model->invoices_date) . ' ' . ArtHelper::getMonthsList()[date('n', $model->invoices_date)] . ' ' . date('Y', $model->invoices_date), // дата платежа
             'invoices_summ' => $model->invoices_summ,
-            'invoices_app' => $studyplan->student->user->last_name . ' ' . $studyplan->student->user->first_name . ', л/сч. ' . sprintf('%06d', $model->studyplan_id) . ' (' . RefBook::find('education_programm_short_name')->getValue($studyplan->programm_id) . ' ' . $studyplan->course . ' класс) '. $model->invoices_app,
+            'invoices_app' => $studyplan->student->user->last_name . ' ' . $studyplan->student->user->first_name . ', л/сч. ' . sprintf('%06d', $studyplan->student_id) . ' (' . RefBook::find('education_programm_short_name')->getValue($studyplan->programm_id) . ' ' . $studyplan->course . ' класс) '. $model->invoices_app,
             'student' => $studyplan->student->getFullName(), // Полное имя ученика
             'last_name' => $studyplan->student->user->last_name,
             'first_name' => $studyplan->student->user->first_name,
             'middle_name' => $studyplan->student->user->middle_name,
             'student_address' => $studyplan->student->getUserAddress() ?: '_________________________',
-            'student_fls' => sprintf('%06d', $model->studyplan_id),
+            'student_fls' => sprintf('%06d', $studyplan->student_id),
             'recipient' => $invoices->recipient,
             'inn' => $invoices->inn,
             'payment_account' => $invoices->payment_account,
@@ -264,11 +264,24 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
             'bank_name' => $invoices->bank_name,
             'bik' => $invoices->bik,
             'kbk' => $invoices->kbk,
-            'pay_period' => date('m.Y', $model->invoices_date),
+            'pay_period' => $model->invoices_reporting_month,
             'inst_num' => Yii::$app->settings->get('own.shortname', ""),
             'class_info' => RefBook::find('education_programm_short_name')->getValue($studyplan->programm_id) . ' ' . $studyplan->course . ' класс ',
             'teacher_info' => isset($model->teachers_id) ? RefBook::find('teachers_fio')->getValue($model->teachers_id) : '',
         ];
+    }
+    /**
+     * формирование квитанции
+     *
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function makeDocx()
+    {
+        $template = 'document/invoices_pd4.docx';
+
+        $save_as = str_replace(' ', '_', $this->studyplan_id);
+
+        $data[] = $this->getInvoicesData();
 
         $data_qr[] = [
             'rank' => 'qr',
@@ -279,7 +292,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
                 'text' => $this->getQrContent($data[0]),
             ]),
         ];
-        $output_file_name = str_replace('.', '_' . $save_as . '_' . Yii::$app->formatter->asDate($model->invoices_date, 'php:Y_m_d') . '.', basename($template));
+        $output_file_name = str_replace('.', '_' . $save_as . '_' . Yii::$app->formatter->asDate($this->invoices_date, 'php:Y_m_d') . '.', basename($template));
 
         $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data, $data_qr) {
             /* @var $tbs clsTinyButStrong */
@@ -296,7 +309,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
      * @param $data
      * @return string
      */
-    protected function getQrContent($data)
+    public function getQrContent($data)
     {
         $str = 'ST00012';
         $data = [

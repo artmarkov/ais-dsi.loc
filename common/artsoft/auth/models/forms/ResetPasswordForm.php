@@ -36,6 +36,7 @@ class ResetPasswordForm extends Model
         return [
             [['email', 'username', 'captcha'], 'required'],
             [['email', 'username'], 'trim'],
+            [['username'], 'filter', 'filter' => 'strtolower'],
             ['email', 'email'],
             ['email', 'validateEmailConfirmedAndUserActive'],
             ['captcha', 'captcha', 'captchaAction' => '/auth/default/captcha'],

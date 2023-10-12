@@ -87,7 +87,16 @@ class DateFieldBehavior extends Behavior
 
             $value = $this->owner->getAttribute($attribute);
             $this->_cache[$attribute] = $value;
-            $value = $value ? strtotime($value) : $this->defaultEncodedValue;
+            if($value) {
+                if ($this->timeFormat == 'm.Y') {
+                    $t = explode(".", $value);
+                    $value = mktime(0, 0, 0, $t[0], 1, $t[1]);
+                } else {
+                    $value = strtotime($value);
+                }
+            } else {
+                $value = $this->defaultEncodedValue;
+            }
             $this->owner->setAttribute($attribute, $value);
         }
     }

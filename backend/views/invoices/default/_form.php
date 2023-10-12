@@ -3,6 +3,7 @@
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
 use yii\helpers\Url;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\studyplan\StudyplanInvoices */
@@ -87,6 +88,20 @@ use yii\helpers\Url;
 
                     <?= $form->field($model, 'invoices_summ')->textInput() ?>
 
+                    <?= $form->field($model, 'invoices_reporting_month')->widget(DatePicker::class, [
+                            'type' => DatePicker::TYPE_INPUT,
+                            'options' => ['placeholder' => ''],
+                            'convertFormat' => true,
+                            'pluginOptions' => [
+                                'format' => 'MM.yyyy',
+                                'autoclose' => true,
+                                'minViewMode' => 1,
+                                'todayBtn' => 'linked',
+                                'todayHighlight' => true,
+                            ]
+                        ]
+                    ); ?>
+
                     <?= $form->field($model, 'invoices_app')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'invoices_rem')->textInput(['maxlength' => true]) ?>
@@ -96,9 +111,9 @@ use yii\helpers\Url;
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?=  \artsoft\helpers\ButtonHelper::exitButton(); ?>
-                <?=  \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit', 'btn-md');?>
-                <?=  $model->isNewRecord ? null  : \artsoft\helpers\ButtonHelper::deleteButton();?>
+                <?= \artsoft\helpers\ButtonHelper::exitButton(); ?>
+                <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit', 'btn-md'); ?>
+                <?= $model->isNewRecord ? null : \artsoft\helpers\ButtonHelper::deleteButton(); ?>
 
             </div>
             <?php if (!$model->isNewRecord): ?>

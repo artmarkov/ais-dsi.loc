@@ -147,6 +147,8 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             echo GridView::widget([
                 'id' => 'studyplan-progress-grid',
                 'pjax' => false,
+                'showPageSummary' => false,
+                'showFooter' => \artsoft\Art::isBackend(),
                 'dataProvider' => new \yii\data\ArrayDataProvider([
                     'allModels' => $model['data'],
                     'sort' => false,
@@ -157,7 +159,6 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                     'type' => '',
                     'footer' => $hints,
                 ],
-                'showFooter' => true,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

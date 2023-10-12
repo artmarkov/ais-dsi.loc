@@ -9,10 +9,10 @@ use yii\helpers\Html;
 <?php
 $returnUrl = Yii::$app->user->returnUrl == Yii::$app->homeUrl ? null : rtrim(Yii::$app->homeUrl, '/') . Yii::$app->user->returnUrl;
 
-$confirmLink = Yii::$app->urlManager->createAbsoluteUrl(['/auth/default/confirm-registration-email', 'token' => $user->confirmation_token, 'returnUrl' => $returnUrl]);
+$confirmLink = Yii::$app->urlManager->createAbsoluteUrl(['/auth/default/confirm-registration-email', 'token' => $user->confirmation_token, 'returnUrl' => $returnUrl], 'https');
 ?>
 
-<p><?= Yii::t('art/mail', 'Hello:') ?> <?= Html::encode($user->username) ?>.</p>
+<p><?= Yii::t('art/mail', 'Hello:') ?> <b><?= Html::encode($user->username) ?></b></p>
 
 <br/><br/>
 

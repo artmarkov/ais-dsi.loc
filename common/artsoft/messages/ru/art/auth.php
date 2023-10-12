@@ -28,6 +28,7 @@ return [
     'Follow this link to confirm your E-mail and activate account:' => 'Перейдите по этой ссылке, чтобы подтвердить свой E-mail и активировать аккаунт:',
     'Hello, {username}.' => 'Здравствуйте, {username}.',
     'Hello, you have been registered on {host}.' => 'Здравствуйте, вы были зарегистрированы на {host}.',
+    'You have been registered on {host}.' => 'Вы были зарегистрированы на {host}.',
     'Incorrect username or password' => 'Неверное имя пользователя или пароль',
     'Login has been taken' => 'Логин был использован',
     'Username' => 'Пользователь',
@@ -67,4 +68,5 @@ return [
     'After changing the E-mail confirmation is required' => 'После изменения адреса электронной почты требуется подтверждение',
     'User not found or blocked in the system' => 'Пользователь не найден или заблокирован в системе',
     'The user with the entered data already exists.' => 'Пользователь с введенными данными уже существует.',
+    'The user with the entered data is already registered in the system and the account is active.' => 'Пользователь с введенными данными уже зарегистрирован в системе и учетная запись активна.',
 ];

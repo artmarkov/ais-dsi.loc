@@ -17,6 +17,7 @@ use common\models\teachers\TeachersLoadTrait;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "subject_schedule".
@@ -192,19 +193,6 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
         return $this->hasOne(Auditory::class, ['id' => 'teachers_id']);
     }
 
-
-    /**
-     * Запрос на полное время занятий расписания преподавателя данной нагрузки
-     * @return array|SubjectSectScheduleStudyplanView|null|\yii\db\ActiveRecord
-     */
-    public function getTeachersOverLoad()
-    {
-        return SubjectSchedule::find()
-            ->select(new \yii\db\Expression('(SUM(time_out) - SUM(time_in)) as full_time, COUNT(teachers_load_id) as qty'))
-            ->where(['=', 'teachers_load_id', $this->teachers_load_id])
-            ->asArray()
-            ->one();
-    }
 
     /**
      * Получаем расписание группы или дисциплины ученика

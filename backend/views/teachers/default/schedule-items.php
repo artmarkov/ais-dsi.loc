@@ -5,6 +5,8 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridView;
+use common\models\schedule\SubjectScheduleView;
+use artsoft\helpers\NoticeDisplay;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\schedule\search\SubjectScheduleSearch */
@@ -16,6 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $teachers_list = RefBook::find('teachers_fio')->getList();
 $auditory_list = RefBook::find('auditory_memo_1')->getList();
+$noteModel = NoticeDisplay::getData($dataProvider->models, $model_date->plan_year);
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
@@ -79,8 +82,8 @@ $columns = [
     [
         'attribute' => 'scheduleDisplay',
         'width' => '300px',
-        'value' => function ($model) {
-            return $model->getScheduleDisplay();
+        'value' => function (SubjectScheduleView $model) use($noteModel) {
+            return $model->getScheduleDisplay() . $noteModel->getScheduleNotice($model);
         },
         'format' => 'raw',
     ],
@@ -130,8 +133,8 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-            'create' => function ($model) {
-                return $model->getTeachersScheduleNeed();
+            'create' => function (SubjectScheduleView $model) use($noteModel) {
+                return $noteModel->getTeachersScheduleNeed($model);
             },
             'delete' => function ($model) {
                 return $model->subject_schedule_id !== null;
@@ -180,8 +183,8 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-            'create' => function ($model) {
-                return $model->getTeachersScheduleNeed() && $model->subject_sect_id == 0;
+            'create' => function (SubjectScheduleView $model) use($noteModel) {
+                return $noteModel->getTeachersScheduleNeed($model) && $model->subject_sect_id == 0;
             },
             'delete' => function ($model) {
                 return $model->subject_schedule_id && $model->subject_sect_id == 0;
