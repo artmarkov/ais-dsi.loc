@@ -1003,7 +1003,7 @@ class DefaultController extends MainController
                 $model_date->plan_year = $session->get('_invoices_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
             }
 
-            $session->set('_invoices_plan_year', $model->plan_year);;
+            $session->set('_invoices_plan_year', $model->plan_year);
 
             $searchModel = new StudyplanInvoicesViewSearch();
             $searchName = StringHelper::basename($searchModel::className());

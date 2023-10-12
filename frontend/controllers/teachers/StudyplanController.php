@@ -781,7 +781,7 @@ class StudyplanController extends MainController
             $searchName = StringHelper::basename($searchModel::className());
             $params = ArrayHelper::merge($this->getParams(), [
                 $searchName => [
-                    'studyplan_id' => $id,
+                    'studyplan_id' => $model_date->studyplan_id,
                     'plan_year' => $model_date->plan_year,
                     'status' => Studyplan::STATUS_ACTIVE,
                 ]

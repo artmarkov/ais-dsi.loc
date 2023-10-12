@@ -13,7 +13,6 @@ use yii\data\ActiveDataProvider;
 class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
 {
     public $date_in;
-//    public $date_out;
     public $subject_id;
     public $subject_type_id;
     public $subject_type_sect_id;
@@ -78,7 +77,6 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
             $this->date_in = mktime(0, 0, 0, $t[0], 1, $t[1]);
 
             $query->andWhere(['OR', ['=', 'invoices_reporting_month', $this->date_in], ['IS', 'invoices_reporting_month', NULL]]);
-            $query->andWhere(['plan_year' => \artsoft\helpers\ArtHelper::getStudyYearDefault(null, $this->date_in)]);
 
         }
         $query->andFilterWhere([
@@ -98,8 +96,9 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
             'payment_time_fact' => $this->payment_time_fact,
             'invoices_summ' => $this->invoices_summ
         ]);
-        $query->andFilterWhere(['like', 'student_fio', $this->student_fio]);
-
+        if ($this->student_fio) {
+            $query->andFilterWhere(['like', 'student_fio', $this->student_fio]);
+        }
 
         if ($this->subject_id) {
             $query->andWhere(new \yii\db\Expression(":subject_id = any(string_to_array(subject_list, ',')::int[])"), [':subject_id' => $this->subject_id]);

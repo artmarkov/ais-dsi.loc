@@ -73,8 +73,14 @@ class DefaultController extends BaseController
         $searchName = StringHelper::basename($this->modelSearchClass::className());
         $searchModel = new $this->modelSearchClass;
 
+        $t = explode(".", $model_date->date_in);
+        $date_in = mktime(0, 0, 0, $t[0], 1, $t[1]);
+
+        $plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, $date_in);
+
         $params = ArrayHelper::merge($this->getParams(), [
             $searchName => [
+                'plan_year' => $plan_year,
                 'date_in' => $model_date->date_in,
                 'programm_id' => $model_date->programm_id,
                 'education_cat_id' => $model_date->education_cat_id,

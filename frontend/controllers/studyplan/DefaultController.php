@@ -290,7 +290,7 @@ class DefaultController extends MainController
             $searchName = StringHelper::basename($searchModel::className());
             $params = ArrayHelper::merge(Yii::$app->request->getQueryParams(), [
                 $searchName => [
-                    'studyplan_id' => $id,
+                    'studyplan_id' => $model_date->studyplan_id,
                     'plan_year' => $model_date->plan_year,
                     'status' => Studyplan::STATUS_ACTIVE,
                 ]

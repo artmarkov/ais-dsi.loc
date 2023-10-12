@@ -21,6 +21,7 @@ class LoginForm extends Model
     {
         return [
             [['username', 'password'], 'required'],
+            [['username'], 'filter', 'filter' => 'strtolower'],
             ['rememberMe', 'boolean'],
             ['password', 'validatePassword'],
             ['username', 'validateIP'],
