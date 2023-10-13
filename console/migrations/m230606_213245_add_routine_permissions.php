@@ -44,7 +44,9 @@ class m230606_213245_add_routine_permissions extends PermissionsMigration
 
                     ],
                     'roles' => [
-                        self::ROLE_USER,
+                        self::ROLE_TEACHER,
+                        self::ROLE_DEPARTMENT,
+                        self::ROLE_EMPLOYEES,
                     ],
                 ],
                 'editRoutine' => [

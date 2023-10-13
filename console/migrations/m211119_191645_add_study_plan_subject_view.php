@@ -16,6 +16,10 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ])->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['users_parents', 'parents_view', 'user_id', 'parents_id', 'user_id', 'status', null, 'Родители (ссылка на id учетной записи)'],
+        ])->execute();
+
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
             ['subject_name', 'subject', 'id', 'name', 'name', 'status', null, 'Предметы(полное)'],
         ])->execute();
 
@@ -279,6 +283,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         $this->db->createCommand()->dropView('studyplan_subject_view')->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_name'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'subject_name_dev'])->execute();
+        $this->db->createCommand()->delete('refbooks', ['name' => 'users_parents'])->execute();
         $this->db->createCommand()->delete('refbooks', ['name' => 'users_teachers'])->execute();
     }
 }

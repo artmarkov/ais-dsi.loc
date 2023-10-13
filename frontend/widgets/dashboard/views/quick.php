@@ -4,10 +4,16 @@ use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
 $studyplan_id = null;
-if(\artsoft\models\User::hasRole(['student'])) {
+
 $userId = Yii::$app->user->identity->getId();
-$student_id = \artsoft\helpers\RefBook::find('users_students')->getValue($userId) ?? null;
-$studyplan_id = \common\models\studyplan\Studyplan::getStudentStudyplanDefault($student_id);
+
+if (\artsoft\models\User::hasRole(['student'])) {
+    $student_id = \artsoft\helpers\RefBook::find('users_students')->getValue($userId) ?? null;
+    $studyplan_id = \common\models\studyplan\Studyplan::getStudentStudyplanDefault($student_id);
+
+} elseif (\artsoft\models\User::hasRole(['parents'])) {
+    $parents_id = \artsoft\helpers\RefBook::find('users_parents')->getValue($userId) ?? null;
+    $studyplan_id = \common\models\studyplan\Studyplan::getParentStudyplanDefault($parents_id);
 }
 ?>
 
@@ -56,8 +62,24 @@ $studyplan_id = \common\models\studyplan\Studyplan::getStudentStudyplanDefault($
             );
             ?>
             <?= Html::a(
+                '<i class="fa fa-paper-plane-o" aria-hidden="true"></i> ' . Yii::t('art/studyplan', 'Individual plans'),
+                ['/parents/studyplan/index'],
+                [
+                    'class' => 'btn btn-default btn-lg',
+                ]
+            );
+            ?>
+            <?= Html::a(
                 '<i class="fa fa-money" aria-hidden="true"></i> Оплата за обучение',
                 ['/studyplan/default/studyplan-invoices', 'id' => $studyplan_id],
+                [
+                    'class' => 'btn btn-success btn-lg',
+                ]
+            );
+            ?>
+            <?= Html::a(
+                '<i class="fa fa-money" aria-hidden="true"></i> Оплата за обучение',
+                ['/parents/studyplan/studyplan-invoices', 'id' => $studyplan_id],
                 [
                     'class' => 'btn btn-success btn-lg',
                 ]

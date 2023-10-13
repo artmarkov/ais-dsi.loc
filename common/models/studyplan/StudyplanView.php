@@ -3,10 +3,10 @@
 namespace common\models\studyplan;
 
 use artsoft\helpers\ArtHelper;
+use artsoft\models\User;
 use Yii;
 
 /**
-
  * @property string|null $education_programm_name
  * @property string|null $education_programm_short_name
  * @property string|null $education_cat_name
@@ -41,16 +41,33 @@ class StudyplanView extends Studyplan
         return $attr;
     }
 
-    public static function getStudentStudyplanList($id) {
+
+    public static function getStudyplanList($id)
+    {
         $model = self::find()->where(['=', 'id', $id])->one();
+        if (!$model) return [];
+        $query = [];
 
-        if(!$model) return [];
+        if (User::hasRole(['parents'])) {
+            $userId = Yii::$app->user->identity->getId();
+            $parents_id = \artsoft\helpers\RefBook::find('users_parents')->getValue($userId) ?? null;
 
-        return \yii\helpers\ArrayHelper::map(self::find()->select('id,education_programm_short_name as name')
-            ->where(['=', 'student_id', $model->student_id])
-            ->andWhere(['=', 'plan_year', $model->plan_year])
-            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
-            ->asArray()->all(), 'id', 'name');
+            $query = (new \yii\db\Query)->from('studyplan_view')
+                ->select(['studyplan_view.id', "CONCAT(student_fio, ' - ',education_programm_short_name) as name"])
+                ->innerJoin('student_dependence', 'studyplan_view.student_id=student_dependence.student_id')
+                ->where(['student_dependence.parent_id' => $parents_id])
+                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->andWhere(['=', 'plan_year', $model->plan_year])
+                ->all();
+        } elseif (User::hasRole(['student'])) {
+
+            $query = self::find()->select('id,education_programm_short_name as name')
+                ->where(['=', 'student_id', $model->student_id])
+                ->andWhere(['=', 'plan_year', $model->plan_year])
+                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->asArray()->all();
+        }
+        return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
     }
 
 

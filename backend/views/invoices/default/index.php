@@ -47,14 +47,14 @@ $columns = [
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
-   /* [
-        'attribute' => 'education_cat_id',
-        'value' => function ($model) {
-            return $model->education_cat_short_name;
-        },
-        'group' => true,  // enable grouping
-        'subGroupOf' => 2
-    ],*/
+    /* [
+         'attribute' => 'education_cat_id',
+         'value' => function ($model) {
+             return $model->education_cat_short_name;
+         },
+         'group' => true,  // enable grouping
+         'subGroupOf' => 2
+     ],*/
     [
         'attribute' => 'course',
         'value' => function ($model) {
@@ -222,7 +222,7 @@ $columns = [
                 'pjax' => true,
                 'dataProvider' => $dataProvider,
                 // 'filterModel' => $searchModel,
-                'bulkActionOptions' => [
+                'bulkActionOptions' => \artsoft\Art::isBackend() ? [
                     'gridId' => 'studyplan-invoices-grid',
                     'actions' => [
                         Url::to(['bulk-new']) => 'Создать новые квитанции',
@@ -232,8 +232,8 @@ $columns = [
                         Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_RECEIPT]) => 'Перевести в статус "Поступили средства"',
                         Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_ARREARS]) => 'Перевести в статус "Задолженность по оплате"',
 //                        Url::to(['bulk-load']) => 'Выгрузить квитанции в Word',
-                    ] //Configure here you bulk actions
-                ],
+                    ]//Configure here you bulk actions
+                ] : false,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

@@ -198,7 +198,7 @@ $columns = [
         'buttons' => [
             'print' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-print" aria-hidden="true" style="color: blue"></span>',
-                    [\artsoft\models\User::hasRole(['student']) ? '/studyplan/default/make-invoices' : '/teachers/studyplan/make-invoices', 'id' => $model->studyplan_invoices_id], [
+                    [\artsoft\models\User::hasRole(['student']) ? '/studyplan/default/make-invoices' : '/parents/studyplan/make-invoices', 'id' => $model->studyplan_invoices_id], [
                         'title' => 'Скачать квитанцию',
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -207,7 +207,7 @@ $columns = [
             },
             'view' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-qrcode" aria-hidden="true" style="color: red"></span> Оплатить',
-                    [\artsoft\models\User::hasRole(['student']) ? '/studyplan/default/studyplan-invoices' : '/teachers/studyplan/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id, 'mode' => 'view'], [
+                    [\artsoft\models\User::hasRole(['student']) ? '/studyplan/default/studyplan-invoices' : '/parents/studyplan/studyplan-invoices', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_invoices_id, 'mode' => 'view'], [
                         'title' => 'Оплатить по QR-коду',
                         'data-method' => 'post',
                         'data-pjax' => '0',

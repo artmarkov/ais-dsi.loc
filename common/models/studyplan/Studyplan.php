@@ -575,11 +575,24 @@ class Studyplan extends \artsoft\db\ActiveRecord
         }
     }
 
-    public static function getStudentStudyplanDefault($student_id) {
+    public static function getStudentStudyplanDefault($student_id)
+    {
         $plan_year = ArtHelper::getStudyYearDefault();
         return self::find()->where(['=', 'student_id', $student_id])
                 ->andWhere(['=', 'plan_year', $plan_year])
                 ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->scalar() ?? null;
+
+    }
+
+    public static function getParentStudyplanDefault($parents_id)
+    {
+        $plan_year = ArtHelper::getStudyYearDefault();
+        return self::find()
+                ->innerJoin('student_dependence', 'studyplan.student_id=student_dependence.student_id')
+                ->where(['=', 'student_dependence.parent_id', $parents_id])
+                ->andWhere(['=', 'plan_year', $plan_year])
+                ->andWhere(['=', 'studyplan.status', Studyplan::STATUS_ACTIVE])
                 ->scalar() ?? null;
 
     }
@@ -594,15 +607,14 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function beforeSave($insert)
     {
         if ($this->status == self::STATUS_ACTIVE) {
-            if($this->status_reason == 1) {
+            if ($this->status_reason == 1) {
                 $this->deleteStadylan();
             } elseif ($this->status_reason == 2) {
                 $this->deleteStadylan(0);
             }
             $this->status_reason = 0;
-        }
-        else {
-            if($this->status_reason == 1) {
+        } else {
+            if ($this->status_reason == 1) {
                 $this->makeStadylan();
             } elseif ($this->status_reason == 2) {
                 $this->makeStadylan(0);

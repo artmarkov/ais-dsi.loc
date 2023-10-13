@@ -3,8 +3,8 @@
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
-use kartik\date\DatePicker;
-use yii\helpers\Url;
+use artsoft\models\User;
+use common\models\studyplan\StudyplanView;
 
 /* @var $this yii\web\View */
 /* @var $form artsoft\widgets\ActiveForm */
@@ -26,11 +26,11 @@ $form = ActiveForm::begin([
                 <div class="row">
                     <div class="col-sm-12">
                         <?php if (\artsoft\Art::isFrontend()): ?>
-                            <?= $form->field($model_date, 'studyplan_id')->dropDownList(\common\models\studyplan\StudyplanView::getStudentStudyplanList($id),
+                            <?= $form->field($model_date, 'studyplan_id')->dropDownList(StudyplanView::getStudyplanList($id),
                                 [
                                     'disabled' => false,
                                     'onchange' => 'js: $(this).closest("form").submit()',
-                                ])->label('План ученика');
+                                ])->label('Планы ученика');
                             ?>
                         <?php endif; ?>
 

@@ -62,7 +62,7 @@ use artsoft\widgets\Nav;
                 'items' => [
                     ['label' => 'Производственный календарь', 'icon' => 'fa fa-minus', 'url' => ['/routine/default/calendar']],
                     ['label' => 'План работы школы', 'icon' => 'fa fa-minus', 'url' => ['/schoolplan/default/index']],
-//                    ['label' => 'Счета за обучение', 'icon' => 'fa fa-minus', 'url' => ['/invoices/default/index']],
+                    ['label' => 'Счета за обучение', 'icon' => 'fa fa-minus', 'url' => ['/invoices/default/index']],
 //                    ['label' => 'Табель учета пед.часов', 'icon' => 'fa fa-minus', 'url' => ['/timesheet/default/index']],
 //                    ['label' => 'Работы и сертификаты', 'icon' => 'fa fa-minus', 'url' => ['/creative/default/index']],
                 ],
@@ -92,6 +92,9 @@ use artsoft\widgets\Nav;
                     // ученики
                     ['label' => 'Карточка ученика', 'icon' => 'fa fa-minus', 'url' => ['/student/default/index']],
                     ['label' => 'Планы учащегося', 'icon' => 'fa fa-minus', 'url' => ['/studyplan/default/index']],
+                    // родители
+                    ['label' => 'Карточка родителя', 'icon' => 'fa fa-minus', 'url' => ['/parents/default/index']],
+                    ['label' => 'Планы учащихся', 'icon' => 'fa fa-minus', 'url' => ['/parents/studyplan/index']],
 
                 ],
             ],

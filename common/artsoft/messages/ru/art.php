@@ -26,6 +26,7 @@ return [
     'Cache has been flushed.' => 'Кэш был сброшен.',
     'Clear filters' => 'Очистить Фильтры',
     'Closed' => 'Закрыто',
+    'Close' => 'Закрыть',
     'Captcha' => 'Проверочный код',
     'Code' => 'Код',
     'Comment Status' => 'Статус Комментариев',

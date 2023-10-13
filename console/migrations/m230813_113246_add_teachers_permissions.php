@@ -41,7 +41,6 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
             'teachersManagement' => [
                 'links' => [
                     '/admin/invoices/default/*',
-                    '/admin/teachers/default/*',
                     '/admin/teachers/default/load-items/*',
                     '/admin/teachers/default/cheet-account/*',
                     '/admin/teachers/default/schedule-items/*',
@@ -169,6 +168,11 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/activities/teachers-schedule/init-calendar',
                         '/activities/default/create-event',
                         '/studyplan/lesson-progress/set-mark',
+                        '/invoices/default/index',
+                        '/invoices/default/grid-sort',
+                        '/invoices/default/grid-page-size',
+                        '/invoices/default/view',
+                        '/invoices/default/make-invoices',
                     ],
                     'roles' => [
                         self::ROLE_TEACHER,
@@ -178,7 +182,10 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                     'title' => 'Доступ к учебной работе(backend)',
                     'links' => [
                         '/admin/invoices/default/index',
-                        '/admin/teachers/default/index',
+                        '/admin/invoices/default/grid-sort',
+                        '/admin/invoices/default/grid-page-size',
+                        '/admin/invoices/default/view',
+                        '/admin/invoices/default/make-invoices',
                         '/admin/teachers/default/load-items',
                         '/admin/teachers/default/load-items/grid-sort',
                         '/admin/teachers/default/load-items/grid-page-size',
@@ -258,21 +265,6 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                     ],
                     'roles' => [
                         self::ROLE_ADMIN,
-                    ],
-                ],
-                'fullTeachersAccess' => [
-                    'title' => 'Полный доступ к карточке преподавателя',
-                    'links' => [
-                        '/admin/teachers/default/create',
-                        '/admin/teachers/default/update',
-                        '/admin/teachers/default/delete',
-                        '/admin/teachers/default/history',
-                    ],
-                    'roles' => [
-                        'teachersAdmin',
-                    ],
-                    'childs' => [
-                        'accessTeachersBackend',
                     ],
                 ],
                 'fullTeachersLoadAccess' => [

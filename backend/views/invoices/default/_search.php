@@ -43,16 +43,19 @@ $form = ActiveForm::begin([
                             ]
                         )->label('Месяц и год'); ?>
 
-                        <?= $form->field($model_date, "programm_id")->widget(\kartik\select2\Select2::class, [
-                            'data' => RefBook::find('education_programm_short_name')->getList(),
-                            'options' => [
-                                'onchange' => 'js: $(this).closest("form").submit()',
-                                'placeholder' => Yii::t('art', 'Select...'),
-                            ],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-                        ])->label(Yii::t('art/studyplan', 'Education Programm')); ?>
+                        <?php if (\artsoft\Art::isBackend()): ?>
+                            <?= $form->field($model_date, "programm_id")->widget(\kartik\select2\Select2::class, [
+                                'data' => RefBook::find('education_programm_short_name')->getList(),
+                                'options' => [
+                                    'onchange' => 'js: $(this).closest("form").submit()',
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
+                            ])->label(Yii::t('art/studyplan', 'Education Programm')); ?>
+                        <?php endif; ?>
+
                     </div>
                 </div>
                 <div class="row">
@@ -64,34 +67,37 @@ $form = ActiveForm::begin([
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-sm-12">
+                                        <?php if (\artsoft\Art::isBackend()): ?>
 
-                                        <?= $form->field($model_date, 'direction_id')->widget(\kartik\select2\Select2::class, [
-                                            'data' => \common\models\guidejob\Direction::getDirectionList(),
-                                            'options' => [
-                                                'id' => 'direction_id',
-                                                'placeholder' => Yii::t('art', 'Select...'),
-                                            ],
-                                            'pluginOptions' => [
-                                                'allowClear' => true,
-                                                'placeholder' => Yii::t('art', 'Select...'),
-                                            ],
-                                        ])->label(Yii::t('art/teachers', 'Name Direction'));
-                                        ?>
+                                            <?= $form->field($model_date, 'direction_id')->widget(\kartik\select2\Select2::class, [
+                                                'data' => \common\models\guidejob\Direction::getDirectionList(),
+                                                'options' => [
+                                                    'id' => 'direction_id',
+                                                    'placeholder' => Yii::t('art', 'Select...'),
+                                                ],
+                                                'pluginOptions' => [
+                                                    'allowClear' => true,
+                                                    'placeholder' => Yii::t('art', 'Select...'),
+                                                ],
+                                            ])->label(Yii::t('art/teachers', 'Name Direction'));
+                                            ?>
 
-                                        <?= $form->field($model_date, 'teachers_id')->widget(\kartik\depdrop\DepDrop::class, [
-                                            'data' => \common\models\teachers\Teachers::getTeachersList($model_date->direction_id),
-                                            'options' => [
-                                                'placeholder' => Yii::t('art', 'Select...'),
-                                            ],
-                                            'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
-                                            'pluginOptions' => [
-                                                'allowClear' => true,
-                                                'depends' => ['direction_id'],
-                                                'placeholder' => Yii::t('art', 'Select...'),
-                                                'url' => Url::to(['/teachers/default/teachers'])
-                                            ]
-                                        ])->label(Yii::t('art/teachers', 'Teacher'));
-                                        ?>
+                                            <?= $form->field($model_date, 'teachers_id')->widget(\kartik\depdrop\DepDrop::class, [
+                                                'data' => \common\models\teachers\Teachers::getTeachersList($model_date->direction_id),
+                                                'options' => [
+                                                    'placeholder' => Yii::t('art', 'Select...'),
+                                                ],
+                                                'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
+                                                'pluginOptions' => [
+                                                    'allowClear' => true,
+                                                    'depends' => ['direction_id'],
+                                                    'placeholder' => Yii::t('art', 'Select...'),
+                                                    'url' => Url::to(['/teachers/default/teachers'])
+                                                ]
+                                            ])->label(Yii::t('art/teachers', 'Teacher'));
+                                            ?>
+
+                                        <?php endif; ?>
 
                                         <?= $form->field($model_date, "student_id")->widget(\kartik\select2\Select2::class, [
                                             'data' => RefBook::find('students_fio')->getList(),

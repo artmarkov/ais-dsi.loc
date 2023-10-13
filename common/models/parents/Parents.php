@@ -25,6 +25,9 @@ use yii\behaviors\TimestampBehavior;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
+ *
+ * @property UserCommon $user
+ * @property StudentDependence $studentDependence
  */
 class Parents extends \artsoft\db\ActiveRecord
 {
@@ -190,13 +193,14 @@ class Parents extends \artsoft\db\ActiveRecord
      */
     public function beforeDelete()
     {
-        $model = UserCommon::findOne($this->user_common_id);
-        if (!$model->delete(false)) {
-            return false;
-        }
-        foreach (StudentDependence::findAll(['id' => $this->id]) as $model) {
+        foreach ($this->studentDependence as $model) {
             if (!$model->delete(false)) {
                 break;
+                return false;
+            }
+
+            $model = $this->user;
+            if (!$model->delete(false)) {
                 return false;
             }
         }

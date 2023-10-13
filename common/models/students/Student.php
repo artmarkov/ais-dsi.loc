@@ -224,15 +224,15 @@ class Student extends ActiveRecord
         if ($this->studyplans) {
             return false;
         }
-        $model = $this->user;
-        if (!$model->delete(false)) {
-            return false;
-        }
         foreach ($this->studentDependence as $model) {
             if (!$model->delete(false)) {
                 break;
                 return false;
             }
+        }
+        $model = $this->user;
+        if (!$model->delete(false)) {
+            return false;
         }
 
         return parent::beforeDelete();

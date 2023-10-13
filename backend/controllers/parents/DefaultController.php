@@ -184,6 +184,15 @@ class DefaultController extends MainController
         return $this->actionUpdate($id, true);
     }
 
+    public function actionDelete($id)
+    {
+        /* @var $model \artsoft\db\ActiveRecord */
+        $model = $this->findModel($id);
+        if ($model->delete()) {
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+        }
+        return $this->redirect($this->getRedirectPage('delete', $model));
+    }
     /**
      * @param $id
      * @param null $objectId

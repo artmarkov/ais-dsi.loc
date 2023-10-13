@@ -112,7 +112,7 @@ class ButtonHelper
     public static function closeButton($class = null, $buttonClass = self::buttonClass)
     {
 
-        return Html::a('<i class="fa fa-list" aria-hidden="true"></i> ' . Yii::t('art', 'Cancel'),
+        return Html::a('<i class="fa fa-close" aria-hidden="true"></i> ' . Yii::t('art', 'Close'),
             null,
             [
                 'class' => 'btn btn-default ' . $buttonClass . ' ' . $class
