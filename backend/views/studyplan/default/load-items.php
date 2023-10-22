@@ -37,11 +37,11 @@ $columns = [
     [
         'attribute' => 'sect_name',
         'width' => '320px',
-        'value' => function ($model) use ($JSSubmit){
-            if($model->subject_sect_studyplan_id === 0) {
+        'value' => function ($model) use ($JSSubmit) {
+            if ($model->subject_sect_studyplan_id === 0) {
                 return $model->sect_name ? $model->sect_name : null;
             } else {
-                $sectList =  \yii\helpers\ArrayHelper::map((new \yii\db\Query())->select('id, sect_name_1')
+                $sectList = \yii\helpers\ArrayHelper::map((new \yii\db\Query())->select('id, sect_name_1')
                     ->from('subject_sect_view')
                     ->where(['=', 'subject_id', $model->subject_id])
                     ->andWhere(['=', 'plan_year', $model->plan_year])
@@ -71,6 +71,7 @@ $columns = [
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
         'format' => 'raw',
+        'footer' => 'ИТОГО: ак.час',
 
     ],
     [
@@ -80,8 +81,11 @@ $columns = [
         },
 //        'group' => true,
 //        'subGroupOf' => 1,
-        'pageSummary' => true,
-        'format' => ['decimal', 2],
+        'footer' => \common\models\teachers\TeachersLoadView::getStudyplanTotal($dataProvider->models, 'week_time'),
+        'contentOptions' => function ($model) {
+            return $model->direction_id == 1000 ? ['class' => ''] : ['class' => 'text-right'];
+
+        },
     ],
     [
         'attribute' => 'year_time_consult',
@@ -90,6 +94,11 @@ $columns = [
         },
 //        'group' => true,
 //        'subGroupOf' => 1,
+        'footer' => \common\models\teachers\TeachersLoadView::getStudyplanTotal($dataProvider->models, 'year_time_consult'),
+        'contentOptions' => function ($model) {
+            return $model->direction_id == 1000 ? ['class' => ''] : ['class' => 'text-right'];
+
+        },
     ],
     [
         'attribute' => 'direction_id',
@@ -102,7 +111,7 @@ $columns = [
     [
         'attribute' => 'teachers_id',
         'value' => function ($model) {
-            return \artsoft\Art::isBackend() ?  Html::a(RefBook::find('teachers_fio')->getValue($model->teachers_id),
+            return \artsoft\Art::isBackend() ? Html::a(RefBook::find('teachers_fio')->getValue($model->teachers_id),
                 ['/teachers/default/load-items', 'id' => $model->teachers_id],
                 [
                     'target' => '_blank',
@@ -120,6 +129,11 @@ $columns = [
             return $model->load_time === null ? $model->load_time : $model->load_time . ' ' . $model->getItemLoadStudyplanNotice();
         },
         'format' => 'raw',
+        'footer' => \common\models\teachers\TeachersLoadView::getStudyplanTotal($dataProvider->models, 'load_time'),
+        'contentOptions' => function ($model) {
+            return $model->direction_id == 1000 ? ['class' => ''] : ['class' => 'text-right'];
+
+        },
     ],
     [
         'attribute' => 'load_time_consult',
@@ -127,6 +141,11 @@ $columns = [
             return $model->load_time_consult . ' ' . $model->getItemLoadStudyplanConsultNotice();
         },
         'format' => 'raw',
+        'footer' => \common\models\teachers\TeachersLoadView::getStudyplanTotal($dataProvider->models, 'load_time_consult'),
+        'contentOptions' => function ($model) {
+            return $model->direction_id == 1000 ? ['class' => ''] : ['class' => 'text-right'];
+
+        },
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -193,8 +212,8 @@ $columns = [
 <div class="teachers-load-index">
     <div class="panel">
         <div class="panel-heading">
-            Нагрузка: <?= RefBook::find('students_fullname')->getValue($model->student_id);?>
-            <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.';?>
+            Нагрузка: <?= RefBook::find('students_fullname')->getValue($model->student_id); ?>
+            <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.'; ?>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -220,8 +239,9 @@ $columns = [
                 'id' => 'teachers-load-grid',
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
-               // 'filterModel' => $searchModel,
-                'showPageSummary' => true,
+                // 'filterModel' => $searchModel,
+                'showPageSummary' => false,
+                'showFooter' => \artsoft\Art::isBackend(),
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

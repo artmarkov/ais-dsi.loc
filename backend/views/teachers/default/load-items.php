@@ -56,7 +56,6 @@ $columns = [
             return $model->week_time;
         },
         'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'week_time', $model->id),
-
     ],
     [
         'attribute' => 'year_time_consult',

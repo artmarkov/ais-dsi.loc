@@ -937,7 +937,6 @@ class DefaultController extends MainController
             $m->status = StudyplanInvoices::STATUS_WORK;
 
             if ($m->load(Yii::$app->request->post()) && $studyplanIds->load(Yii::$app->request->post()) && $m->validate()) {
-                $m->setAttributes($model->getAttributes());
                 $m->studyplan_id = $studyplanIds['ids'][0];
                 if ($m->save(false)) {
                     Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));

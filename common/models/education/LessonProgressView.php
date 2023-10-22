@@ -66,7 +66,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $attributes = ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
         $attributes += ['student_id' => Yii::t('art/student', 'Student')];
 
-        if($model_date->subject_sect_studyplan_id == '') {
+        if ($model_date->subject_sect_studyplan_id == '') {
             $lessonDates = [];
             $modelsProgress = [];
             $modelsMarks = [];
@@ -232,7 +232,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
     public static function getSectListForTeachersQuery($teachers_id, $plan_year)
     {
-        return  self::find()
+        return self::find()
             ->select('subject_sect_studyplan_id, sect_name, subject')
             ->distinct()
             ->where(['!=', 'subject_sect_studyplan_id', 0])
@@ -246,6 +246,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     {
         return ArrayHelper::map(self::getSectListForTeachersQuery($teachers_id, $plan_year)->all(), 'subject_sect_studyplan_id', 'sect_name', 'subject');
     }
+
     public static function getSecListForTeachersDefault($teachers_id, $plan_year)
     {
         $model = self::getSectListForTeachersQuery($teachers_id, $plan_year)->one();
@@ -255,7 +256,6 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     public static function getDataIndivTeachers($model_date, $teachers_id, $plan_year)
     {
         $data = $dates = $datesLoad = [];
-        $dates_load = 0;
 
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
         $timestamp_in = $timestamp[0];
@@ -278,9 +278,10 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->andWhere(['plan_year' => $plan_year])
             ->all();
 
-        $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress,'studyplan_subject_id');
+        $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress, 'studyplan_subject_id');
 
         foreach ($lessonDates as $id => $lessonDate) {
+            $dates_load = 0;
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
             $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
             $attributes += [$date => $label];
@@ -326,7 +327,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
     public static function getIndivListForTeachersQuery($teachers_id, $plan_year)
     {
-        return  self::find()
+        return self::find()
             ->select('subject_key, subject')
             ->distinct()
             ->where(['is not', 'subject_key', NULL])
@@ -340,6 +341,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     {
         return ArrayHelper::map(self::getIndivListForTeachersQuery($teachers_id, $plan_year)->all(), 'subject_key', 'subject');
     }
+
     public static function getIndivListForTeachersDefault($teachers_id, $plan_year)
     {
         $model = self::getIndivListForTeachersQuery($teachers_id, $plan_year)->one();
@@ -354,7 +356,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
      */
     protected static function getEditableForm($date_label, $mark)
     {
-        $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::MARK,LessonMark::OFFSET_NONOFFSET,LessonMark::REASON_ABSENCE]);
+        $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::MARK, LessonMark::OFFSET_NONOFFSET, LessonMark::REASON_ABSENCE]);
 
         return Editable::widget([
             'buttonsTemplate' => "{reset}{submit}",

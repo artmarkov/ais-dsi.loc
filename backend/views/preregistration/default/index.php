@@ -87,9 +87,25 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                         'value' => function (EntrantPreregistrations $model) {
-                            return RefBook::find('students_fullname')->getValue($model->student_id);
+                            return Html::a(RefBook::find('students_fullname')->getValue($model->student_id),
+                                ['/students/default/view', 'id' => $model->student_id],
+                                [
+                                    'target' => '_blank',
+                                    'data-pjax' => '0',
+                                   // 'class' => 'btn btn-link',
+                                    'title' => 'Открыть в новом окне'
+                                ]);
                         },
                         'format' => 'raw'
+                    ],
+                    [
+                        'attribute' => 'created_at',
+                        'filter' => false,
+                        'value' => function (EntrantPreregistrations $model) {
+                            return Yii::$app->formatter->asDate($model->created_at);
+                        },
+                        'format' => 'raw',
+                        'label' => 'Дата регистрации',
                     ],
 
                     /*[

@@ -50,15 +50,26 @@ class TeachersLoadView extends TeachersLoad
 
         foreach ($provider as $item) {
             if ($item['teachers_id'] == $teachers_id) {
-                if($item['direction_id'] == 1000) {
-                $total[0] += $item[$fieldName];
+                if ($item['direction_id'] == 1000) {
+                    $total[0] += $item[$fieldName];
                 } else {
-                $total[1] += $item[$fieldName];
+                    $total[1] += $item[$fieldName];
                 }
             }
         }
 
         return $total[0] . '/' . $total[1];
+    }
+
+    public static function getStudyplanTotal($provider, $fieldName)
+    {
+        $total = 0;
+        foreach ($provider as $item) {
+            if ($item['direction_id'] == 1000) {
+                $total += $item[$fieldName];
+            }
+        }
+        return $total;
     }
 
 //    public function getStudyplanWeekTime()
