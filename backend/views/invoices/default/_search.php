@@ -43,19 +43,6 @@ $form = ActiveForm::begin([
                             ]
                         )->label('Месяц и год'); ?>
 
-                        <?php if (\artsoft\Art::isBackend()): ?>
-                            <?= $form->field($model_date, "programm_id")->widget(\kartik\select2\Select2::class, [
-                                'data' => RefBook::find('education_programm_short_name')->getList(),
-                                'options' => [
-                                    'onchange' => 'js: $(this).closest("form").submit()',
-                                    'placeholder' => Yii::t('art', 'Select...'),
-                                ],
-                                'pluginOptions' => [
-                                    'allowClear' => true
-                                ],
-                            ])->label(Yii::t('art/studyplan', 'Education Programm')); ?>
-                        <?php endif; ?>
-
                     </div>
                 </div>
                 <div class="row">
@@ -67,6 +54,18 @@ $form = ActiveForm::begin([
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-sm-12">
+                                        <?php if (\artsoft\Art::isBackend()): ?>
+                                            <?= $form->field($model_date, "programm_id")->widget(\kartik\select2\Select2::class, [
+                                                'data' => RefBook::find('education_programm_short_name')->getList(),
+                                                'options' => [
+                                                    /*'onchange' => 'js: $(this).closest("form").submit()',*/
+                                                    'placeholder' => Yii::t('art', 'Select...'),
+                                                ],
+                                                'pluginOptions' => [
+                                                    'allowClear' => true
+                                                ],
+                                            ])->label(Yii::t('art/studyplan', 'Education Programm')); ?>
+                                        <?php endif; ?>
                                         <?php if (\artsoft\Art::isBackend()): ?>
 
                                             <?= $form->field($model_date, 'direction_id')->widget(\kartik\select2\Select2::class, [
