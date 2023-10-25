@@ -6,6 +6,7 @@ use artsoft\Art;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use common\models\guidejob\Direction;
 use common\models\studyplan\Studyplan;
 use common\models\teachers\TeachersLoadView;
 use common\widgets\editable\Editable;
@@ -290,6 +291,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                     ->select(new \yii\db\Expression('datetime_out - datetime_in AS time'))
                     ->where(['in', 'studyplan_subject_id', $studyplanSubjectIds])
                     ->andWhere(['and', ['>=', 'datetime_in', $lessonDate['lesson_date']], ['<', 'datetime_in', $lessonDate['lesson_date'] + 86400]])
+                    ->andWhere(['=', 'direction_id', 1000])
                     ->column();
 //                print_r($datesArray); die();
                 foreach ($datesArray as $index => $time) {

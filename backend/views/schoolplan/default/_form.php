@@ -315,7 +315,7 @@ use common\models\user\UserCommon;
                                 <div class="form-group btn-group">
                                     <?php if (!$model->isNewRecord && \artsoft\Art::isFrontend()): ?>
                                         <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => $model->isAuthor() ? $model->doc_status != 0 : $readonly]); ?>
-                                        <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => $model->isAuthor() ? $model->doc_status != 1 : $readonly]); ?>
+                                        <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => $model->isAuthor() ? false /*$model->doc_status != 1 */: $readonly]); ?>
                                     <?php endif; ?>
                                 </div>
                             </div>

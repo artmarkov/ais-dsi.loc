@@ -24,7 +24,7 @@ class StudyplanProgressIndivController extends MainController
         $modelTeachers = Teachers::findOne($this->teachers_id);
 
         $session = Yii::$app->session;
-        if($session->get('_progress_teachers_id') != $this->teachers_id) {
+        if ($session->get('_progress_teachers_id') != $this->teachers_id) {
             $session->remove('_progress_subject_key');
         }
         $model_date = new DynamicModel(['date_in', 'subject_key']);
@@ -212,6 +212,7 @@ class StudyplanProgressIndivController extends MainController
             'timestamp_in' => $timestamp_in,
         ]);
     }
+
     public function actionDelete($id)
     {
         if (!Yii::$app->request->get('objectId')) {
@@ -228,8 +229,10 @@ class StudyplanProgressIndivController extends MainController
             ->andWhere(['=', 'lesson_date', $timestamp_in])
             ->all();
         foreach ($models as $model) {
-            $deletedIDs = LessonItems::find()->where(['=', 'id', $model->lesson_items_id])->column();
-           // LessonItems::deleteAll(['id' => $deletedIDs]);
+            $modelProgress = LessonProgress::findOne(['id' => $model->lesson_progress_id]);
+            $modelProgress->delete();
+            $modelLesson = LessonItems::findOne(['id' => $model->lesson_items_id]);
+            $modelLesson->delete();
         }
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
         return $this->redirect($this->getRedirectPage('delete', $model));

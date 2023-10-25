@@ -109,6 +109,8 @@ $form = ActiveForm::begin([
                                             ],
                                         ])->label(Yii::t('art/student', 'Student')); ?>
 
+                                        <?= $form->field($model_date, 'status')->dropDownList( \common\models\studyplan\Studyplan::getStatusList())->label('Статус учебного плана');
+                                        ?>
                                         <?= $form->field($model_date, "course")->dropDownList(\artsoft\helpers\ArtHelper::getCourseList(), ['prompt' => Yii::t('art', 'Select...')])->label(Yii::t('art/studyplan', 'Course')); ?>
 
                                         <?= $form->field($model_date, "subject_id")->widget(\kartik\select2\Select2::class, [
@@ -152,6 +154,7 @@ document.querySelector('form').addEventListener('submit', (event) => {
         $("#dynamicmodel-teachers_id").empty();
         $("#dynamicmodel-student_id").empty();
         $("#dynamicmodel-course").empty();
+        $("#dynamicmodel-status").empty();
         $("#dynamicmodel-subject_id").empty();
         $("#dynamicmodel-subject_type_id").empty();
         $("#dynamicmodel-subject_type_sect_id").empty();

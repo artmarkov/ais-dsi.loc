@@ -21,7 +21,7 @@ $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'subject',
-        'filter' => false,
+//        'filter' => false,
         'width' => '310px',
         'value' => function ($model, $key, $index, $widget) {
             return $model->subject;

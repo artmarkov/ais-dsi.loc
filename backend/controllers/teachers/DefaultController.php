@@ -962,6 +962,8 @@ class DefaultController extends MainController
             $data = new LessonItemsHistory($objectId);
             return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
         } elseif ('delete' == $mode && $objectId) {
+            $deletedIDs = LessonProgress::find()->where(['=', 'lesson_items_id', $objectId])->column();
+            LessonProgress::deleteAll(['id' => $deletedIDs]);
             $model = LessonItems::findOne($objectId);
             $model->delete();
 
@@ -1161,8 +1163,10 @@ class DefaultController extends MainController
                 ->andWhere(['=', 'lesson_date', $timestamp_in])
                 ->all();
             foreach ($models as $model) {
-                $deletedIDs = LessonItems::find()->where(['=', 'id', $model->lesson_items_id])->column();
-                //LessonItems::deleteAll(['id' => $deletedIDs]);
+                $modelProgress = LessonProgress::findOne(['id' => $model->lesson_progress_id]);
+                $modelProgress->delete();
+                $modelLesson = LessonItems::findOne(['id' => $model->lesson_items_id]);
+                $modelLesson->delete();
             }
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
             return $this->redirect($this->getRedirectPage('delete', $model));

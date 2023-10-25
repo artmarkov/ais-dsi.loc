@@ -53,7 +53,7 @@ class LessonProgress extends \artsoft\db\ActiveRecord
     {
         return [
             [['lesson_items_id', 'studyplan_subject_id', 'lesson_mark_id', 'version'], 'integer'],
-            [['studyplan_subject_id', 'lesson_mark_id'], 'required'],
+            [['studyplan_subject_id'/*, 'lesson_mark_id'*/], 'required'],
             // не работает при новой записи
             // [['studyplan_subject_id'], 'unique', 'targetAttribute' => ['lesson_items_id', 'studyplan_subject_id'], 'message' => 'Ученику можно ставить только одну оценку за урок'],
             // [['studyplan_subject_id', 'lesson_mark_id'], 'unique', 'targetAttribute' => ['studyplan_subject_id', 'lesson_mark_id', 'lesson_items_id'], 'message' => 'Нельзя поставить одинаковую оценку ученику за урок'],

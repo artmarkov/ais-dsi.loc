@@ -91,6 +91,9 @@ class TeachersLoadViewSearch extends TeachersLoadView
         if($this->studyplan_subject_list) {
             $query->andWhere(new \yii\db\Expression("studyplan_subject_list::text LIKE '%" . $this->studyplan_subject_list . "%'"));
         }
+        if($this->subject) {
+            $query->andWhere(new \yii\db\Expression("subject LIKE '%" . $this->subject . "%'"));
+        }
         return $dataProvider;
     }
 }

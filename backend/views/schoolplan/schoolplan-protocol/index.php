@@ -56,15 +56,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
                         'attribute' => 'id',
-                        'class' => 'artsoft\grid\columns\TitleActionColumn',
-                        'controller' => '/schoolplan-protocol/default',
-                        'title' => function (SchoolplanProtocol $model) {
+                        'value' => function (SchoolplanProtocol $model) {
                             return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
                         },
-                        'buttonsTemplate' => '{update} {view} {delete}',
                     ],
 
-                    'id',
                     'schoolplan_id',
                     'protocol_name',
                     'description',
@@ -73,7 +69,54 @@ $this->params['breadcrumbs'][] = $this->title;
                     'secretary_id',
                     'members_list',
                     'subject_list',
-
+                    [
+                        'class' => 'kartik\grid\ActionColumn',
+                        'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+                        'width' => '90px',
+                        'template' => '{view} {update} {delete}',
+                        'buttons' => [
+                            'update' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                                    ['/schoolplan-protocol/default/update', 'id' => $model->id], [
+                                        'title' => Yii::t('art', 'Edit'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                            'delete' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                                    ['/schoolplan-protocol/default/delete', 'id' => $model->id], [
+                                        'title' => Yii::t('art', 'Delete'),
+                                        'aria-label' => Yii::t('art', 'Delete'),
+                                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                            'view' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-qrcode" aria-hidden="true" style="color: red"></span>',
+                                    ['/schoolplan-protocol/default/view', 'id' => $model->id], [
+                                        'title' => Yii::t('art', 'View'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            }
+                        ],
+                       /* 'visibleButtons' => [
+                            'delete' => function ($model) {
+                                return $model->studyplan_invoices_id !== null;
+                            },
+                            'update' => function ($model) {
+                                return $model->studyplan_invoices_id !== null;
+                            },
+                            'view' => function ($model) {
+                                return $model->studyplan_invoices_id !== null;
+                            }
+                        ],*/
+                    ],
                 ],
             ]);
             ?>

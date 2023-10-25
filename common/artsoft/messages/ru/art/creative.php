@@ -2,7 +2,7 @@
 return [
     'Date Weight' => 'Дата поощрения',
     'Weight' => 'Бонус',
-    'Creative Works' => 'Творческие работы и сертификаты',
+    'Creative Works' => 'Работы и сертификаты',
     'Creative Category' => 'Категория',
     'View Rights' => 'Доступ к работе',
     'Аuthors-performers' => 'Автор',

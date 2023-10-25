@@ -66,7 +66,7 @@ class NoticeDisplay
         $array = ArrayHelper::index($array, 'teachers_load_id');
         foreach ($array as $teachers_load_id => $data) {
             $weekTime = Schedule::academ2astr($data['load_time']);
-            if ($data['load_time'] != 0 && $data['full_time'] != null && abs(($weekTime - $data['full_time'])) > ($delta_time * ($data['qty'] - $data['qty'] / 2))) {
+            if ($data['load_time'] != 0 && $data['full_time'] != null && abs(($weekTime - $data['full_time'])) > ($delta_time * ($data['qty'] - ($data['qty'] > 1 ? $data['qty'] / 2 : 0)))) {
                 $load_data[$teachers_load_id] = ['load_time' => $data['load_time'], 'full_time' => $data['full_time'], 'delta_time' => abs(($weekTime - $data['full_time']) / 60)];
             }
         }

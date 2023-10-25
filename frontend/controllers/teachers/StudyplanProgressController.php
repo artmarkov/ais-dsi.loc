@@ -166,6 +166,8 @@ class StudyplanProgressController extends MainController
 
     public function actionDelete($id)
     {
+        $deletedIDs = LessonProgress::find()->where(['=', 'lesson_items_id', $id])->column();
+        LessonProgress::deleteAll(['id' => $deletedIDs]);
         $model = LessonItems::findOne($id);
         $model->delete();
 

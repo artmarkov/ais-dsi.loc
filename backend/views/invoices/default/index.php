@@ -8,6 +8,7 @@ use artsoft\grid\GridQuickLinks;
 use common\models\studyplan\StudyplanInvoices;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
+use common\models\studyplan\Studyplan;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\studyplan\search\StudyplanInvoicesSearch */
@@ -38,6 +39,25 @@ $columns = [
             return $model->student_fio;
         },
         'group' => true,  // enable grouping
+    ],
+    [
+        'attribute' => 'status',
+        'value' => function ($model) {
+            return Studyplan::getStatusValue($model->status);
+        },
+        'contentOptions' => function ($model) {
+            switch ($model->status) {
+                case Studyplan::STATUS_ACTIVE:
+                    return ['class' => 'default'];
+                case Studyplan::STATUS_INACTIVE:
+                    return ['class' => 'danger'];
+                default:
+                    return [];
+            }
+        },
+        'format' => 'raw',
+        'group' => true,  // enable grouping
+        'subGroupOf' => 2
     ],
     [
         'attribute' => 'programm_id',
@@ -238,7 +258,7 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
+                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 7, 'class' => 'text-center warning']],
                             ['content' => 'Счета за обучение', 'options' => ['colspan' => 4, 'class' => 'text-center success']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
