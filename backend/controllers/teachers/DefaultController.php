@@ -27,6 +27,7 @@ use common\models\schedule\search\SubjectScheduleViewSearch;
 use common\models\schedule\SubjectSchedule;
 use common\models\service\UsersCard;
 use common\models\studyplan\search\ThematicViewSearch;
+use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\schedule\SubjectScheduleView;
 use common\models\studyplan\StudyplanThematic;
@@ -1159,8 +1160,10 @@ class DefaultController extends MainController
             $timestamp_in = $keyArray[1];
 
             $models = LessonItemsProgressView::find()
+                ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $id]))
                 ->where(['=', 'subject_key', $subject_key])
                 ->andWhere(['=', 'lesson_date', $timestamp_in])
+                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
                 ->all();
             foreach ($models as $model) {
                 $modelProgress = LessonProgress::findOne(['id' => $model->lesson_progress_id]);

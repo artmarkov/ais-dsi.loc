@@ -46,8 +46,19 @@ $columns = [
         'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
-        'footer' => 'Пед./Конц.',
         'label' =>  Yii::t('art/guide', 'Sect').'/'.Yii::t('art/student', 'Student'),
+    ],
+    [
+        'attribute' => 'programm_id',
+        'filter' => RefBook::find('education_programm_short_name')->getList(),
+        'width' => '310px',
+        'value' => function ($model, $key, $index, $widget) {
+            return $model->education_programm_short_name;
+        },
+        'format' => 'raw',
+        'group' => true,
+        'subGroupOf' => 1,
+        'footer' => 'Пед./Конц.',
     ],
     [
         'attribute' => 'week_time',
@@ -104,7 +115,7 @@ $columns = [
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 5,
+        'subGroupOf' => 6,
     ],
     [
         'attribute' => 'load_time',
@@ -254,7 +265,7 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Учебный предмет/Группа/Ученик', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                            ['content' => 'Учебный предмет/Группа/Ученик', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
                             ['content' => 'Нагрузка', 'options' => ['colspan' => 8, 'class' => 'text-center info']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export

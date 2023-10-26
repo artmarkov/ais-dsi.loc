@@ -9,6 +9,7 @@ use common\models\education\LessonItems;
 use common\models\education\LessonItemsProgressView;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
+use common\models\studyplan\Studyplan;
 use common\models\teachers\Teachers;
 use Yii;
 use yii\base\DynamicModel;
@@ -225,9 +226,12 @@ class StudyplanProgressIndivController extends MainController
         $timestamp_in = $keyArray[1];
 
         $models = LessonItemsProgressView::find()
+            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $id]))
             ->where(['=', 'subject_key', $subject_key])
             ->andWhere(['=', 'lesson_date', $timestamp_in])
+            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
             ->all();
+//        echo '<pre>' . print_r($models, true) . '</pre>'; die();
         foreach ($models as $model) {
             $modelProgress = LessonProgress::findOne(['id' => $model->lesson_progress_id]);
             $modelProgress->delete();

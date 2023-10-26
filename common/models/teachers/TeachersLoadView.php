@@ -41,6 +41,8 @@ class TeachersLoadView extends TeachersLoad
             'subject' => Yii::t('art/guide', 'Subject'),
             'subject_type_id' => Yii::t('art/guide', 'Subject Type'),
             'subject_type_name' => Yii::t('art/guide', 'Subject Type Name'),
+            'programm_id' => 'Программа',
+            'education_programm_short_name' => 'Программа',
         ];
     }
 
