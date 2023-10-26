@@ -21,7 +21,12 @@ $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'subject',
-//        'filter' => false,
+        'filter' => \common\models\teachers\TeachersLoadView::getSubjectListForTeachers($model->id, $model_date->plan_year),
+        'filterType' => GridView::FILTER_SELECT2,
+        'filterWidgetOptions' => [
+            'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'width' => '310px',
         'value' => function ($model, $key, $index, $widget) {
             return $model->subject;
@@ -50,7 +55,12 @@ $columns = [
     ],
     [
         'attribute' => 'programm_id',
-        'filter' => RefBook::find('education_programm_short_name')->getList(),
+        'filter' => \common\models\teachers\TeachersLoadView::getProgrammListForTeachers($model->id, $model_date->plan_year),
+        'filterType' => GridView::FILTER_SELECT2,
+        'filterWidgetOptions' => [
+            'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'width' => '310px',
         'value' => function ($model, $key, $index, $widget) {
             return $model->education_programm_short_name;
@@ -245,7 +255,7 @@ $columns = [
                 </div>
 
                 <div class="col-sm-6 text-right">
-                    <?php /*\artsoft\grid\GridPageSize::widget(['pjaxId' => 'subject-load-grid-pjax'])*/ ?>
+                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'subject-load-grid-pjax']) ?>
                 </div>
             </div>
             <?php

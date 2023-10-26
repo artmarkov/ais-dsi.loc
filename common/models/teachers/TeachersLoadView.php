@@ -63,6 +63,33 @@ class TeachersLoadView extends TeachersLoad
         return $total[0] . '/' . $total[1];
     }
 
+
+    public static function getSubjectListForTeachers($teachers_id, $plan_year)
+    {
+        $q = Yii::$app->db->createCommand('SELECT distinct subject as id, subject as name
+	FROM teachers_load_view where teachers_id IS NOT NULL AND teachers_id=:teachers_id AND plan_year=:plan_year',
+            ['teachers_id' => $teachers_id,
+                'plan_year' => $plan_year
+            ])->queryAll();
+        $data = ArrayHelper::map($q, 'id', 'name');
+
+        return $data;
+
+    }
+
+    public static function getProgrammListForTeachers($teachers_id, $plan_year)
+    {
+        $q = Yii::$app->db->createCommand('SELECT distinct programm_id as id, education_programm_short_name as name
+	FROM teachers_load_view where teachers_id IS NOT NULL AND programm_id IS NOT NULL AND teachers_id=:teachers_id AND plan_year=:plan_year',
+            ['teachers_id' => $teachers_id,
+                'plan_year' => $plan_year
+            ])->queryAll();
+        $data = ArrayHelper::map($q, 'id', 'name');
+
+        return $data;
+
+    }
+
     public static function getStudyplanTotal($provider, $fieldName)
     {
         $total = 0;
