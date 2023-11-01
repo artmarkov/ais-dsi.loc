@@ -2,8 +2,6 @@
 
 namespace common\models\teachers;
 
-use artsoft\helpers\RefBook;
-use artsoft\widgets\Notice;
 use artsoft\widgets\Tooltip;
 use common\models\guidejob\Direction;
 use common\models\studyplan\Studyplan;

@@ -57,7 +57,7 @@ class SchoolplanViewSearch extends SchoolplanView
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'id' => SORT_DESC,
+                    'datetime_in' => SORT_ASC,
                 ],
             ],
         ]);

@@ -85,7 +85,7 @@ $columns = [
         'format' => 'raw',
         'group' => true,
         'subGroupOf' => 1,
-        'footer' => 'ИТОГО: ак.час',
+        'footer' => 'ИТОГО: ' . $model['dates_load_total'] . ' ак.час.',
     ],
     [
         'attribute' => 'student_id',
@@ -107,7 +107,6 @@ foreach ($model['lessonDates'] as $id => $name) {
         'label' => $model['attributes'][$name['date']],
         'format' => 'raw',
         'footer' => $name['dates_load'],
-
     ];
 }
 

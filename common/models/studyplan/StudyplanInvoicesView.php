@@ -14,6 +14,7 @@ use Yii;
  * @property int|null $course
  * @property int|null $status
  * @property int|null $subject_form_id
+ * @property int|null $studyplan_mat_capital_flag
  * @property int|null $education_cat_id
  * @property int|null $programm_short_name
  * @property int|null $education_cat_short_name
@@ -21,8 +22,7 @@ use Yii;
  * @property string|null $studyplan_subjects
  * @property string|null $subject_list
  * @property string|null $subject_type_list
- * @property string|null $subject_type_sect_list
- * @property string|null $subject_vid_list
+ * @property string|null $limited_status_list
  * @property string|null $direction_list
  * @property string|null $teachers_list
  * @property int|null $studyplan_invoices_id
@@ -54,6 +54,7 @@ class StudyplanInvoicesView extends StudyplanInvoices
         $attr = parent::attributeLabels();
             $attr['studyplan_id'] = Yii::t('art/guide', 'Studyplan');
             $attr['programm_id'] = 'Обр. программа';
+            $attr['education_cat_id'] = Yii::t('art/guide', 'Education Cat');
             $attr['student_id'] = Yii::t('art/student', 'Student');
             $attr['student_fio'] = Yii::t('art/student', 'Student');
             $attr['plan_year'] = Yii::t('art/studyplan', 'Plan Year');
@@ -64,12 +65,24 @@ class StudyplanInvoicesView extends StudyplanInvoices
             $attr['studyplan_subjects'] = 'Дисциплины';
             $attr['subject_list'] = 'Предметы';
             $attr['subject_type_list'] = 'Тип занятия';
-            $attr['subject_type_sect_list'] = 'Тип занятия';
-            $attr['subject_vid_list'] = 'Вид занятия';
+            $attr['limited_status_list'] = 'Ограничения';
             $attr['direction_list'] = Yii::t('art/teachers', 'Direction');
             $attr['teachers_list'] = Yii::t('art/teachers', 'Teacher');
             $attr['studyplan_invoices_id'] ='ID';
             $attr['studyplan_invoices_status'] = 'Статус';
+            $attr['studyplan_mat_capital_flag'] =  Yii::t('art/studyplan', 'Mat Capital');
         return $attr;
+    }
+
+    public static function getTotalSumm($provider)
+    {
+        $total = 0;
+        foreach ($provider as $item) {
+            if (in_array($item['studyplan_invoices_status'], [self::STATUS_RECEIPT, self::STATUS_PAYD])) {
+            $total += $item['invoices_summ'];
+            }
+        }
+
+        return $total;
     }
 }

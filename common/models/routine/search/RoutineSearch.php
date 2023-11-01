@@ -2,6 +2,7 @@
 
 namespace common\models\routine\search;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\routine\Routine;
@@ -51,6 +52,14 @@ class RoutineSearch extends Routine
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
+            ],
+            'sort' => [
+                'defaultOrder' => [
+                    'start_date' => SORT_ASC,
+                ],
+            ],
         ]);
 
         $this->load($params);

@@ -69,6 +69,7 @@ if (\artsoft\models\User::hasRole(['student'])) {
                 ]
             );
             ?>
+            <?php if ($studyplan_id): ?>
             <?= Html::a(
                 '<i class="fa fa-money" aria-hidden="true"></i> Оплата за обучение',
                 ['/studyplan/default/studyplan-invoices', 'id' => $studyplan_id],
@@ -85,6 +86,7 @@ if (\artsoft\models\User::hasRole(['student'])) {
                 ]
             );
             ?>
+            <?php endif;?>
             <?= Html::a(
                 '<i class="fa fa-users" aria-hidden="true"></i> Мои ученики',
                 ['/sect/default/index'],

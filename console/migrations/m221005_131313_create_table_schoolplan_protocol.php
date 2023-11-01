@@ -10,6 +10,34 @@ class m221005_131313_create_table_schoolplan_protocol extends \artsoft\db\BaseMi
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
 
+        $this->createTableWithHistory('schoolplan_perform', [
+            'id' => $this->primaryKey(),
+            'schoolplan_id' => $this->integer()->defaultValue(0)->comment('Мероприятие'),
+            'studyplan_id' => $this->integer()->notNull()->comment('Индивидуальный план'),
+            'studyplan_subject_id' => $this->integer()->notNull()->comment('Учебный предмет ученика'),
+            'teachers_id' => $this->integer()->notNull()->comment('Преподаватель'),
+            'thematic_items_list' => $this->string(1024)->comment('Список заданий из тематич/реп плана'),
+            'lesson_mark_id' =>  $this->integer()->comment('Оценка'),
+            'winner_id' => $this->string()->defaultValue(0)->comment('Звание/Диплом'),
+            'resume' => $this->string(1024)->notNull()->comment('Отзыв комиссии/Результат'),
+            'status_exe' => $this->integer()->comment('Статус выполнения'),
+            'status_sign' => $this->integer()->defaultValue(0)->comment('Статус утверждения'),
+            'signer_id' => $this->integer()->comment('Подписант'),
+            'created_at' => $this->integer()->notNull(),
+            'created_by' => $this->integer(),
+            'updated_at' => $this->integer()->notNull(),
+            'updated_by' => $this->integer(),
+            'version' => $this->bigInteger()->notNull()->defaultValue(0),
+        ], $tableOptions);
+
+        $this->addCommentOnTable('schoolplan_perform', 'Выполнение плана и участие в мероприятии');
+
+        $this->addForeignKey('schoolplan_perform_ibfk_1', 'schoolplan_perform', 'schoolplan_id', 'schoolplan', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('schoolplan_perform_ibfk_2', 'schoolplan_perform', 'studyplan_id', 'studyplan', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('schoolplan_perform_ibfk_3', 'schoolplan_perform', 'studyplan_subject_id', 'studyplan_subject', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('schoolplan_perform_ibfk_4', 'schoolplan_perform', 'lesson_mark_id', 'guide_lesson_mark', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('schoolplan_perform_ibfk_5', 'schoolplan_perform', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
+
         $this->createTableWithHistory('schoolplan_protocol', [
             'id' => $this->primaryKey(),
             'schoolplan_id' => $this->integer()->defaultValue(0)->comment('Мероприятие'),
@@ -54,7 +82,7 @@ class m221005_131313_create_table_schoolplan_protocol extends \artsoft\db\BaseMi
         $this->addCommentOnTable('schoolplan_protocol_items', 'Элементы протокола мероприятия');
 
         $this->addForeignKey('schoolplan_protocol_items_ibfk_1', 'schoolplan_protocol_items', 'schoolplan_protocol_id', 'schoolplan_protocol', 'id', 'CASCADE', 'CASCADE');
-        $this->addForeignKey('schoolplan_protocol_items_ibfk_2', 'schoolplan_protocol_items', 'studyplan_subject_id', 'studyplan_subject', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('schoolplan_protocol_items_ibfk_2', 'schoolplan_protocol_items', 'studyplan_subject_id', 'studyplan_subject', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('schoolplan_protocol_items_ibfk_3', 'schoolplan_protocol_items', 'lesson_mark_id', 'guide_lesson_mark', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('schoolplan_protocol_items_view', '
@@ -88,5 +116,6 @@ class m221005_131313_create_table_schoolplan_protocol extends \artsoft\db\BaseMi
         $this->db->createCommand()->dropView('schoolplan_protocol_items_view')->execute();
         $this->dropTableWithHistory('schoolplan_protocol_items');
         $this->dropTableWithHistory('schoolplan_protocol');
+        $this->dropTableWithHistory('schoolplan_perform');
     }
 }

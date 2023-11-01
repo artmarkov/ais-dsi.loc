@@ -15,8 +15,7 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
     public $date_in;
     public $subject_id;
     public $subject_type_id;
-    public $subject_type_sect_id;
-    public $subject_vid_id;
+    public $limited_status_id;
     public $direction_id;
     public $teachers_id;
 
@@ -26,11 +25,11 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
     public function rules()
     {
         return [
-            [['studyplan_id', 'programm_id', 'student_id', 'student_fio', 'plan_year', 'course', 'status', 'education_cat_id', 'studyplan_invoices_id', 'plan_year', 'studyplan_invoices_status', 'invoices_id'], 'integer'],
+            [['studyplan_id', 'student_fio', 'plan_year', 'course', 'status', 'education_cat_id', 'studyplan_invoices_id', 'studyplan_mat_capital_flag', 'plan_year', 'studyplan_invoices_status', 'invoices_id', 'mat_capital_flag'], 'integer'],
             [['month_time_fact', 'invoices_date', 'payment_time', 'payment_time_fact'], 'integer'],
             [['invoices_summ'], 'number'],
-            [['studyplan_subjects', 'subject_list', 'subject_type_list', 'subject_type_sect_list', 'subject_vid_list', 'direction_list', 'teachers_list'], 'string'],
-            [['date_in', 'invoices_reporting_month', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'subject_form_id', 'direction_id', 'teachers_id'], 'safe'],
+            [['subject_list', 'subject_type_list', 'teachers_list'], 'string'],
+            [['programm_id', 'student_id', 'date_in', 'invoices_reporting_month', 'subject_id', 'limited_status_id', 'subject_type_id', 'subject_form_id', 'direction_id', 'teachers_id'], 'safe'],
         ];
     }
 
@@ -81,8 +80,6 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
         }
         $query->andFilterWhere([
             'studyplan_id' => $this->studyplan_id,
-            'programm_id' => $this->programm_id,
-            'student_id' => $this->student_id,
             'course' => $this->course,
             'status' => $this->status,
             'subject_form_id' => $this->subject_form_id,
@@ -96,25 +93,31 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
             'payment_time_fact' => $this->payment_time_fact,
             'invoices_summ' => $this->invoices_summ
         ]);
+        if ($this->mat_capital_flag == 1) {
+            $query->andWhere(['=', 'mat_capital_flag', 1]); // andWhere !!
+        }
+        if ($this->studyplan_mat_capital_flag == 1) {
+            $query->andFilterWhere(['=', 'studyplan_mat_capital_flag', 1]);
+        }
         if ($this->student_fio) {
             $query->andFilterWhere(['like', 'student_fio', $this->student_fio]);
         }
-
+        if ($this->programm_id) {
+            $query->andWhere(new \yii\db\Expression("programm_id = any(string_to_array(:programm_id, ',')::int[])"), [':programm_id' => implode(',', $this->programm_id)]);
+        }
+        if ($this->student_id) {
+            $query->andWhere(new \yii\db\Expression("student_id = any(string_to_array(:student_id, ',')::int[])"), [':student_id' => implode(',', $this->student_id)]);
+        }
         if ($this->subject_id) {
             $query->andWhere(new \yii\db\Expression(":subject_id = any(string_to_array(subject_list, ',')::int[])"), [':subject_id' => $this->subject_id]);
         }
         if ($this->subject_type_id) {
             $query->andWhere(new \yii\db\Expression(":subject_type_id = any(string_to_array(subject_type_list, ',')::int[])"), [':subject_type_id' => $this->subject_type_id]);
         }
-        if ($this->subject_type_sect_id) {
-            $query->andWhere(new \yii\db\Expression(":subject_type_sect_id = any(string_to_array(subject_type_sect_list, ',')::int[])"), [':subject_type_sect_id' => $this->subject_type_sect_id]);
+        if ($this->limited_status_id) {
+            $query->andWhere(new \yii\db\Expression(":limited_status_id = any(string_to_array(limited_status_list, ',')::int[])"), [':limited_status_id' => $this->limited_status_id]);
         }
-        if ($this->subject_vid_id) {
-            $query->andWhere(new \yii\db\Expression(":subject_vid_id = any(string_to_array(subject_vid_list, ',')::int[])"), [':subject_vid_id' => $this->subject_vid_id]);
-        }
-        if ($this->direction_id) {
-            $query->andWhere(new \yii\db\Expression(":direction_id = any(string_to_array(direction_list, ',')::int[])"), [':direction_id' => $this->direction_id]);
-        }
+//
         if ($this->teachers_id) {
             $query->andWhere(new \yii\db\Expression(":teachers_id = any(string_to_array(teachers_list, ',')::int[])"), [':teachers_id' => $this->teachers_id]);
         }

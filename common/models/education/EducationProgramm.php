@@ -198,6 +198,28 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             ->asArray()->all(), 'id', 'name');
     }
 
+    public static function getProgrammListByName($cat_id)
+    {
+        return ArrayHelper::map(self::find()
+            ->select('id, short_name as name')
+            ->andFilterWhere(['=', 'education_cat_id', $cat_id])
+            ->andFilterWhere(['=', 'status', self::STATUS_ACTIVE])
+            ->orderBy('short_name')
+            ->asArray()->all(), 'id', 'name');
+    }
+
+    public static function getProgrammListById($cat_id)
+    {
+        $data = [];
+        if ($cat_id) {
+            $data = self::find()->select('id, short_name as name');
+            $data = $data->andFilterWhere(['=', 'education_cat_id', $cat_id]);
+            $data = $data->andFilterWhere(['=', 'status', self::STATUS_ACTIVE]);
+            $data = $data->asArray()->all();
+        }
+        return $data;
+    }
+
     /**
      * @return false|int|null|string
      */

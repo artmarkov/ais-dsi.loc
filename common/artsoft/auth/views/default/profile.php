@@ -141,7 +141,7 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                         <div class="panel-body">
                             <div class="row">
                                 <?= $form->field($user, 'username')->textInput(['maxlength' => 255, 'autofocus' => false, 'readonly' => true]) ?>
-                                <?= $form->field($userCommon, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput(['readonly' => $userCommon->snils == '' ? false : true])->hint('Может потребоваться для восстановления учетных данных.') ?>
+                                <?= $form->field($userCommon, 'snils')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput(['readonly' => false ])->hint('Может потребоваться для восстановления учетных данных.') ?>
                                 <?= $form->field($user, 'email')->textInput(['maxlength' => 255, 'autofocus' => false])->hint(Yii::t('art/auth', 'After changing the E-mail confirmation is required')) ?>
                             </div>
                         </div>

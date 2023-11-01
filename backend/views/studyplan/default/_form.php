@@ -414,6 +414,9 @@ JS
                             <?= $form->field($model, 'cost_month_total')->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
 
                             <?= $form->field($model, 'cost_year_total')->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
+
+                            <?= $form->field($model, 'mat_capital_flag')->checkbox(['disabled' => $readonly]) ?>
+
                         </div>
                     </div>
                 </div>
@@ -426,6 +429,7 @@ JS
                             <?= $form->field($model, 'status')->dropDownList(Studyplan::getStatusList(), ['disabled' => false]) ?>
 
                             <?= $form->field($model, 'status_reason')->dropDownList(Studyplan::getStatusReasonList(), ['disabled' => true]) ?>
+
                         </div>
                     </div>
                     <div class="panel-footer">

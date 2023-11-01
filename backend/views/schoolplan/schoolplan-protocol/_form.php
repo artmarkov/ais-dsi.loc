@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use artsoft\models\User;
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
@@ -12,12 +13,12 @@ use yii\helpers\ArrayHelper;
 /* @var $modelsProtocolItems common\models\schoolplan\SchoolplanProtocolItems */
 /* @var $form artsoft\widgets\ActiveForm */
 
-//$this->registerJs(<<<JS
-//$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
-//	    $( "#schoolplan-protocol-form" ).submit(); // вызываем событие submit на элементе <form>
-//	  });
-//JS
-//    , \yii\web\View::POS_END);
+/*$this->registerJs(<<<JS
+$( ".add-item" ).click(function(){ // задаем функцию при нажатиии на элемент <button>
+	    $( "#schoolplan-protocol-form" ).submit(); // вызываем событие submit на элементе <form>
+	  });
+JS
+    , \yii\web\View::POS_END);*/
 
 $this->registerJs(<<<JS
 function initSelect2Loading(a,b){ initS2Loading(a,b); }
@@ -45,7 +46,8 @@ $this->registerJs($js);
 ?>
 
 <?php
-
+$readonlyItems = \artsoft\Art::isFrontend() ? $model->protocolIsAvailable() : false;
+$readonly = User::hasRole(['teacher']) ? true : $readonly;
 //$this->registerJs(<<<JS
 //   function toggle(index, field) {
 //      if($(field).is(':checked')) {
@@ -197,13 +199,11 @@ $this->registerJs($js);
                             </div>
                             <div class="panel-body">
                                 <div class="container-items"><!-- widgetBody -->
-                                    <?php foreach ($modelsProtocolItems
-
-                                    as $index => $modelProtocolItems): ?>
+                                    <?php foreach ($modelsProtocolItems as $index => $modelProtocolItems): ?>
                                     <div class="item panel panel-primary"><!-- widgetItem -->
                                         <div class="panel-heading">
                                             <span class="panel-title-activities">Учащийся: <?= ($index + 1) ?></span>
-                                            <?php if (!$readonly): ?>
+                                            <?php if (!$readonlyItems): ?>
                                                 <div class="pull-right">
                                                     <button type="button" class="remove-item btn btn-default btn-xs">
                                                         удалить
@@ -229,7 +229,7 @@ $this->registerJs($js);
                                                     'data' => $model->getStudyplanSubjectList(),
                                                     'showToggleAll' => false,
                                                     'options' => [
-                                                        'disabled' => $readonly,
+                                                        'disabled' => $readonlyItems,
                                                         'placeholder' => Yii::t('art', 'Select...'),
                                                         'multiple' => false,
                                                     ],
@@ -241,10 +241,10 @@ $this->registerJs($js);
                                                 ?>
 
                                                 <?= $form->field($modelProtocolItems, "[{$index}]thematic_items_list")->widget(\kartik\select2\Select2::class, [
-                                                    'data' => \common\models\schoolplan\SchoolplanProtocol::getStudyplanThematicItemsList(10010/*$modelProtocolItems->schoolplan_protocol_id*/),
+                                                    'data' => \common\models\schoolplan\SchoolplanProtocol::getStudyplanThematicItemsList($modelProtocolItems->studyplan_subject_id),
                                                     'showToggleAll' => false,
                                                     'options' => [
-                                                        'disabled' => $readonly,
+                                                        'disabled' => $readonlyItems,
                                                         'placeholder' => Yii::t('art', 'Select...'),
                                                         'multiple' => true,
                                                     ],
@@ -261,7 +261,7 @@ $this->registerJs($js);
                                                     'data' => RefBook::find('lesson_mark')->getList(),
                                                     'showToggleAll' => false,
                                                     'options' => [
-                                                        'disabled' => $readonly,
+                                                        'disabled' => $readonlyItems,
                                                         'placeholder' => Yii::t('art', 'Select...'),
                                                         'multiple' => false,
                                                     ],
@@ -276,7 +276,7 @@ $this->registerJs($js);
                                                     'data' => \common\models\schoolplan\SchoolplanProtocolItems::getWinnerList(),
                                                     'showToggleAll' => false,
                                                     'options' => [
-                                                        'disabled' => $readonly,
+                                                        'disabled' => $readonlyItems,
                                                         'placeholder' => Yii::t('art', 'Select...'),
                                                         'multiple' => false,
                                                     ],
@@ -287,7 +287,7 @@ $this->registerJs($js);
                                                 ]);
                                                 ?>
 
-                                                <?= $form->field($modelProtocolItems, "[{$index}]resume")->textarea(['rows' => 3, 'maxlength' => true]) ?>
+                                                <?= $form->field($modelProtocolItems, "[{$index}]resume")->textarea(['rows' => 3, 'maxlength' => true, 'readonly' => $readonlyItems]) ?>
                                             </div>
                                             <?php if (!$modelProtocolItems->isNewRecord): ?>
                                                 <div class="row">
@@ -297,7 +297,7 @@ $this->registerJs($js);
                                                                 диплома, грамоты)</label>
                                                         </div>
                                                         <div class="col-sm-9">
-<!--                                                            --><?//= artsoft\fileinput\widgets\FileInput::widget(['model' => $modelProtocolItems, 'options' => ['multiple' => true], 'disabled' => $readonly]) ?>
+<!--                                                            --><?//= artsoft\fileinput\widgets\FileInput::widget(['model' => $modelProtocolItems, 'options' => ['multiple' => true], 'disabled' => $readonlyItems]) ?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -308,7 +308,7 @@ $this->registerJs($js);
                                                     'data' => \common\models\schoolplan\SchoolplanProtocolItems::getStatusExeList(),
                                                     'showToggleAll' => false,
                                                     'options' => [
-                                                        'disabled' => $readonly,
+                                                        'disabled' => $readonlyItems,
                                                         'placeholder' => Yii::t('art', 'Select...'),
                                                         'multiple' => false,
                                                     ],
@@ -321,7 +321,7 @@ $this->registerJs($js);
                                                     'data' => \common\models\schoolplan\SchoolplanProtocolItems::getStatusSignList(),
                                                     'showToggleAll' => false,
                                                     'options' => [
-                                                        'disabled' => $readonly,
+                                                        'disabled' => \artsoft\Art::isFrontend(),
                                                         'placeholder' => Yii::t('art', 'Select...'),
                                                         'multiple' => false,
                                                     ],
@@ -335,7 +335,7 @@ $this->registerJs($js);
                                                     'data' => \artsoft\models\User::getUsersListByCategory(['teachers', 'employees']),
                                                     'showToggleAll' => false,
                                                     'options' => [
-                                                        'disabled' => $readonly,
+                                                        'disabled' => \artsoft\Art::isFrontend(),
                                                         'placeholder' => Yii::t('art', 'Select...'),
                                                         'multiple' => false,
                                                     ],
@@ -352,7 +352,7 @@ $this->registerJs($js);
                                 </div>
 
                                 <?php endforeach; ?>
-                                <?php if (!$readonly): ?>
+                                <?php if (!$readonlyItems): ?>
                                     <div class="panel-footer">
                                         <div class="form-group btn-group">
 
@@ -371,7 +371,7 @@ $this->registerJs($js);
             <?php endif; ?>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+                    <?= !$readonlyItems ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
                 </div>
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>

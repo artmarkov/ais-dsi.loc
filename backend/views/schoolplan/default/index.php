@@ -91,14 +91,21 @@ $this->params['breadcrumbs'][] = $this->title;
 //                                },
                             ],
                             [
+                                'attribute' => 'datetime_in',
+                                'value' => function (Schoolplan $model) {
+                                    return $model->datetime_in . ' - </br>' . $model->datetime_out;
+                                },
+                                'options' => ['style' => 'width:150px'],
+                                'format' => 'raw',
+                                'label' => 'Дата мероприятия'
+                            ],
+                            [
                                 'attribute' => 'title',
                                 'value' => function (Schoolplan $model) {
                                     return $model->title;
                                 },
                                 'options' => ['style' => 'width:450px'],
                             ],
-                            'datetime_in:datetime',
-                            'datetime_out:datetime',
                             [
                                 'attribute' => 'category_id',
                                 'value' => function ($model) {

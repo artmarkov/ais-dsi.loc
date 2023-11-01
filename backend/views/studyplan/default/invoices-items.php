@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use common\models\studyplan\Studyplan;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -12,16 +13,13 @@ use artsoft\grid\GridPageSize;
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\studyplan\search\StudyplanInvoicesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $model_date */
 
 $this->title = Yii::t('art/studyplan', 'Studyplan Invoices');
 $this->params['breadcrumbs'][] = $this->title;
+$invModel = \artsoft\helpers\InvoicesHelper::getData($dataProvider->models, $model_date);
 
 $columns = [
-    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
-        return ['value' => $model->studyplan_invoices_id];
-    },
-        'visible' => false,
-    ],
     [
         'attribute' => 'student_id',
         'value' => function ($model) {
@@ -32,12 +30,27 @@ $columns = [
     ],
     [
         'attribute' => 'student_fio',
-        'width' => '310px',
         'value' => function ($model, $key, $index, $widget) {
-
-            return $model->student_fio;
+            $str = ''; $arr = [];
+            $str .= $model->student_fio;
+            if($model->limited_status_list) {
+                foreach (explode(',', $model->limited_status_list) as $limited_status) {
+                    $arr[] = \common\models\students\Student::getLimitedStatusValue($limited_status);
+                }
+                $str .= ' <span class="label label-warning">' . implode(', ', $arr) . '</span>';
+            }
+            return $str;
+        },
+        'format' => 'raw',
+        'group' => true,  // enable grouping
+    ],
+    [
+        'attribute' => 'education_cat_id',
+        'value' => function ($model) {
+            return $model->education_cat_short_name;
         },
         'group' => true,  // enable grouping
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'programm_id',
@@ -45,46 +58,52 @@ $columns = [
             return $model->programm_short_name;
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 1
     ],
-    /*[
-        'attribute' => 'education_cat_id',
+    [
+        'attribute' => 'status',
         'value' => function ($model) {
-            return $model->education_cat_short_name;
+            $val = Studyplan::getStatusValue($model->status);
+            return $model->status == Studyplan::STATUS_ACTIVE ? '<span class="label label-success">' . $val . '</span>' : '<span class="label label-danger">' . $val . '</span>';
         },
+        'contentOptions' => ['style' => "text-align:center; vertical-align: middle;"],
+        /* 'contentOptions' => function ($model) {
+             switch ($model->status) {
+                 case Studyplan::STATUS_ACTIVE:
+                     return ['class' => 'default'];
+                 case Studyplan::STATUS_INACTIVE:
+                     return ['class' => 'danger'];
+                 default:
+                     return [];
+             }
+         },*/
+        'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 2
-    ],*/
+    ],
     [
         'attribute' => 'course',
         'value' => function ($model) {
             return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 4
     ],
     [
-        'attribute' => 'studyplan_subjects',
-        'value' => function ($model) {
-            $v = [];
-            foreach (explode(',', $model->studyplan_subjects) as $studyplan_subject) {
-                if (!$studyplan_subject) {
-                    continue;
-                }
-                $v[] = $studyplan_subject;
-            }
-            return implode('<br/> ', $v);
+        'attribute' => 'subject_list',
+        'value' => function ($model) use ($invModel) {
+            return $invModel->getSubjects($model);
         },
         'width' => '400px',
         'format' => 'raw',
         'noWrap' => false,
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 4
     ],
     [
         'attribute' => 'invoices_summ',
         'value' => function ($model) {
-            return $model->month_time_fact . ' ' . $model->invoices_summ;
+            return $model->invoices_summ . ($model->mat_capital_flag == 1 ? '<span style="color:red">мк</span>' : '');
         },
         'contentOptions' => function ($model) {
             switch ($model->studyplan_invoices_status) {
@@ -269,7 +288,7 @@ $columns = [
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 5, 'class' => 'text-center warning']],
+                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 7, 'class' => 'text-center warning']],
                             ['content' => 'Счета за обучение', 'options' => ['colspan' => 4, 'class' => 'text-center success']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export

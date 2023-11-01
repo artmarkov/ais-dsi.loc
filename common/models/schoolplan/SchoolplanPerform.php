@@ -8,17 +8,20 @@ use common\models\education\LessonMark;
 use common\models\education\LessonProgress;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subjectsect\SubjectSect;
+use common\models\teachers\Teachers;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
 
 /**
- * This is the model class for table "schoolplan_protocol_items".
+ * This is the model class for table "schoolplan_perform".
  *
  * @property int $id
- * @property int|null $schoolplan_protocol_id Протокол
- * @property int $studyplan_subject_id Учебный предмет ученика
+ * @property int|null $schoolplan_id Мероприятие
+ * @property int|null $studyplan_id Учебный план
+ * @property int $studyplan_subject_id Учебный предмет плана ученика
+ * @property int $teachers_id Преподаватель
  * @property string|null $thematic_items_list Список заданий из тематич/реп плана
  * @property int $lesson_mark_id Оцкнка
  * @property string|null $winner_id Звание/Диплом
@@ -33,11 +36,11 @@ use yii\helpers\ArrayHelper;
  * @property int $version
  *
  * @property lessonMark $lessonMark
- * @property SchoolplanProtocol $schoolplanProtocol
+ * @property Schoolplan $schoolplan
  * @property StudyplanSubject $studyplanSubject
- * @property SubjectSect $subjectSect
+ * @property Teachers $teachers
  */
-class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
+class SchoolplanPerform extends \artsoft\db\ActiveRecord
 {
 
     /**
@@ -45,7 +48,7 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'schoolplan_protocol_items';
+        return 'schoolplan_perform';
     }
 
     /**
@@ -72,15 +75,16 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['schoolplan_protocol_id', 'studyplan_subject_id', 'lesson_mark_id', 'status_exe', 'status_sign', 'signer_id'], 'default', 'value' => null],
-            [['schoolplan_protocol_id', 'studyplan_subject_id', 'lesson_mark_id', 'status_exe', 'status_sign', 'signer_id', 'version'], 'integer'],
-            [['studyplan_subject_id'], 'required'],
+            [['schoolplan_id', 'studyplan_id', 'studyplan_subject_id', 'lesson_mark_id', 'status_exe', 'status_sign', 'signer_id'], 'default', 'value' => null],
+            [['schoolplan_id', 'studyplan_id', 'studyplan_subject_id', 'teachers_id', 'lesson_mark_id', 'status_exe', 'status_sign', 'signer_id', 'version'], 'integer'],
+            [['schoolplan_id', 'studyplan_id', 'studyplan_subject_id', 'teachers_id', 'signer_id', 'status_exe'], 'required'],
             [['resume'], 'string', 'max' => 1024],
             [['thematic_items_list'], 'safe'],
             [['winner_id'], 'string', 'max' => 255],
             [['lesson_mark_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonMark::className(), 'targetAttribute' => ['lesson_mark_id' => 'id']],
-            [['schoolplan_protocol_id'], 'exist', 'skipOnError' => true, 'targetClass' => SchoolplanProtocol::className(), 'targetAttribute' => ['schoolplan_protocol_id' => 'id']],
+            [['schoolplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolplan::className(), 'targetAttribute' => ['schoolplan_id' => 'id']],
             [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::className(), 'targetAttribute' => ['studyplan_subject_id' => 'id']],
+            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
         ];
     }
 
@@ -91,7 +95,8 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'schoolplan_protocol_id' => 'Протокол',
+            'schoolplan_id' => 'Мероприятие',
+            'studyplan_id' => Yii::t('art/guide', 'Studyplan List'),
             'studyplan_subject_id' => 'Учебный предмет ученика',
             'thematic_items_list' => 'Список заданий из репертуарного плана',
             'lesson_mark_id' => 'Оценка',
@@ -125,13 +130,23 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[SchoolplanProtocol]].
+     * Gets query for [[Teachers]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getSchoolplanProtocol()
+    public function getTeachers()
     {
-        return $this->hasOne(SchoolplanProtocol::className(), ['id' => 'schoolplan_protocol_id']);
+        return $this->hasOne(Teachers::className(), ['id' => 'teachers_id']);
+    }
+
+    /**
+     * Gets query for [[Schoolplan]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSchoolplan()
+    {
+        return $this->hasOne(Schoolplan::className(), ['id' => 'schoolplan_id']);
     }
 
     public function getSchoolplanProtocols()
@@ -139,6 +154,7 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
         $schoolplan_id = $this->schoolplanProtocol->schoolplan_id ?? null;
         return ArrayHelper::map(SchoolplanProtocol::find()->select(['id', 'protocol_name'])->andWhere(['=', 'schoolplan_id', $schoolplan_id])->asArray()->all(), 'id', 'protocol_name');
     }
+
     /**
      * Gets query for [[StudyplanSubject]].
      *
@@ -190,9 +206,9 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
     public static function getStatusSignList()
     {
         return [
+            0 => 'Не подписано',
             1 => 'На подписи',
             2 => 'Подписано',
-            3 => 'Не подписано',
         ];
     }
 
@@ -202,11 +218,13 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
     public static function getStatusSignOptionsList()
     {
         return [
+            [0, 'Не подписано', 'danger'],
             [1, 'На подписи', 'info'],
             [2, 'Подписано', 'success'],
-            [3, 'Не подписано', 'danger']
         ];
     }
+
+
     /**
      * @param $val
      * @return mixed
@@ -245,5 +263,38 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
         $ar = self::getWinnerList();
 
         return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    /**
+     * Нахождение всех элементов репертуарного плана для $studyplan_subject_id
+     * @param $studyplan_subject_id
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getStudyplanThematicItemsById($studyplan_subject_id)
+    {
+        return Yii::$app->db->createCommand(' select studyplan_thematic_items.id as id,
+		                   concat(studyplan_thematic_items.author , \' - \', studyplan_thematic_items.piece_name, \' (\', guide_piece_category.name, \')\') AS name
+                    FROM studyplan_thematic_view 
+                    INNER JOIN studyplan_thematic_items ON studyplan_thematic_view.studyplan_thematic_id = studyplan_thematic_items.studyplan_thematic_id 
+                    INNER JOIN guide_piece_category ON guide_piece_category.id = studyplan_thematic_items.piece_category_id
+                    where thematic_category = 2 and studyplan_subject_id = :studyplan_subject_id',
+            ['studyplan_subject_id' => $studyplan_subject_id,
+            ])->queryAll();
+    }
+
+    public static function getThematicItemsByStudyplanSubject($studyplan_subject_id)
+    {
+        return ArrayHelper::map(self::getStudyplanThematicItemsById($studyplan_subject_id), 'id', 'name');
+    }
+
+    /**
+     * доступ к протоколу для заполнения
+     * @return bool
+     */
+    public function protocolIsAvailable()
+    {
+        $userId = Yii::$app->user->identity->getId();
+        return !($userId == $this->leader_id || $userId == $this->secretary_id || in_array($userId, $this->members_list));
     }
 }

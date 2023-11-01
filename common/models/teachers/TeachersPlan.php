@@ -235,7 +235,7 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
 
             if ($this->getTeachersOverLapping()->exists() === true) {
                 $info = [];
-                foreach ($this->getTeachersPlanOverLapping()->all() as $itemModel) {
+                foreach ($this->getTeachersOverLapping()->all() as $itemModel) {
                     $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
                 }
                 $message = 'Преподаватель(концертмейстер) не может работать в одно и тоже время в разных аудиториях! ' . implode(', ', $info);

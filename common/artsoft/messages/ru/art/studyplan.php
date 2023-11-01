@@ -31,5 +31,6 @@ return [
     'Finish Avg Mark' => 'Средняя оценка ИА',
     'Lesson Tests' => 'Виды испытвний',
     'Status Reason' => 'Причина закрытия',
+    'Mat Capital' => 'Оплата мат. капиталом',
 
 ];

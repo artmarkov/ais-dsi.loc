@@ -2,6 +2,7 @@
 
 namespace common\models\routine;
 
+use artsoft\Art;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\Schedule;
 use Yii;
@@ -71,7 +72,7 @@ class Routine extends ActiveRecord implements DataItem
     {
         if (!$this->hasErrors()) {
 
-            if ($this->end_date < $this->start_date) {
+            if (Yii::$app->formatter->asTimestamp($this->end_date) < Yii::$app->formatter->asTimestamp($this->start_date)) {
                 $this->addError('start_date', Yii::t('art/routine', 'The event start date must be less than the end date.'));
             }
         }

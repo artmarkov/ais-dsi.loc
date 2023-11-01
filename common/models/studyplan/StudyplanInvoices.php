@@ -32,6 +32,7 @@ use Yii;
  * @property int|null $invoices_tabel_flag Учесть в табеле фактически оплаченные часы
  * @property int|null $invoices_date Дата платежа
  * @property int|null $invoices_reporting_month Отчетный период(месяц)
+ * @property int|null $mat_capital_flag Использован Материнский капиталл
  * @property float|null $invoices_summ Сумма платежа
  * @property int|null $payment_time Время выполнения платежя
  * @property int|null $payment_time_fact Время поступления денег на счет
@@ -88,7 +89,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
     {
         return [
             [['invoices_id', 'type_id', 'invoices_summ', 'invoices_app', 'status', 'invoices_reporting_month'], 'required'],
-            [['studyplan_id', 'invoices_id', 'direction_id', 'teachers_id', 'type_id', 'vid_id', 'month_time_fact', 'invoices_tabel_flag', 'status'], 'integer'],
+            [['studyplan_id', 'invoices_id', 'direction_id', 'teachers_id', 'type_id', 'vid_id', 'month_time_fact', 'invoices_tabel_flag', 'status', 'mat_capital_flag'], 'integer'],
             [['invoices_date', 'payment_time', 'payment_time_fact', 'invoices_reporting_month'], 'safe'],
             [['invoices_summ'], 'number'],
             ['status', 'default', 'value' => function () {
@@ -140,6 +141,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
             'invoices_app' => 'Назначение платежа',
             'invoices_rem' => 'Примечание к платежу',
             'status' => 'Статус',
+            'mat_capital_flag' => Yii::t('art/studyplan', 'Mat Capital'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -238,7 +240,8 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
-    public function getInvoicesData() {
+    public function getInvoicesData()
+    {
         $model = $this;
         $invoices = $model->invoices;
         $studyplan = $model->studyplan;
@@ -247,7 +250,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
             'rank' => 'doc',
             'invoices_date' => date('j', $model->invoices_date) . ' ' . ArtHelper::getMonthsList()[date('n', $model->invoices_date)] . ' ' . date('Y', $model->invoices_date), // дата платежа
             'invoices_summ' => $model->invoices_summ,
-            'invoices_app' => $studyplan->student->user->last_name . ' ' . $studyplan->student->user->first_name . ', л/сч. ' . sprintf('%06d', $studyplan->student_id) . ' (' . RefBook::find('education_programm_short_name')->getValue($studyplan->programm_id) . ' ' . $studyplan->course . ' класс) '. $model->invoices_app,
+            'invoices_app' => $studyplan->student->user->last_name . ' ' . $studyplan->student->user->first_name . ', л/сч. ' . sprintf('%06d', $studyplan->student_id) . ' (' . RefBook::find('education_programm_short_name')->getValue($studyplan->programm_id) . ' ' . $studyplan->course . ' класс) ' . $model->invoices_app,
             'student' => $studyplan->student->getFullName(), // Полное имя ученика
             'last_name' => $studyplan->student->user->last_name,
             'first_name' => $studyplan->student->user->first_name,
@@ -270,6 +273,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
             'teacher_info' => isset($model->teachers_id) ? RefBook::find('teachers_fio')->getValue($model->teachers_id) : '',
         ];
     }
+
     /**
      * формирование квитанции
      *

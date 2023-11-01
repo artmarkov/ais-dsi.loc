@@ -59,7 +59,7 @@ class DefaultController extends MainController
             if (!empty($parents)) {
                 $subject_type_id = $parents[0];
                 $sell = $subject_type_id == 1000 ? (Yii::$app->user->getSetting('_timesheet_activity_list_0') ?? []) : (Yii::$app->user->getSetting('_timesheet_activity_list_1') ?? []);
-                $data =  (new Query())->from('teachers_activity_view')->select('teachers_activity_id as id, teachers_activity_memo as name')->andFilterWhere(['=', 'user_common_status', UserCommon::STATUS_ACTIVE])->all();
+                $data =  (new Query())->from('teachers_activity_view')->select('teachers_activity_id as id, teachers_activity_memo as name')->andFilterWhere(['=', 'user_common_status', UserCommon::STATUS_ACTIVE])->orderBy('fullname')->all();
                 return json_encode(['output' => $data, 'selected' => $sell]);
             }
         }

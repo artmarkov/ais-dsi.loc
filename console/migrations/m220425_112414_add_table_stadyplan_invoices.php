@@ -20,6 +20,7 @@ class m220425_112414_add_table_stadyplan_invoices extends \artsoft\db\BaseMigrat
             'type_id' => $this->integer()->comment('Тип платежа(бюджет, внебюджет)'),
             'vid_id' => $this->integer()->comment('Вид платежа(индивидуальные, групповые)'),
             'month_time_fact' => $this->integer()->comment('Фактически оплаченные часы'),
+            'mat_capital_flag' => $this->integer()->comment('Использован материнский капиталл'),
             'invoices_tabel_flag' => $this->integer()->comment('Учесть в табеле фактически оплаченные часы'),
             'invoices_date' => $this->integer()->comment('Дата платежа'),
             'invoices_summ' => $this->float()->comment('Сумма платежа'),

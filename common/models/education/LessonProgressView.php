@@ -280,7 +280,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->all();
 
         $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress, 'studyplan_subject_id');
-
+        $dates_load_total = 0;
         foreach ($lessonDates as $id => $lessonDate) {
             $dates_load = 0;
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
@@ -297,6 +297,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 foreach ($datesArray as $index => $time) {
                     $dates_load += Schedule::astr2academ($time);
                 }
+                $dates_load_total += $dates_load;
             }
             $dates[] = ['date' => $date, 'dates_load' => $dates_load];
         }
@@ -324,7 +325,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             }
         }
 
-        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
+        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes, 'dates_load_total' => $dates_load_total];
     }
 
     public static function getIndivListForTeachersQuery($teachers_id, $plan_year)

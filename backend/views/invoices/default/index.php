@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use common\models\service\UsersCardLog;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -13,9 +14,11 @@ use common\models\studyplan\Studyplan;
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\studyplan\search\StudyplanInvoicesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $model_date */
 
 $this->title = Yii::t('art/studyplan', 'Studyplan Invoices');
 $this->params['breadcrumbs'][] = $this->title;
+$invModel = \artsoft\helpers\InvoicesHelper::getData($dataProvider->models, $model_date);
 
 $columns = [
     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
@@ -33,29 +36,33 @@ $columns = [
     ],
     [
         'attribute' => 'student_fio',
-        'width' => '310px',
         'value' => function ($model, $key, $index, $widget) {
+            $str = ''; $arr = [];
+            $str .= \artsoft\Art::isBackend() ? Html::a($model->student_fio,
+                    ['/studyplan/default/view', 'id' => $model->studyplan_id],
+                    [
+                        'target' => '_blank',
+                        'data-pjax' => '0',
+                        // 'class' => 'btn btn-link',
+                        'title' => 'Открыть в новом окне'
+                    ]) : $model->student_fio;
 
-            return $model->student_fio;
+            if($model->limited_status_list) {
+                foreach (explode(',', $model->limited_status_list) as $limited_status) {
+                    $arr[] = \common\models\students\Student::getLimitedStatusValue($limited_status);
+                }
+                $str .= ' <span class="label label-warning">' . implode(', ', $arr) . '</span>';
+            }
+            return $str;
         },
+        'format' => 'raw',
         'group' => true,  // enable grouping
     ],
     [
-        'attribute' => 'status',
+        'attribute' => 'education_cat_id',
         'value' => function ($model) {
-            return Studyplan::getStatusValue($model->status);
+            return $model->education_cat_short_name;
         },
-        'contentOptions' => function ($model) {
-            switch ($model->status) {
-                case Studyplan::STATUS_ACTIVE:
-                    return ['class' => 'default'];
-                case Studyplan::STATUS_INACTIVE:
-                    return ['class' => 'danger'];
-                default:
-                    return [];
-            }
-        },
-        'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
@@ -67,44 +74,51 @@ $columns = [
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
-    /* [
-         'attribute' => 'education_cat_id',
-         'value' => function ($model) {
-             return $model->education_cat_short_name;
-         },
-         'group' => true,  // enable grouping
-         'subGroupOf' => 2
-     ],*/
+    [
+        'attribute' => 'status',
+        'value' => function ($model) {
+            $val = Studyplan::getStatusValue($model->status);
+            return $model->status == Studyplan::STATUS_ACTIVE ? '<span class="label label-success">' . $val . '</span>' : '<span class="label label-danger">' . $val . '</span>';
+            },
+        'contentOptions' => ['style' => "text-align:center; vertical-align: middle;"],
+        /* 'contentOptions' => function ($model) {
+             switch ($model->status) {
+                 case Studyplan::STATUS_ACTIVE:
+                     return ['class' => 'default'];
+                 case Studyplan::STATUS_INACTIVE:
+                     return ['class' => 'danger'];
+                 default:
+                     return [];
+             }
+         },*/
+        'format' => 'raw',
+        'group' => true,  // enable grouping
+        'subGroupOf' => 3
+    ],
     [
         'attribute' => 'course',
         'value' => function ($model) {
             return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 5
     ],
     [
-        'attribute' => 'studyplan_subjects',
-        'value' => function ($model) {
-            $v = [];
-            foreach (explode(',', $model->studyplan_subjects) as $studyplan_subject) {
-                if (!$studyplan_subject) {
-                    continue;
-                }
-                $v[] = $studyplan_subject;
-            }
-            return implode('<br/> ', $v);
+        'attribute' => 'subject_list',
+        'value' => function ($model) use ($invModel) {
+            return $invModel->getSubjects($model);
         },
         'width' => '400px',
         'format' => 'raw',
         'noWrap' => false,
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 5,
+        'footer' => 'ИТОГО: (руб)'
     ],
     [
         'attribute' => 'invoices_summ',
         'value' => function ($model) {
-            return $model->month_time_fact . ' ' . $model->invoices_summ;
+            return $model->invoices_summ . ($model->mat_capital_flag == 1 ? '<span style="color:red">мк</span>' : '');
         },
         'contentOptions' => function ($model) {
             switch ($model->studyplan_invoices_status) {
@@ -121,6 +135,7 @@ $columns = [
             }
         },
         'format' => 'raw',
+        'footer' => \common\models\studyplan\StudyplanInvoicesView::getTotalSumm($dataProvider->models),
     ],
     [
         'attribute' => 'invoices_reporting_month',
@@ -213,7 +228,7 @@ $columns = [
 ?>
 <div class="studyplan-invoices-index">
     <div class="panel">
-        <?= $this->render('_search', compact('model_date')) ?>
+        <?= $this->render('_search', compact('model_date', 'plan_year')) ?>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-6">
@@ -242,6 +257,8 @@ $columns = [
                 'pjax' => true,
                 'dataProvider' => $dataProvider,
                 // 'filterModel' => $searchModel,
+                'showPageSummary' => false,
+                'showFooter' => true,
                 'bulkActionOptions' => \artsoft\Art::isBackend() ? [
                     'gridId' => 'studyplan-invoices-grid',
                     'actions' => [
@@ -254,11 +271,17 @@ $columns = [
 //                        Url::to(['bulk-load']) => 'Выгрузить квитанции в Word',
                     ]//Configure here you bulk actions
                 ] : false,
+                /* 'rowOptions' => function($model) {
+                     if($model->status == Studyplan::STATUS_INACTIVE) {
+                         return ['class' => 'danger'];
+                     }
+                     return [];
+                 },*/
                 'columns' => $columns,
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 7, 'class' => 'text-center warning']],
+                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => \artsoft\Art::isBackend() ? 8 : 7, 'class' => 'text-center warning']],
                             ['content' => 'Счета за обучение', 'options' => ['colspan' => 4, 'class' => 'text-center success']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export

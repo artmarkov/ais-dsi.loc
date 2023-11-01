@@ -39,7 +39,7 @@ class m220208_113943_add_teachers_activity_view extends \artsoft\db\BaseMigratio
         ')->execute();
 
         $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
-            ['teachers_activity_memo', 'teachers_activity_view', 'teachers_activity_id', 'teachers_activity_memo', 'teachers_id', 'user_common_status', null, 'Список активностей преподавателей'],
+            ['teachers_activity_memo', 'teachers_activity_view', 'teachers_activity_id', 'teachers_activity_memo', 'fullname', 'user_common_status', null, 'Список активностей преподавателей'],
         ])->execute();
     }
 

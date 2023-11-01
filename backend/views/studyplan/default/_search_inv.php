@@ -25,7 +25,7 @@ $form = ActiveForm::begin([
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <?php if (\artsoft\Art::isFrontend()): ?>
+                        <?php if (\artsoft\Art::isFrontend() && !User::hasRole(['teacher','department'])): ?>
                             <?= $form->field($model_date, 'studyplan_id')->dropDownList(StudyplanView::getStudyplanList($id),
                                 [
                                     'disabled' => false,

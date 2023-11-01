@@ -33,46 +33,46 @@ class DefaultController extends BaseController
     {
         $session = Yii::$app->session;
 
-        $model_date = new DynamicModel(['date_in', 'programm_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'subject_form_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id', 'status']);
-        $model_date->addRule(['date_in', 'programm_id'], 'required')
-            ->addRule(['date_in'], 'safe')
-            ->addRule(['programm_id', 'course', 'subject_id', 'subject_type_id', 'subject_type_sect_id', 'subject_vid_id', 'subject_form_id', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id', 'status'], 'integer');
+        $model_date = new DynamicModel(['date_in', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_form_id', 'studyplan_mat_capital_flag', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id', 'status', 'mat_capital_flag', 'limited_status_id']);
+        $model_date->addRule(['date_in'], 'required')
+            ->addRule(['date_in', 'student_id', 'programm_id'], 'safe')
+            ->addRule(['education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_form_id', 'studyplan_mat_capital_flag', 'studyplan_invoices_status', 'direction_id', 'teachers_id', 'status', 'mat_capital_flag', 'limited_status_id'], 'integer');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
 
             $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
-//            $model_date->programm_id = $session->get('_invoices_programm_id') ?? EducationProgramm::getProgrammScalar();
-            $model_date->programm_id = Yii::$app->user->getSetting('_invoices_programm_id') ?? EducationProgramm::getProgrammScalar();
-//            $model_date->education_cat_id = $session->get('_invoices_education_cat_id') ?? '';
+            $model_date->programm_id = $session->get('_invoices_programm_id') ?? '' /*EducationProgramm::getProgrammScalar()*/;
+            $model_date->education_cat_id = $session->get('_invoices_education_cat_id') ?? '';
             $model_date->course = $session->get('_invoices_course') ?? '';
-            $model_date->status = $session->get('_invoices_status') ?? 1;
+            $model_date->status = $session->get('_invoices_status') ?? '';
             $model_date->subject_id = $session->get('_invoices_subject_id') ?? '';
             $model_date->subject_type_id = $session->get('_invoices_subject_type_id') ?? '';
-            $model_date->subject_type_sect_id = $session->get('_invoices_subject_type_sect_id') ?? '';
-            $model_date->subject_vid_id = $session->get('_invoices_subject_vid_id') ?? '';
+            $model_date->limited_status_id = $session->get('_invoices_limited_status_id') ?? '';
             $model_date->subject_form_id = $session->get('_invoices_subject_form_id') ?? '';
+            $model_date->studyplan_mat_capital_flag = $session->get('_invoices_studyplan_mat_capital_flag') ?? '';
             $model_date->studyplan_invoices_status = $session->get('_invoices_studyplan_invoices_status') ?? '';
             $model_date->student_id = $session->get('_invoices_student_id') ?? '';
             $model_date->direction_id = $session->get('_invoices_direction_id') ?? '';
             $model_date->teachers_id = $session->get('_invoices_teachers_id') ?? '';
+            $model_date->mat_capital_flag = $session->get('_invoices_mat_capital_flag') ?? '';
         }
 
         $session->set('_invoices_date_in', $model_date->date_in);
-        Yii::$app->user->setSetting('_invoices_programm_id', $model_date->programm_id);
-//        $session->set('_invoices_programm_id', $model_date->programm_id);
-//        $session->set('_invoices_education_cat_id', $model_date->education_cat_id);
+        $session->set('_invoices_programm_id', $model_date->programm_id);
+        $session->set('_invoices_education_cat_id', $model_date->education_cat_id);
         $session->set('_invoices_course', $model_date->course);
         $session->set('_invoices_status', $model_date->status);
         $session->set('_invoices_subject_id', $model_date->subject_id);
         $session->set('_invoices_subject_type_id', $model_date->subject_type_id);
-        $session->set('_invoices_subject_type_sect_id', $model_date->subject_type_sect_id);
-        $session->set('_invoices_subject_vid_id', $model_date->subject_vid_id);
+        $session->set('_invoices_limited_status_id', $model_date->limited_status_id);
         $session->set('_invoices_subject_form_id', $model_date->subject_form_id);
+        $session->set('_invoices_studyplan_mat_capital_flag', $model_date->studyplan_mat_capital_flag);
         $session->set('_invoices_studyplan_invoices_status', $model_date->studyplan_invoices_status);
         $session->set('_invoices_student_id', $model_date->student_id);
         $session->set('_invoices_direction_id', $model_date->direction_id);
         $session->set('_invoices_teachers_id', $model_date->teachers_id);
+        $session->set('_invoices_mat_capital_flag', $model_date->mat_capital_flag);
 
         $searchName = StringHelper::basename($this->modelSearchClass::className());
         $searchModel = new $this->modelSearchClass;
@@ -87,23 +87,24 @@ class DefaultController extends BaseController
                 'plan_year' => $plan_year,
                 'date_in' => $model_date->date_in,
                 'programm_id' => $model_date->programm_id,
-//                'education_cat_id' => $model_date->education_cat_id,
+                'education_cat_id' => $model_date->education_cat_id,
                 'course' => $model_date->course,
                 'subject_id' => $model_date->subject_id,
                 'subject_type_id' => $model_date->subject_type_id,
-                'subject_type_sect_id' => $model_date->subject_type_sect_id,
-                'subject_vid_id' => $model_date->subject_vid_id,
+                'limited_status_id' => $model_date->limited_status_id,
                 'subject_form_id' => $model_date->subject_form_id,
+                'studyplan_mat_capital_flag' => $model_date->studyplan_mat_capital_flag,
                 'studyplan_invoices_status' => $model_date->studyplan_invoices_status,
                 'student_id' => $model_date->student_id,
                 'direction_id' => $model_date->direction_id,
                 'teachers_id' => $model_date->teachers_id,
                 'status' => $model_date->status,
+                'mat_capital_flag' => $model_date->mat_capital_flag,
             ]
         ]);
+//print_r($model_date);die();
         $dataProvider = $searchModel->search($params);
-
-        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel', 'model_date'));
+        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel', 'model_date', 'plan_year'));
     }
 
     public function actionCreate()

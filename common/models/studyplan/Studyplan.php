@@ -19,6 +19,7 @@ use yii\behaviors\TimestampBehavior;
 use Yii;
 
 use yii\db\Exception;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use function morphos\Russian\inflectName;
@@ -49,6 +50,7 @@ use function morphos\Russian\inflectName;
  * @property int $status
  * @property int $version
  * @property int $status_reason
+ * @property int $mat_capital_flag Возможность использования мат. капиталла
  *
  * @property EducationProgramm $programm
  * @property Student $student
@@ -94,7 +96,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 //            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) {
 //                return !$model->isNewRecord;
 //            }],
-            [['student_id', 'programm_id', 'course', 'plan_year', 'subject_form_id', 'status', 'version', 'status_reason'], 'integer'],
+            [['student_id', 'programm_id', 'course', 'plan_year', 'subject_form_id', 'status', 'version', 'status_reason', 'mat_capital_flag'], 'integer'],
             [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
             ['doc_date', 'default', 'value' => date('d.m.Y')],
@@ -138,6 +140,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'status' => Yii::t('art', 'Status'),
             'version' => Yii::t('art', 'Version'),
             'status_reason' => Yii::t('art/studyplan', 'Status Reason'),
+            'mat_capital_flag' => Yii::t('art/studyplan', 'Mat Capital'),
         ];
     }
 
@@ -453,20 +456,19 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $data;
     }
 
-    /**
-     * backend/views/studyplan/default/load-items.php
-     * @param $studyplan_id
-     * @return array
-     * @throws \yii\db\Exception
-     */
-//    public static function getSubjectListForStudyplan($studyplan_id)
-//    {
-//        return ArrayHelper::map(Yii::$app->db->createCommand('SELECT distinct studyplan_subject_id, memo_1
-//                                                    FROM studyplan_subject_view
-//                                                    WHERE studyplan_id=:studyplan_id ORDER BY memo_1',
-//            ['studyplan_id' => $studyplan_id,
-//            ])->queryAll(), 'studyplan_subject_id', 'memo_1');
-//    }
+    public static function getStudyplanSubjectListById($studyplan_id)
+    {
+        return Yii::$app->db->createCommand('SELECT distinct studyplan_subject_id as id, memo_1 as name
+                                                    FROM studyplan_subject_view
+                                                    WHERE studyplan_id=:studyplan_id ORDER BY memo_1',
+            ['studyplan_id' => $studyplan_id,
+            ])->queryAll();
+    }
+
+    public static function getStudyplanSubjectListByStudyplan($studyplan_id)
+    {
+        return ArrayHelper::map(self::getStudyplanSubjectListById($studyplan_id), 'id', 'name');
+    }
 
     /**
      * backend/views/studyplan/default/load-items.php
@@ -597,6 +599,15 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
     }
 
+    public static function getStudentListForPlanYear($plan_year)
+    {
+        return \yii\helpers\ArrayHelper::map((new Query())->select('student_id as id, student_fio as name')
+            ->distinct()
+            ->from('studyplan_view')
+            ->where(['=', 'plan_year', $plan_year])
+            ->orderBy('student_fio')
+            ->all(), 'id', 'name');
+    }
     /**
      * @param bool $insert
      * @return bool

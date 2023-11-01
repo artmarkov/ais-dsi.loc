@@ -2,6 +2,8 @@
 
 namespace common\models\schedule;
 
+use artsoft\helpers\Schedule;
+use artsoft\widgets\Tooltip;
 use common\models\guidejob\Direction;
 use Yii;
 
@@ -28,7 +30,6 @@ use Yii;
  * @property string|null $description
  * @property string|null $sect_name
  */
-
 class ConsultScheduleView extends ConsultSchedule
 {
     /**
@@ -73,6 +74,105 @@ class ConsultScheduleView extends ConsultSchedule
     public function getDirection()
     {
         return $this->hasOne(Direction::class, ['id' => 'direction_id']);
+    }
+
+
+    /**
+     * В одной аудитории накладка по времени консультаций!
+     * @param $model
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeachersConsultOverLapping()
+    {
+        if ($this->consult_schedule_id == NULL) {
+            return null;
+        }
+        $thereIsAnOverlapping = self::find()->where(
+            ['AND',
+                ['!=', 'consult_schedule_id', $this->consult_schedule_id],
+                ['auditory_id' => $this->auditory_id],
+                ['plan_year' => $this->plan_year],
+                ['OR',
+                    ['AND',
+                        ['<', 'datetime_in', \Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>=', 'datetime_in', \Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+
+                    ['AND',
+                        ['<=', 'datetime_out', \Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>', 'datetime_out', \Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                ],
+            ])->exists();
+
+        return $thereIsAnOverlapping;
+    }
+
+    /**
+     * Преподаватель не может работать в одно и тоже время в разных аудиториях (консультации)!
+     * @param $this
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeachersOverLapping()
+    {
+        if ($this->consult_schedule_id == NULL) {
+            return null;
+        }
+        $thereIsAnOverlapping = self::find()->where(
+            ['AND',
+                ['!=', 'consult_schedule_id', $this->consult_schedule_id],
+                ['direction_id' => $this->direction_id],
+                ['teachers_id' => $this->teachers_id],
+                ['!=', 'auditory_id', $this->auditory_id],
+                ['plan_year' => $this->plan_year],
+                ['OR',
+                    ['AND',
+                        ['<', 'datetime_in', \Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>=', 'datetime_in', \Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+
+                    ['AND',
+                        ['<=', 'datetime_out', \Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>', 'datetime_out', \Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                ],
+            ])->exists();
+
+        return $thereIsAnOverlapping;
+    }
+
+    public function getConsultOverLappingNotice()
+    {
+        $tooltip = [];
+        if ($this->getTeachersConsultOverLapping()) {
+            $message = 'В одной аудитории накладка по времени консультации';
+            $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
+        }
+
+        if ($this->getTeachersOverLapping()) {
+            $message = 'Преподаватель не может в одно и то же время проводить консультации в разных аудиториях.';
+            $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
+        }
+        return implode('', $tooltip);
+    }
+
+    public static function getTotal($provider, $fieldName)
+    {
+        if ($fieldName == 'load_time_consult' || $fieldName == 'year_time_consult') {
+            $total = [];
+            foreach ($provider as $item) {
+                if (!isset($total[$item['teachers_load_id']])) {
+                    $total[$item['teachers_load_id']] = $item[$fieldName];
+                }
+            }
+            return array_sum($total);
+        } elseif ($fieldName == 'datetime_in') {
+            $total = 0;
+            foreach ($provider as $item) {
+                $total += Schedule::astr2academ(\Yii::$app->formatter->asTimestamp($item['datetime_out']) - \Yii::$app->formatter->asTimestamp($item['datetime_in']));
+            }
+            return $total;
+        }
     }
 
 }

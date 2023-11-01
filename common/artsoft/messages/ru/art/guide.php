@@ -199,6 +199,7 @@ return [
     'Members Item' => 'Член комиссии',
     'Protocol Event' => 'Протокол мероприятия',
     'Schoolplan Protocols' => 'Протоколы мероприятия',
+    'Schoolplan Perform' => 'Выполнение плана и участие в мероприятии',
     'Prep On Test List' => 'Испытания с подготовкой',
     'Prep Off Test List' => 'Испытания без подготовки',
     'Applicants' => 'Поступающие',

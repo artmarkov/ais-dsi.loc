@@ -468,8 +468,7 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
-    public
-    function actionSubject()
+    public function actionSubject()
     {
         $out = [];
         if (isset($_POST['depdrop_parents'])) {

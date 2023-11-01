@@ -12,11 +12,14 @@ use common\models\guidesys\GuidePlanTree;
 use common\models\history\EfficiencyHistory;
 use common\models\history\SchoolplanProtocolHistory;
 use common\models\schoolplan\Schoolplan;
+use common\models\schoolplan\SchoolplanPerform;
 use common\models\schoolplan\SchoolplanProtocol;
 use common\models\schoolplan\SchoolplanProtocolItems;
 use common\models\schoolplan\SchoolplanView;
+use common\models\schoolplan\search\SchoolplanPerformSearch;
 use common\models\schoolplan\search\SchoolplanProtocolSearch;
 use common\models\schoolplan\search\SchoolplanViewSearch;
+use common\models\studyplan\Studyplan;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadView;
@@ -119,7 +122,7 @@ class DefaultController extends MainController
             $model->doc_status = Schoolplan::DOC_STATUS_DRAFT;
             $model->save(false);
             if ($model->sendAdminMessage($_POST['Schoolplan'])) {
-           // print_r($_POST['Schoolplan']);
+                // print_r($_POST['Schoolplan']);
                 Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
                 $this->getSubmitAction($model);
             }
@@ -230,6 +233,80 @@ class DefaultController extends MainController
         }
     }
 
+    public function actionPerform($id, $objectId = null, $mode = null, $readonly = false)
+    {
+        $model = $this->findModel($id);
+        $timestamp = Yii::$app->formatter->asTimestamp($model->datetime_in);
+
+        $plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, $timestamp);
+
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'School Plans'), 'url' => ['schoolplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['schoolplan/default/view', 'id' => $id]];
+
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+            $this->view->params['breadcrumbs'][] = Yii::t('art', 'Create');
+            $modelPerform = new SchoolplanPerform();
+            $modelPerform->schoolplan_id = $id;
+            $modelPerform->status_sign = 0;
+
+            if ($modelPerform->load(Yii::$app->request->post()) && $modelPerform->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($modelPerform);
+            }
+
+            return $this->renderIsAjax('@backend/views/schoolplan/perform/_form.php', [
+                'model' => $modelPerform,
+                'plan_year' => $plan_year,
+                'readonly' => false
+            ]);
+        } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocols'), 'url' => ['schoolplan/default/protocol-event', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['schoolplan/default/protocol-event', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
+            $model = SchoolplanPerform::findOne($objectId);
+            $data = new SchoolplanPerformHistory($objectId);
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $modelPerform = SchoolplanPerform::findOne($objectId);
+            $modelPerform->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $modelPerform));
+
+        } elseif ($objectId) {
+            if ('view' == $mode) {
+                $readonly = true;
+            }
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Perform'), 'url' => ['schoolplan/default/perform', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $modelPerform = SchoolplanPerform::findOne($objectId);
+
+            if ($modelPerform->load(Yii::$app->request->post()) && $modelPerform->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction();
+            }
+
+            return $this->renderIsAjax('@backend/views/schoolplan/perform/_form.php', [
+                'model' => $modelPerform,
+                'plan_year' => $plan_year,
+                'readonly' => $readonly
+            ]);
+
+        } else {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Perform')];
+            $searchModel = new SchoolplanPerformSearch();
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['class'] = \yii\helpers\StringHelper::basename(get_class($model));
+            $params[$searchName]['schoolplan_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('perform', compact('dataProvider', 'searchModel', 'id'));
+        }
+    }
+
     public function actionProtocolEvent($id, $objectId = null, $mode = null, $readonly = false)
     {
         $model = $this->findModel($id);
@@ -330,6 +407,38 @@ class DefaultController extends MainController
         }
     }
 
+    public function actionStudyplanSubject()
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $cat_id = $parents[0];
+                $out = Studyplan::getStudyplanSubjectListById($cat_id);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
+
+    public function actionStudyplanThematic()
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $cat_id = $parents[0];
+                $out = SchoolplanPerform::getStudyplanThematicItemsById($cat_id);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
+
     /**
      * @param $id
      * @return array
@@ -339,18 +448,20 @@ class DefaultController extends MainController
     {
         $model = $this->findModel($id);
         return [
-            ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/update', 'id' => $id]],
-            ['label' => 'Протоколы мероприятия', 'url' => ['/schoolplan/default/protocol-event', 'id' => $id], 'visible' => !($model->category->commission_sell == 1 && $model->category->commission_sell == 2)],
+            ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/view', 'id' => $id]],
+            ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id]],
+//            ['label' => 'Протоколы мероприятия', 'url' => ['/schoolplan/default/protocol-event', 'id' => $id], 'visible' => !($model->category->commission_sell == 1 && $model->category->commission_sell == 2)],
 //            ['label' => 'Протоколы аттестационной комиссии', 'url' => ['/schoolplan/default/protocol-attestations', 'id' => $id], 'visible' => $model->category->commission_sell == 1],
 //            ['label' => 'Протоколы приемной комиссии', 'url' => ['/schoolplan/default/protocol-reception', 'id' => $id], 'visible' => $model->category->commission_sell == 2],
-            ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id], 'visible' => $model->category->efficiency_flag],
+            ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id]/*, 'visible' => $model->category->efficiency_flag*/],
         ];
     }
 
     /**
      * @return mixed
      */
-    public function actionSelect()
+    public
+    function actionSelect()
     {
         $id = \Yii::$app->request->post('id');
         $model = GuidePlanTree::find()->where(['id' => $id])->asArray()->one();

@@ -161,28 +161,10 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
         $funcSql = <<< SQL
                     select studyplan_subject_id, memo_4
                     from studyplan_subject_view where subject_id in ({$subject_list})
-                        and plan_year = {$study_year}
+                        and plan_year = {$study_year} ORDER BY memo_4
 SQL;
         return ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'studyplan_subject_id', 'memo_4');
     }
 
-    /**
-     * Нахождение всех элементов репертуарного плана для $studyplan_subject_id
-     * @param $studyplan_subject_id
-     * @return array
-     * @throws \yii\db\Exception
-     */
-    public static function getStudyplanThematicItemsList($studyplan_subject_id)
-    {
-        $funcSql = <<< SQL
-                    select studyplan_thematic_items.id,
-		                   concat(studyplan_thematic_items.author , ' - ', studyplan_thematic_items.piece_name, ' (', guide_piece_category.name, ')') AS piece
-                    FROM studyplan_thematic_view 
-                    INNER JOIN studyplan_thematic_items ON studyplan_thematic_view.studyplan_thematic_id = studyplan_thematic_items.studyplan_thematic_id 
-                    INNER JOIN guide_piece_category ON guide_piece_category.id = studyplan_thematic_items.piece_category_id
-                    where thematic_category = 2 and studyplan_subject_id = {$studyplan_subject_id}
-                        
-SQL;
-        return ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'id', 'piece');
-    }
+
 }

@@ -88,6 +88,8 @@ use kartik\date\DatePicker;
 
                     <?= $form->field($model, 'invoices_summ')->textInput() ?>
 
+                    <?= $form->field($model, 'mat_capital_flag')->checkbox() ?>
+
                     <?= $form->field($model, 'invoices_reporting_month')->widget(DatePicker::class, [
                             'type' => DatePicker::TYPE_INPUT,
                             'options' => ['placeholder' => ''],

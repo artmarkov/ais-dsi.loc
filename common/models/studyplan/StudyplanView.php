@@ -70,5 +70,14 @@ class StudyplanView extends Studyplan
         return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
     }
 
+    public static function getStudyplanListByPlanYear($plan_year)
+    {
+            $query = self::find()->select('id, student_fio as name')
+                ->where(['=', 'plan_year', $plan_year])
+                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->asArray()->all();
+
+        return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
+    }
 
 }

@@ -3,6 +3,7 @@
 namespace backend\controllers\education;
 
 use common\models\education\EducationCat;
+use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\EducationProgrammLevelSubject;
 use backend\models\Model;
@@ -227,6 +228,22 @@ class DefaultController extends MainController
             if (!empty($parents)) {
                 $cat_id = $parents[0];
                 $out = $model->getSubjectById($cat_id);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
+
+    public function actionProgramm()
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $cat_id = $parents[0];
+                $out = EducationProgramm::getProgrammListById($cat_id);
 
                 return json_encode(['output' => $out, 'selected' => '']);
             }

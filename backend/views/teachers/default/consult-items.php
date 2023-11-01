@@ -35,6 +35,7 @@ $columns = [
         'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
+        'footer' => 'ИТОГО: ак.час',
     ],
     [
         'attribute' => 'year_time_consult',
@@ -43,7 +44,7 @@ $columns = [
         },
         'group' => true,
         'subGroupOf' => 2,
-        'pageSummaryFunc' => GridView::F_SUM
+        'footer' => \common\models\schedule\ConsultScheduleView::getTotal($dataProvider->models, 'year_time_consult'),
     ],
     [
         'attribute' => 'direction_id',
@@ -59,7 +60,7 @@ $columns = [
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 2,
     ],
     [
         'attribute' => 'load_time_consult',
@@ -67,6 +68,7 @@ $columns = [
             return $model->load_time_consult . ' ' . $model->getItemLoadConsultNotice();
         },
         'format' => 'raw',
+        'footer' => \common\models\schedule\ConsultScheduleView::getTotal($dataProvider->models, 'load_time_consult'),
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
@@ -77,6 +79,7 @@ $columns = [
             return $model->datetime_in;
         },
         'format' => 'raw',
+        'footer' => \common\models\schedule\ConsultScheduleView::getTotal($dataProvider->models, 'datetime_in'),
     ],
     [
         'attribute' => 'datetime_out',
@@ -88,10 +91,11 @@ $columns = [
     ],
     [
         'attribute' => 'auditory_id',
-        'width' => '300px',
+        'width' => '350px',
         'value' => function ($model) {
-            return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
+            return RefBook::find('auditory_memo_1')->getValue($model->auditory_id) . ' ' . $model->getConsultOverLappingNotice();
         },
+        'format' => 'raw',
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -229,6 +233,8 @@ $columns = [
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
 //                'filterModel' => $searchModel,
+                'showPageSummary' => false,
+                'showFooter' => true,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [
