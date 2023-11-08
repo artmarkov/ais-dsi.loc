@@ -144,10 +144,10 @@ $this->registerJs($js);
                                 <?php endif; ?>
                                 <th class="text-center">Задание</th>
                                 <th class="text-center">
-                                    <!--                                                --><?php //if (!$readonly): ?>
-                                    <button type="button" class="add-item btn btn-success btn-xs"><span
-                                                class="fa fa-plus"></span></button>
-                                    <!--                                                --><?php //endif; ?>
+                                    <?php if (!$readonly): ?>
+                                        <button type="button" class="add-item btn btn-success btn-xs"><span
+                                                    class="fa fa-plus"></span></button>
+                                    <?php endif; ?>
                                 </th>
                             </tr>
                             </thead>
@@ -225,11 +225,11 @@ $this->registerJs($js);
                                     </td>
 
                                     <td class="vcenter text-center">
-                                        <!--                                                --><?php //if (!$readonly): ?>
-                                        <button type="button"
-                                                class="remove-item btn btn-danger btn-xs"><span
-                                                    class="fa fa-minus"></span></button>
-                                        <!--                                                --><?php //endif; ?>
+                                        <?php if (!$readonly): ?>
+                                            <button type="button"
+                                                    class="remove-item btn btn-danger btn-xs"><span
+                                                        class="fa fa-minus"></span></button>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -245,7 +245,7 @@ $this->registerJs($js);
                     <?php if (!$model->isNewRecord): ?>
                         <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
                     <?php else: ?>
-                        <?= \artsoft\helpers\ButtonHelper::exitButton();?>
+                        <?= \artsoft\helpers\ButtonHelper::exitButton(); ?>
                         <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-md btn-info', 'name' => 'submitAction', 'value' => 'next']); ?>
                     <?php endif; ?>
                 </div>

@@ -14,6 +14,10 @@ class BirthdayTask extends \yii\base\BaseObject implements \yii\queue\JobInterfa
     public function execute($queue)
     {
         $models = UserCommon::getUsersBirthdayByCategory(['employees', 'teachers']);
+        $mails_array = explode(',', Yii::$app->settings->get('mailing.mailing_birthday', ''));
+        $mails_array = array_map('trim', $mails_array);
+        array_unshift($mails_array, Yii::$app->params['adminEmail']);
+
         if ($models) {
             $textBody = 'Дни рождения у сотрудников на сегодня ' . date('d.m.Y', time()) . PHP_EOL;
             $htmlBody = '<p><b>Дни рождения у сотрудников на сегодня</b> ' . date('d.m.Y', time()) . '</p>';
@@ -29,7 +33,7 @@ class BirthdayTask extends \yii\base\BaseObject implements \yii\queue\JobInterfa
 
             return Yii::$app->mailqueue->compose()
                 ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
-                ->setTo(Yii::$app->params['adminEmail'])
+                ->setTo($mails_array)
                 ->setSubject('Сообщение с сайта ' . Yii::$app->name)
                 ->setTextBody($textBody)
                 ->setHtmlBody($htmlBody)

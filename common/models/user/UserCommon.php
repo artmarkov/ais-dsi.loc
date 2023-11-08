@@ -340,7 +340,7 @@ class UserCommon extends ActiveRecord
             END as category_name',
                 'birth_date'
             ])
-            ->where(['in', 'user_category', $category])
+            ->where(['user_category' => $category])
             ->andWhere(['=', 'status', self::STATUS_ACTIVE])
             ->andWhere(new \yii\db\Expression("date_part('day', to_timestamp(birth_date + 10800)) = date_part('day', to_timestamp(:timestamp))"), [':timestamp' => $timestamp])
             ->andWhere(new \yii\db\Expression("date_part('month', to_timestamp(birth_date + 10800)) = date_part('month', to_timestamp(:timestamp))"), [':timestamp' => $timestamp])

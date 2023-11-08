@@ -3,7 +3,7 @@
 namespace artsoft\settings\controllers;
 
 /**
- * ReadingController implements Module Settings page.
+ * ModuleController implements Module Settings page.
  *
  * @author Taras Makitra <makitrataras@gmail.com>
  */
