@@ -48,10 +48,22 @@ $form = ActiveForm::begin([
             ])->label('Преподаватели по занимаемым должностям');
             ?>
 
-            <?= $form->field($model_date, "date_in")->widget(DatePicker::class)->label('Дата начала периода'); ?>
-
-            <?= $form->field($model_date, "date_out")->widget(DatePicker::class)->label('Дата окончания периода'); ?>
-
+            <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [
+                    'type' => \kartik\date\DatePicker::TYPE_INPUT,
+                    'options' => ['placeholder' => ''],
+                    'convertFormat' => true,
+                    'pluginOptions' => [
+                        'format' => 'MM.yyyy',
+                        'autoclose' => true,
+                        'minViewMode' => 1,
+                        'todayBtn' => 'linked',
+                        'todayHighlight' => true,
+                    ],
+                ]
+            )->label('Месяц и год');
+            ?>
+            <?= $form->field($model_date, "is_avans")->checkbox()->label('Первая половина заработной платы.');
+            ?>
             <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
         </div>
     </div>

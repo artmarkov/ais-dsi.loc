@@ -21,21 +21,19 @@ class DefaultController extends MainController
         $session = Yii::$app->session;
         $this->view->params['tabMenu'] = $this->tabMenu;
 
-        $model_date = new DynamicModel(['date_in', 'date_out', 'subject_type_id', 'activity_list']);
-        $model_date->addRule(['date_in', 'date_out', 'subject_type_id', 'activity_list'], 'required')
-            ->addRule(['date_in', 'date_out'], 'date');
+        $model_date = new DynamicModel(['date_in', 'is_avans', 'subject_type_id', 'activity_list']);
+        $model_date->addRule(['date_in', 'subject_type_id', 'activity_list'], 'required')
+            ->addRule(['date_in'], 'date', ['format' => 'php:m.Y'])
+            ->addRule(['is_avans'], 'integer');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-            $m = date('m');
-            $y = date('Y');
-            $t = date('t');
+            $mon = date('m');
+            $year = date('Y');
 
-            $model_date->date_in = $session->get('_timesheet_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $m, 1, $y), 'php:d.m.Y');
-            $model_date->date_out = $session->get('_timesheet_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $m, $t, $y), 'php:d.m.Y');
+            $model_date->date_in = $session->get('_timesheet_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
             $model_date->subject_type_id = $session->get('_timesheet_subject_type_id') ?? SubjectType::find()->scalar();
             $model_date->activity_list =  $model_date->subject_type_id == 1000 ? Yii::$app->user->getSetting('_timesheet_activity_list_0') : Yii::$app->user->getSetting('_timesheet_activity_list_1');
         }
         $session->set('_timesheet_date_in', $model_date->date_in);
-        $session->set('_timesheet_date_out', $model_date->date_out);
         $session->set('_timesheet_subject_type_id', $model_date->subject_type_id);
         $model_date->subject_type_id == 1000 ? Yii::$app->user->setSetting('_timesheet_activity_list_0', $model_date->activity_list) : Yii::$app->user->setSetting('_timesheet_activity_list_1', $model_date->activity_list);
        // echo '<pre>' . print_r($model_date->subject_type_id, true) . '</pre>'; die();

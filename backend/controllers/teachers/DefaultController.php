@@ -1485,33 +1485,27 @@ class DefaultController extends MainController
 
         $session = Yii::$app->session;
 
-        $model_date = new DynamicModel(['date_in', 'date_out', 'subject_type_id', 'activity_list', 'teachers_id']);
-        $model_date->addRule(['date_in', 'date_out'], 'required')
-            ->addRule(['date_in', 'date_out'], 'date')
+        $model_date = new DynamicModel(['date_in', 'subject_type_id', 'activity_list', 'teachers_id']);
+        $model_date->addRule(['date_in'], 'required')
+            ->addRule(['date_in'], 'date', ['format' => 'php:m.Y'])
             ->addRule('teachers_id', 'integer');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-            $m = date('m');
-            $y = date('Y');
-            $t = date('t');
+            $mon = date('m');
+            $year = date('Y');
 
-            $model_date->date_in = $session->get('_timesheet_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $m, 1, $y), 'php:d.m.Y');
-            $model_date->date_out = $session->get('_timesheet_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $m, $t, $y), 'php:d.m.Y');
+            $model_date->date_in = $session->get('_timesheet_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
             $model_date->teachers_id = $id;
         }
         $session->set('_timesheet_date_in', $model_date->date_in);
-        $session->set('_timesheet_date_out', $model_date->date_out);
 
         $model_date->activity_list = TeachersActivity::find()->where(['=', 'teachers_id', $id])->column();
         $model_date->subject_type_id = SubjectType::find()->column();
 
 //        echo '<pre>' . print_r($model_date->activity_list, true) . '</pre>'; die();
-        $model = [];
         $model = new TeachersTimesheet($model_date);
         $model = $model->getTeachersCheetData();
-        // $model = LessonProgressView::getDataIndivTeachers($model_date, $id);
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
-        $timestamp_in = $timestamp[0];
-        $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
+        $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp[0]);
 
         return $this->renderIsAjax('cheet-account', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
 

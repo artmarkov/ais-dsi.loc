@@ -41,8 +41,10 @@ use kartik\date\DatePicker;
                             'birth_date',
                             'phone',
                             'phone_optional',
+                            'address',
                             'snils',
-//                            'info:ntext',
+                            'email',
+                            'info:ntext',
                             [
                                 'attribute' => 'status',
                                 'value' => \common\models\user\UserCommon::getStatusValue($model->userCommon->status),

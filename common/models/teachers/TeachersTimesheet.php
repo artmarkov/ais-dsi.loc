@@ -6,6 +6,7 @@ use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use common\models\education\LessonItemsProgressView;
 use common\models\own\Department;
 use common\models\routine\Routine;
 use Yii;
@@ -16,12 +17,14 @@ class TeachersTimesheet
 {
     const template_timesheet = 'document/tabel_teachers.xlsx';
 
-    const workday = 'Ф';
-    const vocation = 'О';
-    const dayoff = 'В';
+    const WORKDAY = 'Ф'; // рабочий день
+    const VOCATION = 'О'; // Отпуск
+    const DAYOFF = 'В'; // Выходной
 
-    protected $date_in;
-    protected $date_out;
+    protected $timestamp_in;
+    protected $timestamp_out;
+    protected $is_avans;
+    protected $routine;
     protected $subject_type_id;
     protected $activity_list;
     protected $teachers_list;
@@ -29,31 +32,60 @@ class TeachersTimesheet
     protected $year;
     protected $plan_year;
     protected $teachers_day_schedule;
+    protected $teachers_day_schedule_total;
     protected $teachers_day_consult;
+    protected $teachers_day_consult_total;
 
     public function __construct($model_date)
     {
-        $this->date_in = $model_date->date_in;
-        $this->date_out = $model_date->date_out;
+        $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+        $this->timestamp_in = $timestamp[0];
+        $this->timestamp_out = $timestamp[1];
+        $this->mon = date('n', $this->timestamp_in);
+        $this->year = date('Y', $this->timestamp_in);
+        $this->plan_year = ArtHelper::getStudyYearDefault(null, $this->timestamp_in);
+        $this->is_avans = $model_date->is_avans ?? false;
+        $this->routine = $this->getRoutine();
         $this->subject_type_id = $model_date->subject_type_id;
-        $this->activity_list = implode(',', $model_date->activity_list);
+        $this->activity_list = $model_date->activity_list;
         $this->teachers_list = $this->getTeachersList();
-        $this->mon = date('n', strtotime($this->date_in));
-        $this->year = date('Y', strtotime($this->date_in));
-        $this->plan_year = ArtHelper::getStudyYearDefault(null, strtotime($this->date_in));
-        $this->teachers_day_schedule = $this->getTeachersDaySchedule($this->teachers_list);
-        $this->teachers_day_consult = $this->getTeachersDayConsult($this->teachers_list);
+        $this->getTeachersDaySchedule();
+        $this->getTeachersDayConsult();
+//        print_r($model_date);
     }
 
-    protected function isAvans()
+    protected function getRoutine()
     {
-        return date('d', strtotime($this->date_out)) == 15;
+        $routine = [];
+        $day_in = date('j', $this->timestamp_in);
+        $day_out = !$this->is_avans ? date('j', $this->timestamp_out) : 15;
+
+        for ($day = $day_in; $day <= $day_out; $day++) {
+            $timestamp = mktime(12, 0, 0, $this->mon, $day, $this->year); // середина суток
+            $isVocation = Routine::isVocation($timestamp);
+            $isDayOff = Routine::isDayOff($timestamp);
+            $routine[$day] = [
+                'isVocation' => $isVocation,
+                'isDayOff' => $isDayOff
+            ];
+        }
+        return $routine;
     }
+
+//    protected function getLessonsFact()
+//    {
+//        $models = LessonItemsProgressView::find()
+//            ->where(['between', 'lesson_date', $this->timestamp_in, $this->timestamp_out])
+//            ->where(['in', 'teachers_id', $this->teachers_list])
+//            ->orderBy('lesson_date')
+//            ->all();
+//        return $models;
+//    }
 
     protected function getTeachersActivities()
     {
         $models = TeachersActivityView::find()
-            ->where(new \yii\db\Expression("teachers_activity_id = any(string_to_array('{$this->activity_list}', ',')::int[])"))
+            ->where(['in', 'teachers_activity_id', $this->activity_list])
             ->orderBy('last_name, first_name, middle_name, direction_id, direction_vid_id')
             ->all();
         return $models;
@@ -73,6 +105,7 @@ class TeachersTimesheet
         $full_time = 0;
         $week_day = Schedule::getWeekDay($day, $this->mon, $this->year); // номер дня недели
         $week_num = Schedule::getWeekNum($day, $this->mon, $this->year);  // номер недели в месяце
+
         if (isset($this->teachers_day_schedule[$direction_id][$direction_vid_id][$teachers_id][$week_num][$week_day])) {
             $full_time += $this->teachers_day_schedule[$direction_id][$direction_vid_id][$teachers_id][$week_num][$week_day];
         }
@@ -85,29 +118,27 @@ class TeachersTimesheet
         return $full_time > 0 ? $full_time : null;
     }
 
-    protected function getTeachersDaySchedule($teachers_list)
+    protected function getTeachersDaySchedule()
     {
-        $data_schedule = [];
+        $data_schedule = $data_schedule_total = [];
         $models = (new Query())->from('subject_schedule_view')
             ->select('direction_id, direction_vid_id, teachers_id, week_day, week_num, time_in, time_out')
-            ->where(['in', 'teachers_id', $teachers_list])
+            ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['subject_type_id' => $this->subject_type_id])
-            ->groupBy('direction_id, direction_vid_id, teachers_id, week_day, week_num, time_in, time_out')
+            ->andWhere(['status' => 1])
             ->all();
         foreach ($models as $item => $data) {
-            if (isset($data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['week_num']][$data['week_day']])) {
-                $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['week_num']][$data['week_day']] += Schedule::astr2academ($data['time_out'] - $data['time_in']);
-            } else {
-                $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['week_num']][$data['week_day']] = Schedule::astr2academ($data['time_out'] - $data['time_in']);
-            }
+                $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['week_num']][$data['week_day']] = isset($data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['week_num']][$data['week_day']]) ? $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['week_num']][$data['week_day']] + Schedule::astr2academ($data['time_out'] - $data['time_in']) : Schedule::astr2academ($data['time_out'] - $data['time_in']);
+                $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']] = isset($data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']]) ? $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']] + Schedule::astr2academ($data['time_out'] - $data['time_in']) * 4 : Schedule::astr2academ($data['time_out'] - $data['time_in']) * 4;
         }
-        return $data_schedule;
+        $this->teachers_day_schedule = $data_schedule;
+        $this->teachers_day_schedule_total = $data_schedule_total;
     }
 
-    protected function getTeachersDayConsult($teachers_list)
+    protected function getTeachersDayConsult()
     {
-        $data_schedule = [];
+        $data_schedule = $data_schedule_total = [];
         $timestamp = mktime(0, 0, 0, $this->mon, 1, $this->year);
 
         for ($day = 1; $day <= date("t", $timestamp); $day++) {
@@ -116,20 +147,19 @@ class TeachersTimesheet
 
             $models = (new Query())->from('consult_schedule_view')
                 ->select(['direction_id', 'direction_vid_id', 'teachers_id', 'datetime_out', 'datetime_in'])
-                ->where(['in', 'teachers_id', $teachers_list])
+                ->where(['in', 'teachers_id', $this->teachers_list])
                 ->andWhere(['subject_type_id' => $this->subject_type_id])
-                ->andWhere(['and', ['>=', 'datetime_in', $timestamp_up], ['<=', 'datetime_in', $timestamp_end]])
+                ->andWhere(['between', 'datetime_in', $timestamp_up, $timestamp_end])
+                ->andWhere(['status' => 1])
                 ->all();
             foreach ($models as $item => $data) {
-                if (isset($data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$day])) {
-                    $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$day] += Schedule::astr2academ($data['datetime_out'] - $data['datetime_in']);
-                } else {
-                    $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$day] = Schedule::astr2academ($data['datetime_out'] - $data['datetime_in']);
-                }
+                $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$day] = isset($data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$day]) ? Schedule::astr2academ($data['datetime_out'] - $data['datetime_in']) + $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$day] : Schedule::astr2academ($data['datetime_out'] - $data['datetime_in']);
+                $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']] = isset($data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']]) ? Schedule::astr2academ($data['datetime_out'] - $data['datetime_in']) + $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']] : Schedule::astr2academ($data['datetime_out'] - $data['datetime_in']);
             }
         }
+        $this->teachers_day_consult = $data_schedule;
+        $this->teachers_day_consult_total = $data_schedule_total;
 //        echo '<pre>' . print_r($data_schedule, true) . '</pre>';
-        return $data_schedule;
     }
 
     protected function getTeachersDays($direction_id, $direction_vid_id, $teachers_id)
@@ -142,26 +172,24 @@ class TeachersTimesheet
         }
         $data['qty_15'] = $data['qty_31'] = $data['time_total'] = $data['time_total_15'] = null;
 
-        $day_in = date('j', strtotime($this->date_in));
-        $day_out = date('j', strtotime($this->date_out));
+        $day_in = date('j', $this->timestamp_in);
+        $day_out = !$this->is_avans ? date('j', $this->timestamp_out) : 15;
 
         for ($day = $day_in; $day <= $day_out; $day++) {
-            $week_day = Schedule::getWeekDay($day, $this->mon, $this->year); // номер дня недели
-            $timestamp = mktime(12, 0, 0, $this->mon, $day, $this->year); // середина суток
             $data['time'][$day] = $this->getTeachersDayFullTime($day, $direction_id, $direction_vid_id, $teachers_id);
-            $isVocation = Routine::isVocation($timestamp) ? true : false;
-            $isDayOff = Routine::isDayOff($timestamp) || $week_day == 7 ? true : false;
+            $isVocation = $this->routine[$day]['isVocation'];
+            $isDayOff = $this->routine[$day]['isDayOff'];
 
             if ($isVocation) {
                 $data['time'][$day] = null;
-                $data['status'][$day] = self::vocation;
+                $data['status'][$day] = self::VOCATION;
             } elseif ($isDayOff) {
-                $data['status'][$day] = self::dayoff;
+                $data['status'][$day] = self::DAYOFF;
                 $data['time'][$day] = null;
             }
             if ($data['time'][$day] > 0 && !$isVocation && !$isDayOff) {
-                $data['status'][$day] = self::workday;
-                if (!$this->isAvans()) {
+                $data['status'][$day] = self::WORKDAY;
+                if (!$this->is_avans) {
                     $data['time_total'] += $data['time'][$day];
                     $data['qty_31']++;
                 }
@@ -171,22 +199,30 @@ class TeachersTimesheet
                 }
             }
         }
+        if ($this->subject_type_id == 1000) {
+            $data['time_total'] = 0;
+            if (isset($this->teachers_day_schedule_total[$direction_id][$direction_vid_id][$teachers_id])) {
+                $data['time_total'] += $this->teachers_day_schedule_total[$direction_id][$direction_vid_id][$teachers_id];
+            }
+            if (isset($this->teachers_day_consult_total[$direction_id][$direction_vid_id][$teachers_id])) {
+                $data['time_total'] += $this->teachers_day_consult_total[$direction_id][$direction_vid_id][$teachers_id];
+            }
+            $data['time_total_15'] = $data['time_total'] / 2;
+            $data['time_total'] = !$this->is_avans ? $data['time_total'] : null;
+        }
 
 //        echo '<pre>' . print_r($data, true) . '</pre>';
         return $data;
     }
 
+    /**
+     * @param $departmentsIds
+     * @return string
+     */
     protected function getDepartmentsString($departmentsIds)
     {
-        $v = [];
-        foreach ($departmentsIds as $id) {
-            if (!$id) {
-                continue;
-            }
-            $v[] = Department::findOne($id)->name;
-        }
-        sort($v);
-        return implode(', ', $v);
+        $array = Department::find()->select('name')->where(['id' => $departmentsIds])->orderBy('name')->column();
+        return $array ? implode(', ', $array) : '';
     }
 
     /**
@@ -229,10 +265,10 @@ class TeachersTimesheet
         $data[] = [
             'rank' => 'doc',
             'tabel_num' => $this->mon,
-            'period_in' => date('j', strtotime($this->date_in)),
-            'period_out' => date('j', strtotime($this->date_out)),
+            'period_in' => date('j', $this->timestamp_in),
+            'period_out' => date('j', $this->timestamp_out),
             'period_month' => ArtHelper::getMonthsList()[$this->mon],
-            'period_year' => date('Y', strtotime($this->date_in)),
+            'period_year' => date('Y', $this->timestamp_in),
             'subject_type_name' => RefBook::find('subject_type_name')->getValue($this->subject_type_id),
             'org_briefname' => Yii::$app->settings->get('own.shortname'),
             'departments' => $this->getDepartmentsString($departmentsIds),
@@ -244,7 +280,7 @@ class TeachersTimesheet
             'doc_accountant_post' => 'Бухгалтер',
             'doc_accountant_iof' => 'Гвоздева Н.Д.',
             'summ_time_15' => $total['summ_time_15'],
-            'summ_time_31' => $this->isAvans() ? '' : $total['summ_time_31'],
+            'summ_time_31' => $this->is_avans ? '' : $total['summ_time_31'],
         ];
 //        print_r($items); die();
 
@@ -263,8 +299,6 @@ class TeachersTimesheet
     public function getTeachersCheetData()
     {
         $data = [];
-        $timestamp_up = Yii::$app->formatter->asTimestamp($this->date_in);
-        $timestamp_end = Yii::$app->formatter->asTimestamp($this->date_out) + 86399;
         $directions = \Yii::$app->db->createCommand('SELECT 
                           concat(guide_teachers_direction.id, guide_teachers_direction_vid.id) as id,
                           concat(guide_teachers_direction.slug, guide_teachers_direction_vid.slug) as name
@@ -278,23 +312,21 @@ class TeachersTimesheet
         $attributes += ['subject_type_id' => Yii::t('art/guide', 'Subject Type'),];
         $attributes += $directions;
         // Бюджет
-//        $models0 = (new Query())->from('subject_schedule_view')
-//            ->select(['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'teachers_id', 'subject_type_id', 'time_in', 'time_out'])
-//            ->where(['in', 'teachers_id', $this->teachers_list])
-//            ->andWhere(['plan_year' => $this->plan_year])
-//            ->andWhere(['subject_type_id' => $this->subject_type_id])
-//            ->andWhere(['status' => 1])
-//            ->all();
-//
-//        $models0 = ArrayHelper::index($models0, null, ['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'subject_type_id']);
+        $models0 = (new Query())->from('subject_schedule_view')
+            ->select(['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'teachers_id', 'subject_type_id', 'time_in', 'time_out'])
+            ->where(['in', 'teachers_id', $this->teachers_list])
+            ->andWhere(['plan_year' => $this->plan_year])
+            ->andWhere(['status' => 1])
+            ->all();
+
+        $models0 = ArrayHelper::index($models0, null, ['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'subject_type_id']);
 
         // Внебюджет
         $models1 = (new Query())->from('activities_schedule_view')
             ->select(['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'teachers_id', 'subject_type_id', 'datetime_in', 'datetime_out'])
             ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['subject_type_id' => $this->subject_type_id])
-            ->andWhere(['and', ['>=', 'datetime_in', $timestamp_up], ['<=', 'datetime_in', $timestamp_end]])
+            ->andWhere(['between', 'datetime_in', $this->timestamp_in, $this->timestamp_out])
             ->andWhere(['status' => 1])
             ->all();
 
@@ -304,8 +336,7 @@ class TeachersTimesheet
             ->select(['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'teachers_id', 'subject_type_id', 'datetime_in', 'datetime_out'])
             ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['subject_type_id' => $this->subject_type_id])
-            ->andWhere(['and', ['>=', 'datetime_in', $timestamp_up], ['<=', 'datetime_in', $timestamp_end]])
+            ->andWhere(['between', 'datetime_in', $this->timestamp_in, $this->timestamp_out])
             ->andWhere(['status' => 1])
             ->all();
         $modelsConsult = ArrayHelper::index($modelsConsult, null, ['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'subject_type_id']);
@@ -315,7 +346,6 @@ class TeachersTimesheet
             ->distinct()
             ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['subject_type_id' => $this->subject_type_id])
             ->andWhere(['status' => 1])
             ->all();
 
@@ -324,17 +354,17 @@ class TeachersTimesheet
             $data[$i]['sect_name'] = $items['sect_name'];
             $data[$i]['subject_type_id'] = $items['subject_type_id'];
             // согласно расписанию
-//            if ($items['subject_type_id'] == 1000) {
-//                if (isset($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
-//                    foreach ($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {
-//                        if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']])) {
-//                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] += Schedule::astr2academ($time['time_out'] - $time['time_in']) * 4;
-//                        } else {
-//                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] = Schedule::astr2academ($time['time_out'] - $time['time_in']) * 4;
-//                        }
-//                    }
-//                }
-//            } else {
+            if ($items['subject_type_id'] == 1000) {
+                if (isset($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
+                    foreach ($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {
+                        if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']])) {
+                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] += Schedule::astr2academ($time['time_out'] - $time['time_in']) * 4;
+                        } else {
+                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] = Schedule::astr2academ($time['time_out'] - $time['time_in']) * 4;
+                        }
+                    }
+                }
+            } else {
                 if (isset($models1[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
                     foreach ($models1[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {
                         if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']])) {
@@ -344,7 +374,7 @@ class TeachersTimesheet
                         }
                     }
                 }
-//            }
+            }
             // консультации
             if (isset($modelsConsult[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
                 foreach ($modelsConsult[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {

@@ -122,6 +122,11 @@ class Routine extends ActiveRecord implements DataItem
         return JsExpressionHelper::parse($this->end_date);
     }
 
+    /**
+     * заданный выходной или воскресение
+     * @param $timestamp
+     * @return bool
+     */
     public static function isDayOff($timestamp)
     {
         return self::find()->joinWith('cat')
@@ -129,9 +134,14 @@ class Routine extends ActiveRecord implements DataItem
                 ['<=', 'start_date', $timestamp],
                 ['>=', 'end_date', $timestamp - 86399],
             ])->andWhere(['guide_routine_cat.dayoff_flag' => 1])
-            ->exists();
+            ->exists() || date("w", $timestamp) == 0;
     }
 
+    /**
+     * Отпуск преподавателей
+     * @param $timestamp
+     * @return bool
+     */
     public static function isVocation($timestamp)
     {
         return self::find()->joinWith('cat')

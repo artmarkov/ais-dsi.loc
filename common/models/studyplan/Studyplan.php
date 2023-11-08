@@ -9,6 +9,7 @@ use artsoft\helpers\PriceHelper;
 use artsoft\helpers\RefBook;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
+use common\models\own\Invoices;
 use common\models\parents\Parents;
 use common\models\students\Student;
 use common\models\subject\Subject;
@@ -335,7 +336,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             ->where(['programm_id' => $model->programm_id])
             ->andWhere(['course' => $model->course])
             ->one();
-
+        $invoices = Invoices::findOne(1000);
         $save_as = str_replace(' ', '_', $model->student->fullName);
         $data[] = [
             'rank' => 'doc',
@@ -373,6 +374,15 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'parent_sert_num' => $model->parent->sert_num,
             'parent_sert_organ' => $model->parent->sert_organ,
             'parent_sert_date' => $model->parent->sert_date,
+            'inn' => $invoices->inn,
+            'kpp' => $invoices->kpp,
+            'oktmo' => $invoices->oktmo,
+            'recipient' => $invoices->recipient,
+            'payment_account' => $invoices->payment_account,
+            'corr_account' => $invoices->corr_account,
+            'bank_name' => $invoices->bank_name,
+            'bik' => $invoices->bik,
+            'kbk' => $invoices->kbk,
 
         ];
         $items = [];
