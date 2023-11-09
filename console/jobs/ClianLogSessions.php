@@ -12,6 +12,7 @@ class ClianLogSessions extends \yii\base\BaseObject implements \yii\queue\JobInt
     public function execute($queue)
     {
         Session::deleteAll(['is', 'user_id', null]);
+        Session::deleteAll(['<', 'expire', time()]);
     }
 
 }

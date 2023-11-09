@@ -8,6 +8,7 @@ use artsoft\models\Role;
 use yii\helpers\ArrayHelper;
 use yii\widgets\Pjax;
 use artsoft\models\User;
+use yii\helpers\Url;
 
 /**
  * @var yii\web\View $this
@@ -56,6 +57,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filterModel' => $searchModel,
                         'bulkActionOptions' => [
                             'gridId' => 'user-grid',
+                            'actions' => [
+                                Url::to(['bulk-activate']) => Yii::t('art', 'Activate'),
+                                Url::to(['bulk-deactivate']) => Yii::t('art', 'Deactivate'),
+                            ]
                         ],
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
@@ -140,7 +145,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return [$action, 'id' => $model->id];
                                 },
                                 'controller' => '/user/default',
-                                'template' => '{update} {delete} {permissions} {password}',
+                                'template' => '{update} {permissions} {password} {send} {impersonate}',
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
                                 'buttons' => [
                                     'update' => function ($url, $model, $key) {
@@ -151,7 +156,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                             ]
                                         );
                                     },
-                                    'delete' => function ($url, $model, $key) {
+                                    /*'delete' => function ($url, $model, $key) {
                                         return !$model->user_common_id ? Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                                             ['delete', 'id' => $model->id], [
                                                 'title' => Yii::t('art', 'Delete'),
@@ -161,9 +166,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'data-pjax' => '0',
                                             ]
                                         ) : '<span class="glyphicon glyphicon-trash font-weight-lighter" style="cursor: not-allowed;" aria-hidden="true"></span>';
-                                    },
+                                    },*/
                                     'permissions' => function ($url, $model, $key) {
-                                        return Html::a('<span class="glyphicon glyphicon-user" aria-hidden="true"></span>',
+                                        return Html::a('<span class="glyphicon glyphicon-user" aria-hidden="true" style="color: #3b5876"></span>',
                                             ['user-permission/set', 'id' => $model->id], [
                                                 'title' => Yii::t('art/user', 'Permissions'),
                                                 'data-pjax' => '0'
@@ -171,12 +176,43 @@ $this->params['breadcrumbs'][] = $this->title;
                                         );
                                     },
                                     'password' => function ($url, $model, $key) {
-                                        return Html::a('<span class="glyphicon glyphicon-lock" aria-hidden="true"></span>',
+                                        return Html::a('<span class="glyphicon glyphicon-lock" aria-hidden="true" style="color: #b94a48"></span>',
                                             ['/user/default/change-password', 'id' => $model->id], [
                                                 'title' => Yii::t('art/user', 'Password'),
                                                 'data-pjax' => '0'
                                             ]
                                         );
+                                    },
+                                    'send' => function ($url, $model, $key) {
+                                        return Html::a('<i class="fa fa-envelope-o" aria-hidden="true"></i>',
+                                            ['/user/default/send-login', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Send a link to reset your password'),
+                                                'confirm' => Yii::t('art', 'Are you sure?'),
+                                                'data-pjax' => '0'
+                                            ]
+                                        );
+                                    },
+                                    'impersonate' => function ($url, $model, $key) {
+                                        return Html::a('<i class="fa fa-user-secret" aria-hidden="true" style="color: #e28b00"></i>',
+                                            ['/user/default/impersonate', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Login as user'),
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
+                                'visibleButtons' => [
+                                    'update' => function ($model) {
+                                        return !$model->superadmin == 1;
+                                    },
+                                    'permissions' => function ($model) {
+                                        return !$model->superadmin == 1;
+                                    },
+                                    'send' => function ($model) {
+                                        return $model->status == User::STATUS_ACTIVE && !$model->superadmin == 1;
+                                    },
+                                    'impersonate' => function ($model) {
+                                        return $model->status == User::STATUS_ACTIVE && !$model->superadmin == 1;
                                     }
                                 ],
                             ],

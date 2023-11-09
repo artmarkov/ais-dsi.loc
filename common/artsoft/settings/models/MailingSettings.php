@@ -27,7 +27,7 @@ class MailingSettings extends BaseSettingsModel
     {
         return [
             'mailing_birthday' => 'Дни рождения сегодня',
-            'mailing_birthday_period' => 'Дни рождения на месяц',
+            'mailing_birthday_period' => 'Дни рождения за месяц',
         ];
     }
 

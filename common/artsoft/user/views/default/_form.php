@@ -91,6 +91,7 @@ use kartik\date\DatePicker;
                 <?php if (!$model->isNewRecord): ?>
                     <div class="panel-footer">
                         <div class="form-group btn-group">
+                            <?php if ($model->status == User::STATUS_ACTIVE): ?>
                             <?= Html::a('<i class="fa fa-envelope-o" aria-hidden="true"></i> ' . Yii::t('art', 'Send a link to reset your password'),
                                 ['/user/default/send-login', 'id' => $model->id],
                                 [
@@ -101,6 +102,7 @@ use kartik\date\DatePicker;
                                     ],
                                 ]);
                             ?>
+                            <?php endif; ?>
                             <?php if ($model->status == User::STATUS_ACTIVE): ?>
                                 <?= Html::a('<i class="fa fa-user-secret" aria-hidden="true"></i> ' . Yii::t('art', 'Login as user'),
                                     ['/user/default/impersonate', 'id' => $model->id],
@@ -131,7 +133,9 @@ use kartik\date\DatePicker;
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                <?= \artsoft\helpers\ButtonHelper::submitButtons($model, '/admin/user/default/index', ['/user/default/delete', 'id' => $model->id]); ?>
+                <?= \artsoft\helpers\ButtonHelper::exitButton(['/user/default/index']);?>
+                <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit', 'btn-md'); ?>
+                <?= \artsoft\helpers\ButtonHelper::saveButton();?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

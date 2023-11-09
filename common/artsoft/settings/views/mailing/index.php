@@ -31,7 +31,7 @@ SettingsAsset::register($this);
         <div class="panel-body">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Уведомления
+                    Уведомления о датах рождения сотрудников и преподавателей
                 </div>
                 <div class="panel-body">
                     <div class="row">

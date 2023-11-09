@@ -9,7 +9,7 @@ return [
     'Board' => 'Доска объявлений',
     'Hi' => 'Высокая',
     'Normal' => 'Обычная',
-    'Low' => 'Низная',
+    'Low' => 'Низкая',
     'Public announcement' => 'Общедоступное объявление',
     'Students personal account' => 'Личный кабинет ученика',
     'Employers personal account' => 'Личный кабинет сотрудника',

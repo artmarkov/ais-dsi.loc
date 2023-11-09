@@ -13,18 +13,27 @@ class BirthdayPeriodTask extends \yii\base\BaseObject implements \yii\queue\JobI
 {
     public function execute($queue)
     {
-        $models = $this->getDatesArray(null, date('m', time()), date('Y', time()));
-        $mails_array = explode(',', Yii::$app->settings->get('mailing.mailing_birthday_period', ''));
-        $mails_array = array_map('trim', $mails_array);
-        array_unshift($mails_array, Yii::$app->params['adminEmail']);
+        $timestamp = strtotime('first day of +1 month'); // следующий месяц независимо от текущей даты
+        $month = date('m', $timestamp);
+        $year = date('Y', $timestamp);
+        $models = $this->getDatesArray(null, $month, $year);
+        $mails_array = [Yii::$app->params['adminEmail']];
+
+        if (Yii::$app->settings->get('mailing.mailing_birthday_period') != '') {
+            $mails = explode(',', Yii::$app->settings->get('mailing.mailing_birthday_period'));
+            $mails = array_map('trim', $mails);
+            $mails_array = array_merge($mails_array, $mails);
+        }
 
         if ($models) {
-            $textBody = 'Дни рождения у сотрудников на месяц ' . date('m.Y', time()) . PHP_EOL;
-            $htmlBody = '<p><b>Дни рождения у сотрудников на месяц</b> ' . date('m.Y', time()) . '</p>';
-            foreach ($models as $item => $model) {
-                $age = ArtHelper::age($model['birth_date']);
-                $textBody .= strip_tags($model['category_name']) . ': ' . strip_tags($model['fullname']) . ' - ' . date('d.m.Y', $model['birth_date']) . ' (' . $age['age_year'] . ' ' . ArtHelper::per($age['age_year']) . ')' . PHP_EOL;
-                $htmlBody .= '<p>' . strip_tags($model['category_name']) . ': ' . strip_tags($model['fullname']) . ' - ' . date('d.m.Y', $model['birth_date']) . ' (' . $age['age_year'] . ' ' . ArtHelper::per($age['age_year']) . ')</p>';
+            $textBody = 'Дни рождения у сотрудников на месяц ' . date('m.Y', $timestamp) . PHP_EOL;
+            $htmlBody = '<p><b>Дни рождения у сотрудников на месяц</b> ' . date('m.Y', $timestamp) . '</p>';
+            foreach ($models as $time => $modelsForDay) {
+                foreach ($modelsForDay as $item => $model) {
+                    $age = ArtHelper::age($model['birth_date'], $time);
+                    $textBody .= strip_tags($model['category_name']) . ': ' . strip_tags($model['fullname']) . ' - ' . date('d.m.Y', $model['birth_date']) . ' (' . $age['age_year'] . ' ' . ArtHelper::per($age['age_year']) . ')' . PHP_EOL;
+                    $htmlBody .= '<p>' . strip_tags($model['category_name']) . ': ' . strip_tags($model['fullname']) . ' - ' . date('d.m.Y', $model['birth_date']) . ' (' . $age['age_year'] . ' ' . ArtHelper::per($age['age_year']) . ')</p>';
+                }
             }
             $textBody .= '--------------------------' . PHP_EOL;
             $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
@@ -43,17 +52,15 @@ class BirthdayPeriodTask extends \yii\base\BaseObject implements \yii\queue\JobI
 
     protected function getDatesArray($day = null, $month, $year)
     {
-        //инициализируем массив, в котором будем сохранять даты
-        $models = array();
-        //определяем день старта
+        $models = [];
         if ($day) {
             $date = $year . '-' . $month . '-' . $day;
         } else {
             $date = $year . '-' . $month . '-01';
         }
-//заполняем массив датами
         do {
-            $models = array_merge($models, UserCommon::getUsersBirthdayByCategory(['employees', 'teachers'], strtotime($date)));
+            $timestamp = strtotime($date);
+            $models[$timestamp] = UserCommon::getUsersBirthdayByCategory(['employees', 'teachers'], $timestamp);
             $date = date('Y-m-d', strtotime($date . ' + 1 days'));
             $currDateArr = explode('-', $date);
         } while ($month == $currDateArr[1]);

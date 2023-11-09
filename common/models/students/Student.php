@@ -231,8 +231,8 @@ class Student extends ActiveRecord
             }
         }
         $model = $this->user;
-        if (!$model->delete(false)) {
-            return false;
+        if ($model) {
+            return $model->delete(false);
         }
 
         return parent::beforeDelete();

@@ -169,7 +169,9 @@ class ConsultScheduleView extends ConsultSchedule
         } elseif ($fieldName == 'datetime_in') {
             $total = 0;
             foreach ($provider as $item) {
-                $total += Schedule::astr2academ(\Yii::$app->formatter->asTimestamp($item['datetime_out']) - \Yii::$app->formatter->asTimestamp($item['datetime_in']));
+                if (isset($item['datetime_in']) && isset($item['datetime_out'])) {
+                    $total += Schedule::astr2academ(\Yii::$app->formatter->asTimestamp($item['datetime_out']) - \Yii::$app->formatter->asTimestamp($item['datetime_in']));
+                }
             }
             return $total;
         }

@@ -39,19 +39,33 @@ $columns = [
         'filter' => false,
         'width' => '310px',
         'value' => function ($model) {
-            return $model->sect_name ? (\artsoft\Art::isBackend() ? Html::a($model->sect_name . $model->getSectNotice(),
-                ['/studyplan/default/load-items', 'id' => $model->studyplan_id],
-                [
-                    'target' => '_blank',
-                    'data-pjax' => '0',
-//                    'class' => 'btn btn-info',
-                ])  : $model->sect_name . $model->getSectNotice()) : null;
+            $value = $model->sect_name . $model->getSectNotice();
+
+            if (\artsoft\Art::isBackend()) {
+                if ($model->subject_sect_id == 0) {
+                    return Html::a($value,
+                        ['/studyplan/default/load-items', 'id' => $model->studyplan_id],
+                        [
+                            'target' => '_blank',
+                            'data-pjax' => '0',
+                        ]);
+                } else {
+                    return Html::a($value,
+                        ['/sect/default/studyplan-progress', 'id' => $model->subject_sect_id],
+                        [
+                            'target' => '_blank',
+                            'data-pjax' => '0',
+                        ]);
+                }
+            } else {
+                return $value;
+            }
         },
 
         'format' => 'raw',
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
-        'label' =>  Yii::t('art/guide', 'Sect').'/'.Yii::t('art/student', 'Student'),
+        'label' => Yii::t('art/guide', 'Sect') . '/' . Yii::t('art/student', 'Student'),
     ],
     [
         'attribute' => 'programm_id',
