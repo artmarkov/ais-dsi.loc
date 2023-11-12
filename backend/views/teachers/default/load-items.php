@@ -51,7 +51,7 @@ $columns = [
                         ]);
                 } else {
                     return Html::a($value,
-                        ['/sect/default/studyplan-progress', 'id' => $model->subject_sect_id],
+                        ['/sect/default/studyplan-progress', 'id' => $model->subject_sect_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id],
                         [
                             'target' => '_blank',
                             'data-pjax' => '0',

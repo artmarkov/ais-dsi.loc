@@ -66,9 +66,9 @@ use kartik\date\DatePicker;
                     ]);
                     ?>
                     <?= $form->field($model, 'importance_id')->dropDownList(Board::getImportanceList(), [
-                        'options' => [
-                            Board::IMPORTANCE_NORM => ['selected' => true]
-                        ]
+//                        'options' => [
+//                            Board::IMPORTANCE_NORM => ['selected' => true]
+//                        ]
                     ]) ?>
 
                     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>

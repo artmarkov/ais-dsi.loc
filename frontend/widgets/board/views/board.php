@@ -23,8 +23,8 @@
                                 <?= $model->author->userCommon ? $model->author->userCommon->fullName : $model->author_id; ?>
                             </td>
                             <td style="font-weight: bold">
-                                <?= $model->importance_id == \common\models\info\Board::IMPORTANCE_HI ? "<i style='color: red' class='fa fa-exclamation'></i>" : ''?>
-                                <?= $model->title;?>
+                                <?= $model->importance_id == \common\models\info\Board::IMPORTANCE_HI ? "<i style='color: red' class='fa fa-exclamation'></i>" : '' ?>
+                                <?= $model->title; ?>
                             </td>
                         </tr>
                         <tr>
@@ -33,6 +33,26 @@
                             </td>
                             <td>
                                 <?= $model->description; ?>
+
+                                <?= artsoft\fileinput\widgets\FileInput::widget([
+                                    'model' => $model,
+                                    'pluginOptions' => [
+                                        'deleteUrl' => false,
+                                        'showRemove' => false,
+                                        'showCaption' => false,
+                                        'showBrowse' => false,
+                                        'showUpload' => false,
+                                        'dropZoneEnabled' => false,
+                                        'showCancel' => false,
+                                        'initialPreviewShowDelete' => false,
+                                        'fileActionSettings' => [
+                                            'showDrag' => false,
+                                            'showRotate' => false,
+                                        ],
+                                    ],
+                                ]);
+                                ?>
+
                             </td>
                         </tr>
                     <?php endforeach; ?>

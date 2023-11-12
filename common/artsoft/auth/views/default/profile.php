@@ -157,6 +157,7 @@ $info = \artsoft\models\UserVisitLog::getLastVisit();
                                 <?= $form->field($userCommon, 'phone')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                                 <?= $form->field($userCommon, 'phone_optional')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                                 <?= $form->field($userCommon, 'address')->textInput(['maxlength' => 124]) ?>
+                                <?= $form->field($userCommon, 'email')->textInput(['maxlength' => 124]) ?>
                             </div>
                         </div>
                     </div>

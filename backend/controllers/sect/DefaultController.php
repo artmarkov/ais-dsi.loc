@@ -128,54 +128,54 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Subject Sects'), 'url' => ['sect/default/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['sect/default/view', 'id' => $model->id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
-            $model_date = $this->modelDate;
-            $model_distribution = new DynamicModel(['sect_list', 'distr_flag']);
-            $model_distribution->addRule(['sect_list'], 'safe');
+        $model_date = $this->modelDate;
+        $model_distribution = new DynamicModel(['sect_list', 'distr_flag']);
+        $model_distribution->addRule(['sect_list'], 'safe');
 
-            $modelsSubjectSectStudyplan = $model->setSubjectSect($model_date);
+        $modelsSubjectSectStudyplan = $model->setSubjectSect($model_date);
 
-            if (isset($_POST['SubjectSectStudyplan'])) {
+        if (isset($_POST['SubjectSectStudyplan'])) {
 //        echo '<pre>' . print_r($model, true) . '</pre>';
 //        echo '<pre>' . print_r(Yii::$app->request->post(), true) . '</pre>'; die();
-                $modelsSubjectSectStudyplan = $model->getSubjectSectStudyplans($model_date->plan_year);
-                $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
+            $modelsSubjectSectStudyplan = $model->getSubjectSectStudyplans($model_date->plan_year);
+            $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
 
-                $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
-                Model::loadMultiple($modelsSubjectSectStudyplan, Yii::$app->request->post());
-                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
+            $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
+            Model::loadMultiple($modelsSubjectSectStudyplan, Yii::$app->request->post());
+            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
 
-                // validate all models
-                $valid = Model::validateMultiple($modelsSubjectSectStudyplan);
+            // validate all models
+            $valid = Model::validateMultiple($modelsSubjectSectStudyplan);
 //                $valid = true;
-                if ($valid) {
-                    $transaction = \Yii::$app->db->beginTransaction();
-                    try {
-                        $flag = true;
-                        if (!empty($deletedIDs)) {
-                            SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
-                        }
-                        foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
-                            if (!($flag = $modelSubjectSectStudyplan->save(false))) {
-                                $transaction->rollBack();
-                                break;
-                            }
-                        }
-                        if ($flag) {
-                            $transaction->commit();
-                            if (isset($_POST['DynamicModel']) && $_POST['DynamicModel']['distr_flag'] == 1 && count($_POST['DynamicModel']['sect_list']) != 0) {
-                                $model->cloneDistribution($_POST['DynamicModel']['sect_list'], $model_date);
-                            }
-                            $this->getSubmitAction();
-                        }
-                    } catch (Exception $e) {
-                        $transaction->rollBack();
+            if ($valid) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try {
+                    $flag = true;
+                    if (!empty($deletedIDs)) {
+                        SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
                     }
-//           echo '<pre>' . print_r($modelsSubjectSectStudyplan, true) . '</pre>';
+                    foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
+                        if (!($flag = $modelSubjectSectStudyplan->save(false))) {
+                            $transaction->rollBack();
+                            break;
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                        if (isset($_POST['DynamicModel']) && $_POST['DynamicModel']['distr_flag'] == 1 && count($_POST['DynamicModel']['sect_list']) != 0) {
+                            $model->cloneDistribution($_POST['DynamicModel']['sect_list'], $model_date);
+                        }
+                        $this->getSubmitAction();
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
                 }
+//           echo '<pre>' . print_r($modelsSubjectSectStudyplan, true) . '</pre>';
             }
+        }
 
-            $readonly = false;
-            return $this->renderIsAjax('distribution', compact('model', 'modelsSubjectSectStudyplan', 'model_date', 'model_distribution', 'readonly'));
+        $readonly = false;
+        return $this->renderIsAjax('distribution', compact('model', 'modelsSubjectSectStudyplan', 'model_date', 'model_distribution', 'readonly'));
 
     }
 
@@ -477,7 +477,7 @@ class DefaultController extends MainController
             $params[$searchName]['plan_year'] = $model_date->plan_year;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('thematic-items', compact('dataProvider', 'searchModel',  'model_date', 'model'));
+            return $this->renderIsAjax('thematic-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
         }
     }
 
@@ -624,7 +624,12 @@ class DefaultController extends MainController
                 $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
                 $timestamp_in = $timestamp[0];
                 $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
-                $model_date->subject_sect_studyplan_id = $session->get('_progress_subject_sect_studyplan_id') ?? SubjectSect::getSectFirstValue($id, $plan_year);
+
+                if (isset($_GET['subject_sect_studyplan_id'])) {
+                    $model_date->subject_sect_studyplan_id = $_GET['subject_sect_studyplan_id'];
+                } else {
+                    $model_date->subject_sect_studyplan_id = $session->get('_progress_subject_sect_studyplan_id') ?? SubjectSect::getSectFirstValue($id, $plan_year);
+                }
 //                print_r($model_date); die();
             }
             $session->set('_progress_date_in', $model_date->date_in);
@@ -763,6 +768,7 @@ class DefaultController extends MainController
 
         return null;
     }
+
     /**
      * Изменение группы
      * @return string|null
@@ -773,7 +779,7 @@ class DefaultController extends MainController
         if (isset($_POST['hasEditable'])) {
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             if (isset($_POST['subject_sect_studyplan_id']) && isset($_GET['studyplan_subject_id'])) {
-                if (isset($_GET['subject_sect_studyplan_id'])){
+                if (isset($_GET['subject_sect_studyplan_id'])) {
                     $modelOld = SubjectSectStudyplan::findOne($_GET['subject_sect_studyplan_id']);
                     $modelOld->removeStudyplanSubject($_GET['studyplan_subject_id']);
                 }
