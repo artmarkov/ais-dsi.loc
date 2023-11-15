@@ -4,6 +4,7 @@ namespace artsoft\helpers;
 
 use artsoft\widgets\Notice;
 use common\models\schedule\SubjectScheduleView;
+use common\models\studyplan\Studyplan;
 use yii\helpers\ArrayHelper;
 use Yii;
 use artsoft\widgets\Tooltip;
@@ -76,6 +77,7 @@ class NoticeDisplay
 
     /**
      * Проверка на необходимость добавления расписания
+     * @param $model
      * @return bool
      */
     public function getTeachersScheduleNeed($model)
@@ -86,8 +88,9 @@ class NoticeDisplay
     /**
      * Проверка на суммарное время расписания = времени нагрузки
      * $delta_time - погрешность, в зависимости от кол-ва занятий
+     * @param $model
      * @return string|null
-     * @throws \Exception
+     * @throws \Throwable
      */
     public function getTeachersOverLoadNotice($model)
     {
@@ -105,9 +108,9 @@ class NoticeDisplay
      * Заданное расписание не соответствует планированию индивидуальных занятий!
      * Преподаватель не может работать в одно и тоже время в разных аудиториях!
      * Концертмейстер не может работать в одно и тоже время в разных аудиториях!
-     *
-     * @return null|string
-     * @throws \Exception
+     * @param $model
+     * @return string|null
+     * @throws \Throwable
      */
     public function getItemScheduleNotice($model)
     {
@@ -284,6 +287,11 @@ class NoticeDisplay
 
     }
 
+    /**
+     * @param $plan_year
+     * @return array
+     * @throws \yii\db\Exception
+     */
     public function getScheduleAccompLimit($plan_year)
     {
         $thereIsAnAccompLimit = \Yii::$app->db->createCommand('SELECT a.subject_schedule_id, b.week_num, b.week_day, 
@@ -298,7 +306,7 @@ class NoticeDisplay
 							AND a.week_day = b.week_day
 							AND a.plan_year = :plan_year
 							AND b.plan_year = :plan_year
-							AND ((a.time_in >= b.time_in AND  a.time_out <= b.time_out))
+							AND ((a.time_in >= b.time_in AND a.time_out <= b.time_out))
 							AND b.subject_schedule_id = ANY (string_to_array(:subject_schedule_ids, \',\')::int[])',
             [
                 'plan_year' => $plan_year,
@@ -308,6 +316,11 @@ class NoticeDisplay
         return $thereIsAnAccompLimit ? ArrayHelper::index($thereIsAnAccompLimit, null, ['subject_schedule_id']) : [];
     }
 
+    /**
+     * @param $model
+     * @return string
+     * @throws \Throwable
+     */
     public function getScheduleAccompLimitNotice($model)
     {
         $models = $this->scheduleAccompLimit;
@@ -321,6 +334,11 @@ class NoticeDisplay
         }
     }
 
+    /**
+     * @param $model
+     * @return string
+     * @throws \Throwable
+     */
     public function getScheduleNotice($model)
     {
         $string = [];
@@ -328,6 +346,20 @@ class NoticeDisplay
         $string[] = $this->getItemScheduleNotice($model);
         $string[] = $this->getScheduleAccompLimitNotice($model);
         return implode('', $string);
+    }
+
+    public function confirmIsAvailable()
+    {
+        $subjectScheduleNull = array_filter(\yii\helpers\ArrayHelper::getColumn($this->models, 'subject_schedule_id'), function ($value) {
+            return is_null($value) && $value == '';
+        });
+        $subjectScheduleAccomp = array_filter($this->models, function ($value) {
+            return $value['direction_id']  == 1001 && !is_null($value['subject_schedule_id']);
+        });
+        $subjectScheduleAccomp = \yii\helpers\ArrayHelper::getColumn($subjectScheduleAccomp, 'subject_schedule_id');
+        $subjectScheduleAccomp = array_diff($subjectScheduleAccomp, array_keys($this->scheduleAccompLimit));
+
+        return !empty($this->models) && empty($this->teachersLoadData) && empty($this->scheduleOverLapping) && empty($this->teachersOverLapping) && empty($this->teachersPlanScheduleOverLapping) && empty($this->studentScheduleOverLapping) && empty($subjectScheduleAccomp) && empty($subjectScheduleNull);
     }
 
     public function getScheduleDisplay($model)

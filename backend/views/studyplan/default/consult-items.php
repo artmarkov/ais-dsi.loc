@@ -1,5 +1,5 @@
 <?php
-
+use artsoft\helpers\NoticeConsultDisplay;
 use artsoft\helpers\RefBook;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
@@ -13,39 +13,30 @@ use artsoft\grid\GridView;
 $this->title = Yii::t('art/guide', 'Consult Schedule');
 $this->params['breadcrumbs'][] = $this->title;
 
-//$studyplan_subject_list = \common\models\studyplan\Studyplan::getSubjectListForStudyplan($model->id);
-//$subject_sect_studyplan_list = \common\models\studyplan\Studyplan::getSectListForStudyplan($model->id);
+$teachers_list = RefBook::find('teachers_fio')->getList();
+$auditory_list = RefBook::find('auditory_memo_1')->getList();
+
+$noteModel = NoticeConsultDisplay::getData($dataProvider->models, $model->plan_year);
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'studyplan_subject_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => $studyplan_subject_list,
         'value' => function ($model) {
             return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,
     ],
     [
         'attribute' => 'sect_name',
         'width' => '320px',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => $subject_sect_studyplan_list,
         'value' => function ($model) {
             return $model->sect_name != 'Индивидуально' ? $model->sect_name . $model->getSectNotice() : $model->sect_name;
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
         'format' => 'raw',
+        'footer' => 'ИТОГО: ак.час',
     ],
     [
         'attribute' => 'year_time_consult',
@@ -54,51 +45,39 @@ $columns = [
         },
         'group' => true,
         'subGroupOf' => 1,
-        'pageSummary' => true,
-        'pageSummaryFunc' => GridView::F_SUM
+        'footer' => $noteModel->getTotal('year_time_consult'),
     ],
     [
         'attribute' => 'direction_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => \common\models\guidejob\Direction::getDirectionList(),
         'value' => function ($model, $key, $index, $widget) {
             return $model->direction ? $model->direction->name : null;
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-
         'group' => true,  // enable grouping
         'subGroupOf' => 1
     ],
     [
         'attribute' => 'teachers_id',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => false /*RefBook::find('teachers_fio')->getList()*/,
-        'value' => function ($model) {
-            return \artsoft\Art::isBackend() ?  Html::a(RefBook::find('teachers_fio')->getValue($model->teachers_id),
+        'value' => function ($model) use($teachers_list) {
+            $teachers_fio = $teachers_list[$model->teachers_id] ?? '';
+            return \artsoft\Art::isBackend() ?  Html::a($teachers_fio,
                 ['/teachers/default/consult-items', 'id' => $model->teachers_id],
                 [
                     'target' => '_blank',
                     'data-pjax' => '0',
 //                    'class' => 'btn btn-info',
-                ]) : RefBook::find('teachers_fio')->getValue($model->teachers_id);
+                ]) : $teachers_fio;
         },
         'format' => 'raw',
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'group' => true,  // enable grouping
         'subGroupOf' => 4
     ],
     [
         'attribute' => 'load_time_consult',
-        'value' => function ($model) {
-            return $model->load_time_consult . ' ' . $model->getItemLoadStudyplanConsultNotice();
+        'value' => function ($model) use ($noteModel) {
+            return $model->load_time_consult . ' ' . $noteModel->getTeachersConsultOverLoadNotice($model);
         },
         'format' => 'raw',
+        'footer' => $noteModel->getTotal('load_time_consult'),
         'group' => true,  // enable grouping
         'subGroupOf' => 4
     ],
@@ -108,6 +87,7 @@ $columns = [
         'value' => function ($model) {
             return $model->datetime_in;
         },
+        'footer' => $noteModel->getTotal('datetime_in'),
         'format' => 'raw',
     ],
     [
@@ -121,15 +101,11 @@ $columns = [
     [
         'attribute' => 'auditory_id',
         'width' => '300px',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => RefBook::find('auditory_memo_1', 1, true)->getList(),
-        'value' => function ($model) {
-            return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
+        'value' => function ($model) use ($auditory_list, $noteModel) {
+            $auditory = $auditory_list[$model->auditory_id] ?? '';
+            return $auditory != '' ? $auditory . $noteModel->getConsultOverLoopingNotice($model) : '';
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+        'format' => 'raw',
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -170,8 +146,8 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-            'create' => function ($model) {
-                return $model->getTeachersConsultNeed();
+            'create' => function ($model) use($noteModel) {
+                return $noteModel->getTeachersConsultScheduleNeed($model);
             },
             'delete' => function ($model) {
                 return $model->consult_schedule_id !== null;
@@ -216,6 +192,8 @@ $columns = [
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
 //                'filterModel' => $searchModel,
+                'showPageSummary' => false,
+                'showFooter' => true,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

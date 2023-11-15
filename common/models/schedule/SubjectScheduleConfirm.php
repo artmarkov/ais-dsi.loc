@@ -2,7 +2,9 @@
 
 namespace common\models\schedule;
 
-use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\ArtHelper;
+use artsoft\helpers\RefBook;
+use artsoft\models\User;
 use common\models\teachers\Teachers;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -14,9 +16,9 @@ use yii\behaviors\TimestampBehavior;
  * @property int $id
  * @property int $teachers_id
  * @property int $plan_year
- * @property bool $confirm_flag
+ * @property bool $confirm_status
  * @property int|null $teachers_sign
- * @property int|null $timestamp_sign
+ * @property int|null $sign_message
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -28,6 +30,9 @@ use yii\behaviors\TimestampBehavior;
  */
 class SubjectScheduleConfirm extends \artsoft\db\ActiveRecord
 {
+
+    public $admin_flag;
+
     /**
      * {@inheritdoc}
      */
@@ -35,6 +40,7 @@ class SubjectScheduleConfirm extends \artsoft\db\ActiveRecord
     {
         return 'subject_schedule_confirm';
     }
+
     /**
      * @inheritdoc
      */
@@ -43,22 +49,25 @@ class SubjectScheduleConfirm extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
-            [
-                'class' => DateFieldBehavior::class,
-                'attributes' => ['timestamp_sign'],
-                'timeFormat' => 'd.m.Y H:i'
-            ]
         ];
     }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['teachers_id', 'plan_year'], 'required'],
-            [['teachers_id', 'plan_year', 'teachers_sign', 'timestamp_sign', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['confirm_flag'], 'boolean'],
+            [['teachers_id', 'teachers_sign', 'plan_year'], 'required'],
+            [['teachers_id', 'plan_year', 'confirm_status', 'teachers_sign', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['admin_flag'], 'boolean'],
+            [['sign_message'], 'string'],
+            [['sign_message'], 'required', 'when' => function ($model) {
+                return $model->admin_flag;
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[id=\"subjectscheduleconfirm-admin_flag\"]').prop('checked');
+                            }"],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
             [['teachers_sign'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_sign' => 'id']],
         ];
@@ -72,10 +81,10 @@ class SubjectScheduleConfirm extends \artsoft\db\ActiveRecord
         return [
             'id' => 'ID',
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
-            'plan_year' =>  Yii::t('art/studyplan', 'Plan Year'),
-            'confirm_flag' => 'Confirm Flag',
-            'teachers_sign' => 'Teachers Sign',
-            'timestamp_sign' => 'Timestamp Sign',
+            'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
+            'confirm_status' => Yii::t('art/guide', 'Doc Status'),
+            'teachers_sign' => Yii::t('art/guide', 'Sign Teachers'),
+            'sign_message' => Yii::t('art/guide', 'Sign Message'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -107,5 +116,82 @@ class SubjectScheduleConfirm extends \artsoft\db\ActiveRecord
     public function getTeachersSign()
     {
         return $this->hasOne(Teachers::className(), ['id' => 'teachers_sign']);
+    }
+
+    /**
+     * getDocStatusList
+     * @return array
+     */
+    public static function getDocStatusList()
+    {
+        return array(
+            self::DOC_STATUS_DRAFT => Yii::t('art', 'Draft'),
+            self::DOC_STATUS_AGREED => Yii::t('art', 'Agreed'),
+            self::DOC_STATUS_WAIT => Yii::t('art', 'Wait'),
+        );
+    }
+
+    public static function getDocStatusListOptions()
+    {
+        return array(
+            [self::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
+            [self::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
+            [self::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
+        );
+    }
+
+    /**
+     * @return |null
+     */
+    public static function getAuthorId()
+    {
+        $userId = Yii::$app->user->identity->getId();
+        return RefBook::find('users_teachers')->getValue($userId) ?? null;
+    }
+
+    public function getAuthorEmail()
+    {
+        $id = RefBook::find('teachers_users')->getValue($this->teachers_id) ?? null;
+        $user = User::findOne($id);
+        return $user->email ?? false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAuthor()
+    {
+        return $this->teachers_id == self::getAuthorId();
+    }
+
+    public function sendAdminMessage()
+    {
+        if ($this->sign_message != '') {
+            $textBody = 'Сообщение модуля "Расписание занятий" ' . PHP_EOL;
+            $htmlBody = '<p><b>Сообщение модуля "Расписание занятий"</b></p>';
+
+            $textBody .= 'Прошу Вас внести уточнения в расписание занятий за: ' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . PHP_EOL;
+            $htmlBody .= '<p>Прошу Вас внести уточнения в расписание занятий за:' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . '</p>';
+            $textBody .= $this->sign_message . PHP_EOL;
+            $htmlBody .= '<p>' . $this->sign_message . '</p>';
+            $textBody .= '--------------------------' . PHP_EOL;
+            $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
+            $htmlBody .= '<hr>';
+            $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
+
+            return Yii::$app->mailqueue->compose()
+                ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
+                ->setTo($this->getAuthorEmail() ?? Yii::$app->params['adminEmail'])
+                ->setSubject('Сообщение с сайта ' . Yii::$app->name)
+                ->setTextBody($textBody)
+                ->setHtmlBody($htmlBody)
+                ->queue();
+        }
+    }
+
+    public function afterFind()
+    {
+        $this->sign_message = '';
+        parent::afterFind();
     }
 }

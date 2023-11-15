@@ -68,7 +68,7 @@ use artsoft\grid\GridPageSize;
                     [
                         'attribute' => 'lesson_mark_id',
                         'value' => function ($model) {
-                            return $model->lessonMark->mark_label;
+                            return  $model->lessonMark ? $model->lessonMark->mark_label : '';
                         },
                     ],
                     [

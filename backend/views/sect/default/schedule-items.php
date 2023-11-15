@@ -14,6 +14,9 @@ use common\models\schedule\SubjectScheduleView;
 
 $this->title = Yii::t('art/guide', 'Subject Sect Schedule');
 $this->params['breadcrumbs'][] = $this->title;
+
+$teachers_list = RefBook::find('teachers_fio')->getList();
+$auditory_list = RefBook::find('auditory_memo_1')->getList();
 $noteModel = NoticeDisplay::getData($dataProvider->models, $model_date->plan_year);
 
 $columns = [
@@ -46,13 +49,14 @@ $columns = [
     [
         'attribute' => 'teachers_id',
         'value' => function ($model) {
-            return \artsoft\Art::isBackend() ?  Html::a(RefBook::find('teachers_fio')->getValue($model->teachers_id),
+            $teachers_fio = $teachers_list[$model->teachers_id] ?? '';
+            return \artsoft\Art::isBackend() ? Html::a($teachers_fio,
                 ['/teachers/default/schedule-items', 'id' => $model->teachers_id],
                 [
                     'target' => '_blank',
                     'data-pjax' => '0',
 //                    'class' => 'btn btn-info',
-                ]) : RefBook::find('teachers_fio')->getValue($model->teachers_id);
+                ]) : $teachers_fio;
         },
         'format' => 'raw',
         'group' => true,  // enable grouping
@@ -77,8 +81,9 @@ $columns = [
     [
         'attribute' => 'auditory_id',
         'options' => ['style' => 'width:300px'],
-        'value' => function ($model) {
-            return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
+        'width' => '300px',
+        'value' => function ($model) use ($auditory_list){
+            return $auditory_list[$model->auditory_id] ?? '';
         },
     ],
     [

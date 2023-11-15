@@ -72,7 +72,7 @@ class Art extends Component
      *
      * @var int
      */
-    public $confirmationTokenExpire = 3600 * 24; // 24 hour
+    public $confirmationTokenExpire = 3600 * 24 * 30; // 24 hour * 30 day
 
     /**
      * Roles that will be assigned to user after registration.

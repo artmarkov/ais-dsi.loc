@@ -166,8 +166,9 @@ trait TeachersLoadTrait
         $tooltip = [];
         if ($this->teachers_load_id) {
             if (!Direction::isDirectionSlave($this->direction_id)) {
-                if ($this->getTeachersFullLoadConsult() != $this->year_time_consult) {
-                    $message = 'Суммарное время консультаций ' . $this->getTeachersFullLoadConsult() . ' ак.ч не соответствует планированию - ' . $this->year_time_consult . ' ак.ч';
+                $yearTime = $this->getTeachersFullLoadConsult();
+                if ($yearTime != $this->year_time_consult) {
+                    $message = 'Суммарное время консультаций ' . $yearTime . ' ак.ч. не соответствует планированию - ' . $this->year_time_consult . ' ак.ч';
                     $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
                 }
             }

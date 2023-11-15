@@ -21,10 +21,12 @@ use common\models\history\TeachersPlanHistory;
 use common\models\info\Document;
 use common\models\info\search\DocumentSearch;
 use common\models\schedule\ConsultSchedule;
+use common\models\schedule\ConsultScheduleConfirm;
 use common\models\schedule\ConsultScheduleView;
 use common\models\schedule\search\ConsultScheduleViewSearch;
 use common\models\schedule\search\SubjectScheduleViewSearch;
 use common\models\schedule\SubjectSchedule;
+use common\models\schedule\SubjectScheduleConfirm;
 use common\models\service\UsersCard;
 use common\models\studyplan\search\ThematicViewSearch;
 use common\models\studyplan\Studyplan;
@@ -72,7 +74,7 @@ class DefaultController extends MainController
                 $model_date = $this->modelDate;
                 if (!$model_date->teachers_id) {
                     $model_date->teachers_id = $id;
-                } elseif($model_date->teachers_id != $id) {
+                } elseif ($model_date->teachers_id != $id) {
                     $id = $model_date->teachers_id;
 //                print_r($action->id); die();
                     $this->redirect(['/teachers/' . $id . '/' . $action->id]);
@@ -661,7 +663,7 @@ class DefaultController extends MainController
             $params[$searchName]['plan_year'] = $model_date->plan_year;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('thematic-items', compact('dataProvider', 'searchModel',  'model_date', 'model'));
+            return $this->renderIsAjax('thematic-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
         }
     }
 
@@ -731,8 +733,24 @@ class DefaultController extends MainController
             $searchModel = new SubjectScheduleViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
             $dataProvider = $searchModel->search($params);
+//print_r(Teachers::getTeachersByIds(User::getUsersByRole('signerSchedule')));
 
-            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
+            $model_confirm = SubjectScheduleConfirm::find()->where(['=', 'teachers_id', $id])->andWhere(['=', 'plan_year', $model_date->plan_year])->one() ?? new SubjectScheduleConfirm();
+            $model_confirm->teachers_id = $id;
+            $model_confirm->plan_year = $model_date->plan_year;
+            if (Yii::$app->request->post('submitAction') == 'send_admin_message') {
+                $model_confirm->confirm_status = SubjectScheduleConfirm::DOC_STATUS_DRAFT;
+            } elseif (Yii::$app->request->post('submitAction') == 'approve') {
+                $model_confirm->confirm_status = SubjectScheduleConfirm::DOC_STATUS_AGREED;
+            }
+            if ($model_confirm->load(Yii::$app->request->post()) AND $model_confirm->save()) {
+                Yii::$app->session->setFlash('info', 'Статус успешно изменен.');
+                if ($model_confirm->sendAdminMessage()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                }
+                return $this->redirect($this->getRedirectPage('schedule-items'));
+            }
+            return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'model_date', 'model', 'model_confirm'));
         }
     }
 
@@ -881,7 +899,22 @@ class DefaultController extends MainController
             $params = Yii::$app->request->getQueryParams();
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel', 'model_date', 'modelTeachers'));
+            $model_confirm = ConsultScheduleConfirm::find()->where(['=', 'teachers_id', $id])->andWhere(['=', 'plan_year', $model_date->plan_year])->one() ?? new ConsultScheduleConfirm();
+            $model_confirm->teachers_id = $id;
+            $model_confirm->plan_year = $model_date->plan_year;
+            if (Yii::$app->request->post('submitAction') == 'send_admin_message') {
+                $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_DRAFT;
+            } elseif (Yii::$app->request->post('submitAction') == 'approve') {
+                $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_AGREED;
+            }
+            if ($model_confirm->load(Yii::$app->request->post()) AND $model_confirm->save()) {
+                Yii::$app->session->setFlash('info', 'Статус успешно изменен.');
+                if ($model_confirm->sendAdminMessage()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                }
+                return $this->redirect($this->getRedirectPage('consult-items'));
+            }
+            return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel', 'model_date', 'modelTeachers', 'model_confirm'));
         }
     }
 
@@ -892,8 +925,8 @@ class DefaultController extends MainController
      * @param null $mode
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException
+     * @throws \Throwable
      * @throws \yii\base\InvalidConfigException
-     * @throws \yii\db\Exception
      * @throws \yii\db\StaleObjectException
      */
     public function actionStudyplanProgress($id, $objectId = null, $mode = null)
@@ -996,7 +1029,7 @@ class DefaultController extends MainController
                     try {
                         if ($flag = $model->save(false)) {
                             if (!empty($deletedIDs)) {
-                               // LessonProgress::deleteAll(['id' => $deletedIDs]);
+                                // LessonProgress::deleteAll(['id' => $deletedIDs]);
                             }
                             foreach ($modelsItems as $modelItems) {
                                 $modelItems->lesson_items_id = $model->id;
@@ -1243,7 +1276,7 @@ class DefaultController extends MainController
 
         } else {
             $session = Yii::$app->session;
-            if($session->get('_progress_teachers_id') != $id) {
+            if ($session->get('_progress_teachers_id') != $id) {
                 $session->remove('_progress_subject_key');
             }
             $model_date = new DynamicModel(['date_in', 'subject_key', 'teachers_id']);

@@ -302,32 +302,10 @@ UNION ALL
 
         $this->addCommentOnTable('consult_schedule', 'Расписание консультаций');
         $this->addForeignKey('consult_schedule_ibfk_1', 'consult_schedule', 'teachers_load_id', 'teachers_load', 'id', 'CASCADE', 'CASCADE');
-
-        $this->createTableWithHistory('consult_schedule_confirm', [
-            'id' => $this->primaryKey(),
-            'teachers_id' => $this->integer()->notNull(),
-            'plan_year' => $this->integer()->notNull(),
-            'confirm_flag' => $this->boolean()->notNull()->defaultValue(false),
-            'teachers_sign' => $this->integer(),
-            'timestamp_sign' => $this->integer(),
-            'created_at' => $this->integer()->notNull(),
-            'created_by' => $this->integer(),
-            'updated_at' => $this->integer()->notNull(),
-            'updated_by' => $this->integer(),
-            'version' => $this->bigInteger()->notNull()->defaultValue(0),
-        ], $tableOptions);
-
-        $this->addCommentOnTable('consult_schedule_confirm', 'Утверждение расписания консультаций');
-        $this->addForeignKey('consult_schedule_confirm_ibfk_1', 'consult_schedule_confirm', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('consult_schedule_confirm_ibfk_2', 'consult_schedule_confirm', 'teachers_sign', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
-
     }
 
     public function down()
     {
-
-        $this->dropForeignKey('consult_schedule_confirm_ibfk_2', 'consult_schedule_confirm');
-        $this->dropForeignKey('consult_schedule_confirm_ibfk_1', 'consult_schedule_confirm');
         $this->dropForeignKey('consult_schedule_ibfk_1', 'consult_schedule');
         $this->dropForeignKey('teachers_plan_ibfk_1', 'teachers_plan');
         $this->dropForeignKey('teachers_plan_ibfk_2', 'teachers_plan');
@@ -336,7 +314,6 @@ UNION ALL
         $this->db->createCommand()->dropView('teachers_load_studyplan_view')->execute();
         $this->dropForeignKey('teachers_load_ibfk_1', 'teachers_load');
         $this->dropForeignKey('teachers_load_ibfk_2', 'teachers_load');
-        $this->dropTableWithHistory('consult_schedule_confirm');
         $this->dropTableWithHistory('consult_schedule');
         $this->dropTableWithHistory('teachers_plan');
         $this->dropTableWithHistory('subject_schedule');

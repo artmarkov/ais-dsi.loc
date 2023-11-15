@@ -6,15 +6,23 @@ use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridView;
 use common\models\subjectsect\SubjectScheduleStudyplanView;
+use artsoft\helpers\NoticeConsultDisplay;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\schedule\search\ConsultScheduleViewSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $model_date */
+/* @var $model_confirm */
 /* @var $modelTeachers */
 
 $this->title = Yii::t('art/guide', 'Consult Schedule');
 $this->params['breadcrumbs'][] = $this->title;
+
+$teachers_list = RefBook::find('teachers_fio')->getList();
+$auditory_list = RefBook::find('auditory_memo_1')->getList();
+
+$noteModel = NoticeConsultDisplay::getData($dataProvider->models, $model_date->plan_year);
+$readonly = !$noteModel->confirmIsAvailable();
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
@@ -44,7 +52,7 @@ $columns = [
         },
         'group' => true,
         'subGroupOf' => 2,
-        'footer' => \common\models\schedule\ConsultScheduleView::getTotal($dataProvider->models, 'year_time_consult'),
+        'footer' => $noteModel->getTotal('year_time_consult'),
     ],
     [
         'attribute' => 'direction_id',
@@ -56,19 +64,19 @@ $columns = [
     ],
     [
         'attribute' => 'teachers_id',
-        'value' => function ($model) {
-            return RefBook::find('teachers_fio')->getValue($model->teachers_id);
+        'value' => function ($model) use ($teachers_list) {
+            return $teachers_list[$model->teachers_id] ?? '';
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 2,
     ],
     [
         'attribute' => 'load_time_consult',
-        'value' => function ($model) {
-            return $model->load_time_consult . ' ' . $model->getItemLoadConsultNotice();
+        'value' => function ($model) use ($noteModel) {
+            return $model->load_time_consult . ' ' . $noteModel->getTeachersConsultOverLoadNotice($model);
         },
         'format' => 'raw',
-        'footer' => \common\models\schedule\ConsultScheduleView::getTotal($dataProvider->models, 'load_time_consult'),
+        'footer' => $noteModel->getTotal('load_time_consult'),
         'group' => true,  // enable grouping
         'subGroupOf' => 2
     ],
@@ -79,7 +87,7 @@ $columns = [
             return $model->datetime_in;
         },
         'format' => 'raw',
-        'footer' => \common\models\schedule\ConsultScheduleView::getTotal($dataProvider->models, 'datetime_in'),
+        'footer' => $noteModel->getTotal('datetime_in'),
     ],
     [
         'attribute' => 'datetime_out',
@@ -92,9 +100,11 @@ $columns = [
     [
         'attribute' => 'auditory_id',
         'width' => '350px',
-        'value' => function ($model) {
-            return RefBook::find('auditory_memo_1')->getValue($model->auditory_id) . ' ' . $model->getConsultOverLappingNotice();
+        'value' => function ($model) use ($auditory_list, $noteModel) {
+            $auditory = $auditory_list[$model->auditory_id] ?? '';
+            return $auditory != '' ? $auditory . $noteModel->getConsultOverLoopingNotice($model) : '';
         },
+
         'format' => 'raw',
     ],
     [
@@ -136,8 +146,8 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-            'create' => function ($model) {
-                return $model->getTeachersConsultNeed();
+            'create' => function ($model) use($noteModel) {
+                return $noteModel->getTeachersConsultScheduleNeed($model);
             },
             'delete' => function ($model) {
                 return $model->consult_schedule_id !== null;
@@ -186,14 +196,14 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-            'create' => function ($model) {
-                return $model->getTeachersConsultNeed();
+            'create' => function ($model) use($noteModel) {
+                return $noteModel->getTeachersConsultScheduleNeed($model);
             },
-            'delete' => function ($model) {
-                return $model->consult_schedule_id !== null;
+            'delete' => function ($model) use($model_confirm) {
+                return $model->consult_schedule_id !== null && $model_confirm->confirm_status == 0;
             },
-            'update' => function ($model) {
-                return $model->consult_schedule_id !== null;
+            'update' => function ($model) use($model_confirm) {
+                return $model->consult_schedule_id !== null && $model_confirm->confirm_status == 0;
             }
         ],
     ],
@@ -207,6 +217,7 @@ $columns = [
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>
+            <?= $this->render('_confirm', compact('model_confirm', 'readonly')) ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

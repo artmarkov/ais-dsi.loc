@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\helpers\NoticeConsultDisplay;
 use artsoft\helpers\RefBook;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
@@ -8,11 +9,17 @@ use artsoft\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\subjectsect\search\SubjectScheduleSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $dataProvider $model_dateyii\data\ActiveDataProvider */
+/* @var $model_date */
+
 
 $this->title = Yii::t('art/guide', 'Consult Schedule');
 $this->params['breadcrumbs'][] = $this->title;
 
+$teachers_list = RefBook::find('teachers_fio')->getList();
+$auditory_list = RefBook::find('auditory_memo_1')->getList();
+
+$noteModel = NoticeConsultDisplay::getData($dataProvider->models, $model_date->plan_year);
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
@@ -37,24 +44,27 @@ $columns = [
     [
         'attribute' => 'teachers_id',
         'value' => function ($model) {
-            return \artsoft\Art::isBackend() ?  Html::a(RefBook::find('teachers_fio')->getValue($model->teachers_id),
+            $teachers_fio = $teachers_list[$model->teachers_id] ?? '';
+            return \artsoft\Art::isBackend() ?  Html::a($teachers_fio,
                 ['/teachers/default/consult-items', 'id' => $model->teachers_id],
                 [
                     'target' => '_blank',
                     'data-pjax' => '0',
 //                    'class' => 'btn btn-info',
-                ]) : RefBook::find('teachers_fio')->getValue($model->teachers_id);
+                ]) :$teachers_fio;
         },
         'format' => 'raw',
+        'footer' => 'ИТОГО: ак.час',
         'group' => true,  // enable grouping
         'subGroupOf' => 1
     ],
     [
         'attribute' => 'load_time_consult',
-        'value' => function ($model) {
-            return $model->load_time_consult;
+        'value' => function ($model) use ($noteModel) {
+            return $model->load_time_consult . ' ' . $noteModel->getTeachersConsultOverLoadNotice($model);
         },
         'format' => 'raw',
+        'footer' => $noteModel->getTotal('load_time_consult'),
         'group' => true,  // enable grouping
         'subGroupOf' => 1
 
@@ -65,6 +75,7 @@ $columns = [
         'value' => function ($model) {
             return $model->datetime_in;
         },
+        'footer' => $noteModel->getTotal('datetime_in'),
         'format' => 'raw',
     ],
     [
@@ -78,8 +89,9 @@ $columns = [
     [
         'attribute' => 'auditory_id',
         'width' => '300px',
-        'value' => function ($model) {
-            return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
+        'value' => function ($model) use ($auditory_list, $noteModel) {
+            $auditory = $auditory_list[$model->auditory_id] ?? '';
+            return $auditory != '' ? $auditory . $noteModel->getConsultOverLoopingNotice($model) : '';
         },
     ],
     [
@@ -165,6 +177,8 @@ $columns = [
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
 //                'filterModel' => $searchModel,
+                'showPageSummary' => false,
+                'showFooter' => true,
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

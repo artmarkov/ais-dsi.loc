@@ -14,6 +14,9 @@ use common\models\schedule\SubjectScheduleView;
 
 $this->title = Yii::t('art/guide', 'Subject Schedule');
 $this->params['breadcrumbs'][] = $this->title;
+
+$teachers_list = RefBook::find('teachers_fio')->getList();
+$auditory_list = RefBook::find('auditory_memo_1')->getList();
 $noteModel = NoticeDisplay::getData($dataProvider->models, $model->plan_year);
 
 $columns = [
@@ -53,14 +56,16 @@ $columns = [
     ],
     [
         'attribute' => 'teachers_id',
-        'value' => function ($model) {
-            return \artsoft\Art::isBackend() ?  Html::a(RefBook::find('teachers_fio')->getValue($model->teachers_id),
+        'attribute' => 'teachers_id',
+        'value' => function ($model)  use($teachers_list) {
+            $teachers_fio = $teachers_list[$model->teachers_id] ?? '';
+            return \artsoft\Art::isBackend() ? Html::a($teachers_fio,
                 ['/teachers/default/schedule-items', 'id' => $model->teachers_id],
                 [
                     'target' => '_blank',
                     'data-pjax' => '0',
 //                    'class' => 'btn btn-info',
-                ]) : RefBook::find('teachers_fio')->getValue($model->teachers_id);
+                ]) : $teachers_fio;
         },
         'format' => 'raw',
         'group' => true,  // enable grouping
@@ -69,9 +74,9 @@ $columns = [
     [
         'attribute' => 'load_time',
         'value' => function ($model) {
-            return $model->load_time /*. ' ' . $model->getItemLoadStudyplanNotice()*/;
+            return $model->load_time /*. ' ' . $model->getItemLoadStudyplanNotice()*/ ;
         },
-         'group' => true,  // enable grouping
+        'group' => true,  // enable grouping
         'subGroupOf' => 4,
         'format' => 'raw',
     ],
@@ -84,8 +89,9 @@ $columns = [
     ],
     [
         'attribute' => 'auditory_id',
-        'value' => function ($model) {
-            return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
+        'width' => '300px',
+        'value' => function ($model) use ($auditory_list){
+            return $auditory_list[$model->auditory_id] ?? '';
         },
     ],
     [
@@ -127,7 +133,7 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-            'create' => function (SubjectScheduleView $model) use($noteModel) {
+            'create' => function (SubjectScheduleView $model) use ($noteModel) {
                 return $noteModel->getTeachersScheduleNeed($model) && $model->subject_sect_studyplan_id === 0;
             },
             'delete' => function ($model) {
@@ -143,8 +149,8 @@ $columns = [
 <div class="subject-schedule-index">
     <div class="panel">
         <div class="panel-heading">
-            Элементы расписания: <?= RefBook::find('students_fullname')->getValue($model->student_id);?>
-            <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.';?>
+            Элементы расписания: <?= RefBook::find('students_fullname')->getValue($model->student_id); ?>
+            <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.'; ?>
         </div>
         <div class="panel-body">
             <div class="row">

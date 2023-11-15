@@ -2,6 +2,7 @@
 
 namespace backend\controllers\execution;
 
+use common\models\execution\ExecutionSchedule;
 
 /**
  * Class DefaultController
@@ -10,7 +11,6 @@ namespace backend\controllers\execution;
 
 class DefaultController extends MainController
 {
-
     /**
      * @return mixed|string|\yii\web\Response
      */
@@ -19,8 +19,10 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
         $this->view->params['breadcrumbs'][] = 'Расписания на подпись';
 
-        return $this->renderIsAjax('index');
+        $model_date = $this->modelDate;
+        $models = ExecutionSchedule::getData($model_date);
+        $model = $models->getDataTeachers();
+        return $this->renderIsAjax('index', compact('model','model_date'));
     }
-
 
 }

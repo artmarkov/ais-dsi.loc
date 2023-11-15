@@ -3,6 +3,7 @@
 namespace frontend\controllers\teachers;
 
 use common\models\schedule\search\SubjectScheduleViewSearch;
+use common\models\schedule\SubjectScheduleConfirm;
 use common\models\schedule\SubjectScheduleView;
 use common\models\schedule\SubjectSchedule;
 use common\models\teachers\Teachers;
@@ -30,8 +31,20 @@ class ScheduleItemsController extends MainController
         $params = Yii::$app->request->getQueryParams();
         $dataProvider = $searchModel->search($params);
 
-        return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
+        $model_confirm = SubjectScheduleConfirm::find()->where(['=', 'teachers_id', $this->teachers_id])->andWhere(['=', 'plan_year', $model_date->plan_year])->one() ?? new SubjectScheduleConfirm();
+        $model_confirm->teachers_id = $this->teachers_id;
+        $model_confirm->plan_year = $model_date->plan_year;
+        if (Yii::$app->request->post('submitAction') == 'send_approve') {
+            $model_confirm->confirm_status = SubjectScheduleConfirm::DOC_STATUS_WAIT;
+        } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
+            $model_confirm->confirm_status = SubjectScheduleConfirm::DOC_STATUS_DRAFT;
+        }
+        if ($model_confirm->load(Yii::$app->request->post()) AND $model_confirm->save()) {
+            Yii::$app->session->setFlash('info', 'Статус успешно изменен.');
+            return $this->redirect($this->getRedirectPage('schedule-items'));
+        }
 
+        return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'model_date', 'model', 'model_confirm'));
     }
 
     public function actionCreate()

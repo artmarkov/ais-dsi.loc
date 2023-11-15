@@ -1,0 +1,139 @@
+<?php
+
+namespace common\models\execution;
+
+use artsoft\widgets\Notice;
+use common\models\schedule\SubjectScheduleConfirm;
+use common\models\schedule\SubjectScheduleView;
+use common\models\studyplan\Studyplan;
+use yii\helpers\ArrayHelper;
+use Yii;
+use artsoft\widgets\Tooltip;
+use yii\helpers\Html;
+
+/**
+ * Class ExecutionSchedule
+ * @package common\models\execution
+ *
+ */
+class ExecutionSchedule
+{
+    protected $plan_year;
+    protected $teachers_id;
+    protected $teachersIds;
+    protected $subjectScheduleIds;
+    protected $teachersSchedule;
+    protected $teachersScheduleConfirm;
+//    protected $scheduleOverLapping;
+//    protected $teachersOverLapping;
+//    protected $teachersPlanScheduleOverLapping;
+//    protected $studentScheduleOverLapping;
+//    protected $scheduleAccompLimit;
+
+    public static function getData($model_date)
+    {
+        return new self($model_date);
+    }
+
+    public function __construct($model_date)
+    {
+        $this->teachers_id = $model_date->teachers_id;
+        $this->plan_year = $model_date->plan_year;
+        $this->teachersIds = !$model_date->teachers_id ? array_keys(\artsoft\helpers\RefBook::find('teachers_fio', 1)->getList()) : [$model_date->teachers_id];
+        $this->teachersScheduleConfirm = $this->getTeachersScheduleConfirm();
+//        echo '<pre>' . print_r($this->teachersScheduleConfirm, true) . '</pre>';
+        $this->teachersSchedule = $this->getTeachersSchedule();
+        //        $this->subjectScheduleIds = array_filter(\yii\helpers\ArrayHelper::getColumn($this->models, 'subject_schedule_id'), function ($value) {
+//            return !is_null($value) && $value !== '';
+//        });
+//        $this->teachersLoadData = $this->getTeachersOverLoad(); // Запрос на полное время занятий расписания преподавателя данной нагрузки
+//        $this->scheduleOverLapping = $this->getScheduleOverLapping($this->plan_year); // В одной аудитории накладка по времени!
+//        $this->teachersOverLapping = $this->getTeachersOverLapping($this->plan_year); // Преподаватель не может работать в одно и тоже время в разных аудиториях!
+//        $this->teachersPlanScheduleOverLapping = $this->getTeachersPlanScheduleOverLapping($this->plan_year); // Заданное расписание не соответствует планированию индивидуальных занятий!
+//        $this->studentScheduleOverLapping = $this->getStudentScheduleOverLapping($this->plan_year); // Ученик не может в одно и то же время находиться в разных аудиториях!
+//        $this->scheduleAccompLimit = $this->getScheduleAccompLimit($this->plan_year); // Концертмейстер может работать только в рамках расписания преподавателя
+
+    }
+
+    protected function getTeachersScheduleConfirm()
+    {
+        $models = SubjectScheduleConfirm::find()->select('id,teachers_id,confirm_status,teachers_sign')->where(['teachers_id' => $this->teachersIds])->andWhere(['=', 'plan_year', $this->plan_year])->asArray()->all();
+        return ArrayHelper::index($models, 'teachers_id');
+    }
+
+    /**
+     * Запрос на полное время занятий расписания преподавателя данной нагрузки
+     * @param $teachersLoadIds
+     * @return array
+     */
+    public function getTeachersSchedule()
+    {
+        $array = SubjectScheduleView::find()
+            ->select('teachers_id,subject_sect_studyplan_id,studyplan_subject_id,subject_schedule_id,subject,sect_name,studyplan_id,subject_sect_id')
+            ->where(['teachers_id' => $this->teachersIds])
+            ->andWhere(['plan_year' => $this->plan_year])
+            ->asArray()
+            ->all();
+        return ArrayHelper::index($array, null, ['teachers_id', 'subject_sect_studyplan_id', 'studyplan_subject_id']);
+
+    }
+
+    public function getDataTeachers()
+    {
+        $load_data = [];
+
+        $attributes = ['teachers_id' => 'Преподаватели'];
+        $attributes += ['scale_0' => 'Групповые/Мелкогрупповые'];
+        $attributes += ['scale_1' => 'Индивидуальные'];
+        $attributes += ['confirm_status' => 'Статус'];
+        $attributes += ['teachers_sign' => 'Подписант'];
+
+        foreach ($this->teachersIds as $i => $teachers_id) {
+            $dataTeachers = $this->teachersSchedule[$teachers_id] ?? [];
+            $load_data[$teachers_id]['teachers_id'] = $teachers_id;
+            $check = '';
+            $load_data[$teachers_id]['scale_0'] = '';
+            $load_data[$teachers_id]['scale_1'] = '';
+            foreach ($dataTeachers as $subject_sect_studyplan_id => $dataSect) {
+                foreach ($dataSect as $studyplan_subject_id => $dataSubject) {
+                    foreach ($dataSubject as $item => $value) {
+                        $check = $value['subject_schedule_id'] != null ? '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>' : '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>';
+                        if ($subject_sect_studyplan_id == 0) {
+                            $check = Html::a($check, ['/studyplan/default/schedule-items', 'id' => $value['studyplan_id']], ['target' => '_blank', 'title' => $value['subject'] . '-' . $value['sect_name']]);;
+                        } else {
+                            $check = Html::a($check, ['/sect/default/schedule-items', 'id' => $value['subject_sect_id']], ['target' => '_blank', 'title' => $value['subject'] . '-' . $value['sect_name']]);;
+                        }
+                    }
+                    if ($subject_sect_studyplan_id == 0) {
+                        $load_data[$teachers_id]['scale_1'] .= $check;
+                    } else {
+                        $load_data[$teachers_id]['scale_0'] .= $check;
+                    }
+                }
+            }
+            $load_data[$teachers_id]['confirm_status'] = isset($this->teachersScheduleConfirm[$teachers_id]) ? $this->teachersScheduleConfirm[$teachers_id]['confirm_status'] : null;
+            $load_data[$teachers_id]['teachers_sign'] = isset($this->teachersScheduleConfirm[$teachers_id]) ? $this->teachersScheduleConfirm[$teachers_id]['teachers_sign'] : null;
+        }
+//        echo '<pre>' . print_r($this->teachersScheduleConfirm, true) . '</pre>';
+        return ['data' => $load_data, 'attributes' => $attributes];
+    }
+
+    public static function getStatusLabel($status)
+    {
+        switch ($status) {
+            case SubjectScheduleConfirm::DOC_STATUS_DRAFT:
+                $label = '<span class="label label-primary">' . Yii::t('art', 'Draft') . '</span>';
+                break;
+            case SubjectScheduleConfirm::DOC_STATUS_AGREED:
+                $label = '<span class="label label-success">' . Yii::t('art', 'Agreed') . '</span>';
+                break;
+            case SubjectScheduleConfirm::DOC_STATUS_WAIT:
+                $label = '<span class="label label-warning">' . Yii::t('art', 'Wait') . '</span>';
+                break;
+            default:
+                $label = '';
+        }
+        return $label;
+
+    }
+}

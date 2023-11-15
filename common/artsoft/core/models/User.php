@@ -191,6 +191,17 @@ class User extends UserIdentity
         return $result;
     }
 
+    public static function getUsersByRole($roleName)
+    {
+        $table = Yii::$app->art->auth_assignment_table;
+        $funcSql = <<< SQL
+                SELECT user_id
+                    FROM {$table}
+                    WHERE item_name like '{$roleName}' 
+SQL;
+        return Yii::$app->db->createCommand($funcSql)->queryColumn();
+    }
+
     /**
      * @param string|array $roles
      * @param bool $superAdminAllowed

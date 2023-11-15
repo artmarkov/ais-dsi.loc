@@ -287,7 +287,7 @@ class TeachersTimesheet
             'rank' => 'doc',
             'tabel_num' => $this->mon,
             'period_in' => date('j', $this->timestamp_in),
-            'period_out' => date('j', $this->timestamp_out),
+            'period_out' => !$this->is_avans ? date('j', $this->timestamp_out) : 15,
             'period_month' => ArtHelper::getMonthsList()[$this->mon],
             'period_year' => date('Y', $this->timestamp_in),
             'subject_type_name' => RefBook::find('subject_type_name')->getValue($this->subject_type_id),

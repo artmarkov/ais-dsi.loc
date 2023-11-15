@@ -12,6 +12,8 @@ use artsoft\helpers\NoticeDisplay;
 /* @var $searchModel common\models\schedule\search\SubjectScheduleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $model_date */
+/* @var $model_confirm */
+/* @var $noteModel */
 
 $this->title = Yii::t('art/guide', 'Subject Schedule');
 $this->params['breadcrumbs'][] = $this->title;
@@ -19,6 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $teachers_list = RefBook::find('teachers_fio')->getList();
 $auditory_list = RefBook::find('auditory_memo_1')->getList();
 $noteModel = NoticeDisplay::getData($dataProvider->models, $model_date->plan_year);
+$readonly = !$noteModel->confirmIsAvailable();
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
@@ -186,12 +189,13 @@ $columns = [
             'create' => function (SubjectScheduleView $model) use($noteModel) {
                 return $noteModel->getTeachersScheduleNeed($model) && $model->subject_sect_id == 0;
             },
-            'delete' => function ($model) {
-                return $model->subject_schedule_id && $model->subject_sect_id == 0;
+              'delete' => function ($model) use($model_confirm) {
+                return $model->subject_schedule_id !== null && $model->subject_sect_id == 0 && $model_confirm->confirm_status == 0;
             },
-            'update' => function ($model) {
-                return $model->subject_schedule_id && $model->subject_sect_id == 0;
+            'update' => function ($model) use($model_confirm) {
+                return $model->subject_schedule_id !== null && $model->subject_sect_id == 0 && $model_confirm->confirm_status == 0;
             }
+
         ]
     ],
 ];
@@ -203,6 +207,7 @@ $columns = [
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>
+            <?= $this->render('_confirm', compact('model_confirm', 'readonly')) ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

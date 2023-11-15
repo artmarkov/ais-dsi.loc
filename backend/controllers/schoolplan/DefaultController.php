@@ -121,7 +121,7 @@ class DefaultController extends MainController
         if (Yii::$app->request->post('submitAction') == 'send_admin_message') {
             $model->doc_status = Schoolplan::DOC_STATUS_DRAFT;
             $model->save(false);
-            if ($model->sendAdminMessage($_POST['Schoolplan'])) {
+            if ($model->sendAdminMessage()) {
                 // print_r($_POST['Schoolplan']);
                 Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
                 $this->getSubmitAction($model);

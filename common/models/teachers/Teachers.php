@@ -250,11 +250,20 @@ class Teachers extends ActiveRecord
 
     public static function getTeachersAll($status = null)
     {
-        $qyery = (new Query())->from('teachers_view')
-            ->select(['teachers_id', 'fio'])
+        $query = (new Query())->from('teachers_view')
+            ->select('teachers_id as id , fio as name')
             ->where($status != null ? ['=', 'status', $status] : ['in', 'status', [0, 1]])
             ->all();
-        return \yii\helpers\ArrayHelper::map($qyery, 'teachers_id', 'fio');
+        return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
+    }
+
+    public static function getTeachersByIds($ids = [])
+    {
+        $query = (new Query())->from('teachers_view')
+            ->select('teachers_id as id , fio as name')
+            ->where(['user_id' => $ids])
+            ->all();
+        return\yii\helpers\ArrayHelper::map($query, 'id', 'name');
     }
 
     public function getTeachersScheduleQuery($plan_year)
