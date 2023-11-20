@@ -34,6 +34,8 @@ use yii\helpers\ArrayHelper;
  * @property int|null auditory_id
  * @property string|null description
  * @property string|null sect_name
+ * @property int|null status
+ * @property int|null studyplan_id
  */
 class SubjectScheduleView extends SubjectSchedule
 {
@@ -68,6 +70,8 @@ class SubjectScheduleView extends SubjectSchedule
         $attr['scheduleDisplay'] = Yii::t('art/guide', 'Subject Schedule');
         $attr['sect_name'] = Yii::t('art/guide', 'Sect Name');
         $attr['subject'] = Yii::t('art/guide', 'Subject');
+        $attr['status'] = Yii::t('art/guide', 'Status');
+        $attr['studyplan_id'] = Yii::t('art/guide', 'Studyplan');
 
         return $attr;
     }

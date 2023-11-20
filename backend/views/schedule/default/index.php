@@ -23,7 +23,7 @@ ini_set('memory_limit', '1024M');
                             </thead>
                             <tbody>
                             <?php
-
+//                            echo '<pre>' . print_r($data, true) . '</pre>';
                             ?>
                             <?php foreach ($modelsAuditory as $index => $auditory): ?>
                                 <tr class="item">

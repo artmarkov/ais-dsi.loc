@@ -134,7 +134,7 @@ use yii\helpers\Url;
                                 <label class="control-label">Загруженные материалы(сканы диплома, грамоты)</label>
                             </div>
                             <div class="col-sm-9">
-                                <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], 'pluginOptions' => ['theme' => 'explorer'], 'disabled' => $readonly]) ?>
+                                <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], /*'pluginOptions' => ['theme' => 'explorer'],*/ 'disabled' => $readonly]) ?>
                             </div>
                         </div>
                     </div>

@@ -24,11 +24,6 @@ class ExecutionSchedule
     protected $subjectScheduleIds;
     protected $teachersSchedule;
     protected $teachersScheduleConfirm;
-//    protected $scheduleOverLapping;
-//    protected $teachersOverLapping;
-//    protected $teachersPlanScheduleOverLapping;
-//    protected $studentScheduleOverLapping;
-//    protected $scheduleAccompLimit;
 
     public static function getData($model_date)
     {
@@ -43,15 +38,6 @@ class ExecutionSchedule
         $this->teachersScheduleConfirm = $this->getTeachersScheduleConfirm();
 //        echo '<pre>' . print_r($this->teachersScheduleConfirm, true) . '</pre>';
         $this->teachersSchedule = $this->getTeachersSchedule();
-        //        $this->subjectScheduleIds = array_filter(\yii\helpers\ArrayHelper::getColumn($this->models, 'subject_schedule_id'), function ($value) {
-//            return !is_null($value) && $value !== '';
-//        });
-//        $this->teachersLoadData = $this->getTeachersOverLoad(); // Запрос на полное время занятий расписания преподавателя данной нагрузки
-//        $this->scheduleOverLapping = $this->getScheduleOverLapping($this->plan_year); // В одной аудитории накладка по времени!
-//        $this->teachersOverLapping = $this->getTeachersOverLapping($this->plan_year); // Преподаватель не может работать в одно и тоже время в разных аудиториях!
-//        $this->teachersPlanScheduleOverLapping = $this->getTeachersPlanScheduleOverLapping($this->plan_year); // Заданное расписание не соответствует планированию индивидуальных занятий!
-//        $this->studentScheduleOverLapping = $this->getStudentScheduleOverLapping($this->plan_year); // Ученик не может в одно и то же время находиться в разных аудиториях!
-//        $this->scheduleAccompLimit = $this->getScheduleAccompLimit($this->plan_year); // Концертмейстер может работать только в рамках расписания преподавателя
 
     }
 
@@ -72,6 +58,7 @@ class ExecutionSchedule
             ->select('teachers_id,subject_sect_studyplan_id,studyplan_subject_id,subject_schedule_id,subject,sect_name,studyplan_id,subject_sect_id')
             ->where(['teachers_id' => $this->teachersIds])
             ->andWhere(['plan_year' => $this->plan_year])
+            ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
             ->asArray()
             ->all();
         return ArrayHelper::index($array, null, ['teachers_id', 'subject_sect_studyplan_id', 'studyplan_subject_id']);
@@ -100,14 +87,11 @@ class ExecutionSchedule
                         $check = $value['subject_schedule_id'] != null ? '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>' : '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>';
                         if ($subject_sect_studyplan_id == 0) {
                             $check = Html::a($check, ['/studyplan/default/schedule-items', 'id' => $value['studyplan_id']], ['target' => '_blank', 'title' => $value['subject'] . '-' . $value['sect_name']]);;
+                            $load_data[$teachers_id]['scale_1'] .= $check;
                         } else {
                             $check = Html::a($check, ['/sect/default/schedule-items', 'id' => $value['subject_sect_id']], ['target' => '_blank', 'title' => $value['subject'] . '-' . $value['sect_name']]);;
+                            $load_data[$teachers_id]['scale_0'] .= $check;
                         }
-                    }
-                    if ($subject_sect_studyplan_id == 0) {
-                        $load_data[$teachers_id]['scale_1'] .= $check;
-                    } else {
-                        $load_data[$teachers_id]['scale_0'] .= $check;
                     }
                 }
             }

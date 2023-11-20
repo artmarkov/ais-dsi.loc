@@ -39,6 +39,7 @@ class ConsultScheduleConfirm extends \artsoft\db\ActiveRecord
     {
         return 'consult_schedule_confirm';
     }
+
     /**
      * @inheritdoc
      */
@@ -153,25 +154,26 @@ class ConsultScheduleConfirm extends \artsoft\db\ActiveRecord
     public function sendAdminMessage()
     {
         if ($this->sign_message != '') {
-            $textBody = 'Сообщение модуля "Расписание занятий" ' . PHP_EOL;
-            $htmlBody = '<p><b>Сообщение модуля "Расписание консультаций"</b></p>';
+            $textBody = 'РЎРѕРѕР±С‰РµРЅРёРµ РјРѕРґСѓР»СЏ "Р Р°СЃРїРёСЃР°РЅРёРµ Р·Р°РЅСЏС‚РёР№ РєРѕРЅСЃСѓР»СЊС‚Р°С†РёР№" ' . PHP_EOL;
+            $htmlBody = '<p><b>РЎРѕРѕР±С‰РµРЅРёРµ РјРѕРґСѓР»СЏ "Р Р°СЃРїРёСЃР°РЅРёРµ Р·Р°РЅСЏС‚РёР№ РєРѕРЅСЃСѓР»СЊС‚Р°С†РёР№"</b></p>';
 
-            $textBody .= 'Прошу Вас внести уточнения в расписание консультаций за: ' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . PHP_EOL;
-            $htmlBody .= '<p>Прошу Вас внести уточнения в расписание консультаций за:' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . '</p>';
+            $textBody .= 'РџСЂРѕС€Сѓ Р’Р°СЃ РІРЅРµСЃС‚Рё СѓС‚РѕС‡РЅРµРЅРёСЏ РІ Р Р°СЃРїРёСЃР°РЅРёРµ Р·Р°РЅСЏС‚РёР№ РєРѕРЅСЃСѓР»СЊС‚Р°С†РёР№ РЅР°: ' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ. ' . PHP_EOL;
+            $htmlBody .= '<p>РџСЂРѕС€Сѓ Р’Р°СЃ РІРЅРµСЃС‚Рё СѓС‚РѕС‡РЅРµРЅРёСЏ РІ Р Р°СЃРїРёСЃР°РЅРёРµ Р·Р°РЅСЏС‚РёР№ РєРѕРЅСЃСѓР»СЊС‚Р°С†РёР№ РЅР°:' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ. ' . '</p>';
             $textBody .= $this->sign_message . PHP_EOL;
             $htmlBody .= '<p>' . $this->sign_message . '</p>';
             $textBody .= '--------------------------' . PHP_EOL;
-            $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
+            $textBody .= 'РЎРѕРѕР±С‰РµРЅРёРµ СЃРѕР·РґР°РЅРѕ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё. РћС‚РІРµС‡Р°С‚СЊ РЅР° РЅРµРіРѕ РЅРµ РЅСѓР¶РЅРѕ.';
             $htmlBody .= '<hr>';
-            $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
+            $htmlBody .= '<p>РЎРѕРѕР±С‰РµРЅРёРµ СЃРѕР·РґР°РЅРѕ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё. РћС‚РІРµС‡Р°С‚СЊ РЅР° РЅРµРіРѕ РЅРµ РЅСѓР¶РЅРѕ.</p>';
 
             return Yii::$app->mailqueue->compose()
                 ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
                 ->setTo($this->getAuthorEmail() ?? Yii::$app->params['adminEmail'])
-                ->setSubject('Сообщение с сайта ' . Yii::$app->name)
+                ->setSubject('РЎРѕРѕР±С‰РµРЅРёРµ СЃ СЃР°Р№С‚Р° ' . Yii::$app->name)
                 ->setTextBody($textBody)
                 ->setHtmlBody($htmlBody)
                 ->queue();
+
         }
     }
 

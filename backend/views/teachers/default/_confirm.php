@@ -84,8 +84,8 @@ $form = ActiveForm::begin([
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="form-group btn-group pull-right">
-                                    <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => $model_confirm->isAuthor() && $model_confirm->confirm_status != 0 ? true : $readonly]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => $model_confirm->isAuthor() && $model_confirm->confirm_status != 1 ? true : $readonly]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => $model_confirm->isAuthor() && $model_confirm->confirm_status != 0 ? true : false]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => $model_confirm->isAuthor() && $model_confirm->confirm_status != 1 ? true : false]); ?>
                                 </div>
                             </div>
                         </div>

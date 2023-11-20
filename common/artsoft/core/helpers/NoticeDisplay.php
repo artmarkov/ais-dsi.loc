@@ -183,7 +183,8 @@ class NoticeDisplay
 							AND b.status = 1
 							AND a.plan_year = :plan_year
 							AND b.plan_year = :plan_year
-							AND ((a.time_in < b.time_out AND a.time_in > b.time_in) OR (a.time_out < b.time_out AND a.time_out > b.time_in) OR a.time_in = b.time_in OR a.time_out = b.time_out)
+							AND (((a.time_in < b.time_out AND a.time_in >= b.time_in) OR (a.time_out <= b.time_out AND a.time_out > b.time_in))
+							AND ((b.time_in < a.time_out AND b.time_in >= a.time_in) OR (b.time_out <= a.time_out AND b.time_out > a.time_in)))
 							AND b.subject_schedule_id = ANY (string_to_array(:subject_schedule_ids, \',\')::int[])',
             [
                 'plan_year' => $plan_year,
@@ -214,7 +215,8 @@ class NoticeDisplay
 							AND a.week_day = b.week_day
 							AND a.plan_year = :plan_year
 							AND b.plan_year = :plan_year
-							AND ((a.time_in < b.time_out AND a.time_in > b.time_in) OR (a.time_out < b.time_out AND a.time_out > b.time_in))
+							AND (((a.time_in < b.time_out AND a.time_in >= b.time_in) OR (a.time_out <= b.time_out AND a.time_out > b.time_in))
+							OR ((b.time_in < a.time_out AND b.time_in >= a.time_in) OR (b.time_out <= a.time_out AND b.time_out > a.time_in)))
 							AND b.subject_schedule_id = ANY (string_to_array(:subject_schedule_ids, \',\')::int[])',
             [
                 'plan_year' => $plan_year,
@@ -275,7 +277,8 @@ class NoticeDisplay
 							AND a.status = :status
 							AND b.status = :status
 							AND a.student_id = b.student_id
-							AND ((a.time_in < b.time_out AND a.time_in > b.time_in) OR (a.time_out < b.time_out AND a.time_out > b.time_in))
+							AND (((a.time_in < b.time_out AND a.time_in >= b.time_in) OR (a.time_out <= b.time_out AND a.time_out > b.time_in))
+							OR ((b.time_in < a.time_out AND b.time_in >= a.time_in) OR (b.time_out <= a.time_out AND b.time_out > a.time_in)))
 							AND b.subject_schedule_id = ANY (string_to_array(:subject_schedule_ids, \',\')::int[])',
             [
                 'plan_year' => $plan_year,

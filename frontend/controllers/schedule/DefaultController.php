@@ -23,9 +23,7 @@ class DefaultController extends MainController
             ->where(['=', 'plan_year', $model_date->plan_year])
             ->andWhere(['=', 'status', 1])
             ->andWhere(['IS NOT', 'auditory_id', null]);
-        if ($model_date->teachers_id) {
-            $models = $models->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($model_date->teachers_id)]);
-        }
+
         $models = $models->asArray()->orderBy('week_day,time_in')->all();
         $modelsAuditory = RefBook::find('auditory_memo_1', 1)->getList();
         $data = ArrayHelper::index($models, null, ['auditory_id', 'week_day']);
