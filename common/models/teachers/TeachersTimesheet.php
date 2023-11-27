@@ -4,6 +4,7 @@ namespace common\models\teachers;
 
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
+use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use common\models\education\LessonItemsProgressView;
@@ -325,7 +326,7 @@ class TeachersTimesheet
                           concat(guide_teachers_direction.slug, guide_teachers_direction_vid.slug) as name
 	            FROM guide_teachers_direction, guide_teachers_direction_vid;'
         )->queryAll();
-
+//        print_r($directions); die();
         $directions = ArrayHelper::index($directions, 'id');
 
         $attributes = ['subject' => Yii::t('art/guide', 'Subject Name')];
@@ -381,54 +382,59 @@ class TeachersTimesheet
             if ($items['subject_type_id'] == 1000) {
                 if (isset($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
                     foreach ($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {
-                        if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']])) {
-                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] += Schedule::astr2academ($time['time']) * 4;
+                        if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'])) {
+                            $data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'] += Schedule::astr2academ($time['time']) * 4;
                         } else {
-                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] = Schedule::astr2academ($time['time']) * 4;
+                            $data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'] = Schedule::astr2academ($time['time']) * 4;
                         }
                     }
                 }
             } else {
                 if (isset($models1[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
                     foreach ($models1[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {
-                        if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']])) {
-                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] += Schedule::astr2academ($time['datetime_out'] - $time['datetime_in']);
+                        if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'])) {
+                            $data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'] += Schedule::astr2academ($time['datetime_out'] - $time['datetime_in']);
                         } else {
-                            $data[$i][$items['direction_id'] . $items['direction_vid_id']] = Schedule::astr2academ($time['datetime_out'] - $time['datetime_in']);
+                            $data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'] = Schedule::astr2academ($time['datetime_out'] - $time['datetime_in']);
                         }
                     }
                 }
             }
             // консультации
             if (isset($modelsConsult[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
+                $label = [];
                 foreach ($modelsConsult[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {
-                    if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']])) {
-                        $data[$i][$items['direction_id'] . $items['direction_vid_id']] += Schedule::astr2academ($time['datetime_out'] - $time['datetime_in']);
+                    if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']]['cons'])) {
+                        $data[$i][$items['direction_id'] . $items['direction_vid_id']]['cons'] += Schedule::astr2academ($time['datetime_out'] - $time['datetime_in']);
                     } else {
-                        $data[$i][$items['direction_id'] . $items['direction_vid_id']] = Schedule::astr2academ($time['datetime_out'] - $time['datetime_in']);
+                        $data[$i][$items['direction_id'] . $items['direction_vid_id']]['cons'] = Schedule::astr2academ($time['datetime_out'] - $time['datetime_in']);
                     }
+                        $label[] = Yii::$app->formatter->asDatetime($time['datetime_in']) . ' - ' . Yii::$app->formatter->asDatetime($time['datetime_out']);
                 }
+                $data[$i][$items['direction_id'] . $items['direction_vid_id']]['title'] = implode(',', $label);
             }
         }
 
-//        echo '<pre>' . print_r(['data' => $data, 'attributes' => $attributes, 'directions' => $directions], true) . '</pre>'; die();
+//        echo '<pre>' . print_r(['data' => $modelsConsult, 'attributes' => $attributes, 'directions' => $directions], true) . '</pre>'; die();
         return ['data' => $data, 'attributes' => $attributes, 'directions' => $directions];
 //        echo '<pre>' . print_r($this->teachers_day_consult, true) . '</pre>';
     }
 
     public static function getTotal($provider, $fieldName)
     {
-        $total = [0, 0];
+        $total[0]['teach'] = $total[0]['cons'] = $total[1]['teach'] = $total[1]['cons'] = 0;
 //        echo '<pre>' . print_r($provider, true) . '</pre>'; die();
         foreach ($provider as $item) {
             if ($item['subject_type_id'] == 1000) {
-                $total[0] += $item[$fieldName] ?? 0;
+                $total[0]['teach'] += $item[$fieldName]['teach'] ?? 0;
+                $total[0]['cons'] += $item[$fieldName]['cons'] ?? 0;
             } else {
-                $total[1] += $item[$fieldName] ?? 0;
+                $total[1]['teach'] += $item[$fieldName]['teach'] ?? 0;
+                $total[1]['cons'] += $item[$fieldName]['cons'] ?? 0;
             }
         }
 
-        return $total[0] . '/' . $total[1];
+        return $total[0]['teach'] . '/' . $total[0]['cons'] . '<span class="pull-right">' . $total[1]['teach'] . '/' . $total[1]['cons'] . '</span>';
     }
 }
 

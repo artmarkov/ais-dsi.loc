@@ -120,7 +120,7 @@ class DefaultController extends MainController
                         $transaction->commit();
                         $this->getSubmitAction($model);
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $transaction->rollBack();
                 }
             }

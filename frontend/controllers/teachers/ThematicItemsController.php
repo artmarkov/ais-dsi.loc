@@ -30,6 +30,7 @@ class ThematicItemsController extends MainController
         $searchName = StringHelper::basename($searchModel::className());
         $params = Yii::$app->request->getQueryParams();
         $params[$searchName]['status'] = 1;
+        $params[$searchName]['direction_id'] = 1000;
         $params[$searchName]['teachers_id'] = $this->teachers_id;
         $params[$searchName]['plan_year'] = $model_date->plan_year;
         $dataProvider = $searchModel->search($params);
@@ -122,6 +123,12 @@ class ThematicItemsController extends MainController
         $modelsItems = $model->studyplanThematicItems;
 
         if ($model->load(Yii::$app->request->post())) {
+
+            if (Yii::$app->request->post('submitAction') == 'send_approve') {
+                $model->doc_status = StudyplanThematic::DOC_STATUS_WAIT;
+            } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
+                $model->doc_status = StudyplanThematic::DOC_STATUS_DRAFT;
+            }
 
             $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
             $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);

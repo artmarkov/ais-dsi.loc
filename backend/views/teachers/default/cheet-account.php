@@ -25,7 +25,7 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,
-        'footer' => 'Итого: бюд./внебюд.',
+        'footer' => 'Итого: распис./консульт.',
 //        'groupFooter' => $editMarks
     ],
     [
@@ -49,7 +49,14 @@ $columns = [
 ];
 foreach ($model['directions'] as $id => $name) {
     $columns[] = [
-        'attribute' => $id,
+        'attribute' => $id['teach'],
+        'value' => function ($model) use($id, $modelTeachers) {
+        $summ_teach = $model[$id]['teach'] ?? 0;
+        $summ_cons = $model[$id]['cons'] ?? 0;
+        $label_cons = $model[$id]['title'] ?? '';
+            return  $summ_cons != 0 ? $summ_teach . '/' . \artsoft\helpers\Html::a($summ_cons, ['/teachers/default/consult-items', 'id' => $modelTeachers->id],['title' => $label_cons]) : $summ_teach;
+
+        },
         'label' => $model['attributes'][$id]['name'],
         'format' => 'raw',
         'footer' => \common\models\teachers\TeachersTimesheet::getTotal($model['data'], $id),

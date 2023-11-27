@@ -86,7 +86,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Журнал успеваемости группы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/studyplan-progress/index']],
                     ['label' => 'Журнал успеваемости индивидуальных занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/studyplan-progress-indiv/index']],
                     ['label' => 'Показатели эффективности', 'icon' => 'fa fa-minus', 'url' => ['/teachers/efficiency/index']],
-//                    ['label' => 'Портфолио', 'icon' => 'fa fa-minus', 'url' => ['/teachers/portfolio/index']],
+                    ['label' => 'Портфолио', 'icon' => 'fa fa-minus', 'url' => ['/teachers/portfolio/index']],
                     ['label' => 'Документы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/document/index']],
                     ['label' => 'Вступительные экзамены', 'icon' => 'fa fa-minus', 'url' => ['/entrant/default/index']],
                     // ученики

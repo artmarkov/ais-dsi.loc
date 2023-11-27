@@ -92,10 +92,9 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $this->view->params['breadcrumbs'][] = 'Расписание преподавателя';
-
         $model_date = $this->modelDate;
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-            $model_date->teachers_id = $session->get('_teachersScheduleReports') ?? Teachers::find()->joinWith(['user'])->where(['status' => Teachers::STATUS_ACTIVE])->scalar();
+            $model_date->teachers_id = isset($_GET['id']) ? $_GET['id'] : ($session->get('_teachersScheduleReports') ?? Teachers::find()->joinWith(['user'])->where(['status' => Teachers::STATUS_ACTIVE])->scalar());
         }
         $session->set('_teachersScheduleReports', $model_date->teachers_id);
 //        echo '<pre>' . print_r($model_date->plan_year, true) . '</pre>';die();

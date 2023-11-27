@@ -24,6 +24,8 @@ use common\models\studyplan\Studyplan;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadView;
+use common\models\user\UserCommon;
+use common\models\user\UsersView;
 use Yii;
 use yii\base\DynamicModel;
 use yii\data\ActiveDataProvider;
@@ -401,9 +403,20 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $modelPerform = SchoolplanPerform::findOne($objectId);
 
-            if ($modelPerform->load(Yii::$app->request->post()) && $modelPerform->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction();
+            if ($modelPerform->load(Yii::$app->request->post())) {
+                if (Yii::$app->request->post('submitAction') == 'send_approve') {
+                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_WAIT;
+                } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
+                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_DRAFT;
+                } elseif (Yii::$app->request->post('submitAction') == 'approve') {
+                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_AGREED;
+                } elseif (Yii::$app->request->post('submitAction') == 'send_admin_message') {
+                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_DRAFT;
+                }
+                if ($modelPerform->save()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                    $this->getSubmitAction();
+                }
             }
 
             return $this->renderIsAjax('@backend/views/schoolplan/perform/_form.php', [
@@ -466,7 +479,7 @@ class DefaultController extends MainController
     public function getMenu($id)
     {
         $model = $this->findModel($id);
-        $visiblePerform = in_array($this->teachers_id, $model->executors_list);
+        $visiblePerform = in_array($this->teachers_id, $model->executors_list) || $model->isAuthor();
         return [
             ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/view', 'id' => $id]],
             ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id],'visible' => $visiblePerform],

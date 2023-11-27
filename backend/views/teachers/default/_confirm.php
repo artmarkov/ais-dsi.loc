@@ -39,8 +39,6 @@ $form = ActiveForm::begin([
                     echo Html::activeHiddenInput($model_confirm, 'plan_year');
                     ?>
                     <?php
-                    if (\artsoft\Art::isBackend()) {
-                    }
                     echo $form->field($model_confirm, 'teachers_sign')->widget(\kartik\select2\Select2::class, [
                         'data' => Teachers::getTeachersByIds(User::getUsersByRole($modelName == 'SubjectScheduleConfirm' ? 'signerSchedule' : 'signerScheduleConsult')),
                         'options' => [

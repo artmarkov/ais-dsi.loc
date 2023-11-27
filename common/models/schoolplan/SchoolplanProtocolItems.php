@@ -78,6 +78,7 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
             [['resume'], 'string', 'max' => 1024],
             [['thematic_items_list'], 'safe'],
             [['winner_id'], 'string', 'max' => 255],
+            [['status_sign'], 'default', 'value' => 0],
             [['lesson_mark_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonMark::className(), 'targetAttribute' => ['lesson_mark_id' => 'id']],
             [['schoolplan_protocol_id'], 'exist', 'skipOnError' => true, 'targetClass' => SchoolplanProtocol::className(), 'targetAttribute' => ['schoolplan_protocol_id' => 'id']],
             [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::className(), 'targetAttribute' => ['studyplan_subject_id' => 'id']],
@@ -189,11 +190,11 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
      */
     public static function getStatusSignList()
     {
-        return [
-            1 => 'На подписи',
-            2 => 'Подписано',
-            3 => 'Не подписано',
-        ];
+        return array(
+            self::DOC_STATUS_DRAFT => Yii::t('art', 'Draft'),
+            self::DOC_STATUS_AGREED => Yii::t('art', 'Agreed'),
+            self::DOC_STATUS_WAIT => Yii::t('art', 'Wait'),
+        );
     }
 
     /**
@@ -201,11 +202,11 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
      */
     public static function getStatusSignOptionsList()
     {
-        return [
-            [1, 'На подписи', 'info'],
-            [2, 'Подписано', 'success'],
-            [3, 'Не подписано', 'danger']
-        ];
+        return array(
+            [self::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
+            [self::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
+            [self::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
+        );
     }
     /**
      * @param $val

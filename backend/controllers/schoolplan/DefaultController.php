@@ -63,7 +63,7 @@ class DefaultController extends MainController
 
         $this->view->params['tabMenu'] = $this->tabMenu;
 
-        $query = SchoolplanView::find()->where(['between', 'datetime_in', Yii::$app->formatter->asTimestamp($model_date->date_in), Yii::$app->formatter->asTimestamp($model_date->date_out)]);
+        $query = SchoolplanView::find()->where(['between', 'datetime_in', Yii::$app->formatter->asTimestamp($model_date->date_in), Yii::$app->formatter->asTimestamp($model_date->date_out) + 86399]);
         $searchModel = new $this->modelSearchClass($query);
         $params = $this->getParams();
         $dataProvider = $searchModel->search($params);
@@ -108,6 +108,8 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
         /* @var $model \artsoft\db\ActiveRecord */
         $model = $this->findModel($id);
+        $model->formPlaces = $model->getFormPlaces();
+        $model->title_over = $model->getTitleOver();
         $model->initActivitiesOver();
         if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
@@ -283,11 +285,17 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $modelPerform = SchoolplanPerform::findOne($objectId);
 
-            if ($modelPerform->load(Yii::$app->request->post()) && $modelPerform->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction();
+            if ($modelPerform->load(Yii::$app->request->post())) {
+                if (Yii::$app->request->post('submitAction') == 'approve') {
+                    $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_AGREED;
+                } elseif (Yii::$app->request->post('submitAction') == 'send_admin_message') {
+                    $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_DRAFT;
+                }
+                if ($modelPerform->save()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                    $this->getSubmitAction();
+                }
             }
-
             return $this->renderIsAjax('@backend/views/schoolplan/perform/_form.php', [
                 'model' => $modelPerform,
                 'plan_year' => $plan_year,
@@ -460,8 +468,7 @@ class DefaultController extends MainController
     /**
      * @return mixed
      */
-    public
-    function actionSelect()
+    public function actionSelect()
     {
         $id = \Yii::$app->request->post('id');
         $model = GuidePlanTree::find()->where(['id' => $id])->asArray()->one();

@@ -36,6 +36,7 @@ use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
 use common\models\subject\SubjectType;
 use common\models\subjectsect\SubjectSect;
+use common\models\teachers\PortfolioView;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\search\TeachersPlanSearch;
 use common\models\teachers\Teachers;
@@ -46,6 +47,7 @@ use common\models\teachers\TeachersPlan;
 use common\models\teachers\TeachersTimesheet;
 use common\models\user\UserCommon;
 use yii\base\DynamicModel;
+use yii\data\ActiveDataProvider;
 use yii\db\Exception;
 use yii\helpers\Json;
 use yii\helpers\StringHelper;
@@ -607,8 +609,12 @@ class DefaultController extends MainController
                 throw new NotFoundHttpException("The StudyplanThematic was not found.");
             }
             $modelsItems = $model->studyplanThematicItems;
-
             if ($model->load(Yii::$app->request->post())) {
+                if (Yii::$app->request->post('submitAction') == 'approve') {
+                    $model->doc_status = StudyplanThematic::DOC_STATUS_AGREED;
+                } elseif (Yii::$app->request->post('submitAction') == 'send_admin_message') {
+                    $model->doc_status = StudyplanThematic::DOC_STATUS_DRAFT;
+                }
 
                 $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
                 $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
@@ -659,6 +665,7 @@ class DefaultController extends MainController
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();
             $params[$searchName]['status'] = 1;
+            $params[$searchName]['direction_id'] = 1000;
             $params[$searchName]['teachers_id'] = $id;
             $params[$searchName]['plan_year'] = $model_date->plan_year;
             $dataProvider = $searchModel->search($params);
@@ -1542,6 +1549,18 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax('cheet-account', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
 
+    }
+
+    public function actionPortfolio($id)
+    {
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
+
+        $model_date = $this->modelDate;
+        $data = ArtHelper::getStudyYearParams($model_date->plan_year);
+        $dataProvider = new ActiveDataProvider(['query' => PortfolioView::find()->where(['teachers_id' => $id])->andWhere(['between', 'datetime_in', $data['timestamp_in'], $data['timestamp_out']])]);
+        return $this->renderIsAjax('portfolio', compact(['dataProvider', 'model_date', 'id']));
     }
 
     /**

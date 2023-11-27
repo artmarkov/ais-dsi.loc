@@ -23,7 +23,7 @@ use artsoft\widgets\ActiveForm;
     <div class="panel">
         <div class="panel-heading">
             Элемент характеристики по предметам:
-            <?php echo RefBook::find('subject_memo_2')->getValue($studyplanSubjectModel->id); ?>
+            <?php echo RefBook::find('subject_memo_4')->getValue($studyplanSubjectModel->id); ?>
             <?php if (!$model->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
             <?php endif; ?>

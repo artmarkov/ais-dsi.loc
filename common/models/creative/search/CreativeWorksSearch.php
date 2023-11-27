@@ -13,6 +13,7 @@ use common\models\creative\CreativeWorks;
 class CreativeWorksSearch extends CreativeWorks
 {
     public $published_at_operand;
+
     /**
      * @inheritdoc
      */
@@ -65,12 +66,12 @@ class CreativeWorksSearch extends CreativeWorks
         }
 //        жадная загрузка
         $query->joinWith(['category']);
-        
 
         $query->andFilterWhere([
             'creative_works.id' => $this->id,
             'category_id' => $this->category_id,
             'status' => $this->status,
+            'created_at' => ($this->created_at) ? strtotime($this->created_at) : null,
             ]);
 
         $query->andFilterWhere([($this->published_at_operand) ? $this->published_at_operand : '=', 'published_at', ($this->published_at) ? strtotime($this->published_at) : null]);

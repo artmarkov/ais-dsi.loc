@@ -16,9 +16,9 @@ class FileInput extends \yii\base\Widget
 
     public $model;
     public $id;
+    public $options = [];
 
     public $disabled = false;
-    public $options = [];
     public $pluginOptions = [];
     public $pluginEvents = [];
     public $maxFileCount = 50;
@@ -34,7 +34,7 @@ class FileInput extends \yii\base\Widget
         }
 
         if (!isset($this->id)) {
-            $this->id = $this->getId();
+            $this->id = $this->model->id;
         }
 
         $this->buildWidget();
@@ -111,12 +111,12 @@ class FileInput extends \yii\base\Widget
                 ],
                 'uploadExtraData' => [
                     'FileManager[class]' => $this->model->formName(),
-                    'FileManager[item_id]' => $this->model->id
+                    'FileManager[item_id]' => $this->id
                 ],
             ], $this->pluginOptions),
             'pluginEvents' => ArrayHelper::merge([
                 'filesorted' => new \yii\web\JsExpression('function(event, params){
-                                                  $.post("' . Url::toRoute(["/fileinput/file-manager/sort-file", "id" => $this->model->id]) . '", {sort: params});
+                                                  $.post("' . Url::toRoute(["/fileinput/file-manager/sort-file", "id" => $this->id]) . '", {sort: params});
                                             }'),
                 'filebatchselected' => new \yii\web\JsExpression('function(event, files) {                                               
                                                   $("#' . $this->id . '").fileinput("upload");

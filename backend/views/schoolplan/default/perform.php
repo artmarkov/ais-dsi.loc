@@ -60,6 +60,12 @@ use artsoft\grid\GridPageSize;
                         },
                     ],
                     [
+                        'attribute' => 'teachers_id',
+                        'value' => function ($model) {
+                            return RefBook::find('teachers_fio')->getValue($model->teachers_id);
+                        },
+                    ],
+                    [
                         'attribute' => 'studyplan_subject_id',
                         'value' => function ($model) {
                             return RefBook::find('subject_memo_4')->getValue($model->studyplan_subject_id);
@@ -79,13 +85,7 @@ use artsoft\grid\GridPageSize;
                     ],
 
                     'resume',
-                    [
-                        'attribute' => 'status_exe',
-                        'format' => 'raw',
-                        'value' => function ($model) {
-                            return SchoolplanPerform::getStatusExeValue($model->status_exe);
-                        }
-                    ],
+
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',
                         'attribute' => 'status_exe',

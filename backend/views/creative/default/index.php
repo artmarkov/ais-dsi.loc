@@ -130,16 +130,27 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['style' => 'width:180px'],
                             ],
                             [
-                                'class' => '\artsoft\grid\columns\DateFilterColumn',
-                                'attribute' => 'published_at',
+                                'attribute' => 'created_at',
+                                'filter' => false,
                                 'value' => function (CreativeWorks $model) {
-                                    return '<span style="font-size:85%;" class="label label-'
-                                        . ((time() >= $model->published_at) ? 'primary' : 'default') . '">'
-                                        . $model->published_at . '</span>';
+                                    return '<span style="font-size:85%; " class="label label-primary">'
+                                        . Yii::$app->formatter->asDatetime($model->created_at) . '</span>';
                                 },
                                 'format' => 'raw',
-                                'options' => ['style' => 'width:150px'],
+                                'options' => ['style' => 'width:150px;'],
+                                'contentOptions' => ['style'=>"text-align:center; vertical-align: middle;"],
                             ],
+//                            [
+//                                'class' => '\artsoft\grid\columns\DateFilterColumn',
+//                                'attribute' => 'published_at',
+//                                'value' => function (CreativeWorks $model) {
+//                                    return '<span style="font-size:85%;" class="label label-'
+//                                        . ((time() >= $model->published_at) ? 'primary' : 'default') . '">'
+//                                        . $model->published_at . '</span>';
+//                                },
+//                                'format' => 'raw',
+//                                'options' => ['style' => 'width:150px'],
+//                            ],
                             [
                                 'class' => 'kartik\grid\ActionColumn',
                                 'urlCreator' => function ($action, $model, $key, $index) {

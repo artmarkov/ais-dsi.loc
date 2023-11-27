@@ -151,4 +151,19 @@ class Routine extends ActiveRecord implements DataItem
             ])->andWhere(['guide_routine_cat.vacation_flag' => 1])
             ->exists();
     }
+
+    /**
+     * Каникулы
+     * @param $timestamp
+     * @return bool
+     */
+    public static function isHolidays($timestamp)
+    {
+        return self::find()
+            ->where(['AND',
+                ['<=', 'start_date', $timestamp],
+                ['>=', 'end_date', $timestamp - 86399],
+            ])->andWhere(['cat_id' => 1000])
+            ->exists();
+    }
 }

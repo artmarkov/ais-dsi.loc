@@ -11,6 +11,7 @@ use common\models\guidejob\Level;
 use common\models\guidejob\Position;
 use common\models\guidejob\Work;
 use common\models\schedule\SubjectScheduleView;
+use common\models\studyplan\Studyplan;
 use common\models\user\UserCommon;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -262,6 +263,7 @@ class Teachers extends ActiveRecord
         $query = (new Query())->from('teachers_view')
             ->select('teachers_id as id , fio as name')
             ->where(['user_id' => $ids])
+            ->andWhere(['=', 'status', UserCommon::STATUS_ACTIVE])
             ->all();
         return\yii\helpers\ArrayHelper::map($query, 'id', 'name');
     }
@@ -272,7 +274,8 @@ class Teachers extends ActiveRecord
             ->where(['teachers_id' => $this->id])
             ->andWhere(['not', ['subject_schedule_id' => null]])
             ->andWhere(['=', 'plan_year', $plan_year])
-            ->orderBy('week_day,time_in')
+            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+            ->orderBy('week_day, time_in')
             ->all();
     }
 

@@ -26,7 +26,7 @@ use yii\widgets\MaskedInput;
     <div class="panel">
         <div class="panel-heading">
             Элемент расписания консультаций:
-            <?php echo RefBook::find('subject_memo_2')->getValue($teachersLoadModel->studyplan_subject_id); ?>
+            <?php echo RefBook::find('subject_memo_4')->getValue($teachersLoadModel->studyplan_subject_id); ?>
             <?php echo RefBook::find('sect_name_1')->getValue($teachersLoadModel->subject_sect_studyplan_id); ?>
             <?php if (!$model->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>

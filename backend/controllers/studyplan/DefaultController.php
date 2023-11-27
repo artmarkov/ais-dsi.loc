@@ -637,6 +637,11 @@ class DefaultController extends MainController
 
             if ($model->load(Yii::$app->request->post())) {
 
+                if (Yii::$app->request->post('submitAction') == 'approve') {
+                    $model->doc_status = StudyplanThematic::DOC_STATUS_AGREED;
+                } elseif (Yii::$app->request->post('submitAction') == 'send_admin_message') {
+                    $model->doc_status = StudyplanThematic::DOC_STATUS_DRAFT;
+                }
                 $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
                 $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());

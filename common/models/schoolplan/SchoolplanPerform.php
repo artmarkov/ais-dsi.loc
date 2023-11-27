@@ -9,6 +9,7 @@ use common\models\education\LessonProgress;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subjectsect\SubjectSect;
 use common\models\teachers\Teachers;
+use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -75,9 +76,9 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['schoolplan_id', 'studyplan_id', 'studyplan_subject_id', 'lesson_mark_id', 'status_exe', 'status_sign', 'signer_id'], 'default', 'value' => null],
+            [['lesson_mark_id', 'status_exe', 'status_sign', 'signer_id'], 'default', 'value' => null],
             [['schoolplan_id', 'studyplan_id', 'studyplan_subject_id', 'teachers_id', 'lesson_mark_id', 'status_exe', 'status_sign', 'signer_id', 'version'], 'integer'],
-            [['schoolplan_id', 'studyplan_id', 'studyplan_subject_id', 'teachers_id', 'signer_id', 'status_exe'], 'required'],
+            [['teachers_id', 'signer_id', 'status_exe'], 'required'],
             [['resume'], 'string', 'max' => 1024],
             [['thematic_items_list'], 'safe'],
             [['winner_id'], 'string', 'max' => 255],
@@ -96,14 +97,15 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
         return [
             'id' => 'ID',
             'schoolplan_id' => 'Мероприятие',
-            'studyplan_id' => Yii::t('art/guide', 'Studyplan List'),
-            'studyplan_subject_id' => 'Учебный предмет ученика',
+            'studyplan_id' => 'Ученик',
+            'studyplan_subject_id' => 'Учебный предмет',
+            'teachers_id' => 'Преподаватель',
             'thematic_items_list' => 'Список заданий из репертуарного плана',
             'lesson_mark_id' => 'Оценка',
             'winner_id' => 'Звание/Диплом',
             'resume' => 'Отзыв комиссии/Результат',
             'status_exe' => 'Статус выполнения',
-            'status_sign' => 'Статус утверждения',
+            'status_sign' => 'Статус документа',
             'signer_id' => 'Подписант',
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -205,11 +207,11 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
      */
     public static function getStatusSignList()
     {
-        return [
-            0 => 'Не подписано',
-            1 => 'На подписи',
-            2 => 'Подписано',
-        ];
+        return array(
+            self::DOC_STATUS_DRAFT => Yii::t('art', 'Draft'),
+            self::DOC_STATUS_AGREED => Yii::t('art', 'Agreed'),
+            self::DOC_STATUS_WAIT => Yii::t('art', 'Wait'),
+        );
     }
 
     /**
@@ -217,11 +219,11 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
      */
     public static function getStatusSignOptionsList()
     {
-        return [
-            [0, 'Не подписано', 'danger'],
-            [1, 'На подписи', 'info'],
-            [2, 'Подписано', 'success'],
-        ];
+        return array(
+            [self::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
+            [self::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
+            [self::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
+        );
     }
 
 
@@ -296,5 +298,10 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
     {
         $userId = Yii::$app->user->identity->getId();
         return !($userId == $this->leader_id || $userId == $this->secretary_id || in_array($userId, $this->members_list));
+    }
+
+    public function getUserCommon()
+    {
+        return $this->hasOne(UserCommon::class, ['id' => 'signer_id']);
     }
 }

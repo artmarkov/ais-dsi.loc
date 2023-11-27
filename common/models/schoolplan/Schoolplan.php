@@ -73,10 +73,16 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 
     public $admin_message;
     public $admin_flag;
+    public $formPlaces;
 
     const FORM_PARTIC = [
         1 => 'Беcплатное',
         2 => 'Платное',
+    ];
+
+    const FORM_PLACES = [
+        1 => 'Внутреннее',
+        2 => 'Внешнее',
     ];
 
     const PERIOD_OVER = [
@@ -173,14 +179,25 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['admin_message'], 'required', 'when' => function ($model) {
                 return $model->admin_flag;
             }, 'enableClientValidation' => false],
-            [['places', 'auditory_id'], 'required', 'when' => function ($model) {
-                return empty($model->places) && empty($model->auditory_id);
+//            [['places', 'auditory_id'], 'required', 'when' => function ($model) {
+//                return empty($model->places) && empty($model->auditory_id);
+//            }, 'enableClientValidation' => false],
+            [['auditory_id'], 'required', 'when' => function ($model) {
+                return $model->formPlaces == 1;
+            }, 'enableClientValidation' => false],
+            [['places'], 'required', 'when' => function ($model) {
+                return $model->formPlaces == 2;
             }, 'enableClientValidation' => false],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['author_id' => 'id']],
+            [['formPlaces'], 'safe'],
 
         ];
     }
 
+    public function attributes()
+    {
+        return array_merge(parent::attributes(), ['formPlaces', 'title_over']);
+    }
 
     public function compareTimestamp($attribute, $params, $validator)
     {
@@ -246,12 +263,26 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'period_over_flag' => 'Добавить подготовку к мероприятию',
             'executor_over_id' => 'Ответственный за подготовку',
             'admin_message' => 'Сообщение админа',
+            'formPlaces' => 'Вид мероприятия',
         ];
     }
 
     public function optimisticLock()
     {
         return 'version';
+    }
+
+    public function getFormPlaces()
+    {
+        if($this->auditory_id != null) {
+            return 1;
+        } elseif($this->places != '') {
+            return 2;
+        }
+    }
+
+    public function getTitleOver(){
+        return $this->title_over == null ? 'Подготовка к мероприятию' : $this->title_over;
     }
 
     /**
@@ -322,6 +353,15 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public static function getFormParticList()
     {
         return self::FORM_PARTIC;
+    }
+
+    /**
+     * getFormPlacesList
+     * @return array
+     */
+    public static function getFormPlacesList()
+    {
+        return self::FORM_PLACES;
     }
 
     /**
@@ -426,6 +466,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $this->title_over = $model->title;
             $this->executor_over_id = $model->executors_list;
             return true;
+        } else {
         }
         return false;
     }
@@ -507,9 +548,9 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         if ($this->form_partic == 1) {
             $this->partic_price = null;
         }
-        if ($this->getCategorySell() == 1) {
+        if ($this->getCategorySell() == 1 || $this->formPlaces == 1) {
             $this->places = null;
-        } else {
+        } elseif ($this->getCategorySell() == 2 || $this->formPlaces == 2) {
             $this->auditory_id = null;
         }
         return parent::beforeSave($insert);

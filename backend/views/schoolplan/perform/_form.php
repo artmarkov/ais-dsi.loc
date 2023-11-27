@@ -1,9 +1,11 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use artsoft\models\User;
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
 use common\models\studyplan\StudyplanView;
+use common\models\teachers\Teachers;
 use common\models\user\UserCommon;
 use yii\helpers\Url;
 
@@ -29,6 +31,13 @@ use yii\helpers\Url;
             <?php endif; ?>
         </div>
         <div class="panel-body">
+            <?php if ($model->isNewRecord): ?>
+                <?= \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info"></i> Возможность загрузки файлов появится после первого сохранения формы.',
+                    'options' => ['class' => 'alert-info'],
+                ]);
+                ?>
+            <?php endif; ?>
             <div class="row">
                 <div class="col-sm-12">
                     <?php
@@ -36,6 +45,18 @@ use yii\helpers\Url;
                         echo Html::activeHiddenInput($model, "schoolplan_id");
                     }
                     ?>
+                    <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/teachers', 'Teacher'));
+                    ?>
+
                     <?= $form->field($model, 'studyplan_id')->widget(\kartik\select2\Select2::class, [
                         'data' => StudyplanView::getStudyplanListByPlanYear($plan_year),
                         'showToggleAll' => false,
@@ -84,17 +105,6 @@ use yii\helpers\Url;
                             'url' => Url::to(['/schoolplan/default/studyplan-thematic'])
                         ]
                     ]);
-                    ?>
-                    <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
-                        'options' => [
-                            'disabled' => $readonly,
-                            'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
-                        ],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ])->label(Yii::t('art/teachers', 'Teachers'));
                     ?>
 
                     <?= $form->field($model, 'lesson_mark_id')->widget(\kartik\select2\Select2::class, [
@@ -171,7 +181,7 @@ use yii\helpers\Url;
                     ?>
 
                     <?= $form->field($model, 'signer_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \artsoft\models\User::getUsersListByCategory(['teachers', 'employees']),
+                        'data' => User::getUsersByIds(User::getUsersByRole('department,administrator')),
                         'showToggleAll' => false,
                         'options' => [
                             'disabled' => $readonly,
@@ -184,6 +194,27 @@ use yii\helpers\Url;
 
                     ]);
                     ?>
+                    <?php if (!$model->isNewRecord): ?>
+                        <?php if (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && $model->schoolplan->isAuthor())): ?>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group btn-group pull-right">
+                                        <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->status_sign == 1]); ?>
+                                        <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'send_admin_message', 'disabled' => $model->status_sign != 1]); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group btn-group pull-right">
+                                        <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => $model->status_sign != 0 ? true : false]); ?>
+                                        <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => $model->status_sign != 1 ? true : false]); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

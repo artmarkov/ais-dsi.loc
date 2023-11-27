@@ -468,6 +468,8 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
     public static function getStudyplanSubjectListById($studyplan_id)
     {
+        if (!$studyplan_id) return [];
+
         return Yii::$app->db->createCommand('SELECT distinct studyplan_subject_id as id, memo_1 as name
                                                     FROM studyplan_subject_view
                                                     WHERE studyplan_id=:studyplan_id ORDER BY memo_1',

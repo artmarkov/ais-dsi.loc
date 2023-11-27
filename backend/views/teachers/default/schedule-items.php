@@ -80,7 +80,7 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,  // enable grouping
-        'subGroupOf' => 4
+        'subGroupOf' => 5
     ],
     [
         'attribute' => 'scheduleDisplay',

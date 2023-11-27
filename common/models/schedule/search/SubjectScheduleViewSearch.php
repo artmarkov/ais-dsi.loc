@@ -58,7 +58,7 @@ class SubjectScheduleViewSearch extends SubjectScheduleView
                 'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
             ],*/
             'sort' => [
-                'defaultOrder' => false,
+                'defaultOrder' => false /* [ 'week_day' => SORT_ASC, 'time_in' => SORT_ASC]*/,
             ],
         ]);
 

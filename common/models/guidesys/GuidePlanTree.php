@@ -79,7 +79,7 @@ class GuidePlanTree extends \kartik\tree\models\Tree
         $attr['commission_sell'] = 'Требуется комиссия';
         $attr['preparing_flag'] = 'Требуется подготовка к мероприятию';
         $attr['description_flag'] = 'Требуется описание мероприятия (1000 знаков)';
-        $attr['afisha_flag'] = 'Требуется афиша и программа';
+        $attr['afisha_flag'] = 'Возможность добавления афиши и программы';
         $attr['bars_flag'] = 'Требуется отправлять в БАРС';
         $attr['efficiency_flag'] = 'Требуется подключение показателей эффективности';
         $attr['schedule_flag'] = 'Мероприятие в рамках расписания занятий';

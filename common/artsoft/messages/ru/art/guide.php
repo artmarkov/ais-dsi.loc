@@ -240,6 +240,7 @@ return [
     'Refused admission' => 'Отказано в приеме',
     'Plan closed' => 'План закрыт',
     'Entrant Result' => 'Результаты испытаний',
+    'Portfolio' => 'Портфолио',
 
 ];
 ?>

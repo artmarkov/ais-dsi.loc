@@ -105,10 +105,25 @@ use common\models\user\UserCommon;
                                     <?= \kartik\spinner\Spinner::widget(['preset' => 'small', 'align' => 'left']); ?>
                                 </div>
                             </div>
+                            <?= $form->field($model->loadDefaultValues(), 'formPlaces')->radioList(Schoolplan::getFormPlacesList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
 
                             <?= $form->field($model, 'places')->textInput(['maxlength' => true])->hint('Укажите место проведения в соответствии с фактическим местом, где проводится мероприятие (в случае, если мероприятие будет проводиться на разных площадках, указывается основное место его проведения. Данные вводятся в формате полного названия места. Например: Парк культуры и отдыха имени Горького). Если мероприятие проводится дистанционно, то местом проведения указывается «сеть интернет».') ?>
 
-                            <?= $form->field($model, "auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList()) ?>
+                            <?= $form->field($model, 'auditory_id')->widget(\kartik\select2\Select2::class, [
+                                'data' => RefBook::find('auditory_memo_1')->getList(),
+                                'showToggleAll' => false,
+                                'options' => [
+                                    'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                    'multiple' => false,
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => false,
+                                    //'minimumInputLength' => 3,
+                                ],
+
+                            ]);
+                            ?>
 
                             <?php if (!$model->isNewRecord) : ?>
                                 <?php if ($model->category->preparing_flag) : ?>
@@ -148,7 +163,7 @@ use common\models\user\UserCommon;
 
                                         ]); ?>
 
-                                        <?= $form->field($model, 'title_over')->textInput(['maxlength' => true]) ?>
+                                        <?= $form->field($model->loadDefaultValues(), 'title_over')->textInput(['maxlength' => true]) ?>
 
                                     </div>
                                 </div>
@@ -221,6 +236,11 @@ use common\models\user\UserCommon;
                                 <div class="panel-body">
                                     <div class="row">
                                         <div class="col-sm-12">
+                                            <?= \yii\bootstrap\Alert::widget([
+                                                'body' => '<i class="fa fa-info"></i> Максимальный размер файла: 3 Mb',
+                                                'options' => ['class' => 'alert-info'],
+                                            ]);
+                                            ?>
                                             <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], /*'pluginOptions' => ['theme' => 'explorer'],*/
                                                 'disabled' => $readonly]) ?>
                                         </div>
@@ -382,12 +402,15 @@ $('.spinner').hide();
   schoolplan(key);
   });
   
+    
 function schoolplan(key) {
+  let input =  $('input[type=radio][name="Schoolplan[formPlaces]"]');
   let field1 = $('.field-schoolplan-places');
   let field2 = $('.field-schoolplan-auditory_id');
-    
+  let field3 = $('.field-schoolplan-formPlaces');
+     
   if(key == '') {
-        field1.hide(); field2.hide();
+        field1.hide(); field2.hide(); field3.hide();
     } else {
    $('.spinner').show();
      $.ajax({
@@ -400,10 +423,27 @@ function schoolplan(key) {
                $('.spinner').hide();
                  // console.log(category);
              if(category == 1) {
-                 field1.hide(); field2.show();
+                 field1.hide(); field2.show(); field3.hide();
              }
-             else {
-                 field2.hide(); field1.show();
+             else if(category == 2) {
+                 field2.hide(); field1.show(); field3.hide();
+             } else {
+                 field2.hide(); field1.hide(); field3.show();
+                 
+                 input.each(function () {
+                    if($(this).val() === '1' && $(this).prop('checked')) {
+                        field2.show(); field1.hide();
+                    } else if($(this).val() === '2' && $(this).prop('checked')) {
+                        field1.show(); field2.hide();
+                    }
+                 });
+                 input.click(function() {
+                     if($(this).val() === '1') {
+                             field1.hide(); field2.show(); 
+                         } else if($(this).val() === '2') {
+                             field1.show(); field2.hide(); 
+                         }
+                 });
              }
             },
             error: function () {

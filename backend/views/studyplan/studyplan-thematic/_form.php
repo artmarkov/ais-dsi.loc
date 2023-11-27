@@ -4,6 +4,8 @@ use artsoft\widgets\ActiveForm;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Html;
 use wbraganca\dynamicform\DynamicFormWidget;
+use common\models\teachers\Teachers;
+use artsoft\models\User;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\studyplan\StudyplanThematic */
@@ -47,7 +49,7 @@ $this->registerJs($js);
         <div class="panel">
             <div class="panel-heading">
                 Тематический(репертуарный) план:
-                <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
+                <?php echo RefBook::find('subject_memo_4')->getValue($model->studyplan_subject_id); ?>
                 <?php echo RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id); ?>
             </div>
             <div class="panel-body">
@@ -70,7 +72,7 @@ $this->registerJs($js);
                         <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(\common\models\studyplan\StudyplanThematic::getDocStatusList(), ['disabled' => \artsoft\Art::isFrontend() ? true : $readonly]) ?>
 
                         <?= $form->field($model, 'doc_sign_teachers_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => RefBook::find('teachers_fio', \common\models\teachers\Teachers::STATUS_ACTIVE)->getList(),
+                            'data' => Teachers::getTeachersByIds(User::getUsersByRole('department,administrator')),
                             'options' => [
                                 'disabled' => $readonly,
                                 'placeholder' => Yii::t('art', 'Select...'),
@@ -239,6 +241,27 @@ $this->registerJs($js);
                         <?php endif; ?>
                     </div>
                 </div>
+                <?php if (!$model->isNewRecord): ?>
+                    <?php if (\artsoft\Art::isBackend()): ?>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group btn-group pull-right">
+                                    <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->doc_status == 1]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'send_admin_message', 'disabled' => $model->doc_status != 1]); ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group btn-group pull-right">
+                                    <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => $model->doc_status != 0 ? true : $readonly]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => $model->doc_status != 1 ? true : $readonly]); ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">

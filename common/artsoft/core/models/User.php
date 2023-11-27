@@ -14,6 +14,7 @@ use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -197,7 +198,7 @@ class User extends UserIdentity
         $funcSql = <<< SQL
                 SELECT user_id
                     FROM {$table}
-                    WHERE item_name like '{$roleName}' 
+                    WHERE item_name like any (string_to_array('{$roleName}', ',')::varchar[]) 
 SQL;
         return Yii::$app->db->createCommand($funcSql)->queryColumn();
     }
@@ -294,9 +295,19 @@ SQL;
     {
         $users = static::find()->select(['id', 'username'])
             ->where(['=', 'status', User::STATUS_ACTIVE])
-            ->where(['=', 'superadmin',0])
+            ->andWhere(['=', 'superadmin',0])
             ->asArray()->all();
         return ArrayHelper::map($users, 'id', 'username');
+    }
+
+    public static function getUsersByIds($ids = [])
+    {
+        $query = (new Query())->from('users_view')
+            ->select('id , user_name as name')
+            ->where(['=', 'status', User::STATUS_ACTIVE])
+            ->andWhere(['id' => $ids])
+            ->all();
+        return\yii\helpers\ArrayHelper::map($query, 'id', 'name');
     }
 
     /**

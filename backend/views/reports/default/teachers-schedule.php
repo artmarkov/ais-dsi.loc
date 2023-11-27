@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 
@@ -11,6 +12,15 @@ $total[1000][1000] = $total[1000][1001] = $total[1001][1000] = $total[1001][1001
     <div class="panel">
         <div class="panel-heading">
             Расписание занятий: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+        </div>
+        <div class="form-group btn-group pull-right">
+            <?= Html::a('<i class="fa fa-calendar-check-o" aria-hidden="true"></i> Элементы расписания',
+                ['/teachers/default/schedule-items', 'id' => $modelTeachers->id],
+                [
+                    'title' => 'Открыть в новом окне',
+                    'target' => '_blank',
+                    'class' => 'btn btn-default',
+                ]); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search-schedule', compact('model_date')) ?>
@@ -29,7 +39,7 @@ $total[1000][1000] = $total[1000][1001] = $total[1001][1000] = $total[1001][1001
                             <tr class="warning">
                                 <th class="text-center" style="width: 200px">Время</th>
                                 <th class="text-center" style="width: 200px">Нагрузка факт</th>
-                                <th class="text-center"style="width: 200px">Группа/Ученик</th>
+                                <th class="text-center" style="white-space:nowrap;">Группа/Ученик</th>
                                 <th class="text-center">Предмет</th>
                                 <th class="text-center">Деятельность</th>
                                 <th class="text-center">Кабинет</th>

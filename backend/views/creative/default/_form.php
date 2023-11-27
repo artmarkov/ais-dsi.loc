@@ -49,9 +49,14 @@ JS
     , \yii\web\View::POS_END);
 
 $this->registerJs(<<<JS
+    let today = new Date();
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    let yyyy = today.getFullYear();
+    today = dd + '.' + mm + '.' + yyyy;
+    
     jQuery(".dynamicform_wrapper .kv-tree-input").each(function(index) {
         $("#efficiency_tree" + index).on('treeview:change', function(event, key) {
-    // console.log(key);
         $.ajax({
                 url: '/admin/efficiency/default/select',
                 type: 'POST',
@@ -60,8 +65,10 @@ $this->registerJs(<<<JS
                 },
                 success: function (bonus) {
                    let  p = jQuery.parseJSON(bonus);
+                   let date = document.getElementById('teachersefficiency-' + index + '-date_in');
                     document.getElementsByName('TeachersEfficiency[' + index + '][bonus_vid_id]')[p.id].checked = true;
                     document.getElementById('teachersefficiency-' + index + '-bonus').value = p.value;
+                    date.value = !date.value ? today : date.value;
                 },
                 error: function () {
                     alert('Error!!!');  
@@ -86,7 +93,7 @@ JS
         'enableClientScript' => true, // default
     ])
     ?>
-    <?php $teachers_fio_list = RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(); ?>
+    <?php $teachers_fio_list = RefBook::find('teachers_fio', !$readonly ? UserCommon::STATUS_ACTIVE : '')->getList(); ?>
 
     <div class="panel">
         <div class="panel-heading">
@@ -98,7 +105,7 @@ JS
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($model, 'category_id')->dropDownList(CreativeCategory::getCreativeCategoryList(), ['prompt' => '', 'encodeSpaces' => true, 'disabled' => $readonly]) ?>
+                    <?= $form->field($model, 'category_id')->dropDownList(CreativeCategory::getCreativeCategoryList(), ['prompt' => '', 'encodeSpaces' => true, 'disabled' => !$model->isNewRecord ? true : $readonly]) ?>
                     <?= $form->field($model, 'status')->dropDownList(CreativeWorks::getStatusList(), ['disabled' => $readonly]) ?>
 
                     <?= $form->field($model, 'name')->textarea(['rows' => 3]) ?>
@@ -128,11 +135,7 @@ JS
                     ])->label(Yii::t('art/creative', 'Аuthors-performers'));
                     ?>
 
-                    <?= $form->field($model, 'published_at')->widget(DatePicker::class, ['disabled' => $readonly])->textInput(['autocomplete' => 'off']); ?>
-
-                    <?php if (!$model->isNewRecord): ?>
-                        <?= $form->field($model, 'created_by')->dropDownList(User::getUsersList(), ['disabled' => $readonly]) ?>
-                    <?php endif; ?>
+                    <?php /*$form->field($model, 'published_at')->widget(DatePicker::class, ['disabled' => $readonly])->textInput(['autocomplete' => 'off']); */?>
 
                 </div>
             </div>
@@ -156,7 +159,7 @@ JS
                 'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items', // required: css class selector
                 'widgetItem' => '.item', // required: css class
-                'limit' => 999, // the maximum times, an element can be added (default 999)
+                'limit' => 15, // the maximum times, an element can be added (default 999)
                 'min' => 1, // 0 or 1 (default 1)
                 'insertButton' => '.add-item', // css class
                 'deleteButton' => '.remove-item', // css class
@@ -202,7 +205,7 @@ JS
                                             'disabled' => $readonly,
                                             'id' => "efficiency_tree{$index}",
                                         ],
-                                        'query' => \common\models\efficiency\EfficiencyTree::find()->andWhere(['root' => 3])->addOrderBy('root, lft'),
+                                        'query' => \common\models\efficiency\EfficiencyTree::find()->andWhere(['root' => [3, 12]])->addOrderBy('root, lft'),
                                         'dropdownConfig' => [
                                             'input' => ['placeholder' => 'Выберите показатель эффективности...'],
                                         ],
@@ -257,7 +260,12 @@ JS
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
+                <?php if (!$model->isNewRecord): ?>
                 <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+                <?php else: ?>
+                <?= \artsoft\helpers\ButtonHelper::exitButton();?>
+                <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'next']); ?>
+                <?php endif; ?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

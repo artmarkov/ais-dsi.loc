@@ -155,7 +155,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [Schoolplan::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
                                     [Schoolplan::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
                                     [Schoolplan::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
-                                    [Schoolplan::DOC_STATUS_CANCEL, Yii::t('art', 'Canceled'), 'danger'],
+                                  //  [Schoolplan::DOC_STATUS_CANCEL, Yii::t('art', 'Canceled'), 'danger'],
                                 ],
                                 'options' => ['style' => 'width:150px']
                             ],

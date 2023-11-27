@@ -24,7 +24,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             'commission_sell' => $this->smallInteger(1)->defaultValue(1)->comment('Требуется аттестационная или приемная комиссия'),
             'preparing_flag' => $this->boolean()->defaultValue(false)->comment('Требуется подготовка к мероприятию'),
             'description_flag' => $this->boolean()->defaultValue(false)->comment('Требуется описание мероприятия (1000 знаков)'),
-            'afisha_flag' => $this->boolean()->defaultValue(false)->comment('Требуется афиша и программа'),
+            'afisha_flag' => $this->boolean()->defaultValue(false)->comment('Возможность добавления афиши и программы'),
             'bars_flag' => $this->boolean()->defaultValue(false)->comment('Требуется отправлять в БАРС'),
             'efficiency_flag' => $this->boolean()->defaultValue(false)->comment('Требуется подключение показателей эффективности'),
             'schedule_flag' => $this->boolean()->defaultValue(false)->comment('Мероприятие в рамках расписания занятий'),

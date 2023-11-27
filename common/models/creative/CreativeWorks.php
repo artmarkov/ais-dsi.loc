@@ -4,6 +4,7 @@ namespace  common\models\creative;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\behaviors\DateToTimeBehavior;
 use common\models\efficiency\TeachersEfficiency;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -59,6 +60,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
             [
                 'class' => DateFieldBehavior::class,
                 'attributes' => ['published_at'],
+                'timeFormat' => 'd.m.Y H:i'
             ],
             [
                 'class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class,
