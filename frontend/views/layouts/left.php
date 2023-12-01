@@ -99,15 +99,12 @@ use artsoft\widgets\Nav;
                 ],
             ],
             [
-                'label' => 'Аналитика',
+                'label' => 'Контроль исполнения',
                 'icon' => 'fa fa-bar-chart',
                 'url' => '#',
                 'items' => [
-//                    ['label' => 'Отчеты', 'icon' => 'fa fa-minus', 'url' => ['/reports/default/index']],
-//                    ['label' => 'Журнал посещений', 'icon' => 'fa fa-minus', 'url' => ['/attandlog/default/index']],
-//                    ['label' => 'Показатели эфективности', 'icon' => 'fa fa-minus', 'url' => ['/efficiency/default/index']],
-//                    ['label' => 'Портфолио преподавателей', 'icon' => 'fa fa-minus', 'url' => ['/portfolio/default/index']],
-                    ['label' => 'Контроль исполнения', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/index']],
+                    ['label' => 'Индивидуальные планы на подписи', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/thematic-sign']],
+                    ['label' => 'Отдел на контроле', 'icon' => 'fa fa-minus', 'url' => ['/execution/teachers/index']],
 //                    ['label' => 'Сводная успеваемость', 'icon' => 'fa fa-minus', 'url' => ['/summary-progress/default/index']],
                 ],
             ],

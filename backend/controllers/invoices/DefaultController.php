@@ -18,6 +18,7 @@ use yii\db\Exception;
 use yii\db\Transaction;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
+use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -118,11 +119,11 @@ class DefaultController extends BaseController
         $model->status = StudyplanInvoices::STATUS_WORK;
         // $model->invoices_reporting_month = date('m');
 
-        if (!Yii::$app->request->get('studyplan_id') && !Yii::$app->request->get('ids')) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_id.");
-        }
+//        if (!Yii::$app->request->get('studyplan_id') || !Yii::$app->request->get('ids')) {
+//            throw new NotFoundHttpException("Отсутствует обязательный параметр GET studyplan_id.");
+//        }
         if (Yii::$app->request->get('ids')) {
-            $studyplanIds->ids = array_unique(Yii::$app->request->get('ids'));
+            $studyplanIds->ids = array_unique(explode(',', base64_decode(Yii::$app->request->get('ids'))));
         }
         if (Yii::$app->request->get('studyplan_id')) {
             $studyplanIds->ids = [Yii::$app->request->get('studyplan_id')];
@@ -171,7 +172,7 @@ class DefaultController extends BaseController
             $t = explode('|', $val);
             $ids[] = $t[0];
         }
-        return $this->redirect(['create', 'ids' => $ids]);
+        return $this->redirect(['create', 'ids' => base64_encode(implode(',', $ids))]);
     }
 
     public function actionBulkDelete()

@@ -48,8 +48,8 @@ $columns = [
     ],
     [
         'attribute' => 'teachers_id',
-        'value' => function ($model) {
-            $teachers_fio = $teachers_list[$model->teachers_id] ?? '';
+        'value' => function ($model) use ($teachers_list) {
+            $teachers_fio = $teachers_list[$model->teachers_id] ?? $model->teachers_id;
             return \artsoft\Art::isBackend() ? Html::a($teachers_fio,
                 ['/teachers/default/schedule-items', 'id' => $model->teachers_id],
                 [

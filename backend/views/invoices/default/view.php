@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = 'Информация о платеже';
 $this->params['breadcrumbs'][] = $this->title;
 
 $data = $model->getInvoicesData();
-Notice::registerDanger('Банк Тинькофф временно не принимает платежи по QR-коду. Решает технические проблемы. Выбирайте другой банк для оплаты по QR-коду!');
+//Notice::registerDanger('Банк Тинькофф временно не принимает платежи по QR-коду. Решает технические проблемы. Выбирайте другой банк для оплаты по QR-коду!');
 
 ?>
 <div class="studyplan-invoices-view">

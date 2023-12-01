@@ -1,7 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use yii\helpers\Url;
+use common\models\teachers\Teachers;use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridView;
@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $teachers_list = RefBook::find('teachers_fio')->getList();
 $auditory_list = RefBook::find('auditory_memo_1')->getList();
 $noteModel = NoticeDisplay::getData($dataProvider->models, $model_date->plan_year);
-$readonly = !$noteModel->confirmIsAvailable();
+$readonly = !$noteModel->confirmIsAvailable() || !Teachers::isOwnTeacher($model->id);
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
@@ -151,7 +151,7 @@ $columns = [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
-        'visible' => \artsoft\Art::isFrontend(),
+        'visible' => \artsoft\Art::isFrontend() && Teachers::isOwnTeacher($model->id) && $model_confirm->confirm_status == 0,
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
@@ -186,14 +186,14 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-            'create' => function (SubjectScheduleView $model) use($noteModel) {
-                return $noteModel->getTeachersScheduleNeed($model) && $model->subject_sect_id == 0;
+            'create' => function (SubjectScheduleView $model) use($noteModel,$model_confirm) {
+                return $noteModel->getTeachersScheduleNeed($model) && $model->subject_sect_id == 0 ;
             },
               'delete' => function ($model) use($model_confirm) {
-                return $model->subject_schedule_id !== null && $model->subject_sect_id == 0 && $model_confirm->confirm_status == 0;
+                return $model->subject_schedule_id !== null && $model->subject_sect_id == 0;
             },
             'update' => function ($model) use($model_confirm) {
-                return $model->subject_schedule_id !== null && $model->subject_sect_id == 0 && $model_confirm->confirm_status == 0;
+                return $model->subject_schedule_id !== null && $model->subject_sect_id == 0;
             }
 
         ]

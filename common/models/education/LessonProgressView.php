@@ -8,6 +8,7 @@ use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use common\models\guidejob\Direction;
 use common\models\studyplan\Studyplan;
+use common\models\teachers\Teachers;
 use common\models\teachers\TeachersLoadView;
 use common\widgets\editable\Editable;
 use Yii;
@@ -223,7 +224,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
             foreach ($marks as $id => $mark) {
                 $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
-                $data[$item][$date_label] = self::getEditableForm($date_label, $mark);
+                $data[$item][$date_label] = self::getEditableForm($date_label, $mark, $teachers_id);
             }
         }
 
@@ -321,7 +322,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
             foreach ($marks as $id => $mark) {
                 $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
-                $data[$item][$date_label] = self::getEditableForm($date_label, $mark);
+                $data[$item][$date_label] = self::getEditableForm($date_label, $mark, $teachers_id);
             }
         }
 
@@ -357,7 +358,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
      * @return string
      * @throws \Exception
      */
-    protected static function getEditableForm($date_label, $mark)
+    protected static function getEditableForm($date_label, $mark, $teachers_id)
     {
         $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::MARK, LessonMark::OFFSET_NONOFFSET, LessonMark::REASON_ABSENCE]);
 
@@ -365,6 +366,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             'buttonsTemplate' => "{reset}{submit}",
             'name' => 'lesson_mark_id',
             'asPopover' => true,
+            'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($teachers_id),
             'value' => $mark->lesson_mark_id,
             'header' => $date_label . ' - ' . $mark->test_name,
             'displayValueConfig' => $mark_list,

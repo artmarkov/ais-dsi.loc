@@ -6,6 +6,7 @@ use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridView;
 use common\models\studyplan\StudyplanThematic;
+use common\models\teachers\Teachers;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\studyplan\search\ThematicViewSearch */
@@ -57,14 +58,6 @@ $columns = [
         'format' => 'raw',
     ],
     [
-        'attribute' => 'doc_status',
-        'filter' => StudyplanThematic::getDocStatusList(),
-        'value' => function (StudyplanThematic $model) {
-            return StudyplanThematic::getDocStatusValue($model->doc_status);
-        },
-        'format' => 'raw',
-    ],
-    [
         'attribute' => 'doc_sign_teachers_id',
         'filter' => RefBook::find('teachers_fio')->getList(),
         'value' => function (StudyplanThematic $model) {
@@ -72,6 +65,16 @@ $columns = [
         },
         'options' => ['style' => 'width:150px'],
         'format' => 'raw',
+    ],
+    [
+        'class' => 'artsoft\grid\columns\StatusColumn',
+        'attribute' => 'doc_status',
+        'optionsArray' => [
+            [StudyplanThematic::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
+            [StudyplanThematic::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
+            [StudyplanThematic::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
+        ],
+        'options' => ['style' => 'width:150px']
     ],
     [
         'attribute' => 'doc_sign_timestamp',
@@ -91,7 +94,7 @@ $columns = [
             'create' => function ($key, $model) {
                 if ($model->subject_sect_studyplan_id == null) {
                     return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                       ['/teachers/default/thematic-items', 'id' => $model->teachers_id, 'studyplan_subject_id' => $model->studyplan_subject_id, 'mode' => 'create'], [
+                        ['/teachers/default/thematic-items', 'id' => $model->teachers_id, 'studyplan_subject_id' => $model->studyplan_subject_id, 'mode' => 'create'], [
                             'title' => Yii::t('art', 'Create'),
                             'data-method' => 'post',
                             'data-pjax' => '0',
@@ -100,7 +103,7 @@ $columns = [
                     );
                 } else {
                     return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                       ['/teachers/default/thematic-items', 'id' => $model->teachers_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id, 'mode' => 'create'], [
+                        ['/teachers/default/thematic-items', 'id' => $model->teachers_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id, 'mode' => 'create'], [
                             'title' => Yii::t('art', 'Create'),
                             'data-method' => 'post',
                             'data-pjax' => '0',
@@ -158,13 +161,13 @@ $columns = [
     [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
-        'visible' => \artsoft\Art::isFrontend(),
+        'visible' => \artsoft\Art::isFrontend() && Teachers::isOwnTeacher($model->id),
         'width' => '90px',
         'template' => '{create} {view} {update} {delete}',
         'buttons' => [
             'view' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
-                    ['teachers/thematic-items/', 'id' => $model->studyplan_thematic_id], [
+                    ['/teachers/thematic-items/', 'id' => $model->studyplan_thematic_id], [
                         'title' => Yii::t('art', 'View'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -229,12 +232,36 @@ $columns = [
             }
         ],
     ],
+    [
+        'class' => 'kartik\grid\ActionColumn',
+        'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+        'visible' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($model->id),
+        'width' => '90px',
+        'template' => '{view}',
+        'buttons' => [
+            'view' => function ($key, $model) {
+                return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                    ['/execution/teachers/thematic-items', 'id' => $model->teachers_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'view'], [
+                        'title' => Yii::t('art', 'View'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]
+                );
+            },
+
+        ],
+        'visibleButtons' => [
+            'view' => function ($model) {
+                return $model->studyplan_thematic_id;
+            }
+        ],
+    ],
 ];
 ?>
 <div class="teachers-thematic-index">
     <div class="panel">
         <div class="panel-heading">
-            Тематические планы:  <?php echo RefBook::find('teachers_fio')->getValue($model->id); ?>
+            Тематические планы: <?php echo RefBook::find('teachers_fio')->getValue($model->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>
@@ -267,7 +294,8 @@ $columns = [
                     [
                         'columns' => [
                             ['content' => 'Учебный предмет/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-                            ['content' => 'План', 'options' => ['colspan' => 6, 'class' => 'text-center danger']],
+                            ['content' => 'План', 'options' => ['colspan' => 2, 'class' => 'text-center info']],
+                            ['content' => 'Подпись', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

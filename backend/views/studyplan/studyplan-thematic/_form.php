@@ -242,7 +242,7 @@ $this->registerJs($js);
                     </div>
                 </div>
                 <?php if (!$model->isNewRecord): ?>
-                    <?php if (\artsoft\Art::isBackend()): ?>
+                    <?php if (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && Teachers::isOwnTeacher($model->doc_sign_teachers_id))): ?>
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="form-group btn-group pull-right">

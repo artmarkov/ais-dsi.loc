@@ -230,13 +230,71 @@ class Teachers extends ActiveRecord
 
         return self::find()->innerJoin('user_common', 'user_common.id = teachers.user_common_id')
             ->innerJoin('teachers_activity', 'teachers_activity.teachers_id = teachers.id')
-            ->andWhere(['in', 'user_common.status', UserCommon::STATUS_ACTIVE])// заблокированных не добавляем в список
+            ->where(['in', 'user_common.status', UserCommon::STATUS_ACTIVE])// заблокированных не добавляем в список
             ->andWhere(['in', 'user_common.user_category', UserCommon::USER_CATEGORY_TEACHERS])// только преподаватели
             ->andWhere(['=', 'teachers_activity.direction_id', $direction_id])
             ->select(['teachers.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
             ->orderBy('user_common.last_name')
             ->asArray()->all();
     }
+
+    /**
+     * Отделы выбранного преподавателя
+     * @param $id
+     * @return array|false|int|string|null
+     */
+    public static function getTeachersDepartment($id)
+    {
+        if (!$id) {
+            return [];
+        }
+        return self::find()->select('department_list')
+            ->where(['=', 'id', $id])
+            ->scalar();
+    }
+
+    /**
+     * Список Id преподавателей выбранных отделов
+     * @param $department_list
+     * @return array
+     */
+    public static function getTeachersForDepartments($department_list)
+    {
+        if (!$department_list) {
+            return [];
+        }
+        return (new \yii\db\Query())->select('teachers.id')->from('guide_department, teachers')
+            ->distinct()
+            ->where(new \yii\db\Expression("guide_department.id = ANY (string_to_array(teachers.department_list::text, ',')::int[])"))
+            ->andWhere(new \yii\db\Expression("guide_department.id = ANY (string_to_array('{$department_list}', ',')::int[])"))
+            ->andWhere(['status' => Teachers::STATUS_ACTIVE])
+            ->column();
+
+    }
+
+    /**
+     * Коллеги по отделам
+     * @param $id
+     * @return array
+     */
+    public static function getTeachersForTeacher($id)
+    {
+        $department_list = self::getTeachersDepartment($id);
+        return self::getTeachersForDepartments($department_list);
+
+    }
+
+    /**
+     * Проверка зашедшего преподавателя
+     * @return bool
+     */
+    public static function isOwnTeacher($id = null)
+    {
+        $userId = Yii::$app->user->identity->getId();
+        $teachers_id = RefBook::find('users_teachers')->getValue($userId) ?? null;
+        return $id == $teachers_id;
+    }
+
 
     /**
      * Список преподавателей/концертмейстеров
@@ -265,7 +323,7 @@ class Teachers extends ActiveRecord
             ->where(['user_id' => $ids])
             ->andWhere(['=', 'status', UserCommon::STATUS_ACTIVE])
             ->all();
-        return\yii\helpers\ArrayHelper::map($query, 'id', 'name');
+        return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
     }
 
     public function getTeachersScheduleQuery($plan_year)

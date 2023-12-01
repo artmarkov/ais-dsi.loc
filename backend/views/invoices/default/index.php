@@ -37,17 +37,18 @@ $columns = [
     [
         'attribute' => 'student_fio',
         'value' => function ($model, $key, $index, $widget) {
-            $str = ''; $arr = [];
+            $str = '';
+            $arr = [];
             $str .= \artsoft\Art::isBackend() ? Html::a($model->student_fio,
-                    ['/studyplan/default/view', 'id' => $model->studyplan_id],
-                    [
-                        'target' => '_blank',
-                        'data-pjax' => '0',
-                        // 'class' => 'btn btn-link',
-                        'title' => 'Открыть в новом окне'
-                    ]) : $model->student_fio;
+                ['/studyplan/default/view', 'id' => $model->studyplan_id],
+                [
+                    'target' => '_blank',
+                    'data-pjax' => '0',
+                    // 'class' => 'btn btn-link',
+                    'title' => 'Открыть в новом окне'
+                ]) : $model->student_fio;
 
-            if($model->limited_status_list) {
+            if ($model->limited_status_list) {
                 foreach (explode(',', $model->limited_status_list) as $limited_status) {
                     $arr[] = \common\models\students\Student::getLimitedStatusValue($limited_status);
                 }
@@ -79,7 +80,7 @@ $columns = [
         'value' => function ($model) {
             $val = Studyplan::getStatusValue($model->status);
             return $model->status == Studyplan::STATUS_ACTIVE ? '<span class="label label-success">' . $val . '</span>' : '<span class="label label-danger">' . $val . '</span>';
-            },
+        },
         'contentOptions' => ['style' => "text-align:center; vertical-align: middle;"],
         /* 'contentOptions' => function ($model) {
              switch ($model->status) {
@@ -226,12 +227,28 @@ $columns = [
     ],
 ];
 ?>
-<div class="studyplan-invoices-index">
+    <div class="studyplan-invoices-index">
     <div class="panel">
         <?= $this->render('_search', compact('model_date', 'plan_year')) ?>
         <div class="panel-body">
             <div class="row">
+                <div class="col-sm-12">
+                    <?= \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-info"></i> Для добавления нескольких квитанцый, нажмите чекбоксы слева.',
+                        'options' => ['class' => 'alert-info'],
+                    ]);
+                    ?>
+                </div>
                 <div class="col-sm-6">
+                    <?php echo Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Создать новые квитанции',
+                        ['#'],
+                        [
+                            // 'target' => '_blank',
+                            'data-pjax' => '0',
+                            'class' => 'btn btn-success bulk-new disabled',
+                            //    'title' => 'Открыть в новом окне'
+                        ]);
+                    ?>
                     <?php
                     /* Uncomment this to activate GridQuickLinks */
                     /* echo GridQuickLinks::widget([
@@ -262,7 +279,7 @@ $columns = [
                 'bulkActionOptions' => \artsoft\Art::isBackend() ? [
                     'gridId' => 'studyplan-invoices-grid',
                     'actions' => [
-                        Url::to(['bulk-new']) => 'Создать новые квитанции',
+//                        Url::to(['bulk-new']) => 'Создать новые квитанции',
                         Url::to(['bulk-delete']) => 'Удалить квитанции',
                         Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_WORK]) => 'Перевести в статус "Счет в работе"',
                         Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_PAYD]) => 'Перевести в статус "Оплачено"',
@@ -292,7 +309,38 @@ $columns = [
 
             <?php Pjax::end() ?>
         </div>
+        <div class="panel-footer">
+
+        </div>
     </div>
-</div>
+<?php
 
 
+$js = <<<JS
+var checkboxes = $("input[name='selection[]']");
+   var  btn =  $(".bulk-new");
+
+checkboxes.each(function(idx, itm){
+  $(itm).on("change", function() {
+      console.log(checkboxes.filter(":checked").length);
+    if(checkboxes.filter(":checked").length > 0) {
+        btn.removeClass('disabled');        
+    }
+    else {
+        btn.addClass('disabled');  
+    }
+  });
+});
+
+$(document).off('click', '.bulk-new').on('click', '.bulk-new', function (e) {
+     e.preventDefault();
+$.ajax({
+            url: '/admin/invoices/default/bulk-new',
+            type: "POST",
+            data: $('input[name="selection[]"]:checked').serialize(),
+          });
+
+});
+
+JS;
+$this->registerJs($js);

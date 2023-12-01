@@ -230,6 +230,7 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/admin/studyplan/default/characteristic-items/grid-sort',
                         '/admin/studyplan/default/characteristic-items/grid-page-size',
                         '/admin/studyplan/default/thematic-items',
+                        '/admin/studyplan/default/thematic-items?mode=view',
                         '/admin/studyplan/default/thematic-items/grid-sort',
                         '/admin/studyplan/default/thematic-items/grid-page-size',
                         '/admin/studyplan/default/studyplan-progress',

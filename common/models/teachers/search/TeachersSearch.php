@@ -19,6 +19,13 @@ class TeachersSearch extends Teachers
     public $fullName;
     public $userStatus;
 
+    public $query;
+
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: Teachers::find();
+        parent::__construct();
+    }
     /**
      * @inheritdoc
      */
@@ -50,7 +57,7 @@ class TeachersSearch extends Teachers
      */
     public function search($params)
     {
-        $query = Teachers::find();
+        $query = $this->query;
 //        жадная загрузка
         $query->joinWith(['user']);
 

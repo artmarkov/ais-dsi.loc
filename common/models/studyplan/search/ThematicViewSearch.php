@@ -18,7 +18,7 @@ class ThematicViewSearch extends ThematicView
     public function rules()
     {
         return [
-            [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'plan_year', 'teachers_load_id', 'subject_type_id',  'studyplan_thematic_id', 'thematic_category', 'direction_id', 'teachers_id', 'status'], 'integer'],
+            [['studyplan_subject_id', 'subject_sect_studyplan_id', 'subject_sect_id', 'plan_year', 'teachers_load_id', 'subject_type_id',  'studyplan_thematic_id', 'thematic_category', 'direction_id', 'teachers_id', 'status', 'doc_sign_teachers_id'], 'integer'],
 
         ];
     }
@@ -73,7 +73,7 @@ class ThematicViewSearch extends ThematicView
             'subject_type_id' => $this->subject_type_id,
             'teachers_id' => $this->teachers_id,
             'direction_id' => $this->direction_id,
-//            'subject_vid_id' => $this->subject_vid_id,
+            'doc_sign_teachers_id' => $this->doc_sign_teachers_id,
             'studyplan_thematic_id' => $this->studyplan_thematic_id,
             'thematic_category' => $this->thematic_category,
         ]);

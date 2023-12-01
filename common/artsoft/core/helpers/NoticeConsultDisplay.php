@@ -215,7 +215,7 @@ class NoticeConsultDisplay
      */
     public function confirmIsAvailable()
     {
-        return !empty($this->models) && empty($this->teachersLoadData) && empty($this->scheduleOverLapping) && empty($this->teachersOverLapping)  && ($this->yearTimeConsultTotal == $this->dateTimeTotal);
+        return !empty($this->models) && empty($this->teachersLoadData)/* && empty($this->scheduleOverLapping) && empty($this->teachersOverLapping)*/  && ($this->yearTimeConsultTotal == $this->dateTimeTotal);
     }
 
     /**

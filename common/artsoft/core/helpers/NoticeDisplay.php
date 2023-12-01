@@ -361,8 +361,8 @@ class NoticeDisplay
         });
         $subjectScheduleAccomp = \yii\helpers\ArrayHelper::getColumn($subjectScheduleAccomp, 'subject_schedule_id');
         $subjectScheduleAccomp = array_diff($subjectScheduleAccomp, array_keys($this->scheduleAccompLimit));
-
-        return !empty($this->models) && empty($this->teachersLoadData) && empty($this->scheduleOverLapping) && empty($this->teachersOverLapping) && empty($this->teachersPlanScheduleOverLapping) && empty($this->studentScheduleOverLapping) && empty($subjectScheduleAccomp) && empty($subjectScheduleNull);
+//        echo '<pre>' . print_r($this->studentScheduleOverLapping, true) . '</pre>'; die();
+        return !empty($this->models) && empty($this->teachersLoadData) /*&& empty($this->scheduleOverLapping)*/ && empty($this->teachersOverLapping) && empty($this->teachersPlanScheduleOverLapping) /*&& empty($this->studentScheduleOverLapping) */&& empty($subjectScheduleAccomp) && empty($subjectScheduleNull);
     }
 
     public function getScheduleDisplay($model)

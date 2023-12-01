@@ -243,6 +243,7 @@ class TeachersTimesheet
      */
     protected function getDepartmentsString($departmentsIds)
     {
+        $departmentsIds = array_filter($departmentsIds, function($value) { return !is_null($value) && $value !== ''; });
         $array = Department::find()->select('name')->where(['id' => $departmentsIds])->orderBy('name')->column();
         return $array ? implode(', ', $array) : '';
     }

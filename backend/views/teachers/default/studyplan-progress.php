@@ -2,6 +2,7 @@
 
 use artsoft\grid\GridView;
 use artsoft\helpers\RefBook;
+use common\models\teachers\Teachers;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use common\models\schedule\SubjectScheduleStudyplanView;
@@ -16,13 +17,14 @@ $this->title = $this->title = Yii::t('art/guide', 'Group Progress');
 $this->params['breadcrumbs'][] = $this->title;
 //echo '<pre>' . print_r($model, true) . '</pre>'; die();
 
-$editMarks = function ($model, $key, $index, $widget) {
+$editMarks = function ($model, $key, $index, $widget) use ($modelTeachers){
     $content = [];
     if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], 0)) {
             $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                 \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create'] :
                     ['/teachers/studyplan-progress/create', 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id']],
                 [
+                    'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
                     'title' => 'Добавить занятие',
                     'data-method' => 'post',
                     'data-pjax' => '0',
@@ -36,6 +38,7 @@ $editMarks = function ($model, $key, $index, $widget) {
             $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                 \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'update'] :
                     ['/teachers/studyplan-progress/update', 'id' => $model['teachers_id'], 'id' => $lesson_items_id], [
+                        'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -44,6 +47,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                 . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                 \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete'] :
                     ['/teachers/studyplan-progress/delete', 'id' => $model['teachers_id'], 'id' => $lesson_items_id], [
+                        'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xxs btn-link',
                         'data' => [
