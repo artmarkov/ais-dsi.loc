@@ -95,7 +95,7 @@ $subject = (new \yii\db\Query())->select('subject')
                                     ]
                                 ]);
                                 ?>
-                                <?= $form->field($model, 'lesson_date')->widget(DatePicker::class, ['options' => ['readonly' => $model->lesson_date]]); ?>
+                                <?= $form->field($model, 'lesson_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['options' => ['disabled' => $model->lesson_date]]); ?>
                                 <?= $form->field($model, 'lesson_topic')->textInput() ?>
                                 <?= $form->field($model, 'lesson_rem')->textInput() ?>
                             </div>
