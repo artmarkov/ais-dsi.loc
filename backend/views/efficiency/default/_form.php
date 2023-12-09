@@ -6,9 +6,18 @@ use artsoft\helpers\Html;
 use common\models\user\UserCommon;
 use kartik\date\DatePicker;
 use common\models\efficiency\EfficiencyTree;
+use yii\helpers\StringHelper;
 
 /* @var $this yii\web\View */
 /* @var $form artsoft\widgets\ActiveForm */
+/* @var $model common\models\efficiency\TeachersEfficiency */
+/* @var $modelDependence */
+
+if (StringHelper::basename($modelDependence::className()) == 'Schoolplan') {
+    $dataEfficiencyTree = EfficiencyTree::find()->andWhere(['root' => [1, 2]])->addOrderBy('root, lft');
+} else  {
+    $dataEfficiencyTree = EfficiencyTree::find()->andWhere(['root' => [7, 11]])->addOrderBy('root, lft');
+}
 ?>
 
 <div class="teachers-efficiency-form">
@@ -58,7 +67,7 @@ use common\models\efficiency\EfficiencyTree;
                         'options' => [
                             'disabled' => isset($model->class) ? true : $readonly,
                         ],
-                        'query' => EfficiencyTree::find()->addOrderBy('root, lft'),
+                        'query' =>  isset($model->class) ? EfficiencyTree::find()->addOrderBy('root, lft') : $dataEfficiencyTree,
                         'dropdownConfig' => [
                             'input' => ['placeholder' => 'Выберите показатель эффективности...'],
                         ],
@@ -77,7 +86,7 @@ use common\models\efficiency\EfficiencyTree;
                     ]);
                     ?>
                     <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
+                        'data' => (StringHelper::basename($modelDependence::className()) == 'Schoolplan') ? $modelDependence->getExecutorsList() : RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
                         'options' => [
                             'disabled' => isset($model->class) ? true : $readonly,
                             'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),

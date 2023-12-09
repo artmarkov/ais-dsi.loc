@@ -5,6 +5,7 @@ namespace common\models\schoolplan;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\fileinput\behaviors\FileManagerBehavior;
+use artsoft\helpers\Html;
 use artsoft\models\User;
 use common\models\activities\ActivitiesOver;
 use common\models\auditory\Auditory;
@@ -14,6 +15,7 @@ use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Query;
 use yii\helpers\StringHelper;
 
 /**
@@ -274,14 +276,15 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 
     public function getFormPlaces()
     {
-        if($this->auditory_id != null) {
+        if ($this->auditory_id != null) {
             return 1;
-        } elseif($this->places != '') {
+        } elseif ($this->places != '') {
             return 2;
         }
     }
 
-    public function getTitleOver(){
+    public function getTitleOver()
+    {
         return $this->title_over == null ? 'Подготовка к мероприятию' : $this->title_over;
     }
 
@@ -336,6 +339,50 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function getTeachersEfficiency()
     {
         return $this->hasMany(TeachersEfficiency::class, ['item_id' => 'id'])->andWhere(['class' => StringHelper::basename(get_class($this))]);
+    }
+
+    /**
+     * Список ответственных
+     * @return array
+     */
+    public function getExecutorsList()
+    {
+        $query = (new Query())->from('teachers_view')
+            ->select('teachers_id as id , fio as name')
+            ->where(['teachers_id' => $this->executors_list])
+            ->all();
+        return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
+    }
+
+    public static function getEfficiencyForExecutors($models)
+    {
+        $data = [];
+        $ids = \yii\helpers\ArrayHelper::getColumn($models, 'id');
+        $query = TeachersEfficiency::find()
+            ->where(['item_id' => $ids])
+            ->andWhere(['class' => StringHelper::basename(self::class)])
+            ->asArray()
+            ->all();
+        $query = \yii\helpers\ArrayHelper::index($query, null, ['item_id', 'teachers_id']);
+        foreach ($query as $item_id => $teachers) {
+            foreach ($teachers as $teachers_id => $value) {
+                $label = [];
+                foreach ($value as $index => $val) {
+                        $label[] = Html::a($val['bonus'] . ($val['bonus_vid_id'] == 1 ? '%' : '₽'),
+                            ['/schoolplan/default/teachers-efficiency', 'id' => $val['item_id']],
+                            [
+                                'style' => 'color: #428bca;
+                                            padding: 2px 1px;
+                                            text-decoration: none;
+                                            cursor: pointer;
+                                            border-bottom: 1px dashed;',
+                                'data-pjax' => '0',
+                            ]);
+                }
+                    $data[$item_id][$teachers_id] = implode(',', $label);
+            }
+        }
+        return $data;
     }
 
     /**

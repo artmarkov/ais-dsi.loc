@@ -16,6 +16,7 @@ use artsoft\grid\GridPageSize;
 
 $this->title = Yii::t('art/guide', 'School Plans');
 $this->params['breadcrumbs'][] = $this->title;
+$executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
 ?>
 <div class="schoolplan-plan-index">
     <div class="panel">
@@ -85,8 +86,6 @@ $this->params['breadcrumbs'][] = $this->title;
 //                                            return ['class' => 'success'];
 //                                        case Schoolplan::DOC_STATUS_WAIT:
 //                                            return ['class' => 'warning'];
-//                                        case Schoolplan::DOC_STATUS_CANCEL:
-//                                            return ['class' => 'danger'];
 //                                    }
 //                                },
                             ],
@@ -115,7 +114,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'filter' => \common\models\guidesys\GuidePlanTree::getPlanList(),
                             ],
                             'auditory_places',
-
                             [
                                 'attribute' => 'department_list',
                                 'filter' => Department::getDepartmentList(),
@@ -135,18 +133,46 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'executors_list',
                                 'filter' => RefBook::find('teachers_fio', UserCommon::STATUS_ACTIVE)->getList(),
-                                'value' => function (Schoolplan $model) {
+                                'value' => function (Schoolplan $model) use ($executorsBonus){
                                     $v = [];
                                     foreach ($model->executors_list as $id) {
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = RefBook::find('teachers_fio')->getValue($id);
+                                        $v[] = RefBook::find('teachers_fio')->getValue($id) . (\artsoft\Art::isBackend() ? (isset($executorsBonus[$model->id][$id]) ? $executorsBonus[$model->id][$id] : null) : null);
                                     }
                                     return implode(',<br/> ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'result',
+                                'value' => function ($model) {
+                                    return  mb_strlen($model->result, 'UTF-8') > 200 ? mb_substr($model->result, 0, 200, 'UTF-8') . '...' : $model->result;
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'num_users',
+                                'label' => 'Число уч.',
+                                'value' => function ($model) {
+                                    return $model->num_users ;
+                                },
+                            ],
+                            [
+                                'attribute' => 'num_winners',
+                                'label' => 'Число поб.',
+                                'value' => function ($model) {
+                                    return $model->num_winners;
+                                },
+                            ],
+                            [
+                                'attribute' => 'num_visitors',
+                                'label' => 'Число зрит.',
+                                'value' => function ($model) {
+                                    return $model->num_visitors;
+                                },
                             ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
@@ -155,9 +181,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [Schoolplan::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
                                     [Schoolplan::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
                                     [Schoolplan::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
-                                  //  [Schoolplan::DOC_STATUS_CANCEL, Yii::t('art', 'Canceled'), 'danger'],
                                 ],
                                 'options' => ['style' => 'width:150px']
+                            ],
+                            [
+                                'attribute' => 'bars_flag',
+                                'label' => 'БАРС',
+                                'value' => function (Schoolplan $model) {
+                                    return $model->bars_flag == 1 ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i>Да' : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i>Нет';
+                                },
+                                'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
+                                'format' => 'raw',
                             ],
                             [
                                 'class' => 'kartik\grid\ActionColumn',

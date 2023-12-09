@@ -24,16 +24,17 @@ class MessageNewEmailJob extends \yii\base\BaseObject implements \yii\queue\JobI
     }
 
     /**
-     *
-     * @return type
+     * @return array|Mailbox[]|MailboxInbox[]
      */
-    protected static function getQtyNewMail()
+    protected function getQtyNewMail()
     {
         return MailboxInbox::find()
+            ->joinWith(['mailbox'])
             ->joinWith(['receiver'])
             ->select(['receiver_id', 'COUNT(*) AS qty'])
-            ->where(['mailbox_inbox.status_read' => Mailbox::STATUS_READ_NEW])
-            ->where(['mailbox_inbox.status_del' => Mailbox::STATUS_DEL_NO])
+            ->where(['status_read' => Mailbox::STATUS_READ_NEW])
+            ->andWhere(['status_post' => Mailbox::STATUS_POST_SENT])
+            ->andWhere(['mailbox_inbox.status_del' => Mailbox::STATUS_DEL_NO])
             ->andWhere(['status' => \artsoft\models\User::STATUS_ACTIVE])
             ->groupBy('receiver_id')
             ->asArray()
@@ -45,7 +46,7 @@ class MessageNewEmailJob extends \yii\base\BaseObject implements \yii\queue\JobI
      * @param type $model
      * @return type
      */
-    protected static function sendEmail($model)
+    protected function sendEmail($model)
     {
         $link = Url::to(['/mailbox/default'], true);
 

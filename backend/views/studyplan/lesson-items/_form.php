@@ -100,6 +100,11 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                             ]
                         ]);
                         ?>
+                        <?php
+                        if ($model->lesson_date) {
+                            echo Html::activeHiddenInput($model, 'lesson_date');
+                        }
+                        ?>
                         <?= $form->field($model, 'lesson_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['options' => ['disabled' => $model->lesson_date]]); ?>
                         <?= $form->field($model, 'lesson_topic')->textInput() ?>
                         <?= $form->field($model, 'lesson_rem')->textInput() ?>

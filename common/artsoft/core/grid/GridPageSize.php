@@ -106,7 +106,7 @@ class GridPageSize extends Widget
         $this->gridId = '#' . ltrim($this->gridId, '#');
 
         if (!$this->dropDownOptions) {
-            $this->dropDownOptions = [5 => 5, 10 => 10, 20 => 20, 50 => 50, 100 => 100, 200 => 200];
+            $this->dropDownOptions = [5 => 5, 10 => 10, 20 => 20, 50 => 50, 100 => 100, 200 => 200, 500 => 500, 1000 => 1000];
         }
 
         if (!$this->url) {

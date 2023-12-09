@@ -49,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
                                 <h3><?= $model->mailbox->title; ?></h3>
-                                <h5><?= Yii::t('art/mailbox', 'From:') . ' ' . $model->receiver->username; ?>
+                                <h5><?= Yii::t('art/mailbox', 'From:') . ' ' . $model->mailbox->senderName; ?>
                                     <span class="mailbox-read-time pull-right"><?= $model->mailbox->createdDateTime; ?></span>
                                 </h5>
                             </div>

@@ -13,6 +13,7 @@ use yii\data\ActiveDataProvider;
 class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
 {
     public $date_in;
+    public $date_out;
     public $subject_id;
     public $subject_type_id;
     public $limited_status_id;
@@ -25,11 +26,11 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
     public function rules()
     {
         return [
-            [['studyplan_id', 'student_fio', 'plan_year', 'course', 'status', 'education_cat_id', 'studyplan_invoices_id', 'studyplan_mat_capital_flag', 'plan_year', 'studyplan_invoices_status', 'invoices_id', 'mat_capital_flag'], 'integer'],
+            [['studyplan_id', 'student_fio', 'plan_year', 'course', 'status', 'education_cat_id', 'studyplan_invoices_id', 'studyplan_mat_capital_flag', 'studyplan_invoices_status', 'invoices_id', 'mat_capital_flag'], 'integer'],
             [['month_time_fact', 'invoices_date', 'payment_time', 'payment_time_fact'], 'integer'],
             [['invoices_summ'], 'number'],
             [['subject_list', 'subject_type_list', 'teachers_list'], 'string'],
-            [['programm_id', 'student_id', 'date_in', 'invoices_reporting_month', 'subject_id', 'limited_status_id', 'subject_type_id', 'subject_form_id', 'direction_id', 'teachers_id'], 'safe'],
+            [['programm_id', 'student_id', 'date_in', 'date_out', 'invoices_reporting_month', 'subject_id', 'limited_status_id', 'subject_type_id', 'subject_form_id', 'direction_id', 'teachers_id'], 'safe'],
         ];
     }
 
@@ -74,8 +75,10 @@ class StudyplanInvoicesViewSearch extends StudyplanInvoicesView
         if ($this->date_in) {
             $t = explode(".", $this->date_in);
             $this->date_in = mktime(0, 0, 0, $t[0], 1, $t[1]);
+            $t = explode(".", $this->date_out);
+            $this->date_out = mktime(0, 0, 0, $t[0], 1, $t[1]);
 
-            $query->andWhere(['OR', ['=', 'invoices_reporting_month', $this->date_in], ['IS', 'invoices_reporting_month', NULL]]);
+            $query->andWhere(['OR', ['between', 'invoices_reporting_month', $this->date_in, $this->date_out], ['IS', 'invoices_reporting_month', NULL]]);
 
         }
         $query->andFilterWhere([

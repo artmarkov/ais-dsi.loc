@@ -118,7 +118,7 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax($this->createView, [
             'model' => $model,
-            'class' => StringHelper::basename($this->modelClass::className()),
+            'modelDependence' => $model,
             'readonly' => false
         ]);
     }
@@ -137,7 +137,7 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax($this->updateView, [
             'model' => $model,
-            'class' => StringHelper::basename($this->modelClass::className()),
+            'modelDependence' => $model,
             'readonly' => $readonly
         ]);
     }

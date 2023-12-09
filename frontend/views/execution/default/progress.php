@@ -15,7 +15,7 @@ $columns = [
         'label' => $model['attributes']['teachers_id'],
         'value' => function ($models) use ($teachers_list){
             return Html::a($teachers_list[$models['teachers_id']],
-                ['/teachers/default/schedule-items', 'id' => $models['teachers_id']],
+                ['/execution/teachers/schedule-items', 'id' => $models['teachers_id']],
                 [
                     'target' => '_blank',
 //                    'class' => 'btn btn-link',

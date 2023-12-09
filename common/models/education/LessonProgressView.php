@@ -157,11 +157,6 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $data[$item]['sect_name'] = $modelProgress->sect_name;
             $data[$item]['subject'] = $modelProgress->subject;
 
-            $marks = LessonItemsProgressView::find()
-                ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
-                ->andWhere(['=', 'studyplan_subject_id', $modelProgress->studyplan_subject_id])
-                ->all();
-
             if (isset($modelsMarks[$modelProgress->studyplan_subject_id])) {
                 foreach ($modelsMarks[$modelProgress->studyplan_subject_id] as $id => $mark) {
                     $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
@@ -252,7 +247,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     public static function getSecListForTeachersDefault($teachers_id, $plan_year)
     {
         $model = self::getSectListForTeachersQuery($teachers_id, $plan_year)->one();
-        return $model->subject_sect_studyplan_id ?? 0;
+        return $model->subject_sect_studyplan_id ?? null;
     }
 
     public static function getDataIndivTeachers($model_date, $teachers_id, $plan_year)
@@ -335,6 +330,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->select('subject_key, subject')
             ->distinct()
             ->where(['is not', 'subject_key', NULL])
+            ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
             ->andWhere(['plan_year' => $plan_year])
             ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->orderBy('subject');
@@ -349,7 +345,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     public static function getIndivListForTeachersDefault($teachers_id, $plan_year)
     {
         $model = self::getIndivListForTeachersQuery($teachers_id, $plan_year)->one();
-        return $model->subject_key ?? 0;
+        return $model->subject_key ?? null;
     }
 
     /**
@@ -358,7 +354,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
      * @return string
      * @throws \Exception
      */
-    protected static function getEditableForm($date_label, $mark, $teachers_id)
+    protected static function getEditableForm($date_label, $mark, $teachers_id = null)
     {
         $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::MARK, LessonMark::OFFSET_NONOFFSET, LessonMark::REASON_ABSENCE]);
 
@@ -366,7 +362,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             'buttonsTemplate' => "{reset}{submit}",
             'name' => 'lesson_mark_id',
             'asPopover' => true,
-            'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($teachers_id),
+            'disabled' => $teachers_id !== null ? (\artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($teachers_id)) : false,
             'value' => $mark->lesson_mark_id,
             'header' => $date_label . ' - ' . $mark->test_name,
             'displayValueConfig' => $mark_list,

@@ -1,6 +1,8 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use artsoft\models\User;
+use common\models\info\Board;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridView;
@@ -23,6 +25,7 @@ $columns = [
         'value' => function ($model) {
             return Yii::$app->formatter->asDatetime($model->datetime_in) . ' - ' . Yii::$app->formatter->asDatetime($model->datetime_out) . '<br/>' . $model->title;
         },
+        'width' => '300px',
         'format' => 'raw',
         'group' => true,
     ],
@@ -36,7 +39,6 @@ $columns = [
     ],
     [
         'attribute' => 'sect_name',
-        'width' => '310px',
         'value' => function ($model) {
             return $model->studyplan_id ? $model->sect_name : '';
         },
@@ -99,7 +101,15 @@ $columns = [
         'optionsArray' => \common\models\schoolplan\SchoolplanPerform::getStatusSignOptionsList(),
         'options' => ['style' => 'width:100px'],
     ],
-
+    [
+        'attribute' => 'signer_id',
+        'value' => function (\common\models\teachers\PortfolioView $model) {
+            return $model->user->userCommon ? $model->user->userCommon->lastFM : $model->signer_id;
+        },
+        'options' => ['style' => 'width:150px'],
+        'contentOptions' => ['style'=>"text-align:center; vertical-align: middle;"],
+        'format' => 'raw',
+    ],
     [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,

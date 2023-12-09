@@ -1,14 +1,11 @@
 <?php
 
-use artsoft\helpers\RefBook;
-use common\models\service\UsersCardLog;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
 use common\models\studyplan\StudyplanInvoices;
 use artsoft\helpers\Html;
-use artsoft\grid\GridPageSize;
 use common\models\studyplan\Studyplan;
 
 /* @var $this yii\web\View */
@@ -228,89 +225,87 @@ $columns = [
 ];
 ?>
     <div class="studyplan-invoices-index">
-    <div class="panel">
-        <?= $this->render('_search', compact('model_date', 'plan_year')) ?>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-sm-12">
-                    <?= \yii\bootstrap\Alert::widget([
-                        'body' => '<i class="fa fa-info"></i> Для добавления нескольких квитанцый, нажмите чекбоксы слева.',
-                        'options' => ['class' => 'alert-info'],
-                    ]);
-                    ?>
-                </div>
-                <div class="col-sm-6">
-                    <?php echo Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Создать новые квитанции',
-                        ['#'],
-                        [
-                            // 'target' => '_blank',
-                            'data-pjax' => '0',
-                            'class' => 'btn btn-success bulk-new disabled',
-                            //    'title' => 'Открыть в новом окне'
+        <div class="panel">
+            <?= $this->render('_search', compact('model_date', 'plan_year')) ?>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= \yii\bootstrap\Alert::widget([
+                            'body' => '<i class="fa fa-info"></i> Для добавления нескольких квитанцый, нажмите чекбоксы слева.',
+                            'options' => ['class' => 'alert-info'],
                         ]);
-                    ?>
-                    <?php
-                    /* Uncomment this to activate GridQuickLinks */
-                    /* echo GridQuickLinks::widget([
-                        'model' => StudyplanInvoices::className(),
-                        'searchModel' => $searchModel,
-                    ])*/
-                    ?>
+                        ?>
+                    </div>
+                    <div class="col-sm-6">
+                        <?php echo Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Создать новые квитанции',
+                            ['#'],
+                            [
+                                // 'target' => '_blank',
+                                'data-pjax' => '0',
+                                'class' => 'btn btn-success bulk-new disabled',
+                                //    'title' => 'Открыть в новом окне'
+                            ]);
+                        ?>
+                        <?php
+                        /* Uncomment this to activate GridQuickLinks */
+                        /* echo GridQuickLinks::widget([
+                            'model' => StudyplanInvoices::className(),
+                            'searchModel' => $searchModel,
+                        ])*/
+                        ?>
+                    </div>
+
+                    <div class="col-sm-6 text-right">
+                        <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'studyplan-invoices-grid-pjax']) ?>
+                    </div>
                 </div>
 
-                <div class="col-sm-6 text-right">
-                    <?= GridPageSize::widget(['pjaxId' => 'studyplan-invoices-grid-pjax']) ?>
-                </div>
-            </div>
+                <?php
+                Pjax::begin([
+                    'id' => 'studyplan-invoices-grid-pjax',
+                ])
+                ?>
 
-            <?php
-            Pjax::begin([
-                'id' => 'studyplan-invoices-grid-pjax',
-            ])
-            ?>
-
-            <?= GridView::widget([
-                'id' => 'studyplan-invoices-grid',
-                'pjax' => true,
-                'dataProvider' => $dataProvider,
-                // 'filterModel' => $searchModel,
-                'showPageSummary' => false,
-                'showFooter' => true,
-                'bulkActionOptions' => \artsoft\Art::isBackend() ? [
-                    'gridId' => 'studyplan-invoices-grid',
-                    'actions' => [
+                <?= GridView::widget([
+                    'id' => 'studyplan-invoices-grid',
+//                'pjax' => true,
+                    'dataProvider' => $dataProvider,
+                    // 'filterModel' => $searchModel,
+                    'showPageSummary' => false,
+                    'showFooter' => true,
+                    'bulkActionOptions' => \artsoft\Art::isBackend() ? [
+                        'gridId' => 'studyplan-invoices-grid',
+                        'actions' => [
 //                        Url::to(['bulk-new']) => 'Создать новые квитанции',
-                        Url::to(['bulk-delete']) => 'Удалить квитанции',
-                        Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_WORK]) => 'Перевести в статус "Счет в работе"',
-                        Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_PAYD]) => 'Перевести в статус "Оплачено"',
-                        Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_RECEIPT]) => 'Перевести в статус "Поступили средства"',
-                        Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_ARREARS]) => 'Перевести в статус "Задолженность по оплате"',
+                            Url::to(['bulk-delete']) => 'Удалить квитанции',
+                            Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_WORK]) => 'Перевести в статус "Счет в работе"',
+                            Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_PAYD]) => 'Перевести в статус "Оплачено"',
+                            Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_RECEIPT]) => 'Перевести в статус "Поступили средства"',
+                            Url::to(['bulk-status', 'status' => StudyplanInvoices::STATUS_ARREARS]) => 'Перевести в статус "Задолженность по оплате"',
 //                        Url::to(['bulk-load']) => 'Выгрузить квитанции в Word',
-                    ]//Configure here you bulk actions
-                ] : false,
-                /* 'rowOptions' => function($model) {
-                     if($model->status == Studyplan::STATUS_INACTIVE) {
-                         return ['class' => 'danger'];
-                     }
-                     return [];
-                 },*/
-                'columns' => $columns,
-                'beforeHeader' => [
-                    [
-                        'columns' => [
-                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => \artsoft\Art::isBackend() ? 8 : 7, 'class' => 'text-center warning']],
-                            ['content' => 'Счета за обучение', 'options' => ['colspan' => 4, 'class' => 'text-center success']],
-                        ],
-                        'options' => ['class' => 'skip-export'] // remove this row from export
-                    ]
-                ],
-            ]);
-            ?>
+                        ]//Configure here you bulk actions
+                    ] : false,
+                    /* 'rowOptions' => function($model) {
+                         if($model->status == Studyplan::STATUS_INACTIVE) {
+                             return ['class' => 'danger'];
+                         }
+                         return [];
+                     },*/
+                    'columns' => $columns,
+                    'beforeHeader' => [
+                        [
+                            'columns' => [
+                                ['content' => 'Ученик/Программа', 'options' => ['colspan' => \artsoft\Art::isBackend() ? 8 : 7, 'class' => 'text-center warning']],
+                                ['content' => 'Счета за обучение', 'options' => ['colspan' => 4, 'class' => 'text-center success']],
+                            ],
+                            'options' => ['class' => 'skip-export'] // remove this row from export
+                        ]
+                    ],
+                ]);
+                ?>
 
-            <?php Pjax::end() ?>
-        </div>
-        <div class="panel-footer">
-
+                <?php Pjax::end() ?>
+            </div>
         </div>
     </div>
 <?php

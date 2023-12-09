@@ -201,7 +201,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
                 'model' => $modelEfficiency,
-                'class' => StringHelper::basename($this->modelClass::className()),
+                'modelDependence' => $model,
                 'readonly' => false
             ]);
         } elseif ('history' == $mode && $objectId) {
@@ -233,7 +233,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
                 'model' => $modelEfficiency,
-                'class' => StringHelper::basename($this->modelClass::className()),
+                'modelDependence' => $model,
                 'readonly' => $readonly
             ]);
 

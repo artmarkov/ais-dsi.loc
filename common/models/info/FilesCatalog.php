@@ -55,6 +55,7 @@ class FilesCatalog extends \kartik\tree\models\Tree
         $rules[] = ['rules_list_edit', 'safe'];
         $rules[] = ['rules_list_edit', 'default', 'value' => null];
         $rules[] = ['created_at', 'integer'];
+//        $rules[] = ['created_by', 'required'];
         $rules[] = ['created_by', 'integer'];
 
         return $rules;

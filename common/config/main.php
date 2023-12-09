@@ -53,6 +53,9 @@ return [
                 'send-support' => '@common/views/mail/send-support-html',
             ],
         ],
+        'mailbox' => [
+            'class' => 'artsoft\components\Mailbox'
+        ],
         'session' => [
             'class' => 'yii\web\DbSession',
             'writeCallback' => function ($session) {

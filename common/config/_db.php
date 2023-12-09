@@ -6,6 +6,6 @@ return [
     'password' => env('MYSQL_PASSWORD', 'password'),            
     'tablePrefix' => env('DB_TABLE_PREFIX'),
     'charset' => env('DB_CHARSET', 'utf8'),
-    'enableSchemaCache' => false /*YII_ENV_PROD*/,
+    'enableSchemaCache' => YII_ENV_PROD,
     'schemaCacheDuration' => 3600,
 ];

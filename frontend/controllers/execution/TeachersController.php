@@ -103,7 +103,7 @@ class TeachersController extends MainController
         $query = Teachers::find()
             ->where(['in', 'teachers.id', Teachers::getTeachersForTeacher($this->teachers_id)])
             ->andWhere(['!=', 'teachers.id', $this->teachers_id])
-            ->andWhere(['=', 'status', Teachers::STATUS_ACTIVE]);
+            ->andWhere(['=', 'status', UserCommon::STATUS_ACTIVE]);
         $searchModel = new TeachersSearch($query);
         $params = $this->getParams();
         $dataProvider = $searchModel->search($params);
@@ -1046,7 +1046,7 @@ class TeachersController extends MainController
             }
             return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
                 'model' => $model,
-                'class' => StringHelper::basename(TeachersEfficiency::className()),
+                'modelDependence' => $modelTeachers,
                 'readonly' => false
             ]);
 
@@ -1084,7 +1084,7 @@ class TeachersController extends MainController
 
             return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
                 'model' => $model,
-                'class' => StringHelper::basename(TeachersEfficiency::className()),
+                'modelDependence' => $modelTeachers,
                 'readonly' => false
             ]);
         } else {

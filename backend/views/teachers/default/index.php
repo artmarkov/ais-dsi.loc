@@ -30,10 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-6">
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
-//                            echo GridQuickLinks::widget([
-//                                'model' => Teachers::className(),
-//                                'searchModel' => $searchModel,
-//                            ])
+                            //                            echo GridQuickLinks::widget([
+                            //                                'model' => Teachers::className(),
+                            //                                'searchModel' => $searchModel,
+                            //                            ])
                             ?>
                         </div>
 
@@ -55,8 +55,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             'gridId' => 'teachers-grid',
                             'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
-                        'rowOptions' => function(Teachers $model) {
-                            if($model->userStatus == UserCommon::STATUS_INACTIVE) {
+                        'rowOptions' => function (Teachers $model) {
+                            if ($model->userStatus == UserCommon::STATUS_INACTIVE) {
                                 return ['class' => 'danger'];
                             }
                             return [];
@@ -140,12 +140,59 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'class' => 'kartik\grid\ActionColumn',
-                                'urlCreator' => function ($action, $model, $key, $index) {
-                                    return [$action, 'id' => $model->id];
-                                },
-                                'controller' => '/teachers/default',
+                                'visible' => \artsoft\Art::isBackend(),
                                 'template' => '{view} {update} {delete}',
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                'buttons' => [
+                                    'view' => function ($key, $model) {
+                                        return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                                            ['/teachers/default/view', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'View'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                    'update' => function ($key, $model) {
+                                        return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                                           ['/teachers/default/update', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Edit'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                    'delete' => function ($key, $model) {
+                                        return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                                            ['/teachers/default/delete', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Delete'),
+                                                'aria-label' => Yii::t('art', 'Delete'),
+                                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
+//
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'visible' => \artsoft\Art::isFrontend(),
+                                'template' => '{view}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                'buttons' => [
+                                    'view' => function ($key, $model) {
+                                        return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                                            ['/execution/teachers/view', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'View'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
+//
                             ],
                         ],
                     ]);

@@ -171,8 +171,8 @@ class SubjectScheduleConfirm extends \artsoft\db\ActiveRecord
             $textBody = 'Сообщение модуля "Расписание занятий" ' . PHP_EOL;
             $htmlBody = '<p><b>Сообщение модуля "Расписание занятий"</b></p>';
 
-            $textBody .= 'Прошу Вас внести уточнения в Расписание занятий на: ' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' ������� ���. ' . PHP_EOL;
-            $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание занятий на:' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' ������� ���. ' . '</p>';
+            $textBody .= 'Прошу Вас внести уточнения в Расписание занятий на: ' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . PHP_EOL;
+            $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание занятий на:' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . '</p>';
             $textBody .= $this->sign_message . PHP_EOL;
             $htmlBody .= '<p>' . $this->sign_message . '</p>';
             $textBody .= '--------------------------' . PHP_EOL;

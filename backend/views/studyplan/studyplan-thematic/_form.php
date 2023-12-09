@@ -32,6 +32,8 @@ jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
 ';
 
 $this->registerJs($js);
+
+$readonly = $model->doc_status != 0 && \artsoft\Art::isFrontend() ? true : $readonly;
 ?>
 
     <div class="studyplan-thematic-form">
@@ -247,7 +249,7 @@ $this->registerJs($js);
                             <div class="col-sm-12">
                                 <div class="form-group btn-group pull-right">
                                     <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->doc_status == 1]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'send_admin_message', 'disabled' => $model->doc_status != 1]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'send_admin_message', 'disabled' => $model->doc_status == 0]); ?>
                                 </div>
                             </div>
                         </div>
@@ -255,8 +257,8 @@ $this->registerJs($js);
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="form-group btn-group pull-right">
-                                    <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => $model->doc_status != 0 ? true : $readonly]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => $model->doc_status != 1 ? true : $readonly]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => $model->doc_status != 0 ? true : false]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => $model->doc_status == 0 ? true : false]); ?>
                                 </div>
                             </div>
                         </div>
@@ -266,7 +268,7 @@ $this->registerJs($js);
             <div class="panel-footer">
                 <div class="form-group btn-group">
                     <?php if (!$model->isNewRecord): ?>
-                        <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+                        <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : (\artsoft\Art::isBackend() ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton()); ?>
                     <?php else: ?>
                         <?= \artsoft\helpers\ButtonHelper::exitButton(); ?>
                         <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-md btn-info', 'name' => 'submitAction', 'value' => 'next']); ?>

@@ -38,6 +38,7 @@ use yii\helpers\ArrayHelper;
  * @property int $updated_at
  * @property int|null $updated_by
  *
+ * @property UserCommon $userCommon
  */
 class User extends UserIdentity
 {

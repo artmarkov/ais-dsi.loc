@@ -4,7 +4,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\efficiency\TeachersEfficiency */
-/* @var $class  */
+/* @var $modelDependence  */
 /* @var $readonly  */
 
 $this->title = Yii::t('art', 'Create');
@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="teachers-efficiency-create">
     <?= $this->render('_form', [
         'model' => $model,
-        'class' => $class,
+        'modelDependence' => $modelDependence,
         'readonly' => $readonly
     ]) ?>
 </div>

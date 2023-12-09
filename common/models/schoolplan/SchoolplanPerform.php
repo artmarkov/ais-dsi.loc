@@ -4,6 +4,7 @@ namespace common\models\schoolplan;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\fileinput\behaviors\FileManagerBehavior;
+use artsoft\models\User;
 use common\models\education\LessonMark;
 use common\models\education\LessonProgress;
 use common\models\studyplan\StudyplanSubject;
@@ -40,6 +41,7 @@ use yii\helpers\ArrayHelper;
  * @property Schoolplan $schoolplan
  * @property StudyplanSubject $studyplanSubject
  * @property Teachers $teachers
+ * @property User $user
  */
 class SchoolplanPerform extends \artsoft\db\ActiveRecord
 {
@@ -300,8 +302,8 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
         return !($userId == $this->leader_id || $userId == $this->secretary_id || in_array($userId, $this->members_list));
     }
 
-    public function getUserCommon()
+    public function getUser()
     {
-        return $this->hasOne(UserCommon::class, ['id' => 'signer_id']);
+        return $this->hasOne(User::class, ['id' => 'signer_id']);
     }
 }

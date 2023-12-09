@@ -1372,7 +1372,7 @@ class DefaultController extends MainController
             }
             return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
                 'model' => $model,
-                'class' => StringHelper::basename(TeachersEfficiency::className()),
+                'modelDependence' => $modelTeachers,
                 'readonly' => false
             ]);
 
@@ -1410,7 +1410,7 @@ class DefaultController extends MainController
 
             return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
                 'model' => $model,
-                'class' => StringHelper::basename(TeachersEfficiency::className()),
+                'modelDependence' => $modelTeachers,
                 'readonly' => false
             ]);
         } else {

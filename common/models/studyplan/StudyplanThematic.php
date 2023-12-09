@@ -67,7 +67,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['thematic_category', 'half_year'], 'required'],
+            [['thematic_category', 'half_year', 'doc_sign_teachers_id'], 'required'],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'template_flag', 'author_id'], 'integer'],
             [['doc_status', 'doc_sign_teachers_id', 'doc_sign_timestamp', 'half_year'], 'integer'],
             [['doc_status'], 'default', 'value' => self::DOC_STATUS_DRAFT],

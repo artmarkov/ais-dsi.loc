@@ -236,6 +236,16 @@ class Mailbox extends \artsoft\db\ActiveRecord
         return $this->sender->username;
     }
 
+    /* Геттер для имен получателей */
+    public function getReceiversName()
+    {
+        $usernsme = [];
+        foreach ($this->receivers as $item => $receiver) {
+            $usernsme[] = $receiver['username'];
+        }
+        return implode(',', $usernsme);
+    }
+
     public function getMailboxFolder() {
         return $this->folder;
     }

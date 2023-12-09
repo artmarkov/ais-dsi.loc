@@ -2,29 +2,18 @@
 
 namespace backend\controllers\invoices;
 
-use artsoft\helpers\ArtHelper;
-use artsoft\models\OwnerAccess;
-use artsoft\models\User;
-use common\models\education\EducationProgramm;
-use common\models\studyplan\search\StudyplanInvoicesViewSearch;
-use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanInvoices;
-use common\models\studyplan\StudyplanInvoicesView;
-use common\models\studyplan\StudyplanSubject;
 use Yii;
-use artsoft\controllers\admin\BaseController;
 use yii\base\DynamicModel;
 use yii\db\Exception;
-use yii\db\Transaction;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
-use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
 /**
  * StudyplanInvoicesController implements the CRUD actions for common\models\studyplan\StudyplanInvoices model.
  */
-class DefaultController extends BaseController
+class DefaultController extends MainController
 {
     public $modelClass = 'common\models\studyplan\StudyplanInvoices';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanInvoicesViewSearch';
@@ -33,16 +22,30 @@ class DefaultController extends BaseController
     public function actionIndex()
     {
         $session = Yii::$app->session;
-
-        $model_date = new DynamicModel(['date_in', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_form_id', 'studyplan_mat_capital_flag', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id', 'status', 'mat_capital_flag', 'limited_status_id']);
-        $model_date->addRule(['date_in'], 'required')
-            ->addRule(['date_in', 'student_id', 'programm_id'], 'safe')
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $day_in = 1;
+        $day_out = date("t");
+        $model_date = new DynamicModel(['date_in', 'date_out', 'programm_id', 'education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_form_id', 'studyplan_mat_capital_flag', 'studyplan_invoices_status', 'student_id', 'direction_id', 'teachers_id', 'status', 'mat_capital_flag', 'limited_status_id']);
+        $model_date->addRule(['date_in', 'date_out'], 'required')
+            ->addRule(['date_in', 'date_out', 'student_id', 'programm_id'], 'safe')
+            ->addRule('date_in', function ($attribute)
+            {
+                if(Yii::$app->formatter->asTimestamp('01.'.$this->date_in) > Yii::$app->formatter->asTimestamp('01.'.$this->date_out)) $this->addError($attribute, 'Дата начала периода должна быть меньше даты окончания.');
+            })
+            ->addRule('date_in', function ($attribute)
+            {
+                $plan_year_1 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_in));
+                $plan_year_2 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_out));
+                if($plan_year_1  != $plan_year_2 ) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
+            })
             ->addRule(['education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_form_id', 'studyplan_mat_capital_flag', 'studyplan_invoices_status', 'direction_id', 'teachers_id', 'status', 'mat_capital_flag', 'limited_status_id'], 'integer');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
 
-            $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+            $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:m.Y');
+            $model_date->date_out = $session->get('_invoices_date_out') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_out, $year), 'php:m.Y');
+
             $model_date->programm_id = $session->get('_invoices_programm_id') ?? '' /*EducationProgramm::getProgrammScalar()*/;
             $model_date->education_cat_id = $session->get('_invoices_education_cat_id') ?? '';
             $model_date->course = $session->get('_invoices_course') ?? '';
@@ -60,6 +63,7 @@ class DefaultController extends BaseController
         }
 
         $session->set('_invoices_date_in', $model_date->date_in);
+        $session->set('_invoices_date_out', $model_date->date_out);
         $session->set('_invoices_programm_id', $model_date->programm_id);
         $session->set('_invoices_education_cat_id', $model_date->education_cat_id);
         $session->set('_invoices_course', $model_date->course);
@@ -87,6 +91,7 @@ class DefaultController extends BaseController
             $searchName => [
                 'plan_year' => $plan_year,
                 'date_in' => $model_date->date_in,
+                'date_out' => $model_date->date_out,
                 'programm_id' => $model_date->programm_id,
                 'education_cat_id' => $model_date->education_cat_id,
                 'course' => $model_date->course,

@@ -7,8 +7,19 @@ use artsoft\models\User; ?>
 <div class="row">
     <div class="col-sm-12">
 
-        <?= $form->field($node, 'created_by')->dropDownList(User::getUsersList()) ?>
+        <?= $form->field($node, 'created_by')->widget(\kartik\select2\Select2::className(), [
+            'data' => User::getUsersListByCategory(['teachers', 'employees']),
+            'showToggleAll' => false,
+            'options' => [
+                'disabled' => $node->isReadonly(),
+                'placeholder' => Yii::t('art', 'Select...'),
+            ],
+            'pluginOptions' => [
+                'allowClear' => false,
+            ],
 
+        ]);
+        ?>
         <?= $form->field($node, 'rules_list_read')->widget(\kartik\select2\Select2::className(), [
             'data' => \common\models\info\FilesCatalog::getRoleList(),
             'showToggleAll' => false,

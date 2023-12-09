@@ -30,6 +30,8 @@ class m231127_111445_add_execution_permissions extends PermissionsMigration
                     'title' => 'Доступ к разделу "Контроль исполнения(frontend)"',
                     'links' => [
                         '/execution/default/thematic-sign',
+                        '/execution/default/perform',
+                        '/execution/default/progress',
                     ],
                     'roles' => [
                         self::ROLE_DEPARTMENT,

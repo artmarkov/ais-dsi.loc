@@ -2,12 +2,15 @@
 
 namespace frontend\controllers\execution;
 
+use artsoft\helpers\ArtHelper;
 use common\models\execution\ExecutionProgress;
-use common\models\execution\ExecutionSchoolplanPerform;
 use common\models\studyplan\search\ThematicViewSearch;
+use common\models\teachers\PortfolioView;
+use common\models\user\UserCommon;
 use Yii;
 use yii\base\DynamicModel;
 use common\models\teachers\Teachers;
+use yii\data\ActiveDataProvider;
 use yii\helpers\StringHelper;
 
 /**
@@ -20,12 +23,12 @@ class DefaultController extends MainController
 
     public function actionPerform() {
         $this->view->params['tabMenu'] = $this->tabMenu;
-        $this->view->params['breadcrumbs'][] = 'Контроль выполнения планов и участия в мероприятиях';
-
+        $this->view->params['breadcrumbs'][] = 'Выполнения планов на подписи';
+        $id = $this->teachers_id;
         $model_date = $this->modelDate;
-        $models = ExecutionSchoolplanPerform::getData($model_date);
-        $model = $models->getDataTeachers();
-        return $this->renderIsAjax('perform', compact(['model', 'model_date']));
+        $data = ArtHelper::getStudyYearParams($model_date->plan_year);
+        $dataProvider = new ActiveDataProvider(['query' => PortfolioView::find()->where(['signer_id' => Yii::$app->user->identity->getId()])->andWhere(['between', 'datetime_in', $data['timestamp_in'], $data['timestamp_out']])]);
+        return $this->renderIsAjax('perform', compact(['dataProvider', 'model_date', 'id']));
     }
 
     public function actionThematicSign()
@@ -55,20 +58,27 @@ class DefaultController extends MainController
 
         $session = Yii::$app->session;
 
-        $model_date = new DynamicModel(['date_in', 'teachers_id']);
+        $model_date = new DynamicModel(['date_in','teachersIds']);
         $model_date->addRule(['date_in'], 'required')
-            ->addRule(['date_in'], 'date', ['format' => 'php:m.Y'])
-            ->addRule('teachers_id', 'integer');
+            ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
 
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
-            $model_date->date_in = $session->get('_execution_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+            $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
         }
-        $session->set('_execution_date_in', $model_date->date_in);
+        $session->set('_progress_date_in', $model_date->date_in);
 
+        $model_date->teachersIds =  Teachers::find()
+            ->select('teachers.id')
+            ->joinWith(['user'])
+            ->where(['in', 'teachers.id', Teachers::getTeachersForTeacher($this->teachers_id)])
+            ->andWhere(['!=', 'teachers.id', $this->teachers_id])
+            ->andWhere(['=', 'status', UserCommon::STATUS_ACTIVE])->column();
         $models = ExecutionProgress::getData($model_date);
         $model = $models->getDataTeachers();
         return $this->renderIsAjax('progress', compact('model','model_date'));
     }
+
+
 }

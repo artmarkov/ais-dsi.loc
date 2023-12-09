@@ -2,6 +2,7 @@
 
 namespace common\models\execution;
 
+use artsoft\Art;
 use artsoft\helpers\ArtHelper;
 use artsoft\widgets\Notice;
 use common\models\education\LessonItemsProgressView;
@@ -40,11 +41,11 @@ class ExecutionProgress
 
     public function __construct($model_date)
     {
-        $this->teachers_id = $model_date->teachers_id;
+        $this->teachers_id = $model_date->teachers_id ?? null;
         $this->date_in = $model_date->date_in;
         $this->getDateParams();
         $this->routine = $this->getRoutine();
-        $this->teachersIds = !$model_date->teachers_id ? array_keys(\artsoft\helpers\RefBook::find('teachers_fio', 1)->getList()) : [$model_date->teachers_id];
+        $this->teachersIds = $model_date->teachersIds ?? (!$this->teachers_id ? array_keys(\artsoft\helpers\RefBook::find('teachers_fio', 1)->getList()) : [$this->teachers_id]);
         $this->teachersActivities = $this->getTeachersActivities();
         $this->teachersProgress = $this->getProgressData();
 //        echo '<pre>' . print_r($this->routine, true) . '</pre>';
@@ -116,12 +117,12 @@ class ExecutionProgress
 //                            echo '<pre>' . print_r($this->teachersProgress[$teachers_id], true) . '</pre>';
                             if ($subject_sect_studyplan_id == 0) {
                                 $check = !isset($this->teachersProgress[$teachers_id][$date][$subject_sect_studyplan_id][$studyplan_subject_id]) ? '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>' : '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
-                                $check = Html::a($check, ['/teachers/default/studyplan-progress-indiv', 'id' => $teachers_id, 'subject_key' => base64_encode($value['subject_key'] . '||' . $value['datetime_in'])], ['target' => '_blank', 'title' => $value['title'] . ': ' . Yii::$app->formatter->asDatetime($value['datetime_in']) . ' - ' . Yii::$app->formatter->asDatetime($value['datetime_out'])]);
+                                $check = Html::a($check, [Art::isBackend() ? '/teachers/default/studyplan-progress-indiv' : '/execution/teachers/studyplan-progress-indiv', 'id' => $teachers_id, 'subject_key' => base64_encode($value['subject_key'] . '||' . $value['datetime_in'])], ['target' => '_blank', 'title' => $value['title'] . ': ' . Yii::$app->formatter->asDatetime($value['datetime_in']) . ' - ' . Yii::$app->formatter->asDatetime($value['datetime_out'])]);
                                 $load_data[$teachers_id]['scale_1'] .= $check;
                             } else {
                                 $check = !isset($this->teachersProgress[$teachers_id][$date][$subject_sect_studyplan_id]) ? '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>' : '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
 
-                                $check = Html::a($check, ['/teachers/default/studyplan-progress', 'id' => $teachers_id, 'subject_sect_studyplan_id' => $subject_sect_studyplan_id], ['target' => '_blank', 'title' => $value['title'] . ': ' . Yii::$app->formatter->asDatetime($value['datetime_in']) . ' - ' . Yii::$app->formatter->asDatetime($value['datetime_out'])]);;
+                                $check = Html::a($check, [Art::isBackend() ? '/teachers/default/studyplan-progress' : '/execution/teachers/studyplan-progress', 'id' => $teachers_id, 'subject_sect_studyplan_id' => $subject_sect_studyplan_id], ['target' => '_blank', 'title' => $value['title'] . ': ' . Yii::$app->formatter->asDatetime($value['datetime_in']) . ' - ' . Yii::$app->formatter->asDatetime($value['datetime_out'])]);;
                                 $load_data[$teachers_id]['scale_0'] .= $check;
                             }
                         }

@@ -83,8 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'class' => 'artsoft\grid\columns\TitleActionColumn',
                                         'controller' => '/mailbox/default',
                                         'title' => function (Mailbox $model) {
-                                            return implode(', ',
-                                                ArrayHelper::map($model->receivers, 'id', 'username'));
+                                            return  $model->receiversName;
                                         },
                                         'options' => ['style' => 'width:350px'],
                                         'format' => 'raw',
