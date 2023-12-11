@@ -124,6 +124,7 @@ class ConsultScheduleConfirm extends \artsoft\db\ActiveRecord
             self::DOC_STATUS_DRAFT => Yii::t('art', 'Draft'),
             self::DOC_STATUS_AGREED => Yii::t('art', 'Agreed'),
             self::DOC_STATUS_WAIT => Yii::t('art', 'Wait'),
+            self::DOC_STATUS_MODIF => Yii::t('art', 'Modif'),
         );
     }
 
@@ -154,11 +155,11 @@ class ConsultScheduleConfirm extends \artsoft\db\ActiveRecord
     public function sendAdminMessage()
     {
         if ($this->sign_message != '') {
-            $textBody = 'Сообщение модуля "Расписание занятий консультаций" ' . PHP_EOL;
-            $htmlBody = '<p><b>Сообщение модуля "Расписание занятий консультаций"</b></p>';
+            $textBody = 'Сообщение модуля "Расписание консультаций" ' . PHP_EOL;
+            $htmlBody = '<p><b>Сообщение модуля "Расписание консультаций"</b></p>';
 
-            $textBody .= 'Прошу Вас внести уточнения в Расписание занятий консультаций на: ' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . PHP_EOL;
-            $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание занятий консультаций на:' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . '</p>';
+            $textBody .= 'Прошу Вас внести уточнения в Расписание консультаций на: ' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . PHP_EOL;
+            $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание консультаций на:' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . '</p>';
             $textBody .= $this->sign_message . PHP_EOL;
             $htmlBody .= '<p>' . $this->sign_message . '</p>';
             $textBody .= '--------------------------' . PHP_EOL;

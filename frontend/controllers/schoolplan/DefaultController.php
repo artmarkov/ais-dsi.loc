@@ -118,7 +118,7 @@ class DefaultController extends MainController
         if (!$model->isAuthor() && $readonly == false) {
             throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
         }
-        if ($model->doc_status != Schoolplan::DOC_STATUS_DRAFT) {
+        if (!in_array($model->doc_status, [Schoolplan::DOC_STATUS_DRAFT, Schoolplan::DOC_STATUS_MODIF])) {
             $readonly = true;
         }
         $model->initActivitiesOver();
@@ -138,7 +138,7 @@ class DefaultController extends MainController
                 $this->getSubmitAction($model);
             }
         } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
-            $model->doc_status = Schoolplan::DOC_STATUS_DRAFT;
+            $model->doc_status = Schoolplan::DOC_STATUS_MODIF;
             if ($model->save(false)) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
                 $this->getSubmitAction($model);
@@ -407,11 +407,11 @@ class DefaultController extends MainController
                 if (Yii::$app->request->post('submitAction') == 'send_approve') {
                     $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_WAIT;
                 } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
-                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_DRAFT;
+                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_MODIF;
                 } elseif (Yii::$app->request->post('submitAction') == 'approve') {
                     $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_AGREED;
                 } elseif (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_DRAFT;
+                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_MODIF;
                 }
                 if ($modelPerform->save()) {
                     Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));

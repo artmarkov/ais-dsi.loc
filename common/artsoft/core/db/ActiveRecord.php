@@ -19,6 +19,7 @@ class ActiveRecord extends \yii\db\ActiveRecord
     const DOC_STATUS_DRAFT = 0; //Черновик (внесены изменения) - серый
     const DOC_STATUS_AGREED = 1; //Согласовано - зеленый
     const DOC_STATUS_WAIT = 2; //На согласовании - желтый
+    const DOC_STATUS_MODIF = 3; //На доработке - желтый
 
     /**
      * Returns TRUE if model support multilingual behavior.
@@ -69,6 +70,7 @@ class ActiveRecord extends \yii\db\ActiveRecord
             self::DOC_STATUS_DRAFT => Yii::t('art', 'Draft'),
             self::DOC_STATUS_AGREED => Yii::t('art', 'Agreed'),
             self::DOC_STATUS_WAIT => Yii::t('art', 'Wait'),
+            self::DOC_STATUS_MODIF => Yii::t('art', 'Modif'),
         );
     }
 

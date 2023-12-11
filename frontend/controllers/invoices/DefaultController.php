@@ -38,19 +38,33 @@ class DefaultController extends \frontend\controllers\DefaultController
     public function actionIndex()
     {
         $session = Yii::$app->session;
+        $day_in = 1;
+        $day_out = date("t");
 
-        $model_date = new DynamicModel(['date_in', 'teachers_id']);
-        $model_date->addRule(['date_in'], 'required')
-            ->addRule(['date_in'], 'safe');
+        $model_date = new DynamicModel(['date_in', 'date_out', 'teachers_id']);
+        $model_date->addRule(['date_in', 'date_out'], 'required')
+            ->addRule(['date_in', 'date_out'], 'safe')
+            ->addRule('date_in', function ($attribute)
+            {
+                if(Yii::$app->formatter->asTimestamp('01.'.$this->date_in) > Yii::$app->formatter->asTimestamp('01.'.$this->date_out)) $this->addError($attribute, 'Дата начала периода должна быть меньше даты окончания.');
+            })
+            ->addRule('date_in', function ($attribute)
+            {
+                $plan_year_1 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_in));
+                $plan_year_2 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_out));
+                if($plan_year_1  != $plan_year_2 ) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
+            });
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
 
-            $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
-            $model_date->teachers_id = $this->teachers_id;
+            $model_date->date_in = $session->get('_invoices_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:m.Y');
+            $model_date->date_out = $session->get('_invoices_date_out') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_out, $year), 'php:m.Y');
         }
 
+        $model_date->teachers_id = $this->teachers_id;
         $session->set('_invoices_date_in', $model_date->date_in);
+        $session->set('_invoices_date_out', $model_date->date_out);
 
         $searchName = StringHelper::basename($this->modelSearchClass::className());
         $searchModel = new $this->modelSearchClass;
@@ -64,6 +78,7 @@ class DefaultController extends \frontend\controllers\DefaultController
             $searchName => [
                 'plan_year' => $plan_year,
                 'date_in' => $model_date->date_in,
+                'date_out' => $model_date->date_out,
                 'teachers_id' => $this->teachers_id,
                 'status' => StudyplanInvoicesView::STATUS_ACTIVE,
             ]

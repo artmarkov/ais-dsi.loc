@@ -121,7 +121,7 @@ class DefaultController extends MainController
             }
         }
         if (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-            $model->doc_status = Schoolplan::DOC_STATUS_DRAFT;
+            $model->doc_status = Schoolplan::DOC_STATUS_MODIF;
             $model->save(false);
             if ($model->sendAdminMessage()) {
                 // print_r($_POST['Schoolplan']);
@@ -289,7 +289,7 @@ class DefaultController extends MainController
                 if (Yii::$app->request->post('submitAction') == 'approve') {
                     $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_AGREED;
                 } elseif (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-                    $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_DRAFT;
+                    $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_MODIFT;
                 }
                 if ($modelPerform->save()) {
                     Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));

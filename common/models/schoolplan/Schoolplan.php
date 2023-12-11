@@ -65,6 +65,7 @@ use yii\helpers\StringHelper;
  * @property GuidePlanTree $category
  * @property ActivitiesOver $activitiesOver
  * @property TeachersEfficiency $teachersEfficiency
+ * @property SchoolplanPerform $schoolplanPerform
  */
 class Schoolplan extends \artsoft\db\ActiveRecord
 {
@@ -393,6 +394,10 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         return $this->hasOne(UserCommon::class, ['id' => 'author_id']);
     }
 
+    public function getSchoolplanPerform()
+    {
+        return $this->hasMany(SchoolplanPerform::class, ['schoolplan_id' => 'id']);
+    }
     /**
      * getFormParticList
      * @return array

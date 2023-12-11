@@ -194,6 +194,7 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
             self::DOC_STATUS_DRAFT => Yii::t('art', 'Draft'),
             self::DOC_STATUS_AGREED => Yii::t('art', 'Agreed'),
             self::DOC_STATUS_WAIT => Yii::t('art', 'Wait'),
+            self::DOC_STATUS_MODIF => Yii::t('art', 'Modif'),
         );
     }
 
@@ -206,6 +207,7 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
             [self::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
             [self::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
             [self::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
+            [self::DOC_STATUS_MODIF, Yii::t('art', 'Modif'), 'warning'],
         );
     }
     /**

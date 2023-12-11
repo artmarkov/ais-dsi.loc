@@ -73,6 +73,7 @@ $columns = [
             [StudyplanThematic::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
             [StudyplanThematic::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
             [StudyplanThematic::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
+            [StudyplanThematic::DOC_STATUS_MODIF, Yii::t('art', 'Modif'), 'warning'],
         ],
         'options' => ['style' => 'width:150px']
     ],

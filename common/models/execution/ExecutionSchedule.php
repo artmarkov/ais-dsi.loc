@@ -114,6 +114,9 @@ class ExecutionSchedule
             case SubjectScheduleConfirm::DOC_STATUS_WAIT:
                 $label = '<span class="label label-warning">' . Yii::t('art', 'Wait') . '</span>';
                 break;
+            case SubjectScheduleConfirm::DOC_STATUS_MODIF:
+                $label = '<span class="label label-warning">' . Yii::t('art', 'Modif') . '</span>';
+                break;
             default:
                 $label = '';
         }

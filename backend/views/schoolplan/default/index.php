@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
 use common\models\own\Department;
 use common\models\user\UserCommon;
@@ -73,11 +74,11 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                         },
                         'columns' => [
 //                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
-                            [
-                                'attribute' => 'id',
-                                'value' => function (Schoolplan $model) {
-                                    return sprintf('#%06d', $model->id);
-                                },
+//                            [
+//                                'attribute' => 'id',
+//                                'value' => function (Schoolplan $model) {
+//                                    return sprintf('#%06d', $model->id);
+//                                },
 //                                'contentOptions' => function (Schoolplan $model) {
 //                                    switch ($model->doc_status) {
 //                                        case Schoolplan::DOC_STATUS_DRAFT:
@@ -88,7 +89,7 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
 //                                            return ['class' => 'warning'];
 //                                    }
 //                                },
-                            ],
+//                            ],
                             [
                                 'attribute' => 'datetime_in',
                                 'value' => function (Schoolplan $model) {
@@ -133,6 +134,11 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                             [
                                 'attribute' => 'executors_list',
                                 'filter' => RefBook::find('teachers_fio', UserCommon::STATUS_ACTIVE)->getList(),
+                                'filterType' => GridView::FILTER_SELECT2,
+                                'filterWidgetOptions' => [
+                                    'pluginOptions' => ['allowClear' => true],
+                                ],
+                                'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                                 'value' => function (Schoolplan $model) use ($executorsBonus){
                                     $v = [];
                                     foreach ($model->executors_list as $id) {
@@ -155,21 +161,21 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                             ],
                             [
                                 'attribute' => 'num_users',
-                                'label' => 'Число уч.',
+                                'label' => 'Участ.',
                                 'value' => function ($model) {
                                     return $model->num_users ;
                                 },
                             ],
                             [
                                 'attribute' => 'num_winners',
-                                'label' => 'Число поб.',
+                                'label' => 'Поб.',
                                 'value' => function ($model) {
                                     return $model->num_winners;
                                 },
                             ],
                             [
                                 'attribute' => 'num_visitors',
-                                'label' => 'Число зрит.',
+                                'label' => 'Зрит.',
                                 'value' => function ($model) {
                                     return $model->num_visitors;
                                 },
@@ -181,14 +187,30 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                     [Schoolplan::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
                                     [Schoolplan::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
                                     [Schoolplan::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
+                                    [Schoolplan::DOC_STATUS_MODIF, Yii::t('art', 'Modif'), 'warning'],
                                 ],
                                 'options' => ['style' => 'width:150px']
                             ],
                             [
                                 'attribute' => 'bars_flag',
                                 'label' => 'БАРС',
+                                'visible' => \artsoft\Art::isBackend(),
                                 'value' => function (Schoolplan $model) {
-                                    return $model->bars_flag == 1 ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i>Да' : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i>Нет';
+                                    return $model->bars_flag == 1 ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да'
+                                        : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> Нет';
+                                },
+                                'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
+                                'format' => 'raw',
+                            ],
+                             [
+                                'label' => 'Вып.плана',
+                                'visible' => \artsoft\Art::isBackend(),
+                                'value' => function (Schoolplan $model) {
+                                    return $model->schoolplanPerform ?  Html::a('<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> ' . count($model->schoolplanPerform),
+                                        ['/schoolplan/default/perform', 'id' => $model->id],
+                                        [
+                                            'data-pjax' => '0',
+                                        ]) : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> Нет';
                                 },
                                 'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
                                 'format' => 'raw',
@@ -203,16 +225,26 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
                                 'visibleButtons' => [
                                     'update' => function ($model) {
-                                        return ($model->isAuthor() && $model->doc_status == Schoolplan::DOC_STATUS_DRAFT) || \artsoft\Art::isBackend();
+                                        return $model->isAuthor() || \artsoft\Art::isBackend();
                                     },
                                     'delete' => function ($model) {
-                                        return ($model->isAuthor() && $model->doc_status == Schoolplan::DOC_STATUS_DRAFT) || \artsoft\Art::isBackend();
+                                        return $model->isAuthor() || \artsoft\Art::isBackend();
                                     },
                                     'view' => function ($model) {
                                         return true;
                                     }
                                 ],
                             ],
+                        ],
+                        'beforeHeader' => [
+                            [
+                                'columns' => [
+                                    ['content' => 'Мероприятие', 'options' => ['colspan' => 7, 'class' => 'text-center warning']],
+                                    ['content' => 'Колличество', 'options' => ['colspan' => 3, 'class' => 'text-center success']],
+                                    ['content' => 'Статус', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
+                                ],
+                                'options' => ['class' => 'skip-export'] // remove this row from export
+                            ]
                         ],
                     ]);
                     ?>

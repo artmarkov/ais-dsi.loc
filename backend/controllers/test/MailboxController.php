@@ -2,29 +2,35 @@
 
 namespace backend\controllers\test;
 
-use artsoft\mailbox\models\Mailbox;
-use artsoft\mailbox\models\MailboxInbox;
+use artsoft\helpers\ArtHelper;
+use artsoft\helpers\RefBook;
 use Yii;
+use yii\helpers\Html;
 
 class MailboxController extends \backend\controllers\DefaultController
 {
     public function actionIndex()
     {
+        $plan_year = 2023;
+        $sign_message = 'Необходимо сделать следующее...';
+        $title = '<b>Сообщение модуля "Расписание консультаций"</b>';
+        $receiverId = 1136;
+       // $senderId =  Yii::$app->user->identity->id;
+        $senderId = 1267;
+        $teachers_id = RefBook::find('users_teachers')->getValue($receiverId) ?? null;
+        $teachers_fio = RefBook::find('teachers_fullname')->getValue($teachers_id);
+        $teachers_sender_id = RefBook::find('users_teachers')->getValue($senderId) ?? null;
+        $teachers_sender_fio = RefBook::find('teachers_fio')->getValue($teachers_sender_id);
+        $link = Yii::$app->urlManager->hostInfo . '/teachers/consult-items/index?id=' . $teachers_id;
 
-        $models = MailboxInbox::find()
-            ->joinWith(['mailbox'])
-            ->joinWith(['receiver'])
-            ->select(['receiver_id', 'COUNT(*) AS qty'])
-            ->where(['status_read' => Mailbox::STATUS_READ_NEW])
-            ->andWhere(['status_post' => Mailbox::STATUS_POST_SENT])
-            ->andWhere(['mailbox_inbox.status_del' => Mailbox::STATUS_DEL_NO])
-            ->andWhere(['status' => \artsoft\models\User::STATUS_ACTIVE])
-            ->groupBy('receiver_id')
-            ->asArray()
-            ->all();
+        $htmlBody = '<p><b>Здравствуйте, ' . Html::encode($teachers_fio) . '</b></p>';
+        $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание консультаций на:' . strip_tags(ArtHelper::getStudyYearsValue($plan_year)) . ' учебный год. ' . '</p>';
+        $htmlBody .= '<p>' . $sign_message . '</p>';
+        $htmlBody .= '<p>' . Html::a(Html::encode($link), $link) . '</p>';
+        $htmlBody .= '<hr>';
+        $htmlBody .= '<p><b>С уважением, ' . Html::encode($teachers_sender_fio) . '</b></p>';
 
-        echo '<pre>' . print_r($models, true) . '</pre>';
-       // Yii::$app->mailbox->send([10117, 91117],'Title Тест','Content Тест');
+        Yii::$app->mailbox->send($receiverId, $title, $htmlBody);
     }
 
 }

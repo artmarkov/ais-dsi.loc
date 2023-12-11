@@ -34,7 +34,7 @@ class ConsultItemsController extends MainController
         if (Yii::$app->request->post('submitAction') == 'send_approve') {
             $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_WAIT;
         } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
-            $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_DRAFT;
+            $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_MODIF;
         }
         if ($model_confirm->load(Yii::$app->request->post()) AND $model_confirm->save()) {
             Yii::$app->session->setFlash('info', 'Статус успешно изменен.');

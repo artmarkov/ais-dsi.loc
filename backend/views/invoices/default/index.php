@@ -230,11 +230,13 @@ $columns = [
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= \yii\bootstrap\Alert::widget([
-                            'body' => '<i class="fa fa-info"></i> Для добавления нескольких квитанцый, нажмите чекбоксы слева.',
-                            'options' => ['class' => 'alert-info'],
-                        ]);
-                        ?>
+                        <?php if (\artsoft\Art::isBackend()): ?>
+                            <?= \yii\bootstrap\Alert::widget([
+                                'body' => '<i class="fa fa-info"></i> Для добавления нескольких квитанцый, нажмите чекбоксы слева.',
+                                'options' => ['class' => 'alert-info'],
+                            ]);
+                            ?>
+                        <?php endif; ?>
                     </div>
                     <div class="col-sm-6">
                         <?php echo Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Создать новые квитанции',

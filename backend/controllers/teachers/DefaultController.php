@@ -613,7 +613,7 @@ class DefaultController extends MainController
                 if (Yii::$app->request->post('submitAction') == 'approve') {
                     $model->doc_status = StudyplanThematic::DOC_STATUS_AGREED;
                 } elseif (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-                    $model->doc_status = StudyplanThematic::DOC_STATUS_DRAFT;
+                    $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
                 }
 
                 $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
@@ -746,7 +746,7 @@ class DefaultController extends MainController
             $model_confirm->teachers_id = $id;
             $model_confirm->plan_year = $model_date->plan_year;
             if (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-                $model_confirm->confirm_status = SubjectScheduleConfirm::DOC_STATUS_DRAFT;
+                $model_confirm->confirm_status = SubjectScheduleConfirm::DOC_STATUS_MODIF;
             } elseif (Yii::$app->request->post('submitAction') == 'approve') {
                 $model_confirm->confirm_status = SubjectScheduleConfirm::DOC_STATUS_AGREED;
             }
@@ -910,7 +910,7 @@ class DefaultController extends MainController
             $model_confirm->teachers_id = $id;
             $model_confirm->plan_year = $model_date->plan_year;
             if (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-                $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_DRAFT;
+                $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_MODIF;
             } elseif (Yii::$app->request->post('submitAction') == 'approve') {
                 $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_AGREED;
             }
