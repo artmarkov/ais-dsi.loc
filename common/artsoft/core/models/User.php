@@ -536,7 +536,7 @@ SQL;
     }
 
     /**
-     * Gets query for [[UserCommons]].
+     * Gets query for [[UserCommon]].
      *
      * @return \yii\db\ActiveQuery
      */

@@ -23,6 +23,7 @@ use yii\helpers\StringHelper;
  *
  * @property int $id
  * @property int $author_id Автор записи
+ * @property int $signer_id Подписант
  * @property string|null $title Название мероприятия
  * @property int $datetime_in Дата и время начала
  * @property int $datetime_out Дата и время окончания
@@ -62,6 +63,7 @@ use yii\helpers\StringHelper;
  *
  * @property Auditory $auditory
  * @property Author $author
+ * @property User $user
  * @property GuidePlanTree $category
  * @property ActivitiesOver $activitiesOver
  * @property TeachersEfficiency $teachersEfficiency
@@ -146,13 +148,13 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'datetime_in', 'datetime_out', 'category_id', 'author_id'], 'required'],
+            [['title', 'datetime_in', 'datetime_out', 'category_id', 'author_id', 'signer_id'], 'required'],
             [['department_list', 'executors_list'], 'required'],
             [['partic_price'], 'required', 'when' => function ($model) {
                 return $model->form_partic == '2';
             }, 'enableClientValidation' => false],
             [['department_list', 'executors_list', 'datetime_in', 'datetime_out'], 'safe'],
-            [['auditory_id', 'category_id', 'activities_over_id', 'form_partic', 'visit_poss', 'important_event', 'format_event', 'num_users', 'num_winners', 'num_visitors', 'author_id'], 'integer'],
+            [['auditory_id', 'category_id', 'activities_over_id', 'form_partic', 'visit_poss', 'important_event', 'format_event', 'num_users', 'num_winners', 'num_visitors', 'author_id', 'signer_id'], 'integer'],
             [['visit_content', 'region_partners', 'rider', 'result'], 'string'],
             [['site_url', 'site_media'], 'url', 'defaultScheme' => 'http'],
             [['title'], 'string', 'max' => 512],
@@ -192,6 +194,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
                 return $model->formPlaces == 2;
             }, 'enableClientValidation' => false],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['author_id' => 'id']],
+            [['signer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['signer_id' => 'id']],
             [['formPlaces'], 'safe'],
 
         ];
@@ -230,6 +233,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         return [
             'id' => 'ID',
             'author_id' => 'Автор мероприятия',
+            'signer_id' => 'Подписант',
             'title' => 'Название мероприятия',
             'datetime_in' => 'Дата и время начала',
             'datetime_out' => 'Дата и время окончания',
@@ -392,6 +396,11 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function getAuthor()
     {
         return $this->hasOne(UserCommon::class, ['id' => 'author_id']);
+    }
+
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'signer_id']);
     }
 
     public function getSchoolplanPerform()
@@ -610,25 +619,27 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 
     public function sendAdminMessage()
     {
-        $textBody = 'Сообщение модуля "План работы" ' . PHP_EOL;
-        $htmlBody = '<p><b>Сообщение модуля "План работы"</b></p>';
+        if ($this->admin_message != '') {
+            $textBody = 'Сообщение модуля "План работы" ' . PHP_EOL;
+            $htmlBody = '<p><b>Сообщение модуля "План работы"</b></p>';
 
-        $textBody .= 'Прошу Вас внести уточнения в мероприятие: ' . strip_tags($this->title) . ' от ' . strip_tags($this->datetime_in) . PHP_EOL;
-        $htmlBody .= '<p>Прошу Вас внести уточнения в мероприятие:' . strip_tags($this->title) . ' от ' . strip_tags($this->datetime_in) . '</p>';
-        $textBody .= $this->admin_message . PHP_EOL;
-        $htmlBody .= '<p>' . $this->admin_message . '</p>';
-        $textBody .= '--------------------------' . PHP_EOL;
-        $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
-        $htmlBody .= '<hr>';
-        $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
+            $textBody .= 'Прошу Вас внести уточнения в мероприятие: ' . strip_tags($this->title) . ' от ' . strip_tags($this->datetime_in) . PHP_EOL;
+            $htmlBody .= '<p>Прошу Вас внести уточнения в мероприятие:' . strip_tags($this->title) . ' от ' . strip_tags($this->datetime_in) . '</p>';
+            $textBody .= $this->admin_message . PHP_EOL;
+            $htmlBody .= '<p>' . $this->admin_message . '</p>';
+            $textBody .= '--------------------------' . PHP_EOL;
+            $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
+            $htmlBody .= '<hr>';
+            $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
 
-        return Yii::$app->mailqueue->compose()
-            ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
-            ->setTo(self::getAuthorEmail() ?? Yii::$app->params['adminEmail'])
-            ->setSubject('Сообщение с сайта ' . Yii::$app->name)
-            ->setTextBody($textBody)
-            ->setHtmlBody($htmlBody)
-            ->queue();
+            return Yii::$app->mailqueue->compose()
+                ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
+                ->setTo(self::getAuthorEmail() ?? Yii::$app->params['adminEmail'])
+                ->setSubject('Сообщение с сайта ' . Yii::$app->name)
+                ->setTextBody($textBody)
+                ->setHtmlBody($htmlBody)
+                ->queue();
+        }
     }
 
     /**
@@ -657,5 +668,17 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function isAuthor()
     {
         return $this->author_id == self::getAuthorId();
+    }
+
+    public static function getSignerId()
+    {
+        $id = \Yii::$app->user->id;
+        $user = User::findOne($id);
+        return $user ? $user->id : null;
+    }
+
+    public function isSigner()
+    {
+        return $this->signer_id == self::getSignerId();
     }
 }

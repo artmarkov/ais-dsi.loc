@@ -122,7 +122,15 @@ class DefaultController extends MainController
             $readonly = true;
         }
         $model->initActivitiesOver();
-        if ($model->load(Yii::$app->request->post())) {
+
+        if (Yii::$app->request->post('submitAction') == 'make_changes') {
+            $model->doc_status = Schoolplan::DOC_STATUS_MODIF;
+            if ($model->save(false)) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
+                $this->getSubmitAction($model);
+            }
+        } elseif ($model->load(Yii::$app->request->post())) {
+
             $valid = $model->validate();
             if ($valid) {
                 if ($model->setActivitiesOver($model->activities_over_id)) {
@@ -137,13 +145,8 @@ class DefaultController extends MainController
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
                 $this->getSubmitAction($model);
             }
-        } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
-            $model->doc_status = Schoolplan::DOC_STATUS_MODIF;
-            if ($model->save(false)) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
-                $this->getSubmitAction($model);
-            }
         }
+
         return $this->render('update', [
             'model' => $model,
             'readonly' => $readonly

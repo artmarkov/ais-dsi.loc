@@ -102,6 +102,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
         $this->createTableWithHistory('schoolplan', [
             'id' => $this->primaryKey(),
             'author_id' => $this->integer()->notNull()->comment('Автор записи'),
+            'signer_id' => $this->integer()->notNull()->comment('Подписант'),
             'title' => $this->string(512)->comment('Название мероприятия'),
             'datetime_in' => $this->integer()->notNull()->comment('Дата и время начала'),
             'datetime_out' => $this->integer()->notNull()->comment('Дата и время окончания'),
@@ -126,7 +127,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             'num_users' => $this->integer()->comment('Количество участников'),
             'num_winners' => $this->integer()->comment('Количество победителей'),
             'num_visitors' => $this->integer()->comment('Количество зрителей'),
-            'bars_flag' => $this->boolean()->comment('Отправлено в БАРС'),
+            'bars_flag' => $this->boolean()->defaultValue(false)->comment('Отправлено в БАРС'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -170,6 +171,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
         $this->db->createCommand()->createView('schoolplan_view', '
         SELECT id, 
                 author_id, 
+                signer_id, 
                 title, 
                 datetime_in, 
                 datetime_out, 

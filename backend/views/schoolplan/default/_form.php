@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use artsoft\models\User;
 use artsoft\widgets\ActiveForm;
 use common\models\own\Department;
 use common\models\schoolplan\Schoolplan;
@@ -298,11 +299,25 @@ use common\models\user\UserCommon;
 
                                         ]);
                                         ?>
+                                        <?= $form->field($model, 'signer_id')->widget(\kartik\select2\Select2::class, [
+                                            'data' => User::getUsersByIds(User::getUsersByRole('signerSchoolplan')),
+                                            'showToggleAll' => false,
+                                            'options' => [
+                                                'disabled' => $readonly,
+                                                'placeholder' => Yii::t('art', 'Select...'),
+                                                'multiple' => false,
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => false,
+                                            ],
+
+                                        ]);
+                                        ?>
                                         <?= $form->field($model->loadDefaultValues(), 'doc_status')->widget(\kartik\select2\Select2::class, [
                                             'data' => Schoolplan::getDocStatusList(),
                                             'showToggleAll' => false,
                                             'options' => [
-                                                'disabled' => \artsoft\Art::isFrontend() ? true : $readonly,
+                                                'disabled' => true,
                                                 'placeholder' => Yii::t('art', 'Select...'),
                                                 'multiple' => false,
                                             ],
@@ -320,17 +335,19 @@ use common\models\user\UserCommon;
                                     </div>
                                 </div>
                                 <?php if (!$model->isNewRecord && \artsoft\Art::isBackend()) : ?>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <?= $form->field($model, 'admin_flag')->checkbox(['disabled' => $readonly])->label('Отправить на доработку') ?>
-
-                                            <div id="send_admin_message">
-                                                <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора мароприятия и нажмите "Отправить на доработку"') ?>
-
-                                                <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-default pull-right', 'name' => 'submitAction', 'value' => 'send_admin_message']); ?>
+                                        <div class="row">
+                                        <hr>
+                                            <div class="col-sm-12">
+                                                <?= $form->field($model, 'admin_flag')->checkbox(['disabled' => $readonly])->label('Добавить сообщение') ?>
+                                                <div id="send_admin_message">
+                                                    <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора мароприятия и нажмите "Отправить на доработку"') ?>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                        <div class="form-group btn-group">
+                                            <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->doc_status == 1]); ?>
+                                            <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-default pull-right', 'name' => 'submitAction', 'value' => 'send_admin_message']); ?>
+                                        </div>
                                 <?php endif; ?>
                                 <div class="form-group btn-group">
                                     <?php if (!$model->isNewRecord && \artsoft\Art::isFrontend()): ?>

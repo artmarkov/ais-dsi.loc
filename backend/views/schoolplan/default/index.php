@@ -181,6 +181,26 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                 },
                             ],
                             [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/schoolplan/default',
+                                'template' => '{view} {update} {delete}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                'visibleButtons' => [
+                                    'update' => function ($model) {
+                                        return $model->isAuthor() || \artsoft\Art::isBackend();
+                                    },
+                                    'delete' => function ($model) {
+                                        return $model->isAuthor() || \artsoft\Art::isBackend();
+                                    },
+                                    'view' => function ($model) {
+                                        return true;
+                                    }
+                                ],
+                            ],
+                            [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'doc_status',
                                 'optionsArray' => [
@@ -190,6 +210,15 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                     [Schoolplan::DOC_STATUS_MODIF, Yii::t('art', 'Modif'), 'warning'],
                                 ],
                                 'options' => ['style' => 'width:150px']
+                            ],
+                            [
+                                'attribute' => 'signer_id',
+                                'value' => function (Schoolplan $model) {
+                                    return isset($model->user->userCommon ) ? $model->user->userCommon->lastFM : $model->signer_id;
+                                },
+                                'options' => ['style' => 'width:150px'],
+                                'contentOptions' => ['style'=>"text-align:center; vertical-align: middle;"],
+                                'format' => 'raw',
                             ],
                             [
                                 'attribute' => 'bars_flag',
@@ -215,33 +244,14 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                 'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
                                 'format' => 'raw',
                             ],
-                            [
-                                'class' => 'kartik\grid\ActionColumn',
-                                'urlCreator' => function ($action, $model, $key, $index) {
-                                    return [$action, 'id' => $model->id];
-                                },
-                                'controller' => '/schoolplan/default',
-                                'template' => '{view} {update} {delete}',
-                                'headerOptions' => ['class' => 'kartik-sheet-style'],
-                                'visibleButtons' => [
-                                    'update' => function ($model) {
-                                        return $model->isAuthor() || \artsoft\Art::isBackend();
-                                    },
-                                    'delete' => function ($model) {
-                                        return $model->isAuthor() || \artsoft\Art::isBackend();
-                                    },
-                                    'view' => function ($model) {
-                                        return true;
-                                    }
-                                ],
-                            ],
+
                         ],
                         'beforeHeader' => [
                             [
                                 'columns' => [
-                                    ['content' => 'Мероприятие', 'options' => ['colspan' => 7, 'class' => 'text-center warning']],
-                                    ['content' => 'Колличество', 'options' => ['colspan' => 3, 'class' => 'text-center success']],
-                                    ['content' => 'Статус', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
+                                    ['content' => 'Мероприятие', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
+                                    ['content' => 'Итоги/Количество', 'options' => ['colspan' => 4, 'class' => 'text-center success']],
+                                    ['content' => 'Статус', 'options' => ['colspan' => 5, 'class' => 'text-center danger']],
                                 ],
                                 'options' => ['class' => 'skip-export'] // remove this row from export
                             ]
