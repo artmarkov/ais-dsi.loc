@@ -2,8 +2,9 @@
 
 namespace artsoft\components;
 
-use artsoft\helpers\ArtHelper;
+use artsoft\helpers\RefBook;
 use artsoft\models\User;
+use common\models\user\UsersView;
 use Yii;
 use yii\base\Component;
 use yii\helpers\Html;
@@ -24,11 +25,27 @@ class Mailbox extends Component
 {
     public $modelClass = 'artsoft\mailbox\models\Mailbox';
 
+    protected $teachers_id;
     protected $teachers_io;
     protected $teachers_sender_fio;
     protected $sign_message;
     protected $model;
     protected $module;
+
+    public function mailing($receiversIds, $content = NULL, $title = NULL)
+    {
+        if (!$receiversIds) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр receiversIds.");
+        }
+        $m = new $this->modelClass;
+        $m->scenario = $this->modelClass::SCENARIO_COMPOSE;
+        $m->status_post = $this->modelClass::STATUS_POST_SENT;
+        $m->receivers_ids = $this->getReceivers($receiversIds);
+        $m->title = $title == NULL ? '<b>Сообщение модуля "Рассылка"</b>' : $title;
+        $m->content = $content;
+
+        return $m->save();
+    }
 
     /**
      * @param array|int $receiversIds Получатели сообщения
@@ -37,20 +54,27 @@ class Mailbox extends Component
      * @return mixed
      * @throws NotFoundHttpException
      */
-    public function send($receiversIds, $model = NULL, $content = NULL)
+    public function send($receiver_id, $model = NULL, $content = NULL)
     {
-        if (!$receiversIds) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр receiversIds.");
+        if (!$receiver_id) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр receiver_id.");
+        }
+        if (is_array($receiver_id)) {
+            throw new NotFoundHttpException("Параметр receiver_id не должен быть массивом. Используйте метод mailing для рассылок");
         }
         $this->model = $model;
         $this->module = $this->model ? StringHelper::basename($model::className()) : null;
-        $title = '<b>Сообщение модуля "' . $this->getModuleText() . '"</b>';
+        $this->teachers_id = RefBook::find('users_teachers')->getValue($receiver_id) ?? null;
+        $teachers_sender_id = RefBook::find('users_teachers')->getValue(Yii::$app->user->identity->id) ?? null;
+        $this->teachers_sender_fio = RefBook::find('teachers_fio')->getValue($teachers_sender_id);
+        $this->sign_message = $content;
+
         $m = new $this->modelClass;
         $m->scenario = $this->modelClass::SCENARIO_COMPOSE;
         $m->status_post = $this->modelClass::STATUS_POST_SENT;
-        $m->receivers_ids = $this->getReceivers($receiversIds);
-        $m->title = $title;
-        $m->content = $content;
+        $m->receivers_ids = $this->getReceiver($receiver_id);
+        $m->title = $this->getTitle();
+        $m->content = $this->getContent();
 
         return $m->save();
     }
@@ -67,61 +91,81 @@ class Mailbox extends Component
             ->column();
     }
 
-    protected function getModuleText()
+    protected function getReceiver($receiver_id)
     {
-        switch ($this->module) {
-            case 'Schedule':
-                return 'Расписание занятий';
-                break;
-            case 'ScheduleConsult':
-                return 'Расписание консультаций';
-                break;
-            case 'Schoolplan':
-                return 'План работы школы';
-                break;
-            case 'SchoolpanPerform':
-                return 'Выполнение плана и участие в меропритиях';
-                break;
-            case 'Thematic':
-                return 'Тематические(репертуарные) планы';
-                break;
-            default:
-                return '';
+        $user = UsersView::find()
+            ->where(['id' => $receiver_id])
+            ->andWhere(['user_category' => 'teachers'])
+            ->andWhere(['status' => User::STATUS_ACTIVE])
+            ->one();
+        if ($user) {
+            $this->teachers_io = $user->first_name . ' ' . $user->middle_name;
+            return [$user->id];
         }
+        return [];
     }
 
-    protected function getLink()
+    protected function getTitle()
     {
         switch ($this->module) {
             case 'Schedule':
-                return Yii::$app->urlManager->hostInfo . '/teachers/schedule-items/index?id=' . $teachers_id;
+                $text = 'Расписание занятий';
                 break;
             case 'ScheduleConsult':
-                return Yii::$app->urlManager->hostInfo . '/teachers/consult-items/index?id=' . $teachers_id;
+                $text = 'Расписание консультаций';
                 break;
             case 'Schoolplan':
-                return 'План работы школы';
+                $text = 'План работы школы';
                 break;
-            case 'SchoolpanPerform':
-                return 'Выполнение плана и участие в меропритиях';
+            case 'SchoolplanPerform':
+                $text = 'Выполнение плана и участие в меропритиях';
                 break;
             case 'Thematic':
-                return 'Тематические(репертуарные) планы';
+                $text = 'Тематические(репертуарные) планы';
                 break;
             default:
-                return '';
+                $text = '';
+                break;
         }
+        return 'Сообщение модуля "' . $text . '"';
     }
 
     protected function getContent()
     {
+
         $htmlBody = '<p><b>Здравствуйте, ' . Html::encode($this->teachers_io) . '</b></p>';
-        $htmlBody .= '<p>Прошу Вас внести уточнения в ' . $this->getModuleText($this->module) . ' на:' . strip_tags(ArtHelper::getStudyYearsValue($plan_year)) . ' учебный год. ' . '</p>';
+        $htmlBody .= '<hr>';
+        switch ($this->module) {
+//            case 'Schedule':
+//                $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание занятий на:' . strip_tags(ArtHelper::getStudyYearsValue($plan_year)) . ' учебный год. ' . '</p>';
+//                $link = Yii::$app->urlManager->hostInfo . '/teachers/schedule-items/index?id=' . $this->teachers_id;
+//                break;
+//            case 'ScheduleConsult':
+//                $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание консультаций на:' . strip_tags(ArtHelper::getStudyYearsValue($plan_year)) . ' учебный год. ' . '</p>';
+//                $link = Yii::$app->urlManager->hostInfo . '/teachers/consult-items/index?id=' . $this->teachers_id;
+//                break;
+            case 'Schoolplan':
+                $htmlBody .= '<p><b>Прошу Вас доработать мероприятие: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . '</p>';
+                $link = Yii::$app->urlManager->hostInfo . '/schoolplan/default/update?id=' . $this->model->id;
+                break;
+            case 'SchoolplanPerform':
+                $modelSchoolplan = $this->model->schoolplan;
+                $htmlBody .= '<p><b>Прошу Вас доработать карточку выполнения плана и участия в мероприятии: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . '</p>';
+                $link = Yii::$app->urlManager->hostInfo . '/schoolplan/default/perform?mode=update&id=' . $modelSchoolplan->id . '&objectId=' . $this->model->id;
+                break;
+            case 'Thematic':
+                $htmlBody .= '<p>Прошу Вас доработать тематический(репертуарный) план' . '</p>';
+                $link = '';
+                break;
+            default:
+                return '';
+        }
+
         $htmlBody .= '<p>' . $this->sign_message . '</p>';
-        $htmlBody .= '<p>' . Html::a(Html::encode($link), $link) . '</p>';
+        $htmlBody .= '<hr>';
+        $htmlBody .= '<p>Пройдите по ссылке: ' . Html::a(Html::encode($link), $link, [ 'target' => '_blank', 'data-pjax' => '0']) . ' (откроется в новом окне)</p>';
         $htmlBody .= '<hr>';
         $htmlBody .= '<p><b>С уважением, ' . Html::encode($this->teachers_sender_fio) . '</b></p>';
-
         return $htmlBody;
     }
 }

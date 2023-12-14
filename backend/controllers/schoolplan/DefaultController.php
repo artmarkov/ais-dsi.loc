@@ -302,6 +302,9 @@ class DefaultController extends MainController
                 }
                 if ($modelPerform->save()) {
                     Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                    if ($modelPerform->sendAdminMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
                     $this->getSubmitAction();
                 }
             }

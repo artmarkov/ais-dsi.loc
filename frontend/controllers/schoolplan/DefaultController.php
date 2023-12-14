@@ -408,16 +408,19 @@ class DefaultController extends MainController
 
             if ($modelPerform->load(Yii::$app->request->post())) {
                 if (Yii::$app->request->post('submitAction') == 'send_approve') {
-                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_WAIT;
+                    $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_WAIT;
                 } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
-                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_MODIF;
+                    $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_MODIF;
                 } elseif (Yii::$app->request->post('submitAction') == 'approve') {
-                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_AGREED;
+                    $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_AGREED;
                 } elseif (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-                    $modelPerform->status_sign = SchoolplanProtocolItems::DOC_STATUS_MODIF;
+                    $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_MODIF;
                 }
                 if ($modelPerform->save()) {
                     Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                    if ($modelPerform->sendAdminMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
                     $this->getSubmitAction();
                 }
             }

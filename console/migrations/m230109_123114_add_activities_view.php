@@ -136,7 +136,7 @@ UNION ALL
     activities_over.datetime_in AS start_time,
     activities_over.datetime_out AS end_time
    FROM activities_over
-  WHERE activities_over.auditory_id IS NOT NULL AND activities_over.over_category = 2
+  WHERE activities_over.auditory_id IS NOT NULL AND activities_over.over_category IN  (1,2)
 UNION ALL
  SELECT \'subject_schedule\'::text AS resource,
     activities_schedule_view.subject_schedule_id AS id,
@@ -148,7 +148,8 @@ UNION ALL
     activities_schedule_view.description,
     activities_schedule_view.datetime_in AS start_time,
     activities_schedule_view.datetime_out AS end_time
-   FROM activities_schedule_view WHERE direction_id = 1000
+   FROM activities_schedule_view
+  WHERE activities_schedule_view.direction_id = 1000
   ORDER BY 9;
         ')->execute();
 

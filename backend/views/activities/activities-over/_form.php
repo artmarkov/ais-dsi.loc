@@ -33,6 +33,7 @@ use common\models\user\UserCommon;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
+
                     <?= $form->field($model, 'over_category')->widget(\kartik\select2\Select2::class, [
                         'data' => $model->getOverCategoryList(),
                         'options' => [

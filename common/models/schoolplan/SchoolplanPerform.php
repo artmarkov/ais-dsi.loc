@@ -4,6 +4,7 @@ namespace common\models\schoolplan;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\fileinput\behaviors\FileManagerBehavior;
+use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\education\LessonMark;
 use common\models\education\LessonProgress;
@@ -45,6 +46,9 @@ use yii\helpers\ArrayHelper;
  */
 class SchoolplanPerform extends \artsoft\db\ActiveRecord
 {
+
+    public $admin_flag;
+    public $admin_message;
 
     /**
      * {@inheritdoc}
@@ -88,7 +92,11 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
             [['schoolplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolplan::className(), 'targetAttribute' => ['schoolplan_id' => 'id']],
             [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::className(), 'targetAttribute' => ['studyplan_subject_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
-        ];
+            [['admin_flag'], 'boolean'],
+            [['admin_message'], 'required', 'when' => function ($model) {
+                return $model->admin_flag;
+            }, 'enableClientValidation' => false],
+            ];
     }
 
     /**
@@ -115,6 +123,7 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
             'mark_flag' => 'Добавить оценку',
+            'admin_message' => 'Сообщение для автора',
         ];
     }
 
@@ -307,5 +316,13 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'signer_id']);
+    }
+
+    public function sendAdminMessage()
+    {
+        if ($this->admin_message != '') {
+            $receiverId =  RefBook::find('teachers_users')->getValue($this->teachers_id);
+            Yii::$app->mailbox->send($receiverId, $this, $this->admin_message);
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace backend\controllers\activities;
 
+use common\models\activities\ActivitiesOver;
 use Yii;
 
 /**
@@ -23,6 +24,7 @@ class ActivitiesOverController extends MainController
 
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
+        $model->over_category = 1;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));

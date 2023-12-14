@@ -99,6 +99,16 @@ use artsoft\grid\GridPageSize;
                         'options' => ['style' => 'width:100px'],
                     ],
                     [
+                        'attribute' => 'signer_id',
+                        'filter' => false,
+                        'value' => function (SchoolplanPerform $model) {
+                            return isset($model->user->userCommon ) ? $model->user->userCommon->lastFM : $model->signer_id;
+                        },
+                        'options' => ['style' => 'width:150px'],
+                        'contentOptions' => ['style'=>"text-align:center; vertical-align: middle;"],
+                        'format' => 'raw',
+                    ],
+                    [
                         'class' => 'kartik\grid\ActionColumn',
                         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
                         'width' => '90px',

@@ -39,6 +39,9 @@ class UsersView extends User
         $attr['user_common_id'] = Yii::t('art', 'ID');
         $attr['user_category_name'] = Yii::t('art', 'User Category');
         $attr['user_name'] = Yii::t('art', 'Full Name');
+        $attr['last_name'] = Yii::t('art', 'Last Name');
+        $attr['first_name'] = Yii::t('art', 'First Name');
+        $attr['middle_name'] = Yii::t('art', 'Middle Name');
         $attr['phone'] = Yii::t('art', 'Phone');
         $attr['phone_optional'] =  Yii::t('art', 'Phone Optional');
         $attr['user_common_status'] = Yii::t('art', 'Status');
