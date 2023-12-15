@@ -123,7 +123,7 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
             'mark_flag' => 'Добавить оценку',
-            'admin_message' => 'Сообщение для автора',
+            'admin_message' => 'Сообщение для участника мероприятия',
         ];
     }
 
@@ -310,7 +310,7 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
     public function protocolIsAvailable()
     {
         $userId = Yii::$app->user->identity->getId();
-        return !($userId == $this->leader_id || $userId == $this->secretary_id || in_array($userId, $this->members_list));
+        return !($userId == $this->schoolplan->leader_id || $userId == $this->schoolplan->secretary_id || in_array($userId, $this->schoolplan->members_list));
     }
 
     public function getUser()
@@ -318,11 +318,21 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
         return $this->hasOne(User::class, ['id' => 'signer_id']);
     }
 
-    public function sendAdminMessage()
+    public function modifMessage()
     {
-        if ($this->admin_message != '') {
-            $receiverId =  RefBook::find('teachers_users')->getValue($this->teachers_id);
-            Yii::$app->mailbox->send($receiverId, $this, $this->admin_message);
-        }
+        $receiverId =  RefBook::find('teachers_users')->getValue($this->teachers_id);
+        Yii::$app->mailbox->send($receiverId, 'modif', $this, $this->admin_message);
+    }
+
+    public function approveMessage()
+    {
+        $receiverId =  RefBook::find('teachers_users')->getValue($this->teachers_id);
+        Yii::$app->mailbox->send($receiverId, 'approve', $this, $this->admin_message);
+    }
+
+    public function sendApproveMessage()
+    {
+        $receiverId = $this->signer_id;
+        Yii::$app->mailbox->send($receiverId, 'send_approve', $this, $this->admin_message);
     }
 }

@@ -143,8 +143,12 @@ class DefaultController extends MainController
             $model->doc_status = Schoolplan::DOC_STATUS_WAIT;
             if ($model->save(false)) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
+                if ($model->sendApproveMessage()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                }
                 $this->getSubmitAction($model);
             }
+
         }
 
         return $this->render('update', [
@@ -406,21 +410,27 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $modelPerform = SchoolplanPerform::findOne($objectId);
 
-            if ($modelPerform->load(Yii::$app->request->post())) {
+            if ($modelPerform->load(Yii::$app->request->post()) && $modelPerform->validate()) {
                 if (Yii::$app->request->post('submitAction') == 'send_approve') {
                     $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_WAIT;
+                    if ($modelPerform->sendApproveMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
                 } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
                     $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_MODIF;
                 } elseif (Yii::$app->request->post('submitAction') == 'approve') {
                     $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_AGREED;
-                } elseif (Yii::$app->request->post('submitAction') == 'send_admin_message') {
+                    if ($modelPerform->approveMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
+                } elseif (Yii::$app->request->post('submitAction') == 'modif') {
                     $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_MODIF;
+                    if ($modelPerform->modifMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
                 }
                 if ($modelPerform->save()) {
                     Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                    if ($modelPerform->sendAdminMessage()) {
-                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
-                    }
                     $this->getSubmitAction();
                 }
             }

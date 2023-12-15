@@ -373,18 +373,18 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             foreach ($teachers as $teachers_id => $value) {
                 $label = [];
                 foreach ($value as $index => $val) {
-                        $label[] = Html::a($val['bonus'] . ($val['bonus_vid_id'] == 1 ? '%' : '₽'),
-                            ['/schoolplan/default/teachers-efficiency', 'id' => $val['item_id']],
-                            [
-                                'style' => 'color: #428bca;
+                    $label[] = Html::a($val['bonus'] . ($val['bonus_vid_id'] == 1 ? '%' : '₽'),
+                        ['/schoolplan/default/teachers-efficiency', 'id' => $val['item_id']],
+                        [
+                            'style' => 'color: #428bca;
                                             padding: 2px 1px;
                                             text-decoration: none;
                                             cursor: pointer;
                                             border-bottom: 1px dashed;',
-                                'data-pjax' => '0',
-                            ]);
+                            'data-pjax' => '0',
+                        ]);
                 }
-                    $data[$item_id][$teachers_id] = implode(',', $label);
+                $data[$item_id][$teachers_id] = implode(',', $label);
             }
         }
         return $data;
@@ -407,6 +407,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         return $this->hasMany(SchoolplanPerform::class, ['schoolplan_id' => 'id']);
     }
+
     /**
      * getFormParticList
      * @return array
@@ -617,32 +618,24 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         return parent::beforeSave($insert);
     }
 
-    public function sendAdminMessage()
+    public function modifMessage()
     {
-        if ($this->admin_message != '') {
-//            $textBody = 'Сообщение модуля "План работы" ' . PHP_EOL;
-//            $htmlBody = '<p><b>Сообщение модуля "План работы"</b></p>';
-//
-//            $textBody .= 'Прошу Вас внести уточнения в мероприятие: ' . strip_tags($this->title) . ' от ' . strip_tags($this->datetime_in) . PHP_EOL;
-//            $htmlBody .= '<p>Прошу Вас внести уточнения в мероприятие:' . strip_tags($this->title) . ' от ' . strip_tags($this->datetime_in) . '</p>';
-//            $textBody .= $this->admin_message . PHP_EOL;
-//            $htmlBody .= '<p>' . $this->admin_message . '</p>';
-//            $textBody .= '--------------------------' . PHP_EOL;
-//            $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
-//            $htmlBody .= '<hr>';
-//            $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
-//
-//            return Yii::$app->mailqueue->compose()
-//                ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
-//                ->setTo(self::getAuthorEmail() ?? Yii::$app->params['adminEmail'])
-//                ->setSubject('Сообщение с сайта ' . Yii::$app->name)
-//                ->setTextBody($textBody)
-//                ->setHtmlBody($htmlBody)
-//                ->queue();
-            $userCommon = UserCommon::findOne($this->author_id);
-            $receiverId =  $userCommon->user ? $userCommon->user->id : null;
-            Yii::$app->mailbox->send($receiverId, $this, $this->admin_message);
-        }
+        $userCommon = UserCommon::findOne($this->author_id);
+        $receiverId = $userCommon->user ? $userCommon->user->id : null;
+        Yii::$app->mailbox->send($receiverId, 'modif', $this, $this->admin_message);
+    }
+
+    public function approveMessage()
+    {
+        $userCommon = UserCommon::findOne($this->author_id);
+        $receiverId = $userCommon->user ? $userCommon->user->id : null;
+        Yii::$app->mailbox->send($receiverId, 'approve', $this, $this->admin_message);
+    }
+
+    public function sendApproveMessage()
+    {
+        $receiverId = $this->signer_id;
+        Yii::$app->mailbox->send($receiverId, 'send_approve', $this, $this->admin_message);
     }
 
     /**

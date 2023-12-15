@@ -46,7 +46,7 @@ use yii\helpers\Url;
                         }
                         ?>
                         <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
+                            'data' => $model->schoolplan->getExecutorsList(),
                             'options' => [
                                 'disabled' => $readonly,
                                 'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
@@ -203,7 +203,7 @@ use yii\helpers\Url;
                                     <div class="col-sm-12">
                                         <?= $form->field($model, 'admin_flag')->checkbox(/*['disabled' => $readonly]*/)->label('Добавить сообщение') ?>
                                         <div id="send_admin_message">
-                                            <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора мароприятия и нажмите "Отправить на доработку"') ?>
+                                            <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для участника мароприятия и нажмите "Отправить на доработку"') ?>
                                         </div>
                                     </div>
                                 </div>
@@ -211,7 +211,7 @@ use yii\helpers\Url;
                             <div class="row">
                                 <div class="form-group btn-group">
                                     <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->status_sign == 1]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'send_admin_message', 'disabled' => $model->status_sign != 1]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'modif', 'disabled' => $model->status_sign != 1]); ?>
                                 </div>
                             </div>
                         <?php else: ?>

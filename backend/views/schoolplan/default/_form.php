@@ -173,107 +173,107 @@ use common\models\user\UserCommon;
                     </div>
                 </div>
                 <?php if (!$model->isNewRecord) : ?>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                Дополнительные сведения
-                            </div>
-                            <div class="panel-body">
-                                <div class="row">
-                                    <div class="col-sm-12">
-
-                                        <?= $form->field($model, 'form_partic')->radioList(Schoolplan::getFormParticList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
-
-                                        <?= $form->field($model, 'partic_price')->widget(\kartik\money\MaskMoney::class, [
-                                            'pluginOptions' => [
-                                                'prefix' => '₽ ',
-                                                'suffix' => ' ',
-                                                'allowNegative' => false
-                                            ]
-                                        ])->hint('Укажите стоимость участия одного человека/организации в рублях.') ?>
-
-                                        <?= $form->field($model, 'visit_poss')->radioList(Schoolplan::getVisitPossList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
-
-                                        <?= $form->field($model, 'visit_content')->textarea(['rows' => 2])->hint('Укажите, является запланированное мероприятие открытым или закрытым. Открытое мероприятие - вход возможен для всех желающих (в независимости от того, платный он или нет). Закрытое мероприятие - вход возможен для ограниченного круга лиц, например: «Приглашаются выпускники и их родители».') ?>
-
-                                        <?= $form->field($model, 'format_event')->radioList(Schoolplan::getFormatList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
-
-                                        <?= $form->field($model, 'important_event')->radioList(Schoolplan::getImportantList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
-
-                                        <?php if ($model->category->partners_flag) : ?>
-
-                                            <?= $form->field($model, 'region_partners')->textInput(['maxlength' => true]) ?>
-
-                                        <?php endif; ?>
-
-                                        <?= $form->field($model, 'site_url')->textInput(['maxlength' => true]) ?>
-
-                                        <?= $form->field($model, 'site_media')->textInput(['maxlength' => true]) ?>
-
-                                        <div id="count_schoolplan-description" class="fa-pull-right"></div>
-                                        <?= $form->field($model, 'description')->textarea(['rows' => 6])->hint('Введите полное описание мероприятия, включающее важную и существенную информацию. Оно может содержать программу мероприятия, историю возникновения, значимость мероприятия для учреждения и участников, поименное перечисление участников, выступающих, организаторов, направленность мероприятия в форме развернутого ответа.') ?>
-
-                                        <?php if ($model->category->rider_flag) : ?>
-
-                                            <?= $form->field($model, 'rider')->textarea(['rows' => 3])->hint('свет, микрофоны, хоровые станки и т.п.') ?>
-
-                                        <?php endif; ?>
-
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php if ($model->category->afisha_flag) : ?>
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="panel panel-info">
                                 <div class="panel-heading">
-                                    Загруженные материалы
+                                    Дополнительные сведения
                                 </div>
                                 <div class="panel-body">
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <?= \yii\bootstrap\Alert::widget([
-                                                'body' => '<i class="fa fa-info"></i> Максимальный размер файла: 3 Mb',
-                                                'options' => ['class' => 'alert-info'],
-                                            ]);
-                                            ?>
-                                            <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], /*'pluginOptions' => ['theme' => 'explorer'],*/
-                                                'disabled' => $readonly]) ?>
+
+                                            <?= $form->field($model, 'form_partic')->radioList(Schoolplan::getFormParticList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
+
+                                            <?= $form->field($model, 'partic_price')->widget(\kartik\money\MaskMoney::class, [
+                                                'pluginOptions' => [
+                                                    'prefix' => '₽ ',
+                                                    'suffix' => ' ',
+                                                    'allowNegative' => false
+                                                ]
+                                            ])->hint('Укажите стоимость участия одного человека/организации в рублях.') ?>
+
+                                            <?= $form->field($model, 'visit_poss')->radioList(Schoolplan::getVisitPossList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
+
+                                            <?= $form->field($model, 'visit_content')->textarea(['rows' => 2])->hint('Укажите, является запланированное мероприятие открытым или закрытым. Открытое мероприятие - вход возможен для всех желающих (в независимости от того, платный он или нет). Закрытое мероприятие - вход возможен для ограниченного круга лиц, например: «Приглашаются выпускники и их родители».') ?>
+
+                                            <?= $form->field($model, 'format_event')->radioList(Schoolplan::getFormatList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
+
+                                            <?= $form->field($model, 'important_event')->radioList(Schoolplan::getImportantList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
+
+                                            <?php if ($model->category->partners_flag) : ?>
+
+                                                <?= $form->field($model, 'region_partners')->textInput(['maxlength' => true]) ?>
+
+                                            <?php endif; ?>
+
+                                            <?= $form->field($model, 'site_url')->textInput(['maxlength' => true]) ?>
+
+                                            <?= $form->field($model, 'site_media')->textInput(['maxlength' => true]) ?>
+
+                                            <div id="count_schoolplan-description" class="fa-pull-right"></div>
+                                            <?= $form->field($model, 'description')->textarea(['rows' => 6])->hint('Введите полное описание мероприятия, включающее важную и существенную информацию. Оно может содержать программу мероприятия, историю возникновения, значимость мероприятия для учреждения и участников, поименное перечисление участников, выступающих, организаторов, направленность мероприятия в форме развернутого ответа.') ?>
+
+                                            <?php if ($model->category->rider_flag) : ?>
+
+                                                <?= $form->field($model, 'rider')->textarea(['rows' => 3])->hint('свет, микрофоны, хоровые станки и т.п.') ?>
+
+                                            <?php endif; ?>
+
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                <?php endif; ?>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                Итоги мероприятия
+                    <?php if ($model->category->afisha_flag) : ?>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">
+                                        Загруженные материалы
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <?= \yii\bootstrap\Alert::widget([
+                                                    'body' => '<i class="fa fa-info"></i> Максимальный размер файла: 3 Mb',
+                                                    'options' => ['class' => 'alert-info'],
+                                                ]);
+                                                ?>
+                                                <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], /*'pluginOptions' => ['theme' => 'explorer'],*/
+                                                    'disabled' => $readonly]) ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="panel-body">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <?= $form->field($model, 'result')->textarea(['rows' => 6])->hint('Введите данные о результатах мероприятия с указанием фамилии и имени учащихся, ФИО преподавателей и концертмейстеров в формате: Иванов Иван (преп. Петров П.П., конц. Сидоров С.С.) – лауреат I степени. В случае, если учащийся не получил награды по итогам мероприятия, он вносится как участник. Если участие в мероприятии не состоялось, укажите причину, по которой оно было отменено.') ?>
+                        </div>
+                    <?php endif; ?>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    Итоги мероприятия
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <?= $form->field($model, 'result')->textarea(['rows' => 6])->hint('Введите данные о результатах мероприятия с указанием фамилии и имени учащихся, ФИО преподавателей и концертмейстеров в формате: Иванов Иван (преп. Петров П.П., конц. Сидоров С.С.) – лауреат I степени. В случае, если учащийся не получил награды по итогам мероприятия, он вносится как участник. Если участие в мероприятии не состоялось, укажите причину, по которой оно было отменено.') ?>
 
-                                        <?= $form->field($model, 'num_users')->textInput()->hint('Укажите, какое количество человек предположительно будет принимать участие в мероприятии. В случае, если Вы сами являетесь организатором, указывается точное количество участников, включая организаторов и преподавателей. Если вы не являетесь организатором указанного мероприятия, то в критерии учитываются только участники непосредственно от учреждения.') ?>
+                                            <?= $form->field($model, 'num_users')->textInput()->hint('Укажите, какое количество человек предположительно будет принимать участие в мероприятии. В случае, если Вы сами являетесь организатором, указывается точное количество участников, включая организаторов и преподавателей. Если вы не являетесь организатором указанного мероприятия, то в критерии учитываются только участники непосредственно от учреждения.') ?>
 
-                                        <?= $form->field($model, 'num_winners')->textInput() ?>
+                                            <?= $form->field($model, 'num_winners')->textInput() ?>
 
-                                        <?= $form->field($model, 'num_visitors')->textInput() ?>
+                                            <?= $form->field($model, 'num_visitors')->textInput() ?>
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 <?php endif; ?>
                 <div class="row">
                     <div class="col-sm-12">
@@ -335,26 +335,26 @@ use common\models\user\UserCommon;
                                     </div>
                                 </div>
                                 <?php if (!$model->isNewRecord && \artsoft\Art::isBackend()) : ?>
-                                        <div class="row">
+                                    <div class="row">
                                         <hr>
-                                            <div class="col-sm-12">
-                                                <?= $form->field($model, 'admin_flag')->checkbox(['disabled' => $readonly])->label('Добавить сообщение') ?>
-                                                <div id="send_admin_message">
-                                                    <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора мароприятия и нажмите "Отправить на доработку"') ?>
-                                                </div>
+                                        <div class="col-sm-12">
+                                            <?= $form->field($model, 'admin_flag')->checkbox(['disabled' => $readonly])->label('Добавить сообщение') ?>
+                                            <div id="send_admin_message">
+                                                <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора мароприятия и нажмите "Отправить на доработку"') ?>
                                             </div>
                                         </div>
-                                        <div class="form-group btn-group">
-                                            <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->doc_status == 1]); ?>
-                                            <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-default pull-right', 'name' => 'submitAction', 'value' => 'send_admin_message']); ?>
-                                        </div>
+                                    </div>
+                                    <div class="form-group btn-group">
+                                        <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->doc_status == 1]); ?>
+                                        <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-default pull-right', 'name' => 'submitAction', 'value' => 'modif']); ?>
+                                    </div>
                                 <?php endif; ?>
-                                <div class="form-group btn-group">
-                                    <?php if (!$model->isNewRecord && \artsoft\Art::isFrontend()): ?>
-                                        <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => $model->isAuthor() ? $model->doc_status == 1 : $readonly]); ?>
-                                        <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => $model->isAuthor() ? in_array($model->doc_status, [0,3]) : $readonly]); ?>
-                                    <?php endif; ?>
-                                </div>
+                                <?php if (!$model->isNewRecord && \artsoft\Art::isFrontend() && $model->isAuthor()): ?>
+                                    <div class="form-group btn-group">
+                                        <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => in_array($model->doc_status, [1, 2]) ? true : false]); ?>
+                                        <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => in_array($model->doc_status, [0, 3]) ? true : false]); ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

@@ -31,6 +31,8 @@ class Mailbox extends Component
     protected $sign_message;
     protected $model;
     protected $module;
+    protected $action;
+    protected $isAdmin;
 
     public function mailing($receiversIds, $content = NULL, $title = NULL)
     {
@@ -54,7 +56,7 @@ class Mailbox extends Component
      * @return mixed
      * @throws NotFoundHttpException
      */
-    public function send($receiver_id, $model = NULL, $content = NULL)
+    public function send($receiver_id, $action = 'approve', $model = NULL, $content = NULL)
     {
         if (!$receiver_id) {
             throw new NotFoundHttpException("Отсутствует обязательный параметр receiver_id.");
@@ -63,11 +65,13 @@ class Mailbox extends Component
             throw new NotFoundHttpException("Параметр receiver_id не должен быть массивом. Используйте метод mailing для рассылок");
         }
         $this->model = $model;
+        $this->action = $action;
         $this->module = $this->model ? StringHelper::basename($model::className()) : null;
         $this->teachers_id = RefBook::find('users_teachers')->getValue($receiver_id) ?? null;
         $teachers_sender_id = RefBook::find('users_teachers')->getValue(Yii::$app->user->identity->id) ?? null;
         $this->teachers_sender_fio = RefBook::find('teachers_fio')->getValue($teachers_sender_id);
         $this->sign_message = $content;
+        $this->isAdmin = in_array($receiver_id, User::getUsersByRole('administrator'));
 
         $m = new $this->modelClass;
         $m->scenario = $this->modelClass::SCENARIO_COMPOSE;
@@ -130,12 +134,56 @@ class Mailbox extends Component
         return 'Сообщение модуля "' . $text . '"';
     }
 
+    protected function getLink()
+    {
+        $link = null;
+        switch ($this->module) {
+            case 'Schoolplan':
+                $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/schoolplan/default/update?id=' : '/admin/schoolplan/default/update?id=') . $this->model->id;
+                break;
+            case 'SchoolplanPerform':
+                $modelSchoolplan = $this->model->schoolplan;
+                $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/schoolplan/default/perform?mode=update&id=' : '/admin/schoolplan/default/perform?mode=update&id=') . $modelSchoolplan->id . '&objectId=' . $this->model->id;
+                break;
+//            case 'Schedule':
+//                $text = 'Расписание занятий';
+//                break;
+//            case 'ScheduleConsult':
+//                $text = 'Расписание консультаций';
+//                break;
+//            case 'Thematic':
+//                $text = 'Тематические(репертуарные) планы';
+//                break;
+        }
+        return $link;
+    }
     protected function getContent()
     {
-
+        $link = $this->getLink();
         $htmlBody = '<p><b>Здравствуйте, ' . Html::encode($this->teachers_io) . '</b></p>';
         $htmlBody .= '<hr>';
-        switch ($this->module) {
+        switch (1) {
+            case $this->module == 'Schoolplan' && $this->action == 'modif':
+                $htmlBody .= '<p><b>Прошу Вас доработать мероприятие: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . '</p>';
+                break;
+            case $this->module == 'Schoolplan' && $this->action == 'approve':
+                $htmlBody .= '<p><b>Мероприятие: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . ' <b>было утверждено.</b></p>';
+                break;
+            case $this->module == 'Schoolplan' && $this->action == 'send_approve':
+                $htmlBody .= '<p><b>Прошу Вас утвердить мероприятие: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . '.</p>';
+                break;
+            case $this->module == 'SchoolplanPerform' && $this->action == 'modif':
+                $modelSchoolplan = $this->model->schoolplan;
+                $htmlBody .= '<p><b>Прошу Вас доработать карточку выполнения плана и участия в мероприятии: </b>' . $modelSchoolplan->title  . ' за ' . $modelSchoolplan->datetime_in . '</p>';
+                break;
+            case $this->module == 'SchoolplanPerform' && $this->action == 'approve':
+                $modelSchoolplan = $this->model->schoolplan;
+                $htmlBody .= '<p><b>Карточка выполнения плана и участия в мероприятии: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . ' <b>была согласована.</b></p>';
+                break;
+            case $this->module == 'SchoolplanPerform' && $this->action == 'send_approve':
+                $modelSchoolplan = $this->model->schoolplan;
+                $htmlBody .= '<p><b>Прошу Вас утвердить карточку выполнения плана и участия в мероприятии: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . '.</p>';
+                break;
 //            case 'Schedule':
 //                $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание занятий на:' . strip_tags(ArtHelper::getStudyYearsValue($plan_year)) . ' учебный год. ' . '</p>';
 //                $link = Yii::$app->urlManager->hostInfo . '/teachers/schedule-items/index?id=' . $this->teachers_id;
@@ -144,21 +192,11 @@ class Mailbox extends Component
 //                $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание консультаций на:' . strip_tags(ArtHelper::getStudyYearsValue($plan_year)) . ' учебный год. ' . '</p>';
 //                $link = Yii::$app->urlManager->hostInfo . '/teachers/consult-items/index?id=' . $this->teachers_id;
 //                break;
-            case 'Schoolplan':
-                $htmlBody .= '<p><b>Прошу Вас доработать мероприятие: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . '</p>';
-                $link = Yii::$app->urlManager->hostInfo . '/schoolplan/default/update?id=' . $this->model->id;
-                break;
-            case 'SchoolplanPerform':
-                $modelSchoolplan = $this->model->schoolplan;
-                $htmlBody .= '<p><b>Прошу Вас доработать карточку выполнения плана и участия в мероприятии: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . '</p>';
-                $link = Yii::$app->urlManager->hostInfo . '/schoolplan/default/perform?mode=update&id=' . $modelSchoolplan->id . '&objectId=' . $this->model->id;
-                break;
-            case 'Thematic':
-                $htmlBody .= '<p>Прошу Вас доработать тематический(репертуарный) план' . '</p>';
-                $link = '';
-                break;
-            default:
-                return '';
+//            case 'Thematic':
+//                $htmlBody .= '<p>Прошу Вас доработать тематический(репертуарный) план' . '</p>';
+//                $link = '';
+//                break;
+
         }
 
         $htmlBody .= '<p>' . $this->sign_message . '</p>';
