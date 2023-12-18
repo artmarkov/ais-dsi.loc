@@ -33,16 +33,13 @@ jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
 
 $this->registerJs($js);
 
-$readonly = $model->doc_status != 0 && \artsoft\Art::isFrontend() ? true : $readonly;
+$readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? true : $readonly;
 ?>
 
     <div class="studyplan-thematic-form">
 
         <?php
         $form = ActiveForm::begin([
-            'fieldConfig' => [
-                'inputOptions' => ['readonly' => $readonly]
-            ],
             'id' => 'studyplan-thematic-form',
             'validateOnBlur' => false,
         ])
@@ -70,19 +67,6 @@ $readonly = $model->doc_status != 0 && \artsoft\Art::isFrontend() ? true : $read
                         <?= $form->field($model, 'thematic_category')->dropDownList(\common\models\studyplan\StudyplanThematic::getCategoryList(), ['disabled' => $readonly]) ?>
 
                         <?= $form->field($model, 'half_year')->dropDownList(\artsoft\helpers\ArtHelper::getHalfYearList(true), ['disabled' => $readonly]); ?>
-
-                        <?= $form->field($model->loadDefaultValues(), 'doc_status')->dropDownList(\common\models\studyplan\StudyplanThematic::getDocStatusList(), ['disabled' => \artsoft\Art::isFrontend() ? true : $readonly]) ?>
-
-                        <?= $form->field($model, 'doc_sign_teachers_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => Teachers::getTeachersByIds(User::getUsersByRole('department,administrator')),
-                            'options' => [
-                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art', 'Select...'),
-                            ],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-                        ])->hint('Время согласования:' . Yii::$app->formatter->asDatetime($model->doc_sign_timestamp)); ?>
 
                         <?php
                         if ($model->isNewRecord and \artsoft\Art::isFrontend()) {
@@ -244,12 +228,39 @@ $readonly = $model->doc_status != 0 && \artsoft\Art::isFrontend() ? true : $read
                     </div>
                 </div>
                 <?php if (!$model->isNewRecord): ?>
+                    <?= $form->field($model->loadDefaultValues(), 'doc_status')->widget(\kartik\select2\Select2::class, [
+                        'data' => \common\models\studyplan\StudyplanThematic::getDocStatusList(),
+                        'showToggleAll' => false,
+                        'options' => [
+                            'disabled' => true,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => false,
+                        ],
+                    ]);
+                    ?>
+                    <?= $form->field($model, 'doc_sign_teachers_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => Teachers::getTeachersByIds(User::getUsersByRole('department,administrator')),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->hint('Время согласования:' . Yii::$app->formatter->asDatetime($model->doc_sign_timestamp)); ?>
                     <?php if (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && Teachers::isOwnTeacher($model->doc_sign_teachers_id))): ?>
                         <div class="row">
                             <div class="col-sm-12">
+                                <?= $form->field($model, 'admin_flag')->checkbox()->label('Добавить сообщение преподавателю') ?>
+                                <div id="admin_message">
+                                    <?= $form->field($model, 'sign_message')->textInput(['disabled' => false])->hint('Введите сообщение для автора') ?>
+                                </div>
                                 <div class="form-group btn-group pull-right">
                                     <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->doc_status == 1]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'send_admin_message', 'disabled' => $model->doc_status != 1]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'modif', 'disabled' => $model->doc_status != 1]); ?>
                                 </div>
                             </div>
                         </div>
@@ -293,5 +304,16 @@ $js = <<<JS
      });
 JS;
 
+$this->registerJs($js, \yii\web\View::POS_LOAD);
+
+
+$js = <<<JS
+     // Показ модуля сообщения
+    $('input[type=checkbox][name="StudyplanThematic[admin_flag]"]').prop('checked') ? $('#admin_message').show() : $('#admin_message').hide();
+    $('input[type=checkbox][name="StudyplanThematic[admin_flag]"]').click(function() {
+       $(this).prop('checked') ? $('#admin_message').show() : $('#admin_message').hide();
+     });
+  
+JS;
 $this->registerJs($js, \yii\web\View::POS_LOAD);
 ?>

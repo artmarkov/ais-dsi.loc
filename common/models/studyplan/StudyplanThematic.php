@@ -7,6 +7,7 @@ use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\teachers\Teachers;
+use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\base\ErrorException;
 use yii\behaviors\BlameableBehavior;
@@ -41,6 +42,9 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
 
     public $thematic_list;
     public $thematic_flag;
+
+    public $admin_flag;
+    public $sign_message;
 
     /**
      * {@inheritdoc}
@@ -87,6 +91,15 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
                 'whenClient' => "function (attribute, value) {
                                 return $('input[id=\"studyplanthematic-thematic_flag\"]').prop('checked');
                             }"],
+
+            [['admin_flag'], 'boolean'],
+            [['sign_message'], 'string'],
+            [['sign_message'], 'required', 'when' => function ($model) {
+                return $model->admin_flag;
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[id=\"studyplanthematic-admin_flag\"]').prop('checked');
+                            }"],
             [['doc_sign_teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['doc_sign_teachers_id' => 'id']],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['author_id' => 'id']],
 
@@ -115,6 +128,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
             'updated_by' => Yii::t('art', 'Updated By'),
+            'sign_message' => Yii::t('art/guide', 'Sign Message'),
         ];
     }
 
@@ -227,6 +241,38 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
             }
         }
 
+    }
+
+    /**
+     * ≈сли не задан автор, то берем из нагрузки.
+     * @return int|null
+     */
+    public function getAuthorScalar()
+    {
+        return TeachersLoad::find()
+            ->select('teachers_id')
+            ->where(['subject_sect_studyplan_id' => $this->subject_sect_studyplan_id])
+            ->andWhere(['studyplan_subject_id' => $this->studyplan_subject_id])
+            ->andWhere(['direction_id' => 1000])
+            ->scalar();
+    }
+
+    public function modifMessage()
+    {
+        $receiverId = $this->author_id ?? RefBook::find('teachers_users')->getValue($this->getAuthorScalar());
+        Yii::$app->mailbox->send($receiverId, 'modif', $this, $this->sign_message);
+    }
+
+    public function approveMessage()
+    {
+        $receiverId = $this->author_id ?? RefBook::find('teachers_users')->getValue($this->getAuthorScalar());
+        Yii::$app->mailbox->send($receiverId, 'approve', $this, $this->sign_message);
+    }
+
+    public function sendApproveMessage()
+    {
+        $receiverId = RefBook::find('teachers_users')->getValue($this->doc_sign_teachers_id);
+        Yii::$app->mailbox->send($receiverId, 'send_approve', $this, $this->sign_message);
     }
 
 }

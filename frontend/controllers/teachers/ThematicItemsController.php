@@ -142,6 +142,14 @@ class ThematicItemsController extends MainController
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
+                    if (Yii::$app->request->post('submitAction') == 'send_approve') {
+                        $model->doc_status = StudyplanThematic::DOC_STATUS_WAIT;
+                        if ($model->sendApproveMessage()) {
+                            Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                        }
+                    } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
+                        $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
+                    }
                     if ($flag = $model->save(false)) {
                         if (!empty($deletedIDs)) {
                             StudyplanThematicItems::deleteAll(['id' => $deletedIDs]);

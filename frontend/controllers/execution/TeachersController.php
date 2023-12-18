@@ -445,12 +445,6 @@ class TeachersController extends MainController
             }
             $modelsItems = $model->studyplanThematicItems;
             if ($model->load(Yii::$app->request->post())) {
-                if (Yii::$app->request->post('submitAction') == 'approve') {
-                    $model->doc_status = StudyplanThematic::DOC_STATUS_AGREED;
-                } elseif (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-                    $model->doc_status = StudyplanThematic::DOC_STATUS_DRAFT;
-                }
-
                 $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
                 $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
@@ -463,6 +457,17 @@ class TeachersController extends MainController
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
+                        if (Yii::$app->request->post('submitAction') == 'approve') {
+                            $model->doc_status = StudyplanThematic::DOC_STATUS_AGREED;
+                            if ($model->approveMessage()) {
+                                Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                            }
+                        } elseif (Yii::$app->request->post('submitAction') == 'modif') {
+                            $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
+                            if ($model->modifMessage()) {
+                                Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                            }
+                        }
                         if ($flag = $model->save(false)) {
                             if (!empty($deletedIDs)) {
                                 StudyplanThematicItems::deleteAll(['id' => $deletedIDs]);

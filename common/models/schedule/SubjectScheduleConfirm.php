@@ -166,32 +166,49 @@ class SubjectScheduleConfirm extends \artsoft\db\ActiveRecord
         return $this->teachers_id == self::getAuthorId();
     }
 
-    public function sendAdminMessage()
+//    public function sendAdminMessage()
+//    {
+//
+//        if ($this->sign_message != '') {
+//            $textBody = 'Сообщение модуля "Расписание занятий" ' . PHP_EOL;
+//            $htmlBody = '<p><b>Сообщение модуля "Расписание занятий"</b></p>';
+//
+//            $textBody .= 'Прошу Вас внести уточнения в Расписание занятий на: ' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . PHP_EOL;
+//            $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание занятий на:' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . '</p>';
+//            $textBody .= $this->sign_message . PHP_EOL;
+//            $htmlBody .= '<p>' . $this->sign_message . '</p>';
+//            $textBody .= '--------------------------' . PHP_EOL;
+//            $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
+//            $htmlBody .= '<hr>';
+//            $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
+//
+//            return Yii::$app->mailqueue->compose()
+//                ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
+//                ->setTo($this->getAuthorEmail() ?? Yii::$app->params['adminEmail'])
+//                ->setSubject('Сообщение с сайта ' . Yii::$app->name)
+//                ->setTextBody($textBody)
+//                ->setHtmlBody($htmlBody)
+//                ->queue();
+//        }
+//    }
+
+    public function modifMessage()
     {
-
-        if ($this->sign_message != '') {
-            $textBody = 'Сообщение модуля "Расписание занятий" ' . PHP_EOL;
-            $htmlBody = '<p><b>Сообщение модуля "Расписание занятий"</b></p>';
-
-            $textBody .= 'Прошу Вас внести уточнения в Расписание занятий на: ' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . PHP_EOL;
-            $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание занятий на:' . strip_tags(ArtHelper::getStudyYearsValue($this->plan_year)) . ' учебный год. ' . '</p>';
-            $textBody .= $this->sign_message . PHP_EOL;
-            $htmlBody .= '<p>' . $this->sign_message . '</p>';
-            $textBody .= '--------------------------' . PHP_EOL;
-            $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
-            $htmlBody .= '<hr>';
-            $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
-
-            return Yii::$app->mailqueue->compose()
-                ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
-                ->setTo($this->getAuthorEmail() ?? Yii::$app->params['adminEmail'])
-                ->setSubject('Сообщение с сайта ' . Yii::$app->name)
-                ->setTextBody($textBody)
-                ->setHtmlBody($htmlBody)
-                ->queue();
-        }
+        $receiverId =  RefBook::find('teachers_users')->getValue($this->teachers_id);
+        Yii::$app->mailbox->send($receiverId, 'modif', $this, $this->sign_message);
     }
 
+    public function approveMessage()
+    {
+        $receiverId =  RefBook::find('teachers_users')->getValue($this->teachers_id);
+        Yii::$app->mailbox->send($receiverId, 'approve', $this, $this->sign_message);
+    }
+
+    public function sendApproveMessage()
+    {
+        $receiverId =  RefBook::find('teachers_users')->getValue($this->teachers_sign);
+        Yii::$app->mailbox->send($receiverId, 'send_approve', $this, $this->sign_message);
+    }
     public function afterFind()
     {
         $this->sign_message = '';

@@ -42,7 +42,7 @@ $form = ActiveForm::begin([
                     echo $form->field($model_confirm, 'teachers_sign')->widget(\kartik\select2\Select2::class, [
                         'data' => Teachers::getTeachersByIds(User::getUsersByRole($modelName == 'SubjectScheduleConfirm' ? 'signerSchedule' : 'signerScheduleConsult')),
                         'options' => [
-                            'disabled' => $readonly && \artsoft\Art::isFrontend(),
+                            'disabled' => false,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [
@@ -73,7 +73,7 @@ $form = ActiveForm::begin([
                                 </div>
                                 <div class="form-group btn-group pull-right">
                                     <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model_confirm->confirm_status == 1]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'send_admin_message', 'disabled' => $model_confirm->confirm_status != 1]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'modif', 'disabled' => $model_confirm->confirm_status != 1]); ?>
                                 </div>
                             </div>
                         </div>
@@ -83,7 +83,7 @@ $form = ActiveForm::begin([
                             <div class="col-sm-12">
                                 <div class="form-group btn-group pull-right">
                                     <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' =>  in_array($model_confirm->confirm_status, [0,3]) ? $readonly : true]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' =>  !in_array($model_confirm->confirm_status, [0,3]) ? $readonly : true]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' =>  !in_array($model_confirm->confirm_status, [0,3]) ? false : true]); ?>
                                 </div>
                             </div>
                         </div>

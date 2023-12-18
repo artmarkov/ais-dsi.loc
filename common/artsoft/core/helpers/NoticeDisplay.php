@@ -356,12 +356,13 @@ class NoticeDisplay
         $subjectScheduleNull = array_filter(\yii\helpers\ArrayHelper::getColumn($this->models, 'subject_schedule_id'), function ($value) {
             return is_null($value) && $value == '';
         });
+        $subjectScheduleNull = array_diff($subjectScheduleNull, array('', null));
         $subjectScheduleAccomp = array_filter($this->models, function ($value) {
             return $value['direction_id']  == 1001 && !is_null($value['subject_schedule_id']);
         });
         $subjectScheduleAccomp = \yii\helpers\ArrayHelper::getColumn($subjectScheduleAccomp, 'subject_schedule_id');
         $subjectScheduleAccomp = array_diff($subjectScheduleAccomp, array_keys($this->scheduleAccompLimit));
-//        echo '<pre>' . print_r($this->models, true) . '</pre>'; die();
+     //   echo '<pre>' . print_r($subjectScheduleNull, true) . '</pre>'; die();
         return !empty($this->models) && empty($this->teachersLoadData) /*&& empty($this->scheduleOverLapping)*/ && empty($this->teachersOverLapping) && empty($this->teachersPlanScheduleOverLapping) /*&& empty($this->studentScheduleOverLapping) */&& empty($subjectScheduleAccomp) && empty($subjectScheduleNull);
     }
 

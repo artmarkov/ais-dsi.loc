@@ -610,11 +610,6 @@ class DefaultController extends MainController
             }
             $modelsItems = $model->studyplanThematicItems;
             if ($model->load(Yii::$app->request->post())) {
-                if (Yii::$app->request->post('submitAction') == 'approve') {
-                    $model->doc_status = StudyplanThematic::DOC_STATUS_AGREED;
-                } elseif (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-                    $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
-                }
 
                 $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
                 $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
@@ -628,12 +623,22 @@ class DefaultController extends MainController
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
+                        if (Yii::$app->request->post('submitAction') == 'approve') {
+                            $model->doc_status = StudyplanThematic::DOC_STATUS_AGREED;
+                            if ($model->approveMessage()) {
+                                Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                            }
+                        } elseif (Yii::$app->request->post('submitAction') == 'modif') {
+                            $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
+                            if ($model->modifMessage()) {
+                                Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                            }
+                        }
                         if ($flag = $model->save(false)) {
                             if (!empty($deletedIDs)) {
                                 StudyplanThematicItems::deleteAll(['id' => $deletedIDs]);
                             }
                             foreach ($modelsItems as $modelItems) {
-
                                 $modelItems->studyplan_thematic_id = $model->id;
                                 if (!($flag = $modelItems->save(false))) {
                                     $transaction->rollBack();
@@ -745,17 +750,23 @@ class DefaultController extends MainController
             $model_confirm = SubjectScheduleConfirm::find()->where(['=', 'teachers_id', $id])->andWhere(['=', 'plan_year', $model_date->plan_year])->one() ?? new SubjectScheduleConfirm();
             $model_confirm->teachers_id = $id;
             $model_confirm->plan_year = $model_date->plan_year;
-            if (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-                $model_confirm->confirm_status = SubjectScheduleConfirm::DOC_STATUS_MODIF;
-            } elseif (Yii::$app->request->post('submitAction') == 'approve') {
-                $model_confirm->confirm_status = SubjectScheduleConfirm::DOC_STATUS_AGREED;
-            }
-            if ($model_confirm->load(Yii::$app->request->post()) AND $model_confirm->save()) {
-                Yii::$app->session->setFlash('info', 'Статус успешно изменен.');
-                if ($model_confirm->sendAdminMessage()) {
-                    Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+
+            if ($model_confirm->load(Yii::$app->request->post()) && $model_confirm->validate()) {
+                if (Yii::$app->request->post('submitAction') == 'approve') {
+                    $model_confirm->confirm_status = SubjectScheduleConfirm::DOC_STATUS_AGREED;
+                    if ($model_confirm->approveMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
+                } elseif (Yii::$app->request->post('submitAction') == 'modif') {
+                    $model_confirm->confirm_status = SubjectScheduleConfirm::DOC_STATUS_MODIF;
+                    if ($model_confirm->modifMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
                 }
-                return $this->redirect($this->getRedirectPage('schedule-items'));
+                if ($model_confirm->save()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                    $this->getSubmitAction();
+                }
             }
             return $this->renderIsAjax('schedule-items', compact('dataProvider', 'searchModel', 'model_date', 'model', 'model_confirm'));
         }
@@ -909,17 +920,22 @@ class DefaultController extends MainController
             $model_confirm = ConsultScheduleConfirm::find()->where(['=', 'teachers_id', $id])->andWhere(['=', 'plan_year', $model_date->plan_year])->one() ?? new ConsultScheduleConfirm();
             $model_confirm->teachers_id = $id;
             $model_confirm->plan_year = $model_date->plan_year;
-            if (Yii::$app->request->post('submitAction') == 'send_admin_message') {
-                $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_MODIF;
-            } elseif (Yii::$app->request->post('submitAction') == 'approve') {
-                $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_AGREED;
-            }
-            if ($model_confirm->load(Yii::$app->request->post()) AND $model_confirm->save()) {
-                Yii::$app->session->setFlash('info', 'Статус успешно изменен.');
-                if ($model_confirm->sendAdminMessage()) {
-                    Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+            if ($model_confirm->load(Yii::$app->request->post()) && $model_confirm->validate()) {
+                if (Yii::$app->request->post('submitAction') == 'approve') {
+                    $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_AGREED;
+                    if ($model_confirm->approveMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
+                } elseif (Yii::$app->request->post('submitAction') == 'modif') {
+                    $model_confirm->confirm_status = ConsultScheduleConfirm::DOC_STATUS_MODIF;
+                    if ($model_confirm->modifMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
                 }
-                return $this->redirect($this->getRedirectPage('consult-items'));
+                if ($model_confirm->save()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                    $this->getSubmitAction();
+                }
             }
             return $this->renderIsAjax('consult-items', compact('dataProvider', 'searchModel', 'model_date', 'modelTeachers', 'model_confirm'));
         }

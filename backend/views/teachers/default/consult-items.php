@@ -22,8 +22,7 @@ $teachers_list = RefBook::find('teachers_fio')->getList();
 $auditory_list = RefBook::find('auditory_memo_1')->getList();
 
 $noteModel = NoticeConsultDisplay::getData($dataProvider->models, $model_date->plan_year);
-$readonly = !$noteModel->confirmIsAvailable() || !Teachers::isOwnTeacher($modelTeachers->id);
-
+$readonly = ($noteModel->confirmIsAvailable() && Teachers::isOwnTeacher($modelTeachers->id)) ? false : true;
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [

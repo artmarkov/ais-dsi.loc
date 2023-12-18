@@ -2,8 +2,11 @@
 
 namespace artsoft\components;
 
+use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
+use common\models\schedule\ConsultScheduleConfirm;
+use common\models\schedule\SubjectSchedule;
 use common\models\user\UsersView;
 use Yii;
 use yii\base\Component;
@@ -111,24 +114,22 @@ class Mailbox extends Component
 
     protected function getTitle()
     {
+        $text = null;
         switch ($this->module) {
-            case 'Schedule':
-                $text = 'Расписание занятий';
-                break;
-            case 'ScheduleConsult':
-                $text = 'Расписание консультаций';
-                break;
             case 'Schoolplan':
                 $text = 'План работы школы';
                 break;
             case 'SchoolplanPerform':
                 $text = 'Выполнение плана и участие в меропритиях';
                 break;
-            case 'Thematic':
-                $text = 'Тематические(репертуарные) планы';
+            case 'SubjectScheduleConfirm':
+                $text = 'Расписание занятий';
                 break;
-            default:
-                $text = '';
+            case 'ConsultScheduleConfirm':
+                $text = 'Расписание консультаций';
+                break;
+            case 'StudyplanThematic':
+                $text = 'Тематический/репертуарный план';
                 break;
         }
         return 'Сообщение модуля "' . $text . '"';
@@ -145,15 +146,17 @@ class Mailbox extends Component
                 $modelSchoolplan = $this->model->schoolplan;
                 $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/schoolplan/default/perform?mode=update&id=' : '/admin/schoolplan/default/perform?mode=update&id=') . $modelSchoolplan->id . '&objectId=' . $this->model->id;
                 break;
-//            case 'Schedule':
-//                $text = 'Расписание занятий';
-//                break;
-//            case 'ScheduleConsult':
-//                $text = 'Расписание консультаций';
-//                break;
-//            case 'Thematic':
-//                $text = 'Тематические(репертуарные) планы';
-//                break;
+            case 'SubjectScheduleConfirm':
+                $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/teachers/schedule-items' : '/admin/teachers/' . $this->model->teachers_id . '/schedule-items');
+                break;
+            case 'ConsultScheduleConfirm':
+                $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/teachers/consult-items' : '/admin/teachers/' . $this->model->teachers_id . '/consult-items');
+                break;
+            case 'StudyplanThematic':
+                $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? ($this->action == 'send_approve' ? '/execution/teachers/' . $this->model->getAuthorScalar() . '/thematic-items?objectId=' . $this->model->id . '&mode=update' : '/teachers/thematic-items') : '/admin/teachers/' . $this->model->getAuthorScalar() . '/thematic-items');
+
+
+                break;
         }
         return $link;
     }
@@ -164,10 +167,10 @@ class Mailbox extends Component
         $htmlBody .= '<hr>';
         switch (1) {
             case $this->module == 'Schoolplan' && $this->action == 'modif':
-                $htmlBody .= '<p><b>Прошу Вас доработать мероприятие: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . '</p>';
+                $htmlBody .= '<p><b>Прошу Вас доработать карточку мероприятия: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . '</p>';
                 break;
             case $this->module == 'Schoolplan' && $this->action == 'approve':
-                $htmlBody .= '<p><b>Мероприятие: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . ' <b>было утверждено.</b></p>';
+                $htmlBody .= '<p><b>Мероприятие: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . ' <b> утверждено.</b></p>';
                 break;
             case $this->module == 'Schoolplan' && $this->action == 'send_approve':
                 $htmlBody .= '<p><b>Прошу Вас утвердить мероприятие: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . '.</p>';
@@ -178,25 +181,39 @@ class Mailbox extends Component
                 break;
             case $this->module == 'SchoolplanPerform' && $this->action == 'approve':
                 $modelSchoolplan = $this->model->schoolplan;
-                $htmlBody .= '<p><b>Карточка выполнения плана и участия в мероприятии: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . ' <b>была согласована.</b></p>';
+                $htmlBody .= '<p><b>Карточка выполнения плана и участия в мероприятии: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . ' <b> согласована.</b></p>';
                 break;
             case $this->module == 'SchoolplanPerform' && $this->action == 'send_approve':
                 $modelSchoolplan = $this->model->schoolplan;
                 $htmlBody .= '<p><b>Прошу Вас утвердить карточку выполнения плана и участия в мероприятии: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . '.</p>';
                 break;
-//            case 'Schedule':
-//                $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание занятий на:' . strip_tags(ArtHelper::getStudyYearsValue($plan_year)) . ' учебный год. ' . '</p>';
-//                $link = Yii::$app->urlManager->hostInfo . '/teachers/schedule-items/index?id=' . $this->teachers_id;
-//                break;
-//            case 'ScheduleConsult':
-//                $htmlBody .= '<p>Прошу Вас внести уточнения в Расписание консультаций на:' . strip_tags(ArtHelper::getStudyYearsValue($plan_year)) . ' учебный год. ' . '</p>';
-//                $link = Yii::$app->urlManager->hostInfo . '/teachers/consult-items/index?id=' . $this->teachers_id;
-//                break;
-//            case 'Thematic':
-//                $htmlBody .= '<p>Прошу Вас доработать тематический(репертуарный) план' . '</p>';
-//                $link = '';
-//                break;
-
+            case  $this->module =='SubjectScheduleConfirm' && $this->action == 'modif':
+                $htmlBody .= '<p><b>Прошу Вас доработать расписание занятий</b> за ' . strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год. ' . '</p>';
+                break;
+            case  $this->module =='SubjectScheduleConfirm' && $this->action == 'approve':
+                $htmlBody .= '<p><b>Расписание занятий</b> за ' . strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год <b> утверждено.</b></p>';
+                break;
+            case $this->module == 'SubjectScheduleConfirm' && $this->action == 'send_approve':
+                $htmlBody .= '<p><b>Прошу Вас утвердить расписание занятий</b> за ' .  strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год.</p>';
+                break;
+            case  $this->module == 'ConsultScheduleConfirm' && $this->action == 'modif':
+                $htmlBody .= '<p><b>Прошу Вас доработать расписание консультаций</b> за ' . strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год. ' . '</p>';
+                break;
+            case  $this->module == 'ConsultScheduleConfirm' && $this->action == 'approve':
+                $htmlBody .= '<p><b>Расписание консультаций</b> за ' . strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год <b> утверждено.</b></p>';
+                break;
+            case $this->module == 'ConsultScheduleConfirm' && $this->action == 'send_approve':
+                $htmlBody .= '<p><b>Прошу Вас утвердить расписание консультаций</b> за ' .  strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год.</p>';
+                break;
+            case  $this->module == 'StudyplanThematic' && $this->action == 'modif':
+                $htmlBody .= '<p><b>Прошу Вас доработать Тематический/репертуарный план</b> за ' . strip_tags(ArtHelper::getHalfYearValue($this->model->half_year)) . '</p>';
+                break;
+            case  $this->module == 'StudyplanThematic' && $this->action == 'approve':
+                $htmlBody .= '<p><b>Тематический/репертуарный план</b> за ' . strip_tags(ArtHelper::getHalfYearValue($this->model->half_year)) . ' <b> утвержден.</b></p>';
+                break;
+            case $this->module == 'StudyplanThematic' && $this->action == 'send_approve':
+                $htmlBody .= '<p><b>Прошу Вас утвердить Тематический/репертуарный план</b> за ' .  strip_tags(ArtHelper::getHalfYearValue($this->model->half_year)) . '</p>';
+                break;
         }
 
         $htmlBody .= '<p>' . $this->sign_message . '</p>';

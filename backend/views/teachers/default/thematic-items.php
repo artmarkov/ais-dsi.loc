@@ -36,18 +36,10 @@ $columns = [
     ],
     [
         'attribute' => 'thematic_category',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => \common\models\studyplan\StudyplanThematic::getCategoryList(),
         'value' => function ($model) {
             return StudyplanThematic::getCategoryValue($model->thematic_category);
         },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'format' => 'raw',
-//        'group' => true,
-//        'subGroupOf' => 1
     ],
     [
         'attribute' => 'half_year',
