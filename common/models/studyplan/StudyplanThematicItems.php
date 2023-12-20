@@ -10,13 +10,10 @@ use Yii;
  *
  * @property int $id
  * @property int|null $studyplan_thematic_id
- * @property string $author
- * @property string $piece_name
- * @property int $piece_category_id
- * @property string|null $task
+ * @property string $task
+ * @property string|null $topic
  *
  * @property StudyplanThematic $studyplanThematic
- * @property PieceCategory $pieceCategory
  */
 class StudyplanThematicItems extends \artsoft\db\ActiveRecord
 {
@@ -35,12 +32,10 @@ class StudyplanThematicItems extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['studyplan_thematic_id', 'piece_category_id'], 'integer'],
-            [['task'], 'string', 'max' => 1024],
-            [['author', 'piece_name', 'piece_category_id'], 'required', 'when' => function () { return $this->studyplanThematic ? $this->studyplanThematic->thematic_category == StudyplanThematic::REPERTORY_PLAN : false; } ],
-            [['author', 'piece_name'], 'string', 'max' => 256],
+            [['studyplan_thematic_id', 'topic'], 'required'],
+            [['studyplan_thematic_id'], 'integer'],
+            [['task', 'topic'], 'string', 'max' => 1024],
             [['studyplan_thematic_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanThematic::className(), 'targetAttribute' => ['studyplan_thematic_id' => 'id']],
-            [['piece_category_id'], 'exist', 'skipOnError' => true, 'targetClass' => PieceCategory::className(), 'targetAttribute' => ['piece_category_id' => 'id']],
         ];
     }
 
@@ -52,10 +47,8 @@ class StudyplanThematicItems extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/studyplan', 'ID'),
             'studyplan_thematic_id' => Yii::t('art/studyplan', 'Studyplan Thematic'),
-            'author' => Yii::t('art/studyplan', 'Piece Author'),
-            'piece_name' => Yii::t('art/studyplan', 'Piece Name'),
-            'piece_category_id' => Yii::t('art/studyplan', 'Piece Category'),
             'task' => Yii::t('art/studyplan', 'Task'),
+            'topic' => Yii::t('art/studyplan', 'Topic'),
         ];
     }
 
@@ -69,27 +62,4 @@ class StudyplanThematicItems extends \artsoft\db\ActiveRecord
         return $this->hasOne(StudyplanThematic::className(), ['id' => 'studyplan_thematic_id']);
     }
 
-    /**
-     * Gets query for [[PieceCategory]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPieceCategory()
-    {
-        return $this->hasOne(PieceCategory::className(), ['id' => 'piece_category_id']);
-    }
-
-    /**
-     * @param bool $insert
-     * @return bool
-     */
-    public function beforeSave($insert)
-    {
-        if ($this->studyplanThematic->thematic_category == StudyplanThematic::THEMATIC_PLAN) {
-            $this->author = null;
-            $this->piece_name = null;
-            $this->piece_category_id = null;
-        }
-        return parent::beforeSave($insert);
-    }
 }

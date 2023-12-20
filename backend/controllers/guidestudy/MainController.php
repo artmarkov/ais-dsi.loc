@@ -8,7 +8,7 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Состояние перевода',  'url' => ['/guidestudy/default/index']],
         ['label' => 'Виды образовательных программ',  'url' => ['/guidestudy/education-cat/index']],
         ['label' => 'Образовательный уровень',  'url' => ['/guidestudy/education-level/index']],
-        ['label' => 'Категории произведений',  'url' => ['/guidestudy/piece-category/index']],
+//        ['label' => 'Категории произведений',  'url' => ['/guidestudy/piece-category/index']],
         ['label' => 'Оценки уроков',  'url' => ['/guidestudy/lesson-mark/index']],
         ['label' => 'Виды испытаний',  'url' => ['/guidestudy/lesson-test/index']],
         ['label' => 'Приемные испытания',  'url' => ['/guidestudy/entrant-test/index']],

@@ -811,7 +811,7 @@ class StudyplanController extends MainController
             ['label' => 'Расписание занятий', 'url' => ['/teachers/studyplan/schedule', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/teachers/studyplan/consult-items', 'id' => $id]],
             ['label' => 'Характеристики по предметам', 'url' => ['/teachers/studyplan/characteristic-items', 'id' => $id]],
-            ['label' => 'Тематические планы', 'url' => ['/teachers/studyplan/thematic-items', 'id' => $id]],
+            ['label' => 'Тематические/репертуарные планы', 'url' => ['/teachers/studyplan/thematic-items', 'id' => $id]],
             ['label' => 'Дневник успеваемости', 'url' => ['/teachers/studyplan/studyplan-progress', 'id' => $id]],
             ['label' => 'Оплата за обучение', 'url' => ['/teachers/studyplan/studyplan-invoices', 'id' => $id]],
 //            ['label' => 'Выполнение плана и участие в мероприятиях', 'url' => ['/teachers/studyplan/studyplan-perform', 'id' => $id]],

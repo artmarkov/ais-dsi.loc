@@ -18,7 +18,7 @@ class StudyplanThematicViewSearch extends StudyplanThematicView
     public function rules()
     {
         return [
-            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'studyplan_thematic_id', 'subject_sect_studyplan_id', 'thematic_category'], 'integer'],
+            [['studyplan_id', 'student_id', 'plan_year', 'programm_id', 'course', 'status', 'studyplan_subject_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'studyplan_thematic_id', 'subject_sect_studyplan_id'], 'integer'],
 
         ];
     }
@@ -75,7 +75,6 @@ class StudyplanThematicViewSearch extends StudyplanThematicView
             'subject_vid_id' => $this->subject_vid_id,
             'studyplan_thematic_id' => $this->studyplan_thematic_id,
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
-            'thematic_category' => $this->thematic_category,
         ]);
 
 

@@ -475,7 +475,7 @@ class DefaultController extends MainController
         return [
             ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/view', 'id' => $id]],
             ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id]],
-//            ['label' => 'Протоколы мероприятия', 'url' => ['/schoolplan/default/protocol-event', 'id' => $id], 'visible' => !($model->category->commission_sell == 1 && $model->category->commission_sell == 2)],
+            ['label' => 'Протоколы аттестационной комиссии', 'url' => ['/schoolplan/default/protocol-event', 'id' => $id], 'visible' => $model->category->commission_sell == 1],
 //            ['label' => 'Протоколы аттестационной комиссии', 'url' => ['/schoolplan/default/protocol-attestations', 'id' => $id], 'visible' => $model->category->commission_sell == 1],
 //            ['label' => 'Протоколы приемной комиссии', 'url' => ['/schoolplan/default/protocol-reception', 'id' => $id], 'visible' => $model->category->commission_sell == 2],
             ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id]/*, 'visible' => $model->category->efficiency_flag*/],

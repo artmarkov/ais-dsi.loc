@@ -33,21 +33,7 @@ $columns = [
         'subGroupOf' => 1,
         'format' => 'raw',
     ],
-    [
-        'attribute' => 'thematic_category',
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => \common\models\studyplan\StudyplanThematic::getCategoryList(),
-        'value' => function ($model) {
-            return StudyplanThematic::getCategoryValue($model->thematic_category);
-        },
-//        'filterWidgetOptions' => [
-//            'pluginOptions' => ['allowClear' => true],
-//        ],
-//        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-        'format' => 'raw',
-        'group' => true,
-        'subGroupOf' => 1
-    ],
+
     [
         'attribute' => 'half_year',
         'value' => function (StudyplanThematic $model) {
@@ -183,7 +169,7 @@ $columns = [
 <div class="studyplan-thematic-index">
     <div class="panel">
         <div class="panel-heading">
-            Тематические планы: <?= RefBook::find('students_fullname')->getValue($model->student_id);?>
+            Тематические/репертуарные планы: <?= RefBook::find('students_fullname')->getValue($model->student_id);?>
             <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.';?>
         </div>
         <div class="panel-body">
@@ -216,7 +202,7 @@ $columns = [
                     [
                         'columns' => [
                             ['content' => 'Учебный предмет/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-                            ['content' => 'План', 'options' => ['colspan' => 6, 'class' => 'text-center danger']],
+                            ['content' => 'План', 'options' => ['colspan' => 5, 'class' => 'text-center danger']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

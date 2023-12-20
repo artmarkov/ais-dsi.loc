@@ -60,9 +60,6 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
                 'class' => ArrayFieldBehavior::class,
                 'attributes' => ['thematic_items_list'],
             ],
-            [
-                'class' => FileManagerBehavior::class,
-            ],
         ];
     }
 
@@ -93,7 +90,7 @@ class SchoolplanProtocolItems extends \artsoft\db\ActiveRecord
         return [
             'id' => 'ID',
             'schoolplan_protocol_id' => 'Протокол',
-            'studyplan_subject_id' => 'Учебный предмет ученика',
+            'studyplan_subject_id' => 'Ученик/учебный предмет',
             'thematic_items_list' => 'Список заданий из репертуарного плана',
             'lesson_mark_id' => 'Оценка',
             'winner_id' => 'Звание/Диплом',

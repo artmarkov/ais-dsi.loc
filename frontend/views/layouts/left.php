@@ -82,7 +82,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/calendar']],
                     ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/schedule-items/index']],
                     ['label' => 'Расписание консультаций', 'icon' => 'fa fa-minus', 'url' => ['/teachers/consult-items/index']],
-                    ['label' => 'Тематические (репертуарные) планы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/thematic-items/index']],
+                    ['label' => 'Тематические/репертуарные планы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/thematic-items/index']],
                     ['label' => 'Журнал успеваемости группы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/studyplan-progress/index']],
                     ['label' => 'Журнал успеваемости индивидуальных занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/studyplan-progress-indiv/index']],
                     ['label' => 'Показатели эффективности', 'icon' => 'fa fa-minus', 'url' => ['/teachers/efficiency/index']],

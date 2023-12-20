@@ -115,7 +115,7 @@ $columns = [
 <div class="teachers-thematic-index">
     <div class="panel">
         <div class="panel-heading">
-            Тематические планы на подписи: <?php echo RefBook::find('teachers_fio')->getValue($model->id); ?>
+            Тематические/репертуарные планы на подписи: <?php echo RefBook::find('teachers_fio')->getValue($model->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>

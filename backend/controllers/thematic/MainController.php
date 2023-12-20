@@ -10,7 +10,7 @@ class MainController extends \backend\controllers\DefaultController
     public $modelDate;
 
     public $tabMenu = [
-        ['label' => 'Тематические (репертуарные) планы',  'url' => ['/thematic/default/index']],
+        ['label' => 'Тематические/репертуарные планы',  'url' => ['/thematic/default/index']],
     ];
 
 

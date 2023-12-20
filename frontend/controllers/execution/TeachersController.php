@@ -1256,7 +1256,7 @@ class TeachersController extends MainController
             ['label' => 'Планирование инд. занятий', 'url' => ['/execution/teachers/teachers-plan', 'id' => $id]],
             ['label' => 'Злементы расписания', 'url' => ['/execution/teachers/schedule-items', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/execution/teachers/schedule', 'id' => $id]],
-            ['label' => 'Тематические (репертуарные) планы', 'url' => ['/execution/teachers/thematic-items', 'id' => $id]],
+            ['label' => 'Тематические/репертуарные планы', 'url' => ['/execution/teachers/thematic-items', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/execution/teachers/consult-items', 'id' => $id]],
             ['label' => 'Журнал успеваемости группы', 'url' => ['/execution/teachers/studyplan-progress', 'id' => $id]],
             ['label' => 'Журнал успеваемости индивидуальных занятий', 'url' => ['/execution/teachers/studyplan-progress-indiv', 'id' => $id]],

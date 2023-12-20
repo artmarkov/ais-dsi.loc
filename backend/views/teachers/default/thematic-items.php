@@ -34,13 +34,7 @@ $columns = [
         'subGroupOf' => 1,
         'format' => 'raw',
     ],
-    [
-        'attribute' => 'thematic_category',
-        'value' => function ($model) {
-            return StudyplanThematic::getCategoryValue($model->thematic_category);
-        },
-        'format' => 'raw',
-    ],
+
     [
         'attribute' => 'half_year',
         'value' => function (StudyplanThematic $model) {
@@ -254,7 +248,7 @@ $columns = [
 <div class="teachers-thematic-index">
     <div class="panel">
         <div class="panel-heading">
-            Тематические планы: <?php echo RefBook::find('teachers_fio')->getValue($model->id); ?>
+            Тематические/репертуарные планы: <?php echo RefBook::find('teachers_fio')->getValue($model->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>
@@ -288,7 +282,7 @@ $columns = [
                         'columns' => [
                             ['content' => 'Учебный предмет/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
                             ['content' => 'План', 'options' => ['colspan' => 2, 'class' => 'text-center info']],
-                            ['content' => 'Подпись', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
+                            ['content' => 'Подпись', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

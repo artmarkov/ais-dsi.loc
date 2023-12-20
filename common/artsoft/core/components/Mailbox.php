@@ -120,7 +120,7 @@ class Mailbox extends Component
                 $text = 'План работы школы';
                 break;
             case 'SchoolplanPerform':
-                $text = 'Выполнение плана и участие в меропритиях';
+                $text = 'Выполнение плана и участие в мероприятиях';
                 break;
             case 'SubjectScheduleConfirm':
                 $text = 'Расписание занятий';

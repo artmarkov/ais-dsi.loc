@@ -47,24 +47,17 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
 
         <div class="panel">
             <div class="panel-heading">
-                Тематический(репертуарный) план:
+                Тематический/репертуарный план:
                 <?php echo RefBook::find('subject_memo_4')->getValue($model->studyplan_subject_id); ?>
                 <?php echo RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id); ?>
             </div>
             <div class="panel-body">
-                <?= \yii\bootstrap\Alert::widget([
-                    'body' => '<i class="fa fa-info"></i> Составление плана проводится в 2 этапа. Сначала заполните основные поля формы и нажмите "Продолжить". Затем заполняйте элементы плана, добавляя строчки кнопкой "+".',
-                    'options' => ['class' => 'alert-info'],
-                ]);
-                ?>
                 <div class="row">
                     <div class="col-sm-12">
                         <?php
                         echo Html::activeHiddenInput($model, 'subject_sect_studyplan_id');
                         echo Html::activeHiddenInput($model, 'studyplan_subject_id');
                         ?>
-
-                        <?= $form->field($model, 'thematic_category')->dropDownList(\common\models\studyplan\StudyplanThematic::getCategoryList(), ['disabled' => $readonly]) ?>
 
                         <?= $form->field($model, 'half_year')->dropDownList(\artsoft\helpers\ArtHelper::getHalfYearList(true), ['disabled' => $readonly]); ?>
 
@@ -107,10 +100,7 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
                     'model' => $modelsItems[0],
                     'formId' => 'studyplan-thematic-form',
                     'formFields' => [
-                        'name',
-                        'author',
-                        'piece_name',
-                        'piece_category',
+                        'topic',
                         'task',
                     ],
                 ]); ?>
@@ -125,12 +115,8 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
                             <thead>
                             <tr>
                                 <th class="text-center">№</th>
-                                <?php if ($model->thematic_category == \common\models\studyplan\StudyplanThematic::REPERTORY_PLAN): ?>
-                                    <th class="text-center">Автор произведения</th>
-                                    <th class="text-center">Название произведения</th>
-                                    <th class="text-center">Категория произведения</th>
-                                <?php endif; ?>
-                                <th class="text-center">Задание</th>
+                                <th class="text-center">Тема урока/Репертуар</th>
+                                <th class="text-center">Примечания</th>
                                 <th class="text-center">
                                     <?php if (!$readonly): ?>
                                         <button type="button" class="add-item btn btn-success btn-xs"><span
@@ -151,55 +137,18 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
                                     <td>
                                         <span class="panel-title-activities"><?= ($index + 1) ?></span>
                                     </td>
-                                    <?php if ($model->thematic_category == \common\models\studyplan\StudyplanThematic::REPERTORY_PLAN): ?>
-                                        <td>
-                                            <?php
-                                            $field = $form->field($modelItems, "[{$index}]author");
-                                            echo $field->begin();
-                                            ?>
-                                            <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]author", ['class' => 'form-control', 'disabled' => $readonly]); ?>
-                                                <p class="help-block help-block-error"></p>
-                                            </div>
-                                            <?= $field->end(); ?>
-                                        </td>
-                                        <td>
-                                            <?php
-                                            $field = $form->field($modelItems, "[{$index}]piece_name");
-                                            echo $field->begin();
-                                            ?>
-                                            <div class="col-sm-12">
-                                                <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]piece_name", ['class' => 'form-control', 'disabled' => $readonly]); ?>
-                                                <p class="help-block help-block-error"></p>
-                                            </div>
-                                            <?= $field->end(); ?>
-                                        </td>
-                                        <td>
-                                            <?php
-                                            $field = $form->field($modelItems, "[{$index}]piece_category_id");
-                                            echo $field->begin();
-                                            ?>
-                                            <div class="col-sm-12">
-                                                <?= \kartik\select2\Select2::widget(
-                                                    [
-                                                        'model' => $modelItems,
-                                                        'attribute' => "[{$index}]piece_category_id",
-                                                        'data' => RefBook::find('piece_category', \common\models\education\PieceCategory::STATUS_ACTIVE)->getList(),
-                                                        'options' => [
 
-                                                            'disabled' => $readonly,
-                                                            'placeholder' => Yii::t('art', 'Select...'),
-                                                        ],
-                                                        'pluginOptions' => [
-                                                            'allowClear' => true
-                                                        ],
-                                                    ]
-                                                ) ?>
-                                                <p class="help-block help-block-error"></p>
-                                            </div>
-                                            <?= $field->end(); ?>
-                                        </td>
-                                    <?php endif; ?>
+                                    <td>
+                                        <?php
+                                        $field = $form->field($modelItems, "[{$index}]topic");
+                                        echo $field->begin();
+                                        ?>
+                                        <div class="col-sm-12">
+                                            <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]topic", ['class' => 'form-control', 'disabled' => $readonly]); ?>
+                                            <p class="help-block help-block-error"></p>
+                                        </div>
+                                        <?= $field->end(); ?>
+                                    </td>
                                     <td>
                                         <?php
                                         $field = $form->field($modelItems, "[{$index}]task");

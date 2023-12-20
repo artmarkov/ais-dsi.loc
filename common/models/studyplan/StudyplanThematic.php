@@ -3,16 +3,13 @@
 namespace common\models\studyplan;
 
 use artsoft\Art;
-use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersLoad;
 use Yii;
-use yii\base\ErrorException;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\db\AfterSaveEvent;
 
 /**
  * This is the model class for table "studyplan_thematic".
@@ -20,7 +17,6 @@ use yii\db\AfterSaveEvent;
  * @property int $id
  * @property int|null $subject_sect_studyplan_id
  * @property int|null $studyplan_subject_id
- * @property int $thematic_category
  * @property int $half_year
  * @property int|null $template_flag
  * @property string|null $template_name
@@ -37,9 +33,6 @@ use yii\db\AfterSaveEvent;
  */
 class StudyplanThematic extends \artsoft\db\ActiveRecord
 {
-    const THEMATIC_PLAN = 1;
-    const REPERTORY_PLAN = 2;
-
     public $thematic_list;
     public $thematic_flag;
 
@@ -71,8 +64,8 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['thematic_category', 'half_year', 'doc_sign_teachers_id'], 'required'],
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'template_flag', 'author_id'], 'integer'],
+            [['half_year'/*, 'doc_sign_teachers_id'*/], 'required'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'template_flag', 'author_id'], 'integer'],
             [['doc_status', 'doc_sign_teachers_id', 'doc_sign_timestamp', 'half_year'], 'integer'],
             [['doc_status'], 'default', 'value' => self::DOC_STATUS_DRAFT],
             [['half_year'], 'default', 'value' => 0],
@@ -116,7 +109,6 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art/studyplan', 'ID'),
             'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect_Name'),
             'studyplan_subject_id' => Yii::t('art/guide', 'Subject Name'),
-            'thematic_category' => Yii::t('art/studyplan', 'Thematic Category'),
             'half_year' => Yii::t('art/guide', 'Half Year'),
             'template_flag' => Yii::t('art/studyplan', 'Template Flag'),
             'template_name' => Yii::t('art/studyplan', 'Template Name'),
@@ -161,20 +153,6 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
     public function getStudyplanThematicItems()
     {
         return $this->hasMany(StudyplanThematicItems::className(), ['studyplan_thematic_id' => 'id'])->orderBy('id');
-    }
-
-    public static function getCategoryList()
-    {
-        return array(
-            self::THEMATIC_PLAN => Yii::t('art/studyplan', 'Thematic Plan'),
-            self::REPERTORY_PLAN => Yii::t('art/studyplan', 'Repertory Plan'),
-        );
-    }
-
-    public static function getCategoryValue($val)
-    {
-        $ar = self::getCategoryList();
-        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     public function getTemplateList()
@@ -223,9 +201,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
                 foreach ($modelsItems as $modelItems) {
                     $modelNew = new StudyplanThematicItems();
                     $modelNew->studyplan_thematic_id = $this->id;
-                    $modelNew->piece_category_id = $modelItems->piece_category_id;
-                    $modelNew->author = $modelItems->author;
-                    $modelNew->piece_name = $modelItems->piece_name;
+                    $modelNew->topic = $modelItems->topic;
                     $modelNew->task = $modelItems->task;
                     if (!($flag = $modelNew->save(false))) {
                         $transaction->rollBack();

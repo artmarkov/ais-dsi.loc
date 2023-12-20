@@ -47,7 +47,7 @@ $this->registerJs($js);
 
 <?php
 $readonlyItems = \artsoft\Art::isFrontend() ? $model->protocolIsAvailable() : false;
-$readonly = User::hasRole(['teacher']) ? true : $readonly;
+//$readonly = User::hasRole(['teacher']) ? true : $readonly;
 //$this->registerJs(<<<JS
 //   function toggle(index, field) {
 //      if($(field).is(':checked')) {
@@ -240,21 +240,6 @@ $readonly = User::hasRole(['teacher']) ? true : $readonly;
                                                 ]);
                                                 ?>
 
-                                                <?= $form->field($modelProtocolItems, "[{$index}]thematic_items_list")->widget(\kartik\select2\Select2::class, [
-                                                    'data' => \common\models\schoolplan\SchoolplanProtocol::getStudyplanThematicItemsList($modelProtocolItems->studyplan_subject_id),
-                                                    'showToggleAll' => false,
-                                                    'options' => [
-                                                        'disabled' => $readonlyItems,
-                                                        'placeholder' => Yii::t('art', 'Select...'),
-                                                        'multiple' => true,
-                                                    ],
-                                                    'pluginOptions' => [
-                                                        'allowClear' => false,
-                                                    ],
-
-                                                ]);
-
-                                                ?>
                                             </div>
                                             <div class="row markForm_<?= $index ?>">
                                                 <?= $form->field($modelProtocolItems, "[{$index}]lesson_mark_id")->widget(\kartik\select2\Select2::class, [
@@ -272,81 +257,11 @@ $readonly = User::hasRole(['teacher']) ? true : $readonly;
                                                 ?>
                                             </div>
                                             <div class="row">
-                                                <?= $form->field($modelProtocolItems, "[{$index}]winner_id")->widget(\kartik\select2\Select2::class, [
-                                                    'data' => \common\models\schoolplan\SchoolplanProtocolItems::getWinnerList(),
-                                                    'showToggleAll' => false,
-                                                    'options' => [
-                                                        'disabled' => $readonlyItems,
-                                                        'placeholder' => Yii::t('art', 'Select...'),
-                                                        'multiple' => false,
-                                                    ],
-                                                    'pluginOptions' => [
-                                                        'allowClear' => false,
-                                                    ],
 
-                                                ]);
-                                                ?>
 
                                                 <?= $form->field($modelProtocolItems, "[{$index}]resume")->textarea(['rows' => 3, 'maxlength' => true, 'readonly' => $readonlyItems]) ?>
                                             </div>
-                                            <?php if (!$modelProtocolItems->isNewRecord): ?>
-                                                <div class="row">
-                                                    <div class="form-group">
-                                                        <div class="col-sm-3">
-                                                            <label class="control-label">Загруженные материалы(сканы
-                                                                диплома, грамоты)</label>
-                                                        </div>
-                                                        <div class="col-sm-9">
-<!--                                                            --><?//= artsoft\fileinput\widgets\FileInput::widget(['model' => $modelProtocolItems, 'options' => ['multiple' => true], 'disabled' => $readonlyItems]) ?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            <?php endif; ?>
-                                            <div class="row">
-                                                <hr>
-                                                <?= $form->field($modelProtocolItems, "[{$index}]status_exe")->widget(\kartik\select2\Select2::class, [
-                                                    'data' => \common\models\schoolplan\SchoolplanProtocolItems::getStatusExeList(),
-                                                    'showToggleAll' => false,
-                                                    'options' => [
-                                                        'disabled' => $readonlyItems,
-                                                        'placeholder' => Yii::t('art', 'Select...'),
-                                                        'multiple' => false,
-                                                    ],
-                                                    'pluginOptions' => [
-                                                        'allowClear' => false,
-                                                    ],
-                                                ]);
-                                                ?>
-                                                <?= $form->field($modelProtocolItems, "[{$index}]status_sign")->widget(\kartik\select2\Select2::class, [
-                                                    'data' => \common\models\schoolplan\SchoolplanProtocolItems::getStatusSignList(),
-                                                    'showToggleAll' => false,
-                                                    'options' => [
-                                                        'disabled' => \artsoft\Art::isFrontend(),
-                                                        'placeholder' => Yii::t('art', 'Select...'),
-                                                        'multiple' => false,
-                                                    ],
-                                                    'pluginOptions' => [
-                                                        'allowClear' => false,
-                                                    ],
 
-                                                ]);
-                                                ?>
-                                                <?= $form->field($modelProtocolItems, "[{$index}]signer_id")->widget(\kartik\select2\Select2::class, [
-                                                    'data' => \artsoft\models\User::getUsersListByCategory(['teachers', 'employees']),
-                                                    'showToggleAll' => false,
-                                                    'options' => [
-                                                        'disabled' => \artsoft\Art::isFrontend(),
-                                                        'placeholder' => Yii::t('art', 'Select...'),
-                                                        'multiple' => false,
-                                                    ],
-                                                    'pluginOptions' => [
-                                                        'allowClear' => false,
-                                                    ],
-
-                                                ]);
-                                                ?>
-
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

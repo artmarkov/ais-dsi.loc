@@ -1593,7 +1593,7 @@ class DefaultController extends MainController
             ['label' => 'Планирование инд. занятий', 'url' => ['/teachers/default/teachers-plan', 'id' => $id]],
             ['label' => 'Злементы расписания', 'url' => ['/teachers/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/teachers/default/schedule', 'id' => $id]],
-            ['label' => 'Тематические (репертуарные) планы', 'url' => ['/teachers/default/thematic-items', 'id' => $id]],
+            ['label' => 'Тематические/репертуарные планы', 'url' => ['/teachers/default/thematic-items', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/teachers/default/consult-items', 'id' => $id]],
             ['label' => 'Журнал успеваемости группы', 'url' => ['/teachers/default/studyplan-progress', 'id' => $id]],
             ['label' => 'Журнал успеваемости индивидуальных занятий', 'url' => ['/teachers/default/studyplan-progress-indiv', 'id' => $id]],

@@ -18,7 +18,7 @@ class StudyplanThematicSearch extends StudyplanThematic
     public function rules()
     {
         return [
-            [['id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'thematic_category', 'period_in', 'period_out', 'template_flag', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['id', 'subject_sect_studyplan_id', 'studyplan_subject_id', 'half_year', 'template_flag', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['template_name'], 'safe'],
         ];
     }
@@ -67,9 +67,7 @@ class StudyplanThematicSearch extends StudyplanThematic
             'id' => $this->id,
             'subject_sect_studyplan_id' => $this->subject_sect_studyplan_id,
             'studyplan_subject_id' => $this->studyplan_subject_id,
-            'thematic_category' => $this->thematic_category,
-            'period_in' => $this->period_in,
-            'period_out' => $this->period_out,
+            'half_year' => $this->half_year,
             'template_flag' => $this->template_flag,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,

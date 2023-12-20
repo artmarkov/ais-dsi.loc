@@ -159,7 +159,7 @@ $columns = [
 <div class="studyplan-thematic-index">
     <div class="panel">
         <div class="panel-heading">
-            Тематические планы:
+            Тематические/репертуарные планы:
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>

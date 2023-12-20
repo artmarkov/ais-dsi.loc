@@ -19,7 +19,7 @@ return [
     'Piece Author' => 'Автор произведения',
     'Piece Category' => 'Категория произведения',
     'Task' => 'Задание',
-    'Thematic plans' => 'Тематические планы',
+    'Thematic plans' => 'Тематические/репертуарные планы',
     'Thematic Plan' => 'Тематический план',
     'Repertory Plan' => 'Репертуарный план',
     'Lesson Qty' => 'Число уроков',

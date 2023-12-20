@@ -289,11 +289,10 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
     public static function getStudyplanThematicItemsById($studyplan_subject_id)
     {
         return Yii::$app->db->createCommand(' select studyplan_thematic_items.id as id,
-		                   concat(studyplan_thematic_items.author , \' - \', studyplan_thematic_items.piece_name, \' (\', guide_piece_category.name, \')\') AS name
+		                  studyplan_thematic_items.topic AS name
                     FROM studyplan_thematic_view 
                     INNER JOIN studyplan_thematic_items ON studyplan_thematic_view.studyplan_thematic_id = studyplan_thematic_items.studyplan_thematic_id 
-                    INNER JOIN guide_piece_category ON guide_piece_category.id = studyplan_thematic_items.piece_category_id
-                    where thematic_category = 2 and studyplan_subject_id = :studyplan_subject_id',
+                    where  studyplan_subject_id = :studyplan_subject_id',
             ['studyplan_subject_id' => $studyplan_subject_id,
             ])->queryAll();
     }
