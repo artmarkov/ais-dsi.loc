@@ -149,7 +149,7 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/teachers/thematic-items/update',
                         '/teachers/thematic-items/delete',
                         '/teachers/efficiency/index',
-                        '/teachers/efficiency/bar',
+                        '/teachers/efficiency/view',
                         '/teachers/efficiency/grid-sort',
                         '/teachers/efficiency/grid-page-size',
                         '/teachers/portfolio/index',

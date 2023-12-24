@@ -28,7 +28,7 @@ use yii\helpers\ArrayHelper;
  * @property string|null $thematic_items_list Список заданий из тематич/реп плана
  * @property int $lesson_mark_id Оцкнка
  * @property string|null $winner_id Звание/Диплом
- * @property string $resume Отзыв комиссии/Результат
+ * @property string $resume Результат
  * @property int|null $status_exe Статус выполнения
  * @property int|null $status_sign Статус утверждения
  * @property int|null $signer_id Подписант
@@ -113,7 +113,7 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
             'thematic_items_list' => 'Список заданий из репертуарного плана',
             'lesson_mark_id' => 'Оценка',
             'winner_id' => 'Звание/Диплом',
-            'resume' => 'Отзыв комиссии/Результат',
+            'resume' => 'Результат',
             'status_exe' => 'Статус выполнения',
             'status_sign' => 'Статус документа',
             'signer_id' => 'Подписант',

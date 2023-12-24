@@ -4,7 +4,6 @@ namespace frontend\controllers\schedule;
 
 use artsoft\helpers\RefBook;
 use common\models\schedule\SubjectScheduleView;
-use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -23,7 +22,9 @@ class DefaultController extends MainController
             ->where(['=', 'plan_year', $model_date->plan_year])
             ->andWhere(['=', 'status', 1])
             ->andWhere(['IS NOT', 'auditory_id', null]);
-
+        if ($model_date->teachers_id) {
+            $models = $models->andWhere(['=', 'teachers_id', $model_date->teachers_id]);
+        }
         $models = $models->asArray()->orderBy('week_day,time_in')->all();
         $modelsAuditory = RefBook::find('auditory_memo_1', 1)->getList();
         $data = ArrayHelper::index($models, null, ['auditory_id', 'week_day']);

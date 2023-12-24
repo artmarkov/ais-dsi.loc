@@ -31,15 +31,18 @@ class EfficiencyController extends MainController
 
     }
 
-    public function actionBar()
+    public function actionView($id)
     {
-
         $modelTeachers = Teachers::findOne($this->teachers_id);
-        $model_date = $this->modelDate;
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Efficiencies'), 'url' => ['teachers/default/efficiency', 'id' => $id]];
+        $this->view->params['breadcrumbs'][] = sprintf('#%06d', $id);
+        $model = TeachersEfficiency::findOne($id);
 
-        $data = TeachersEfficiency::getSummaryTeachersData($this->teachers_id, $model_date);
-
-        return $this->renderIsAjax('efficiency-bar', compact(['data', 'model_date', 'modelTeachers']));
-
+        return $this->renderIsAjax('@backend/views/efficiency/default/_form.php', [
+            'model' => $model,
+            'modelDependence' => $modelTeachers,
+            'readonly' => true
+        ]);
     }
+
 }

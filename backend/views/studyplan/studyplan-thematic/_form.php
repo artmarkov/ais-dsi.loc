@@ -87,14 +87,13 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
 
                     </div>
                 </div>
-                <?php if (!$model->isNewRecord) : ?>
 
                 <?php DynamicFormWidget::begin([
                     'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                     'widgetBody' => '.container-items', // required: css class selector
                     'widgetItem' => '.item', // required: css class
                     'limit' => 50, // the maximum times, an element can be added (default 999)
-                    'min' => 1, // 0 or 1 (default 1)
+                    'min' => $model->isNewRecord ? 0 : 1, // 0 or 1 (default 1)
                     'insertButton' => '.add-item', // css class
                     'deleteButton' => '.remove-item', // css class
                     'model' => $modelsItems[0],
@@ -173,66 +172,58 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
                             </tbody>
                         </table>
                         <?php DynamicFormWidget::end(); ?>
-                        <?php endif; ?>
                     </div>
                 </div>
-                <?php if (!$model->isNewRecord): ?>
-                    <?= $form->field($model->loadDefaultValues(), 'doc_status')->widget(\kartik\select2\Select2::class, [
-                        'data' => \common\models\studyplan\StudyplanThematic::getDocStatusList(),
-                        'showToggleAll' => false,
-                        'options' => [
-                            'disabled' => true,
-                            'placeholder' => Yii::t('art', 'Select...'),
-                            'multiple' => false,
-                        ],
-                        'pluginOptions' => [
-                            'allowClear' => false,
-                        ],
-                    ]);
-                    ?>
-                    <?= $form->field($model, 'doc_sign_teachers_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => Teachers::getTeachersByIds(User::getUsersByRole('department,administrator')),
-                        'options' => [
-                            'disabled' => $readonly,
-                            'placeholder' => Yii::t('art', 'Select...'),
-                        ],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ])->hint('Время согласования:' . Yii::$app->formatter->asDatetime($model->doc_sign_timestamp)); ?>
-                    <?php if (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && Teachers::isOwnTeacher($model->doc_sign_teachers_id))): ?>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <?= $form->field($model, 'admin_flag')->checkbox()->label('Добавить сообщение преподавателю') ?>
-                                <div id="admin_message">
-                                    <?= $form->field($model, 'sign_message')->textInput(['disabled' => false])->hint('Введите сообщение для автора') ?>
-                                </div>
-                                <div class="form-group btn-group pull-right">
-                                    <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->doc_status == 1]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'modif', 'disabled' => $model->doc_status != 1]); ?>
-                                </div>
+                <?= $form->field($model->loadDefaultValues(), 'doc_status')->widget(\kartik\select2\Select2::class, [
+                    'data' => \common\models\studyplan\StudyplanThematic::getDocStatusList(),
+                    'showToggleAll' => false,
+                    'options' => [
+                        'disabled' => true,
+                        'placeholder' => Yii::t('art', 'Select...'),
+                        'multiple' => false,
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => false,
+                    ],
+                ]);
+                ?>
+                <?= $form->field($model, 'doc_sign_teachers_id')->widget(\kartik\select2\Select2::class, [
+                    'data' => Teachers::getTeachersByIds(User::getUsersByRole('department,administrator')),
+                    'options' => [
+                        'disabled' => $readonly,
+                        'placeholder' => Yii::t('art', 'Select...'),
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ])->hint('Время согласования:' . Yii::$app->formatter->asDatetime($model->doc_sign_timestamp)); ?>
+                <?php if (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && Teachers::isOwnTeacher($model->doc_sign_teachers_id))): ?>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <?= $form->field($model, 'admin_flag')->checkbox()->label('Добавить сообщение преподавателю') ?>
+                            <div id="admin_message">
+                                <?= $form->field($model, 'sign_message')->textInput(['disabled' => false])->hint('Введите сообщение для автора') ?>
+                            </div>
+                            <div class="form-group btn-group pull-right">
+                                <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->doc_status == 1]); ?>
+                                <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'modif', 'disabled' => $model->doc_status != 1]); ?>
                             </div>
                         </div>
-                    <?php else: ?>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="form-group btn-group pull-right">
-                                    <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => !in_array($model->doc_status, [0,3]) ? true : false]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => in_array($model->doc_status, [0,3]) ? true : false]); ?>
-                                </div>
+                    </div>
+                <?php else: ?>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group btn-group pull-right">
+                                <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => !in_array($model->doc_status, [0,3]) ? true : false]); ?>
+                                <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => in_array($model->doc_status, [0,3]) ? true : false]); ?>
                             </div>
                         </div>
-                    <?php endif; ?>
+                    </div>
                 <?php endif; ?>
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <?php if (!$model->isNewRecord): ?>
-                        <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : (\artsoft\Art::isBackend() ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton()); ?>
-                    <?php else: ?>
-                        <?= \artsoft\helpers\ButtonHelper::exitButton(); ?>
-                        <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-md btn-info', 'name' => 'submitAction', 'value' => 'next']); ?>
-                    <?php endif; ?>
+                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : (\artsoft\Art::isBackend() ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton()); ?>
                 </div>
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>

@@ -55,7 +55,6 @@ use yii\helpers\StringHelper;
  * @property int|null $updated_by
  * @property int $version
  * @property int $doc_status
- *
  * @property int $period_over Период подготовки перед мероприятием мин.
  * @property int $period_over_flag
  * @property int $executor_over_id Ответственный за подготовку

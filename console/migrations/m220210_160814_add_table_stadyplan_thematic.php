@@ -52,7 +52,7 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
             'half_year' => $this->integer()->notNull()->defaultValue(0),
             'template_flag' => $this->integer()->defaultValue(0),
             'template_name' => $this->string(256),
-            'doc_status' => $this->integer(),
+            'doc_status' => $this->integer()->defaultValue(0),
             'author_id' => $this->integer(),
             'doc_sign_teachers_id' => $this->integer(),
             'doc_sign_timestamp' => $this->integer(),

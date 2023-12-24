@@ -64,7 +64,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['half_year'/*, 'doc_sign_teachers_id'*/], 'required'],
+            [['half_year', 'doc_sign_teachers_id'], 'required'],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'template_flag', 'author_id'], 'integer'],
             [['doc_status', 'doc_sign_teachers_id', 'doc_sign_timestamp', 'half_year'], 'integer'],
             [['doc_status'], 'default', 'value' => self::DOC_STATUS_DRAFT],
@@ -220,7 +220,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * Если не задан автор, то берем из нагрузки.
+     * пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
      * @return int|null
      */
     public function getAuthorScalar()

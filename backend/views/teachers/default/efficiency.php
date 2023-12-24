@@ -107,17 +107,13 @@ use artsoft\grid\GridPageSize;
                     ],
                     [
                         'class' => 'kartik\grid\ActionColumn',
-                        'urlCreator' => function ($action, $model, $key, $index) {
-                            return [$action, 'id' => $model->id];
-                        },
-                        'controller' => '/teachers/efficiency',
                         'template' => '{view} {update} {delete}',
                         'headerOptions' => ['class' => 'kartik-sheet-style'],
                         'visible' => \artsoft\Art::isBackend(),
                         'buttons' => [
                             'update' => function ($key, $model) {
                                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                                    Url::to(['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update']), [
+                                    ['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update'], [
                                         'title' => Yii::t('art', 'Edit'),
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
@@ -126,8 +122,8 @@ use artsoft\grid\GridPageSize;
                             },
                             'view' => function ($key, $model) {
                                 return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
-                                    Url::to(['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'view']), [
-                                        'title' => Yii::t('art', 'Edit'),
+                                    ['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'view'], [
+                                        'title' => Yii::t('art', 'View'),
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
                                     ]
@@ -135,10 +131,30 @@ use artsoft\grid\GridPageSize;
                             },
                             'delete' => function ($key, $model) {
                                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                                    Url::to(['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'delete']), [
+                                    ['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'delete'], [
                                         'title' => Yii::t('art', 'Delete'),
                                         'aria-label' => Yii::t('art', 'Delete'),
                                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                        ],
+                    ],
+                    [
+                        'class' => 'kartik\grid\ActionColumn',
+                        'urlCreator' => function ($action, $model, $key, $index) {
+                            return [$action, 'id' => $model->id];
+                        },
+                        'template' => '{view}',
+                        'headerOptions' => ['class' => 'kartik-sheet-style'],
+                        'visible' => \artsoft\Art::isFrontend(),
+                        'buttons' => [
+                            'view' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+                                    ['/teachers/efficiency/view', 'id' => $model->id], [
+                                        'title' => Yii::t('art', 'View'),
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
                                     ]

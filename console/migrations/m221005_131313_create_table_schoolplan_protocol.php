@@ -19,7 +19,7 @@ class m221005_131313_create_table_schoolplan_protocol extends \artsoft\db\BaseMi
             'thematic_items_list' => $this->string(1024)->comment('Список заданий из тематич/реп плана'),
             'lesson_mark_id' =>  $this->integer()->comment('Оценка'),
             'winner_id' => $this->string()->defaultValue(0)->comment('Звание/Диплом'),
-            'resume' => $this->string(1024)->comment('Отзыв комиссии/Результат'),
+            'resume' => $this->string(1024)->comment('Результат'),
             'status_exe' => $this->integer()->notNull()->comment('Статус выполнения'),
             'status_sign' => $this->integer()->notNull()->defaultValue(0)->comment('Статус утверждения'),
             'signer_id' => $this->integer()->notNull()->comment('Подписант'),

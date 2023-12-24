@@ -148,8 +148,8 @@ use yii\helpers\Url;
                                 </div>
                             </div>
                         </div>
-                        <hr>
                     <?php endif; ?>
+                    <hr>
                     <div class="row">
                         <?= $form->field($model, 'status_exe')->widget(\kartik\select2\Select2::class, [
                             'data' => \common\models\schoolplan\SchoolplanProtocolItems::getStatusExeList(),

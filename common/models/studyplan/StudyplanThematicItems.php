@@ -32,7 +32,7 @@ class StudyplanThematicItems extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['studyplan_thematic_id', 'topic'], 'required'],
+            [['topic'], 'required'],
             [['studyplan_thematic_id'], 'integer'],
             [['task', 'topic'], 'string', 'max' => 1024],
             [['studyplan_thematic_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanThematic::className(), 'targetAttribute' => ['studyplan_thematic_id' => 'id']],

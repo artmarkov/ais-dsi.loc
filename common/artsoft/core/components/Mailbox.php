@@ -5,22 +5,20 @@ namespace artsoft\components;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
-use common\models\schedule\ConsultScheduleConfirm;
-use common\models\schedule\SubjectSchedule;
 use common\models\user\UsersView;
-use Yii;
 use yii\base\Component;
 use yii\helpers\Html;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
+use Yii;
 
 /**
  * Class Mailbox
  *
  * Usage examples:
  * ~~~
- * Yii::$app->mailbox->send(1000,'Title','Content');
- * Yii::$app->mailbox->send([1000,1001],'Title','Content');
+ * Yii::$app->mailbox->send(1000, $action, $model, 'Content');
+ * Yii::$app->mailbox->mailing([1000,1001],'Title','Content');
  * ~~~
  * @package artsoft\components
  */
@@ -37,6 +35,14 @@ class Mailbox extends Component
     protected $action;
     protected $isAdmin;
 
+    /**
+     * Рассылка сообщений
+     * @param $receiversIds
+     * @param null $content
+     * @param null $title
+     * @return mixed
+     * @throws NotFoundHttpException
+     */
     public function mailing($receiversIds, $content = NULL, $title = NULL)
     {
         if (!$receiversIds) {
@@ -154,8 +160,6 @@ class Mailbox extends Component
                 break;
             case 'StudyplanThematic':
                 $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? ($this->action == 'send_approve' ? '/execution/teachers/' . $this->model->getAuthorScalar() . '/thematic-items?objectId=' . $this->model->id . '&mode=update' : '/teachers/thematic-items') : '/admin/teachers/' . $this->model->getAuthorScalar() . '/thematic-items');
-
-
                 break;
         }
         return $link;
