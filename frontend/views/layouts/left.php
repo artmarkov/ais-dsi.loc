@@ -103,7 +103,7 @@ use artsoft\widgets\Nav;
                 'icon' => 'fa fa-bar-chart',
                 'url' => '#',
                 'items' => [
-                    ['label' => 'Индивидуальные планы на подписи', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/thematic-sign']],
+                    ['label' => 'Тематические/репертуарные планы на подписи', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/thematic-sign']],
                     ['label' => 'Выполнения планов на подписи', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/perform']],
                     ['label' => 'Контроль заполнения журналов успеваемости', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/progress']],
                     ['label' => 'Отдел на контроле', 'icon' => 'fa fa-minus', 'url' => ['/execution/teachers/index']],

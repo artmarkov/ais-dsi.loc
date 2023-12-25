@@ -33,15 +33,6 @@ $columns = [
         'format' => 'raw',
     ],
     [
-        'attribute' => 'thematic_category',
-        'value' => function ($model) {
-            return StudyplanThematic::getCategoryValue($model->thematic_category);
-        },
-        'format' => 'raw',
-//        'group' => true,
-//        'subGroupOf' => 1
-    ],
-    [
         'attribute' => 'half_year',
         'value' => function (StudyplanThematic $model) {
             return \artsoft\helpers\ArtHelper::getHalfYearValue($model->half_year);

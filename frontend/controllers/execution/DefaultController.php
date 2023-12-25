@@ -34,7 +34,7 @@ class DefaultController extends MainController
     public function actionThematicSign()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
-        $this->view->params['breadcrumbs'][] = 'Индивидуальные планы на подписи';
+        $this->view->params['breadcrumbs'][] = 'Тематические/репертуарные планы на подписи';
 
         $model_date = $this->modelDate;
         $model = Teachers::findOne($this->teachers_id);
