@@ -64,7 +64,7 @@ Pjax::begin([
 <div class="subject-sect-schedule">
     <div class="panel">
         <div class="panel-heading">
-            Расписание занятий: <?php echo \artsoft\helpers\RefBook::find('teachers_fio')->getValue($model->id); ?>
+            Расписание занятий: <?php echo \artsoft\helpers\RefBook::find('teachers_fullname')->getValue($model->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>

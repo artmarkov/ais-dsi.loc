@@ -136,7 +136,7 @@ $columns = [
 <div class="portfolio-index">
     <div class="panel">
         <div class="panel-heading">
-            Портфолио преподавателя: <?php echo RefBook::find('teachers_fio')->getValue($id); ?>
+            Портфолио преподавателя: <?php echo RefBook::find('teachers_fullname')->getValue($id); ?>
         </div>
         <div class="panel-body">
             <?php echo \yii\bootstrap\Alert::widget([

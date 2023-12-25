@@ -17,7 +17,7 @@ use artsoft\grid\GridPageSize;
 <div class="document-index">
     <div class="panel">
         <div class="panel-heading">
-            Документы: <?php echo \artsoft\helpers\RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+            Документы: <?php echo \artsoft\helpers\RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>

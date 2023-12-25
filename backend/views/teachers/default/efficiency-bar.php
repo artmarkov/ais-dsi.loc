@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = 'График эффективности';
 <div class="teachers-efficiency-summary">
     <div class="panel">
         <div class="panel-heading">
-            График эффективности: <?php echo \artsoft\helpers\RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+            График эффективности: <?php echo \artsoft\helpers\RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>

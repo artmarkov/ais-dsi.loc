@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="teachers-plan-index">
     <div class="panel">
         <div class="panel-heading">
-            Планирование индивидуальных занятий: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+            Планирование индивидуальных занятий: <?php echo RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>

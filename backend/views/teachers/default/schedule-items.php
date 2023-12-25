@@ -202,7 +202,7 @@ $columns = [
 <div class="subject-schedule-index">
     <div class="panel">
         <div class="panel-heading">
-            Элементы расписания: <?php echo RefBook::find('teachers_fio')->getValue($model->id); ?>
+            Элементы расписания: <?php echo RefBook::find('teachers_fullname')->getValue($model->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>

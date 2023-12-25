@@ -212,7 +212,7 @@ $columns = [
     <div class="panel">
 
         <div class="panel-heading">
-            Расписание консультаций: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+            Расписание консультаций: <?php echo RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>

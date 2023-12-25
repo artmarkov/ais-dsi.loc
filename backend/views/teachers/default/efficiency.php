@@ -19,7 +19,7 @@ use artsoft\grid\GridPageSize;
 <div class="teachers-efficiency-index">
     <div class="panel">
         <div class="panel-heading">
-            Показатели эффективности: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
+            Показатели эффективности: <?php echo RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>
