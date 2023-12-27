@@ -43,7 +43,7 @@ $columns = [
     ],
     [
         'attribute' => 'teachers_id',
-        'value' => function ($model) {
+        'value' => function ($model)  use ($teachers_list) {
             $teachers_fio = $teachers_list[$model->teachers_id] ?? '';
             return \artsoft\Art::isBackend() ?  Html::a($teachers_fio,
                 ['/teachers/default/consult-items', 'id' => $model->teachers_id],

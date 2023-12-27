@@ -4,6 +4,7 @@ namespace common\models\studyplan;
 
 use artsoft\helpers\ArtHelper;
 use artsoft\models\User;
+use common\models\teachers\TeachersLoadStudyplanView;
 use Yii;
 
 /**

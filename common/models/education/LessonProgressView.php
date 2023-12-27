@@ -73,7 +73,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $modelsProgress = [];
             $modelsMarks = [];
         } else {
-            $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
+            $lessonDates = LessonItemsProgressView::find()->select('lesson_date, test_name_short')->distinct()
                 ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
                 ->andWhere(['=', 'subject_sect_id', $subject_sect_id])
                 ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
@@ -93,7 +93,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         // echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
         foreach ($lessonDates as $id => $lessonDate) {
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
-            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
+            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d') . ' ' . $lessonDate['test_name_short'];
             $attributes += [$date => $label];
             $dates[] = $date;
         }
@@ -181,7 +181,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $attributes += ['student_id' => Yii::t('art/student', 'Student')];
 
         if ($model_date->subject_sect_studyplan_id != 0) {
-            $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
+            $lessonDates = LessonItemsProgressView::find()->select('lesson_date, test_name_short')->distinct()
                 ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
                 ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
                 ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
@@ -195,7 +195,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 ->all();
             foreach ($lessonDates as $id => $lessonDate) {
                 $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
-                $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
+                $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d') . ' ' . $lessonDate['test_name_short'];
                 $attributes += [$date => $label];
                 $dates[] = $date;
             }
@@ -262,7 +262,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $attributes += ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
         $attributes += ['student_id' => Yii::t('art/student', 'Student')];
 
-        $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
+        $lessonDates = LessonItemsProgressView::find()->select('lesson_date, test_name_short')->distinct()
             ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
             ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->andWhere(['=', 'subject_key', $model_date->subject_key])
@@ -280,14 +280,18 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         foreach ($lessonDates as $id => $lessonDate) {
             $dates_load = 0;
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
-            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
+            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d') . ' ' . $lessonDate['test_name_short'];
             $attributes += [$date => $label];
             if (Art::isBackend()) {
                 $datesArray = (new Query())->from('activities_schedule_view')
+                    ->innerJoin('lesson_items', 'lesson_items.subject_sect_studyplan_id = activities_schedule_view.subject_sect_studyplan_id AND lesson_items.studyplan_subject_id = activities_schedule_view.studyplan_subject_id')
+                    ->innerJoin('lesson_progress', 'lesson_progress.lesson_items_id = lesson_items.id')
                     ->select(new \yii\db\Expression('datetime_out - datetime_in AS time'))
-                    ->where(['in', 'studyplan_subject_id', $studyplanSubjectIds])
+                    ->where(['in', 'activities_schedule_view.studyplan_subject_id', $studyplanSubjectIds])
                     ->andWhere(['and', ['>=', 'datetime_in', $lessonDate['lesson_date']], ['<', 'datetime_in', $lessonDate['lesson_date'] + 86400]])
+                    ->andWhere(['and', ['>=', 'lesson_date', $lessonDate['lesson_date']], ['<', 'lesson_date', $lessonDate['lesson_date'] + 86400]])
                     ->andWhere(['=', 'direction_id', 1000])
+                    ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
                     ->column();
 //                print_r($datesArray); die();
                 foreach ($datesArray as $index => $time) {

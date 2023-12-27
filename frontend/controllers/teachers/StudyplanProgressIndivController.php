@@ -153,12 +153,15 @@ class StudyplanProgressIndivController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Indiv Progress'), 'url' => ['teachers/studyplan-progress-indiv', 'id' => $id]];
         $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
 
-
         $modelLesson = LessonItemsProgressView::find()
             ->where(['=', 'subject_key', $subject_key])
+            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $this->teachers_id]))
             ->andWhere(['=', 'lesson_date', $timestamp_in])
+            ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
+            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
             ->one();
         $model = LessonItems::findOne($modelLesson->lesson_items_id);
+       // echo '<pre>' . print_r($model, true) . '</pre>';
         $modelsItems = $model->getLessonProgressTeachers($this->teachers_id, $subject_key, $timestamp_in);
 
         if ($model->load(Yii::$app->request->post())) {

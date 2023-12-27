@@ -12,12 +12,14 @@ use artsoft\grid\GridPageSize;
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\schoolplan\search\SchoolplanPerformSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $modelScoolplan \common\models\schoolplan\Schoolplan */
 
 ?>
 <div class="schoolplan-perform-index">
     <div class="panel">
         <div class="panel-heading">
-            <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
+            <?= \artsoft\Art::isBackend() || $modelScoolplan->isExecutors() ? \artsoft\helpers\ButtonHelper::createButton() : null; ?>
+
         </div>
         <div class="panel-body">
             <div class="row">
@@ -144,6 +146,17 @@ use artsoft\grid\GridPageSize;
                                 );
                             },
                         ],
+                        'visibleButtons' => [
+                            'view' => function ($model){
+                                return true;
+                            },
+                            'update' => function ($model) {
+                                return \artsoft\Art::isBackend() ? true : $model->isAuthor();
+                            },
+                            'delete' => function ($model) {
+                                return  \artsoft\Art::isBackend() ? true : $model->isAuthor();
+                            },
+                        ]
                     ],
 
                 ],

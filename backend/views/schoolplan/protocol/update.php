@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model common\models\schoolplan\SchoolplanProtocol */
 
 $this->title = Yii::t('art', 'Update "{item}"', ['item' => $model->id]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocols'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol'), 'url' => ['default/index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['default/view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('art', 'Update');
 ?>

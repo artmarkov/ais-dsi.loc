@@ -3,8 +3,16 @@
 namespace common\models\schoolplan;
 
 use artsoft\behaviors\ArrayFieldBehavior;
-use artsoft\behaviors\DateFieldBehavior;
+use artsoft\fileinput\behaviors\FileManagerBehavior;
+use artsoft\helpers\RefBook;
 use artsoft\models\User;
+use common\models\education\LessonMark;
+use common\models\education\LessonProgress;
+use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubject;
+use common\models\subjectsect\SubjectSect;
+use common\models\teachers\Teachers;
+use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -15,26 +23,27 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property int|null $schoolplan_id Мероприятие
- * @property string $protocol_name Название протокола
- * @property string|null $description Описание протокола
- * @property int $protocol_date Дата протокола
- * @property int $leader_id Реководитель комиссии user_id
- * @property int $secretary_id Секретарь комиссии user_id
- * @property string $members_list Члены комиссии user_id
- * @property string $subject_list Дисциплины
+ * @property int|null $studyplan_id Учебный план
+ * @property int $studyplan_subject_id Учебный предмет плана ученика
+ * @property int $teachers_id Преподаватель
+ * @property string|null $thematic_items_list Список заданий из тематич/реп плана
+ * @property int $lesson_mark_id Оцкнка
+ * @property string $resume Отзыв комиссии/Результат
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
  *
+ * @property lessonMark $lessonMark
  * @property Schoolplan $schoolplan
- * @property Users $leader
- * @property Users $secretary
- * @property SchoolplanProtocolItems[] $schoolplanProtocolItems
+ * @property StudyplanSubject $studyplanSubject
+ * @property Teachers $teachers
+ * @property User $user
  */
 class SchoolplanProtocol extends \artsoft\db\ActiveRecord
 {
+
     /**
      * {@inheritdoc}
      */
@@ -52,13 +61,11 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
             TimestampBehavior::class,
             BlameableBehavior::class,
             [
-                'class' => DateFieldBehavior::class,
-                'attributes' => ['protocol_date'],
-                'timeFormat' => 'd.m.Y'
+                'class' => ArrayFieldBehavior::class,
+                'attributes' => ['thematic_items_list'],
             ],
             [
-                'class' => ArrayFieldBehavior::class,
-                'attributes' => ['members_list', 'subject_list'],
+                'class' => FileManagerBehavior::class,
             ],
         ];
     }
@@ -69,15 +76,17 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['protocol_name', 'protocol_date', 'leader_id', 'secretary_id', 'members_list', 'subject_list'], 'required'],
-            [['schoolplan_id', 'protocol_date', 'leader_id', 'secretary_id', 'subject_list'], 'default', 'value' => null],
-            [['schoolplan_id', 'leader_id', 'secretary_id'], 'integer'],
-            [['protocol_name'], 'string', 'max' => 127],
-            [['description'], 'string', 'max' => 512],
-            [['members_list', 'protocol_date', 'subject_list'], 'safe'],
+            [['lesson_mark_id'], 'default', 'value' => null],
+            [['schoolplan_id', 'studyplan_id', 'studyplan_subject_id', 'teachers_id', 'lesson_mark_id', 'version'], 'integer'],
+            [['teachers_id', 'studyplan_id', 'studyplan_subject_id', 'thematic_items_list'], 'required'],
+            [['resume'], 'string', 'max' => 1024],
+            [['thematic_items_list'], 'safe'],
+            [['lesson_mark_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonMark::className(), 'targetAttribute' => ['lesson_mark_id' => 'id']],
             [['schoolplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolplan::className(), 'targetAttribute' => ['schoolplan_id' => 'id']],
-            [['leader_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['leader_id' => 'id']],
-            [['secretary_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['secretary_id' => 'id']],
+            [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::className(), 'targetAttribute' => ['studyplan_subject_id' => 'id']],
+            [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
+            [['studyplan_id'], 'unique', 'targetAttribute' => ['schoolplan_id', 'studyplan_subject_id', 'teachers_id'], 'message' => 'Ученик уже записан в протокол.'],
+
         ];
     }
 
@@ -89,13 +98,12 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
         return [
             'id' => 'ID',
             'schoolplan_id' => 'Мероприятие',
-            'protocol_name' => 'Название протокола',
-            'description' => 'Описание протокола',
-            'protocol_date' => 'Дата протокола',
-            'leader_id' => 'Реководитель комиссии',
-            'secretary_id' => 'Секретарь комиссии',
-            'members_list' => 'Члены комиссии',
-            'subject_list' => 'Дисциплины',
+            'studyplan_id' => 'Ученик',
+            'studyplan_subject_id' => 'Учебный предмет',
+            'teachers_id' => 'Преподаватель',
+            'thematic_items_list' => 'Список заданий из репертуарного плана',
+            'lesson_mark_id' => 'Оценка',
+            'resume' => 'Отзыв комиссии/Результат',
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -110,6 +118,32 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Gets query for [[LessonMark]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLessonMark()
+    {
+        return $this->hasOne(LessonMark::className(), ['id' => 'lesson_mark_id']);
+    }
+
+    /**
+     * Gets query for [[Teachers]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeachers()
+    {
+        return $this->hasOne(Teachers::className(), ['id' => 'teachers_id']);
+    }
+
+    public function isAuthor()
+    {
+        $userId = Yii::$app->user->identity->getId();
+        return $this->teachers_id == RefBook::find('users_teachers')->getValue($userId);
+    }
+
+    /**
      * Gets query for [[Schoolplan]].
      *
      * @return \yii\db\ActiveQuery
@@ -120,51 +154,49 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Leader]].
+     * Gets query for [[StudyplanSubject]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getLeader()
+    public function getStudyplanSubject()
     {
-        return $this->hasOne(User::className(), ['id' => 'leader_id']);
+        return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
+    }
+
+    public function getStudyplan()
+    {
+        return $this->hasOne(Studyplan::className(), ['id' => 'studyplan_id']);
     }
 
     /**
-     * Gets query for [[Secretary]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSecretary()
-    {
-        return $this->hasOne(User::className(), ['id' => 'secretary_id']);
-    }
-
-    /**
-     * Gets query for [[SchoolplanProtocolItems]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSchoolplanProtocolItems()
-    {
-        return $this->hasMany(SchoolplanProtocolItems::className(), ['schoolplan_protocol_id' => 'id']);
-    }
-
-    /**
-     * Получаем всех учеников для выбранных дисциплин для протокола мероприятия в учебном году
+     * Нахождение всех элементов репертуарного плана для $studyplan_subject_id
+     * @param $studyplan_subject_id
      * @return array
      * @throws \yii\db\Exception
      */
-    public function getStudyplanSubjectList()
+    public static function getStudyplanThematicItemsById($studyplan_subject_id)
     {
-        $subject_list = implode(',', $this->subject_list);
-        $study_year = \artsoft\helpers\ArtHelper::getStudyYearDefault($month_dev = null, $timestamp = Yii::$app->formatter->asTimestamp($this->protocol_date))-1;
-        $funcSql = <<< SQL
-                    select studyplan_subject_id, memo_4
-                    from studyplan_subject_view where subject_id in ({$subject_list})
-                        and plan_year = {$study_year} ORDER BY memo_4
-SQL;
-        return ArrayHelper::map(Yii::$app->db->createCommand($funcSql)->queryAll(), 'studyplan_subject_id', 'memo_4');
+        return Yii::$app->db->createCommand(' select studyplan_thematic_items.id as id,
+		                  studyplan_thematic_items.topic AS name
+                    FROM studyplan_thematic_view 
+                    INNER JOIN studyplan_thematic_items ON studyplan_thematic_view.studyplan_thematic_id = studyplan_thematic_items.studyplan_thematic_id 
+                    where  studyplan_subject_id = :studyplan_subject_id AND studyplan_thematic_items.topic != \'\'',
+            ['studyplan_subject_id' => $studyplan_subject_id,
+            ])->queryAll();
     }
 
+    public static function getThematicItemsByStudyplanSubject($studyplan_subject_id)
+    {
+        return ArrayHelper::map(self::getStudyplanThematicItemsById($studyplan_subject_id), 'id', 'name');
+    }
 
+    /**
+     * доступ к протоколу для заполнения
+     * @return bool
+     */
+    public function protocolIsAvailable()
+    {
+        $userId = Yii::$app->user->identity->getId();
+        return !($userId == $this->schoolplan->protocol_leader_id || $userId == $this->schoolplan->protocol_secretary_id || in_array($userId, $this->schoolplan->protocol_members_list) || in_array($userId, $this->schoolplan->executors_list));
+    }
 }

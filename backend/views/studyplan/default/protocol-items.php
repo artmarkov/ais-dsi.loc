@@ -9,7 +9,7 @@ use artsoft\helpers\Html;
 use artsoft\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\schoolplan\search\SchoolplanProtocolItemsSearch */
+/* @var $searchModel common\models\schoolplan\search\SchoolplanProtocolSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('art/guide', 'Schoolplan Protocol Items');
@@ -21,7 +21,7 @@ $columns = [
         'attribute' => 'id',
         'class' => 'artsoft\grid\columns\TitleActionColumn',
         'controller' => '/studyplan/default/protocol-items',
-        'title' => function (\common\models\schoolplan\SchoolplanProtocolItems $model) {
+        'title' => function (\common\models\schoolplan\SchoolplanProtocol $model) {
             return Html::a(sprintf('#%06d', $model->id), ['view', 'id' => $model->id], ['data-pjax' => 0]);
         },
         'buttonsTemplate' => '{update} {view} {delete}',
@@ -79,9 +79,9 @@ $columns = [
     ],
     [
         'attribute' => 'winner_id',
-        'filter' => \common\models\schoolplan\SchoolplanProtocolItems::getWinnerList(),
+        'filter' => \common\models\schoolplan\SchoolplanProtocol::getWinnerList(),
         'value' => function ($model) {
-            return \common\models\schoolplan\SchoolplanProtocolItems::getWinnerValue($model->winner_id);
+            return \common\models\schoolplan\SchoolplanProtocol::getWinnerValue($model->winner_id);
         },
         'options' => ['style' => 'width:100px'],
         'format' => 'raw',
@@ -90,13 +90,13 @@ $columns = [
     [
         'class' => 'artsoft\grid\columns\StatusColumn',
         'attribute' => 'status_exe',
-        'optionsArray' => \common\models\schoolplan\SchoolplanProtocolItems::getStatusExeOptionsList(),
+        'optionsArray' => \common\models\schoolplan\SchoolplanProtocol::getStatusExeOptionsList(),
         'options' => ['style' => 'width:100px'],
     ],
     [
         'class' => 'artsoft\grid\columns\StatusColumn',
         'attribute' => 'status_sign',
-        'optionsArray' => \common\models\schoolplan\SchoolplanProtocolItems::getStatusSignOptionsList(),
+        'optionsArray' => \common\models\schoolplan\SchoolplanProtocol::getStatusSignOptionsList(),
         'options' => ['style' => 'width:100px'],
     ],
 ];

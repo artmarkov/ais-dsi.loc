@@ -137,6 +137,9 @@ class Mailbox extends Component
             case 'StudyplanThematic':
                 $text = 'Тематический/репертуарный план';
                 break;
+                case 'SchoolplanProtocolConfirm':
+                $text = 'Протокол аттестационной комиссии';
+                break;
         }
         return 'Сообщение модуля "' . $text . '"';
     }
@@ -160,6 +163,10 @@ class Mailbox extends Component
                 break;
             case 'StudyplanThematic':
                 $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? ($this->action == 'send_approve' ? '/execution/teachers/' . $this->model->getAuthorScalar() . '/thematic-items?objectId=' . $this->model->id . '&mode=update' : '/teachers/thematic-items') : '/admin/teachers/' . $this->model->getAuthorScalar() . '/thematic-items');
+                break;
+            case 'SchoolplanProtocolConfirm':
+                $modelSchoolplan = $this->model->schoolplan;
+                $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/schoolplan/default/protocol?id=' : '/admin/schoolplan/default/protocol?id=') . $modelSchoolplan->id;
                 break;
         }
         return $link;
@@ -217,6 +224,18 @@ class Mailbox extends Component
                 break;
             case $this->module == 'StudyplanThematic' && $this->action == 'send_approve':
                 $htmlBody .= '<p><b>Прошу Вас утвердить Тематический/репертуарный план</b> за ' .  strip_tags(ArtHelper::getHalfYearValue($this->model->half_year)) . '</p>';
+                break;
+            case $this->module == 'SchoolplanProtocolConfirm' && $this->action == 'modif':
+                $modelSchoolplan = $this->model->schoolplan;
+                $htmlBody .= '<p><b>Прошу Вас доработать протокол аттестационной комиссии для мероприятия: </b>' . $modelSchoolplan->title  . ' за ' . $modelSchoolplan->datetime_in . '</p>';
+                break;
+            case $this->module == 'SchoolplanProtocolConfirm' && $this->action == 'approve':
+                $modelSchoolplan = $this->model->schoolplan;
+                $htmlBody .= '<p><b>Протокол аттестационной комиссии для мероприятия: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . ' <b> утвержден.</b></p>';
+                break;
+            case $this->module == 'SchoolplanProtocolConfirm' && $this->action == 'send_approve':
+                $modelSchoolplan = $this->model->schoolplan;
+                $htmlBody .= '<p><b>Прошу Вас утвердить Протокол аттестационной комиссии для мероприятия: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . '.</p>';
                 break;
         }
 

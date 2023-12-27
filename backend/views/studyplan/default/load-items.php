@@ -79,8 +79,8 @@ $columns = [
         'value' => function ($model) {
             return $model->week_time;
         },
-//        'group' => true,
-//        'subGroupOf' => 1,
+        'group' => true,
+        'subGroupOf' => 5,
         'footer' => \common\models\teachers\TeachersLoadView::getStudyplanTotal($dataProvider->models, 'week_time'),
         'contentOptions' => function ($model) {
             return $model->direction_id == 1000 ? ['class' => ''] : ['class' => 'text-right'];
@@ -92,8 +92,8 @@ $columns = [
         'value' => function ($model) {
             return $model->year_time_consult;
         },
-//        'group' => true,
-//        'subGroupOf' => 1,
+        'group' => true,
+        'subGroupOf' => 5,
         'footer' => \common\models\teachers\TeachersLoadView::getStudyplanTotal($dataProvider->models, 'year_time_consult'),
         'contentOptions' => function ($model) {
             return $model->direction_id == 1000 ? ['class' => ''] : ['class' => 'text-right'];

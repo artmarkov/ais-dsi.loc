@@ -38,7 +38,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
 
 
         $this->db->createCommand()->createView('teachers_load_studyplan_view', '
-       SELECT studyplan_subject.id AS studyplan_subject_id,
+  SELECT studyplan_subject.id AS studyplan_subject_id,
     studyplan_subject.week_time,
     studyplan_subject.year_time_consult,
     0 AS subject_sect_studyplan_id,
@@ -48,6 +48,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
     studyplan.student_id,
     concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
     studyplan.plan_year,
+    studyplan.course,
     studyplan.status,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
@@ -83,6 +84,7 @@ UNION ALL
     studyplan.student_id,
     concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
     studyplan.plan_year,
+    studyplan.course,
     studyplan.status,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
@@ -122,6 +124,7 @@ UNION ALL
     studyplan.student_id,
     NULL::text AS student_fio,
     studyplan.plan_year,
+    studyplan.course,
     studyplan.status,
     NULL::integer AS teachers_load_id,
     NULL::integer AS direction_id,
@@ -153,7 +156,7 @@ UNION ALL
              JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject_1.subject_cat_id AND subject_sect.subject_id = studyplan_subject_1.subject_id AND subject_sect.subject_vid_id = studyplan_subject_1.subject_vid_id
              JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject_1.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
              LEFT JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0))
-  ORDER BY 23, 18, 19, 13, 14;
+  ORDER BY 24, 19, 20, 14, 15;
         ')->execute();
 
         $this->db->createCommand()->createView('teachers_load_view', '

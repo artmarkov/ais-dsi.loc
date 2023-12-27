@@ -3,9 +3,12 @@
 namespace common\models\history;
 
 use artsoft\helpers\RefBook;
+use common\models\education\LessonProgress;
 use common\models\schoolplan\SchoolplanProtocol;
+use common\models\studyplan\StudyplanThematicItems;
 use common\models\user\UserCommon;
 use common\widgets\history\BaseHistory;
+use Yii;
 use yii\helpers\Json;
 
 class SchoolplanProtocolHistory extends BaseHistory
@@ -23,57 +26,35 @@ class SchoolplanProtocolHistory extends BaseHistory
     protected function getFields()
     {
         return [
-            'protocol_name',
-            'description',
-            'protocol_date',
-            'leader_id',
-            'secretary_id',
-            'members_list',
-            'subject_list',
+            'studyplan_id',
+            'studyplan_subject_id',
+            'teachers_id',
+            'thematic_items_list',
+            'lesson_mark_id',
+            'resume',
         ];
     }
 
     protected static function getDisplayValue($model, $name, $value)
     {
         switch ($name) {
-            case 'leader_id':
-                return isset($model->leader_id) ? (UserCommon::findOne(['user_id' => $model->leader_id]) ? UserCommon::findOne(['user_id' => $model->leader_id])->getFullName() : $model->leader_id) : null;
-            case 'secretary_id':
-                return isset($model->secretary_id) ? (UserCommon::findOne(['user_id' => $model->secretary_id]) ? UserCommon::findOne(['user_id' => $model->secretary_id])->getFullName() : $model->secretary_id) : null;
-            case 'members_list':
-                if (isset($model->members_list)) {
-                    $v = [];
-                    foreach (Json::decode($model->members_list) as $id) {
-                        $v[] = $id != null ? (UserCommon::findOne(['user_id' => $id]) ? UserCommon::findOne(['user_id' => $id])->getFullName() : $id) : null;
-                    }
-                    return implode(', ', $v);
+            case 'studyplan_id':
+                return isset($model->studyplan_id) ? $model->studyplan->student->fullName : $value;
+            case 'studyplan_subject_id':
+                return isset($model->studyplan_subject_id) ? RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id) : $value;
+                break;
+            case 'teachers_id':
+                return isset($model->teachers_id) ? RefBook::find('teachers_fio')->getValue($model->teachers_id) : $value;
+                break;
+            case 'lesson_mark_id':
+                return isset($model->lesson_mark_id) ? $model->lessonMark->mark_label . ' [' . LessonProgress::getStudentName($model->studyplan_subject_id) . ']'  : $value;
+            case 'thematic_items_list':
+                if (isset($model->thematic_items_list)) {
+                    $thematic_items_list =  StudyplanThematicItems::find()->select('topic')->where(['id' => Json::decode($model->thematic_items_list)])->column();
+                    return implode(', ', $thematic_items_list);
                 }
-            case 'subject_list':
-                if (isset($model->subject_list)) {
-                    $v = [];
-                    foreach (Json::decode($model->subject_list) as $id) {
-                        $v[] = $id != null ? RefBook::find('subject_name')->getValue($id) : null;
-                    }
-                    return implode(', ', $v);
-                }
-
         }
         return parent::getDisplayValue($model, $name, $value);
     }
 
-//    /**
-//     * @return array
-//     */
-//    public function getHistory()
-//    {
-//        $selfHistory = parent::getHistory();
-//
-//        foreach (EntrantMembersHistory::getLinkedIdList('entrant_id', $this->objId) as $itemId) {
-//            $vf = new EntrantMembersHistory($itemId);
-//            $selfHistory = array_merge($selfHistory, $vf->getHistory());
-//        }
-//
-//        krsort($selfHistory);
-//        return $selfHistory;
-//    }
 }

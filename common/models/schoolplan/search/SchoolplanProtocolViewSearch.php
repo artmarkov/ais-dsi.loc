@@ -2,16 +2,16 @@
 
 namespace common\models\schoolplan\search;
 
-use common\models\schoolplan\SchoolplanProtocolItemsView;
+use common\models\schoolplan\SchoolplanProtocolView;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\schoolplan\SchoolplanProtocolItems;
+use common\models\schoolplan\SchoolplanProtocol;
 
 /**
  * SchoolplanProtocolItemsSearch represents the model behind the search form about `common\models\schoolplan\SchoolplanProtocolItemsView`.
  */
-class SchoolplanProtocolItemsViewSearch extends SchoolplanProtocolItemsView
+class SchoolplanProtocolViewSearch extends SchoolplanProtocolView
 {
     /**
      * @inheritdoc
@@ -43,7 +43,7 @@ class SchoolplanProtocolItemsViewSearch extends SchoolplanProtocolItemsView
      */
     public function search($params)
     {
-        $query = SchoolplanProtocolItemsView::find();
+        $query = SchoolplanProtocolView::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

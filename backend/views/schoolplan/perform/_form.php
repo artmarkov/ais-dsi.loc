@@ -14,11 +14,11 @@ use yii\helpers\Url;
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 
-    <div class="schoolplan-perform-form">
+    <div class="perform-form">
 
         <?php
         $form = ActiveForm::begin([
-            'id' => 'schoolplan-perform-form',
+            'id' => 'perform-form',
             'validateOnBlur' => false,
         ])
         ?>
@@ -48,7 +48,8 @@ use yii\helpers\Url;
                         <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
                             'data' => $model->schoolplan->getExecutorsList(),
                             'options' => [
-                                'disabled' => $readonly,
+                                'id' => 'teachers_id',
+                                'disabled' => $model->schoolplan->isExecutors() ? true : $readonly,
                                 'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
                             ],
                             'pluginOptions' => [
@@ -57,17 +58,20 @@ use yii\helpers\Url;
                         ])->label(Yii::t('art/teachers', 'Teacher'));
                         ?>
 
-                        <?= $form->field($model, 'studyplan_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => StudyplanView::getStudyplanListByPlanYear($plan_year),
-                            'showToggleAll' => false,
+                        <?= $form->field($model, 'studyplan_id')->widget(\kartik\depdrop\DepDrop::class, [
+                            'data' => \common\models\teachers\TeachersLoadStudyplanView::getStudyplanListByTeachers($model->teachers_id, $plan_year),
                             'options' => [
                                 'id' => 'studyplan_id',
                                 'disabled' => $readonly,
                                 'placeholder' => Yii::t('art', 'Select...'),
                                 'multiple' => false,
                             ],
+                            'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
+                            'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                             'pluginOptions' => [
-                                'allowClear' => false,
+                                'depends' => ['teachers_id'],
+                                'placeholder' => Yii::t('art', 'Select...'),
+                                'url' => Url::to(['/schoolplan/default/studyplan', 'plan_year' => $plan_year])
                             ],
 
                         ]);
@@ -122,7 +126,7 @@ use yii\helpers\Url;
                         ?>
 
                         <?= $form->field($model, 'winner_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => \common\models\schoolplan\SchoolplanProtocolItems::getWinnerList(),
+                            'data' => \common\models\schoolplan\SchoolplanPerform::getWinnerList(),
                             'showToggleAll' => false,
                             'options' => [
                                 'disabled' => $readonly,
@@ -135,7 +139,7 @@ use yii\helpers\Url;
 
                         ]);
                         ?>
-                        <?= $form->field($model, 'resume')->textarea(['rows' => 3, 'maxlength' => true]) ?>
+                        <?= $form->field($model, 'resume')->textarea(['rows' => 3, 'maxlength' => true, 'disabled' => $readonly]) ?>
                     </div>
                     <?php if (!$model->isNewRecord): ?>
                         <div class="row">
@@ -152,7 +156,7 @@ use yii\helpers\Url;
                     <hr>
                     <div class="row">
                         <?= $form->field($model, 'status_exe')->widget(\kartik\select2\Select2::class, [
-                            'data' => \common\models\schoolplan\SchoolplanProtocolItems::getStatusExeList(),
+                            'data' => \common\models\schoolplan\SchoolplanPerform::getStatusExeList(),
                             'showToggleAll' => false,
                             'options' => [
                                 'disabled' => $readonly,
@@ -166,7 +170,7 @@ use yii\helpers\Url;
                         ?>
 
                         <?= $form->field($model, 'status_sign')->widget(\kartik\select2\Select2::class, [
-                            'data' => \common\models\schoolplan\SchoolplanProtocolItems::getStatusSignList(),
+                            'data' => \common\models\schoolplan\SchoolplanPerform::getStatusSignList(),
                             'showToggleAll' => false,
                             'options' => [
                                 'disabled' => true,
@@ -217,8 +221,8 @@ use yii\helpers\Url;
                         <?php else: ?>
                             <div class="row">
                                 <div class="form-group btn-group">
-                                    <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => !in_array($model->status_sign, [0, 3]) ? true : false]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => in_array($model->status_sign, [0, 3]) ? true : false]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => in_array($model->status_sign, [0, 3]) && $model->isAuthor() ? false : true]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => in_array($model->status_sign, [1, 2]) && $model->isAuthor() ? false : true]); ?>
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -227,7 +231,7 @@ use yii\helpers\Url;
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : (\artsoft\Art::isBackend() ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton()); ?>
                 </div>
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>

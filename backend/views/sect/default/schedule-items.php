@@ -125,7 +125,7 @@ $columns = [
         ],
         'visibleButtons' => [
             'create' => function (SubjectScheduleView $model) use($noteModel) {
-                return $noteModel->getTeachersScheduleNeed($model) && $model->subject_sect_studyplan_id === 0;
+                return $noteModel->getTeachersScheduleNeed($model) && $model->studyplan_subject_id === 0;
             },
             'delete' => function ($model) {
                 return $model->subject_schedule_id !== null;

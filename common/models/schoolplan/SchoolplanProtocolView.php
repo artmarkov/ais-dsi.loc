@@ -30,7 +30,7 @@ namespace common\models\schoolplan;
  * @property int $datetime_out Дата и время окончания
  *
  */
-class SchoolplanProtocolItemsView extends SchoolplanProtocolItems
+class SchoolplanProtocolView extends SchoolplanProtocol
 {
 
     /**

@@ -2,6 +2,7 @@
 
 namespace common\models\history;
 
+use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use common\models\own\Department;
 use common\models\schoolplan\Schoolplan;
@@ -50,6 +51,11 @@ class SchoolplanHistory extends BaseHistory
             'num_visitors',
             'bars_flag',
             'doc_status',
+            'protocol_leader_id',
+            'protocol_secretary_id',
+            'protocol_members_list',
+            'protocol_subject_list',
+            'protocol_class_list'
         ];
     }
 
@@ -108,7 +114,30 @@ class SchoolplanHistory extends BaseHistory
             case 'doc_status':
                 return isset($model->doc_status) ? Schoolplan::getDocStatusValue($value) : $value;
                 break;
-
+            case 'protocol_leader_id':
+                return isset($model->leader_id) ? (UserCommon::findOne(['user_id' => $model->protocol_leader_id]) ? UserCommon::findOne(['user_id' => $model->protocol_leader_id])->getFullName() : $model->protocol_leader_id) : null;
+            case 'protocol_secretary_id':
+                return isset($model->secretary_id) ? (UserCommon::findOne(['user_id' => $model->protocol_secretary_id]) ? UserCommon::findOne(['user_id' => $model->protocol_secretary_id])->getFullName() : $model->protocol_secretary_id) : null;
+            case 'protocol_members_list':
+                if (isset($model->protocol_members_list)) {
+                    $v = [];
+                    foreach (Json::decode($model->protocol_members_list) as $id) {
+                        $v[] = $id != null ? (UserCommon::findOne(['user_id' => $id]) ? UserCommon::findOne(['user_id' => $id])->getFullName() : $id) : null;
+                    }
+                    return implode(', ', $v);
+                }
+            case 'protocol_subject_list':
+                if (isset($model->protocol_subject_list)) {
+                    $v = [];
+                    foreach (Json::decode($model->protocol_subject_list) as $id) {
+                        $v[] = $id != null ? RefBook::find('subject_name')->getValue($id) : null;
+                    }
+                    return implode(', ', $v);
+                }
+            case 'protocol_class_list':
+                if (isset($model->protocol_class_list)) {
+                    return implode(', ', Json::decode($model->protocol_class_list));
+                }
         }
         return parent::getDisplayValue($model, $name, $value);
     }

@@ -12,7 +12,7 @@ use artsoft\grid\GridPageSize;
 /* @var $searchModel common\models\schoolplan\search\SchoolplanProtocolSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('art/guide', 'Schoolplan Protocols');
+$this->title = Yii::t('art/guide', 'Schoolplan Protocol');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="schoolplan-protocol-index">

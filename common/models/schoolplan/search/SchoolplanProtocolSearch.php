@@ -8,7 +8,7 @@ use yii\data\ActiveDataProvider;
 use common\models\schoolplan\SchoolplanProtocol;
 
 /**
- * SchoolplanProtocolSearch represents the model behind the search form about `common\models\schoolplan\SchoolplanProtocol`.
+ * SchoolplanProtocolItemsSearch represents the model behind the search form about `common\models\schoolplan\SchoolplanProtocol`.
  */
 class SchoolplanProtocolSearch extends SchoolplanProtocol
 {
@@ -18,8 +18,8 @@ class SchoolplanProtocolSearch extends SchoolplanProtocol
     public function rules()
     {
         return [
-            [['id', 'schoolplan_id', 'leader_id', 'secretary_id'], 'integer'],
-            [['protocol_name', 'description', 'members_list', 'protocol_date', 'subject_list'], 'safe'],
+            [['id', 'schoolplan_id', 'studyplan_subject_id', 'lesson_mark_id'], 'integer'],
+            [['thematic_items_list', 'resume'], 'safe'],
         ];
     }
 
@@ -66,19 +66,12 @@ class SchoolplanProtocolSearch extends SchoolplanProtocol
         $query->andFilterWhere([
             'id' => $this->id,
             'schoolplan_id' => $this->schoolplan_id,
-            'leader_id' => $this->leader_id,
-            'secretary_id' => $this->secretary_id,
-            'subject_list' => $this->subject_list,
-
+            'studyplan_subject_id' => $this->studyplan_subject_id,
+            'lesson_mark_id' => $this->lesson_mark_id,
         ]);
-        if (isset($this->protocol_date)) {
-            $query->andFilterWhere([
-                'protocol_date' => Yii::$app->formatter->asTimestamp($this->protocol_date),
-            ]);
-        }
-        $query->andFilterWhere(['like', 'protocol_name', $this->protocol_name])
-            ->andFilterWhere(['like', 'description', $this->description])
-            ->andFilterWhere(['like', 'members_list', $this->members_list]);
+
+        $query->andFilterWhere(['like', 'thematic_items_list', $this->thematic_items_list])
+            ->andFilterWhere(['like', 'resume', $this->resume]);
 
         return $dataProvider;
     }

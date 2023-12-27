@@ -251,6 +251,102 @@ use common\models\user\UserCommon;
                             </div>
                         </div>
                     <?php endif; ?>
+                    <?php if ($model->category->commission_sell == 1) : ?>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">
+                                        Протокол мероприятия
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <?= $form->field($model, 'protocol_leader_id')->widget(\kartik\select2\Select2::class, [
+                                                    'data' => User::getUsersByIds(User::getUsersByRole('department,administrator')),
+                                                    'showToggleAll' => false,
+                                                    'options' => [
+                                                        'disabled' => $readonly,
+                                                        'value' => $model->protocol_leader_id,
+                                                        'placeholder' => Yii::t('art', 'Select...'),
+                                                        'multiple' => false,
+                                                    ],
+                                                    'pluginOptions' => [
+                                                        'allowClear' => false,
+                                                    ],
+
+                                                ]);
+
+                                                ?>
+                                                <?= $form->field($model, 'protocol_secretary_id')->widget(\kartik\select2\Select2::class, [
+                                                    'data' => User::getUsersByIds(User::getUsersByRole('department,administrator')),
+                                                    'showToggleAll' => false,
+                                                    'options' => [
+                                                        'disabled' => $readonly,
+                                                        'value' => $model->protocol_secretary_id,
+                                                        'placeholder' => Yii::t('art', 'Select...'),
+                                                        'multiple' => false,
+                                                    ],
+                                                    'pluginOptions' => [
+                                                        'allowClear' => false,
+                                                    ],
+
+                                                ]);
+
+                                                ?>
+                                                <?= $form->field($model, 'protocol_members_list')->widget(\kartik\select2\Select2::class, [
+                                                    'data' => User::getUsersByIds(User::getUsersByRole('department')),
+                                                    'showToggleAll' => false,
+                                                    'options' => [
+                                                        'disabled' => $readonly,
+                                                        'placeholder' => Yii::t('art', 'Select...'),
+                                                        'multiple' => true,
+                                                    ],
+                                                    'pluginOptions' => [
+                                                        'allowClear' => true,
+                                                    ],
+
+                                                ]);
+
+                                                ?>
+                                                <?= $form->field($model, 'protocol_subject_list')->widget(\kartik\select2\Select2::class, [
+                                                    'data' => \artsoft\helpers\RefBook::find('subject_name')->getList(),
+                                                    'showToggleAll' => false,
+                                                    'options' => [
+                                                        'disabled' => $readonly,
+                                                        'placeholder' => Yii::t('art', 'Select...'),
+                                                        'multiple' => true,
+                                                    ],
+                                                    'pluginOptions' => [
+                                                        'allowClear' => true,
+                                                    ],
+
+                                                ]);
+
+                                                ?>
+
+                                                <?= $form->field($model, 'protocol_class_list')->widget(\kartik\select2\Select2::class, [
+                                                    'data' => \artsoft\helpers\ArtHelper::getCourseList(),
+                                                    'showToggleAll' => false,
+                                                    'options' => [
+                                                        'disabled' => $readonly,
+                                                        'placeholder' => Yii::t('art', 'Select...'),
+                                                        'multiple' => true,
+                                                    ],
+                                                    'pluginOptions' => [
+                                                        'allowClear' => true,
+                                                    ],
+
+                                                ]);
+
+                                                ?>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="panel panel-info">

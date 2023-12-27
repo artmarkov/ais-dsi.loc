@@ -1,0 +1,18 @@
+Массовая замена оценки для преподавателя тапа все П меняем на NUll
+
+UPDATE public.lesson_progress
+	SET  lesson_mark_id=NULL
+	WHERE id IN (SELECT lesson_progress.id
+	FROM public.lesson_progress 
+	inner join lesson_items on(lesson_progress.lesson_items_id = lesson_items.id) 
+	inner JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = lesson_items.subject_sect_studyplan_id 
+	AND teachers_load.studyplan_subject_id = lesson_items.studyplan_subject_id
+     AND teachers_load.teachers_id = 1100
+	where lesson_mark_id = 1014);
+	
+//Reset sequence	
+ALTER SEQUENCE teachers_load_id_seq
+RESTART WITH 1317;
+
+ALTER SEQUENCE teachers_load_hist_hist_id_seq
+RESTART WITH 12860;

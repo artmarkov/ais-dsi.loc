@@ -29,4 +29,20 @@ class TeachersLoadStudyplanView extends TeachersLoadView
 
         return $attr;
     }
+
+    public static function getStudyplanListByTeachers($teachers_id, $plan_year)
+    {
+        return \yii\helpers\ArrayHelper::map(self::getStudyplanListById($teachers_id, $plan_year), 'id', 'name');
+    }
+
+    public static function getStudyplanListById($teachers_id, $plan_year)
+    {
+        return self::find()
+            ->select('studyplan_id as id,  student_fio as name')
+            ->distinct('studyplan_id, student_fio')
+            ->where(['=', 'teachers_id', $teachers_id])
+            ->andWhere(['=', 'plan_year', $plan_year])
+            ->asArray()
+            ->all();
+    }
 }

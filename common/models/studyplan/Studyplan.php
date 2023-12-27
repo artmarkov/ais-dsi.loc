@@ -15,6 +15,7 @@ use common\models\students\Student;
 use common\models\subject\Subject;
 use common\models\schedule\SubjectScheduleStudyplanView;
 use common\models\subject\SubjectForm;
+use common\models\teachers\TeachersLoadStudyplanView;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;

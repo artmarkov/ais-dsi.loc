@@ -17,8 +17,8 @@ use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
 use common\models\schedule\search\SubjectScheduleStudyplanViewSearch;
 use common\models\schedule\SubjectSchedule;
-use common\models\schoolplan\SchoolplanProtocolItems;
-use common\models\schoolplan\search\SchoolplanProtocolItemsViewSearch;
+use common\models\schoolplan\SchoolplanProtocol;
+use common\models\schoolplan\search\SchoolplanProtocolViewSearch;
 use common\models\students\Student;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use common\models\studyplan\search\StudyplanSearch;
@@ -636,7 +636,7 @@ class StudyplanController extends MainController
 
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol Items'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление карточки';
-            $modelProtocolItems = new SchoolplanProtocolItems();
+            $modelProtocolItems = new SchoolplanProtocol();
             if ($modelProtocolItems->load(Yii::$app->request->post()) AND $modelProtocolItems->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
                 $this->getSubmitAction($modelProtocolItems);
@@ -651,12 +651,12 @@ class StudyplanController extends MainController
         } elseif ('history' == $mode && $objectId) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol Item'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/studyplan-perform', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
-            $modelProtocolItems = SchoolplanProtocolItems::findOne($objectId);
+            $modelProtocolItems = SchoolplanProtocol::findOne($objectId);
             $data = new ProtocolItemsHistory($objectId);
             return $this->renderIsAjax('@backend/views/history/index.php', compact(['modelProtocolItems', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
-            $modelProtocolItems = SchoolplanProtocolItems::findOne($objectId);
+            $modelProtocolItems = SchoolplanProtocol::findOne($objectId);
             $modelProtocolItems->delete();
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
@@ -666,7 +666,7 @@ class StudyplanController extends MainController
 
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol Items'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $modelProtocolItems = SchoolplanProtocolItems::findOne($objectId);
+            $modelProtocolItems = SchoolplanProtocol::findOne($objectId);
             if (!isset($modelProtocolItems)) {
                 throw new NotFoundHttpException("The SchoolplanProtocolItems was not found.");
             }
@@ -683,7 +683,7 @@ class StudyplanController extends MainController
             ]);
 
         } else {
-            $searchModel = new SchoolplanProtocolItemsViewSearch();
+            $searchModel = new SchoolplanProtocolViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();

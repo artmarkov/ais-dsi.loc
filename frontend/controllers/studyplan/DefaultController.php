@@ -5,7 +5,7 @@ namespace frontend\controllers\studyplan;
 use common\models\education\LessonProgressView;
 use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
 use common\models\schedule\search\SubjectScheduleStudyplanViewSearch;
-use common\models\schoolplan\search\SchoolplanProtocolItemsViewSearch;
+use common\models\schoolplan\search\SchoolplanProtocolViewSearch;
 use common\models\students\Student;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
@@ -224,7 +224,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
 
-        $searchModel = new SchoolplanProtocolItemsViewSearch();
+        $searchModel = new SchoolplanProtocolViewSearch();
 
         $searchName = StringHelper::basename($searchModel::className());
         $params = Yii::$app->request->getQueryParams();

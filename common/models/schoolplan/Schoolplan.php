@@ -11,11 +11,13 @@ use common\models\activities\ActivitiesOver;
 use common\models\auditory\Auditory;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
+use common\models\teachers\TeachersLoadStudyplanView;
 use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Query;
+use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
 
 /**
@@ -55,11 +57,18 @@ use yii\helpers\StringHelper;
  * @property int|null $updated_by
  * @property int $version
  * @property int $doc_status
+ * 
  * @property int $period_over Период подготовки перед мероприятием мин.
  * @property int $period_over_flag
  * @property int $executor_over_id Ответственный за подготовку
  * @property string $title_over Примечание
- *
+ * 
+ * @property int $protocol_leader_id Реководитель комиссии user_id
+ * @property int $protocol_secretary_id Секретарь комиссии user_id
+ * @property string $protocol_members_list Члены комиссии user_id
+ * @property string $protocol_subject_list Дисциплины
+ * @property string $protocol_class_list Классы
+ * 
  * @property Auditory $auditory
  * @property Author $author
  * @property User $user
@@ -133,7 +142,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ],
             [
                 'class' => ArrayFieldBehavior::class,
-                'attributes' => ['department_list', 'executors_list'],
+                'attributes' => ['department_list', 'executors_list', 'protocol_members_list','protocol_subject_list','protocol_class_list'],
             ],
             [
                 'class' => FileManagerBehavior::class,
@@ -195,6 +204,12 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['author_id' => 'id']],
             [['signer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['signer_id' => 'id']],
             [['formPlaces'], 'safe'],
+            [['protocol_members_list','protocol_subject_list','protocol_class_list'], 'safe'],
+            [['protocol_leader_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_leader_id' => 'id']],
+            [['protocol_secretary_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_secretary_id' => 'id']],
+            [['protocol_secretary_id','protocol_members_list','protocol_subject_list','protocol_class_list'], 'required', 'when' => function ($model) {
+                return $model->category->commission_sell == 1;
+            }, 'enableClientValidation' => false],
 
         ];
     }
@@ -270,6 +285,11 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'executor_over_id' => 'Ответственный за подготовку',
             'admin_message' => 'Сообщение админа',
             'formPlaces' => 'Вид мероприятия',
+            'protocol_leader_id' => 'Реководитель комиссии',
+            'protocol_secretary_id' => 'Секретарь комиссии',
+            'protocol_members_list' => 'Члены комиссии',
+            'protocol_subject_list' => 'Дисциплины',
+            'protocol_class_list' => 'Классы',
         ];
     }
 
@@ -352,7 +372,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function getExecutorsList()
     {
         $query = (new Query())->from('teachers_view')
-            ->select('teachers_id as id , fio as name')
+            ->select('teachers_id as id , fullname as name')
             ->where(['teachers_id' => $this->executors_list])
             ->all();
         return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
@@ -405,6 +425,11 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function getSchoolplanPerform()
     {
         return $this->hasMany(SchoolplanPerform::class, ['schoolplan_id' => 'id']);
+    }
+
+    public function getSchoolplanProtocol()
+    {
+        return $this->hasMany(SchoolplanProtocol::class, ['schoolplan_id' => 'id']);
     }
 
     /**
@@ -600,22 +625,6 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         }
     }
 
-    /**
-     * @param bool $insert
-     * @return bool
-     */
-    public function beforeSave($insert)
-    {
-        if ($this->form_partic == 1) {
-            $this->partic_price = null;
-        }
-        if ($this->getCategorySell() == 1 || $this->formPlaces == 1) {
-            $this->places = null;
-        } elseif ($this->getCategorySell() == 2 || $this->formPlaces == 2) {
-            $this->auditory_id = null;
-        }
-        return parent::beforeSave($insert);
-    }
 
     public function modifMessage()
     {
@@ -675,5 +684,95 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function isSigner()
     {
         return $this->signer_id == self::getSignerId();
+    }
+
+    /**
+     * @return |null
+     */
+    public static function getOwnerId()
+    {
+        return Yii::$app->user->identity->getId();
+    }
+    /**
+     * Залогинился секретарь или руководитель
+     * @return bool
+     */
+    public function isProtocolSigner()
+    {
+        return in_array(self::getOwnerId(), [$this->protocol_secretary_id, $this->protocol_leader_id]);
+    }
+
+    /**
+     * Залогинился ответственный за мероприятие или член комиссии
+     * @return bool
+     */
+    public function isExecutors()
+    {
+
+        $ids = (new Query())->from('teachers_view')
+            ->select('user_id')
+            ->where(['teachers_id' => $this->executors_list])
+            ->andWhere(['=', 'status', UserCommon::STATUS_ACTIVE])
+            ->column();
+        return in_array(self::getOwnerId(), $ids);
+    }
+
+    public function isProtocolMembers()
+    {
+        return in_array(self::getOwnerId(), $this->protocol_members_list);
+    }
+
+
+    public function setSchuulplanProtocols()
+    {
+        $timestamp = Yii::$app->formatter->asTimestamp($this->datetime_in);
+        $plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, $timestamp);
+        $data = TeachersLoadStudyplanView::find()
+            ->select('studyplan_subject_id, studyplan_id,  teachers_id')
+            ->distinct('studyplan_subject_id, studyplan_id,  teachers_id')
+            ->where(['teachers_id' => $this->executors_list])
+            ->andWhere(['subject_id' => $this->protocol_subject_list])
+            ->andWhere(['course' => $this->protocol_class_list])
+            ->andWhere(['=', 'plan_year', $plan_year])
+            ->orderBy('teachers_id')
+            ->asArray()
+            ->all();
+        foreach ($data as $item => $value) {
+            $exists = SchoolplanProtocol::find()
+                ->where(['schoolplan_id' => $this->id])
+                ->andWhere(['studyplan_id' => $value['studyplan_id']])
+                ->andWhere(['studyplan_subject_id' => $value['studyplan_subject_id']])
+                ->andWhere(['teachers_id' => $value['teachers_id']])
+                ->exists();
+            if ($exists) continue;
+
+            $model = new SchoolplanProtocol();
+            $model->schoolplan_id = $this->id;
+            $model->studyplan_id = $value['studyplan_id'];
+            $model->studyplan_subject_id = $value['studyplan_subject_id'];
+            $model->teachers_id = $value['teachers_id'];
+            $model->save(false);
+        }
+//        echo '<pre>' . print_r($data, true) . '</pre>';
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if ($this->form_partic == 1) {
+            $this->partic_price = null;
+        }
+        if ($this->getCategorySell() == 1 || $this->formPlaces == 1) {
+            $this->places = null;
+        } elseif ($this->getCategorySell() == 2 || $this->formPlaces == 2) {
+            $this->auditory_id = null;
+        }
+        if($this->category->commission_sell == 1) {
+            $this->setSchuulplanProtocols();
+        }
+        return parent::beforeSave($insert);
     }
 }

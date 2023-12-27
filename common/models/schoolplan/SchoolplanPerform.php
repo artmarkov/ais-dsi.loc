@@ -96,7 +96,8 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
             [['admin_message'], 'required', 'when' => function ($model) {
                 return $model->admin_flag;
             }, 'enableClientValidation' => false],
-            ];
+            [['studyplan_id'], 'unique', 'targetAttribute' => ['schoolplan_id', 'studyplan_subject_id', 'teachers_id'], 'message' => 'Ученик уже записан в реестр выполнения плана.'],
+        ];
     }
 
     /**
@@ -160,12 +161,6 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
     public function getSchoolplan()
     {
         return $this->hasOne(Schoolplan::className(), ['id' => 'schoolplan_id']);
-    }
-
-    public function getSchoolplanProtocols()
-    {
-        $schoolplan_id = $this->schoolplanProtocol->schoolplan_id ?? null;
-        return ArrayHelper::map(SchoolplanProtocol::find()->select(['id', 'protocol_name'])->andWhere(['=', 'schoolplan_id', $schoolplan_id])->asArray()->all(), 'id', 'protocol_name');
     }
 
     /**
@@ -292,7 +287,7 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
 		                  studyplan_thematic_items.topic AS name
                     FROM studyplan_thematic_view 
                     INNER JOIN studyplan_thematic_items ON studyplan_thematic_view.studyplan_thematic_id = studyplan_thematic_items.studyplan_thematic_id 
-                    where  studyplan_subject_id = :studyplan_subject_id',
+                    where  studyplan_subject_id = :studyplan_subject_id AND studyplan_thematic_items.topic != \'\'',
             ['studyplan_subject_id' => $studyplan_subject_id,
             ])->queryAll();
     }
@@ -302,16 +297,11 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
         return ArrayHelper::map(self::getStudyplanThematicItemsById($studyplan_subject_id), 'id', 'name');
     }
 
-    /**
-     * доступ к протоколу для заполнения
-     * @return bool
-     */
-    public function protocolIsAvailable()
+    public function isAuthor()
     {
         $userId = Yii::$app->user->identity->getId();
-        return !($userId == $this->schoolplan->leader_id || $userId == $this->schoolplan->secretary_id || in_array($userId, $this->schoolplan->members_list));
+        return $this->teachers_id == RefBook::find('users_teachers')->getValue($userId);
     }
-
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'signer_id']);

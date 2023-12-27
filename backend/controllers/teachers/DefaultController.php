@@ -1240,7 +1240,10 @@ class DefaultController extends MainController
 
             $modelLesson = LessonItemsProgressView::find()
                 ->where(['=', 'subject_key', $subject_key])
+                ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $id]))
                 ->andWhere(['=', 'lesson_date', $timestamp_in])
+                ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
+                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
                 ->one();
             $model = LessonItems::findOne($modelLesson->lesson_items_id);
             $modelsItems = $model->getLessonProgressTeachers($id, $subject_key, $timestamp_in);
