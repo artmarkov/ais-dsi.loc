@@ -208,7 +208,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['protocol_leader_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_leader_id' => 'id']],
             [['protocol_secretary_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_secretary_id' => 'id']],
             [['protocol_secretary_id','protocol_members_list','protocol_subject_list','protocol_class_list'], 'required', 'when' => function ($model) {
-                return $model->category->commission_sell == 1;
+                return $model->category->commission_sell == 1 && !$model->isNewRecord;
             }, 'enableClientValidation' => false],
 
         ];

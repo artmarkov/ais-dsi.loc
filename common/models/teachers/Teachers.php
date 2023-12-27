@@ -273,6 +273,32 @@ class Teachers extends ActiveRecord
     }
 
     /**
+     * user_id преподавателей выбранных отделов
+     * @param $department_list
+     * @return array
+     */
+    public static function getUserTeachersForDepartment($department_list)
+    {
+        if (!$department_list) {
+            return [];
+        }
+        if (is_array($department_list)) {
+            $department_list = implode(',', $department_list);
+        }
+        $query = (new \yii\db\Query())->select(['user_common.user_id as id', 'CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) as name'])
+            ->from('guide_department, teachers, user_common')
+            ->distinct()
+            ->where('user_common.id = teachers.user_common_id')
+            ->andWhere(new \yii\db\Expression("guide_department.id = ANY (string_to_array(teachers.department_list::text, ',')::int[])"))
+            ->andWhere(new \yii\db\Expression("guide_department.id = ANY (string_to_array('{$department_list}', ',')::int[])"))
+            ->andWhere(['user_common.user_category' => 'teachers'])
+            ->andWhere(['user_common.status' => Teachers::STATUS_ACTIVE])
+            ->orderBy('name')
+            ->all();
+        return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
+    }
+
+    /**
      * Коллеги по отделам
      * @param $id
      * @return array

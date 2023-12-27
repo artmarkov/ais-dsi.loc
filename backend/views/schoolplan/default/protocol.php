@@ -19,7 +19,7 @@ $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
 <div class="protocol-index">
     <div class="panel">
         <div class="panel-body">
-            <?= $this->render('_confirm', ['model_confirm' => $model_confirm, 'readonly' => !$model_confirm->schoolplan->isProtocolSigner()]) ?>
+            <?= $this->render('_confirm', ['model_confirm' => $model_confirm, 'readonly' => (\artsoft\Art::isFrontend() && !$model_confirm->schoolplan->isProtocolSigner()) ? true : false]) ?>
             <div class="row">
                 <div class="panel">
                     <div class="panel-heading">

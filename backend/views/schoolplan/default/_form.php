@@ -294,7 +294,7 @@ use common\models\user\UserCommon;
 
                                                 ?>
                                                 <?= $form->field($model, 'protocol_members_list')->widget(\kartik\select2\Select2::class, [
-                                                    'data' => User::getUsersByIds(User::getUsersByRole('department')),
+                                                    'data' => \common\models\teachers\Teachers::getUserTeachersForDepartment($model->department_list),
                                                     'showToggleAll' => false,
                                                     'options' => [
                                                         'disabled' => $readonly,
@@ -520,7 +520,7 @@ function schoolplan(key) {
   let input =  $('input[type=radio][name="Schoolplan[formPlaces]"]');
   let field1 = $('.field-schoolplan-places');
   let field2 = $('.field-schoolplan-auditory_id');
-  let field3 = $('.field-schoolplan-formPlaces');
+  let field3 = $('.field-schoolplan-formplaces');
      
   if(key == '') {
         field1.hide(); field2.hide(); field3.hide();
