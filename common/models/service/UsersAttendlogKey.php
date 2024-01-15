@@ -20,6 +20,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $auditory_id
  * @property int $timestamp_received Ключ выдан
  * @property int|null $timestamp_over Ключ сдан
+ * @property boolean/false $key_free_flag
  * @property string|null $comment
  * @property int $created_at
  * @property int|null $created_by
@@ -64,6 +65,7 @@ class UsersAttendlogKey extends \artsoft\db\ActiveRecord
             [['auditory_id', 'timestamp_received'], 'required'],
             [['timestamp_received', 'timestamp_over'], 'safe'],
             [['comment'], 'string', 'max' => 127],
+            [['key_free_flag'], 'boolean'],
             [['users_attendlog_id', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
             [['users_attendlog_id'], 'exist', 'skipOnError' => true, 'targetClass' => UsersAttendlog::class, 'targetAttribute' => ['users_attendlog_id' => 'id']],
@@ -86,14 +88,16 @@ class UsersAttendlogKey extends \artsoft\db\ActiveRecord
 
     public function checkKeyExist($attribute, $params, $validator)
     {
-        if ($this->isNewRecord) {
-            $thereIsKeyExist = self::find()
+        if ($this->isNewRecord && !$this->key_free_flag) {
+            $thereIsKeyExist = UsersAttendlogView::find()
                 ->where(['auditory_id' => $this->auditory_id])
                 ->andWhere(['is', 'timestamp_over', null]);
 
             if ($thereIsKeyExist->exists() === true) {
-                $message = 'Ключ от аудитории ' . RefBook::find('auditory_memo_1')->getValue($this->auditory_id) . ' <b>Не был сдан!</b>';
+                $m = $thereIsKeyExist->one();
+                $message = '<b>Ключ от аудитории</b> ' . RefBook::find('auditory_memo_1')->getValue($m->auditory_id) . ' <b>не был сдан!</b></br>';
                 $this->addError($attribute, $message);
+                $message .= '<b>Выдан:</b> ' . $m->timestamp_received . ' <b>' . $m->user_category_name . ':</b> ' . $m->user_name;
                 Notice::registerDanger($message);
             }
         }
@@ -110,6 +114,7 @@ class UsersAttendlogKey extends \artsoft\db\ActiveRecord
             'auditory_id' => Yii::t('art/guide', 'Auditory'),
             'timestamp_received' => Yii::t('art/guide', 'Time Received'),
             'timestamp_over' => Yii::t('art/guide', 'Time Over'),
+            'key_free_flag' => Yii::t('art/guide', 'Key Free'),
             'comment' => Yii::t('art', 'Comment'),
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -149,4 +154,14 @@ class UsersAttendlogKey extends \artsoft\db\ActiveRecord
         return $this->save(false);
     }
 
+    public function beforeSave($insert)
+    {
+        if ($this->isNewRecord && $this->key_free_flag) {
+            $model = UsersAttendlogView::find()
+                ->where(['auditory_id' => $this->auditory_id])
+                ->andWhere(['is', 'timestamp_over', null])->one();
+            $model ? $this->comment = 'Занимаются вместе: ' . $model->user_name : $this->key_free_flag = false;
+        }
+        return parent::beforeSave($insert);
+    }
 }

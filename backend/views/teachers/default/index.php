@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\models\User;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -62,7 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return [];
                         },
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                            ['class' => 'artsoft\grid\CheckboxColumn',  'visible' => \artsoft\Art::isBackend(), 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
                                 'options' => ['style' => 'width:30px'],
@@ -184,7 +185,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttons' => [
                                     'view' => function ($key, $model) {
                                         return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
-                                            ['/execution/teachers/view', 'id' => $model->id], [
+                                            [User::hasRole(['reestrFrontend']) ? '/reestr/teachers/view' : '/execution/teachers/view', 'id' => $model->id], [
                                                 'title' => Yii::t('art', 'View'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
@@ -192,7 +193,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                         );
                                     },
                                 ],
-//
                             ],
                         ],
                     ]);

@@ -71,22 +71,45 @@ class InvoicesHelper
      * @param $model
      * @return string|void
      */
+//    public function getSubjects($model)
+//    {
+//        if (!isset($this->studyplanData[$model->studyplan_id])) {
+//            return;
+//        }
+//        $v = [];
+//        foreach ($this->studyplanData[$model->studyplan_id] as $studyplan_subject) {
+//            if (!$studyplan_subject) {
+//                continue;
+//            }
+//            $string = '';
+//            $string .= isset($this->model_date->subject_id) && $studyplan_subject['subject_id'] == $this->model_date->subject_id ? '<span style="background-color:greenyellow">' . $studyplan_subject['subject'] . '</span>' : $studyplan_subject['subject'];
+//            $string .= ' - ';
+//            $string .= isset($this->model_date->teachers_id) && $studyplan_subject['teachers_id'] == $this->model_date->teachers_id ? '<span style="background-color:yellow">' . $studyplan_subject['teacher'] . '</span>' : $studyplan_subject['teacher'];
+//            $v[] = $string;
+//        }
+//        return implode('<BR/> ', $v);
+//    }
     public function getSubjects($model)
     {
         if (!isset($this->studyplanData[$model->studyplan_id])) {
             return;
         }
         $v = [];
+        $string = '<table class="table table-striped" style="margin-bottom:0px;">';
         foreach ($this->studyplanData[$model->studyplan_id] as $studyplan_subject) {
             if (!$studyplan_subject) {
                 continue;
             }
-            $string = '';
+            $string .= '<tr>';
+            $string .= '<td>';
             $string .= isset($this->model_date->subject_id) && $studyplan_subject['subject_id'] == $this->model_date->subject_id ? '<span style="background-color:greenyellow">' . $studyplan_subject['subject'] . '</span>' : $studyplan_subject['subject'];
-            $string .= ' - ';
+            $string .= '</td>';
+            $string .= '<td>';
             $string .= isset($this->model_date->teachers_id) && $studyplan_subject['teachers_id'] == $this->model_date->teachers_id ? '<span style="background-color:yellow">' . $studyplan_subject['teacher'] . '</span>' : $studyplan_subject['teacher'];
-            $v[] = $string;
+            $string .= '</td>';
+            $string .= '</tr>';
         }
-        return implode('<BR/> ', $v);
+        $string .= '</table>';
+        return $string;
     }
 }

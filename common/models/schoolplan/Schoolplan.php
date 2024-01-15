@@ -170,7 +170,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['description'], 'default', 'value' => null],
             [['doc_status'], 'default', 'value' => 0],
             [['partic_price', 'site_url', 'site_media'], 'string', 'max' => 255],
-            ['description', 'string', 'max' => 4000, 'min' => 1000, 'when' => function ($model) {
+            ['description', 'string', 'max' => 4000, 'when' => function ($model) {
                 return $model->category->description_flag && !$model->isNewRecord;
             }, 'enableClientValidation' => false, 'skipOnEmpty' => false, 'message' => 'Введите описание мероприятия минимум 1000 знаков, включая пробелы.'],
             ['description', 'string', 'max' => 4000, 'when' => function ($model) {

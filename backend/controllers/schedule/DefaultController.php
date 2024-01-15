@@ -25,17 +25,25 @@ class DefaultController extends MainController
             ->where(['=', 'plan_year', $model_date->plan_year])
             ->andWhere(['=', 'status', 1])
             ->andWhere(['IS NOT', 'auditory_id', null]);
-        $models = $models->asArray()->orderBy('week_day,time_in')->all();
-        $modelsAuditory = RefBook::find('auditory_memo_1', 1)->getList();
-
-        $modelsPlan = TeachersPlan::find()
-            ->where(['=', 'plan_year', $model_date->plan_year]);
         if ($model_date->teachers_id) {
-            $modelsPlan = $modelsPlan->where(['=', 'teachers_id', $model_date->teachers_id]);
+            $models = $models->andWhere(['=', 'teachers_id', $model_date->teachers_id]);
         }
-        $modelsPlan = $modelsPlan->asArray()->orderBy('week_day,time_plan_in')->all();
-
+        if ($model_date->auditory_id) {
+            $models = $models->andWhere(['=', 'auditory_id', $model_date->auditory_id]);
+        }
+        $models = $models->asArray()->orderBy('week_day, time_in')->all();
         $data = ArrayHelper::index($models, null, ['auditory_id', 'week_day']);
+        $modelsAuditory = Auditory::find()->joinWith('cat')
+            ->where(['=', 'study_flag', true]);
+        if ($model_date->auditory_id) {
+            $modelsAuditory = $modelsAuditory->andWhere(['=', 'auditory.id', $model_date->auditory_id]);
+        }
+        $modelsAuditory = $modelsAuditory->orderBy(['sort_order' => SORT_ASC])->all();
+
+//        $modelsPlan = TeachersPlan::find()
+//            ->where(['=', 'plan_year', $model_date->plan_year]);
+//        $modelsPlan = $modelsPlan->asArray()->orderBy('week_day,time_plan_in')->all();
+
 //        echo '<pre>' . print_r($modelsPlan, true) . '</pre>';
 //        echo '<pre>' . print_r($data, true) . '</pre>'; die();
         return $this->renderIsAjax('index', compact('model_date', 'data', 'modelsAuditory'));

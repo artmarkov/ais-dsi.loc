@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = 'Поиск ученика';
 ?>
 <div class="panel">
     <div class="panel-heading">
-        Поиск ученика (Введите данные Вашего ребенка)
+        Поиск ученика (Введите данные ребенка)
     </div>
     <?php $form = ActiveForm::begin([
         'id' => 'form-find',
@@ -24,10 +24,10 @@ $this->params['breadcrumbs'][] = 'Поиск ученика';
     ]); ?>
     <div class="panel-body">
         <div class="row">
-            <?= $form->field($model, 'last_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Введите Фамилию Вашего ребенка.') ?>
-            <?= $form->field($model, 'first_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Введите Имя Вашего ребенка.') ?>
-            <?= $form->field($model, 'middle_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Введите Отчество Вашего ребенка, как указано в Свидетельстве о рождении. Если Отчества нет, оставьте поле пустым.') ?>
-            <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->hint('Введите Дату рождения Вашего ребенка.') ?>
+            <?= $form->field($model, 'last_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Введите Фамилию ребенка.') ?>
+            <?= $form->field($model, 'first_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Введите Имя ребенка.') ?>
+            <?= $form->field($model, 'middle_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Введите Отчество ребенка, как указано в Свидетельстве о рождении. Если Отчества нет, оставьте поле пустым.') ?>
+            <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->hint('Введите Дату рождения ребенка.') ?>
 
         </div>
     </div>

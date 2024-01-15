@@ -368,7 +368,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             'asPopover' => true,
             'disabled' => $teachers_id !== null ? (\artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($teachers_id)) : false,
             'value' => $mark->lesson_mark_id,
-            'header' => $date_label . ' - ' . $mark->test_name,
+            'header' => $date_label . ' - ' . $mark->test_name /*.$mark->lesson_progress_id*/,
             'displayValueConfig' => $mark_list,
             'format' => Editable::FORMAT_LINK,
             'inputType' => Editable::INPUT_DROPDOWN_LIST,

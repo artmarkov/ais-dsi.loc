@@ -19,19 +19,19 @@
             <td><?= $val['sect_name'] ?></td>
             <td><?= $val['subject'] ?></td>
             <td>
-                <?= \artsoft\Art::isBackend() ? Html::a(\artsoft\helpers\RefBook::find('teachers_fio')->getValue($val['teachers_id']),
+                <?= \artsoft\Art::isBackend() ? Html::a($teachers_list[$val['teachers_id']],
                     ['/teachers/default/schedule-items', 'id' => $val['teachers_id']],
                     [
                         'target' => '_blank',
 //                        'class' => 'btn btn-info',
-                    ]) : \artsoft\helpers\RefBook::find('teachers_fio')->getValue($val['teachers_id']); ?>
+                    ]) : $teachers_list[$val['teachers_id']]; ?>
             </td>
         </tr>
     <?php endforeach; ?>
     </tbody>
     <tfoot>
     <tr class="bg-warning text-left">
-        <td colspan="4"> <?= $weekDay . ' - ' . $auditory; ?></td>
+        <td colspan="4"> <?= $weekDay . ' - ' . $auditory->num; ?></td>
     </tr>
     </tfoot>
 </table>

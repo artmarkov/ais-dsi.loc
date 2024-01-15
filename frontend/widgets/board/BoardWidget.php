@@ -26,7 +26,7 @@ class BoardWidget extends Widget
         $userId = \Yii::$app->user->identity->getId();
 
         $models = Board::find()
-            ->where(['>', 'delete_date', time()])
+            ->where(['>', 'delete_date', time() - 86399]) // 86399 - включая день удаления
             ->andWhere(['=', 'status', Board::STATUS_ACTIVE])
             ->andWhere(new \yii\db\Expression('CASE WHEN recipients_list IS NOT NULL THEN category_id = :category_id  AND :user_id = any(string_to_array(recipients_list, \',\')::int[]) ELSE category_id = any(string_to_array(:category_ids, \',\')::int[]) END', [':category_id' => Board::CAT_SELECT, ':user_id' => $userId, ':category_ids' => implode(',', $categoryIds)]))
             ->orderBy('board_date DESC')->all();

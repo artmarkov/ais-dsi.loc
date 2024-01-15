@@ -56,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ],
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                            ['class' => 'artsoft\grid\CheckboxColumn',  'visible' => \artsoft\Art::isBackend(), 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
                                 'options' => ['style' => 'width:30px'],
@@ -96,10 +96,20 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'urlCreator' => function ($action, $model, $key, $index) {
                                     return [$action, 'id' => $model->id];
                                 },
+                                'visible' => \artsoft\Art::isBackend(),
                                 'controller' => '/employees/default',
                                 'template' => '{view} {update} {delete}',
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
-
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'visible' => \artsoft\Art::isFrontend(),
+                                'controller' => '/employees/default',
+                                'template' => '{view}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
                             ],
                         ],
                     ]);

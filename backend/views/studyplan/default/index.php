@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
             GridView::widget([
                 'id' => 'studyplan-grid',
                 'dataProvider' => $dataProvider,
-                'filterModel' =>  \artsoft\Art::isBackend() ? $searchModel : false,
+                'filterModel' =>  $searchModel,
                 'bulkActionOptions' =>  \artsoft\Art::isBackend() ? [
                     'gridId' => 'studyplan-grid',
                     'actions' =>  [

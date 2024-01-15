@@ -235,32 +235,8 @@ class SubjectScheduleView extends SubjectSchedule
 //        return $thereIsAnOverlapping;
 //
 //    }
-//
-//    /**
-//     * Заданное расписание не соответствует планированию индивидуальных занятий!
-//     * @param $model
-//     * @return \yii\db\ActiveQuery
-//     */
-//    public static function getTeachersPlanScheduleOverLapping($model)
-//    {
-//        $thereIsAnOverlapping = TeachersPlan::find()
-//            ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = teachers_plan.direction_id')
-//            ->where(
-//                ['AND',
-//                    ['is', 'parent', null],
-//                    ['=', 'teachers_id', $model->teachersId],
-//                    ['auditory_id' => $model->auditory_id],
-//                    ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($model->id)],
-//                    ['AND',
-//                        ['<=', 'time_plan_in', Schedule::encodeTime($model->time_in)],
-//                        ['>=', 'time_plan_out', Schedule::encodeTime($model->time_out)],
-//                    ],
-//                    ['=', 'week_day', $model->week_day]
-//                ])->andWhere(new \yii\db\Expression('CASE WHEN week_num != 0 THEN week_num = :week_num ELSE TRUE END', [':week_num' => $model->week_num]));;
-//
-//
-//        return $thereIsAnOverlapping;
-//    }
+
+
 
     /**
      * Запрос на полное время занятий расписания преподавателя данной нагрузки

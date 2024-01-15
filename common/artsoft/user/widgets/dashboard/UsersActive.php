@@ -18,7 +18,7 @@ class UsersActive extends DashboardWidget
             ->innerJoin('users', 'users.id = session.user_id')
             ->innerJoin('user_common', "user_common.user_id = users.id")
             ->where(['in', 'user_common.user_category', $this->category])
-            ->where(['>', 'run_at', time() - $this->activeTime])
+            ->andWhere(['>', 'run_at', time() - $this->activeTime])
             ->column();
 
         return $this->render('users-active', [

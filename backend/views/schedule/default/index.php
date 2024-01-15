@@ -1,5 +1,9 @@
 <?php
 ini_set('memory_limit', '1024M');
+
+use artsoft\helpers\RefBook;
+
+$teachers_list = RefBook::find('teachers_fio')->getList();
 ?>
 
 <div class="schedule-index">
@@ -27,11 +31,11 @@ ini_set('memory_limit', '1024M');
                             ?>
                             <?php foreach ($modelsAuditory as $index => $auditory): ?>
                                 <tr class="item">
-                                    <td style="min-width: 100px; font-weight: bold"><?= $auditory ?></td>
+                                    <td style="min-width: 100px; font-weight: bold"><?= $auditory->num . ' ' .  $auditory->name?></td>
                                     <?php foreach (\artsoft\helpers\ArtHelper::getWeekdayList() as $item => $weekDay): ?>
                                         <td class="text-center" style="min-width: 100px">
-                                            <?php if (isset($data[$index][$item])): ?>
-                                                <?= $this->render('_table-item', ['dataItem' => $data[$index][$item], 'weekDay' => $weekDay, 'auditory' => $auditory]) ?>
+                                            <?php if (isset($data[$auditory->id][$item])): ?>
+                                                <?= $this->render('_table-item', ['dataItem' => $data[$auditory->id][$item], 'weekDay' => $weekDay, 'auditory' => $auditory, 'teachers_list' => $teachers_list]) ?>
                                             <?php endif; ?>
 
                                         </td>

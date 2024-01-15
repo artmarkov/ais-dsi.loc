@@ -3,7 +3,6 @@
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
-use artsoft\grid\GridQuickLinks;
 use common\models\service\UsersAttendlogView;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
@@ -15,6 +14,7 @@ use artsoft\helpers\RefBook;
 
 $this->title = Yii::t('art/guide', 'Users Attendlogs');
 $this->params['breadcrumbs'][] = $this->title;
+$auditory_list = RefBook::find('auditory_memo_1')->getList();
 
 $columns = [
     [
@@ -29,14 +29,14 @@ $columns = [
     [
         'attribute' => 'user_name',
         'value' => function (UsersAttendlogView $model) {
-          return  Html::a($model->user_name,
+            return Html::a($model->user_name,
                 ['/service/attendlog/update', 'id' => $model->users_attendlog_id], [
                     'title' => Yii::t('art', 'Edit'),
                     'data-method' => 'post',
                     'data-pjax' => '0',
                 ]
             );
-            },
+        },
         'format' => 'raw',
         'group' => true,  // enable grouping
     ],
@@ -53,10 +53,10 @@ $columns = [
     [
         'attribute' => 'auditory_id',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => RefBook::find('auditory_memo_1', 1, true)->getList(),
+        'filter' => $auditory_list,
         'options' => ['style' => 'width:300px'],
-        'value' => function ($model) {
-            return RefBook::find('auditory_memo_1')->getValue($model->auditory_id);
+        'value' => function ($model) use ($auditory_list) {
+            return $auditory_list[$model->auditory_id];
         },
         'filterWidgetOptions' => [
             'pluginOptions' => ['allowClear' => true],
@@ -70,13 +70,21 @@ $columns = [
     [
         'attribute' => 'timestamp_over',
         'value' => function (UsersAttendlogView $model) {
-            return $model->timestamp_over ? Yii::$app->formatter->asDatetime($model->timestamp_over) : Html::a('<i class="fa fa-key" aria-hidden="true"></i> Вернуть ключ',
+            return $model->timestamp_over ? Yii::$app->formatter->asDatetime($model->timestamp_over) : (
+            $model->key_free_flag ? Html::a('<i class="fa fa-male" aria-hidden="true"></i> Завершить работу',
                 ['/service/attendlog/over', 'id' => $model->id], [
-                    'class' => 'btn btn-sm btn-primary',
-                    'title' => 'Вернуть ключ',
+                    'class' => 'btn btn-sm btn-info',
+                    'title' => 'Завершить работу',
                     'data-method' => 'post',
                     'data-pjax' => '0',
-                ]
+                ]) :
+                Html::a('<i class="fa fa-key" aria-hidden="true"></i> Вернуть ключ',
+                    ['/service/attendlog/over', 'id' => $model->id], [
+                        'class' => 'btn btn-sm btn-success',
+                        'title' => 'Вернуть ключ',
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ])
             );
         },
         'format' => 'raw',
@@ -89,59 +97,43 @@ $columns = [
     <div class="panel">
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>
+            <div class="row">
+                <div class="col-sm-6">
+                    <?php
+                    /* Uncomment this to activate GridQuickLinks */
+                    /* echo GridQuickLinks::widget([
+                        'model' => Document::className(),
+                        'searchModel' => $searchModel,
+                    ])*/
+                    ?>
+                </div>
 
+                <div class="col-sm-6 text-right">
+                    <?= GridPageSize::widget(['pjaxId' => 'users-attendlog-grid-pjax']) ?>
+                </div>
+            </div>
             <?php
             Pjax::begin([
                 'id' => 'users-attendlog-grid-pjax',
             ])
             ?>
-
             <?= GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
-                        'tableOptions' => ['class' => 'table-condensed'],
-                        //                        'showPageSummary' => true,
-                        'pjax' => true,
-                        'hover' => true,
-                        'panel' => [
-                            'heading' => 'Журнал выдачи ключей',
-                            'type' => 'default',
-                            'after' => '',
+                'id' => 'users-attendlog-grid',
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'columns' => $columns,
+                'beforeHeader' => [
+                    [
+                        'columns' => [
+                            ['content' => 'Пользователь', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                            ['content' => 'Ключи от аудиторий', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
                         ],
-                        'toggleDataContainer' => ['class' => 'btn-group mr-2 me-2'],
-                        'columns' => $columns,
-                        'beforeHeader' => [
-                            [
-                                'columns' => [
-                                    ['content' => 'Пользователь', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-                                    ['content' => 'Ключи от аудиторий', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
-                                ],
-                                'options' => ['class' => 'skip-export'] // remove this row from export
-                            ]
-                        ],
-                        'exportConfig' => [
-                            'html' => [],
-                            'csv' => [],
-                            'txt' => [],
-                            'xls' => [],
-                        ],
-                        'toolbar' => [
-                            [
-                                'content' => Html::a('Очистить',
-                                    ['/service/attendlog'], [
-                                        'title' => 'Очистить',
-                                        'data-pjax' => '0',
-                                        'class' => 'btn btn-default'
-                                    ]
-                                ),
-                            ],
-                            '{export}',
-                            '{toggleData}'
-                        ],
-                    ]);
-                    ?>
-
+                    ]
+                ],
+            ]);
+            ?>
             <?php Pjax::end() ?>
+
         </div>
     </div>
 </div>

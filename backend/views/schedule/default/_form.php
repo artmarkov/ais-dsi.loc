@@ -37,7 +37,21 @@ use yii\widgets\MaskedInput;
                     <?= $form->field($model, "week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList()) ?>
                     <?= $form->field($model, "time_in")->textInput()->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
                     <?= $form->field($model, "time_out")->textInput()->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
-                    <?= $form->field($model, "auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList()) ?>
+                    <?= $form->field($model, 'auditory_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => RefBook::find('auditory_memo_1')->getList(),
+                        'showToggleAll' => false,
+                        'options' => [
+                            'placeholder' => Yii::t('art/guide', 'Select auditory...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => false,
+                            //'minimumInputLength' => 3,
+                        ],
+
+                    ]);
+                    ?>
+
                     <?= $form->field($model, "description")->textarea() ?>
 
                 </div>

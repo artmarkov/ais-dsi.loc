@@ -236,8 +236,6 @@ class StudyplanProgressIndivController extends MainController
             ->all();
 //        echo '<pre>' . print_r($models, true) . '</pre>'; die();
         foreach ($models as $model) {
-            $modelProgress = LessonProgress::findOne(['id' => $model->lesson_progress_id]);
-            $modelProgress->delete();
             $modelLesson = LessonItems::findOne(['id' => $model->lesson_items_id]);
             $modelLesson->delete();
         }

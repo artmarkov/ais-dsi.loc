@@ -43,18 +43,17 @@ use artsoft\widgets\Nav;
                 ],
             ],
 
-//            [
-//                'label' => 'Реестры',
-//                'icon' => 'fa fa-list',
-//                'url' => '#',
-//                'items' => [
-//                    ['label' => 'Список сотрудников', 'icon' => 'fa fa-minus', 'url' => ['/employees/default/index']],
-//                    ['label' => 'Список преподавателей', 'icon' => 'fa fa-minus', 'url' => ['/teachers/default/index']],
-//                    ['label' => 'Список учеников', 'icon' => 'fa fa-minus', 'url' => ['/students/default/index']],
-//                    ['label' => 'Список родителей', 'icon' => 'fa fa-minus', 'url' => ['/parents/default/index']],
-//                    ['label' => 'Заявления', 'icon' => 'fa fa-minus', 'url' => ['/order/default/index']],
-//                ],
-//            ],
+            [
+                'label' => 'Реестры',
+                'icon' => 'fa fa-list',
+                'url' => '#',
+                'items' => [
+                    ['label' => 'Список учеников', 'icon' => 'fa fa-minus', 'url' => ['/reestr/studyplan/index']],
+                    ['label' => 'Список сотрудников', 'icon' => 'fa fa-minus', 'url' => ['/reestr/employees/index']],
+                    ['label' => 'Список преподавателей', 'icon' => 'fa fa-minus', 'url' => ['/reestr/teachers/index']],
+                    ['label' => 'Список родителей', 'icon' => 'fa fa-minus', 'url' => ['/reestr/parents/index']],
+                ],
+            ],
             [
                 'label' => 'Организационная работа',
                 'icon' => 'fa fa-university',

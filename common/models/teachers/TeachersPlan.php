@@ -226,7 +226,7 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
             if ($this->getTeachersPlanOverLapping()->exists() === true) {
                 $info = [];
                 foreach (self::getTeachersPlanOverLapping()->all() as $itemModel) {
-                    $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id);
+                    $info[] = RefBook::find('auditory_memo_1')->getValue($itemModel->auditory_id) . ' - ' . RefBook::find('teachers_fio')->getValue($itemModel->teachers_id);
                 }
                 $message = 'В одной аудитории при планировании накладка по времени! ' . implode(', ', $info);
                 //  Notice::registerDanger($message);

@@ -27,7 +27,7 @@ class StudyplanProgressController extends MainController
             $session->remove('_progress_subject_sect_studyplan_id');
         }
         $model_date = new DynamicModel(['date_in', 'subject_sect_studyplan_id']);
-        $model_date->addRule(['date_in', 'subject_sect_studyplan_id'], 'required')
+        $model_date->addRule(['date_in', 'subject_sect_studyplan_id'], 'required', ['message' => 'Необходимо выбрать из списка.'])
             ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
 
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {

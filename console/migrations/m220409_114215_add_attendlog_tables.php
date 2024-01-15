@@ -32,6 +32,7 @@ class m220409_114215_add_attendlog_tables extends \artsoft\db\BaseMigration
             'timestamp_received' => $this->integer()->notNull()->comment('Ключ выдан'),
             'timestamp_over' => $this->integer()->comment('Ключ сдан'),
             'comment' => $this->string(127),
+            'key_free_flag' => $this->boolean()->defaultValue(false)->comment('Занимаются вместе'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

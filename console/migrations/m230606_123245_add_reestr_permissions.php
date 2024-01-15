@@ -9,6 +9,7 @@ class m230606_123245_add_reestr_permissions extends PermissionsMigration
     {
         $this->addPermissionsGroup('reestrManagement', 'Управление Реестрами');
         $this->addRole('reestrAdmin', 'Администратор Реестров');
+        $this->addRole('reestrFrontend', 'Доступ к реестрам Фронтенд');
         $this->addRole('documentAdmin', 'Администратор Документов');
     }
 
@@ -16,6 +17,7 @@ class m230606_123245_add_reestr_permissions extends PermissionsMigration
     {
         $this->deletePermissionsGroup('reestrManagement');
         $this->deleteRole('reestrAdmin');
+        $this->deleteRole('reestrFrontend');
         $this->deleteRole('documentAdmin');
     }
 
@@ -57,6 +59,55 @@ class m230606_123245_add_reestr_permissions extends PermissionsMigration
                     ],
                     'roles' => [
                         self::ROLE_ADMIN,
+                    ],
+                ],
+                'viewReestrFrontend' => [
+                    'title' => 'Просмотр Реестров Фронтенд',
+                    'links' => [
+                        '/reestr/employees/index',
+                        '/reestr/employees/view',
+                        '/reestr/employees/grid-sort',
+                        '/reestr/employees/grid-page-size',
+                        '/reestr/teachers/index',
+                        '/reestr/teachers/view',
+                        '/reestr/teachers/grid-sort',
+                        '/reestr/teachers/grid-page-size',
+                        '/reestr/teachers/schedule-items',
+                        '/reestr/teachers/schedule',
+                        '/reestr/teachers/consult-items',
+                        '/reestr/parents/index',
+                        '/reestr/parents/view',
+                        '/reestr/parents/grid-sort',
+                        '/reestr/parents/grid-page-size',
+                        '/reestr/studyplan/grid-sort',
+                        '/reestr/studyplan/grid-page-size',
+                        '/reestr/studyplan/index',
+                        '/reestr/studyplan/view',
+                        '/reestr/studyplan/schedule-items',
+                        '/reestr/studyplan/schedule-items/grid-sort',
+                        '/reestr/studyplan/schedule-items/grid-page-size',
+                        '/reestr/studyplan/schedule',
+                        '/reestr/studyplan/consult-items',
+                        '/reestr/studyplan/consult-items/grid-sort',
+                        '/reestr/studyplan/consult-items/grid-page-size',
+                        '/reestr/studyplan/characteristic-items',
+                        '/reestr/studyplan/characteristic-items/grid-sort',
+                        '/reestr/studyplan/characteristic-items/grid-page-size',
+                        '/reestr/studyplan/thematic-items',
+                        '/reestr/studyplan/thematic-items/grid-sort',
+                        '/reestr/studyplan/thematic-items/grid-page-size',
+                        '/reestr/studyplan/thematic-items?mode=view',
+                        '/reestr/studyplan/studyplan-progress',
+                        '/reestr/studyplan/studyplan-progress/grid-sort',
+                        '/reestr/studyplan/studyplan-progress/grid-page-size',
+                        '/reestr/studyplan/studyplan-progress?mode=view',
+                        '/reestr/studyplan/studyplan-invoices',
+                        '/reestr/studyplan/studyplan-invoices?mode=view',
+                        '/reestr/studyplan/studyplan-invoices/grid-sort',
+                        '/reestr/studyplan/studyplan-invoices/grid-page-size',
+                    ],
+                    'roles' => [
+                        'reestrFrontend',
                     ],
                 ],
                 'viewDocument' => [

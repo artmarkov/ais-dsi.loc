@@ -14,6 +14,7 @@ use common\models\studyplan\StudyplanSubject;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadTrait;
+use common\models\teachers\TeachersPlan;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -81,7 +82,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['time_out'], 'compare', 'compareAttribute' => 'time_in', 'operator' => '>', 'message' => 'Время окончания не может быть меньше или равно времени начала.'],
             //  [['auditory_id', 'time_in'], 'unique', 'targetAttribute' => ['auditory_id', 'time_in'], 'message' => 'time and place is busy place select new one.'],
-            //  [['auditory_id'], 'checkScheduleOverLapping', 'skipOnEmpty' => false],
+            [['auditory_id'], 'checkScheduleOverLapping', 'skipOnEmpty' => false],
             //  [['auditory_id'], 'checkScheduleAccompLimit', 'skipOnEmpty' => false],
         ];
     }
@@ -96,11 +97,37 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
 
     public function checkScheduleOverLapping($attribute, $params)
     {
-        if (SubjectScheduleStudyplanView::getScheduleOverLapping($this)->exists() === true) {
-            $this->addError($attribute, 'В одной аудитории накладка по времени!');
+        if ($this->teachersLoad->subject_sect_studyplan_id === 0 && $this->getTeachersPlanScheduleOverLapping() === false) {
+            $message = 'Заданное расписание не соответствует планированию индивидуальных занятий!';
+            $this->addError($attribute, $message);
+            Notice::registerDanger($message);
+            print_r($this->errors);
         }
     }
 
+    /**
+     * Заданное расписание не соответствует планированию индивидуальных занятий!
+     * @return bool
+     */
+    public function getTeachersPlanScheduleOverLapping()
+    {
+        $thereIsAnOverlapping = TeachersPlan::find()
+            ->where(
+                ['AND',
+                    ['=', 'teachers_id', $this->teachersLoad->teachers_id],
+                    ['=', 'direction_id', 1000],
+                    ['auditory_id' => $this->auditory_id],
+                    ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($this->id)],
+                    ['AND',
+                        ['<=', 'time_plan_in', Schedule::encodeTime($this->time_in)],
+                        ['>=', 'time_plan_out', Schedule::encodeTime($this->time_out)],
+                    ],
+                    ['=', 'week_day', $this->week_day]
+                ])->andWhere(new \yii\db\Expression('CASE WHEN week_num != 0 THEN week_num = :week_num ELSE TRUE END', [':week_num' => $this->week_num]))
+            ->exists();
+
+        return $thereIsAnOverlapping;
+    }
 
     /**
      * {@inheritdoc}

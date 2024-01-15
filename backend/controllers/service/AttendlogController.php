@@ -22,6 +22,7 @@ use yii\web\NotFoundHttpException;
 class AttendlogController extends BaseController
 {
     public $modelClass = 'common\models\service\UsersAttendlog';
+    public  $modelSearchClass = 'common\models\service\search\UsersAttendlogViewSearch';
 
     public function actionIndex()
     {
@@ -39,7 +40,7 @@ class AttendlogController extends BaseController
 
         $query = UsersAttendlogView::find()->where(['=', 'timestamp', $timestamp]);
         $searchModel = new UsersAttendlogViewSearch($query);
-        $params = Yii::$app->request->getQueryParams();
+        $params = $this->getParams();
         $dataProvider = $searchModel->search($params);
 
         return $this->renderIsAjax('index', compact('dataProvider', 'searchModel', 'model_date'));

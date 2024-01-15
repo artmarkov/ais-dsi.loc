@@ -95,6 +95,7 @@ JS
                                     <th class="text-center">Аудитория</th>
                                     <th class="text-center">Время выдачи</th>
                                     <th class="text-center">Время сдачи</th>
+                                    <th class="text-center">Занимаются<br/>вместе</th>
                                     <th class="text-center">Примечание</th>
                                     <th class="text-center">
                                         <?php if (!$readonly): ?>
@@ -164,6 +165,9 @@ JS
                                                 <p class="help-block help-block-error"></p>
                                             </div>
                                             <?= $field->end(); ?>
+                                        </td>
+                                        <td>
+                                            <?= $form->field($modelDependency, "[{$index}]key_free_flag")->checkbox(['disabled' => $readonly, 'label' => 'Да']) ?>
                                         </td>
                                         <td>
                                             <?php

@@ -72,7 +72,7 @@ class RegistrationForm extends Model
             [['student_birth_date', 'parent_birth_date'], 'date'],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             [['student_snils', 'parent_snils'], 'string', 'max' => 16],
-           // ['email', 'validateEmail'],
+            // ['email', 'validateEmail'],
             ['email', 'email'],
             [['student_sert_date'], 'date'],
             [['student_sert_name', 'student_sert_series', 'student_sert_num'], 'string', 'max' => 32],
@@ -288,6 +288,9 @@ class RegistrationForm extends Model
                         $flag = $modelDependence->save(false);
                     }
                 }
+                if ($flag && Yii::$app->art->emailConfirmationRequired) {
+                    $this->sendConfirmationEmail($userParent);
+                }
             }
 
             if ($flag) {
@@ -300,5 +303,19 @@ class RegistrationForm extends Model
             return false;
         }
 
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return bool
+     */
+    protected function sendConfirmationEmail($user)
+    {
+        return Yii::$app->mailqueue->compose(Yii::$app->art->emailTemplates['signup-confirmation'], ['user' => $user])
+            ->setFrom(Yii::$app->art->emailSender)
+            ->setTo($user->email)
+            ->setSubject(Yii::t('art/auth', 'E-mail confirmation for') . ' ' . Yii::$app->name)
+            ->send();
     }
 }

@@ -31,6 +31,19 @@ $form = ActiveForm::begin([
                                 ],
                             ])->label(Yii::t('art/teachers', 'Teacher'));
                         ?>
+                        <?php
+                        echo $form->field($model_date, 'auditory_id')->widget(\kartik\select2\Select2::class, [
+                            'data' => \artsoft\helpers\RefBook::find('auditory_memo_1', 1)->getList(),
+                            'options' => [
+//                                    'multiple' => true,
+                                'onchange'=>'js: $(this).closest("form").submit()',
+                                'placeholder' => Yii::t('art', 'Select...'),
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ])->label('Аудитория');
+                        ?>
                         <?= $form->field($model_date, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                             [
                                 'disabled' => false,

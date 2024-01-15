@@ -24,7 +24,7 @@ if ($user_cat == 'employees' || $user_cat == 'teachers') {
         $access_disabled = true;
        echo \yii\bootstrap\Alert::widget([
             'body' => '<i class="fa fa-info-circle"></i> Для получени пропуска необходимо пройти первичный инструктаж по охране труда.',
-            'options' => ['class' => 'alert-info'],
+            'options' => ['class' => 'alert-danger'],
         ]);
     }
 }

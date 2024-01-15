@@ -3,6 +3,7 @@
     <div class="panel-body">
         <?php if (count($active)): ?>
             <div class="clearfix">
+                <?= '<b>Преподавателей и сотрудников (' . count($active) . '):</b> '?>
                 <?= implode(', ', $active)?>
             </div>
         <?php else: ?>

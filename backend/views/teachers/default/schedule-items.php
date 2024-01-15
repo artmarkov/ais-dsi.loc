@@ -150,7 +150,7 @@ $columns = [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
-        'visible' => \artsoft\Art::isFrontend() && Teachers::isOwnTeacher($model->id) && $model_confirm->confirm_status == 0,
+        'visible' => \artsoft\Art::isFrontend() && Teachers::isOwnTeacher($model->id) && in_array($model_confirm->confirm_status, [0,3]),
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
@@ -206,7 +206,7 @@ $columns = [
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>
-            <?= $this->render('_confirm', compact('model_confirm', 'readonly')) ?>
+            <?= \artsoft\models\User::hasRole('reestrFrontend', false) ? '' : $this->render('_confirm', compact('model_confirm', 'readonly')) ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

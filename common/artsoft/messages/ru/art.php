@@ -29,6 +29,7 @@ return [
     'Close' => 'Закрыть',
     'Captcha' => 'Проверочный код',
     'Code' => 'Код',
+    'Comment' => 'Примечание',
     'Comment Status' => 'Статус Комментариев',
     'Status successfully changed.' => 'Статус успешно изменен.',
     'Comments Activity' => 'Активность Комментариев',

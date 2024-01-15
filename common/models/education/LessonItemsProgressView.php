@@ -44,7 +44,7 @@ class LessonItemsProgressView extends \artsoft\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Subject Sect Studyplan ID'),
+            'subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name'),
             'studyplan_subject_id' => Yii::t('art/guide', 'Studyplan Subject ID'),
             'studyplan_id' => Yii::t('art/guide', 'Studyplan ID'),
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
