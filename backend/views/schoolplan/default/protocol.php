@@ -85,8 +85,11 @@ $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
                                     if (!empty($model->thematic_items_list[0])) {
                                         $thematic_items_list = StudyplanThematicItems::find()->select('topic')->where(['id' => $model->thematic_items_list])->column();
                                         return implode(', ', $thematic_items_list);
+                                    } else {
+                                        return $model->task_ticket;
                                     }
                                 },
+                                'label' => 'Задание/Билет',
                                 'format' => 'raw'
                             ],
                             [

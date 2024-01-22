@@ -49,6 +49,7 @@ class DefaultController extends MainController
             $model_date->date_in = $session->get('_schoolplan_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:d.m.Y');
             $model_date->date_out = $session->get('_schoolplan_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:d.m.Y');
         }
+
         $session->set('_schoolplan_date_in', $model_date->date_in);
         $session->set('_schoolplan_date_out', $model_date->date_out);
 
@@ -338,15 +339,38 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = Yii::t('art', 'Create');
             $modelProtocol = new SchoolplanProtocol();
             $modelProtocol->schoolplan_id = $id;
-
-            if ($modelProtocol->load(Yii::$app->request->post()) && $modelProtocol->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                $this->getSubmitAction($modelProtocol);
+            $flag = true;
+            if ($modelProtocol->load(Yii::$app->request->post())) {
+                $valid = $modelProtocol->validate();
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        foreach ($modelProtocol->studyplan_subject_id as $id => $studyplan_subject_id) {
+                            $m = new SchoolplanProtocol();
+                            $m->schoolplan_id = $modelProtocol->schoolplan_id;
+                            $m->teachers_id = $modelProtocol->teachers_id;
+                            $m->thematic_items_list = $modelProtocol->thematic_items_list;
+                            $m->studyplan_subject_id = $studyplan_subject_id;
+                            if (!($flag = $m->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+                            $this->redirect($this->getRedirectPage('index'));
+                        }
+                    } catch (\Exception $e) {
+                        print_r($e->getMessage());
+                        $transaction->rollBack();
+                    }
+                }
             }
 
             return $this->renderIsAjax('@backend/views/schoolplan/protocol/_form.php', [
+                'modelSchoolplan' => $model,
                 'model' => $modelProtocol,
-                'plan_year' => $plan_year,
                 'readonly' => false
             ]);
         } elseif ('history' == $mode && $objectId) {
@@ -378,8 +402,8 @@ class DefaultController extends MainController
                 }
             }
             return $this->renderIsAjax('@backend/views/schoolplan/protocol/_form.php', [
+                'modelSchoolplan' => $model,
                 'model' => $modelProtocol,
-                'plan_year' => $plan_year,
                 'readonly' => $readonly
             ]);
 
@@ -406,6 +430,8 @@ class DefaultController extends MainController
                     if ($model_confirm->modifMessage()) {
                         Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
                     }
+                } elseif (Yii::$app->request->post('submitAction') == 'doc_protocol') {
+                    $model->makeProtocolDocx();
                 }
                 if ($model_confirm->save()) {
                     Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
@@ -423,24 +449,8 @@ class DefaultController extends MainController
         if (isset($_POST['depdrop_parents'])) {
             $parents = $_POST['depdrop_parents'];
             if (!empty($parents)) {
-
-                $out = TeachersLoadStudyplanView::getStudyplanListById($parents[0], $_GET['plan_year']);
-
-                return json_encode(['output' => $out, 'selected' => '']);
-            }
-        }
-        return json_encode(['output' => '', 'selected' => '']);
-    }
-
-    public function actionStudyplanSubject()
-    {
-        $out = [];
-        if (isset($_POST['depdrop_parents'])) {
-            $parents = $_POST['depdrop_parents'];
-
-            if (!empty($parents)) {
-                $cat_id = $parents[0];
-                $out = Studyplan::getStudyplanSubjectListById($cat_id);
+                $model = Schoolplan::findOne(['id' => $_GET['id']]);
+                $out = $model->getStudyplanSubjectListById($parents[0]);
 
                 return json_encode(['output' => $out, 'selected' => '']);
             }
@@ -456,7 +466,8 @@ class DefaultController extends MainController
 
             if (!empty($parents)) {
                 $cat_id = $parents[0];
-                $out = SchoolplanPerform::getStudyplanThematicItemsById($cat_id);
+                $model = Schoolplan::findOne($_GET['id']);
+                $out = $model->getStudyplanThematicItemsById($cat_id);
 
                 return json_encode(['output' => $out, 'selected' => '']);
             }

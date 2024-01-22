@@ -61,31 +61,34 @@ $form = ActiveForm::begin([
                         ],
                     ]);
                     ?>
-                    <?php if (\artsoft\Art::isBackend()) : ?>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <?= $form->field($model_confirm, 'admin_flag')->checkbox()->label('Добавить сообщение секретарю комиссии') ?>
-                                <div id="admin_message">
-                                    <?= $form->field($model_confirm, 'sign_message')->textInput()->hint('Введите сообщение для секретаря комиссии') ?>
-                                </div>
-                                <div class="form-group btn-group pull-right">
-                                    <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model_confirm->confirm_status == 1]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'modif', 'disabled' => $model_confirm->confirm_status != 1]); ?>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                    <?php if (\artsoft\Art::isFrontend()): ?>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="form-group btn-group pull-right">
-                                    <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => in_array($model_confirm->confirm_status, [0,3]) ? $readonly : true]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => in_array($model_confirm->confirm_status, [1,2]) ? $readonly : true]); ?>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
                 </div>
+                <?php if (\artsoft\Art::isBackend()) : ?>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <?= $form->field($model_confirm, 'admin_flag')->checkbox()->label('Добавить сообщение секретарю комиссии') ?>
+                            <div id="admin_message">
+                                <?= $form->field($model_confirm, 'sign_message')->textInput()->hint('Введите сообщение для секретаря комиссии') ?>
+                            </div>
+                            <div class="form-group btn-group pull-left">
+                                <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Скачать протокол', ['class' => 'btn btn-sm btn-default', 'name' => 'submitAction', 'value' => 'doc_protocol', 'disabled' => \artsoft\Art::isFrontend()]); ?>
+                            </div>
+                            <div class="form-group btn-group pull-right">
+                                <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model_confirm->confirm_status == 1]); ?>
+                                <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'modif', 'disabled' => $model_confirm->confirm_status != 1]); ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php if (\artsoft\Art::isFrontend()): ?>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group btn-group pull-right">
+                                <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => in_array($model_confirm->confirm_status, [0, 3]) ? $readonly : true]); ?>
+                                <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => in_array($model_confirm->confirm_status, [1, 2]) ? $readonly : true]); ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

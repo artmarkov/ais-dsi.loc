@@ -60,6 +60,8 @@ use artsoft\widgets\Nav;
                 'url' => '#',
                 'items' => [
                     ['label' => 'Производственный календарь', 'icon' => 'fa fa-minus', 'url' => ['/routine/default/calendar']],
+                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/schoolplan-outside/index']],
+                    ['label' => 'Сетка расписания школы', 'icon' => 'fa fa-minus', 'url' => ['/schedule/default/index']], // common permission
                     ['label' => 'План работы школы', 'icon' => 'fa fa-minus', 'url' => ['/schoolplan/default/index']],
                     ['label' => 'Счета за обучение', 'icon' => 'fa fa-minus', 'url' => ['/invoices/default/index']],
 //                    ['label' => 'Табель учета пед.часов', 'icon' => 'fa fa-minus', 'url' => ['/timesheet/default/index']],
@@ -71,14 +73,12 @@ use artsoft\widgets\Nav;
                 'icon' => 'fa fa-graduation-cap',
                 'url' => '#',
                 'items' => [
-                        // Преподаватели
+                    // Преподаватели
                     ['label' => 'Карточка преподавателя', 'icon' => 'fa fa-minus', 'url' => ['/teachers/default/index']],
                     ['label' => 'Мои ученики', 'icon' => 'fa fa-minus', 'url' => ['/teachers/studyplan/index']],
                     ['label' => 'Нагрузка', 'icon' => 'fa fa-minus', 'url' => ['/teachers/load-items/index']],
                     ['label' => 'Табель учета', 'icon' => 'fa fa-minus', 'url' => ['/teachers/cheet-account/index']],
                     ['label' => 'Планирование индивидуальных занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/teachers-plan/index']],
-                    ['label' => 'Сетка расписания школы', 'icon' => 'fa fa-minus', 'url' => ['/schedule/default/index']], // common permission
-                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/calendar']],
                     ['label' => 'Расписание занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/schedule-items/index']],
                     ['label' => 'Расписание консультаций', 'icon' => 'fa fa-minus', 'url' => ['/teachers/consult-items/index']],
                     ['label' => 'Тематические/репертуарные планы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/thematic-items/index']],

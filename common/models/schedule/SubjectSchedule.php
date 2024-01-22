@@ -97,11 +97,11 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
 
     public function checkScheduleOverLapping($attribute, $params)
     {
-        if ($this->teachersLoad->subject_sect_studyplan_id === 0 && $this->getTeachersPlanScheduleOverLapping() === false) {
+        if ($this->teachersLoad->subject_sect_studyplan_id == 0 && $this->teachersLoad->direction_id == 1000 && $this->getTeachersPlanScheduleOverLapping() === false) {
             $message = 'Заданное расписание не соответствует планированию индивидуальных занятий!';
             $this->addError($attribute, $message);
             Notice::registerDanger($message);
-            print_r($this->errors);
+            print_r($this->teachersLoad->subject_sect_studyplan_id);
         }
     }
 
@@ -115,7 +115,6 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             ->where(
                 ['AND',
                     ['=', 'teachers_id', $this->teachersLoad->teachers_id],
-                    ['=', 'direction_id', 1000],
                     ['auditory_id' => $this->auditory_id],
                     ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($this->id)],
                     ['AND',
@@ -266,6 +265,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             }
         }
     }*/
+   // Автоматическое добавление расписания для концертмейтера
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
@@ -277,7 +277,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
                 if ($model) {
                     $modelFind = TeachersLoad::find()
                         ->where(['=', 'studyplan_subject_id', $model->studyplan_subject_id])
-                        ->where(['=', 'subject_sect_studyplan_id', $model->subject_sect_studyplan_id])
+                        ->andWhere(['=', 'subject_sect_studyplan_id', $model->subject_sect_studyplan_id])
                         ->andWhere(['=', 'load_time', $model->load_time])
                         ->andWhere(['=', 'direction_id', 1001])
                         ->one();

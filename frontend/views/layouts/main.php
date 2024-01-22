@@ -64,11 +64,11 @@ AvatarAsset::register($this);
                 'url' => \yii\helpers\Url::to(['/site/contact']),
                 'visible' => true
             ];
-           /* $menuItems[] = [
+            $menuItems[] = [
                 'label' => '<i class="fa fa-user-plus" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Signup'),
                 'url' => \yii\helpers\Url::to(['/auth/default/finding']),
                 'visible' => true
-            ];*/
+            ];
             $menuItems[] = [
                 'label' => '<i class="fa fa-sign-in" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Enter'),
                 'url' => \yii\helpers\Url::to(['/auth/default/login'])

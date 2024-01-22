@@ -11,7 +11,7 @@ class MainController extends \frontend\controllers\DefaultController
     public function init()
     {
 
-        if(!User::hasRole(['student','teacher','department'])) {
+        if(!User::hasRole(['employees', 'student','teacher','department'])) {
             throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
         }
 

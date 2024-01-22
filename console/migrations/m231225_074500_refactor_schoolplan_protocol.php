@@ -23,25 +23,29 @@ class m231225_074500_refactor_schoolplan_protocol extends \artsoft\db\BaseMigrat
         $this->dropForeignKey('schoolplan_protocol_ibfk_2', 'schoolplan_protocol');
         $this->dropForeignKey('schoolplan_protocol_ibfk_1', 'schoolplan_protocol');
         $this->dropTableWithHistory('schoolplan_protocol');
-
         $this->db->createCommand()->dropView('schoolplan_view')->execute();
 
-        $this->addColumnWithHistory('schoolplan', 'protocol_leader_id', $this->integer()->comment('Реководитель комиссии user_id'));
+        $this->addColumnWithHistory('schoolplan', 'protocol_leader_id', $this->integer()->comment('Председатель комиссии user_id'));
+        $this->addColumnWithHistory('schoolplan', 'protocol_leader_name', $this->string(127)->comment('Председатель комиссии(введено вручную)'));
+        $this->addColumnWithHistory('schoolplan', 'protocol_soleader_id', $this->integer()->comment('Заместитель председателя комиссии user_id'));
         $this->addColumnWithHistory('schoolplan', 'protocol_secretary_id', $this->integer()->comment('Секретарь комиссии user_id'));
         $this->addColumnWithHistory('schoolplan', 'protocol_members_list', $this->string(1024)->comment('Члены комиссии user_id'));
-        $this->addColumnWithHistory('schoolplan', 'protocol_subject_list', $this->string(1024)->comment('Дисциплины'));
         $this->addColumnWithHistory('schoolplan', 'protocol_class_list', $this->string(1024)->comment('Классы'));
+        $this->addColumnWithHistory('schoolplan', 'protocol_subject_cat_id', $this->integer()->comment('Категория дисциплины'));
+        $this->addColumnWithHistory('schoolplan', 'protocol_subject_id', $this->integer()->comment('Дисциплина'));
+        $this->addColumnWithHistory('schoolplan', 'protocol_subject_vid_id', $this->integer()->comment('Вид дисциплины(групповое, инд)'));
 
         $this->addForeignKey('schoolplan_ibfk_7', 'schoolplan', 'protocol_leader_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('schoolplan_ibfk_8', 'schoolplan', 'protocol_secretary_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('schoolplan_ibfk_9', 'schoolplan', 'protocol_soleader_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->createTableWithHistory('schoolplan_protocol', [
             'id' => $this->primaryKey(),
             'schoolplan_id' => $this->integer()->comment('Мероприятие'),
-            'studyplan_id' => $this->integer()->comment('Индивидуальный план'),
             'studyplan_subject_id' => $this->integer()->comment('Учебный предмет ученика'),
             'teachers_id' => $this->integer()->notNull()->comment('Преподаватель'),
             'thematic_items_list' => $this->string(1024)->comment('Список заданий из тематич/реп плана'),
+            'task_ticket' => $this->string(127)->comment('Билет-задание'),
             'lesson_mark_id' =>  $this->integer()->comment('Оценка'),
             'resume' => $this->string(1024)->comment('Отзыв комиссии/Результат'),
             'created_at' => $this->integer()->notNull(),
@@ -54,12 +58,12 @@ class m231225_074500_refactor_schoolplan_protocol extends \artsoft\db\BaseMigrat
         $this->addCommentOnTable('schoolplan_protocol', 'Протокол мероприятия');
 
         $this->addForeignKey('schoolplan_protocol_ibfk_1', 'schoolplan_protocol', 'schoolplan_id', 'schoolplan', 'id', 'CASCADE', 'CASCADE');
-        $this->addForeignKey('schoolplan_protocol_ibfk_2', 'schoolplan_protocol', 'studyplan_subject_id', 'studyplan_subject', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('schoolplan_protocol_ibfk_3', 'schoolplan_protocol', 'lesson_mark_id', 'guide_lesson_mark', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('schoolplan_protocol_ibfk_4', 'schoolplan_protocol', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('schoolplan_protocol_ibfk_2', 'schoolplan_protocol', 'lesson_mark_id', 'guide_lesson_mark', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('schoolplan_protocol_ibfk_3', 'schoolplan_protocol', 'teachers_id', 'teachers', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('schoolplan_protocol_ibfk_4', 'schoolplan_protocol', 'studyplan_subject_id', 'studyplan_subject', 'id', 'NO ACTION', 'NO ACTION');
 
 
-        $this->db->createCommand()->createView('schoolplan_view', ' 
+        $this->db->createCommand()->createView('schoolplan_view', '
  SELECT schoolplan.id,
     schoolplan.author_id,
     schoolplan.signer_id,
@@ -105,10 +109,14 @@ class m231225_074500_refactor_schoolplan_protocol extends \artsoft\db\BaseMigrat
     schoolplan.version,
     schoolplan.doc_status,
     schoolplan.protocol_leader_id,
+    schoolplan.protocol_leader_name,
+    schoolplan.protocol_soleader_id,
     schoolplan.protocol_secretary_id,
     schoolplan.protocol_members_list,
-    schoolplan.protocol_subject_list,
-    schoolplan.protocol_class_list
+    schoolplan.protocol_class_list,
+    schoolplan.protocol_subject_cat_id,
+    schoolplan.protocol_subject_id,
+    schoolplan.protocol_subject_vid_id
    FROM schoolplan;
    ')->execute();
     }

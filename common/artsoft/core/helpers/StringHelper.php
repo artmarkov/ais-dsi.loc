@@ -73,4 +73,15 @@ class StringHelper
         }
         return $string;
     }
+
+    /**
+     * перевод Фамилия Имя Отчество в Фамилия И.О.
+     * @param $str
+     * @return string
+     */
+    public static function fullname2fio($str) {
+        $m = explode(' ', $str);
+
+        return $m[0] . ' ' . substr($m[1],0,2) . '.' . substr($m[2],0,2) . '.' ;
+    }
 }

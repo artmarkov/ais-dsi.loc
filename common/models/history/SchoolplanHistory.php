@@ -52,6 +52,8 @@ class SchoolplanHistory extends BaseHistory
             'bars_flag',
             'doc_status',
             'protocol_leader_id',
+            'protocol_leader_name',
+            'protocol_soleader_id',
             'protocol_secretary_id',
             'protocol_members_list',
             'protocol_subject_list',
@@ -115,9 +117,11 @@ class SchoolplanHistory extends BaseHistory
                 return isset($model->doc_status) ? Schoolplan::getDocStatusValue($value) : $value;
                 break;
             case 'protocol_leader_id':
-                return isset($model->leader_id) ? (UserCommon::findOne(['user_id' => $model->protocol_leader_id]) ? UserCommon::findOne(['user_id' => $model->protocol_leader_id])->getFullName() : $model->protocol_leader_id) : null;
+                return isset($model->protocol_leader_id) ? (UserCommon::findOne(['user_id' => $model->protocol_leader_id]) ? UserCommon::findOne(['user_id' => $model->protocol_leader_id])->getFullName() : $model->protocol_leader_id) : null;
+            case 'protocol_soleader_id':
+                return isset($model->protocol_soleader_id) ? (UserCommon::findOne(['user_id' => $model->protocol_soleader_id]) ? UserCommon::findOne(['user_id' => $model->protocol_soleader_id])->getFullName() : $model->protocol_soleader_id) : null;
             case 'protocol_secretary_id':
-                return isset($model->secretary_id) ? (UserCommon::findOne(['user_id' => $model->protocol_secretary_id]) ? UserCommon::findOne(['user_id' => $model->protocol_secretary_id])->getFullName() : $model->protocol_secretary_id) : null;
+                return isset($model->protocol_secretary_id) ? (UserCommon::findOne(['user_id' => $model->protocol_secretary_id]) ? UserCommon::findOne(['user_id' => $model->protocol_secretary_id])->getFullName() : $model->protocol_secretary_id) : null;
             case 'protocol_members_list':
                 if (isset($model->protocol_members_list)) {
                     $v = [];

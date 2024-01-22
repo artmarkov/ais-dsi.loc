@@ -270,8 +270,8 @@ class DefaultController extends MainController
             }
 
             return $this->renderIsAjax('@backend/views/schoolplan/protocol/_form.php', [
+                'modelSchoolplan' => $model,
                 'model' => $modelProtocol,
-                'plan_year' => $plan_year,
                 'readonly' => false
             ]);
         } elseif ('history' == $mode && $objectId) {
@@ -303,8 +303,8 @@ class DefaultController extends MainController
                 }
             }
             return $this->renderIsAjax('@backend/views/schoolplan/protocol/_form.php', [
+                'modelSchoolplan' => $model,
                 'model' => $modelProtocol,
-                'plan_year' => $plan_year,
                 'readonly' => $readonly
             ]);
 
@@ -448,22 +448,6 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
-    public function actionStudyplanSubject()
-    {
-        $out = [];
-        if (isset($_POST['depdrop_parents'])) {
-            $parents = $_POST['depdrop_parents'];
-
-            if (!empty($parents)) {
-                $cat_id = $parents[0];
-                $out = Studyplan::getStudyplanSubjectListById($cat_id);
-
-                return json_encode(['output' => $out, 'selected' => '']);
-            }
-        }
-        return json_encode(['output' => '', 'selected' => '']);
-    }
-
     public function actionStudyplanThematic()
     {
         $out = [];
@@ -491,8 +475,8 @@ class DefaultController extends MainController
 
         return [
             ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/view', 'id' => $id]],
-            ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id], 'visible' => $model->category->commission_sell == 0],
-            ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol', 'id' => $id], 'visible' => $model->category->commission_sell == 1],
+            ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id], 'visible' => $model->getCategorySell() == 0],
+            ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol', 'id' => $id], 'visible' => $model->getCategorySell() == 1],
 //            ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id], 'visible' => $model->category->efficiency_flag],
         ];
     }

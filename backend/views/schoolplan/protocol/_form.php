@@ -11,6 +11,7 @@ use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\schoolplan\SchoolplanProtocol */
+/* @var $modelSchoolplan common\models\schoolplan\Schoolplan */
 /* @var $form artsoft\widgets\ActiveForm */
 ?>
 
@@ -25,10 +26,18 @@ use yii\helpers\Url;
 
         <div class="panel">
             <div class="panel-heading">
-               Аттестационная карточка
+                Аттестационная карточка
                 <?php if (!$model->isNewRecord): ?>
                     <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
                 <?php endif; ?>
+                <?php
+                if ($model->isNewRecord) {
+                    echo \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-info-circle"></i> При добавлении.',
+                        'options' => ['class' => 'alert-info'],
+                    ]);
+                }
+                ?>
             </div>
             <div class="panel-body">
                 <div class="col-sm-12">
@@ -39,7 +48,7 @@ use yii\helpers\Url;
                         }
                         ?>
                         <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => $model->schoolplan->getExecutorsList(),
+                            'data' => $modelSchoolplan->getTeachersListForProtocol(),
                             'options' => [
                                 'id' => 'teachers_id',
                                 'disabled' => $model->schoolplan->isExecutors() ? true : $readonly,
@@ -51,74 +60,63 @@ use yii\helpers\Url;
                         ])->label(Yii::t('art/teachers', 'Teacher'));
                         ?>
 
-                        <?= $form->field($model, 'studyplan_id')->widget(\kartik\depdrop\DepDrop::class, [
-                            'data' => \common\models\teachers\TeachersLoadStudyplanView::getStudyplanListByTeachers($model->teachers_id, $plan_year),
+                        <?= $form->field($model, 'studyplan_subject_id')->widget(\kartik\depdrop\DepDrop::class, [
+                            'data' => $modelSchoolplan->getStudyplanSubjectListByTeachers($model->teachers_id),
                             'options' => [
-                                'id' => 'studyplan_id',
+                                'id' => 'studyplan_subject_id',
                                 'disabled' => $readonly,
                                 'placeholder' => Yii::t('art', 'Select...'),
-                                'multiple' => false,
+                                'multiple' => $model->isNewRecord ? true : false,
                             ],
                             'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
                             'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                             'pluginOptions' => [
                                 'depends' => ['teachers_id'],
-                                'placeholder' => Yii::t('art', 'Select...'),
-                                'url' => Url::to(['/schoolplan/default/studyplan', 'plan_year' => $plan_year])
+                                'url' => Url::to(['/schoolplan/default/studyplan', 'id' => $model->schoolplan_id])
                             ],
 
                         ]);
                         ?>
-                        <?= $form->field($model, 'studyplan_subject_id')->widget(\kartik\depdrop\DepDrop::className(), [
-                            'data' => \common\models\studyplan\Studyplan::getStudyplanSubjectListByStudyplan($model->studyplan_id),
-                            'options' => [
-                                'id' => 'studyplan_subject_id',
-                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art', 'Select...'),
-                                'multiple' => false,
-                            ],
-                            'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
-                            'select2Options' => ['pluginOptions' => ['allowClear' => true]],
-                            'pluginOptions' => [
-                                'depends' => ['studyplan_id'],
-                                'placeholder' => Yii::t('art', 'Select...'),
-                                'url' => Url::to(['/schoolplan/default/studyplan-subject'])
-                            ]
-                        ]);
-                        ?>
-                        <?= $form->field($model, 'thematic_items_list')->widget(\kartik\depdrop\DepDrop::className(), [
-                            'data' => \common\models\schoolplan\SchoolplanProtocol::getThematicItemsByStudyplanSubject($model->studyplan_subject_id),
-                            'options' => [
+                        <?php if (!($model->schoolplan->protocol_subject_vid_id == 1000 && $model->isNewRecord)): ?>
+                            <?= $form->field($model, 'thematicFlag')->checkbox(['disabled' => $readonly]) ?>
+                        <?php endif; ?>
+                        <div id="thematicItemsList">
+                            <?= $form->field($model, 'thematic_items_list')->widget(\kartik\depdrop\DepDrop::className(), [
+                                'data' => $modelSchoolplan->getThematicItemsByStudyplanSubject($model->studyplan_subject_id),
+                                'options' => [
 
-                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art', 'Select...'),
-                                'multiple' => true,
-                            ],
-                            'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
-                            'select2Options' => ['pluginOptions' => ['allowClear' => true]],
-                            'pluginOptions' => [
-                                'depends' => ['studyplan_subject_id'],
-                                'placeholder' => Yii::t('art', 'Select...'),
-                                'url' => Url::to(['/schoolplan/default/studyplan-thematic'])
-                            ]
-                        ]);
-                        ?>
-
-                        <?= $form->field($model, 'lesson_mark_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => RefBook::find('lesson_mark')->getList(),
-                            'showToggleAll' => false,
-                            'options' => [
-                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art', 'Select...'),
-                                'multiple' => false,
-                            ],
-                            'pluginOptions' => [
-                                'allowClear' => false,
-                            ],
-                        ]);
-                        ?>
-
-                        <?= $form->field($model, 'resume')->textarea(['rows' => 3, 'maxlength' => true, 'disabled' => $readonly]) ?>
+                                    'disabled' => $readonly,
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                    'multiple' => true,
+                                ],
+                                'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
+                                'select2Options' => ['pluginOptions' => ['allowClear' => true]],
+                                'pluginOptions' => [
+                                    'depends' => ['studyplan_subject_id'],
+                                    'url' => Url::to(['/schoolplan/default/studyplan-thematic', 'id' => $model->schoolplan_id])
+                                ]
+                            ]);
+                            ?>
+                        </div>
+                        <div id="taskTicket">
+                            <?= $form->field($model, 'task_ticket')->textInput(['disabled' => $readonly]) ?>
+                        </div>
+                        <?php if (!$model->isNewRecord): ?>
+                            <?= $form->field($model, 'lesson_mark_id')->widget(\kartik\select2\Select2::class, [
+                                'data' => RefBook::find('lesson_mark')->getList(),
+                                'showToggleAll' => false,
+                                'options' => [
+                                    'disabled' => (\artsoft\Art::isFrontend() && !$model->schoolplan->isProtocolSigner()) ? true : $readonly,
+                                    'placeholder' => Yii::t('art', 'Select...'),
+                                    'multiple' => false,
+                                ],
+                                'pluginOptions' => [
+                                    'allowClear' => false,
+                                ],
+                            ]);
+                            ?>
+                            <?= $form->field($model, 'resume')->textarea(['rows' => 3, 'maxlength' => true, 'disabled' => (\artsoft\Art::isFrontend() && !$model->schoolplan->isProtocolSigner()) ? true : $readonly]) ?>
+                        <?php endif; ?>
                     </div>
 
                 </div>
@@ -135,3 +133,25 @@ use yii\helpers\Url;
 
     </div>
 
+<?php
+$js = <<<JS
+ // Взять из репертуарного плана
+     if($('input[type=checkbox][name="SchoolplanProtocol[thematicFlag]"]').prop('checked')) {
+       $('#thematicItemsList').show();
+       $('#taskTicket').hide();
+       } else {
+       $('#taskTicket').show();
+       $('#thematicItemsList').hide();
+       }
+    $('input[type=checkbox][name="SchoolplanProtocol[thematicFlag]"]').click(function() {
+       if($(this).prop('checked')) {
+       $('#thematicItemsList').show();
+       $('#taskTicket').hide();
+       } else {
+       $('#taskTicket').show();
+       $('#thematicItemsList').hide();
+       }
+           
+     });
+JS;
+$this->registerJs($js, \yii\web\View::POS_LOAD);

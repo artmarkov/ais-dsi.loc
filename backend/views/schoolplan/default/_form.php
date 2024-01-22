@@ -7,13 +7,19 @@ use common\models\own\Department;
 use common\models\schoolplan\Schoolplan;
 use artsoft\helpers\Html;
 use common\models\user\UserCommon;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\schoolplan\Schoolplan */
 /* @var $modelActivitiesOver common\models\activities\ActivitiesOver */
 /* @var $form artsoft\widgets\ActiveForm */
-?>
 
+//echo '<pre>' . print_r($model, true) . '</pre>';
+?>
+<?php
+$subject_category_name_list = RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList();
+$subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList();
+?>
     <div class="schoolplan-plan-form">
 
         <?php
@@ -261,12 +267,32 @@ use common\models\user\UserCommon;
                                     <div class="panel-body">
                                         <div class="row">
                                             <div class="col-sm-12">
-                                                <?= $form->field($model, 'protocol_leader_id')->widget(\kartik\select2\Select2::class, [
+                                                <?= $form->field($model, 'protocolLeaderFlag')->checkbox(['disabled' => $readonly])->label('Заполнить поле Председатель комиссии от руки') ?>
+                                                <div id="protocolLeaderId">
+                                                    <?= $form->field($model, 'protocol_leader_id')->widget(\kartik\select2\Select2::class, [
+                                                        'data' => User::getUsersByIds(User::getUsersByRole('department,administrator')),
+                                                        'showToggleAll' => false,
+                                                        'options' => [
+                                                            'disabled' => $readonly,
+                                                            'placeholder' => Yii::t('art', 'Select...'),
+                                                            'multiple' => false,
+                                                        ],
+                                                        'pluginOptions' => [
+                                                            'allowClear' => false,
+                                                        ],
+
+                                                    ]);
+
+                                                    ?>
+                                                </div>
+                                                <div id="protocolLeaderName">
+                                                    <?= $form->field($model, 'protocol_leader_name')->textInput()->hint('Введите Председателя комиссии(Фамилия Имя Отчество)') ?>
+                                                </div>
+                                                <?= $form->field($model, 'protocol_soleader_id')->widget(\kartik\select2\Select2::class, [
                                                     'data' => User::getUsersByIds(User::getUsersByRole('department,administrator')),
                                                     'showToggleAll' => false,
                                                     'options' => [
                                                         'disabled' => $readonly,
-                                                        'value' => $model->protocol_leader_id,
                                                         'placeholder' => Yii::t('art', 'Select...'),
                                                         'multiple' => false,
                                                     ],
@@ -278,11 +304,10 @@ use common\models\user\UserCommon;
 
                                                 ?>
                                                 <?= $form->field($model, 'protocol_secretary_id')->widget(\kartik\select2\Select2::class, [
-                                                    'data' => User::getUsersByIds(User::getUsersByRole('department,administrator')),
+                                                    'data' => User::getUsersByIds(User::getUsersByRole('department,administrator,employees')),
                                                     'showToggleAll' => false,
                                                     'options' => [
                                                         'disabled' => $readonly,
-                                                        'value' => $model->protocol_secretary_id,
                                                         'placeholder' => Yii::t('art', 'Select...'),
                                                         'multiple' => false,
                                                     ],
@@ -308,13 +333,44 @@ use common\models\user\UserCommon;
                                                 ]);
 
                                                 ?>
-                                                <?= $form->field($model, 'protocol_subject_list')->widget(\kartik\select2\Select2::class, [
-                                                    'data' => \artsoft\helpers\RefBook::find('subject_name')->getList(),
+
+                                                <?= $form->field($model, 'protocol_subject_cat_id')->widget(\kartik\select2\Select2::class, [
+                                                    'data' =>  $subject_category_name_list,
+                                                    'options' => [
+                                                        'id' => 'protocol_subject_cat_id',
+                                                        'placeholder' => Yii::t('art', 'Select...'),
+                                                    ],
+                                                    'pluginOptions' => [
+                                                        'disabled' => $readonly,
+                                                        'allowClear' => true
+                                                    ],
+
+                                                ]); ?>
+                                                <?= $form->field($model, 'protocol_subject_id')->widget(\kartik\depdrop\DepDrop::class, [
+                                                    'data' => \common\models\subject\Subject::getSubjectByCategory($model->protocol_subject_cat_id),
+                                                    'options' => [
+                                                        'id' => 'protocol_subject_id',
+                                                        'disabled' => $readonly,
+                                                        'placeholder' => Yii::t('art', 'Select...'),
+                                                        'multiple' => false,
+                                                    ],
+                                                    'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
+                                                    'select2Options' => ['pluginOptions' => ['allowClear' => true]],
+                                                    'pluginOptions' => [
+                                                        'depends' => ['protocol_subject_cat_id'],
+                                                        'placeholder' => Yii::t('art', 'Select...'),
+                                                        'url' => Url::to(['/subject/default/subject'])
+                                                    ],
+
+                                                ]);
+                                                ?>
+                                                <?= $form->field($model, 'protocol_subject_vid_id')->widget(\kartik\select2\Select2::class, [
+                                                    'data' => $subject_vid_name_list,
                                                     'showToggleAll' => false,
                                                     'options' => [
                                                         'disabled' => $readonly,
                                                         'placeholder' => Yii::t('art', 'Select...'),
-                                                        'multiple' => true,
+                                                        'multiple' => false,
                                                     ],
                                                     'pluginOptions' => [
                                                         'allowClear' => true,
@@ -499,6 +555,24 @@ if(document.getElementById('schoolplan-description')) {
         console.log(this.value.length);
         });
     }
+ // Введено вручную
+     if($('input[type=checkbox][name="Schoolplan[protocolLeaderFlag]"]').prop('checked')) {
+       $('#protocolLeaderName').show();
+       $('#protocolLeaderId').hide();
+       } else {
+       $('#protocolLeaderId').show();
+       $('#protocolLeaderName').hide();
+       }
+    $('input[type=checkbox][name="Schoolplan[protocolLeaderFlag]"]').click(function() {
+       if($(this).prop('checked')) {
+       $('#protocolLeaderName').show();
+       $('#protocolLeaderId').hide();
+       } else {
+       $('#protocolLeaderId').show();
+       $('#protocolLeaderName').hide();
+       }
+           
+     });
 JS;
 $this->registerJs($js, \yii\web\View::POS_LOAD);
 

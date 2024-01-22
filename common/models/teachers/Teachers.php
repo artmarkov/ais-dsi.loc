@@ -256,12 +256,15 @@ class Teachers extends ActiveRecord
     /**
      * Список Id преподавателей выбранных отделов
      * @param $department_list
-     * @return array
+     * @return array/string
      */
     public static function getTeachersForDepartments($department_list)
     {
         if (!$department_list) {
             return [];
+        }
+        if(is_array($department_list)) {
+            $department_list = implode(',', $department_list);
         }
         return (new \yii\db\Query())->select('teachers.id')->from('guide_department, teachers')
             ->distinct()

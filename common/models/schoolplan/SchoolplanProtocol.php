@@ -6,12 +6,14 @@ use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\fileinput\behaviors\FileManagerBehavior;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
+use artsoft\widgets\Notice;
 use common\models\education\LessonMark;
 use common\models\education\LessonProgress;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subjectsect\SubjectSect;
 use common\models\teachers\Teachers;
+use common\models\teachers\TeachersLoadStudyplanView;
 use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -23,10 +25,10 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property int|null $schoolplan_id Мероприятие
- * @property int|null $studyplan_id Учебный план
  * @property int $studyplan_subject_id Учебный предмет плана ученика
  * @property int $teachers_id Преподаватель
  * @property string|null $thematic_items_list Список заданий из тематич/реп плана
+ * @property string|null $task_ticket
  * @property int $lesson_mark_id Оцкнка
  * @property string $resume Отзыв комиссии/Результат
  * @property int $created_at
@@ -43,6 +45,8 @@ use yii\helpers\ArrayHelper;
  */
 class SchoolplanProtocol extends \artsoft\db\ActiveRecord
 {
+
+    public $thematicFlag;
 
     /**
      * {@inheritdoc}
@@ -77,17 +81,44 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
     {
         return [
             [['lesson_mark_id'], 'default', 'value' => null],
-            [['schoolplan_id', 'studyplan_id', 'studyplan_subject_id', 'teachers_id', 'lesson_mark_id', 'version'], 'integer'],
-            [['teachers_id', 'studyplan_id', 'studyplan_subject_id', 'thematic_items_list'], 'required'],
+            [['schoolplan_id', 'teachers_id', 'lesson_mark_id', 'version'], 'integer'],
+            [['teachers_id', 'studyplan_subject_id'], 'required'],
             [['resume'], 'string', 'max' => 1024],
-            [['thematic_items_list'], 'safe'],
+            [['task_ticket'], 'string', 'max' => 127],
+            [['thematic_items_list', 'studyplan_subject_id'], 'safe'],
+            [['thematicFlag'], 'boolean'],
             [['lesson_mark_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonMark::className(), 'targetAttribute' => ['lesson_mark_id' => 'id']],
             [['schoolplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolplan::className(), 'targetAttribute' => ['schoolplan_id' => 'id']],
-            [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::className(), 'targetAttribute' => ['studyplan_subject_id' => 'id']],
+            //   [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::className(), 'targetAttribute' => ['studyplan_subject_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::className(), 'targetAttribute' => ['teachers_id' => 'id']],
-            [['studyplan_id'], 'unique', 'targetAttribute' => ['schoolplan_id', 'studyplan_subject_id', 'teachers_id'], 'message' => 'Ученик уже записан в протокол.'],
-
+            [['studyplan_subject_id'], 'isUniqueProtocolItem', 'skipOnEmpty' => false],
         ];
+    }
+
+    public function isUniqueProtocolItem($attribute, $params, $validator)
+    {
+        $exists = self::find()
+            ->select('studyplan_subject_id')
+            ->where(['schoolplan_id' => $this->schoolplan_id])
+            ->andWhere(['studyplan_subject_id' => $this->studyplan_subject_id])
+            ->andWhere(['teachers_id' => $this->teachers_id]);
+        if (!$this->isNewRecord) {
+            $exists = $exists->andWhere(['!=', 'id', $this->id]);
+        }
+        $exists = $exists->column();
+
+        if ($exists) {
+            $m = [];
+            foreach ($exists as $item => $studyplan_subject_id) {
+                $m[] = RefBook::find('subject_memo_4')->getValue($studyplan_subject_id);
+            }
+            $message = 'Ученик уже добавлен в протокол.';
+            $this->addError($attribute, $message);
+            if (!empty($m)) {
+                $message .= ' ' . implode(', ', $m);
+                Notice::registerDanger($message);
+            }
+        }
     }
 
     /**
@@ -98,12 +129,13 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
         return [
             'id' => 'ID',
             'schoolplan_id' => 'Мероприятие',
-            'studyplan_id' => 'Ученик',
-            'studyplan_subject_id' => 'Учебный предмет',
+            'studyplan_subject_id' => 'Ученик',
             'teachers_id' => 'Преподаватель',
             'thematic_items_list' => 'Список заданий из репертуарного плана',
+            'task_ticket' => 'Задание/Билет',
             'lesson_mark_id' => 'Оценка',
             'resume' => 'Отзыв комиссии/Результат',
+            'thematicFlag' => 'Взять задание из репертуарного плана',
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -163,32 +195,6 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
         return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
     }
 
-    public function getStudyplan()
-    {
-        return $this->hasOne(Studyplan::className(), ['id' => 'studyplan_id']);
-    }
-
-    /**
-     * Нахождение всех элементов репертуарного плана для $studyplan_subject_id
-     * @param $studyplan_subject_id
-     * @return array
-     * @throws \yii\db\Exception
-     */
-    public static function getStudyplanThematicItemsById($studyplan_subject_id)
-    {
-        return Yii::$app->db->createCommand(' select studyplan_thematic_items.id as id,
-		                  studyplan_thematic_items.topic AS name
-                    FROM studyplan_thematic_view 
-                    INNER JOIN studyplan_thematic_items ON studyplan_thematic_view.studyplan_thematic_id = studyplan_thematic_items.studyplan_thematic_id 
-                    where  studyplan_subject_id = :studyplan_subject_id AND studyplan_thematic_items.topic != \'\'',
-            ['studyplan_subject_id' => $studyplan_subject_id,
-            ])->queryAll();
-    }
-
-    public static function getThematicItemsByStudyplanSubject($studyplan_subject_id)
-    {
-        return ArrayHelper::map(self::getStudyplanThematicItemsById($studyplan_subject_id), 'id', 'name');
-    }
 
     /**
      * доступ к протоколу для заполнения
@@ -199,4 +205,21 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
         $userId = Yii::$app->user->identity->getId();
         return !($userId == $this->schoolplan->protocol_leader_id || $userId == $this->schoolplan->protocol_secretary_id || in_array($userId, $this->schoolplan->protocol_members_list) || in_array($userId, $this->schoolplan->executors_list));
     }
+
+    public function afterFind()
+    {
+        $this->thematicFlag = $this->thematic_items_list != '' ? true : false;
+        parent::afterFind();
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($this->thematicFlag) {
+            $this->task_ticket = null;
+        } else {
+            $this->thematic_items_list = null;
+        }
+        return parent::beforeSave($insert);
+    }
+
 }
