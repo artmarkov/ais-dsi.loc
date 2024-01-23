@@ -347,11 +347,16 @@ class DefaultController extends MainController
                     try {
                         foreach ($modelProtocol->studyplan_subject_id as $id => $studyplan_subject_id) {
                             $m = new SchoolplanProtocol();
-                            $m->schoolplan_id = $modelProtocol->schoolplan_id;
-                            $m->teachers_id = $modelProtocol->teachers_id;
-                            $m->thematic_items_list = $modelProtocol->thematic_items_list;
-                            $m->studyplan_subject_id = $studyplan_subject_id;
-                            if (!($flag = $m->save(false))) {
+                            $m->setAttributes(
+                                [
+                                    'thematicFlag' => $modelProtocol->thematicFlag,
+                                    'schoolplan_id' => $modelProtocol->schoolplan_id,
+                                    'teachers_id' => $modelProtocol->teachers_id,
+                                    'thematic_items_list' => $modelProtocol->thematic_items_list,
+                                    'studyplan_subject_id' => $studyplan_subject_id,
+                                ]
+                            );
+                            if (!($flag = $m->save())) {
                                 $transaction->rollBack();
                                 break;
                             }

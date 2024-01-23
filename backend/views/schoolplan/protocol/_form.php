@@ -30,16 +30,17 @@ use yii\helpers\Url;
                 <?php if (!$model->isNewRecord): ?>
                     <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
                 <?php endif; ?>
+            </div>
+            <div class="panel-body">
                 <?php
                 if ($model->isNewRecord) {
                     echo \yii\bootstrap\Alert::widget([
-                        'body' => '<i class="fa fa-info-circle"></i> При добавлении.',
+                        'body' => '<i class="fa fa-info-circle"></i> Для групповых занятий возможно добавление задания из репертуарного плана. Для индивидуальных занятий форма ограничена только выбором учеников. 
+                            В дальнейшем задание можно добавить в режиме редактирования аттестационной карточки.',
                         'options' => ['class' => 'alert-info'],
                     ]);
                 }
                 ?>
-            </div>
-            <div class="panel-body">
                 <div class="col-sm-12">
                     <div class="row">
                         <?php
