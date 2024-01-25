@@ -153,6 +153,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             'auditory_id' => $this->integer()->defaultValue(0)->comment('Аудитория'),
             'department_list' => $this->string(1024)->comment('Отделы'),
             'executors_list' => $this->string(1024)->comment('Ответственные'),
+            'executor_name' => $this->string(127)->comment('Ответственный, введенный вручную'),
             'description' => $this->text()->defaultValue(null)->comment('Описание мероприятия'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),

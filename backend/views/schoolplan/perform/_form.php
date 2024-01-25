@@ -12,12 +12,17 @@ use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $model common\models\schoolplan\SchoolplanPerform */
 /* @var $form artsoft\widgets\ActiveForm */
+
+$readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_array($model->status_sign, [1, 2]))) ? true : $readonly;
 ?>
 
     <div class="perform-form">
 
         <?php
         $form = ActiveForm::begin([
+            'fieldConfig' => [
+                'inputOptions' => ['readonly' => $readonly]
+            ],
             'id' => 'perform-form',
             'validateOnBlur' => false,
         ])
@@ -41,9 +46,9 @@ use yii\helpers\Url;
                     <?php endif; ?>
                     <div class="row">
                         <?php
-                        if ($model->isNewRecord) {
+//                        if ($model->isNewRecord) { // открыл для смены статусов, чтобы работал Yii::$app->request->post()
                             echo Html::activeHiddenInput($model, "schoolplan_id");
-                        }
+//                        }
                         ?>
                         <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
                             'data' => $model->schoolplan->getExecutorsList(),
@@ -200,7 +205,7 @@ use yii\helpers\Url;
                         ?>
                     </div>
                     <?php if (!$model->isNewRecord): ?>
-                        <?php if (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && $model->schoolplan->isAuthor())): ?>
+                        <?php if (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && $model->isSigner())): ?>
                             <?php if ($model->status_sign == 1): ?>
                                 <div class="row">
                                     <hr>

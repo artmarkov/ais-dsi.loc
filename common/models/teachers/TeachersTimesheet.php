@@ -313,6 +313,9 @@ class TeachersTimesheet
             /* @var $tbs clsTinyButStrong */
             $tbs->MergeBlock('doc', $data);
             $tbs->MergeBlock('a', $items);
+//            $tbs->PlugIn(OPENTBS_SELECT_SHEET, 2);
+//            $tbs->MergeBlock('doc', $data);
+//            $tbs->MergeBlock('a', $items);
 
         })->prepare();
         $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);

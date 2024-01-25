@@ -56,8 +56,10 @@ class SchoolplanHistory extends BaseHistory
             'protocol_soleader_id',
             'protocol_secretary_id',
             'protocol_members_list',
-            'protocol_subject_list',
-            'protocol_class_list'
+            'protocol_class_list',
+            'protocol_subject_cat_id',
+            'protocol_subject_id',
+            'protocol_subject_vid_id',
         ];
     }
 
@@ -130,18 +132,27 @@ class SchoolplanHistory extends BaseHistory
                     }
                     return implode(', ', $v);
                 }
-            case 'protocol_subject_list':
-                if (isset($model->protocol_subject_list)) {
-                    $v = [];
-                    foreach (Json::decode($model->protocol_subject_list) as $id) {
-                        $v[] = $id != null ? RefBook::find('subject_name')->getValue($id) : null;
-                    }
-                    return implode(', ', $v);
-                }
+//            case 'protocol_subject_list':
+//                if (isset($model->protocol_subject_list)) {
+//                    $v = [];
+//                    foreach (Json::decode($model->protocol_subject_list) as $id) {
+//                        $v[] = $id != null ? RefBook::find('subject_name')->getValue($id) : null;
+//                    }
+//                    return implode(', ', $v);
+//                }
             case 'protocol_class_list':
                 if (isset($model->protocol_class_list)) {
                     return implode(', ', Json::decode($model->protocol_class_list));
                 }
+            case 'protocol_subject_cat_id':
+                return isset($model->protocol_subject_cat_id) ? RefBook::find('subject_category_name')->getValue($model->protocol_subject_cat_id) : $value;
+                break;
+            case 'protocol_subject_id':
+                return isset($model->protocol_subject_id) ? RefBook::find('subject_name')->getValue($model->protocol_subject_id) : $value;
+                break;
+            case 'protocol_subject_vid_id':
+                return isset($model->protocol_subject_vid_id) ? RefBook::find('subject_vid_name')->getValue($model->protocol_subject_vid_id) : $value;
+                break;
         }
         return parent::getDisplayValue($model, $name, $value);
     }

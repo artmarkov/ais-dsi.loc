@@ -105,6 +105,7 @@ class DefaultController extends MainController
         $model->initActivitiesOver();
         if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
+//            print_r($model->errors);
             if ($valid) {
                 if ($model->setActivitiesOver($model->activities_over_id)) {
                     Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));

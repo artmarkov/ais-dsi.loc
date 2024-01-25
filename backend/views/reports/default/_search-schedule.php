@@ -9,11 +9,11 @@ use artsoft\widgets\ActiveForm;
 
 <?php
 $form = ActiveForm::begin([
-    'id' => 'teachers-search',
+    'id' => 'teachers-schedule-search',
     'validateOnBlur' => false,
 ])
 ?>
-    <div class="sect-search">
+    <div class="teachers-schedule-search">
         <div class="panel">
             <div class="panel-body">
                 <div class="row">

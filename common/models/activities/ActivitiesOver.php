@@ -21,6 +21,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $auditory_id Аудитория
  * @property string|null $department_list Отделы
  * @property string|null $executors_list Ответственные
+ * @property string|null $executor_name Ответственный, введенный вручную
  * @property string|null $description Описание мероприятия
  * @property int $created_at
  * @property int|null $created_by
@@ -32,6 +33,10 @@ use yii\behaviors\TimestampBehavior;
  */
 class ActivitiesOver extends \artsoft\db\ActiveRecord
 {
+    public $executorFlag;
+    public $cloneFlag;
+    public $cloneDatetime;
+
     const OVER_CATEGORY = [
         1 => 'Внеплановое мероприятие',
         2 => 'Подготовка к мероприятию',
@@ -46,6 +51,7 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
     {
         return 'activities_over';
     }
+
     /**
      * @inheritdoc
      */
@@ -65,24 +71,41 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
             ],
         ];
     }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['over_category', 'title', 'datetime_in', 'datetime_out', 'auditory_id', 'department_list', 'executors_list'], 'required'],
+            [['over_category', 'title', 'datetime_in', 'datetime_out', 'auditory_id', 'department_list'], 'required'],
             [['over_category', 'auditory_id'], 'integer'],
             [['over_category'], 'default', 'value' => 0],
             [['datetime_in', 'datetime_out'], 'safe'],
+            [['cloneDatetime'], 'date'],
             [['department_list', 'executors_list'], 'safe'],
             [['title'], 'string', 'max' => 512],
+            [['executor_name'], 'string', 'max' => 127],
             [['description'], 'string'],
+            [['executorFlag', 'cloneFlag'], 'boolean'],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
             [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['datetime_out'], 'compareTimestamp', 'skipOnEmpty' => false],
+            [['executors_list'], 'required', 'when' => function ($model) {
+                return $model->executorFlag == false;
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[id=\"activitiesover-executorflag\"]').prop('checked') === false;
+                            }"],
+            [['executor_name'], 'required', 'when' => function ($model) {
+                return $model->executorFlag == true;
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[id=\"activitiesover-executorflag\"]').prop('checked') === true;
+                            }"],
         ];
     }
+
     public function compareTimestamp($attribute, $params, $validator)
     {
         $timestamp_in = Yii::$app->formatter->asTimestamp($this->datetime_in);
@@ -101,6 +124,7 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
             $this->addError($attribute, 'Формат ввода даты и времени не верен.');
         }
     }
+
     /**
      * {@inheritdoc}
      */
@@ -115,12 +139,16 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
             'auditory_id' => 'Аудитория',
             'department_list' => 'Отделы',
             'executors_list' => 'Ответственные',
+            'executor_name' => 'Ответственный(вручную)',
+            'executorFlag' => 'Ввести вручную',
             'description' => 'Описание мероприятия',
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'cloneFlag' => 'Клонировать по дням недели',
+            'cloneDatetime' => 'до Даты включительно',
         ];
     }
 
@@ -142,7 +170,7 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
 
     public function getDependence()
     {
-        if($this->over_category == 2) {
+        if ($this->over_category == 2) {
             return $this->hasOne(Schoolplan::class, ['activities_over_id' => 'id']);
         }
     }
@@ -165,5 +193,46 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
     {
         $ar = self::getOverCategoryList();
         return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
+    public function afterFind()
+    {
+        $this->executorFlag = $this->executors_list == '' ? true : false;
+        parent::afterFind();
+    }
+
+    public function save($runValidation = true, $attributeNames = null)
+    {
+        if ($this->cloneFlag && $this->isNewRecord) {
+            $stopTime = Yii::$app->formatter->asTimestamp($this->cloneDatetime) + 86400;
+            $delta = 60 * 60 * 24 * 7;
+            $i = 1;
+            if ($stopTime - Yii::$app->formatter->asTimestamp($this->datetime_in) >= $delta) {
+                do {
+                    $model = new self();
+                    $model->setAttributes($this->getAttributes());
+                    $timestamp_in = Yii::$app->formatter->asTimestamp($this->datetime_in) + $delta * $i;
+                    $timestamp_out = Yii::$app->formatter->asTimestamp($this->datetime_out) + $delta * $i;
+                    $model->datetime_in = Yii::$app->formatter->asDatetime($timestamp_in);
+                    $model->datetime_out = Yii::$app->formatter->asDatetime($timestamp_out);
+                    $model->save();
+                    // echo '<pre>' . print_r($model, true) . '</pre>';
+                    $i++;
+                } while ($timestamp_in + $delta < $stopTime);
+            }
+        }
+        return parent::save($runValidation, $attributeNames);
+    }
+
+
+
+    public function beforeSave($insert)
+    {
+        if ($this->executorFlag) {
+            $this->executors_list = null;
+        } else {
+            $this->executor_name = null;
+        }
+        return parent::beforeSave($insert);
     }
 }

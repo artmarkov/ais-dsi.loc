@@ -48,7 +48,7 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
             'id' => $this->primaryKey() . ' constraint check_range check (id between 10000 and 99999)',
             'subject_sect_studyplan_id' => $this->integer()->defaultValue(0),
             'studyplan_subject_id' => $this->integer()->defaultValue(0),
-            'thematic_category' => $this->integer()->notNull(),
+//            'thematic_category' => $this->integer()->notNull(),
             'half_year' => $this->integer()->notNull()->defaultValue(0),
             'template_flag' => $this->integer()->defaultValue(0),
             'template_name' => $this->string(256),
@@ -84,7 +84,7 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
         $this->addForeignKey('studyplan_thematic_items_ibfk_2', 'studyplan_thematic_items', 'piece_category_id', 'guide_piece_category', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('thematic_view', '
-          SELECT studyplan_subject.id AS studyplan_subject_id,
+  SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
     studyplan_subject.subject_type_id,
@@ -94,14 +94,14 @@ class m220210_160814_add_table_stadyplan_thematic extends \artsoft\db\BaseMigrat
     teachers_load.direction_id,
     teachers_load.teachers_id,
     studyplan_thematic.id AS studyplan_thematic_id,
-    studyplan_thematic.thematic_category,
     studyplan_thematic.half_year,
     studyplan_thematic.doc_status,
     studyplan_thematic.doc_sign_teachers_id,
     studyplan_thematic.doc_sign_timestamp,
     studyplan_thematic.created_by AS author_id,
-    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS sect_name,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject
+    concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name) AS sect_name,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
+    studyplan.status
    FROM studyplan
      JOIN studyplan_subject ON studyplan.id = studyplan_subject.studyplan_id
      LEFT JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
@@ -125,7 +125,6 @@ UNION ALL
     teachers_load.direction_id,
     teachers_load.teachers_id,
     studyplan_thematic.id AS studyplan_thematic_id,
-    studyplan_thematic.thematic_category,
     studyplan_thematic.half_year,
     studyplan_thematic.doc_status,
     studyplan_thematic.doc_sign_teachers_id,
@@ -136,7 +135,8 @@ UNION ALL
             WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
             ELSE \'\'::text
         END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject,
+    subject_sect.status
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      LEFT JOIN teachers_load ON subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0
@@ -144,7 +144,7 @@ UNION ALL
      LEFT JOIN guide_subject_type ON guide_subject_type.id = subject_sect.subject_type_id
      LEFT JOIN guide_subject_vid ON guide_subject_vid.id = subject_sect.subject_vid_id
      LEFT JOIN studyplan_thematic ON studyplan_thematic.subject_sect_studyplan_id = subject_sect_studyplan.id AND studyplan_thematic.studyplan_subject_id = 0
-  ORDER BY 18, 17;  		   
+  ORDER BY 17, 16, 11; 		   
         ')->execute();
         $this->db->createCommand()->createView('studyplan_thematic_view', '
             SELECT studyplan.id AS studyplan_id,

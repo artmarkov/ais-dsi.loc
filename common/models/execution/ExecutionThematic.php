@@ -3,16 +3,10 @@
 namespace common\models\execution;
 
 use artsoft\helpers\ArtHelper;
-use artsoft\widgets\Notice;
-use common\models\schedule\ConsultScheduleConfirm;
-use common\models\schedule\ConsultScheduleView;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\ThematicView;
 use common\models\teachers\TeachersLoadView;
 use yii\helpers\ArrayHelper;
-use Yii;
-use artsoft\widgets\Tooltip;
-use yii\helpers\Html;
 
 /**
  * Class ExecutionThematic
@@ -59,7 +53,7 @@ class ExecutionThematic
             ->all();
         $array1 = ThematicView::find()
             ->select(new \yii\db\Expression('teachers_id,subject_sect_studyplan_id,studyplan_subject_id,subject_sect_id,subject,sect_name,
-                            studyplan_thematic_id,thematic_category,author_id,doc_status,doc_sign_teachers_id,doc_sign_timestamp,half_year'))
+                            studyplan_thematic_id,author_id,doc_status,doc_sign_teachers_id,doc_sign_timestamp,half_year'))
             ->where(['teachers_id' => $this->teachersIds])
             ->andWhere(['direction_id' => 1000])
             ->andWhere(['plan_year' => $this->plan_year])

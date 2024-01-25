@@ -7,11 +7,8 @@ use artsoft\fileinput\behaviors\FileManagerBehavior;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\education\LessonMark;
-use common\models\education\LessonProgress;
 use common\models\studyplan\StudyplanSubject;
-use common\models\subjectsect\SubjectSect;
 use common\models\teachers\Teachers;
-use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -302,6 +299,19 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
         $userId = Yii::$app->user->identity->getId();
         return $this->teachers_id == RefBook::find('users_teachers')->getValue($userId);
     }
+
+    public static function getSignerId()
+    {
+        $id = \Yii::$app->user->id;
+        $user = User::findOne($id);
+        return $user ? $user->id : null;
+    }
+
+    public function isSigner()
+    {
+        return $this->signer_id == self::getSignerId();
+    }
+
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'signer_id']);

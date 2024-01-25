@@ -237,13 +237,13 @@ class Schoolplan extends \artsoft\db\ActiveRecord
                 return $model->category->commission_sell == 1 && !$model->isNewRecord;
             }, 'enableClientValidation' => true],
             [['protocol_leader_name'], 'required', 'when' => function ($model) {
-                return $model->protocolLeaderFlag == true;
+                return $model->protocolLeaderFlag == true && $model->category->commission_sell == 1 && !$model->isNewRecord;
             },
                 'whenClient' => "function (attribute, value) {
                                 return $('input[id=\"schoolplan-protocolleaderflag\"]').prop('checked') === true;
                             }"],
             [['protocol_leader_id'], 'required', 'when' => function ($model) {
-                return $model->protocolLeaderFlag == false;
+                return $model->protocolLeaderFlag == false && $model->category->commission_sell == 1 && !$model->isNewRecord;
             },
                 'whenClient' => "function (attribute, value) {
                                 return $('input[id=\"schoolplan-protocolleaderflag\"]').prop('checked') === false;

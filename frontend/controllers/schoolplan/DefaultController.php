@@ -75,7 +75,7 @@ class DefaultController extends MainController
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
         if (\artsoft\Art::isFrontend()) {
-           $model->author_id = Schoolplan::getAuthorId();
+            $model->author_id = Schoolplan::getAuthorId();
         }
         if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
@@ -388,7 +388,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Perform'), 'url' => ['schoolplan/default/perform', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $modelPerform = SchoolplanPerform::findOne($objectId);
-
+//            print_r($modelPerform->errors);
             if ($modelPerform->load(Yii::$app->request->post()) && $modelPerform->validate()) {
                 if (Yii::$app->request->post('submitAction') == 'send_approve') {
                     $modelPerform->status_sign = SchoolplanPerform::DOC_STATUS_WAIT;
@@ -408,7 +408,7 @@ class DefaultController extends MainController
                         Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
                     }
                 }
-                if ($modelPerform->save()) {
+                if ($modelPerform->save(false)) {
                     Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
                     $this->getSubmitAction();
                 }
