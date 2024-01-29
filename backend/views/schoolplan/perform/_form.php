@@ -153,7 +153,7 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                                     <label class="control-label">Загруженные материалы(сканы диплома, грамоты)</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], /*'pluginOptions' => ['theme' => 'explorer'],*/ 'disabled' => $readonly]) ?>
+                                    <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true]/*, 'pluginOptions' => ['theme' => 'explorer'], 'disabled' => $readonly*/]) ?>
                                 </div>
                             </div>
                         </div>
@@ -220,7 +220,7 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                             <div class="row">
                                 <div class="form-group btn-group">
                                     <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->status_sign == 1]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'modif', 'disabled' => $model->status_sign != 1]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'modif', 'disabled' => $model->status_sign == 3]); ?>
                                 </div>
                             </div>
                         <?php else: ?>

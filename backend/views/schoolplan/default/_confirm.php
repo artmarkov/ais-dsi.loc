@@ -74,7 +74,7 @@ $form = ActiveForm::begin([
                             </div>
                             <div class="form-group btn-group pull-right">
                                 <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model_confirm->confirm_status == 1]); ?>
-                                <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'modif', 'disabled' => $model_confirm->confirm_status != 1]); ?>
+                                <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'modif', 'disabled' => $model_confirm->confirm_status == 3]); ?>
                             </div>
                         </div>
                     </div>

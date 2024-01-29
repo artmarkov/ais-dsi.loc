@@ -668,7 +668,7 @@ class DefaultController extends MainController
             $searchModel = new ThematicViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
+            $params = $this->getParams();
             $params[$searchName]['status'] = 1;
             $params[$searchName]['direction_id'] = 1000;
             $params[$searchName]['teachers_id'] = $id;

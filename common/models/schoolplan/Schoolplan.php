@@ -621,16 +621,15 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $model->executors_list = [$this->executor_over_id];
             if ($model->save(false)) {
                 $this->activities_over_id = $model->id;
-                if ($this->save(false)) {
+                //if ($this->save(false)) {
                     $transaction->commit();
                     return true;
-                }
+               // }
             }
             $transaction->rollBack();
             return false;
         } else {
-            $this->deleteActivitiesOver();
-            return $this->save(false);
+            return $this->deleteActivitiesOver();
         }
     }
 

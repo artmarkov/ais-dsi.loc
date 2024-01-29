@@ -113,34 +113,25 @@ class DefaultController extends MainController
         }
         $model->initActivitiesOver();
 
-        if (Yii::$app->request->post('submitAction') == 'make_changes') {
-            $model->doc_status = Schoolplan::DOC_STATUS_MODIF;
-            if ($model->save(false)) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
-                $this->getSubmitAction($model);
-            }
-        } elseif ($model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+//            print_r($model->errors);
+            $model->setActivitiesOver($model->activities_over_id);
 
-            $valid = $model->validate();
-            if ($valid) {
-                if ($model->setActivitiesOver($model->activities_over_id)) {
-                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                    $this->getSubmitAction($model);
-                }
-            }
-        }
-        if (Yii::$app->request->post('submitAction') == 'send_approve') {
-            $model->doc_status = Schoolplan::DOC_STATUS_WAIT;
-            if ($model->save(false)) {
+            if (Yii::$app->request->post('submitAction') == 'make_changes') {
+                $model->doc_status = Schoolplan::DOC_STATUS_MODIF;
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
+            } elseif (Yii::$app->request->post('submitAction') == 'send_approve') {
+                $model->doc_status = Schoolplan::DOC_STATUS_WAIT;
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
                 if ($model->sendApproveMessage()) {
                     Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
                 }
+            }
+            if ($model->save(false)) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
                 $this->getSubmitAction($model);
             }
-
         }
-
         return $this->render('update', [
             'model' => $model,
             'readonly' => $readonly

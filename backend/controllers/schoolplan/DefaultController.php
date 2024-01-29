@@ -2,6 +2,7 @@
 
 namespace backend\controllers\schoolplan;
 
+use artsoft\widgets\Notice;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
@@ -103,33 +104,25 @@ class DefaultController extends MainController
         $model->formPlaces = $model->getFormPlaces();
         $model->title_over = $model->getTitleOver();
         $model->initActivitiesOver();
-        if ($model->load(Yii::$app->request->post())) {
-            $valid = $model->validate();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
 //            print_r($model->errors);
-            if ($valid) {
-                if ($model->setActivitiesOver($model->activities_over_id)) {
-                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                    $this->getSubmitAction($model);
-                }
-            }
-        }
+            $model->setActivitiesOver($model->activities_over_id);
 
-        if (Yii::$app->request->post('submitAction') == 'approve') {
-            $model->doc_status = Schoolplan::DOC_STATUS_AGREED;
-            if ($model->save(false)) {
+            if (Yii::$app->request->post('submitAction') == 'approve') {
+                $model->doc_status = Schoolplan::DOC_STATUS_AGREED;
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
                 if ($model->approveMessage()) {
                     Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
                 }
-                $this->getSubmitAction($model);
-            }
-        } elseif (Yii::$app->request->post('submitAction') == 'modif') {
-            $model->doc_status = Schoolplan::DOC_STATUS_MODIF;
-            if ($model->save(false)) {
+            } elseif (Yii::$app->request->post('submitAction') == 'modif') {
+                $model->doc_status = Schoolplan::DOC_STATUS_MODIF;
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Status successfully changed.'));
                 if ($model->modifMessage()) {
                     Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
                 }
+            }
+            if ($model->save(false)) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
                 $this->getSubmitAction($model);
             }
         }

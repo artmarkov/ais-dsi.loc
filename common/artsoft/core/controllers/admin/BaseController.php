@@ -122,8 +122,10 @@ abstract class BaseController extends \artsoft\controllers\BaseController
             $params = Yii::$app->request->getQueryParams();
             $searchName = StringHelper::basename($searchModel::className());
             $session = Yii::$app->session;
-            if (count($params) == 0) {
-                if (preg_match('/update|create|view/', Yii::$app->request->referrer)) { // если нет параметров и зашли с update или create, то берем параметры из сессии
+//            print_r(Yii::$app->request->referrer);
+//            print_r($params);
+            if (count($params) == 0 || (count($params) == 1 && isset($params['id']))) {
+                if (preg_match('/update|create|view/', Yii::$app->request->referrer) || empty(Yii::$app->request->referrer)) { // если нет параметров и зашли с update или create, то берем параметры из сессии
                     if ($params = $session->get($searchName . '_params')) {
                         $_GET = $params; // и прописываем в GET для сохранения pagination
                     }
