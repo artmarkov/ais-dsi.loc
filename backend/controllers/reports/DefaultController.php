@@ -53,28 +53,19 @@ class DefaultController extends MainController
         $session = Yii::$app->session;
         $this->view->params['tabMenu'] = $this->tabMenu;
 
-        $model_date = new DynamicModel(['plan_year', 'subject_type_id', 'is_week_load', 'is_consult', 'print_summ', 'print_stat', 'del_free']);
-        $model_date->addRule(['plan_year', 'subject_type_id'], 'required')
-            ->addRule(['plan_year'], 'integer')
-            ->addRule(['subject_type_id'], 'integer')
-            ->addRule(['is_week_load'], 'boolean')
-            ->addRule(['is_consult'], 'boolean')
-            ->addRule(['print_summ'], 'boolean')
-            ->addRule(['print_stat'], 'boolean')
-            ->addRule(['del_free'], 'boolean');
+        $model_date = new DynamicModel(['plan_year']);
+        $model_date->addRule(['plan_year'], 'required')
+            ->addRule(['plan_year'], 'integer');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-
-            $model_date->subject_type_id = $session->get('_tarif_statement_subject_type_id') ?? SubjectType::find()->scalar();
         }
         $session->set('__backendPlanYear', $model_date->plan_year);
-        $session->set('_tarif_statement_subject_type_id', $model_date->subject_type_id);
         // echo '<pre>' . print_r($model_date->subject_type_id, true) . '</pre>'; die();
 
         if (Yii::$app->request->post('submitAction') == 'excel') {
             $model = new TarifStatement($model_date);
-//            $model->makeXlsx();
-            echo '<pre>' . print_r($model, true) . '</pre>'; die();
+            $model->makeXlsx();
+//            echo '<pre>' . print_r($model, true) . '</pre>'; die();
         }
 
         return $this->renderIsAjax('tarif-statement', [

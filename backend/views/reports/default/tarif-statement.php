@@ -5,7 +5,7 @@
 /* @var $searchModel common\models\activities\search\ActivitiesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Табель учета пед.часов';
+$this->title = 'Тарификационная ведомость';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="activities-index">

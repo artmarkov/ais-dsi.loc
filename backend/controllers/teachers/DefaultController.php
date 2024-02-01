@@ -1560,6 +1560,7 @@ class DefaultController extends MainController
 
 //        echo '<pre>' . print_r($model_date->activity_list, true) . '</pre>'; die();
         $model = new TeachersTimesheet($model_date);
+        $model->geTeachersScheduleNeedNotice($id);
         $model = $model->getTeachersCheetData();
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
         $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp[0]);

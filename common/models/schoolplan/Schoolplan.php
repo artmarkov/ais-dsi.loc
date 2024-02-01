@@ -621,10 +621,8 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $model->executors_list = [$this->executor_over_id];
             if ($model->save(false)) {
                 $this->activities_over_id = $model->id;
-                //if ($this->save(false)) {
                     $transaction->commit();
                     return true;
-               // }
             }
             $transaction->rollBack();
             return false;
@@ -643,6 +641,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $model = ActivitiesOver::findOne($this->activities_over_id);
             return $model->delete();
         }
+        return true;
     }
 
 

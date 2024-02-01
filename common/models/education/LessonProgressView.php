@@ -286,16 +286,16 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 $datesArray = (new Query())->from('activities_schedule_view')
                     ->innerJoin('lesson_items', 'lesson_items.subject_sect_studyplan_id = activities_schedule_view.subject_sect_studyplan_id AND lesson_items.studyplan_subject_id = activities_schedule_view.studyplan_subject_id')
                     ->innerJoin('lesson_progress', 'lesson_progress.lesson_items_id = lesson_items.id')
-                    ->select(new \yii\db\Expression('datetime_out - datetime_in AS time'))
+                    ->select(new \yii\db\Expression('DISTINCT activities_schedule_view.subject_schedule_id,datetime_in,datetime_out,lesson_date,lesson_test_id,lesson_mark_id'))
                     ->where(['in', 'activities_schedule_view.studyplan_subject_id', $studyplanSubjectIds])
                     ->andWhere(['and', ['>=', 'datetime_in', $lessonDate['lesson_date']], ['<', 'datetime_in', $lessonDate['lesson_date'] + 86400]])
                     ->andWhere(['and', ['>=', 'lesson_date', $lessonDate['lesson_date']], ['<', 'lesson_date', $lessonDate['lesson_date'] + 86400]])
                     ->andWhere(['=', 'direction_id', 1000])
                     ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
-                    ->column();
+                    ->all();
 //                print_r($datesArray); die();
-                foreach ($datesArray as $index => $time) {
-                    $dates_load += Schedule::astr2academ($time);
+                foreach ($datesArray as $index => $m) {
+                    $dates_load += Schedule::astr2academ($m['datetime_out'] - $m['datetime_in']);
                 }
                 $dates_load_total += $dates_load;
             }

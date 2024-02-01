@@ -37,8 +37,8 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
         $this->addCommentOnTable('guide_teachers_direction_vid' ,'Вид деятельности');
 
         $this->db->createCommand()->batchInsert('guide_teachers_direction_vid', ['id', 'name', 'slug'], [
-            [1000, 'Основная', 'Осн-я'],
-            [1001, 'Дополнительная(внутреннее совмещение)', 'Доп-я'],
+            [1000, 'Основная', 'осн-я'],
+            [1001, 'Дополнительная(внутреннее совмещение)', 'вн.совм'],
         ])->execute();
 
         $this->db->createCommand()->resetSequence('guide_teachers_direction_vid', 1002)->execute();

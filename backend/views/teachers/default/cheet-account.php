@@ -73,6 +73,7 @@ foreach ($model['directions'] as $id => $name) {
     <div class="panel">
         <div class="panel-heading">
             Табель учета: <?php echo RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
+
         </div>
         <div class="panel-body">
             <?= $this->render('_search-cheet', compact('modelTeachers', 'model_date', 'plan_year')) ?>

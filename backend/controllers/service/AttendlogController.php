@@ -13,6 +13,7 @@ use Yii;
 use artsoft\controllers\admin\BaseController;
 use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
+use yii\helpers\StringHelper;
 use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
@@ -27,15 +28,17 @@ class AttendlogController extends BaseController
     public function actionIndex()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
-
+        $session = Yii::$app->session;
         $model_date = new DynamicModel(['date']);
         $model_date->addRule(['date'], 'required')
             ->addRule(['date'], 'date');
 
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $timestamp = Schedule::getStartEndDay();
-            $model_date->date = Yii::$app->formatter->asDate($timestamp[0]);
+            $model_date->date =  $session->get('_attendlog_date') ?? Yii::$app->formatter->asDate($timestamp[0]);
         }
+
+        $session->set('_attendlog_date', $model_date->date);
         $timestamp = Yii::$app->formatter->asTimestamp($model_date->date);
 
         $query = UsersAttendlogView::find()->where(['=', 'timestamp', $timestamp]);

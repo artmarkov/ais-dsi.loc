@@ -37,6 +37,7 @@ class CheetAccountController extends MainController
 //        echo '<pre>' . print_r($model_date->activity_list, true) . '</pre>'; die();
         $model = [];
         $model =  new TeachersTimesheet($model_date);
+        $model->geTeachersScheduleNeedNotice($this->teachers_id);
         $model = $model->getTeachersCheetData();
         // $model = LessonProgressView::getDataIndivTeachers($model_date, $id);
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);

@@ -80,7 +80,7 @@ class DefaultController extends MainController
         if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
             if ($valid) {
-                if ($model->setActivitiesOver()) {
+                if ($model->setActivitiesOver() && $model->save()) {
                     Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
                     $this->getSubmitAction($model);
                 }

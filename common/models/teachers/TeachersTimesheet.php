@@ -7,6 +7,7 @@ use artsoft\helpers\DocTemplate;
 use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use artsoft\widgets\Notice;
 use common\models\education\LessonItemsProgressView;
 use common\models\own\Department;
 use common\models\routine\Routine;
@@ -134,6 +135,7 @@ class TeachersTimesheet
         foreach ($models as $item => $data) {
             $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['week_num']][$data['week_day']] = isset($data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['week_num']][$data['week_day']]) ? $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['week_num']][$data['week_day']] + Schedule::astr2academ($data['time_out'] - $data['time_in']) : Schedule::astr2academ($data['time_out'] - $data['time_in']);
         }
+//        echo '<pre>' . print_r($data_schedule, true) . '</pre>';
         return $data_schedule;
     }
 
@@ -243,7 +245,9 @@ class TeachersTimesheet
      */
     protected function getDepartmentsString($departmentsIds)
     {
-        $departmentsIds = array_filter($departmentsIds, function($value) { return !is_null($value) && $value !== ''; });
+        $departmentsIds = array_filter($departmentsIds, function ($value) {
+            return !is_null($value) && $value !== '';
+        });
         $array = Department::find()->select('name')->where(['id' => $departmentsIds])->orderBy('name')->column();
         return $array ? implode(', ', $array) : '';
     }
@@ -413,7 +417,7 @@ class TeachersTimesheet
                     } else {
                         $data[$i][$items['direction_id'] . $items['direction_vid_id']]['cons'] = Schedule::astr2academ($time['datetime_out'] - $time['datetime_in']);
                     }
-                        $label[] = Yii::$app->formatter->asDatetime($time['datetime_in']) . ' - ' . Yii::$app->formatter->asDatetime($time['datetime_out']);
+                    $label[] = Yii::$app->formatter->asDatetime($time['datetime_in']) . ' - ' . Yii::$app->formatter->asDatetime($time['datetime_out']);
                 }
                 $data[$i][$items['direction_id'] . $items['direction_vid_id']]['title'] = implode(',', $label);
             }
@@ -439,6 +443,31 @@ class TeachersTimesheet
         }
 
         return $total[0]['teach'] . '/' . $total[0]['cons'] . '<span class="pull-right">' . $total[1]['teach'] . '/' . $total[1]['cons'] . '</span>';
+    }
+
+    protected function getTeachersScheduleNeed($teachers_id)
+    {
+        return (new Query())->from('subject_schedule_view')
+            ->where(['teachers_id' => $teachers_id])
+            ->andWhere(['plan_year' => $this->plan_year])
+            ->andWhere(['status' => 1])
+            ->andWhere(['IS', 'subject_schedule_id', null])
+            ->all();
+    }
+
+    public function geTeachersScheduleNeedNotice($teachers_id)
+    {
+        $models = $this->getTeachersScheduleNeed($teachers_id);
+        if ($models) {
+            $message = '<b>Некорректное отображение табеля. Не заполнено расписание занятий</b>';
+            $string = '';
+            $info = [];
+            foreach ($models as $item => $itemModel) {
+                $string = ($item + 1) . '. ' . $itemModel['subject'] . ' ' . $itemModel['sect_name'];
+                $info[] = $string;
+            }
+            Notice::registerWarning($message . ':<br/>' . implode(',<br/>', $info));
+        }
     }
 }
 
