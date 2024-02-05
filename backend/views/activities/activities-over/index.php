@@ -127,7 +127,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return [$action, 'id' => $model->id];
                         },
                         'controller' => '/activities/activities-over',
-                        'template' => '{view} {update} {delete}',
+                        'template' => \artsoft\Art::isFrontend() ? '{view}' : '{view} {update} {delete}',
                         'headerOptions' => ['class' => 'kartik-sheet-style'],
 
                     ],

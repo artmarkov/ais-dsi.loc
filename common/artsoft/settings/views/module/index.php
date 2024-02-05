@@ -107,6 +107,20 @@ SettingsAsset::register($this);
                     </div>
                 </div>
             </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Модуль: Оплата за обучение
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <?= $form->field($model, 'debtors_days')->textInput(['maxlength' => true])->hint('Введите колличество дней') ?>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="panel-footer">
             <div class="form-group">

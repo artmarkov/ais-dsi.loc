@@ -59,50 +59,50 @@ class TarifStatement
         }
         return array_unique($teachers_list);
     }
-
-    /**
-     * Фактическое отработанное время
-     * @return array
-     */
-    protected function getTeachersScheduleTotal()
-    {
-        $data_schedule_total = [];
-
-        $models_total = (new Query())->from('subject_schedule_view')
-            ->select('direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(time_out-time_in) as time')
-            ->where(['teachers_id' => $this->teachers_list])
-            ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['status' => 1])
-            ->groupBy('direction_id, direction_vid_id, teachers_id, subject_type_id')
-            ->all();
-
-        foreach ($models_total as $item => $data) {
-            $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']] = isset($data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']]) ? $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']] + Schedule::astr2academ($data['time']) : Schedule::astr2academ($data['time']);
-        }
-        return $data_schedule_total;
-    }
-
-    /**
-     * Фактическое отработанное время консультаций
-     * @return array
-     */
-    protected function getTeachersConsult()
-    {
-        $data_schedule_total = [];
-        $models = (new Query())->from('consult_schedule_view')
-            ->select('direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(datetime_out-datetime_in) as time')
-            ->where(['teachers_id' => $this->teachers_list])
-            ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['status' => 1])
-            ->groupBy('direction_id, direction_vid_id, teachers_id, subject_type_id')
-            ->all();
-        foreach ($models as $item => $data) {
-            $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']] = isset($data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']]) ? Schedule::astr2academ($data['time']) + $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']] : Schedule::astr2academ($data['time']);
-        }
-
-//        echo '<pre>' . print_r($data_schedule_total, true) . '</pre>';
-        return $data_schedule_total;
-    }
+//
+//    /**
+//     * Фактическое отработанное время
+//     * @return array
+//     */
+//    protected function getTeachersScheduleTotal()
+//    {
+//        $data_schedule_total = [];
+//
+//        $models_total = (new Query())->from('subject_schedule_view')
+//            ->select('direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(time_out-time_in) as time')
+//            ->where(['teachers_id' => $this->teachers_list])
+//            ->andWhere(['plan_year' => $this->plan_year])
+//            ->andWhere(['status' => 1])
+//            ->groupBy('direction_id, direction_vid_id, teachers_id, subject_type_id')
+//            ->all();
+//
+//        foreach ($models_total as $item => $data) {
+//            $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']] = isset($data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']]) ? $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']] + Schedule::astr2academ($data['time']) : Schedule::astr2academ($data['time']);
+//        }
+//        return $data_schedule_total;
+//    }
+//
+//    /**
+//     * Фактическое отработанное время консультаций
+//     * @return array
+//     */
+//    protected function getTeachersConsult()
+//    {
+//        $data_schedule_total = [];
+//        $models = (new Query())->from('consult_schedule_view')
+//            ->select('direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(datetime_out-datetime_in) as time')
+//            ->where(['teachers_id' => $this->teachers_list])
+//            ->andWhere(['plan_year' => $this->plan_year])
+//            ->andWhere(['status' => 1])
+//            ->groupBy('direction_id, direction_vid_id, teachers_id, subject_type_id')
+//            ->all();
+//        foreach ($models as $item => $data) {
+//            $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']] = isset($data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']]) ? Schedule::astr2academ($data['time']) + $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['subject_type_id']] : Schedule::astr2academ($data['time']);
+//        }
+//
+////        echo '<pre>' . print_r($data_schedule_total, true) . '</pre>';
+//        return $data_schedule_total;
+//    }
 
     /**
      * Планируемое время нагрузки преподавателя
@@ -167,7 +167,7 @@ class TarifStatement
         return implode(' ', $array);
     }
 
-    public function getData($subject_type_id) {
+    protected function getData($subject_type_id) {
         $items = [];
         foreach ($this->getTeachersActivities() as $item => $d) {
             $bonus_summ = $this->getTeachersBonusSumm($d->direction_vid_id, $d->teachers_id, $d->stake_value);

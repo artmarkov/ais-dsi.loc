@@ -122,11 +122,11 @@ class StudyplanProgressIndivController extends MainController
                     }
                     if ($flag) {
                         $transaction->commit();
-                        $this->getSubmitAction($model);
                     }
                 } catch (\Exception $e) {
                     $transaction->rollBack();
                 }
+                $this->getSubmitAction($model); // пропускаем ошибку дублирования в lesson_progress
             }
         }
         return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form-indiv.php', [
@@ -161,7 +161,7 @@ class StudyplanProgressIndivController extends MainController
             ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
             ->one();
         $model = LessonItems::findOne($modelLesson->lesson_items_id);
-       // echo '<pre>' . print_r($model, true) . '</pre>';
+        // echo '<pre>' . print_r($model, true) . '</pre>';
         $modelsItems = $model->getLessonProgressTeachers($this->teachers_id, $subject_key, $timestamp_in);
 
         if ($model->load(Yii::$app->request->post())) {

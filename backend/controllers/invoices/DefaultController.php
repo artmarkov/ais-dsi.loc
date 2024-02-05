@@ -140,12 +140,17 @@ class DefaultController extends MainController
             $transaction = \Yii::$app->db->beginTransaction();
             try {
                 foreach ($studyplanIds['ids'] as $item => $studyplan_id) {
-                    $m = new $this->modelClass;
-                    $m->setAttributes($model->getAttributes());
-                    $m->studyplan_id = $studyplan_id;
-                    if (!($flag = $m->save(false))) {
-                        $transaction->rollBack();
-                        break;
+                    foreach (explode(',', $model->invoices_reporting_month) as $i => $invoices_reporting_month) {
+                        $m = new StudyplanInvoices();
+                        $m->setAttributes($model->getAttributes());
+                        $m->studyplan_id = $studyplan_id;
+                        $m->invoices_reporting_month = $invoices_reporting_month;
+                        if($m->checkInvoicesExist()) {
+                            if (!($flag = $m->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
                     }
                 }
                 if ($flag) {

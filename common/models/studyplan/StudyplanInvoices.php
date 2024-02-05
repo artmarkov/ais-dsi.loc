@@ -7,6 +7,7 @@ use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use artsoft\widgets\Notice;
 use common\models\guidejob\Direction;
 use common\models\own\Invoices;
 use common\models\subject\SubjectType;
@@ -92,6 +93,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
             [['studyplan_id', 'invoices_id', 'direction_id', 'teachers_id', 'type_id', 'vid_id', 'month_time_fact', 'invoices_tabel_flag', 'status', 'mat_capital_flag'], 'integer'],
             [['invoices_date', 'payment_time', 'payment_time_fact', 'invoices_reporting_month'], 'safe'],
             [['invoices_summ'], 'number'],
+            [['invoices_id'], 'checkInvoicesExist'],
             ['status', 'default', 'value' => function () {
                 return self::STATUS_WORK;
             }],
@@ -116,6 +118,33 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
             [['studyplan_id'], 'exist', 'skipOnError' => true, 'targetClass' => Studyplan::class, 'targetAttribute' => ['studyplan_id' => 'id']],
             [['teachers_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teachers::class, 'targetAttribute' => ['teachers_id' => 'id']],
         ];
+    }
+
+    public function checkInvoicesExist()
+    {
+//        echo '<pre>' . print_r($this, true) . '</pre>'; die();
+
+        $month = [];
+        foreach (explode(",", $this->invoices_reporting_month) as $i => $invoices_reporting_month) {
+            $t = explode(".", $invoices_reporting_month);
+            $month[] = mktime(0, 0, 0, $t[0], 1, $t[1]);
+        }
+        $check = self::find()->where(
+            ['AND',
+                ['!=', 'id', $this->id],
+                ['=', 'studyplan_id', $this->studyplan_id],
+                ['=', 'invoices_id', $this->invoices_id],
+                ['=', 'invoices_summ', $this->invoices_summ],
+                ['=', 'invoices_reporting_month', $month],
+
+            ]);
+        if ($check->exists() === true) {
+            $message = 'Квитанции уже была добавлены с данными значениями.';
+            $this->addError('invoices_id', $message);
+            Notice::registerWarning($message);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -343,4 +372,14 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
         return $str;
     }
 
+    public function beforeSave($insert)
+    {
+        if (str_contains($this->invoices_app, '{month}')) {
+            $t = explode(".", $this->invoices_reporting_month);
+            $month = ArtHelper::getMonthsNominativeList()[date('n', mktime(0, 0, 0, $t[0], 1, $t[1]))];
+            $this->invoices_app = str_replace('{month}', $month, $this->invoices_app);
+//        echo '<pre>' . print_r($this, true) . '</pre>';
+        }
+        return parent::beforeSave($insert);
+    }
 }

@@ -310,9 +310,17 @@ class Teachers extends ActiveRecord
     {
         $department_list = self::getTeachersDepartment($id);
         return self::getTeachersForDepartments($department_list);
-
     }
 
+    public static function getTeachersListForTeacher($id)
+    {
+        $query = Teachers::find()
+            ->select(['teachers.id as id', 'CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) as name'])
+            ->joinWith(['user'])
+            ->where(['in', 'teachers.id', Teachers::getTeachersForTeacher($id)])
+            ->andWhere(['=', 'status', UserCommon::STATUS_ACTIVE])->asArray()->all();
+        return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
+    }
     /**
      * Проверка зашедшего преподавателя
      * @return bool

@@ -29,6 +29,15 @@ use kartik\date\DatePicker;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
+                    <?php if (\artsoft\Art::isBackend()): ?>
+                        <?= \yii\bootstrap\Alert::widget([
+                            'body' => '<i class="fa fa-info"></i> При добавлении нескольких месяцев, используйте шаблон в назначении платежа в виде {month} вместо реального названия месяца.<br/> <b>Например:</b> Вместо "БО МУЗ за февраль", пишите "БО МУЗ за {month}"',
+                            'options' => ['class' => 'alert-info'],
+                        ]);
+                        ?>
+                    <?php endif; ?>
+                </div>
+                <div class="col-sm-12">
                     <?php if ($model->isNewRecord): ?>
                         <?php
                         echo Html::activeHiddenInputList($studyplanIds, 'ids');
@@ -58,6 +67,8 @@ use kartik\date\DatePicker;
 
                     <?= $form->field($model, 'teachers_id')->widget(\kartik\depdrop\DepDrop::class, [
                         'data' => \common\models\teachers\Teachers::getTeachersList($model->direction_id),
+                        'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
+                        'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                         'options' => [
                             // 'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
@@ -96,15 +107,16 @@ use kartik\date\DatePicker;
                             'convertFormat' => true,
                             'pluginOptions' => [
                                 'format' => 'MM.yyyy',
-                                'autoclose' => true,
+                                'autoclose' => !$model->isNewRecord,
                                 'minViewMode' => 1,
-                                'todayBtn' => 'linked',
+//                                'todayBtn' => 'linked',
                                 'todayHighlight' => true,
+                                'multidate' => $model->isNewRecord,
                             ]
                         ]
                     ); ?>
 
-                    <?= $form->field($model, 'invoices_app')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'invoices_app')->textInput(['maxlength' => true])->hint(''); ?>
 
                     <?= $form->field($model, 'invoices_rem')->textInput(['maxlength' => true]) ?>
 

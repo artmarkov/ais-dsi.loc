@@ -35,6 +35,7 @@ class DefaultController extends MainController
 
         $searchName = StringHelper::basename($modelSearchClass::className());
         $searchModel = new $modelSearchClass;
+        $teachers_id = null;
         $params = ArrayHelper::merge(Yii::$app->request->getQueryParams(), [
             $searchName => [
                 'plan_year' => $model_date->plan_year,
@@ -43,7 +44,7 @@ class DefaultController extends MainController
         ]);
         $dataProvider = $searchModel->search($params);
 
-        return $this->renderIsAjax('index', compact('dataProvider', 'searchModel', 'model_date'));
+        return $this->renderIsAjax('index', compact('dataProvider', 'searchModel', 'model_date', 'teachers_id'));
     }
 
     public function actionView($id)

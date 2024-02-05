@@ -20,6 +20,7 @@ use common\models\schoolplan\SchoolplanProtocol;
 use common\models\schoolplan\search\SchoolplanProtocolViewSearch;
 use common\models\students\Student;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
+use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
 use common\models\studyplan\StudyplanInvoices;
@@ -32,6 +33,7 @@ use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\search\TeachersLoadStudyplanViewSearch;
 use common\models\teachers\TeachersLoad;
+use common\models\teachers\TeachersLoadStudyplanView;
 use yii\base\DynamicModel;
 use yii\db\Exception;
 use yii\helpers\ArrayHelper;
@@ -44,21 +46,32 @@ class DefaultController extends MainController
     public $modelClass = 'common\models\studyplan\Studyplan';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanSearch';
 
+
     public function actionIndex()
     {
-        $modelSearchClass = 'common\models\studyplan\search\StudyplanSearch';
         $model_date = $this->modelDate;
+        $teachers_id = null;
+        if ($model_date->teachers_id != null) {
+            $studyplanIDS = TeachersLoadStudyplanView::find()
+                ->select('studyplan_id')
+                ->distinct('studyplan_id')
+                ->where(['=', 'teachers_id', $model_date->teachers_id])
+                ->column();
+            $query = Studyplan::find()
+                ->where(['in', 'studyplan.id', $studyplanIDS])
+                ->andWhere(['=', 'plan_year', $model_date->plan_year])
+                ->andWhere(['=', 'studyplan.status', 1]);
+        } else {
+            $query = Studyplan::find()
+                ->where(['=', 'plan_year', $model_date->plan_year])
+                ->andWhere(['=', 'studyplan.status', 1]);
+        }
 
-        $searchName = StringHelper::basename($modelSearchClass::className());
-        $searchModel = new $modelSearchClass;
-        $params = ArrayHelper::merge(Yii::$app->request->getQueryParams(), [
-            $searchName => [
-                'plan_year' => $model_date->plan_year,
-            ]
-        ]);
+        $searchModel = new StudyplanSearch($query);
+        $params = $this->getParams();
         $dataProvider = $searchModel->search($params);
 
-        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel', 'model_date'));
+        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel', 'model_date', 'teachers_id'));
     }
 
     /**
@@ -933,23 +946,42 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Studyplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление карточки';
 
+            $model =  new StudyplanInvoices();
+            $model->status = StudyplanInvoices::STATUS_WORK;
+
             $studyplanIds = new DynamicModel(['ids']);
             $studyplanIds->addRule(['ids'], 'safe');
-
             $studyplanIds->ids = [$id];
-            $m = new StudyplanInvoices();
-            $m->status = StudyplanInvoices::STATUS_WORK;
 
-            if ($m->load(Yii::$app->request->post()) && $studyplanIds->load(Yii::$app->request->post()) && $m->validate()) {
-                $m->studyplan_id = $studyplanIds['ids'][0];
-                if ($m->save(false)) {
-                    Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
-                    $this->getSubmitAction($m);
+            if ($model->load(Yii::$app->request->post()) && $studyplanIds->load(Yii::$app->request->post()) && $model->validate()) {
+                $flag = true;
+//            echo '<pre>' . print_r($model, true) . '</pre>'; die();
+                $transaction = \Yii::$app->db->beginTransaction();
+                try {
+                    foreach (explode(',', $model->invoices_reporting_month) as $i => $invoices_reporting_month) {
+                        $m = new StudyplanInvoices();
+                        $m->setAttributes($model->getAttributes());
+                        $m->studyplan_id = $studyplanIds['ids'][0];
+                        $m->invoices_reporting_month = $invoices_reporting_month;
+                        if ($m->checkInvoicesExist()) {
+                            if (!($flag = $m->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                        Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+                        $this->getSubmitAction($model);
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
                 }
             }
 
             return $this->renderIsAjax('@backend/views/invoices/default/_form.php', [
-                'model' => $m,
+                'model' => $model,
                 'studyplanIds' => $studyplanIds,
                 'readonly' => false,
             ]);

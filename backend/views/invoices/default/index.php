@@ -243,7 +243,7 @@ $columns = [
                             ['#'],
                             [
                                 // 'target' => '_blank',
-                                'data-pjax' => '0',
+                                'data-pjax' => false,
                                 'class' => 'btn btn-success bulk-new disabled',
                                 //    'title' => 'Открыть в новом окне'
                             ]);
@@ -270,7 +270,7 @@ $columns = [
 
                 <?= GridView::widget([
                     'id' => 'studyplan-invoices-grid',
-//                'pjax' => true,
+                    'pjax' => false, // чтобы работала кнопка Создать новые квитанции
                     'dataProvider' => $dataProvider,
                     // 'filterModel' => $searchModel,
                     'showPageSummary' => false,

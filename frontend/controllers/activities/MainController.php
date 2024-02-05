@@ -19,6 +19,7 @@ class MainController extends \frontend\controllers\DefaultController
     }
 
     public $tabMenu = [
+        ['label' => 'Внеплановые мероприятия',  'url' => ['/activities/activities-over/index']],
         ['label' => 'Внешние мероприятия',  'url' => ['/activities/schoolplan-outside/index']],
         ['label' => 'Календарь мероприятий',  'url' => ['/activities/default/calendar']],
         ['label' => 'Ежедневник по аудиториям',  'url' => ['/activities/auditory-schedule/index']],

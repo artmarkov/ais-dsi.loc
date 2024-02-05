@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use artsoft\models\User;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -22,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
         </div>
         <div class="panel-body">
-            <?= $this->render('_search', compact('model_date')) ?>
+            <?= $this->render('_search', compact('model_date', 'teachers_id')) ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php
@@ -47,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
             GridView::widget([
                 'id' => 'studyplan-grid',
                 'dataProvider' => $dataProvider,
-                'filterModel' =>  $searchModel,
+                'filterModel' => \artsoft\Art::isFrontend() && User::hasRole(['student']) ? false : $searchModel,
                 'bulkActionOptions' =>  \artsoft\Art::isBackend() ? [
                     'gridId' => 'studyplan-grid',
                     'actions' =>  [

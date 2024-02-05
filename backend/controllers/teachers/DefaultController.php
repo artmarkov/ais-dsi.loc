@@ -1153,10 +1153,12 @@ class DefaultController extends MainController
                 $modelsItems = $model->getLessonProgressTeachersNew($id, $subject_key, $timestamp_in, $model);
                 if (empty($modelsItems)) {
                     Notice::registerDanger('Дата занятия не соответствует расписанию!');
+                    $model->addError('lesson_date', 'Дата занятия не соответствует расписанию!');
                 } else {
                     $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model->lesson_date);
                     if (empty($modelsItems)) {
                         Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
+                        $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
                     }
                 }
             } elseif ($model->load(Yii::$app->request->post())) {
@@ -1193,11 +1195,11 @@ class DefaultController extends MainController
                         }
                         if ($flag) {
                             $transaction->commit();
-                            $this->getSubmitAction($model);
                         }
                     } catch (Exception $e) {
                         $transaction->rollBack();
                     }
+                    $this->getSubmitAction($model);// пропускаем ошибку дублирования в lesson_progress
                 }
             }
             return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form-indiv.php', [
@@ -1223,7 +1225,7 @@ class DefaultController extends MainController
                 ->all();
             foreach ($models as $model) {
                 $modelLesson = LessonItems::findOne(['id' => $model->lesson_items_id]);
-                $modelLesson->delete();
+                $modelLesson ? $modelLesson->delete() : null;
             }
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
             return $this->redirect($this->getRedirectPage('delete', $model));

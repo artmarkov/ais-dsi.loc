@@ -25,6 +25,8 @@ class ModuleSettings extends BaseSettingsModel
     public $pre_plan_year;
     public $pre_date_start;
 
+    public $debtors_days;
+
     /**
      * @inheritdoc
      */
@@ -41,6 +43,8 @@ class ModuleSettings extends BaseSettingsModel
                 [['pre_status', 'pre_date_in', 'pre_date_out', 'pre_plan_year', 'pre_date_start'], 'required'],
                 [['pre_status', 'pre_plan_year'], 'string'],
                 [['pre_date_in', 'pre_date_out', 'pre_date_start'], 'date'],
+
+                [['debtors_days'], 'string'],
             ]);
     }
 
@@ -61,6 +65,8 @@ class ModuleSettings extends BaseSettingsModel
             'pre_date_out' => 'Закрытие формы предварительной записи',
             'pre_plan_year' => 'Учебный год',
             'pre_date_start' => 'Начало обучения',
+
+            'debtors_days' => 'Установить задолженность по оплате по истечении (дней)',
         ];
     }
 

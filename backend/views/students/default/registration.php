@@ -114,7 +114,7 @@ $this->params['breadcrumbs'][] = 'Регистрация';
                             <div class="col-sm-12">
                                 <?= $form->field($model, 'phone')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                                 <?= $form->field($model, 'phone_optional')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                                <?= $form->field($model, 'email')->textInput(['maxlength' => 124]) ?>
+                                <?= $form->field($model, 'email')->textInput(['maxlength' => 124])->hint('Введите емайл, который будет использоваться для регистрации и востановления доступа.') ?>
                             </div>
                         </div>
                     </div>
