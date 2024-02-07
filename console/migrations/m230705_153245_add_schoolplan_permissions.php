@@ -49,8 +49,11 @@ class m230705_153245_add_schoolplan_permissions extends PermissionsMigration
                         '/schoolplan/default/protocol?mode=create',
                         '/schoolplan/default/protocol?mode=delete',
                         '/schoolplan/default/studyplan',
+                        '/schoolplan/default/studyplan-perform',
                         '/schoolplan/default/studyplan-subject',
-                        '/schoolplan/default/studyplan-thematic'
+                        '/schoolplan/default/studyplan-subject-perform',
+                        '/schoolplan/default/studyplan-thematic',
+                        '/schoolplan/default/studyplan-thematic-perform'
                     ],
                     'roles' => [
                         self::ROLE_TEACHER,

@@ -76,7 +76,7 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                             'pluginOptions' => [
                                 'depends' => ['teachers_id'],
                                 'placeholder' => Yii::t('art', 'Select...'),
-                                'url' => Url::to(['/schoolplan/default/studyplan', 'plan_year' => $plan_year])
+                                'url' => Url::to(['/schoolplan/default/studyplan-perform', 'plan_year' => $plan_year])
                             ],
 
                         ]);
@@ -94,7 +94,7 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                             'pluginOptions' => [
                                 'depends' => ['studyplan_id'],
                                 'placeholder' => Yii::t('art', 'Select...'),
-                                'url' => Url::to(['/schoolplan/default/studyplan-subject'])
+                                'url' => Url::to(['/schoolplan/default/studyplan-subject-perform'])
                             ]
                         ]);
                         ?>
@@ -111,7 +111,7 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                             'pluginOptions' => [
                                 'depends' => ['studyplan_subject_id'],
                                 'placeholder' => Yii::t('art', 'Select...'),
-                                'url' => Url::to(['/schoolplan/default/studyplan-thematic'])
+                                'url' => Url::to(['/schoolplan/default/studyplan-thematic-perform'])
                             ]
                         ]);
                         ?>
