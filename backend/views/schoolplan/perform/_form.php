@@ -13,7 +13,7 @@ use yii\helpers\Url;
 /* @var $model common\models\schoolplan\SchoolplanPerform */
 /* @var $form artsoft\widgets\ActiveForm */
 
-$readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_array($model->status_sign, [1, 2]))) ? true : $readonly;
+$readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_array($model->status_sign, [1, 2]))) ? false : $readonly;
 ?>
 
     <div class="perform-form">
@@ -54,7 +54,7 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                             'data' => $model->schoolplan->getExecutorsList(),
                             'options' => [
                                 'id' => 'teachers_id',
-                                'disabled' => $model->schoolplan->isExecutors() ? true : $readonly,
+                                'disabled' => /*$model->schoolplan->isExecutors() ? true :*/ $readonly,
                                 'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
                             ],
                             'pluginOptions' => [
