@@ -204,6 +204,9 @@ EOF;
                     'selectable' => false,
                     'expandRows' => false,
                     'nowIndicator' => true, //Отображение маркера, указывающего Текущее время
+                    'displayEventTime' => true,
+                    'displayEventEnd' => true,
+                    'eventTimeFormat' => ['hour'=> 'numeric',  'minute'=> '2-digit', 'meridiem' => true],
                     'slotMinTime' => '07:00',
                     'slotMaxTime' => '22:00',
                     'slotDuration' => '00:15:00', // Частота отображения временных интервалов.

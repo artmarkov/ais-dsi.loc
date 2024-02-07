@@ -8,7 +8,7 @@
 $this->title = 'График работы преподавателей';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="studyplan-stat">
+<div class="teachers-generator">
     <div class="panel">
         <div class="panel-heading">
         </div>

@@ -12,11 +12,11 @@ use common\models\user\UserCommon;
 
 <?php
 $form = ActiveForm::begin([
-    'id' => 'statement-search',
+    'id' => 'teachers-generator-search',
     'validateOnBlur' => false,
 ])
 ?>
-    <div class="statement-search">
+    <div class="teachers-generator-search">
         <div class="panel">
             <div class="panel-body">
                 <div class="row">
@@ -38,7 +38,7 @@ $form = ActiveForm::begin([
                             'pluginOptions' => [
                                 'allowClear' => true
                             ],
-                        ])->label(Yii::t('art/creative', 'Аuthors-performers'));
+                        ])->label(Yii::t('art/teachers', 'Teachers'));
                         ?>
                         <?= $form->field($model_date, 'subject_type_flag')->checkbox()->label('Учесть внебюджетные часы') ?>
 
