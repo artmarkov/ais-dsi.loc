@@ -6,6 +6,7 @@ use common\models\studyplan\StudyplanStat;
 use common\models\subject\SubjectType;
 use common\models\teachers\TarifStatement;
 use common\models\teachers\Teachers;
+use common\models\teachers\TeachersScheduleGenerator;
 use common\models\teachers\TeachersTimesheet;
 use common\models\user\UserCommon;
 use common\models\venue\VenueSity;
@@ -131,6 +132,33 @@ class DefaultController extends MainController
             'models' => $models,
             'model_date' => $model_date,
             'modelTeachers' => $modelTeachers,
+        ]);
+    }
+
+    public function actionGeneratorSchedule()
+    {
+        $session = Yii::$app->session;
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model_date = new DynamicModel(['plan_year', 'teachers_list', 'subject_type_flag']);
+        $model_date->addRule(['plan_year', 'teachers_list'], 'required')
+            ->addRule(['plan_year'], 'integer')
+            ->addRule(['subject_type_flag'], 'boolean')
+            ->addRule(['teachers_list'], 'safe');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            $model_date->teachers_list = Yii::$app->user->getSetting('_generator_schedule_teachers_list') ?? [];
+        }
+        $session->set('__backendPlanYear', $model_date->plan_year);
+        Yii::$app->user->setSetting('_generator_schedule_teachers_list', $model_date->teachers_list);
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            $models = new TeachersScheduleGenerator($model_date);
+            $models->makeXlsx();
+//            echo '<pre>' . print_r($model, true) . '</pre>'; die();
+        }
+
+        return $this->renderIsAjax('teachers-generator', [
+            'model_date' => $model_date,
         ]);
     }
 

@@ -121,6 +121,22 @@ SettingsAsset::register($this);
                     </div>
                 </div>
             </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Модуль: Генератор графика работы преподавателей
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <?= $form->field($model, 'generator_time_limit')->textInput(['maxlength' => true])->hint('Введите колличество часов') ?>
+                            <?= $form->field($model, 'generator_time_per')->textInput(['maxlength' => true])->hint('Введите колличество минут') ?>
+                            <?= $form->field($model, 'generator_time_max')->textInput(['maxlength' => true])->hint('Введите час окончания работы. Например: 20 или 21.') ?>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="panel-footer">
             <div class="form-group">
