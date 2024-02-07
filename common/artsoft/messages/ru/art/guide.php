@@ -168,7 +168,7 @@ return [
     'Test Category' => 'Категория',
     'Test Name' => 'Название теста',
     'Plan Flag' => 'План подключен',
-    'Current Work' => 'Текущая работа',
+    'Current Work' => 'Раздел "Текущая работа"',
     'Middle Attestation' => 'Промежуточная аттестация',
     'Finish Attestation' => 'Итоговая аттестация',
     'Division List' => 'Отделения',
