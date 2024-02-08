@@ -55,6 +55,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     'gridId' => 'activities-over-grid',
                     'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                 ],
+                'rowOptions' => function (ActivitiesOver $model) {
+                    if ($model->executor_name != null) {
+                        return ['class' => 'warning'];
+                    }
+                    return [];
+                },
                 'columns' => [
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
@@ -104,16 +110,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'attribute' => 'executors_list',
-                        'filter' => RefBook::find('teachers_fio',  UserCommon::STATUS_ACTIVE)->getList(),
+                        'filter' => RefBook::find('teachers_fio', UserCommon::STATUS_ACTIVE)->getList(),
                         'value' => function (ActivitiesOver $model) {
-                            $v = [];
-                            foreach ($model->executors_list as $id) {
-                                if (!$id) {
-                                    continue;
+                            if ($model->executor_name != null) {
+                                return $model->executor_name;
+                             } else {
+                                $v = [];
+                                foreach ($model->executors_list as $id) {
+                                    if (!$id) {
+                                        continue;
+                                    }
+                                    $v[] = RefBook::find('teachers_fio')->getValue($id);
                                 }
-                                $v[] = RefBook::find('teachers_fio')->getValue($id);
+                                return implode(',<br/> ', $v);
                             }
-                            return implode(',<br/> ', $v);
                         },
                         'options' => ['style' => 'width:350px'],
                         'format' => 'raw',

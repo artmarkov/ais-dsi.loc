@@ -99,12 +99,13 @@ class m230109_123114_add_activities_view extends BaseMigration
 
 
         $this->db->createCommand()->createView('activities_view', '
-  SELECT \'schoolplan\'::text AS resource,
+   SELECT \'schoolplan\'::text AS resource,
     schoolplan.id,
     1003 AS category_id,
     schoolplan.auditory_id,
     NULL::integer AS direction_id,
     schoolplan.executors_list,
+	NULL AS executor_name,
     schoolplan.title,
     schoolplan.description,
     schoolplan.datetime_in AS start_time,
@@ -118,6 +119,7 @@ UNION ALL
     consult_schedule_view.auditory_id,
     consult_schedule_view.direction_id,
     consult_schedule_view.teachers_id::text AS executors_list,
+	NULL AS executor_name,
     concat(consult_schedule_view.sect_name, \' - \', consult_schedule_view.subject) AS title,
     consult_schedule_view.description,
     consult_schedule_view.datetime_in AS start_time,
@@ -131,12 +133,13 @@ UNION ALL
     activities_over.auditory_id,
     NULL::integer AS direction_id,
     activities_over.executors_list,
+	activities_over.executor_name AS executor_name,
     activities_over.title,
     activities_over.description,
     activities_over.datetime_in AS start_time,
     activities_over.datetime_out AS end_time
    FROM activities_over
-  WHERE activities_over.auditory_id IS NOT NULL AND activities_over.over_category IN  (1,2)
+  WHERE activities_over.auditory_id IS NOT NULL AND (activities_over.over_category = ANY (ARRAY[1, 2]))
 UNION ALL
  SELECT \'subject_schedule\'::text AS resource,
     activities_schedule_view.subject_schedule_id AS id,
@@ -144,13 +147,14 @@ UNION ALL
     activities_schedule_view.auditory_id,
     activities_schedule_view.direction_id,
     activities_schedule_view.teachers_id::text AS executors_list,
+	NULL AS executor_name,
     activities_schedule_view.title,
     activities_schedule_view.description,
     activities_schedule_view.datetime_in AS start_time,
     activities_schedule_view.datetime_out AS end_time
    FROM activities_schedule_view
   WHERE activities_schedule_view.direction_id = 1000
-  ORDER BY 9;
+  ORDER BY 10;
         ')->execute();
 
  $this->db->createCommand()->createView('activities_teachers_view', '

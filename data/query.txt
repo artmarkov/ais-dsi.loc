@@ -17,7 +17,7 @@ RESTART WITH 1317;
 ALTER SEQUENCE teachers_load_hist_hist_id_seq
 RESTART WITH 12860;
 
-Удаление дублей (остается одна запись)
+//Удаление дублей (остается одна запись)
 
 DELETE FROM lesson_progress a USING (
     SELECT MIN(ctid) as ctid, lesson_items_id, studyplan_subject_id, lesson_mark_id
@@ -28,3 +28,18 @@ WHERE a.lesson_items_id = b.lesson_items_id
 AND a.studyplan_subject_id = b.studyplan_subject_id
 AND a.lesson_mark_id = b.lesson_mark_id
 AND a.ctid <> b.ctid
+////////////////////////////////
+DELETE FROM studyplan_invoices a USING (
+    SELECT MIN(ctid) as ctid, studyplan_id, invoices_id, invoices_summ,invoices_reporting_month
+FROM studyplan_invoices
+GROUP BY (studyplan_id, invoices_id, invoices_summ,invoices_reporting_month) HAVING COUNT(*) > 1
+) b
+WHERE a.studyplan_id = b.studyplan_id
+AND a.invoices_id = b.invoices_id
+AND a.invoices_summ = b.invoices_summ
+AND a.invoices_reporting_month = b.invoices_reporting_month
+AND a.ctid <> b.ctid
+
+// добавление индекса уникального
+ALTER TABLE studyplan_invoices
+ADD UNIQUE (studyplan_id,invoices_id,invoices_summ,invoices_reporting_month)

@@ -49,11 +49,15 @@ switch ($model->resource) {
                                     [
                                         'attribute' => 'executors_list',
                                         'value' => function ($model) {
-                                            $v = [];
-                                            foreach (explode(',', $model->executors_list) as $id) {
-                                                $v[] = $id != null ? RefBook::find('teachers_fio')->getValue($id) : null;
+                                            if ($model->executor_name != null) {
+                                                return $model->executor_name;
+                                            } else {
+                                                $v = [];
+                                                foreach (explode(',', $model->executors_list) as $id) {
+                                                    $v[] = $id != null ? RefBook::find('teachers_fio')->getValue($id) : null;
+                                                }
+                                                return implode(', ', $v);
                                             }
-                                            return implode(', ', $v);
                                         },
                                     ],
                                     'title',
