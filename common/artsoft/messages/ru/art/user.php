@@ -22,7 +22,7 @@ return [
     'Search route' => 'Поиск маршрутов',
     'Show all' => 'Показать все',
     'Show only selected' => 'Показать только избранные',
-    'Site Visits' => 'Посещение сайта',
+    'Site Visits' => 'Посещение сайта(включая VPN)',
     'Update Permission Group' => 'Обновить Группу прав доступа',
     'Update Permission' => 'Обновить право доступа',
     'Update Role' => 'Обновить Роль',
