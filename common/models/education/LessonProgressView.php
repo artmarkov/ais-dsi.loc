@@ -171,7 +171,6 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     public static function getDataTeachers($model_date, $teachers_id, $plan_year)
     {
         $data = $dates = $modelsProgress = [];
-
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
         $timestamp_in = $timestamp[0];
         $timestamp_out = $timestamp[1];
@@ -180,6 +179,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $attributes += ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
         $attributes += ['student_id' => Yii::t('art/student', 'Student')];
 
+        $dates_load_total = 0;
         if ($model_date->subject_sect_studyplan_id != 0) {
             $lessonDates = LessonItemsProgressView::find()->select('lesson_date, test_name_short')->distinct()
                 ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
@@ -193,11 +193,27 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
                 ->andWhere(['plan_year' => $plan_year])
                 ->all();
+            $dates_load = 0;
             foreach ($lessonDates as $id => $lessonDate) {
                 $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
                 $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d') . ' ' . $lessonDate['test_name_short'];
                 $attributes += [$date => $label];
-                $dates[] = $date;
+                if (Art::isBackend()) {
+                    $datesArray = (new Query())->from('activities_schedule_view')
+                        ->innerJoin('lesson_items', 'lesson_items.subject_sect_studyplan_id = activities_schedule_view.subject_sect_studyplan_id AND lesson_items.studyplan_subject_id = activities_schedule_view.studyplan_subject_id')
+                        ->innerJoin('lesson_progress', 'lesson_progress.lesson_items_id = lesson_items.id')
+                        ->select(new \yii\db\Expression('DISTINCT activities_schedule_view.subject_schedule_id,datetime_in,datetime_out,lesson_date,lesson_test_id,lesson_mark_id'))
+                        ->where(['=', 'activities_schedule_view.subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
+                        ->andWhere(['and', ['>=', 'datetime_in', $lessonDate['lesson_date']], ['<', 'datetime_in', $lessonDate['lesson_date'] + 86400]])
+                        ->andWhere(['=', 'lesson_date', $lessonDate['lesson_date']])
+                        ->andWhere(['=', 'direction_id', 1000])
+                        ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+                        ->one();
+//                print_r($datesArray); die();
+                    $dates_load = Schedule::astr2academ($datesArray['datetime_out'] - $datesArray['datetime_in']);
+                    $dates_load_total += $dates_load;
+                }
+                $dates[] = ['date' => $date, 'dates_load' => $dates_load];
             }
         }
         foreach ($modelsProgress as $item => $modelProgress) {
@@ -223,7 +239,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             }
         }
 
-        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
+        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes, 'dates_load_total' => $dates_load_total];
     }
 
 
@@ -252,7 +268,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
     public static function getDataIndivTeachers($model_date, $teachers_id, $plan_year)
     {
-        $data = $dates = $datesLoad = [];
+        $data = $dates = $dates_load = [];
 
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
         $timestamp_in = $timestamp[0];

@@ -89,6 +89,7 @@ $columns = [
         'format' => 'raw',
         'group' => true,
         'subGroupOf' => 1,
+        'footer' => 'ИТОГО: ' . $model['dates_load_total'] . ' ак.час.',
     ],
     [
         'attribute' => 'student_id',
@@ -106,9 +107,10 @@ $columns = [
 ];
 foreach ($model['lessonDates'] as $id => $name) {
     $columns[] = [
-        'attribute' => $name,
-        'label' => $model['attributes'][$name],
+        'attribute' => $name['date'],
+        'label' => $model['attributes'][$name['date']],
         'format' => 'raw',
+        'footer' => $name['dates_load'],
     ];
 }
 
@@ -154,6 +156,8 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             echo GridView::widget([
                 'id' => 'studyplan-progress-grid',
                 'pjax' => false,
+                'showPageSummary' => false,
+                'showFooter' => \artsoft\Art::isBackend(),
                 'dataProvider' => new \yii\data\ArrayDataProvider([
                     'allModels' => $model['data'],
                     'sort' => false,
