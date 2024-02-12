@@ -90,6 +90,8 @@ $columns = [
         'value' => function ($model) {
             return $model->week_time;
         },
+        'group' => true,
+        'subGroupOf' => 2,
         'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'week_time', $model->id),
     ],
     [
@@ -98,6 +100,8 @@ $columns = [
         'value' => function ($model) {
             return $model->year_time_consult;
         },
+        'group' => true,
+        'subGroupOf' => 2,
         'footer' => \common\models\teachers\TeachersLoadView::getTotal($dataProvider->models, 'year_time_consult', $model->id),
     ],
     [

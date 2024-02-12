@@ -1063,12 +1063,13 @@ class DefaultController extends MainController
                             }
                             if ($flag) {
                                 $transaction->commit();
-                                $this->getSubmitAction($model);
                             }
                         }
                     } catch (Exception $e) {
+                        print_r($e->errorInfo);
                         $transaction->rollBack();
                     }
+                    $this->getSubmitAction($model);
                 }
             }
 

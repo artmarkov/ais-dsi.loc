@@ -4,6 +4,7 @@ namespace frontend\controllers\activities;
 
 use common\models\activities\Activities;
 use common\models\activities\search\ActivitiesSearch;
+use common\models\auditory\Auditory;
 use common\models\schoolplan\Schoolplan;
 use common\widgets\fullcalendar\src\models\Event as BaseEvent;
 use yii\base\DynamicModel;
@@ -75,7 +76,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
 
-            $model_date->auditory_id = $session->get('_calendar-auditory') ?? '';
+            $model_date->auditory_id = $session->get('_calendar-auditory') ?? Auditory::getAuditoryScalar();
         }
         $session->set('_calendar-auditory', $model_date->auditory_id);
 
@@ -83,7 +84,6 @@ class DefaultController extends MainController
             'model_date' => $model_date
         ]);
     }
-
     /**
      * @param null $start
      * @param null $end

@@ -8,6 +8,7 @@ use himiklab\sortablegrid\SortableGridBehavior;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "guide_lesson_test".
@@ -140,4 +141,15 @@ class LessonTest extends \artsoft\db\ActiveRecord
         }
         return \yii\helpers\ArrayHelper::map($query->orderBy('test_category, sort_order')->asArray()->all(), 'id', 'test_name', 'test_category_name');
     }
+
+    /**
+     * @return array
+     */
+    public static function getLessonTestHints()
+    {
+        return ArrayHelper::map(self::find()
+            ->select('test_name_short, test_name')
+            ->asArray()->all(), 'test_name_short', 'test_name');
+    }
+
 }

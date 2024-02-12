@@ -9,6 +9,6 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Тарификационная ведомость', 'url' => ['/reports/default/tarif-statement']],
         ['label' => 'Контингент учащихся', 'url' => ['/reports/default/studyplan-stat']],
         ['label' => 'Расписание преподавателя', 'url' => ['/reports/default/teachers-schedule']],
-        ['label' => 'Генератор расписания преподавателей', 'url' => ['/reports/default/generator-schedule']],
+        ['label' => 'График работы преподавателей', 'url' => ['/reports/default/generator-schedule']],
     ];
 }

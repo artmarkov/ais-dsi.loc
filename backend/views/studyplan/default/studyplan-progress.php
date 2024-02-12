@@ -51,8 +51,8 @@ $editMarks = function ($model, $key, $index, $widget) {
                         'data-method' => 'post',
                         'data-pjax' => '0',
                         'class' => 'btn btn-xxs btn-link',
-                    ])
-                . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                    ]) .
+                ($model['subject_sect_studyplan_id'] == 0 ? Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                     Url::to(['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete']), [
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xxs btn-link',
@@ -62,7 +62,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                             'method' => 'post',
                         ],
                     ]
-                ),
+                ) : null),
             ];
         }
     }
@@ -112,7 +112,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
         <div class="panel">
             <div class="panel-heading">
                 Дневник успеваемости: <?= RefBook::find('students_fullname')->getValue($modelStudent->student_id); ?>
-                <?= $modelStudent->getProgrammName() . ' - ' . $modelStudent->course . ' класс.';?>
+                <?= $modelStudent->getProgrammName() . ' - ' . $modelStudent->course . ' класс.'; ?>
             </div>
             <div class="panel-body">
                 <?= $this->render('_search-progress', compact('model_date')) ?>

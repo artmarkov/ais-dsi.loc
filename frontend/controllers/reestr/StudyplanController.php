@@ -52,7 +52,7 @@ class StudyplanController extends MainController
     public function actionIndex()
     {
         $model_date = $this->modelDate;
-
+        $teachers_id = null;
         $query = Studyplan::find()
             ->where(['=', 'plan_year', $model_date->plan_year])
             ->andWhere(['=', 'studyplan.status', 1]);
@@ -60,7 +60,7 @@ class StudyplanController extends MainController
         $searchModel = new StudyplanSearch($query);
         $params = Yii::$app->request->getQueryParams();
         $dataProvider = $searchModel->search($params);
-        return $this->renderIsAjax('@backend/views/studyplan/default/index.php', compact('dataProvider', 'searchModel', 'model_date'));
+        return $this->renderIsAjax('@backend/views/studyplan/default/index.php', compact('dataProvider', 'searchModel', 'model_date', 'teachers_id'));
 
     }
 

@@ -44,8 +44,6 @@ class m220425_112414_add_table_stadyplan_invoices extends \artsoft\db\BaseMigrat
         $this->addForeignKey('studyplan_invoices_ibfk_5', 'studyplan_invoices', 'type_id', 'guide_subject_type', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('studyplan_invoices_ibfk_6', 'studyplan_invoices', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('studyplan_invoices_ibfk_7', 'studyplan_invoices', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
-        $this->createIndex('studyplan_invoices_studyplan_id_invoices_id_invoices_summ_i_key', 'studyplan_invoices', ['studyplan_id','invoices_id','invoices_summ','invoices_reporting_month'], true);
-
 // Учитывает нагрузку преподавателей и наличие расписания занятий, дисциплины должны быть в активном статусе. Статус активности плана задать в контроллере.
 // Для фильтрации заданы все массивы
         $this->db->createCommand()->createView('studyplan_info_view', '
