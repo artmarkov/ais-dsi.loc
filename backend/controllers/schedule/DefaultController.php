@@ -31,10 +31,10 @@ class DefaultController extends MainController
         if ($model_date->auditory_id) {
             $models = $models->andWhere(['=', 'auditory_id', $model_date->auditory_id]);
         }
-        $models = $models->asArray()->orderBy('week_day, time_in')->all();
-        $data = ArrayHelper::index($models, null, ['auditory_id', 'week_day']);
-        $modelsAuditory = Auditory::find()->joinWith('cat')
-            ->where(['=', 'study_flag', true]);
+        $models = $models->asArray()->orderBy('week_day, time_in, direction_id')->all();
+        $data = ArrayHelper::index($models, null, ['auditory_id', 'week_day', 'time_in']);
+        $modelsAuditory = Auditory::find()->joinWith('cat')->where(['=', 'study_flag', true]);
+
         if ($model_date->auditory_id) {
             $modelsAuditory = $modelsAuditory->andWhere(['=', 'auditory.id', $model_date->auditory_id]);
         }

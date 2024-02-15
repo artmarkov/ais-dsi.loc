@@ -31,7 +31,7 @@ $form = ActiveForm::begin([
 //                                ],
                             ])->label(Yii::t('art/studyplan', 'Plan Year'));
                         ?>
-                        <?php if(!(\artsoft\Art::isFrontend() && (User::hasRole(['student']) || User::hasRole(['employees'])))):?>
+                        <?php if(!(\artsoft\Art::isFrontend() && (User::hasRole(['student']) || User::hasRole(['employees']) || User::hasRole(['parents'])))):?>
                         <?= $form->field($model_date, 'teachers_id')->widget(\kartik\select2\Select2::class, [
                                 'data' => \artsoft\Art::isFrontend() ? Teachers::getTeachersListForTeacher($teachers_id) : \artsoft\helpers\RefBook::find('teachers_fullname', 1)->getList(),
                                 'options' => [

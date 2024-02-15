@@ -10,23 +10,26 @@
     <tbody>
     <?php use artsoft\helpers\Html;
     use artsoft\helpers\Schedule;
-
-    foreach ($dataItem as $index => $val): ?>
-        <tr class="item">
-            <td><?= $val['week_num'] != 0 ? $val['week_num'] . ' нед. ' . Schedule::decodeTime($val['time_in']) : Schedule::decodeTime($val['time_in']) ?>
-            <?= '-' . Schedule::decodeTime($val['time_out']) ?>
+//    echo '<pre>' . print_r($dataItem, true) . '</pre>'; die();
+    foreach ($dataItem as $time_in => $data_times):
+        foreach ($data_times as $item => $val):
+            if ($item == 0):
+                ?>
+                <tr class="item">
+                <td><?= $val['week_num'] != 0 ? $val['week_num'] . ' нед. ' . Schedule::decodeTime($val['time_in']) : Schedule::decodeTime($val['time_in']) ?>
+                    <?= '-' . Schedule::decodeTime($val['time_out']) ?>
+                </td>
+                <td><?= $val['sect_name'] ?></td>
+                <td><?= $val['subject'] ?></td>
+                <td>
+            <?php endif; ?>
+            <?= \artsoft\Art::isBackend() ? Html::a($teachers_list[$val['teachers_id']],
+            ['/teachers/default/schedule-items', 'id' => $val['teachers_id']], ['target' => '_blank', /*'class' => 'btn btn-info'*/])
+            : $teachers_list[$val['teachers_id']]; ?>
+            <br/>
+        <?php endforeach; ?>
             </td>
-            <td><?= $val['sect_name'] ?></td>
-            <td><?= $val['subject'] ?></td>
-            <td>
-                <?= \artsoft\Art::isBackend() ? Html::a($teachers_list[$val['teachers_id']],
-                    ['/teachers/default/schedule-items', 'id' => $val['teachers_id']],
-                    [
-                        'target' => '_blank',
-//                        'class' => 'btn btn-info',
-                    ]) : $teachers_list[$val['teachers_id']]; ?>
-            </td>
-        </tr>
+            </tr>
     <?php endforeach; ?>
     </tbody>
     <tfoot>
