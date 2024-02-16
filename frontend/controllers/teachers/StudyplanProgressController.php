@@ -28,14 +28,14 @@ class StudyplanProgressController extends MainController
         }
         $model_date = new DynamicModel(['date_in', 'subject_sect_studyplan_id']);
         $model_date->addRule(['date_in', 'subject_sect_studyplan_id'], 'required', ['message' => 'Необходимо выбрать из списка.'])
-            ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
+            ->addRule(['date_in'], 'safe');
 
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
 
             $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
-            $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+            $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
             $timestamp_in = $timestamp[0];
             $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
             $model_date->subject_sect_studyplan_id = $session->get('_progress_subject_sect_studyplan_id') ?? LessonProgressView::getSecListForTeachersDefault($this->teachers_id, $plan_year);
@@ -45,7 +45,7 @@ class StudyplanProgressController extends MainController
 
         $session->set('_progress_teachers_id', $this->teachers_id);
 
-        $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+        $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
         $timestamp_in = $timestamp[0];
         $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
         $model = LessonProgressView::getDataTeachers($model_date, $this->teachers_id, $plan_year);

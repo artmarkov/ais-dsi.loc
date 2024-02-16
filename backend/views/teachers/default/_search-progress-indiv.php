@@ -40,8 +40,10 @@ $form = ActiveForm::begin([
                             'format' => 'MM.yyyy',
                             'autoclose' => true,
                             'minViewMode' => 1,
-                            'todayBtn' => 'linked',
+//                                'todayBtn' => 'linked',
                             'todayHighlight' => true,
+                            'multidate' => true,
+                            'clearBtn' => true
                         ],
                         'pluginEvents' => ['changeDate' => "function(e){
                            $(e.target).closest('form').submit();

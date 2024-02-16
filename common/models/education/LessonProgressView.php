@@ -171,7 +171,8 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     public static function getDataTeachers($model_date, $teachers_id, $plan_year)
     {
         $data = $dates = $modelsProgress = [];
-        $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+        $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
+        $format_flag = ArtHelper::isNonYearList($model_date->date_in);
         $timestamp_in = $timestamp[0];
         $timestamp_out = $timestamp[1];
 
@@ -196,7 +197,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $dates_load = 0;
             foreach ($lessonDates as $id => $lessonDate) {
                 $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
-                $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d') . ' ' . $lessonDate['test_name_short'];
+                $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], $format_flag ? 'php:d/m/y' : 'php:d') . ' ' . $lessonDate['test_name_short'];
                 $attributes += [$date => $label];
                 if (Art::isBackend()) {
                     $datesArray = (new Query())->from('activities_schedule_view')
@@ -270,7 +271,8 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     {
         $data = $dates = $dates_load = [];
 
-        $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+        $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
+        $format_flag = ArtHelper::isNonYearList($model_date->date_in);
         $timestamp_in = $timestamp[0];
         $timestamp_out = $timestamp[1];
 
@@ -296,7 +298,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         foreach ($lessonDates as $id => $lessonDate) {
             $dates_load = 0;
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
-            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d') . ' ' . $lessonDate['test_name_short'];
+            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], $format_flag ? "php:d/m/y" : 'php:d') . ' ' . $lessonDate['test_name_short'];
             $attributes += [$date => $label];
             if (Art::isBackend()) {
                 $datesArray = (new Query())->from('activities_schedule_view')

@@ -18,6 +18,7 @@ class TeachersScheduleGenerator
     protected $time_max;
     protected $time_limit;
     protected $time_per;
+    protected $period_time = 300; // минимаольный шаг периода сек.
 
     protected $teachers_list;
     protected $teachers_fullname;
@@ -80,10 +81,11 @@ class TeachersScheduleGenerator
                 $time = Schedule::astr2academ($data['time']) * 3600; // приравниваем академический час к астрономическому
                 $count_per = floor($time / $this->time_limit);
                 $time_out_max = $data['min_time'] + $time + (($count_per > 1 ? $count_per - 1 : 1) * $this->time_per); // расчитываем максимальное время окончания с учетом перерывов
+                $time_out_max = ceil($time_out_max/$this->period_time) * $this->period_time; // выравниваем по 5 - мин интервалу
                 $min_time = $data['min_time'];
                 if ($time_out_max > $this->time_max) {
-                   $n = ceil(($time_out_max - $this->time_max)/300); // выравниваем по 5 - мин интервалу
-                    $min_time = $min_time - ($n * 300);
+                   $n = ceil(($time_out_max - $this->time_max)/$this->period_time); // выравниваем по 5 - мин интервалу
+                    $min_time = $min_time - ($n * $this->period_time);
                     $time_out_max = $this->time_max;
                 }
                 $data_schedule[$data['teachers_id']][$data['week_day']]['time'] = $time;
@@ -136,20 +138,19 @@ class TeachersScheduleGenerator
             }
         }
         foreach ($this->teachers_fullname as $teachers_id => $fullname) {
-            $items[] = [
+            $day = [];
+            for ($k = 1; $k <= 6; $k++) {
+                $day['day_' . $k] = implode("\n", $dada_sch[$teachers_id][$k] ?? []);
+            }
+            $items[] = array_merge([
                 'rank' => 'a',
                 'item' => $i + 1,
                 'fullname' => $fullname,
                 'level_slug' => $this->teachers_level[$teachers_id],
                 'direction_slug' => $this->teachers_direction[$teachers_id],
                 'tab_num' => $this->teachers_tab_num[$teachers_id],
-                'day_1' => implode("\n", $dada_sch[$teachers_id][1] ?? []),
-                'day_2' => implode("\n", $dada_sch[$teachers_id][2] ?? []),
-                'day_3' => implode("\n", $dada_sch[$teachers_id][3] ?? []),
-                'day_4' => implode("\n", $dada_sch[$teachers_id][4] ?? []),
-                'day_5' => implode("\n", $dada_sch[$teachers_id][5] ?? []),
-                'day_6' => implode("\n", $dada_sch[$teachers_id][6] ?? []),
-            ];
+            ], $day);
+            $i++;
         }
 
         $output_file_name = str_replace('.', '_' . Yii::$app->formatter->asDate(time(), 'php:Y_m_d H_i') . '.', basename(self::template_timesheet));

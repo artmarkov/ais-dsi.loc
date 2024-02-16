@@ -59,12 +59,10 @@ class DefaultController extends MainController
                 ->column();
             $query = Studyplan::find()
                 ->where(['in', 'studyplan.id', $studyplanIDS])
-                ->andWhere(['=', 'plan_year', $model_date->plan_year])
-                ->andWhere(['=', 'studyplan.status', 1]);
+                ->andWhere(['=', 'plan_year', $model_date->plan_year]);
         } else {
             $query = Studyplan::find()
-                ->where(['=', 'plan_year', $model_date->plan_year])
-                ->andWhere(['=', 'studyplan.status', 1]);
+                ->where(['=', 'plan_year', $model_date->plan_year]);
         }
 
         $searchModel = new StudyplanSearch($query);

@@ -435,6 +435,11 @@ class ArtHelper
         return $data;
     }
 
+    /**
+     * Обработчик даты типа 02.2024
+     * @param $date
+     * @return array
+     */
     public static function getMonYearParams($date)
     {
         $date_array = explode('.', $date);
@@ -444,5 +449,37 @@ class ArtHelper
         $day_out = date("t", $timestamp_in);
         $timestamp_out = mktime(23, 59, 59, $mon, $day_out, $year);
         return [$timestamp_in, $timestamp_out];
+    }
+
+    /**
+     * Обработчик списка дат типа 02.2024,04.2024,03.2024
+     * @param string $date
+     * @return array
+     */
+    public static function getMonYearParamsFromList(string $date)
+    {
+        $timestamp_in = $timestamp_out = [];
+        $array = explode(',', $date);
+        foreach ($array as $item => $date_item) {
+        $date_array = explode('.', $date_item);
+        $mon = $date_array[0];
+        $year = $date_array[1];
+        $t = mktime(0, 0, 0, $mon, 1, $year);
+        $day_out = date("t", $t);
+        $timestamp_in[] = $t;
+        $timestamp_out[] = mktime(23, 59, 59, $mon, $day_out, $year);
+        }
+        return [min($timestamp_in), max($timestamp_out)];
+    }
+
+    /**
+     *  Определяет multiple date
+     * @param $date
+     * @return bool
+     */
+    public static function isNonYearList($date)
+    {
+        $array = explode(',', $date);
+        return count($array) > 1;
     }
 }
