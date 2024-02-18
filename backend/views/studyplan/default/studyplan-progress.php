@@ -15,7 +15,11 @@ use yii\widgets\Pjax;
 
 $this->title = Yii::t('art/guide', 'Studyplan Progress');
 $this->params['breadcrumbs'][] = $this->title;
-//echo '<pre>' . print_r($model['data'], true) . '</pre>'; die();
+$columnsHeader = [];
+foreach ($model['columns'] as $my => $qty) {
+    $columnsHeader[] = ['content' => $my, 'options' => ['colspan' => $qty, 'class' => 'text-center']];
+}
+//echo '<pre>' . print_r($columns, true) . '</pre>'; die();
 $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
     if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
@@ -156,19 +160,15 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                     'beforeHeader' => [
                         [
                             'columns' => [
-                                ['content' => 'Учебный предмет/Группа', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+                                ['content' => 'Учебный предмет/Группа', 'options' => ['colspan' => 3, 'rowspan' => 2, 'class' => 'text-center warning', 'style' => 'vertical-align: middle;']],
                                 ['content' => 'Посещаемость/успеваемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
                             ],
                             'options' => ['class' => 'skip-export'] // remove this row from export
                         ],
-//                        [
-//                            'columns' => [
-//                                ['content' => '', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
-//                                ['content' => 'январь', 'options' => ['colspan' => 3, 'class' => 'text-center']],
-//                                ['content' => 'февраль', 'options' => ['colspan' => 4, 'class' => 'text-center']],
-//                            ],
-//                            'options' => ['class' => 'skip-export'] // remove this row from export
-//                        ]
+                        [
+                            'columns' => $columnsHeader,
+                            'options' => ['class' => 'skip-export'] // remove this row from export
+                        ]
                     ],
                 ]);
                 ?>

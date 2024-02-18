@@ -603,7 +603,7 @@ class StudyplanController extends MainController
 
             $model_date = new DynamicModel(['date_in']);
             $model_date->addRule(['date_in'], 'required')
-                ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
+                ->addRule(['date_in'], 'safe');
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
                 $mon = date('m');

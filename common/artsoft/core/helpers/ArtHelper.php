@@ -188,7 +188,7 @@ class ArtHelper
      * @return mixed
      * @throws \yii\base\InvalidConfigException
      */
-    public static function getMonthsList($format = 'MMMM')
+    public static function getMonthsList()
     {
         $monthAr = [
             1 => 'января',
@@ -208,7 +208,7 @@ class ArtHelper
         return $monthAr;
     }
 
-    public static function getMonthsNominativeList($format = 'MMMM')
+    public static function getMonthsNominativeList()
     {
         $monthAr = [
             1 => 'Январь',

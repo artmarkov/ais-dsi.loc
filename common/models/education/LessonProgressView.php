@@ -130,7 +130,6 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->andWhere(['=', 'studyplan_id', $studyplan_id])
             ->orderBy('lesson_date')
             ->asArray()->all();
-
         $modelsProgress = self::find()->where(['studyplan_id' => $studyplan_id])->all();
 
         $modelsMarks = ArrayHelper::index(LessonItemsProgressView::find()
@@ -142,14 +141,16 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $attributes += ['subject_vid_id' => Yii::t('art/guide', 'Subject Vid')];
         $attributes += ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
 
-        $dates = [];
+        $dates = $columns = [];
         foreach ($lessonDates as $id => $lessonDate) {
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
-            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], $format_flag ? 'php:d/m/y' : 'php:d');
-
+            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
+            $my = ArtHelper::getMonthsNominativeList()[date('n', $lessonDate['lesson_date'])] . ' ' . date('Y', $lessonDate['lesson_date']);
+            $columns[$my] = isset($columns[$my]) ? $columns[$my] + 1 : 1;
             $attributes += [$date => $label];
             $dates[] = $date;
         }
+
         $data = [];
         foreach ($modelsProgress as $item => $modelProgress) {
             $data[$item]['lesson_timestamp'] = $lessonDates;
@@ -166,7 +167,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 }
             }
         }
-        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
+        return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes, 'columns' => $columns];
     }
 
     public static function getDataTeachers($model_date, $teachers_id, $plan_year)
