@@ -100,6 +100,8 @@ foreach ($model['lessonDates'] as $id => $name) {
         'attribute' => $name,
         'label' => $model['attributes'][$name],
         'format' => 'raw',
+//        'headerOptions' => ['style' => 'height: 50px;'],
+//        'contentOptions' => ['style'=>'padding:0px 0px 0px 30px;vertical-align: middle;'],
     ];
 }
 
@@ -158,7 +160,15 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                                 ['content' => 'Посещаемость/успеваемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
                             ],
                             'options' => ['class' => 'skip-export'] // remove this row from export
-                        ]
+                        ],
+//                        [
+//                            'columns' => [
+//                                ['content' => '', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
+//                                ['content' => 'январь', 'options' => ['colspan' => 3, 'class' => 'text-center']],
+//                                ['content' => 'февраль', 'options' => ['colspan' => 4, 'class' => 'text-center']],
+//                            ],
+//                            'options' => ['class' => 'skip-export'] // remove this row from export
+//                        ]
                     ],
                 ]);
                 ?>

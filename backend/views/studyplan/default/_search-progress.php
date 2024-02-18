@@ -15,10 +15,10 @@ $form = ActiveForm::begin([
     'validateOnBlur' => false,
 ])
 ?>
-<div class="studyplan-progress-search">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [
+    <div class="studyplan-progress-search">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [
                         'type' => \kartik\date\DatePicker::TYPE_INPUT,
                         'options' => ['placeholder' => ''],
                         'convertFormat' => true,
@@ -26,15 +26,17 @@ $form = ActiveForm::begin([
                             'format' => 'MM.yyyy',
                             'autoclose' => true,
                             'minViewMode' => 1,
-                            'todayBtn' => 'linked',
+//                            'todayBtn' => 'linked',
                             'todayHighlight' => true,
+                            'multidate' => true,
+                            'clearBtn' => true
                         ],
-                    'pluginEvents' => ['changeDate' => "function(e){
+                        'pluginEvents' => ['changeDate' => "function(e){
                            $(e.target).closest('form').submit();
-                        }" ]
+                        }"]
                     ]
-            )->label('Месяц и год'); ?>
+                )->label('Месяц и год'); ?>
+            </div>
         </div>
     </div>
-</div>
 <?php ActiveForm::end(); ?>

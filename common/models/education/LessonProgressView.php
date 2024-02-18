@@ -121,16 +121,17 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
     public static function getDataStudyplan($model_date, $studyplan_id, $readonly = false)
     {
-        $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
+        $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
         $timestamp_in = $timestamp[0];
         $timestamp_out = $timestamp[1];
+        $format_flag = ArtHelper::isNonYearList($model_date->date_in);
         $lessonDates = LessonItemsProgressView::find()->select('lesson_date')->distinct()
             ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
             ->andWhere(['=', 'studyplan_id', $studyplan_id])
             ->orderBy('lesson_date')
             ->asArray()->all();
 
-        $modelsProgress = self::findAll(['studyplan_id' => $studyplan_id]);
+        $modelsProgress = self::find()->where(['studyplan_id' => $studyplan_id])->all();
 
         $modelsMarks = ArrayHelper::index(LessonItemsProgressView::find()
             ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
@@ -144,7 +145,8 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $dates = [];
         foreach ($lessonDates as $id => $lessonDate) {
             $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
-            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d');
+            $label = Yii::$app->formatter->asDate($lessonDate['lesson_date'], $format_flag ? 'php:d/m/y' : 'php:d');
+
             $attributes += [$date => $label];
             $dates[] = $date;
         }
@@ -164,7 +166,6 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 }
             }
         }
-
         return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
     }
 

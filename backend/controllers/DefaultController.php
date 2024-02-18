@@ -24,8 +24,10 @@ class DefaultController  extends \artsoft\controllers\admin\BaseController {
                     ->addRule(['auditory_id'], 'integer');
             if (!($model->load(Yii::$app->request->post()) && $model->validate())) {
                 $model->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+                $model->teachers_id = $session->get('__backendTeachersId') ?? null;
             }
             $session->set('__backendPlanYear', $model->plan_year);
+            $session->set('__backendTeachersId', $model->teachers_id);
             $this->modelDate = $model;
             return true;
         }
