@@ -89,6 +89,7 @@ $columns = [
             <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.';?>
         </div>
         <div class="panel-body">
+            <?= $this->render('_search-studyplan', compact('model_date')) ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

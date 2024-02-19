@@ -473,6 +473,24 @@ class ArtHelper
     }
 
     /**
+     * @param array $dates
+     * @return array
+     */
+    public static function getMonYearParamsFromArray(array $dates)
+    {
+        $timestamp_in = $timestamp_out = [];
+        foreach ($dates as $item => $date_item) {
+            $date_array = explode('.', $date_item);
+            $mon = $date_array[0];
+            $year = $date_array[1];
+            $t = mktime(0, 0, 0, $mon, 1, $year);
+            $day_out = date("t", $t);
+            $timestamp_in[] = $t;
+            $timestamp_out[] = mktime(23, 59, 59, $mon, $day_out, $year);
+        }
+        return [min($timestamp_in), max($timestamp_out)];
+    }
+    /**
      *  Определяет multiple date
      * @param $date
      * @return bool

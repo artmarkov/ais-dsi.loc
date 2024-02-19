@@ -70,7 +70,6 @@ class DefaultController extends MainController
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-
             if (isset($_GET['id'])) {
                 $id = $_GET['id'];
                 $model_date = $this->modelDate;
@@ -78,7 +77,6 @@ class DefaultController extends MainController
                     $model_date->teachers_id = $id;
                 } elseif ($model_date->teachers_id != $id) {
                     $id = $model_date->teachers_id;
-//                print_r($action->id); die();
                     $this->redirect(['/teachers/' . $id . '/' . $action->id]);
                 }
             }
@@ -435,6 +433,9 @@ class DefaultController extends MainController
         }
         $model_date = $this->modelDate;
 
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
         return $this->render('schedule', [
             'model' => $model,
             'model_date' => $model_date,
@@ -515,6 +516,11 @@ class DefaultController extends MainController
 
         } else {
             $model_date = $this->modelDate;
+
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
+
             $query = TeachersLoadView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)])->andWhere(['=', 'plan_year', $model_date->plan_year]);
             $searchModel = new TeachersLoadViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
@@ -664,7 +670,9 @@ class DefaultController extends MainController
 
         } else {
             $model_date = $this->modelDate;
-
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
             $searchModel = new ThematicViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
@@ -740,7 +748,9 @@ class DefaultController extends MainController
 
         } else {
             $model_date = $this->modelDate;
-
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
             $query = SubjectScheduleView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)])->andWhere(['=', 'plan_year', $model_date->plan_year]);
             $searchModel = new SubjectScheduleViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
@@ -775,7 +785,9 @@ class DefaultController extends MainController
     public function actionTeachersPlan($id, $objectId = null, $mode = null, $readonly = false)
     {
         $model_date = $this->modelDate;
-
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
         $modelTeachers = $this->findModel($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['teachers/default/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
@@ -909,7 +921,9 @@ class DefaultController extends MainController
 
         } else {
             $model_date = $this->modelDate;
-
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
             $query = ConsultScheduleView::find()->where(['=', 'teachers_id', $id])
                 ->andWhere(['status' => 1])
                 ->andWhere(['=', 'plan_year', $model_date->plan_year]);
@@ -1083,26 +1097,34 @@ class DefaultController extends MainController
             if ($session->get('_progress_teachers_id') && $session->get('_progress_teachers_id') != $modelTeachers->id) {
                 $session->remove('_progress_subject_sect_studyplan_id');
             }
-            $model_date = new DynamicModel(['date_in', 'subject_sect_studyplan_id', 'teachers_id']);
-            $model_date->addRule(['date_in'], 'required')
-                ->addRule('date_in', 'safe')
-                ->addRule('teachers_id', 'integer')
-                ->addRule('subject_sect_studyplan_id', 'integer');
+            $model_date = $this->modelDate;
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
+            $model_date->addRule(['date_in', 'date_out'], 'required')
+                ->addRule('date_in', function ($attribute) {
+                    if (Yii::$app->formatter->asTimestamp('01.' . $this->date_in) > Yii::$app->formatter->asTimestamp('01.' . $this->date_out)) $this->addError($attribute, 'Дата начала периода должна быть меньше даты окончания.');
+                })
+                ->addRule('date_in', function ($attribute) {
+                    $plan_year_1 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.' . $this->date_in));
+                    $plan_year_2 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.' . $this->date_out));
+                    if ($plan_year_1 != $plan_year_2) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
+                });
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
                 $mon = date('m');
                 $year = date('Y');
                 $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+                $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, date("t"), $year), 'php:m.Y');
                 $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
                 $timestamp_in = $timestamp[0];
+
                 $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
                 $model_date->subject_sect_studyplan_id = $session->get('_progress_subject_sect_studyplan_id') ?? LessonProgressView::getSecListForTeachersDefault($id, $plan_year);
-                $model_date->teachers_id = $modelTeachers->id;
             }
             $session->set('_progress_date_in', $model_date->date_in);
+            $session->set('_progress_date_out', $model_date->date_out);
             $session->set('_progress_subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id);
-
-            $session->set('_progress_teachers_id', $modelTeachers->id);
 
             $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
             $timestamp_in = $timestamp[0];
@@ -1306,29 +1328,35 @@ class DefaultController extends MainController
             if ($session->get('_progress_teachers_id') != $id) {
                 $session->remove('_progress_subject_key');
             }
-            $model_date = new DynamicModel(['date_in', 'subject_key', 'teachers_id']);
-            $model_date->addRule(['date_in'], 'required')
-                ->addRule('date_in', 'safe')
-                ->addRule('teachers_id', 'integer')
-                ->addRule('subject_key', 'string');
+            $model_date = $this->modelDate;
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
+            $model_date->addRule(['date_in', 'date_out'], 'required')
+                ->addRule('date_in', function ($attribute) {
+                    if (Yii::$app->formatter->asTimestamp('01.' . $this->date_in) > Yii::$app->formatter->asTimestamp('01.' . $this->date_out)) $this->addError($attribute, 'Дата начала периода должна быть меньше даты окончания.');
+                })
+                ->addRule('date_in', function ($attribute) {
+                    $plan_year_1 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.' . $this->date_in));
+                    $plan_year_2 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.' . $this->date_out));
+                    if ($plan_year_1 != $plan_year_2) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
+                });
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
                 $mon = date('m');
                 $year = date('Y');
 
                 $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+                $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, date("t"), $year), 'php:m.Y');
                 $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
                 $timestamp_in = $timestamp[0];
                 $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
                 $model_date->subject_key = $session->get('_progress_subject_key') ?? LessonProgressView::getIndivListForTeachersDefault($id, $plan_year);
-                $model_date->teachers_id = $id;
-//                print_r(LessonProgressView::getIndivListForTeachers($id, $plan_year)); die();
             }
 
             $session->set('_progress_date_in', $model_date->date_in);
+            $session->set('_progress_date_out', $model_date->date_out);
             $session->set('_progress_subject_key', $model_date->subject_key);
-            $session->set('_progress_teachers_id', $id);
-//            print_r($model_date); die();
             $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
             $timestamp_in = $timestamp[0];
             $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
@@ -1399,7 +1427,9 @@ class DefaultController extends MainController
         } elseif ('bar' == $mode) {
 
             $model_date = $this->modelDate;
-
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
             $data = TeachersEfficiency::getSummaryTeachersData($id, $model_date);
 
             return $this->renderIsAjax('efficiency-bar', compact(['data', 'model_date', 'modelTeachers']));
@@ -1436,7 +1466,9 @@ class DefaultController extends MainController
         } else {
             $this->view->params['breadcrumbs'][] = Yii::t('art/guide', 'Efficiencies');
             $model_date = $this->modelDate;
-
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
             $data = ArtHelper::getStudyYearParams($model_date->plan_year);
             $query = TeachersEfficiency::find()->where(['=', 'teachers_id', $id])
                 ->andWhere(['and', ['>=', 'date_in', $data['timestamp_in']], ['<=', 'date_in', $data['timestamp_out']]]);
@@ -1544,24 +1576,25 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
 
         $session = Yii::$app->session;
+        $model_date = $this->modelDate;
 
-        $model_date = new DynamicModel(['date_in', 'subject_type_id', 'activity_list', 'teachers_id']);
-        $model_date->addRule(['date_in'], 'required')
-            ->addRule(['date_in'], 'date', ['format' => 'php:m.Y'])
-            ->addRule('teachers_id', 'integer');
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
 
-            $model_date->date_in = $session->get('_timesheet_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
-            $model_date->teachers_id = $id;
+            $model_date->date_in = $session->get('_cheet_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+
         }
-        $session->set('_timesheet_date_in', $model_date->date_in);
+
+        $session->set('_cheet_date_in', $model_date->date_in);
 
         $model_date->activity_list = TeachersActivity::find()->where(['=', 'teachers_id', $id])->column();
         $model_date->subject_type_id = SubjectType::find()->column();
 
-//        echo '<pre>' . print_r($model_date->activity_list, true) . '</pre>'; die();
+//        echo '<pre>' . print_r($model_date, true) . '</pre>'; die();
         $model = new TeachersTimesheet($model_date);
         $model->geTeachersScheduleNeedNotice($id);
         $model = $model->getTeachersCheetData();

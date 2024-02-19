@@ -17,17 +17,15 @@ class DefaultController  extends \artsoft\controllers\admin\BaseController {
 
             $session = Yii::$app->session;
 
-            $model = new DynamicModel(['plan_year', 'teachers_id', 'auditory_id']);
+            $model = new DynamicModel(['date_in', 'date_out', 'subject_sect_studyplan_id', 'subject_key', 'plan_year', 'teachers_id', 'auditory_id', 'subject_type_id', 'activity_list', 'studyplan_id']);
             $model->addRule(['plan_year'], 'required')
-                    ->addRule(['plan_year'], 'integer')
-                    ->addRule(['teachers_id'], 'integer')
-                    ->addRule(['auditory_id'], 'integer');
+                ->addRule(['plan_year', 'studyplan_id', 'teachers_id', 'auditory_id', 'subject_sect_studyplan_id'], 'integer')
+                ->addRule(['date_in', 'date_out'], 'safe')
+                ->addRule('subject_key', 'string');
             if (!($model->load(Yii::$app->request->post()) && $model->validate())) {
                 $model->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-                $model->teachers_id = $session->get('__backendTeachersId') ?? null;
             }
             $session->set('__backendPlanYear', $model->plan_year);
-            $session->set('__backendTeachersId', $model->teachers_id);
             $this->modelDate = $model;
             return true;
         }

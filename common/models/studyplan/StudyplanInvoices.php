@@ -132,6 +132,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
         $check = self::find()->where(
             ['AND',
                 ['!=', 'id', $this->id],
+                ['=', 'teachers_id', $this->teachers_id],
                 ['=', 'studyplan_id', $this->studyplan_id],
                 ['=', 'invoices_id', $this->invoices_id],
                 ['=', 'invoices_summ', $this->invoices_summ],

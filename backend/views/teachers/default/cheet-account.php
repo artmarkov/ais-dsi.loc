@@ -96,10 +96,9 @@ foreach ($model['directions'] as $id => $name) {
                 'id' => 'studyplan-progress-grid-pjax',
             ])
             ?>
-            <?php
-            echo GridView::widget([
+            <?= GridView::widget([
                 'id' => 'studyplan-progress-grid',
-                'pjax' => false,
+                'pjax' => true,
                 'showPageSummary' => false,
                 'showFooter' => true,
                 'dataProvider' => new \yii\data\ArrayDataProvider([
@@ -124,6 +123,7 @@ foreach ($model['directions'] as $id => $name) {
                 ],
             ]);
             ?>
+            <?php Pjax::end() ?>
         </div>
     </div>
 </div>

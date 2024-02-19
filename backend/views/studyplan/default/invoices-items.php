@@ -247,8 +247,12 @@ $columns = [
 ?>
 <div class="studyplan-invoices-index">
     <div class="panel">
-        <?= $this->render('_search_inv', compact('model_date', 'id')) ?>
+        <div class="panel-heading">
+            Счета за обучение: <?= RefBook::find('students_fullname')->getValue($model->student_id); ?>
+            <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.'; ?>
+        </div>
         <div class="panel-body">
+        <?= $this->render('_search_inv', compact('model_date', 'model')) ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

@@ -136,6 +136,11 @@ class StudyplanController extends MainController
             ]);
 
         } else {
+            $model_date = $this->modelDate;
+
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
             $searchModel = new SubjectScheduleStudyplanViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
@@ -143,7 +148,7 @@ class StudyplanController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('@backend/views/studyplan/default/schedule-items', compact('dataProvider', 'searchModel', 'model'));
+            return $this->renderIsAjax('@backend/views/studyplan/default/schedule-items', compact('dataProvider', 'searchModel', 'model', 'model_date'));
         }
     }
 
@@ -159,11 +164,15 @@ class StudyplanController extends MainController
             throw new NotFoundHttpException("The StudyplanSubject was not found.");
         }
 
-        // $modelsSubject = $model->studyplanSubject;
+        $model_date = $this->modelDate;
+
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
 
         return $this->render('@backend/views/studyplan/default/schedule', [
             'model' => $model,
-            // 'modelsSubject' => (empty($modelsSubject)) ? [new StudyplanSubject()] : $modelsSubject,
+            'modelsSubject' => $model_date,
             'readonly' => $readonly
         ]);
     }
@@ -232,6 +241,11 @@ class StudyplanController extends MainController
             ]);
 
         } else {
+            $model_date = $this->modelDate;
+
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
             $searchModel = new ConsultScheduleStudyplanViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
@@ -239,7 +253,7 @@ class StudyplanController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('@backend/views/studyplan/default/consult-items', compact('dataProvider', 'searchModel', 'model'));
+            return $this->renderIsAjax('@backend/views/studyplan/default/consult-items', compact('dataProvider', 'searchModel', 'model', 'model_date'));
         }
     }
 
@@ -305,6 +319,11 @@ class StudyplanController extends MainController
             ]);
 
         } else {
+            $model_date = $this->modelDate;
+
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
             $searchModel = new SubjectCharacteristicViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
@@ -312,7 +331,7 @@ class StudyplanController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('@backend/views/studyplan/default/characteristic-items', compact('dataProvider', 'searchModel', 'model'));
+            return $this->renderIsAjax('@backend/views/studyplan/default/characteristic-items', compact('dataProvider', 'searchModel', 'model', 'model_date'));
         }
     }
 
@@ -446,6 +465,11 @@ class StudyplanController extends MainController
             ]);
 
         } else {
+            $model_date = $this->modelDate;
+
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
             $searchModel = new StudyplanThematicViewSearch();
 
             $searchName = StringHelper::basename($searchModel::className());
@@ -453,7 +477,7 @@ class StudyplanController extends MainController
             $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('@backend/views/studyplan/default/thematic-items', compact('dataProvider', 'searchModel', 'model'));
+            return $this->renderIsAjax('@backend/views/studyplan/default/thematic-items', compact('dataProvider', 'searchModel', 'model', 'model_date'));
         }
     }
 
@@ -592,17 +616,33 @@ class StudyplanController extends MainController
         } else {
             $session = Yii::$app->session;
 
-            $model_date = new DynamicModel(['date_in']);
-            $model_date->addRule(['date_in'], 'required')
-                ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
+            $model_date = $this->modelDate;
+
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
+            $model_date->addRule(['date_in', 'date_out'], 'required')
+                ->addRule(['date_in', 'date_out'], 'safe')
+                ->addRule('date_in', function ($attribute)
+                {
+                    if(Yii::$app->formatter->asTimestamp('01.'.$this->date_in) > Yii::$app->formatter->asTimestamp('01.'.$this->date_out)) $this->addError($attribute, 'Дата начала периода должна быть меньше даты окончания.');
+                })
+                ->addRule('date_in', function ($attribute)
+                {
+                    $plan_year_1 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_in));
+                    $plan_year_2 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_out));
+                    if($plan_year_1  != $plan_year_2 ) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
+                });
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
                 $mon = date('m');
                 $year = date('Y');
 
                 $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+                $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, date("t"), $year), 'php:m.Y');
             }
             $session->set('_progress_date_in', $model_date->date_in);
+            $session->set('_progress_date_out', $model_date->date_out);
 
             $modelLessonProgress = LessonProgressView::getDataStudyplan($model_date, $id, true);
 
@@ -754,25 +794,22 @@ class StudyplanController extends MainController
         } else {
             $session = Yii::$app->session;
 
-            $model_date = new DynamicModel(['studyplan_id','plan_year']);
-            $model_date->addRule(['plan_year'], 'required')
-                ->addRule(['plan_year'], 'string')
-                ->addRule(['studyplan_id'], 'integer');
+            $model_date = $this->modelDate;
+
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $model_date->plan_year = $session->get('_invoices_plan_year') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
                 $model_date->studyplan_id = $id;
             }
-
             if ($model_date->studyplan_id != $id) {
                 $this->redirect(['/parents/studyplan/' . $model_date->studyplan_id . '/studyplan-invoices']);
             }
-
             $session->set('_invoices_studyplan_id', $model_date->studyplan_id);
-            $session->set('_invoices_plan_year', $model->plan_year);
 
             $searchModel = new StudyplanInvoicesViewSearch();
             $searchName = StringHelper::basename($searchModel::className());
-            $params = ArrayHelper::merge($this->getParams(), [
+            $params = ArrayHelper::merge(Yii::$app->request->getQueryParams(), [
                 $searchName => [
                     'studyplan_id' => $model_date->studyplan_id,
                     'plan_year' => $model_date->plan_year,
@@ -781,7 +818,7 @@ class StudyplanController extends MainController
             ]);
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('@backend/views/studyplan/default/invoices-items', compact('dataProvider', 'searchModel', 'model_date', 'id'));
+            return $this->renderIsAjax('@backend/views/studyplan/default/invoices-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
         }
     }
 

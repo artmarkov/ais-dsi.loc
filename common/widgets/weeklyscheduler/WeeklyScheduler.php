@@ -24,7 +24,7 @@ class WeeklyScheduler extends Widget
     public $verticalScrollbar = 20;
     public $timeLineBorder = 1;
     public $bundleMoveWidth = 6;
-    public $draggable = 'isDraggable';
+    public $draggable = false; //isDraggable
     public $resizable = false; //'isResizable'
     public $resizableLeft = false;
     public $rows = [

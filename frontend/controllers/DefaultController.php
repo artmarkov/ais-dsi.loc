@@ -17,11 +17,9 @@ class DefaultController extends BaseController {
 
             $session = Yii::$app->session;
 
-            $model = new DynamicModel(['plan_year', 'teachers_id', 'auditory_id']);
+            $model = new DynamicModel(['plan_year', 'teachers_id', 'auditory_id', 'studyplan_id']);
             $model->addRule(['plan_year'], 'required')
-                ->addRule(['plan_year'], 'integer')
-                ->addRule(['teachers_id'], 'integer')
-                ->addRule(['auditory_id'], 'integer');
+                ->addRule(['plan_year', 'teachers_id', 'auditory_id', 'studyplan_id'], 'integer');
             if (!($model->load(Yii::$app->request->post()) && $model->validate())) {
                 $model->plan_year = $session->get('__frontendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
             }

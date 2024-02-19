@@ -40,17 +40,32 @@ $form = ActiveForm::begin([
                             'format' => 'MM.yyyy',
                             'autoclose' => true,
                             'minViewMode' => 1,
-//                                'todayBtn' => 'linked',
+                            'todayBtn' => 'linked',
                             'todayHighlight' => true,
-                            'multidate' => true,
-                            'clearBtn' => true
                         ],
                         'pluginEvents' => ['changeDate' => "function(e){
-                           $(e.target).closest('form').submit();
-                        }"]
+                                           $(e.target).closest('form').submit();
+                                        }"]
                     ]
-                )->label('Месяц и год');
-                ?>
+                )->label('Дата начала периода'); ?>
+
+                <?= $form->field($model_date, "date_out")->widget(DatePicker::class, [
+                        'type' => \kartik\date\DatePicker::TYPE_INPUT,
+                        'options' => ['placeholder' => ''],
+                        'convertFormat' => true,
+                        'pluginOptions' => [
+                            'format' => 'MM.yyyy',
+                            'autoclose' => true,
+                            'minViewMode' => 1,
+                            'todayBtn' => 'linked',
+                            'todayHighlight' => true,
+                        ],
+                        'pluginEvents' => ['changeDate' => "function(e){
+                                           $(e.target).closest('form').submit();
+                                        }"]
+                    ]
+                )->label('Дата окончания периода'); ?>
+
                 <?= $form->field($model_date, 'subject_key')->widget(\kartik\select2\Select2::class, [
                     'data' => \common\models\education\LessonProgressView::getIndivListForTeachers($modelTeachers->id, $plan_year),
                     'options' => [

@@ -29,14 +29,25 @@ class StudyplanProgressIndivController extends MainController
             $session->remove('_progress_subject_key');
         }
         $model_date = new DynamicModel(['date_in', 'subject_key']);
-        $model_date->addRule(['date_in', 'subject_key'], 'required')
-            ->addRule(['date_in'], 'safe');
+        $model_date->addRule(['date_in', 'date_out'], 'required')
+            ->addRule(['date_in', 'date_out'], 'safe')
+            ->addRule('subject_key', 'string')->addRule('date_in', function ($attribute)
+            {
+                if(Yii::$app->formatter->asTimestamp('01.'.$this->date_in) > Yii::$app->formatter->asTimestamp('01.'.$this->date_out)) $this->addError($attribute, 'Дата начала периода должна быть меньше даты окончания.');
+            })
+            ->addRule('date_in', function ($attribute)
+            {
+                $plan_year_1 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_in));
+                $plan_year_2 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_out));
+                if($plan_year_1  != $plan_year_2 ) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
+            });
 
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
 
             $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+            $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, date("t"), $year), 'php:m.Y');
             $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
             $timestamp_in = $timestamp[0];
             $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
@@ -45,6 +56,7 @@ class StudyplanProgressIndivController extends MainController
         }
 
         $session->set('_progress_date_in', $model_date->date_in);
+        $session->set('_progress_date_out', $model_date->date_out);
         $session->set('_progress_subject_key', $model_date->subject_key);
         $session->set('_progress_teachers_id', $this->teachers_id);
 

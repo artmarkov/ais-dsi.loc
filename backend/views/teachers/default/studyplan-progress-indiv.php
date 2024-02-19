@@ -15,7 +15,11 @@ use yii\widgets\Pjax;
 
 $this->title = $this->title = Yii::t('art/guide', 'Indiv Progress');
 $this->params['breadcrumbs'][] = $this->title;
-//echo '<pre>' . print_r($model, true) . '</pre>'; die();
+$columnsHeader = [];
+foreach ($model['columns'] as $my => $qty) {
+    $columnsHeader[] = ['content' => $my, 'options' => ['colspan' => $qty, 'class' => 'text-center']];
+}
+//echo '<pre>' . print_r($columns, true) . '</pre>'; die();
 
 $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers){
     $content = [];
@@ -171,9 +175,13 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Учебный предмет/Группа/Ученик', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
+                            ['content' => 'Учебный предмет/Группа/Ученик', 'options' => ['colspan' => 4, 'rowspan' => 2, 'class' => 'text-center warning', 'style' => 'vertical-align: middle;']],
                             ['content' => 'Посещаемость/успеваемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
                         ],
+                        'options' => ['class' => 'skip-export'] // remove this row from export
+                    ],
+                    [
+                        'columns' => $columnsHeader,
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]
                 ],
