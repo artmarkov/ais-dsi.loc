@@ -133,7 +133,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
 <div class="teachers-progress-index">
     <div class="panel">
         <div class="panel-heading">
-            Результаты запроса: <?php echo RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
+            Журнал успеваемости группы: <?php echo RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search-progress', compact('modelTeachers', 'model_date', 'plan_year')) ?>

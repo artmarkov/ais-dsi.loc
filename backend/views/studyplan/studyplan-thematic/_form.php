@@ -210,7 +210,7 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
                             </div>
                         </div>
                     </div>
-                <?php else: ?>
+                <?php elseif(User::hasRole(['teacher', 'department'])): ?>
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group btn-group pull-right">

@@ -28,13 +28,15 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ])->execute();
 
         $this->db->createCommand()->createView('studyplan_subject_view', '
-              SELECT DISTINCT tmp_table.studyplan_subject_id,
+  SELECT DISTINCT tmp_table.studyplan_subject_id,
     tmp_table.subject_sect_studyplan_id,
     tmp_table.subject_sect_id,
     tmp_table.studyplan_id,
     tmp_table.week_time,
     tmp_table.year_time,
     tmp_table.cost_month_summ,
+	tmp_table.med_cert,
+	tmp_table.fin_cert,
     tmp_table.student_id,
     tmp_table.course,
     tmp_table.plan_year,
@@ -47,6 +49,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
     tmp_table.subject_vid_id,
     tmp_table.subject_vid_name,
     tmp_table.subject_vid_slug,
+    tmp_table.subject_type_id,
     tmp_table.subject_type_name,
     tmp_table.subject_type_slug,
     tmp_table.education_programm_id,
@@ -60,7 +63,8 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
     tmp_table.memo_1,
     tmp_table.memo_2,
     tmp_table.memo_3,
-    tmp_table.memo_4
+    tmp_table.memo_4,
+    tmp_table.sect_name
    FROM ( SELECT studyplan_subject.id AS studyplan_subject_id,
             NULL::integer AS subject_sect_studyplan_id,
             NULL::integer AS subject_sect_id,
@@ -68,6 +72,8 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             studyplan_subject.week_time,
             studyplan_subject.year_time,
             studyplan_subject.cost_month_summ,
+		    studyplan_subject.med_cert,
+		 	studyplan_subject.fin_cert,
             studyplan.student_id,
             studyplan.course,
             studyplan.plan_year,
@@ -80,6 +86,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             guide_subject_vid.id AS subject_vid_id,
             guide_subject_vid.name AS subject_vid_name,
             guide_subject_vid.slug AS subject_vid_slug,
+            guide_subject_type.id AS subject_type_id,
             guide_subject_type.name AS subject_type_name,
             guide_subject_type.slug AS subject_type_slug,
             education_programm.id AS education_programm_id,
@@ -93,7 +100,8 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_1,
             concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \')\') AS memo_2,
             concat(subject.name, \'(\', guide_subject_category.slug, \'&nbsp;\', guide_subject_type.slug, \')&nbsp;-&nbsp;\', guide_subject_vid.slug, \'&nbsp;\', studyplan_subject.week_time * 4::double precision, \'&nbsp;час/мес\') AS memo_3,
-            concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'. - \', subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_4
+            concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'. - \', subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_4,
+            \'Индивидуально\'::text AS sect_name
            FROM studyplan_subject
              JOIN studyplan ON studyplan_subject.studyplan_id = studyplan.id
              JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
@@ -112,6 +120,8 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             studyplan_subject.week_time,
             studyplan_subject.year_time,
             studyplan_subject.cost_month_summ,
+		    studyplan_subject.med_cert,
+		 	studyplan_subject.fin_cert,
             studyplan.student_id,
             studyplan.course,
             studyplan.plan_year,
@@ -124,6 +134,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             guide_subject_vid.id AS subject_vid_id,
             guide_subject_vid.name AS subject_vid_name,
             guide_subject_vid.slug AS subject_vid_slug,
+            guide_subject_type.id AS subject_type_id,
             guide_subject_type.name AS subject_type_name,
             guide_subject_type.slug AS subject_type_slug,
             education_programm.id AS education_programm_id,
@@ -137,7 +148,12 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_1,
             concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \')\') AS memo_2,
             concat(subject.name, \'(\', guide_subject_category.slug, \'&nbsp;\', guide_subject_type.slug, \')&nbsp;-&nbsp;\', guide_subject_vid.slug, \'&nbsp;\', studyplan_subject.week_time * 4::double precision, \'&nbsp;час/мес\') AS memo_3,
-            concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'. - \', subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_4
+            concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'. - \', subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_4,
+            concat(subject_sect.sect_name, \' (\',
+                CASE
+                    WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
+                    ELSE \'\'::text
+                END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \' \', guide_subject_type.slug, \') \') AS sect_name
            FROM studyplan_subject
              JOIN studyplan ON studyplan_subject.studyplan_id = studyplan.id
              LEFT JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id

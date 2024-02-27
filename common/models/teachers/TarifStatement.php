@@ -37,8 +37,8 @@ class TarifStatement
         $this->teachers_bonus = $this->getTeachersBonus();
         $this->bonus_name = $this->getBonusName();
         $this->getTeachersLoad();
-       // $this->teachers_schedule_total = $this->getTeacherScheduleTotal();
-       // $this->teachers_consult_total = $this->getTeachersConsult();
+        // $this->teachers_schedule_total = $this->getTeacherScheduleTotal();
+        // $this->teachers_consult_total = $this->getTeachersConsult();
     }
 
 
@@ -54,7 +54,7 @@ class TarifStatement
     protected function getTeachersList()
     {
         $teachers_list = [];
-        foreach ($this->getTeachersActivities() as $model) {
+        foreach ($this->activity_list as $model) {
             $teachers_list[] = $model->teachers_id;
         }
         return array_unique($teachers_list);
@@ -128,7 +128,7 @@ class TarifStatement
     }
 
 
-     protected function getTeachersBonus()
+    protected function getTeachersBonus()
     {
         $models = Teachers::find()
             ->select('id as teachers_id, bonus_list, bonus_summ, bonus_summ_abs')
@@ -149,16 +149,16 @@ class TarifStatement
 
     protected function getTeachersBonusSumm($direction_vid_id, $teachers_id, $stake_value)
     {
-       if($direction_vid_id == 1000) {
-           return ($this->teachers_bonus[$teachers_id]['bonus_summ'] * $stake_value * 0.01) + $this->teachers_bonus[$teachers_id]['bonus_summ_abs'];
-       }
+        if ($direction_vid_id == 1000) {
+            return ($this->teachers_bonus[$teachers_id]['bonus_summ'] * $stake_value * 0.01) + $this->teachers_bonus[$teachers_id]['bonus_summ_abs'];
+        }
         return '';
     }
 
     protected function getTeachersBonusSlug($direction_vid_id, $teachers_id)
     {
         $array = [];
-        if($direction_vid_id == 1000) {
+        if ($direction_vid_id == 1000) {
             $bonus = explode(',', $this->teachers_bonus[$teachers_id]['bonus_list']);
             foreach ($bonus as $item => $id) {
                 $array[] = $this->bonus_name[$id] ?? '';
@@ -167,34 +167,43 @@ class TarifStatement
         return implode(' ', $array);
     }
 
-    protected function getData($subject_type_id) {
+    protected function getData($subject_type_id)
+    {
         $items = [];
-        foreach ($this->getTeachersActivities() as $item => $d) {
+        foreach ($this->activity_list as $item => $d) {
             $bonus_summ = $this->getTeachersBonusSumm($d->direction_vid_id, $d->teachers_id, $d->stake_value);
-            $items[] = [
-                'rank' => 'a',
-                'item' => $item + 1,
-                'last_name' => $d->last_name,
-                'first_name' => $d->first_name,
-                'middle_name' => $d->middle_name,
-                'level_name' => $d->level_slug,
-                'year_serv_spec' => $d->year_serv_spec,
-                'stake_slug' => $d->stake_slug,
-                'direction_slug' => $d->direction_slug,
-                'slug' => $d->work_id == 1001 ? $d->work_slug : ($d->direction_vid_id == 1001 ? $d->direction_vid_slug : ''),
-                'stake_teach' => $d->direction_id == 1000 ? $d->stake_value : '',
-                'stake_conс' => $d->direction_id == 1001 ? $d->stake_value : '',
-                'load_time_teach' =>  $this->teachers_schedule_total[1000][$d->direction_vid_id][$d->teachers_id][$subject_type_id] ?? 0,
-                'load_time_conс' =>  $this->teachers_schedule_total[1001][$d->direction_vid_id][$d->teachers_id][$subject_type_id] ?? 0,
-                'load_year_teach' => $this->teachers_consult_total[1000][$d->direction_vid_id][$d->teachers_id][$subject_type_id] ?? 0,
-                'load_year_conс' => $this->teachers_consult_total[1001][$d->direction_vid_id][$d->teachers_id][$subject_type_id] ?? 0,
-                'bonus_summ' => $bonus_summ,
-                'bonus_list' => $bonus_summ != '' ? $this->getTeachersBonusSlug($d->direction_vid_id, $d->teachers_id) : '',
-            ];
+            $load_time_teach = $this->teachers_schedule_total[1000][$d->direction_vid_id][$d->teachers_id][$subject_type_id] ?? 0;
+            $load_time_conс = $this->teachers_schedule_total[1001][$d->direction_vid_id][$d->teachers_id][$subject_type_id] ?? 0;
+            $load_year_teach = $this->teachers_consult_total[1000][$d->direction_vid_id][$d->teachers_id][$subject_type_id] ?? 0;
+            $load_year_conс = $this->teachers_consult_total[1001][$d->direction_vid_id][$d->teachers_id][$subject_type_id] ?? 0;
+
+            if (($load_time_teach + $load_time_conс) != 0) {
+                $items[] = [
+                    'rank' => 'a',
+                    'item' => $item + 1,
+                    'last_name' => $d->last_name,
+                    'first_name' => $d->first_name,
+                    'middle_name' => $d->middle_name,
+                    'level_name' => $d->level_slug,
+                    'year_serv_spec' => $d->year_serv_spec,
+                    'stake_slug' => $d->stake_slug,
+                    'direction_slug' => $d->direction_slug,
+                    'slug' => $d->work_id == 1001 ? $d->work_slug : ($d->direction_vid_id == 1001 ? $d->direction_vid_slug : ''),
+                    'stake_teach' => $d->direction_id == 1000 ? $d->stake_value : '',
+                    'stake_conс' => $d->direction_id == 1001 ? $d->stake_value : '',
+                    'load_time_teach' => $load_time_teach,
+                    'load_time_conс' => $load_time_conс,
+                    'load_year_teach' => $load_year_teach,
+                    'load_year_conс' => $load_year_conс,
+                    'bonus_summ' => $bonus_summ,
+                    'bonus_list' => $bonus_summ != '' ? $this->getTeachersBonusSlug($d->direction_vid_id, $d->teachers_id) : '',
+                ];
+            }
         }
         //        print_r($items); die();
         return $items;
     }
+
     /**
      * формирование документов: Тарификационная ведомость
      *

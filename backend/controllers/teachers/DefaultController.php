@@ -1241,10 +1241,9 @@ class DefaultController extends MainController
             $timestamp_in = $keyArray[1];
 
             $models = LessonItemsProgressView::find()
-                ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $id]))
-                ->where(['=', 'subject_key', $subject_key])
+                ->where(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $id]))
+                ->andWhere(['=', 'subject_key', $subject_key])
                 ->andWhere(['=', 'lesson_date', $timestamp_in])
-                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
                 ->all();
             foreach ($models as $model) {
                 $modelLesson = LessonItems::findOne(['id' => $model->lesson_items_id]);
@@ -1325,7 +1324,7 @@ class DefaultController extends MainController
 
         } else {
             $session = Yii::$app->session;
-            if ($session->get('_progress_teachers_id') != $id) {
+            if ($_GET['id'] != $id) {
                 $session->remove('_progress_subject_key');
             }
             $model_date = $this->modelDate;

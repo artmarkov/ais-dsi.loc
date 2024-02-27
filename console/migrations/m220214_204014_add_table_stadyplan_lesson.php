@@ -247,7 +247,13 @@ UNION ALL
     array_to_string(ARRAY( SELECT teachers_load.teachers_id
            FROM teachers_load
           WHERE teachers_load.studyplan_subject_id = lesson_items.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0), \',\'::text) AS teachers_list,
-    concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key
+    concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
+    studyplan.status,
+    studyplan.plan_year,
+	studyplan_subject.subject_id,
+	studyplan_subject.subject_vid_id,
+	studyplan_subject.subject_type_id,
+	studyplan_subject.subject_cat_id
    FROM lesson_items
      JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.subject_sect_studyplan_id = 0
      JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
@@ -279,11 +285,87 @@ UNION ALL
     array_to_string(ARRAY( SELECT teachers_load.teachers_id
            FROM teachers_load
           WHERE teachers_load.subject_sect_studyplan_id = lesson_items.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0), \',\'::text) AS teachers_list,
-    NULL::text AS subject_key
+    NULL::text AS subject_key,
+    studyplan.status,
+    studyplan.plan_year,
+	studyplan_subject.subject_id,
+	studyplan_subject.subject_vid_id,
+	studyplan_subject.subject_type_id,
+	studyplan_subject.subject_cat_id
    FROM lesson_items
      LEFT JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.studyplan_subject_id = 0
      JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
      JOIN subject_sect_studyplan ON subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id
+     JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
+     LEFT JOIN guide_lesson_test ON guide_lesson_test.id = lesson_items.lesson_test_id
+     LEFT JOIN guide_lesson_mark ON guide_lesson_mark.id = lesson_progress.lesson_mark_id
+  ORDER BY 1, 2, 6;
+        ')->execute();
+
+        $this->db->createCommand()->createView('lesson_items_progress_studyplan_view', '
+   SELECT 0 AS subject_sect_studyplan_id,
+    lesson_progress.studyplan_subject_id,
+    studyplan_subject.studyplan_id,
+    0 AS subject_sect_id,
+    lesson_items.id AS lesson_items_id,
+    lesson_items.lesson_date,
+    lesson_items.lesson_topic,
+    lesson_items.lesson_rem,
+    lesson_progress.id AS lesson_progress_id,
+    lesson_progress.lesson_mark_id,
+    guide_lesson_test.test_category,
+    guide_lesson_test.test_name,
+    guide_lesson_test.test_name_short,
+    guide_lesson_test.plan_flag,
+    guide_lesson_mark.mark_category,
+    guide_lesson_mark.mark_label,
+    guide_lesson_mark.mark_hint,
+    guide_lesson_mark.mark_value,
+    lesson_progress.mark_rem,
+    teachers_load.direction_id,
+    teachers_load.teachers_id,
+    studyplan.status,
+    studyplan.plan_year
+   FROM lesson_items
+     JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.subject_sect_studyplan_id = 0
+     JOIN teachers_load ON teachers_load.studyplan_subject_id = lesson_items.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
+     JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+     JOIN subject ON subject.id = studyplan_subject.subject_id
+     JOIN education_programm ON education_programm.id = studyplan.programm_id
+     LEFT JOIN guide_lesson_test ON guide_lesson_test.id = lesson_items.lesson_test_id
+     LEFT JOIN guide_lesson_mark ON guide_lesson_mark.id = lesson_progress.lesson_mark_id
+UNION ALL
+ SELECT lesson_items.subject_sect_studyplan_id,
+    lesson_progress.studyplan_subject_id,
+    studyplan_subject.studyplan_id,
+    subject_sect.id AS subject_sect_id,
+    lesson_items.id AS lesson_items_id,
+    lesson_items.lesson_date,
+    lesson_items.lesson_topic,
+    lesson_items.lesson_rem,
+    lesson_progress.id AS lesson_progress_id,
+    lesson_progress.lesson_mark_id,
+    guide_lesson_test.test_category,
+    guide_lesson_test.test_name,
+    guide_lesson_test.test_name_short,
+    guide_lesson_test.plan_flag,
+    guide_lesson_mark.mark_category,
+    guide_lesson_mark.mark_label,
+    guide_lesson_mark.mark_hint,
+    guide_lesson_mark.mark_value,
+    lesson_progress.mark_rem,
+    teachers_load.direction_id,
+    teachers_load.teachers_id,
+    studyplan.status,
+    studyplan.plan_year
+   FROM lesson_items
+     JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.studyplan_subject_id = 0
+     JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = lesson_items.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0
+     JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+     JOIN subject_sect_studyplan ON subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      LEFT JOIN guide_lesson_test ON guide_lesson_test.id = lesson_items.lesson_test_id
      LEFT JOIN guide_lesson_mark ON guide_lesson_mark.id = lesson_progress.lesson_mark_id
@@ -293,6 +375,7 @@ UNION ALL
 
     public function down()
     {
+        $this->db->createCommand()->dropView('lesson_items_progress_studyplan_view')->execute();
         $this->db->createCommand()->dropView('lesson_items_progress_view')->execute();
         $this->db->createCommand()->dropView('lesson_progress_view')->execute();
         $this->dropTableWithHistory('lesson_progress');

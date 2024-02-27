@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use artsoft\models\User;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
@@ -77,7 +78,7 @@ $columns = [
             'create' => function ($key, $model) {
                 if ($model->subject_sect_studyplan_id == null) {
                     return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                        Url::to(['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'studyplan_subject_id' => $model->studyplan_subject_id, 'mode' => 'create']), [
+                        ['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'studyplan_subject_id' => $model->studyplan_subject_id, 'mode' => 'create'], [
                             'title' => Yii::t('art', 'Create'),
                             'data-method' => 'post',
                             'data-pjax' => '0',
@@ -86,7 +87,7 @@ $columns = [
                     );
                 } else {
                     return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                        Url::to(['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id, 'mode' => 'create']), [
+                        ['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id, 'mode' => 'create'], [
                             'title' => Yii::t('art', 'Create'),
                             'data-method' => 'post',
                             'data-pjax' => '0',
@@ -98,7 +99,7 @@ $columns = [
             },
             'view' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
-                    Url::to(['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'view']), [
+                   ['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'view'], [
                         'title' => Yii::t('art', 'View'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -107,7 +108,7 @@ $columns = [
             },
             'update' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                    Url::to(['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'update']), [
+                   ['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'update'], [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -116,7 +117,7 @@ $columns = [
             },
             'delete' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                    Url::to(['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'delete']), [
+                    ['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'delete'], [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -149,8 +150,16 @@ $columns = [
         'template' => '{view}',
         'buttons' => [
             'view' => function ($key, $model) {
+                $url = '';
+                if (User::hasRole(['teacher', 'department', 'employees'])) {
+                    $url = '/teachers/studyplan/thematic-items';
+                } elseif (User::hasRole(['student'])) {
+                    $url = '/studyplan/default/thematic-items';
+                } elseif (User::hasRole(['parents'])) {
+                    $url = '/parents/studyplan/thematic-items';
+                }
                 return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
-                    ['/teachers/studyplan/thematic-items', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'view'], [
+                    [$url, 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'view'], [
                         'title' => Yii::t('art', 'View'),
                         'data-method' => 'post',
                         'data-pjax' => '0',

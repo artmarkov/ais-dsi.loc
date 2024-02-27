@@ -65,6 +65,9 @@ class DefaultController extends MainController
     public function actionIndex()
     {
         $model_date = $this->modelDate;
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
         $teachers_id = null;
         if ($model_date->teachers_id != null) {
             $studyplanIDS = TeachersLoadStudyplanView::find()

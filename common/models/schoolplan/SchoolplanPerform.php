@@ -93,7 +93,7 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
             [['admin_message'], 'required', 'when' => function ($model) {
                 return $model->admin_flag;
             }, 'enableClientValidation' => false],
-            [['studyplan_id'], 'unique', 'targetAttribute' => ['schoolplan_id', 'studyplan_subject_id', 'teachers_id'], 'message' => 'Ученик уже записан в реестр выполнения плана.'],
+          //  [['studyplan_id'], 'unique', 'targetAttribute' => ['schoolplan_id', 'studyplan_subject_id', 'teachers_id'], 'message' => 'Ученик уже записан в реестр выполнения плана.'],
         ];
     }
 
