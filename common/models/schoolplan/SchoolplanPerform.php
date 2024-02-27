@@ -280,6 +280,9 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
      */
     public static function getStudyplanThematicItemsById($studyplan_subject_id)
     {
+        if (!$studyplan_subject_id) {
+            return [];
+        }
         return Yii::$app->db->createCommand(' select studyplan_thematic_items.id as id,
 		                  studyplan_thematic_items.topic AS name
                     FROM studyplan_thematic_view 
