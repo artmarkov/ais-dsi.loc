@@ -164,7 +164,7 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
 
     public static function getDirectionVidListById($teachers_id, $direction_id)
     {
-        if (!$teachers_id && !$direction_id) {
+        if (!$teachers_id || !$direction_id) {
             return [];
         }
         return self::find()

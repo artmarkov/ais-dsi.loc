@@ -84,21 +84,42 @@ $form = ActiveForm::begin([
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                <?= $form->field($model_date, "subject_type_id")->dropDownList(RefBook::find('subject_type_name')->getList(), ['prompt' => Yii::t('art', 'Select...')])->label(Yii::t('art/guide', 'Subject Type')); ?>
-
-                                <?= $form->field($model_date, "course")->dropDownList(\artsoft\helpers\ArtHelper::getCourseList(), ['prompt' => Yii::t('art', 'Select...')])->label(Yii::t('art/studyplan', 'Course')); ?>
-
-                                <?= $form->field($model_date, "subject_id")->widget(\kartik\select2\Select2::class, [
-                                    'data' => \common\models\subject\Subject::getSubjectByCategory(),
+                                <?= $form->field($model_date, 'subject_form_id')->widget(\kartik\select2\Select2::class, [
+                                    'data' => RefBook::find('subject_form_name')->getList(),
                                     'options' => [
+                                        'disabled' => false,
                                         'placeholder' => Yii::t('art', 'Select...'),
+                                        'multiple' => false,
                                     ],
                                     'pluginOptions' => [
                                         'allowClear' => true
                                     ],
-                                ])->label(Yii::t('art/guide', 'Subject Name')); ?>
-
-
+                                ])->label(Yii::t('art/guide', 'Subject Form'));
+                                ?>
+                                <?= $form->field($model_date, 'subject_type_id')->widget(\kartik\select2\Select2::class, [
+                                    'data' => RefBook::find('subject_type_name')->getList(),
+                                    'options' => [
+                                        'disabled' => false,
+                                        'placeholder' => Yii::t('art', 'Select...'),
+                                        'multiple' => true,
+                                    ],
+                                    'pluginOptions' => [
+                                        'allowClear' => true
+                                    ],
+                                ])->label(Yii::t('art/guide', 'Subject Type'));
+                                ?>
+                                <?= $form->field($model_date, 'course')->widget(\kartik\select2\Select2::class, [
+                                    'data' => \artsoft\helpers\ArtHelper::getCourseList(),
+                                    'options' => [
+                                        'disabled' => false,
+                                        'placeholder' => Yii::t('art', 'Select...'),
+                                        'multiple' => true,
+                                    ],
+                                    'pluginOptions' => [
+                                        'allowClear' => true
+                                    ],
+                                ])->label(Yii::t('art/studyplan', 'Course'));
+                                ?>
                             </div>
                         </div>
                     </div>
@@ -107,7 +128,6 @@ $form = ActiveForm::begin([
             <div class="panel-footer">
                 <div class="form-group btn-group">
                     <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Получить данные', ['class' => 'btn btn-primary', 'name' => 'submitAction', 'value' => 'send']); ?>
-                    <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
                 </div>
             </div>
         </div>

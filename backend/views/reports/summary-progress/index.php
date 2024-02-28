@@ -115,19 +115,23 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                     'footer' => $hints,
                 ],
                 'columns' => $columns,
-//                'beforeHeader' => [
-//                    [
-//                        'columns' => [
-//                            ['content' => 'Предмет/Группа/Ученик', 'options' => ['colspan' => 4, 'rowspan' => 2, 'class' => 'text-center warning', 'style' => 'vertical-align: middle;']],
-//                            ['content' => 'Посещаемость/успеваемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
-//                        ],
-//                        'options' => ['class' => 'skip-export'] // remove this row from export
-//                    ],
-////                    [
-////                        'columns' => $columnsHeader,
-////                        'options' => ['class' => 'skip-export'] // remove this row from export
-////                    ]
-//                ],
+                'beforeHeader' => [
+                    [
+                        'columns' => [
+                            ['content' => 'Ученик/Программа/Класс', 'options' => ['colspan' => 6, 'rowspan' => 3, 'class' => 'text-center warning', 'style' => 'vertical-align: middle;']],
+                            ['content' => 'Посещаемость/успеваемость', 'options' => ['colspan' => count($model['subjectKeys']), 'class' => 'text-center danger']],
+                        ],
+                        'options' => ['class' => 'skip-export'] // remove this row from export
+                    ],
+                    [
+                        'columns' => $model['header'][0],
+                        'options' => ['class' => 'skip-export'] // remove this row from export
+                    ],
+                     [
+                        'columns' => $model['header'][1],
+                        'options' => ['class' => 'skip-export'] // remove this row from export
+                    ]
+                ],
             ]);
             ?>
         </div>
