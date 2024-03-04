@@ -2,6 +2,7 @@
 
 namespace common\models\teachers;
 
+use artsoft\helpers\RefBook;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -101,25 +102,43 @@ class TeachersLoadView extends TeachersLoad
         return $total;
     }
 
-//    public function getStudyplanWeekTime()
-//    {
-//        $funcSql = <<< SQL
-//    select MAX(week_time)
-//	from studyplan_subject
-//	where id = any(string_to_array('{$this->studyplan_subject_list}', ',')::int[])
-//SQL;
-//
-//        return $this->studyplan_subject_list ? \Yii::$app->db->createCommand($funcSql)->queryScalar() : 0;
-//    }
-
-//    /**
-//     * Проверка на необходимость добавления нагрузки
-//     * @return bool
-//     */
-//    public function getTeachersLoadsNeed()
-//    {
-//        return $this->getTeachersFullLoad() < $this->week_time;
-//    }
-
+    /**
+     * Вычисляет нагрузку концертмейстера по преподавателям
+     * @param $provider
+     * @param $teachers_id
+     * @return array
+     */
+    public static function getTeachersLoadMonitor($provider, $teachers_id)
+    {
+        $data = [];
+        $dataArray = ArrayHelper::index(ArrayHelper::toArray($provider), null, ['studyplan_subject_id', 'subject_sect_studyplan_id']);
+        foreach ($dataArray as $subject_sect_studyplan_id => $array) {
+            foreach ($array as $studyplan_subject_id => $item) {
+                $total = [];
+                foreach ($item as $index => $itemLoad) {
+                    $total[$itemLoad['direction_id']][$itemLoad['teachers_id']] = isset($total[$itemLoad['direction_id']][$itemLoad['teachers_id']]) ? $total[$itemLoad['direction_id']][$itemLoad['teachers_id']] + $itemLoad['load_time'] : $itemLoad['load_time'];
+                }
+                if (isset($total[1001][$teachers_id])) {
+                    if (isset($total[1000])) {
+                        foreach ($total[1000] as $teachers => $val) {
+                            $data[$teachers] = isset($data[$teachers]) ? $data[$teachers] + $total[1001][$teachers_id] : $total[1001][$teachers_id];
+                            break; // если несколько преподавателей в нагрузке.
+                        }
+                    }
+                }
+            }
+        }
+        $arr = [];
+        $string = '';
+        foreach ($data as $teachers_id => $time_load) {
+            $arr[] = RefBook::find('teachers_fio')->getValue($teachers_id) . ' - <b>' . $time_load . '</b>';
+        }
+        if(!empty($arr)) {
+            $string .= '<b>Распределение концертмейстерской нагрузки по преподавателям(ак.ч.):</b> ';
+            $string .= implode(', ', $arr);
+        }
+//        echo '<pre>' . print_r($data, true) . '</pre>'; die();
+        return $string;
+    }
 
 }

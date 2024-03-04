@@ -244,6 +244,16 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                 'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
                                 'format' => 'raw',
                             ],
+                            [
+                                'label' => 'Файл',
+                                'visible' => \artsoft\Art::isBackend(),
+                                'value' => function (Schoolplan $model) {
+                                    return $model->getFilesCount() ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> ' . $model->getFilesCount() :
+                                        '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> Нет';
+                                },
+                                'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
+                                'format' => 'raw',
+                            ],
 
                         ],
                         'beforeHeader' => [
@@ -251,9 +261,9 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                 'columns' => [
                                     ['content' => 'Мероприятие', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
                                     ['content' => 'Итоги/Количество', 'options' => ['colspan' => 4, 'class' => 'text-center success']],
-                                    ['content' => 'Статус', 'options' => ['colspan' => 5, 'class' => 'text-center danger']],
+                                    ['content' => 'Статус', 'options' => ['colspan' => 6, 'class' => 'text-center danger']],
                                 ],
-                                'options' => ['class' => 'skip-export'] // remove this row from export
+//                                'options' => ['class' => 'skip-export'] // remove this row from export
                             ]
                         ],
                     ]);

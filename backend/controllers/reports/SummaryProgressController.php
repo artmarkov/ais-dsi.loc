@@ -2,6 +2,7 @@
 
 namespace backend\controllers\reports;
 
+use common\models\education\EducationProgramm;
 use common\models\education\SummaryProgress;
 use Yii;
 use yii\base\DynamicModel;
@@ -20,8 +21,7 @@ class SummaryProgressController extends \backend\controllers\DefaultController
             ->addRule(['programm_id', 'subject_type_id', 'course'], 'safe');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            $model_date->programm_id = $session->get('_summary_progress_programm_id') ?? '' /*EducationProgramm::getProgrammScalar()*/
-            ;
+            $model_date->programm_id = $session->get('_summary_progress_programm_id') ?? EducationProgramm::getProgrammScalar();
             $model_date->education_cat_id = $session->get('_summary_progress_education_cat_id') ?? '';
         }
 

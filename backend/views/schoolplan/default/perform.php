@@ -54,7 +54,7 @@ use artsoft\grid\GridPageSize;
                     'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                 ],*/
                 'columns' => [
-                   /* ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],*/
+                    /* ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],*/
                     [
                         'attribute' => 'id',
                         'value' => function ($model) {
@@ -76,7 +76,7 @@ use artsoft\grid\GridPageSize;
                     [
                         'attribute' => 'lesson_mark_id',
                         'value' => function ($model) {
-                            return  $model->lessonMark ? $model->lessonMark->mark_label : '';
+                            return $model->lessonMark ? $model->lessonMark->mark_label : '';
                         },
                     ],
                     [
@@ -104,11 +104,35 @@ use artsoft\grid\GridPageSize;
                         'attribute' => 'signer_id',
                         'filter' => false,
                         'value' => function (SchoolplanPerform $model) {
-                            return isset($model->user->userCommon ) ? $model->user->userCommon->lastFM : $model->signer_id;
+                            return isset($model->user->userCommon) ? $model->user->userCommon->lastFM : $model->signer_id;
                         },
                         'options' => ['style' => 'width:150px'],
-                        'contentOptions' => ['style'=>"text-align:center; vertical-align: middle;"],
+                        'contentOptions' => ['style' => "text-align:center; vertical-align: middle;"],
                         'format' => 'raw',
+                    ],
+                    [
+                        'value' => function (SchoolplanPerform $model) {
+                            return artsoft\fileinput\widgets\FileInput::widget([
+                                'model' => $model,
+                                'pluginOptions' => [
+                                    'deleteUrl' => false,
+                                    'showRemove' => false,
+                                    'showCaption' => false,
+                                    'showBrowse' => false,
+                                    'showUpload' => false,
+                                    'dropZoneEnabled' => false,
+                                    'showCancel' => false,
+                                    'initialPreviewShowDelete' => false,
+                                    'fileActionSettings' => [
+                                        'showDrag' => false,
+                                        'showRotate' => false,
+                                    ],
+                                ],
+                            ]);
+                        },
+                        'label' => 'Файл',
+                        'format' => 'raw',
+                        'visible' => \artsoft\Art::isBackend()
                     ],
                     [
                         'class' => 'kartik\grid\ActionColumn',
@@ -147,14 +171,14 @@ use artsoft\grid\GridPageSize;
                             },
                         ],
                         'visibleButtons' => [
-                            'view' => function ($model){
+                            'view' => function ($model) {
                                 return true;
                             },
                             'update' => function ($model) {
                                 return \artsoft\Art::isBackend() ? true : $model->isAuthor();
                             },
                             'delete' => function ($model) {
-                                return  \artsoft\Art::isBackend() ? true : $model->isAuthor();
+                                return \artsoft\Art::isBackend() ? true : $model->isAuthor();
                             },
                         ]
                     ],

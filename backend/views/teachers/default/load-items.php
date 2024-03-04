@@ -289,6 +289,11 @@ $columns = [
                 'filterModel' => $searchModel,
                 'showPageSummary' => false,
                 'showFooter' => true,
+                'panel' => [
+                    'heading' => false,
+                    'type' => '',
+                    'footer' => \common\models\teachers\TeachersLoadView::getTeachersLoadMonitor($dataProvider->models, $model->id),
+                ],
                 'columns' => $columns,
                 'beforeHeader' => [
                     [

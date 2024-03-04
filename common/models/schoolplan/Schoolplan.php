@@ -4,25 +4,16 @@ namespace common\models\schoolplan;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
-use artsoft\fileinput\behaviors\FileManagerBehavior;
-use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\Html;
-use artsoft\helpers\PriceHelper;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\activities\ActivitiesOver;
 use common\models\auditory\Auditory;
-use common\models\education\EducationProgrammLevel;
 use common\models\education\LessonMark;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
-use common\models\own\Invoices;
-use common\models\parents\Parents;
-use common\models\students\Student;
 use common\models\studyplan\StudyplanThematicItems;
-use common\models\subject\Subject;
-use common\models\teachers\Teachers;
 use common\models\teachers\TeachersLoadStudyplanView;
 use common\models\user\UserCommon;
 use Yii;
@@ -32,8 +23,6 @@ use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
-use function GuzzleHttp\Psr7\str;
-use function morphos\Russian\inflectName;
 
 /**
  * This is the model class for table "schoolplan".
@@ -165,8 +154,9 @@ class Schoolplan extends \artsoft\db\ActiveRecord
                 'class' => ArrayFieldBehavior::class,
                 'attributes' => ['department_list', 'executors_list', 'protocol_members_list', 'protocol_class_list'],
             ],
-            [
-                'class' => FileManagerBehavior::class,
+            'fileManager' => [
+                'class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class,
+                'form_name' => 'Schoolplan',
             ],
         ];
     }
@@ -621,8 +611,8 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $model->executors_list = [$this->executor_over_id];
             if ($model->save(false)) {
                 $this->activities_over_id = $model->id;
-                    $transaction->commit();
-                    return true;
+                $transaction->commit();
+                return true;
             }
             $transaction->rollBack();
             return false;

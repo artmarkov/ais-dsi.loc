@@ -46,6 +46,9 @@ class SummaryProgress
 
     protected function getStudyplan()
     {
+        if(!$this->programm_id) {
+            return [];
+        }
         $models = (new \yii\db\Query())->from('studyplan_view')
             ->where(['programm_id' => $this->programm_id])
             ->andWhere(['status' => 1]);
@@ -78,7 +81,7 @@ class SummaryProgress
         if ($this->vid_sert == LessonTest::FINISH_ATTESTATION) {
             $models = $models->andWhere(['fin_cert' => true]);
         }
-        $models = $models->orderBy('subject_vid_id, subject_category_id, subject_name')->all();
+        $models = $models->orderBy('subject_category_id, subject_vid_id, subject_id')->all();
 
         return $models;
     }
@@ -103,7 +106,7 @@ class SummaryProgress
             ->distinct()
             ->where(['studyplan_subject_id' => $this->studyplanSubjectIds])
             ->andWhere(['status' => 1])
-            ->orderBy('subject_vid_id, subject_category_id, subject_name')
+            ->orderBy('subject_category_id, subject_vid_id, subject_id')
             ->all();
         return $models;
     }
@@ -155,6 +158,7 @@ class SummaryProgress
         }
         return [$columnsHeader, $columnsSubHeader];
     }
+
     /**
      * @return array
      * @throws \yii\base\InvalidConfigException

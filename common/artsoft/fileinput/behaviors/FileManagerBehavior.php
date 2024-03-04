@@ -11,8 +11,9 @@ use yii\db\ActiveRecord;
  * @package artsoft\fileinput\behaviors
  *
  * Usage:
- * 1. In your model, add the behavior and configure it:
+ * In your model, add the behavior and configure it:
  * owner_id - primary key owner your model (default - id)
+ * form_name - Model name (if there are inheritances)
  *
  * public function behaviors()
  * {
@@ -20,6 +21,7 @@ use yii\db\ActiveRecord;
  *             'fileManager' => [
  *                  'class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class,
  *               // 'owner_id' => 'id',
+ *               // 'form_name' => 'ModelName',
  *             ],
  *     ];
  * }
@@ -28,6 +30,7 @@ class FileManagerBehavior extends \yii\base\Behavior
 {
 
     public $owner_id = 'id';
+    public $form_name;
 
     public function events()
     {
@@ -39,7 +42,7 @@ class FileManagerBehavior extends \yii\base\Behavior
     public function getFiles()
     {
         return $this->owner->hasMany(FileManager::class, ['item_id' => $this->owner_id])
-            ->onCondition(['class' => $this->owner->formName()])
+            ->onCondition(['class' => $this->form_name ?? $this->owner->formName()])
             ->orderBy('sort');
     }
 

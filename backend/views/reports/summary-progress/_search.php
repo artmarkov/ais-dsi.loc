@@ -3,8 +3,6 @@
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
-use kartik\date\DatePicker;
-use kartik\depdrop\DepDrop;
 use yii\helpers\Url;
 use common\models\education\LessonTest;
 
@@ -28,7 +26,7 @@ $form = ActiveForm::begin([
                 <div class="row">
                     <div class="col-sm-12">
                         <?= \yii\bootstrap\Alert::widget([
-                            'body' => '<i class="fa fa-info"></i> Заполните поля, помеченные * и нажмите "Получить данные" или "Выгрузить в Excel". <br/> Поля, помеченные * сохраняются в текущей сессии.',
+                            'body' => '<i class="fa fa-info"></i> Заполните поля, помеченные * и нажмите "Получить данные". <br/> Поля, помеченные * сохраняются в текущей сессии.',
                             'options' => ['class' => 'alert-info'],
                         ]);
                         ?>

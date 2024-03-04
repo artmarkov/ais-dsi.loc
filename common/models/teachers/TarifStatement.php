@@ -127,7 +127,6 @@ class TarifStatement
 //        echo '<pre>' . print_r($data_load_cons, true) . '</pre>';
     }
 
-
     protected function getTeachersBonus()
     {
         $models = Teachers::find()
@@ -170,6 +169,8 @@ class TarifStatement
     protected function getData($subject_type_id)
     {
         $items = [];
+        $index = 0;
+        $teachersIdConst = null;
         foreach ($this->activity_list as $item => $d) {
             $bonus_summ = $this->getTeachersBonusSumm($d->direction_vid_id, $d->teachers_id, $d->stake_value);
             $load_time_teach = $this->teachers_schedule_total[1000][$d->direction_vid_id][$d->teachers_id][$subject_type_id] ?? 0;
@@ -178,9 +179,15 @@ class TarifStatement
             $load_year_conс = $this->teachers_consult_total[1001][$d->direction_vid_id][$d->teachers_id][$subject_type_id] ?? 0;
 
             if (($load_time_teach + $load_time_conс) != 0) {
+                $indexItem = '';
+                if ($d->teachers_id != $teachersIdConst) {
+                    $index++;
+                    $indexItem = $index . '.';
+                }
+                $teachersIdConst = $d->teachers_id;
                 $items[] = [
                     'rank' => 'a',
-                    'item' => $item + 1,
+                    'item' => $indexItem,
                     'last_name' => $d->last_name,
                     'first_name' => $d->first_name,
                     'middle_name' => $d->middle_name,

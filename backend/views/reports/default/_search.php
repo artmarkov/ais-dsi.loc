@@ -48,6 +48,8 @@ $form = ActiveForm::begin([
             ])->label('Преподаватели по занимаемым должностям');
             ?>
 
+            <?= $form->field($model_date, "update_list_flag")->checkbox()->label('Обновить список преподавателей'); ?>
+
             <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [
                     'type' => \kartik\date\DatePicker::TYPE_INPUT,
                     'options' => ['placeholder' => ''],
@@ -62,7 +64,7 @@ $form = ActiveForm::begin([
                 ]
             )->label('Месяц и год');
             ?>
-            <?= $form->field($model_date, "is_avans")->checkbox()->label('Первая половина заработной платы.');
+            <?= $form->field($model_date, "is_avans")->checkbox()->label('Первая половина заработной платы');
             ?>
             <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
         </div>

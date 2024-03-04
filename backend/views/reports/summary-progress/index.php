@@ -20,7 +20,6 @@ $columns = [
             return sprintf('#%06d', $models['student_id']);
         },
         'format' => 'raw',
-        'group' => true,
     ],
     [
         'attribute' => 'student_fio',
@@ -118,10 +117,10 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Ученик/Программа/Класс', 'options' => ['colspan' => 6, 'rowspan' => 3, 'class' => 'text-center warning', 'style' => 'vertical-align: middle;']],
-                            ['content' => 'Посещаемость/успеваемость', 'options' => ['colspan' => count($model['subjectKeys']), 'class' => 'text-center danger']],
+                            ['content' => 'Ученик/Программа/Класс', 'options' => ['colspan' => 6, 'rowspan' => 3, 'class' => 'text-center', 'style' => 'vertical-align: middle;']],
+                            ['content' => 'Посещаемость/успеваемость', 'options' => ['colspan' => count($model['subjectKeys']), 'class' => 'text-center']],
                         ],
-                        'options' => ['class' => 'skip-export'] // remove this row from export
+//                        'options' => ['class' => 'skip-export'] // remove this row from export
                     ],
                     [
                         'columns' => $model['header'][0],

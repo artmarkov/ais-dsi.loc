@@ -23,10 +23,11 @@ class DefaultController extends MainController
         $session = Yii::$app->session;
         $this->view->params['tabMenu'] = $this->tabMenu;
 
-        $model_date = new DynamicModel(['date_in', 'is_avans', 'subject_type_id', 'activity_list']);
+        $model_date = new DynamicModel(['date_in', 'is_avans', 'subject_type_id', 'activity_list', 'update_list_flag']);
         $model_date->addRule(['date_in', 'subject_type_id', 'activity_list'], 'required')
             ->addRule(['date_in'], 'date', ['format' => 'php:m.Y'])
-            ->addRule(['is_avans'], 'integer');
+            ->addRule(['is_avans'], 'integer')
+            ->addRule(['update_list_flag'], 'boolean');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
@@ -37,7 +38,10 @@ class DefaultController extends MainController
         }
         $session->set('_timesheet_date_in', $model_date->date_in);
         $session->set('_timesheet_subject_type_id', $model_date->subject_type_id);
-        $model_date->subject_type_id == 1000 ? Yii::$app->user->setSetting('_timesheet_activity_list_0', $model_date->activity_list) : Yii::$app->user->setSetting('_timesheet_activity_list_1', $model_date->activity_list);
+
+        if ($model_date->update_list_flag) {
+            $model_date->subject_type_id == 1000 ? Yii::$app->user->setSetting('_timesheet_activity_list_0', $model_date->activity_list) : Yii::$app->user->setSetting('_timesheet_activity_list_1', $model_date->activity_list);
+        }
         // echo '<pre>' . print_r($model_date->subject_type_id, true) . '</pre>'; die();
 
         if (Yii::$app->request->post('submitAction') == 'excel') {
