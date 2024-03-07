@@ -99,6 +99,7 @@ use artsoft\grid\GridPageSize;
                         'attribute' => 'status_sign',
                         'optionsArray' => \common\models\schoolplan\SchoolplanPerform::getStatusSignOptionsList(),
                         'options' => ['style' => 'width:100px'],
+                        'visible' => Yii::$app->settings->get('mailing.schoolplan_perform_doc')
                     ],
                     [
                         'attribute' => 'signer_id',
@@ -109,6 +110,7 @@ use artsoft\grid\GridPageSize;
                         'options' => ['style' => 'width:150px'],
                         'contentOptions' => ['style' => "text-align:center; vertical-align: middle;"],
                         'format' => 'raw',
+                        'visible' => Yii::$app->settings->get('mailing.schoolplan_perform_doc')
                     ],
                     [
                         'value' => function (SchoolplanPerform $model) {

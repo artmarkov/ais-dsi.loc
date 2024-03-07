@@ -14,6 +14,7 @@ class OwnSettings extends BaseSettingsModel
     public $email;
     public $head;
     public $chief_accountant;
+    public $chief_accountant_post;
 
     /**
      * @inheritdoc
@@ -22,8 +23,8 @@ class OwnSettings extends BaseSettingsModel
     {
         return ArrayHelper::merge(parent::rules(),
             [
-                [['name', 'shortname', 'address', 'email', 'head', 'chief_accountant'], 'required'],
-                [['name', 'shortname', 'address', 'email', 'head', 'chief_accountant'], 'string'],
+                [['name', 'shortname', 'address', 'email', 'head', 'chief_accountant', 'chief_accountant_post'], 'required'],
+                [['name', 'shortname', 'address', 'email', 'head', 'chief_accountant', 'chief_accountant_post'], 'string'],
             ]);
     }
 
@@ -37,6 +38,7 @@ class OwnSettings extends BaseSettingsModel
             'email' => 'E-mail учреждения',
             'head' => 'Руководитель учреждения',
             'chief_accountant' => 'Главный бухгалтер',
+            'chief_accountant_post' => 'Бухгалтер',
         ];
     }
 

@@ -163,6 +163,11 @@ class Parents extends \artsoft\db\ActiveRecord
         return $this->user ? $this->user->email : null;
     }
 
+    public function getUserSnils()
+    {
+        return $this->user ? $this->user->snils : null;
+    }
+
     public static function getDocumentValue($val)
     {
         $ar = self::PARENT_DOC;

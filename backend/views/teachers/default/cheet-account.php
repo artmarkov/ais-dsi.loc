@@ -59,7 +59,7 @@ foreach ($model['directions'] as $id => $name) {
         },
         'label' => $model['attributes'][$id]['name'],
         'format' => 'raw',
-        'footer' => \common\models\teachers\TeachersTimesheet::getTotal($model['data'], $id),
+        'footer' => \common\models\teachers\TeachersCheetAccount::getTotal($model['data'], $id),
         'contentOptions' => function ($model) {
             return $model['subject_type_id'] == 1000 ? ['class' => 'success'] : ['class' => 'warning text-right'];
 

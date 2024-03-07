@@ -2,6 +2,7 @@
 
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
+use common\models\history\StudyplanHistory;
 use common\models\studyplan\Studyplan;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
@@ -431,6 +432,7 @@ JS
                             <?= $form->field($model, 'status_reason')->dropDownList(Studyplan::getStatusReasonList(), ['disabled' => true]) ?>
 
                         </div>
+
                     </div>
                     <div class="panel-footer">
                         <?php if (\artsoft\Art::isBackend()): ?>
@@ -448,6 +450,22 @@ JS
                                     <?= Html::submitButton('<i class="fa fa-arrow-down" aria-hidden="true"></i> Завершить учебную программу', ['class' => 'btn btn-sm btn-default', 'name' => 'submitAction', 'value' => 'finish_plan', 'disabled' => $model->status == 0]); ?>
                                     <?= Html::submitButton('<i class="fa fa-arrow-left" aria-hidden="true"></i> Отменить решение', ['class' => 'btn btn-sm btn-danger', 'name' => 'submitAction', 'value' => 'restore', 'disabled' => $model->status == 1]); ?>
                                 <?php endif; ?>
+                            </div>
+                            <div class="text-default">
+                                <?php
+                                echo '<hr>';
+                                $modelHist = new StudyplanHistory($model->id);
+                                $hist = $modelHist->getHistoryFirst();
+                                if($hist['status'] == Studyplan::STATUS_ACTIVE) {
+                                    $date_open = Yii::$app->formatter->asDatetime($hist['created_at']);
+                                    echo '<span><strong>Дата создания плана: </strong>' . $date_open . '</span> ';
+                                }
+                                $hist = $modelHist->getHistoryLast();
+                                if($hist['status'] == Studyplan::STATUS_INACTIVE) {
+                                    $date_close = Yii::$app->formatter->asDatetime($hist['updated_at']);
+                                    echo '<span><strong>Дата закрытия плана: </strong>' . $date_close . '</span>';
+                                }
+                                ?>
                             </div>
                         <?php endif; ?>
                     </div>

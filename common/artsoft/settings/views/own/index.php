@@ -37,6 +37,7 @@ SettingsAsset::register($this);
                     <?= $form->field($model, 'email')->textInput(['maxlength' => true])->hint($model->getDescription('email')) ?>
                     <?= $form->field($model, 'head')->textInput(['maxlength' => true])->hint($model->getDescription('head')) ?>
                     <?= $form->field($model, 'chief_accountant')->textInput(['maxlength' => true])->hint($model->getDescription('chief_accountant')) ?>
+                    <?= $form->field($model, 'chief_accountant_post')->textInput(['maxlength' => true])->hint($model->getDescription('chief_accountant_post')) ?>
 
                 </div>
             </div>

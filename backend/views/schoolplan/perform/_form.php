@@ -125,7 +125,7 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                                 'multiple' => false,
                             ],
                             'pluginOptions' => [
-                                'allowClear' => false,
+                                'allowClear' => true,
                             ],
                         ]);
                         ?>
@@ -173,7 +173,7 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                             ],
                         ]);
                         ?>
-
+                <?php if (Yii::$app->settings->get('mailing.schoolplan_perform_doc')): ?>
                         <?= $form->field($model, 'status_sign')->widget(\kartik\select2\Select2::class, [
                             'data' => \common\models\schoolplan\SchoolplanPerform::getStatusSignList(),
                             'showToggleAll' => false,
@@ -203,8 +203,9 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
 
                         ]);
                         ?>
+                        <?php endif; ?>
                     </div>
-                    <?php if (!$model->isNewRecord): ?>
+                    <?php if (Yii::$app->settings->get('mailing.schoolplan_perform_doc') && !$model->isNewRecord): ?>
                         <?php if (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && $model->isSigner())): ?>
                             <?php if ($model->status_sign == 1): ?>
                                 <div class="row">

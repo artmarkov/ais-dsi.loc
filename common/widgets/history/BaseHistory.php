@@ -212,4 +212,14 @@ abstract class BaseHistory extends Model
             }
         }
     }
+
+    public function getHistoryFirst()
+    {
+        return (new \yii\db\Query)->from(static::getTableName())->where(['id' => $this->objId])->orderBy('version ASC')->one();
+    }
+
+    public function getHistoryLast()
+    {
+        return (new \yii\db\Query)->from(static::getTableName())->where(['id' => $this->objId])->orderBy('version DESC')->one();
+    }
 }

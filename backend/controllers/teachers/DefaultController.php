@@ -35,18 +35,16 @@ use common\models\schedule\SubjectScheduleView;
 use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
 use common\models\subject\SubjectType;
-use common\models\subjectsect\SubjectSect;
 use common\models\teachers\PortfolioView;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\search\TeachersPlanSearch;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersActivity;
+use common\models\teachers\TeachersCheetAccount;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadView;
 use common\models\teachers\TeachersPlan;
-use common\models\teachers\TeachersTimesheet;
 use common\models\user\UserCommon;
-use yii\base\DynamicModel;
 use yii\data\ActiveDataProvider;
 use yii\db\Exception;
 use yii\helpers\Json;
@@ -1594,7 +1592,7 @@ class DefaultController extends MainController
         $model_date->subject_type_id = SubjectType::find()->column();
 
 //        echo '<pre>' . print_r($model_date, true) . '</pre>'; die();
-        $model = new TeachersTimesheet($model_date);
+        $model = new TeachersCheetAccount($model_date);
         $model->geTeachersScheduleNeedNotice($id);
         $model = $model->getTeachersCheetData();
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);

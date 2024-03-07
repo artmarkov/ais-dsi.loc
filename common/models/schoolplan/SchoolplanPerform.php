@@ -81,7 +81,8 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
         return [
             [['lesson_mark_id', 'status_exe', 'status_sign', 'signer_id'], 'default', 'value' => null],
             [['schoolplan_id', 'studyplan_id', 'studyplan_subject_id', 'teachers_id', 'lesson_mark_id', 'status_exe', 'status_sign', 'signer_id', 'version'], 'integer'],
-            [['teachers_id', 'signer_id', 'status_exe'], 'required'],
+            [['teachers_id', 'status_exe'], 'required'],
+            [['signer_id'], 'required', 'on' => Yii::$app->settings->get('mailing.schoolplan_perform_doc', false)],
             [['resume'], 'string', 'max' => 1024],
             [['thematic_items_list'], 'safe'],
             [['winner_id'], 'string', 'max' => 255],

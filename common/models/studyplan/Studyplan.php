@@ -56,6 +56,7 @@ use function morphos\Russian\inflectName;
  *
  * @property EducationProgramm $programm
  * @property Student $student
+ * @property Parents $parent
  * @property SubjectForm $subjectForm
  */
 class Studyplan extends \artsoft\db\ActiveRecord
@@ -368,6 +369,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'student_sert_num' => $model->student->sert_num,
             'student_sert_organ' => $model->student->sert_organ,
             'student_sert_date' => $model->student->sert_date,
+            'student_snils' => $model->student->userSnils,
             'parent_address' => $model->parent->userAddress,
             'parent_phone' => $model->parent->userPhone,
             'parent_sert_name' => Parents::getDocumentValue($model->parent->sert_name),
@@ -375,6 +377,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'parent_sert_num' => $model->parent->sert_num,
             'parent_sert_organ' => $model->parent->sert_organ,
             'parent_sert_date' => $model->parent->sert_date,
+            'parent_birth_date' => $model->parent->userBirthDate, // День рождения родителя
             'inn' => $invoices->inn,
             'kpp' => $invoices->kpp,
             'oktmo' => $invoices->oktmo,
