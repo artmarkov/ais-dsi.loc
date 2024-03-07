@@ -100,14 +100,24 @@ class ExecutionSchoolplanPerform
 //            0 => Yii::t('art', 'Draft'),
 //            1 => Yii::t('art', 'Agreed'),
 //            2 => Yii::t('art', 'Wait'),
-        if ($value['status_sign'] == 0 && $value['status_exe'] == 2) {
-            $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: gray"></i>';
-        } elseif ($value['status_sign'] == 1 && $value['status_exe'] == 2) {
-            $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
-        } elseif ($value['status_sign'] == 2 && $value['status_exe'] == 2) {
-            $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: darkorange"></i>';
+        if(Yii::$app->settings->get('mailing.schoolplan_perform_doc')) {
+            if ($value['status_sign'] == 0 && $value['status_exe'] == 2) {
+                $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: gray"></i>';
+            } elseif ($value['status_sign'] == 1 && $value['status_exe'] == 2) {
+                $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
+            } elseif ($value['status_sign'] == 2 && $value['status_exe'] == 2) {
+                $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: darkorange"></i>';
+            } else {
+                $check = '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>';
+            }
         } else {
-            $check = '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>';
+            if ($value['status_exe'] == 1) {
+                $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: gray"></i>';
+            } elseif ($value['status_exe'] == 2) {
+                $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
+            } elseif ($value['status_exe'] == 3) {
+                $check = '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>';
+            }
         }
         return $check;
 

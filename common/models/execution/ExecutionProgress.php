@@ -4,18 +4,10 @@ namespace common\models\execution;
 
 use artsoft\Art;
 use artsoft\helpers\ArtHelper;
-use artsoft\widgets\Notice;
-use common\models\education\LessonItemsProgressView;
 use common\models\routine\Routine;
-use common\models\schedule\ConsultScheduleConfirm;
-use common\models\schedule\ConsultScheduleView;
-use common\models\studyplan\Studyplan;
-use common\models\studyplan\ThematicView;
-use common\models\teachers\TeachersLoadView;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use Yii;
-use artsoft\widgets\Tooltip;
 use yii\helpers\Html;
 
 /**
@@ -114,7 +106,6 @@ class ExecutionProgress
                     foreach ($dataSubject as $studyplan_subject_id => $values) {
                         foreach ($values as $i => $value) {
 //                            echo '<pre>' . print_r($value, true) . '</pre>';
-//                            echo '<pre>' . print_r($this->teachersProgress[$teachers_id], true) . '</pre>';
                             if ($subject_sect_studyplan_id == 0) {
                                 $check = !isset($this->teachersProgress[$teachers_id][$date][$subject_sect_studyplan_id][$studyplan_subject_id]) ? '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>' : '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
                                 $check = Html::a($check, [Art::isBackend() ? '/teachers/default/studyplan-progress-indiv' : '/execution/teachers/studyplan-progress-indiv', 'id' => $teachers_id, 'subject_key' => base64_encode($value['subject_key'] . '||' . $value['datetime_in'])], ['target' => '_blank', 'title' => $value['title'] . ': ' . Yii::$app->formatter->asDatetime($value['datetime_in']) . ' - ' . Yii::$app->formatter->asDatetime($value['datetime_out'])]);
