@@ -43,7 +43,7 @@ class DefaultController extends MainController
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsQuestionAttribute) && $valid;
 
-            if (isset($_POST['QuestionOptions'][0][0])) {
+            if (isset($_POST['QuestionOptions'])) {
                 foreach ($_POST['QuestionOptions'] as $index => $times) {
                     foreach ($times as $indexTime => $time) {
                         $data['QuestionOptions'] = $time;
@@ -132,9 +132,9 @@ class DefaultController extends MainController
 
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsQuestionAttribute) && $valid;
-            $valid = true;
+           // $valid = true;
             $timesIDs = [];
-            if (isset($_POST['QuestionOptions'][0][0])) {
+            if (isset($_POST['QuestionOptions'])) {
                 foreach ($_POST['QuestionOptions'] as $index => $times) {
                     $timesIDs = ArrayHelper::merge($timesIDs, array_filter(ArrayHelper::getColumn($times, 'id')));
                     foreach ($times as $indexTime => $time) {
@@ -212,7 +212,7 @@ class DefaultController extends MainController
     public function actionAnswers($id, $objectId = null, $mode = null, $readonly = false)
     {
         $model = $this->findModel($id);
-        $modelVal = new QuestionAnswers(['id' => $id]);
+        $modelVal = new QuestionAnswers(['id' => $id, 'objectId' => $objectId]);
 
         $this->view->params['tabMenu'] = $this->getMenu($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Questions'), 'url' => ['question/default/index']];
@@ -223,9 +223,9 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = 'Добавление ответа';
 
             if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
-               // print_r(Yii::$app->request->post());
+//                echo '<pre>' . print_r($modelVal, true) . '</pre>';
                 Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
-                $this->getSubmitAction($modelVal);
+                $this->redirect(['/question/default/answers/', 'id' => $id]);
             }
             return $this->renderIsAjax('/question/answers/_form', [
                 'model' => $modelVal,
@@ -247,14 +247,14 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Answers'), 'url' => ['/question/default/answers', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
 
-            $modelVal = $modelVal->getDataOne($objectId);
+            $modelVal = $modelVal->getDataOne();
             if (!isset($modelVal)) {
                 throw new NotFoundHttpException("The QuestionValue was not found.");
             }
-
+//                echo '<pre>' . print_r($modelVal, true) . '</pre>';
             if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction($modelVal);
+                $this->redirect(['/question/default/answers/', 'id' => $id]);
             }
             return $this->render('/question/answers/_form', [
                 'model' => $modelVal,
@@ -267,6 +267,19 @@ class DefaultController extends MainController
                 'data' => $modelVal->getDataArrayAll(),
             ]);
         }
+    }
+
+    /**
+     * Скачивание файла
+     * @param $id
+     * @return \yii\console\Response|\yii\web\Response
+     */
+    public function actionDownload($id)
+    {
+        $content = QuestionValue::findOne(['id' => $id]);
+        $tmp_img = Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . 'attachment.png';
+        file_put_contents($tmp_img, base64_decode(stream_get_contents($content->value_file)));
+        return Yii::$app->response->sendFile($tmp_img);
     }
 
     public function actionStat($id)
@@ -292,7 +305,7 @@ class DefaultController extends MainController
         return [
             ['label' => 'Карточка формы', 'url' => ['/question/default/update', 'id' => $id]],
             ['label' => 'Ответы', 'url' => ['/question/default/answers', 'id' => $id]],
-            ['label' => 'Статистика', 'url' => ['/question/default/stat', 'id' => $id]],
+           // ['label' => 'Статистика', 'url' => ['/question/default/stat', 'id' => $id]],
         ];
     }
 }

@@ -20,9 +20,9 @@ if ($user_cat == 'employees' || $user_cat == 'teachers') {
     $access_work_flag = UserCommon::find()->select($user_cat . '.access_work_flag')->innerJoin($user_cat, 'user_common_id = user_common.id')
         ->where(['=', 'user_common.id', $model->user_common_id])
         ->scalar();
-    if(!$access_work_flag || $access_work_flag != 1) {
+    if (!$access_work_flag || $access_work_flag != 1) {
         $access_disabled = true;
-       echo \yii\bootstrap\Alert::widget([
+        echo \yii\bootstrap\Alert::widget([
             'body' => '<i class="fa fa-info-circle"></i> Для получени пропуска необходимо пройти первичный инструктаж по охране труда.',
             'options' => ['class' => 'alert-danger'],
         ]);
@@ -73,22 +73,21 @@ if ($user_cat == 'employees' || $user_cat == 'teachers') {
 
                     </div>
                     <div class="col-sm-2">
-                        <div class="image-preview"
-                        ">
-                        <img src="<?= $model->getSigurPhoto() ?>"/>
+                        <div class="image-preview">
+                            <img src="<?= $model->getSigurPhoto() ?>"/>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="panel-footer">
-            <div class="form-group btn-group">
-                <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+            <div class="panel-footer">
+                <div class="form-group btn-group">
+                    <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                </div>
+                <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>
-            <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
-    </div>
 
-<?php ActiveForm::end(); ?>
+        <?php ActiveForm::end(); ?>
 
     </div>
 

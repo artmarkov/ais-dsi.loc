@@ -133,14 +133,14 @@ class TeachersTimesheet
     }
 
     /**
-     * Для бюджете группируем расписание по нагрузке за неделю
+     * Для бюджете группируем  нагрузку за неделю
      * @return array
      */
     protected function getTeachersDayScheduleTotal()
     {
         $data_schedule_total = [];
-        $models = (new Query())->from('subject_schedule_view')
-            ->select('direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(time_out-time_in) as time')
+        $models = (new Query())->from('teachers_load_view')
+            ->select('direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(week_time) as time')
             ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['subject_type_id' => $this->subject_type_id])
@@ -149,7 +149,7 @@ class TeachersTimesheet
             ->all();
 
         foreach ($models as $item => $data) {
-            $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']] = isset($data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']]) ? $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']] + Schedule::astr2academ($data['time']) * 4 : Schedule::astr2academ($data['time']) * 4;
+            $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']] = isset($data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']]) ? $data_schedule_total[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']] + $data['time'] * 4 : $data['time'] * 4;
         }
 
         return $data_schedule_total;
@@ -211,10 +211,11 @@ class TeachersTimesheet
 
         for ($day = $day_in; $day <= $day_out; $day++) {
             $time_consult = $this->getTeachersConsultDay($day, $direction_id, $direction_vid_id, $teachers_id);
-            $time_consult_15 += $day <= 15 ? $time_consult : 0;
+            $time_consult_15 += $day <= 15 ? $time_consult : null;
             $time_consult_30 += $time_consult;
 
             $data['time'][$day] = $this->getTeachersScheduleDay($day, $direction_id, $direction_vid_id, $teachers_id) + $time_consult;
+            $data['time'][$day] = $data['time'][$day] == 0 ? '' : $data['time'][$day];
             $data['status'][$day] = null;
             $isVocation = $this->routine[$day]['isVocation'];
             $isDayOff = $this->routine[$day]['isDayOff'];
@@ -228,7 +229,7 @@ class TeachersTimesheet
             } elseif (($data['time'][$day] > 0)) {
                 $data['status'][$day] = self::WORKDAY;
             }
-            $data['time_total'] = $this->teachers_day_schedule_total[$direction_id][$direction_vid_id][$teachers_id] ?? 0;
+            $data['time_total'] = $this->teachers_day_schedule_total[$direction_id][$direction_vid_id][$teachers_id] ?? null;
             $data['time_total_15'] = ($data['time_total'] / 2) + $time_consult_15;
             $data['time_total'] = !$this->is_avans ? $data['time_total'] + $time_consult_30 : null;
 

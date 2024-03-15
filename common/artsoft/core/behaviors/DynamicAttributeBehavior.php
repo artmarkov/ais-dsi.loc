@@ -2,6 +2,8 @@
 
 namespace artsoft\behaviors;
 
+use artsoft\helpers\ArtHelper;
+use artsoft\helpers\StringHelper;
 use dosamigos\transliterator\TransliteratorHelper;
 use yii\base\Behavior;
 use yii\db\ActiveRecord;
@@ -41,18 +43,15 @@ class DynamicAttributeBehavior extends Behavior
         if ($this->checkUniqueAttr($attr)) {
             return $attr;
         } else {
-            for ($suffix = 0; !$this->checkUniqueAttr($new_attr = $attr . '_' . $this->suf_array[$suffix]); $suffix++) {
+            for ($suffix = 0; !$this->checkUniqueAttr($new_attr = $attr . '' . $this->suf_array[$suffix]); $suffix++) {
             }
             return $new_attr;
         }
     }
 
-    private function attribute($string, $replacement = '_', $lowercase = true)
+    private function attribute($string, $replacement = '', $lowercase = true)
     {
-        $string = preg_replace('/[0-9]+/', '', $string); // очищаем от цифр
-        $string = Inflector::slug(TransliteratorHelper::process($string), $replacement, true);
-        $string = trim($string, $replacement);
-        return $lowercase ? strtolower($string) : $string;
+        return  ArtHelper::slug($string, $replacement, $lowercase);
     }
 
     private function checkUniqueAttr($attr)

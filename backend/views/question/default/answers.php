@@ -2,6 +2,7 @@
 
 use artsoft\grid\GridPageSize;
 use artsoft\helpers\Html;
+use common\models\question\QuestionAttribute;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 
@@ -11,7 +12,8 @@ foreach ($data['attributes'] as $attribute => $label) {
     $columns[] = [
         'attribute' => $attribute,
         'label' => $label,
-        'headerOptions' => ['class' => "grid"]
+        'headerOptions' => ['class' => "grid"],
+        'format' => (isset($data['types'][$attribute]) && $data['types'][$attribute] == QuestionAttribute::TYPE_FILE) ? 'image' : 'html',
     ];
 }
 $columns[] = [
@@ -76,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ])
             ?>
             <?= \artsoft\grid\GridView::widget([
-                'id' => 'teachers-efficiency-summary',
+                'id' => 'question-answers',
                 'dataProvider' => new \yii\data\ArrayDataProvider([
                     'allModels' => $data['data'],
                     'sort' => [
@@ -91,3 +93,17 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+
+<?php
+$css = <<<CSS
+img {
+   width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    border: 1px solid #3b5876;
+    padding: 3px;
+    vertical-align: middle;
+}
+CSS;
+$this->registerCss($css);
+?>

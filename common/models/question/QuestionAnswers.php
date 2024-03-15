@@ -9,39 +9,83 @@ use Yii;
 use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
+use yii\web\UploadedFile;
 use yii\widgets\MaskedInput;
 
 class QuestionAnswers extends DynamicModel
 {
     public $id;
+    public $model;
+    public $objectId;
+    public $models;
     private $attributes;
+    private $attributesTypes;
+    private $optionsValues;
     private $fileSize = 1024 * 1024 * 5; // Допустимый размер файла
-    private $fileExt = 'png, jpg, pdf'; // Допустимые расширения
+    private $fileExt = 'png, jpg, JPG'; // Допустимые расширения
 
     public function __construct($config = [])
     {
         $this->id = $config['id'];
+        $this->objectId = $config['objectId'];
+        $this->models = $this->getModels();
+        $this->model = $this->getModelQuestion();
         $this->attributes = array_merge(array_values($this->attributes()), ['question_users_id', 'users_id']);
+        $this->attributesTypes = $this->getAttributesType();
+        $this->optionsValues = $this->getOptionsValue();
         $this->addRules();
         $this->setAttributeLabels($this->labels());
+//         echo '<pre>' . print_r($opt_okuppied, true) . '</pre>';
+
         parent::__construct($this->attributes, $config);
     }
 
-    public function getModel()
+    /**
+     *  Нахождение id модели QuestionValue для имени атрибута
+     * @param $id
+     * @return |null
+     */
+    public function getValueId($attribute)
     {
-        return QuestionAttribute::find()->where(['=', 'question_id', $this->id])->orderBy('sort_order');
+        $values = ArrayHelper::map($this->loadValue(), 'name', 'question_value_id');
+        return $values[$attribute];
+    }
+
+    public function getModels()
+    {
+        return QuestionAttribute::find()->where(['question_id' => $this->id])->orderBy('sort_order');
+    }
+
+    public function getModelQuestion()
+    {
+        return Question::findOne(['id' => $this->id]);
     }
 
     public function attributes()
     {
-        return ArrayHelper::map($this->getModel()->asArray()->all(), 'id', 'name');
+        return ArrayHelper::map($this->models->asArray()->all(), 'id', 'name');
+    }
+
+    public function getAttributesType()
+    {
+        return ArrayHelper::map($this->models->asArray()->all(), 'name', 'type_id');
+    }
+
+    public function getOptionsValue()
+    {
+        $models = QuestionOptions::find()->innerJoin('question_attribute', 'question_attribute.id = question_options.attribute_id')
+            ->where(['=', 'question_attribute.question_id', $this->id])->asArray()->all();
+        return ArrayHelper::map($models, 'id', 'name');
     }
 
     private function addRules()
     {
-        foreach ($this->getModel()->asArray()->all() as $model) {
+        foreach ($this->models->asArray()->all() as $model) {
             if ($model['required'] == 1) {
                 $this->addRule($model['name'], 'required');
+            }
+            if ($this->model->vid_id == Question::VID_OPEN) {
+                $this->addRule('users_id', 'required');
             }
             switch ($model['type_id']) {
                 case QuestionAttribute::TYPE_STRING :
@@ -57,11 +101,6 @@ class QuestionAnswers extends DynamicModel
                 case QuestionAttribute::TYPE_EMAIL :
                     $this->addRule($model['name'], 'email');
                     break;
-                case QuestionAttribute::TYPE_PHONE :
-                case QuestionAttribute::TYPE_RADIOLIST :
-                case QuestionAttribute::TYPE_CHECKLIST :
-                    $this->addRule($model['name'], 'safe');
-                    break;
                 case QuestionAttribute::TYPE_FILE :
                     $this->addRule($model['name'], 'file', ['skipOnEmpty' => false, 'extensions' => $this->fileExt, 'maxSize' => $this->fileSize]);
                     break;
@@ -75,13 +114,13 @@ class QuestionAnswers extends DynamicModel
     {
         $labels = ['question_users_id' => '#'];
         $labels += ['users_id' => 'Пользователь'];
-        $labels += ArrayHelper::map($this->getModel()->asArray()->all(), 'name', 'label');
+        $labels += ArrayHelper::map($this->models->asArray()->all(), 'name', 'label');
         return $labels;
     }
 
     public function attributeHints()
     {
-        return ArrayHelper::map($this->getModel()->asArray()->all(), 'name', 'hint');
+        return ArrayHelper::map($this->models->asArray()->all(), 'name', 'hint');
     }
 
     private function loadQuery()
@@ -92,6 +131,8 @@ class QuestionAnswers extends DynamicModel
                      question_attribute.name as name,
                      question_users.users_id as users_id, 
                      question_users.id as question_users_id,
+                     question_value.id as question_value_id,
+                     question_value.question_attribute_id as question_attribute_id,
                      question_value.value_string as value_string,
                      question_value.question_option_list as question_option_list,
                      question_value.value_file as value_file'
@@ -106,9 +147,9 @@ class QuestionAnswers extends DynamicModel
         return $this->loadQuery()->asArray()->all();
     }
 
-    public function loadValue($objectId)
+    public function loadValue()
     {
-        return $this->loadQuery()->andWhere(['=', 'question_users.id', $objectId])->asArray()->all();
+        return $this->objectId ? $this->loadQuery()->andWhere(['=', 'question_users.id', $this->objectId])->asArray()->all() : [];
     }
 
     public function getDataArrayAll()
@@ -116,46 +157,70 @@ class QuestionAnswers extends DynamicModel
         $data = [];
 //        echo '<pre>' . print_r($this->loadValues(), true) . '</pre>'; die();
         foreach ($this->loadValues() as $model) {
-            $data[$model['question_users_id']] = isset($data[$model['question_users_id']]) ? array_merge($data[$model['question_users_id']], $this->getDataArray($model)) : $this->getDataArray($model);
+            $data[$model['question_users_id']] = isset($data[$model['question_users_id']]) ? array_merge($data[$model['question_users_id']], $this->getDataManager($model)) : $this->getDataManager($model);
         }
-        return ['data' => $data, 'attributes' => $this->labels()];
+        return ['data' => $data, 'attributes' => $this->labels(), 'types' => $this->attributesTypes];
     }
 
-    public function getDataOne($objectId)
+    public function getDataOne()
     {
-        foreach ($this->loadValue($objectId) as $model) {
+        foreach ($this->loadValue() as $model) {
             $this->question_users_id = $model['question_users_id'];
             $this->users_id = $model['users_id'];
             $name = $model['name'];
             $this->$name = $this->getValue($model);
         }
+
         return $this;
     }
 
-    public function getDataArray($model)
+    public function getDataManager($model)
     {
         $user = User::findOne($model['users_id']);
         $data['question_id'] = $model['question_id'];
-        $data['users_id'] = $user->username;
+        $data['users_id'] = $user->username ?? 'Гость';
         $data['question_users_id'] = $model['question_users_id'];
-        $data[$model['name']] = $this->getValue($model);
+        $data[$model['name']] = $this->getValueManager($model);
         return $data;
+    }
+
+    protected function getValueManager($model)
+    {
+        switch ($model['type_id']) {
+            case QuestionAttribute::TYPE_TEXT :
+                $value = mb_strlen($model['value_string'], 'UTF-8') > 200 ? mb_substr($model['value_string'], 0, 200, 'UTF-8') . '...' : $model['value_string'];
+                break;
+            case QuestionAttribute::TYPE_RADIOLIST :
+            case QuestionAttribute::TYPE_RADIOLIST_UNIQUE :
+                $value = $this->optionsValues[$model['question_option_list']] ?? $model['question_option_list'];
+                break;
+            case QuestionAttribute::TYPE_CHECKLIST :
+            case QuestionAttribute::TYPE_CHECKLIST_UNIQUE :
+                $values = [];
+                foreach (explode(',', $model['question_option_list']) as $option_id) {
+                    $values[] = $this->optionsValues[$option_id] ?? $option_id;
+                }
+                $value = implode(',', $values);
+                break;
+            case QuestionAttribute::TYPE_FILE :
+                $value = self::getFileContent($model['value_file']);
+                break;
+            default:
+                $value = $model['value_string'];
+        }
+        return $value;
     }
 
     protected function getValue($model)
     {
         switch ($model['type_id']) {
-            case QuestionAttribute::TYPE_STRING :
-            case QuestionAttribute::TYPE_TEXT :
-            case QuestionAttribute::TYPE_DATE :
-            case QuestionAttribute::TYPE_DATETIME :
-            case QuestionAttribute::TYPE_EMAIL :
-            case QuestionAttribute::TYPE_PHONE :
-                $value = $model['value_string'];
-                break;
             case QuestionAttribute::TYPE_RADIOLIST :
+            case QuestionAttribute::TYPE_RADIOLIST_UNIQUE :
+                $value = $model['question_option_list'];
+                break;
             case QuestionAttribute::TYPE_CHECKLIST :
-                $value = $model['question_option_list']; // TODO
+            case QuestionAttribute::TYPE_CHECKLIST_UNIQUE :
+                $value = explode(',', $model['question_option_list']);
                 break;
             case QuestionAttribute::TYPE_FILE :
                 $value = $model['value_file'];
@@ -165,6 +230,7 @@ class QuestionAnswers extends DynamicModel
         }
         return $value;
     }
+
 
     public function getForm($form, $item, $options = ['readonly' => false])
     {
@@ -189,8 +255,14 @@ class QuestionAnswers extends DynamicModel
             case QuestionAttribute::TYPE_RADIOLIST :
                 $form = $form->radioList($this->getOptionsList($item['id']));
                 break;
+            case QuestionAttribute::TYPE_RADIOLIST_UNIQUE :
+                $form = $form->radioList($this->getOptionsListUnique($item['id']));
+                break;
             case QuestionAttribute::TYPE_CHECKLIST :
                 $form = $form->checkboxList($this->getOptionsList($item['id']));
+                break;
+            case QuestionAttribute::TYPE_CHECKLIST_UNIQUE :
+                $form = $form->checkboxList($this->getOptionsListUnique($item['id']));
                 break;
             case QuestionAttribute::TYPE_FILE :
                 $form = $form->fileInput();
@@ -207,25 +279,56 @@ class QuestionAnswers extends DynamicModel
         return ArrayHelper::map($modelOptions, 'id', 'name');
     }
 
+    public function getOptionsListUnique($id)
+    {
+        $opt_available = $this->getOptionsList($id);
+        $query = $this->loadQuery()->andWhere(['question_attribute_id' => $id]);
+        if ($this->objectId) $query = $query->andWhere(['!=', 'question_users_id', $this->objectId]);
+        $query = $query->asArray()->all();
+        $opt_okuppied = implode(',', ArrayHelper::getColumn($query, 'question_option_list'));
+
+        foreach (explode(',', $opt_okuppied) as $key) {
+            unset($opt_available[$key]);
+        }
+        return $opt_available;
+    }
+
     public function save()
     {
+        $modelName = StringHelper::basename($this::className());
         $data = Yii::$app->request->post();
-        $user = new QuestionUsers();
+        $user = QuestionUsers::findOne(['id' => $this->objectId, 'question_id' => $this->id]) ?? new QuestionUsers();
         $user->question_id = $this->id;
-       // $user->users_id = Yii::$app->getUser()->getId();
-        $user->users_id = $data[StringHelper::basename($this::className())]['users_id'];
-
+        // $user->users_id = Yii::$app->getUser()->getId();
+        $user->users_id = $data[$modelName]['users_id'];
         $valid = $user->validate();
         if ($valid) {
             $transaction = \Yii::$app->db->beginTransaction();
             try {
                 if ($flag = $user->save(false)) {
-                    // print_r($data['QuestionAnswers']); die();
                     foreach ($this->attributes() as $id => $attribute) {
-                        $modelAttribute = new QuestionValue();
+                        $modelAttribute = QuestionValue::findOne(['question_users_id' => $user->id, 'question_attribute_id' => $id]) ?? new QuestionValue();
                         $modelAttribute->question_users_id = $user->id;
                         $modelAttribute->question_attribute_id = $id;
-                        $modelAttribute->value_string = $data[StringHelper::basename($this::className())][$attribute];
+
+                        switch ($this->attributesTypes[$attribute]) {
+                            case QuestionAttribute::TYPE_RADIOLIST :
+                            case QuestionAttribute::TYPE_RADIOLIST_UNIQUE :
+                                $modelAttribute->question_option_list = $data[$modelName][$attribute];
+                                break;
+                            case QuestionAttribute::TYPE_CHECKLIST :
+                            case QuestionAttribute::TYPE_CHECKLIST_UNIQUE :
+                                $modelAttribute->question_option_list = is_array($data[$modelName][$attribute]) ? implode(',', $data[$modelName][$attribute]) : $data[$modelName][$attribute];
+                                break;
+                            case QuestionAttribute::TYPE_FILE :
+                                $file = UploadedFile::getInstanceByName('QuestionAnswers[' . $attribute . ']');
+                                $file->saveAs(Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . $file->name);
+                                $modelAttribute->value_file = base64_encode(file_get_contents(Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . $file->name));
+                                break;
+                            default:
+                                $modelAttribute->value_string = $data[$modelName][$attribute];
+                        }
+//                        echo '<pre>' . print_r($modelAttribute, true) . '</pre>';
                         if (!($flag = $modelAttribute->save(false))) {
                             $transaction->rollBack();
                             break;
@@ -234,7 +337,6 @@ class QuestionAnswers extends DynamicModel
                 }
                 if ($flag) {
                     $transaction->commit();
-                    $this->getSubmitAction();
                     return true;
                 }
             } catch (\Exception $e) {
@@ -250,4 +352,11 @@ class QuestionAnswers extends DynamicModel
         return QuestionUsers::deleteAll(['id' => $id, 'question_id' => $this->id]);
     }
 
+    /**
+     * @return string
+     */
+    public static function getFileContent($valueFileBin)
+    {
+        return is_resource($valueFileBin) ? 'data:image/png;base64,' . stream_get_contents($valueFileBin) : '';
+    }
 }

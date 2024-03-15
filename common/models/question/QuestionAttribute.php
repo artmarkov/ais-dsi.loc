@@ -19,7 +19,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string|null $hint Подсказка атрибута формы
  * @property int $required Обязательность атрибута (Да, Нет)
  * @property string|null $default_value
- * @property string $description Описание вопроса
+ * @property string $description Описание поля
  * @property int|null $sort_order
  * @property int $created_at
  * @property int|null $created_by
@@ -40,7 +40,9 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
     const TYPE_EMAIL = 5;
     const TYPE_PHONE = 6;
     const TYPE_RADIOLIST = 7;
+    const TYPE_RADIOLIST_UNIQUE = 77;
     const TYPE_CHECKLIST = 8;
+    const TYPE_CHECKLIST_UNIQUE = 88;
     const TYPE_FILE = 9;
 
     /**
@@ -95,7 +97,7 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
             'hint' => 'Подсказка поля',
             'required' => 'Обязательно к заполнению',
             'default_value' => 'Значение по умолчанию',
-            'description' => 'Описание вопроса',
+            'description' => 'Описание Поля',
             'sort_order' => 'Sort Order',
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
@@ -121,6 +123,8 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
             self::TYPE_PHONE => 'Телефон',
             self::TYPE_RADIOLIST => 'Радио-лист (ед.выбор)',
             self::TYPE_CHECKLIST => 'Чек-лист (мн.выбор)',
+            self::TYPE_RADIOLIST_UNIQUE => 'Радио-лист уникальный (ед.выбор)',
+            self::TYPE_CHECKLIST_UNIQUE => 'Чек-лист уникальный (мн.выбор)',
             self::TYPE_FILE => 'Файл',
         );
     }
@@ -164,5 +168,17 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
     public function getQuestionValues()
     {
         return $this->hasMany(QuestionValue::className(), ['question_attribute_id' => 'id']);
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if ($this->sort_order == null) {
+            $this->sort_order = $this->id;
+        }
+        return parent::beforeSave($insert);
     }
 }

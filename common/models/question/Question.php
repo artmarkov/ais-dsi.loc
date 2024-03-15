@@ -74,6 +74,9 @@ class Question extends \artsoft\db\ActiveRecord
                 'class' => DateFieldBehavior::class,
                 'attributes' => ['timestamp_in', 'timestamp_out'],
             ],
+            [
+                'class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class,
+            ],
         ];
     }
 
@@ -89,7 +92,7 @@ class Question extends \artsoft\db\ActiveRecord
             [['author_id', 'category_id', 'users_cat', 'vid_id', 'status', 'email_flag', 'email_author_flag'], 'integer'],
             [['timestamp_in', 'timestamp_out'], 'safe'],
             [['division_list', 'moderator_list'], 'safe'],
-            [['description'], 'string', 'max' => 1024],
+            [['description'], 'string', 'max' => 4000],
             [['name'], 'string', 'max' => 127],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['author_id' => 'id']],
             [['division_list', 'users_cat'], 'required', 'when' => function ($model) {
@@ -151,6 +154,25 @@ class Question extends \artsoft\db\ActiveRecord
         );
     }
 
+    public function getUsersCategory()
+    {
+        switch ($this->users_cat) {
+            case self::GROUP_STUDENTS:
+                return ['students'];
+                break;
+            case self::GROUP_EMPLOYEES:
+                return ['employees'];
+                break;
+            case self::GROUP_TEACHERS:
+                return ['teachers'];
+                break;
+            case self::GROUP_PARENTS:
+                return ['parents'];
+                break;
+            default:
+                return [];
+        }
+    }
     /**
      * @param $val
      * @return mixed
@@ -217,7 +239,7 @@ class Question extends \artsoft\db\ActiveRecord
      */
     public function getQuestionAttributes()
     {
-        return $this->hasMany(QuestionAttribute::className(), ['question_id' => 'id']);
+        return $this->hasMany(QuestionAttribute::className(), ['question_id' => 'id'])->orderBy('sort_order');
     }
 
     /**

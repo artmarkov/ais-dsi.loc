@@ -59,9 +59,9 @@ class TeachersCheetAccount
         $attributes += ['sect_name' => Yii::t('art/guide', 'Sect Name')];
         $attributes += ['subject_type_id' => Yii::t('art/guide', 'Subject Type'),];
         $attributes += $directions;
-        // Бюджет
-        $models0 = (new Query())->from('subject_schedule_view')
-            ->select('studyplan_subject_id, subject_sect_studyplan_id, direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(time_out-time_in) as time')
+        // Бюджет - по нагрузке за неделю
+        $models0 = (new Query())->from('teachers_load_view')
+            ->select('studyplan_subject_id, subject_sect_studyplan_id, direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(week_time) as time')
             ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['subject_type_id' => 1000])
@@ -109,9 +109,9 @@ class TeachersCheetAccount
                 if (isset($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
                     foreach ($models0[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']] as $k => $time) {
                         if (isset($data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'])) {
-                            $data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'] += Schedule::astr2academ($time['time']) * 4;
+                            $data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'] += $time['time'] * 4;
                         } else {
-                            $data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'] = Schedule::astr2academ($time['time']) * 4;
+                            $data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'] = $time['time'] * 4;
                         }
                     }
                 }

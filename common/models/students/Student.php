@@ -32,6 +32,7 @@ class Student extends ActiveRecord
     const STUDENT_DOC = [
         'password' => 'Паспорт',
         'birth_cert' => 'Свидетельство о рождении',
+        'birth_cert_egr' => 'Запись о рождении ЕГР ЗАГС',
     ];
 
     const LIMITED_STATUS = [

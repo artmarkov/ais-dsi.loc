@@ -164,7 +164,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'slug' => $this->string(32),
             'bonus_vid_id' => $this->integer(),
             'value_default' => $this->string(127),
-            'status' => $this->integer()->notNull(),
+            'status' => $this->integer()->notNull()->defaultValue(1),
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_teachers_bonus' ,'Достижения');

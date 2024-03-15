@@ -38,6 +38,7 @@ class Bonus extends \artsoft\db\ActiveRecord
             [['bonus_category_id', 'bonus_vid_id', 'status'], 'integer'],
             [['name', 'value_default'], 'string', 'max' => 127],
             [['slug'], 'string', 'max' => 32],
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
             [['bonus_category_id'], 'exist', 'skipOnError' => true, 'targetClass' => BonusCategory::class, 'targetAttribute' => ['bonus_category_id' => 'id']],
             [['name','slug'], 'unique'],
         ];

@@ -6,7 +6,7 @@ use artsoft\helpers\ArtHelper;
 use common\models\subject\SubjectType;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersActivity;
-use common\models\teachers\TeachersTimesheet;
+use common\models\teachers\TeachersCheetAccount;
 use Yii;
 use yii\base\DynamicModel;
 
@@ -36,7 +36,7 @@ class CheetAccountController extends MainController
         $model_date->subject_type_id = SubjectType::find()->column();
 //        echo '<pre>' . print_r($model_date->activity_list, true) . '</pre>'; die();
         $model = [];
-        $model =  new TeachersTimesheet($model_date);
+        $model =  new TeachersCheetAccount($model_date);
         $model->geTeachersScheduleNeedNotice($this->teachers_id);
         $model = $model->getTeachersCheetData();
         // $model = LessonProgressView::getDataIndivTeachers($model_date, $id);
