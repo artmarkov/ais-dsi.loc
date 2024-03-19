@@ -66,8 +66,21 @@ $form = ActiveForm::begin([
             ?>
             <?= $form->field($model_date, "is_avans")->checkbox()->label('Первая половина заработной платы');
             ?>
+            <?= $form->field($model_date, "progress_flag")->checkbox()->label('Учесть посещаемость и успеваемость');
+            ?>
             <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
         </div>
     </div>
 </div>
 <?php ActiveForm::end(); ?>
+
+<?php
+$js = <<<JS
+$("select[name='DynamicModel[subject_type_id]']").find(":selected").val() === '1001' ? $('.field-dynamicmodel-progress_flag').show() : $('.field-dynamicmodel-progress_flag').hide();
+document.getElementById("subject_type_id").onchange = function () {
+ $(this).val() === '1001' ? $('.field-dynamicmodel-progress_flag').show() : $('.field-dynamicmodel-progress_flag').hide();
+}
+JS;
+
+$this->registerJs($js, \yii\web\View::POS_LOAD);
+?>
