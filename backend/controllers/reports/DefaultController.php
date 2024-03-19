@@ -23,11 +23,11 @@ class DefaultController extends MainController
         $session = Yii::$app->session;
         $this->view->params['tabMenu'] = $this->tabMenu;
 
-        $model_date = new DynamicModel(['date_in', 'is_avans', 'subject_type_id', 'activity_list', 'update_list_flag']);
+        $model_date = new DynamicModel(['date_in', 'is_avans', 'subject_type_id', 'activity_list', 'update_list_flag', 'progress_flag']);
         $model_date->addRule(['date_in', 'subject_type_id', 'activity_list'], 'required')
             ->addRule(['date_in'], 'date', ['format' => 'php:m.Y'])
             ->addRule(['is_avans'], 'integer')
-            ->addRule(['update_list_flag'], 'boolean');
+            ->addRule(['update_list_flag', 'progress_flag'], 'boolean');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');

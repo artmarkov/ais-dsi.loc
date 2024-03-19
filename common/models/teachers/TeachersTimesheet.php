@@ -26,6 +26,7 @@ class TeachersTimesheet
     protected $timestamp_in;
     protected $timestamp_out;
     protected $is_avans;
+    protected $progress_flag;
     protected $routine;
     protected $subject_type_id;
     protected $activity_list;
@@ -49,6 +50,7 @@ class TeachersTimesheet
         $this->plan_year = ArtHelper::getStudyYearDefault(null, $this->timestamp_in);
         $this->subject_type_id = $model_date->subject_type_id;
         $this->activity_list = $model_date->activity_list;
+        $this->progress_flag = $model_date->progress_flag ?? false;
         $this->is_avans = $model_date->is_avans ?? false;
         $this->routine = $this->getRoutine();
         $this->activities = $this->getTeachersActivities();
@@ -124,7 +126,7 @@ class TeachersTimesheet
             ->orderBy('datetime_in')
             ->all();
         foreach ($models as $item => $data) {
-            $flag = ($this->is_lesson_mark && $this->subject_type_id == 1001 && isset($this->lesson_fact[$data['day']][$data['subject_sect_studyplan_id']][$data['studyplan_subject_id']])) || $this->subject_type_id == 1000;
+            $flag = ($this->progress_flag && isset($this->lesson_fact[$data['day']][$data['subject_sect_studyplan_id']][$data['studyplan_subject_id']])) || (!$this->progress_flag && $this->subject_type_id == 1001) || $this->subject_type_id == 1000;
             if ($flag) {
                 $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['day']] = isset($data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['day']]) ? Schedule::astr2academ($data['time']) + $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['day']] : Schedule::astr2academ($data['time']);
             }

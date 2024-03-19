@@ -66,6 +66,7 @@ class Mailbox extends \artsoft\db\ActiveRecord
                 'class' => BlameableBehavior::className(),
                 'createdByAttribute' => 'sender_id',
                 'updatedByAttribute' => NULL,
+                'defaultValue' => 10000 // Система
             ],
             [
                 'class' => \artsoft\behaviors\ManyHasManyBehavior::className(),

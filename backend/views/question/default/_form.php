@@ -159,8 +159,11 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
                         ],
                     ])->label(Yii::t('art/guide', 'Division'));
                     ?>
+                    <?= $form->field($model, 'description')->widget(\dosamigos\tinymce\TinyMce::className(), [
+                        'options' => ['rows' => 6],
+                        'language' => 'ru',
 
-                    <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+                    ]);?>
 
                     <?= $form->field($model, 'timestamp_in')->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 

@@ -10,11 +10,7 @@ use common\models\forms\FindingForm;
 use common\models\forms\RegistrationForm;
 use common\models\students\Student;
 use Yii;
-use yii\i18n\Formatter;
 
-/**
- * EntrantProgrammController implements the CRUD actions for common\models\entrant\EntrantProgramm model.
- */
 class DefaultController extends \frontend\controllers\DefaultController
 {
     public $freeAccessActions = ['finding', 'registration', 'create'];

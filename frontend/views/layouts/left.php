@@ -32,6 +32,12 @@ use artsoft\widgets\Nav;
                 'visible' => (Yii::$app->user->isGuest && $pre_status == 1 && $pre_date_in < time() && $pre_date_out > time())
             ],
             [
+                'label' => 'Формы и заявки',
+                'icon' => 'fa fa-th',
+                'url' => ['/question/default/index'],
+                'visible' => Yii::$app->user->isGuest
+            ],
+            [
                 'label' => 'Информационный ресурс',
                 'icon' => 'fa fa-inbox',
                 'url' => '#',

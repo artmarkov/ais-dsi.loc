@@ -14,7 +14,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
         'widgetContainer' => 'dynamicform_inner',
         'widgetBody' => '.container-time',
         'widgetItem' => '.room-item',
-        'limit' => 20,
+        'limit' => 200,
         'min' => ($model->type_id == \common\models\question\QuestionAttribute::TYPE_RADIOLIST || $model->type_id == \common\models\question\QuestionAttribute::TYPE_CHECKLIST) ? 1:0,
         'insertButton' => '.add-time',
         'deleteButton' => '.remove-time',

@@ -22,12 +22,12 @@ class QuestionAnswers extends DynamicModel
     private $attributesTypes;
     private $optionsValues;
     private $fileSize = 1024 * 1024 * 5; // Допустимый размер файла
-    private $fileExt = 'png, jpg, JPG'; // Допустимые расширения
+    private $fileExt = 'png, jpg, JPEG'; // Допустимые расширения
 
     public function __construct($config = [])
     {
         $this->id = $config['id'];
-        $this->objectId = $config['objectId'];
+        $this->objectId = $config['objectId'] ?? 0;
         $this->models = $this->getModels();
         $this->model = $this->getModelQuestion();
         $this->attributes = array_merge(array_values($this->attributes()), ['question_users_id', 'users_id']);
@@ -325,6 +325,12 @@ class QuestionAnswers extends DynamicModel
                                 $file->saveAs(Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . $file->name);
                                 $modelAttribute->value_file = base64_encode(file_get_contents(Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . $file->name));
                                 break;
+                            case QuestionAttribute::TYPE_EMAIL :
+                                $modelAttribute->value_string = $data[$modelName][$attribute];
+                                if ($this->model->email_flag) {
+                                    $this->sendMessage($modelAttribute->value_string);
+                                }
+                                break;
                             default:
                                 $modelAttribute->value_string = $data[$modelName][$attribute];
                         }
@@ -336,11 +342,13 @@ class QuestionAnswers extends DynamicModel
                     }
                 }
                 if ($flag) {
+                    $this->sendAuthorMessage();
                     $transaction->commit();
                     return true;
                 }
             } catch (\Exception $e) {
                 $transaction->rollBack();
+                print_r($e->getMessage());
                 return false;
             }
         }
@@ -358,5 +366,38 @@ class QuestionAnswers extends DynamicModel
     public static function getFileContent($valueFileBin)
     {
         return is_resource($valueFileBin) ? 'data:image/png;base64,' . stream_get_contents($valueFileBin) : '';
+    }
+
+    public function sendMessage($email)
+    {
+        if ($email) {
+            $textBody = 'Сообщение модуля "Формы и заявки" ' . PHP_EOL;
+            $htmlBody = '<p><b>Сообщение модуля "Формы и заявки"</b></p>';
+
+            $textBody .= 'Вы успешно заполнили форму: ' . strip_tags($this->model->name) . PHP_EOL;
+            $htmlBody .= '<p>Вы успешно заполнили форму: ' . strip_tags($this->model->name) . '</p>';
+
+            $textBody .= '--------------------------' . PHP_EOL;
+            $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
+            $htmlBody .= '<hr>';
+            $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
+
+            return Yii::$app->mailqueue->compose()
+                ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
+                ->setTo($email)
+                ->setSubject('Сообщение с сайта ' . Yii::$app->name)
+                ->setTextBody($textBody)
+                ->setHtmlBody($htmlBody)
+                ->queue();
+        }
+    }
+
+    public function sendAuthorMessage()
+    {
+        if ($this->model->email_author_flag) {
+            $title = 'Сообщение модуля "Формы и заявки"';
+            $content = '<p>Заполнена новая форма: ' . strip_tags($this->model->name) . '</p>';
+            Yii::$app->mailbox->mailing($this->model->author_id, $content, $title);
+        }
     }
 }

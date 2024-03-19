@@ -105,7 +105,7 @@ class DefaultController extends MainController
         /* @var $model \artsoft\db\ActiveRecord */
         $model = $this->findModel($id);
         if (!isset($model)) {
-            throw new NotFoundHttpException("The EducationProgramm was not found.");
+            throw new NotFoundHttpException("The Question was not found.");
         }
 
         $modelsQuestionAttribute = $model->questionAttributes;
