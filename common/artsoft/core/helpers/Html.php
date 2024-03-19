@@ -20,7 +20,9 @@ class Html extends \yii\helpers\Html
         if (in_array($url, [null, '', '#'])) {
             return parent::a($text, $url, $options);
         }
-
+        if (isset($options['visible']) && $options['visible'] == true) {
+            return parent::a($text, $url, $options);
+        }
         return User::canRoute($url) ? parent::a($text, $url, $options) : '';
     }
 
@@ -30,7 +32,7 @@ class Html extends \yii\helpers\Html
      */
     public static function checkbox($name, $checked = false, $options = [])
     {
-        $options['checked'] = (bool) $checked;
+        $options['checked'] = (bool)$checked;
         $value = array_key_exists('value', $options) ? $options['value'] : '1';
         if (isset($options['uncheck'])) {
             // add a hidden field so that if the checkbox is not selected, it still submits a value
@@ -58,7 +60,7 @@ class Html extends \yii\helpers\Html
     {
         // 'checked' option has priority over $checked argument
         if (!isset($options['checked'])) {
-            $options['checked'] = (bool) $checked;
+            $options['checked'] = (bool)$checked;
         }
         $value = array_key_exists('value', $options) ? $options['value'] : '1';
         if (isset($options['uncheck'])) {
@@ -100,7 +102,7 @@ class Html extends \yii\helpers\Html
         $str = '';
         $flattenedList = static::getflatInputNames($attribute, $model->$attribute);
         foreach ($flattenedList as $flattenAttribute) {
-            $str.= static::activeHiddenInput($model, $flattenAttribute, $options);
+            $str .= static::activeHiddenInput($model, $flattenAttribute, $options);
         }
         return $str;
     }
