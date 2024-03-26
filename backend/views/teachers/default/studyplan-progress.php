@@ -12,36 +12,39 @@ use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $model_date */
 /* @var $modelTeachers */
+/* @var $modelConfirm */
 
 $this->title = $this->title = Yii::t('art/guide', 'Group Progress');
 $this->params['breadcrumbs'][] = $this->title;
+//echo '<pre>' . print_r($model['columns'], true) . '</pre>'; die();
+$readonly = (Teachers::isOwnTeacher($modelTeachers->id)) ? false : true;
+$confirm_available = count($model['columns']) == 1 && $model_date->subject_sect_studyplan_id;
 $columnsHeader = [];
 foreach ($model['columns'] as $my => $qty) {
     $columnsHeader[] = ['content' => $my, 'options' => ['colspan' => $qty, 'class' => 'text-center']];
 }
-//echo '<pre>' . print_r($columns, true) . '</pre>'; die();
 
-$editMarks = function ($model, $key, $index, $widget) use ($modelTeachers){
+$editMarks = function ($model, $key, $index, $widget) use ($modelTeachers) {
     $content = [];
     if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], 0)) {
-            $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create'] :
-                    ['/teachers/studyplan-progress/create', 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id']],
-                [
-                    'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
-                    'title' => 'Добавить занятие',
-                    'data-method' => 'post',
-                    'data-pjax' => '0',
-                    'class' => 'btn btn-xxs btn-link'
+        $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
+            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create'] :
+                ['/teachers/studyplan-progress/create', 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id']],
+            [
+                'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
+                'title' => 'Добавить занятие',
+                'data-method' => 'post',
+                'data-pjax' => '0',
+                'class' => 'btn btn-xxs btn-link'
 
-                ]
-            )];
+            ]
+        )];
     }
     foreach ($model['lesson_timestamp'] as $id => $item) {
         if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], 0, $item['lesson_date'])) {
             $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'update'] :
-                    ['/teachers/studyplan-progress/update', 'id' => $model['teachers_id'], 'id' => $lesson_items_id], [
+                    \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'update'] :
+                        ['/teachers/studyplan-progress/update', 'id' => $model['teachers_id'], 'id' => $lesson_items_id], [
                         'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
@@ -49,8 +52,8 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers){
                         'class' => 'btn btn-xxs btn-link',
                     ])
                 . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete'] :
-                    ['/teachers/studyplan-progress/delete', 'id' => $model['teachers_id'], 'id' => $lesson_items_id], [
+                    \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete'] :
+                        ['/teachers/studyplan-progress/delete', 'id' => $model['teachers_id'], 'id' => $lesson_items_id], [
                         'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xxs btn-link',
@@ -136,7 +139,16 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             Журнал успеваемости группы: <?php echo RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
+            <?php if (\artsoft\Art::isFrontend() && $readonly): ?>
+                <?php echo \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info-circle"></i> Для отправки на утверждение журнала успеваемости, выберите дисциплину и период не более одного месяца.',
+                    'options' => ['class' => 'alert-danger'],
+                ]);
+                ?>
+            <?php endif; ?>
             <?= $this->render('_search-progress', compact('modelTeachers', 'model_date', 'plan_year')) ?>
+            <?= $confirm_available ? $this->render('_confirm-progress', compact('model_confirm', 'readonly')) : null ?>
+
             <div class="row">
                 <div class="col-sm-6">
                     <?php

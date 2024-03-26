@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-sm-6">
                     <?php
                     /* Uncomment this to activate GridQuickLinks */
-                     echo GridQuickLinks::widget([
+                    echo GridQuickLinks::widget([
                         'model' => Question::className(),
                         'searchModel' => $searchModel,
                     ])
@@ -127,6 +127,21 @@ $this->params['breadcrumbs'][] = $this->title;
                             [Question::STATUS_INACTIVE, Yii::t('art', 'Inactive'), 'info'],
                         ],
                         'options' => ['style' => 'width:150px']
+                    ],
+                    [
+                        'value' => function (Question $model) {
+                            return Html::a($model->getCountAnswers(),
+                                ['question/default/answers', 'id' => $model->id], [
+                                    'title' => 'Ответы',
+                                    'data-method' => 'post',
+                                    'data-pjax' => '0',
+                                ]
+                            );
+                        },
+                        'label' => 'Кол-во ответов',
+                        'options' => ['style' => 'width:150px'],
+                        'contentOptions' => ['style'=>"text-align:center; vertical-align: middle;"],
+                        'format' => 'raw'
                     ],
                     [
                         'class' => 'kartik\grid\ActionColumn',

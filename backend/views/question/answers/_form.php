@@ -133,6 +133,11 @@ $options = [];
                         'options' => ['class' => 'alert-warning'],
                     ]);
                     ?>
+                    <?= \artsoft\Art::isFrontend() ? \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-info"></i> ' . 'Нажимая кнопку "Отправить данные формы", Вы соглашаетесь на обработку персональных данных!',
+                        'options' => ['class' => 'alert-info'],
+                    ]) : '';
+                    ?>
                     <div class="form-group btn-group">
                             <?= ButtonHelper::exitButton(); ?>
                         <?php if (!$readonly): ?>

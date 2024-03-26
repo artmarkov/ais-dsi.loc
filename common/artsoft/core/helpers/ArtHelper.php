@@ -229,6 +229,17 @@ class ArtHelper
     }
 
     /**
+     * @param $val
+     * @return mixed|null
+     */
+    public static function getMonthsNominativeValue($val)
+    {
+        $list = self::getMonthsNominativeList();
+
+        return isset($list[$val]) ? $list[$val] : null;
+    }
+
+    /**
      * @param int $start
      * @return array
      */

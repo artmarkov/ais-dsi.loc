@@ -7,6 +7,7 @@ use backend\models\Model;
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
+use common\models\education\ProgressConfirm;
 use common\models\teachers\Teachers;
 use Yii;
 use yii\base\DynamicModel;
@@ -59,11 +60,30 @@ class StudyplanProgressController extends MainController
         $timestamp_in = $timestamp[0];
         $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
         $model = LessonProgressView::getDataTeachers($model_date, $this->teachers_id, $plan_year);
-        if (Yii::$app->request->post('submitAction') == 'excel') {
-            // TeachersEfficiency::sendXlsx($data);
+        $model_confirm = ProgressConfirm::find()->where(['=', 'teachers_id', $modelTeachers->id])
+                ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
+                ->andWhere(['=', 'timestamp_month', $timestamp_in])
+                ->one() ?? new ProgressConfirm();
+        $model_confirm->teachers_id = $modelTeachers->id;
+        $model_confirm->timestamp_month = $timestamp_in;
+        $model_confirm->subject_sect_studyplan_id = $model_date->subject_sect_studyplan_id;
+
+        if ($model_confirm->load(Yii::$app->request->post()) && $model_confirm->validate()) {
+            if (Yii::$app->request->post('submitAction') == 'send_approve') {
+                $model_confirm->confirm_status = ProgressConfirm::DOC_STATUS_WAIT;
+                if ($model_confirm->sendApproveMessage()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                }
+            } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
+                $model_confirm->confirm_status = ProgressConfirm::DOC_STATUS_MODIF;
+            }
+            if ($model_confirm->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction();
+            }
         }
 
-        return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
+        return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date', 'modelTeachers', 'plan_year', 'model_confirm']));
 
     }
 

@@ -74,7 +74,7 @@ class QuestionAnswers extends DynamicModel
     public function getOptionsValue()
     {
         $models = QuestionOptions::find()->innerJoin('question_attribute', 'question_attribute.id = question_options.attribute_id')
-            ->where(['=', 'question_attribute.question_id', $this->id])->asArray()->all();
+            ->where(['=', 'question_attribute.question_id', $this->id])->orderBy('question_options.name')->asArray()->all();
         return ArrayHelper::map($models, 'id', 'name');
     }
 
@@ -253,19 +253,19 @@ class QuestionAnswers extends DynamicModel
                 $form = $form->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput();
                 break;
             case QuestionAttribute::TYPE_RADIOLIST :
-                $form = $form->radioList($this->getOptionsList($item['id']));
+                $form = $form->radioList($this->getOptionsList($item['id']), ['itemOptions' => ['disabled' => $options['readonly']]]);
                 break;
             case QuestionAttribute::TYPE_RADIOLIST_UNIQUE :
-                $form = $form->radioList($this->getOptionsListUnique($item['id']));
+                $form = $form->radioList($this->getOptionsListUnique($item['id']), ['itemOptions' => ['disabled' => $options['readonly']]]);
                 break;
             case QuestionAttribute::TYPE_CHECKLIST :
-                $form = $form->checkboxList($this->getOptionsList($item['id']));
+                $form = $form->checkboxList($this->getOptionsList($item['id']), ['itemOptions' => ['disabled' => $options['readonly']]]);
                 break;
             case QuestionAttribute::TYPE_CHECKLIST_UNIQUE :
-                $form = $form->checkboxList($this->getOptionsListUnique($item['id']));
+                $form = $form->checkboxList($this->getOptionsListUnique($item['id']), ['itemOptions' => ['disabled' => $options['readonly']]]);
                 break;
             case QuestionAttribute::TYPE_FILE :
-                $form = $form->fileInput();
+                $form = $form->fileInput(['disabled' => $options['readonly']]);
                 break;
             default:
                 $form = $form->textInput(['maxlength' => true]);
@@ -275,7 +275,7 @@ class QuestionAnswers extends DynamicModel
 
     public function getOptionsList($id)
     {
-        $modelOptions = QuestionOptions::find()->select(['id', 'name'])->where(['=', 'attribute_id', $id])->asArray()->all();
+        $modelOptions = QuestionOptions::find()->select(['id', 'name'])->where(['=', 'attribute_id', $id])->orderBy('name')->asArray()->all();
         return ArrayHelper::map($modelOptions, 'id', 'name');
     }
 

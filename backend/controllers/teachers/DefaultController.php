@@ -10,6 +10,8 @@ use common\models\education\LessonItems;
 use common\models\education\LessonItemsProgressView;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
+use common\models\education\ProgressConfirm;
+use common\models\education\ProgressConfirmIndiv;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidejob\Bonus;
@@ -1128,11 +1130,34 @@ class DefaultController extends MainController
             $timestamp_in = $timestamp[0];
             $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
             $model = LessonProgressView::getDataTeachers($model_date, $id, $plan_year);
-//            if (Yii::$app->request->post('submitAction') == 'excel') {
-//                // TeachersEfficiency::sendXlsx($data);
-//            }
 
-            return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
+            $model_confirm = ProgressConfirm::find()->where(['=', 'teachers_id', $id])
+                    ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id == '' ? 0 : $model_date->subject_sect_studyplan_id])
+                    ->andWhere(['=', 'timestamp_month', $timestamp_in])
+                    ->one() ?? new ProgressConfirm();
+            $model_confirm->teachers_id = $id;
+            $model_confirm->timestamp_month = $timestamp_in;
+            $model_confirm->subject_sect_studyplan_id = $model_date->subject_sect_studyplan_id;
+
+            if ($model_confirm->load(Yii::$app->request->post()) && $model_confirm->validate()) {
+                if (Yii::$app->request->post('submitAction') == 'approve') {
+                    $model_confirm->confirm_status = ProgressConfirm::DOC_STATUS_AGREED;
+                    if ($model_confirm->approveMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
+                } elseif (Yii::$app->request->post('submitAction') == 'modif') {
+                    $model_confirm->confirm_status = ProgressConfirm::DOC_STATUS_MODIF;
+                    if ($model_confirm->modifMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
+                }
+                if ($model_confirm->save()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                    $this->getSubmitAction();
+                }
+            }
+
+            return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date', 'modelTeachers', 'plan_year', 'model_confirm']));
         }
     }
 
@@ -1358,11 +1383,34 @@ class DefaultController extends MainController
             $timestamp_in = $timestamp[0];
             $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
             $model = LessonProgressView::getDataIndivTeachers($model_date, $id, $plan_year);
-            if (Yii::$app->request->post('submitAction') == 'excel') {
-                // TeachersEfficiency::sendXlsx($data);
+
+            $model_confirm = ProgressConfirmIndiv::find()->where(['=', 'teachers_id', $id])
+                    ->andWhere(['=', 'subject_key', $model_date->subject_key])
+                    ->andWhere(['=', 'timestamp_month', $timestamp_in])
+                    ->one() ?? new ProgressConfirmIndiv();
+            $model_confirm->teachers_id = $id;
+            $model_confirm->timestamp_month = $timestamp_in;
+            $model_confirm->subject_key = $model_date->subject_key;
+
+            if ($model_confirm->load(Yii::$app->request->post()) && $model_confirm->validate()) {
+                if (Yii::$app->request->post('submitAction') == 'approve') {
+                    $model_confirm->confirm_status = ProgressConfirmIndiv::DOC_STATUS_AGREED;
+                    if ($model_confirm->approveMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
+                } elseif (Yii::$app->request->post('submitAction') == 'modif') {
+                    $model_confirm->confirm_status = ProgressConfirmIndiv::DOC_STATUS_MODIF;
+                    if ($model_confirm->modifMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
+                }
+                if ($model_confirm->save()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                    $this->getSubmitAction();
+                }
             }
 
-            return $this->renderIsAjax('studyplan-progress-indiv', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
+            return $this->renderIsAjax('studyplan-progress-indiv', compact(['model', 'model_date', 'modelTeachers', 'plan_year', 'model_confirm']));
         }
     }
 

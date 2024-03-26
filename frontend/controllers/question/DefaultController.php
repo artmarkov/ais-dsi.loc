@@ -2,14 +2,10 @@
 
 namespace frontend\controllers\question;
 
-use artsoft\widgets\Notice;
 use common\models\question\Question;
 use common\models\question\QuestionAnswers;
-use common\models\question\search\QuestionSearch;
 use Yii;
 use yii\data\ActiveDataProvider;
-use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -48,6 +44,7 @@ class DefaultController extends \frontend\controllers\DefaultController
         }
         $modelVal = new QuestionAnswers(['id' => $id]);
 
+        $this->view->params['breadcrumbs'][] =  ['label' => Yii::t('art/question', 'Questions'), 'url' => ['question/default/index']];
         $this->view->params['breadcrumbs'][] = 'Добавление ответа';
 
         if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
@@ -68,8 +65,9 @@ class DefaultController extends \frontend\controllers\DefaultController
 
     public function beforeAction($action)
     {
-        if (!Yii::$app->user->isGuest) {
-            $this->redirect('/dashboard');
+        if(Yii::$app->user->identity) { // Если по ссылке проходит залогиненный пользователь
+            Yii::$app->user->logout();
+            $this->redirect(Yii::$app->request->referrer);
         }
         return parent::beforeAction($action);
     }

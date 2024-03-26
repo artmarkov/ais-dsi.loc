@@ -172,7 +172,7 @@ class StudyplanController extends MainController
 
         return $this->render('@backend/views/studyplan/default/schedule', [
             'model' => $model,
-            'modelsSubject' => $model_date,
+            'model_date' => $model_date,
             'readonly' => $readonly
         ]);
     }

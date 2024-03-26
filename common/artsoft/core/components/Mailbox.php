@@ -137,8 +137,14 @@ class Mailbox extends Component
             case 'StudyplanThematic':
                 $text = 'Тематический/репертуарный план';
                 break;
-                case 'SchoolplanProtocolConfirm':
+            case 'SchoolplanProtocolConfirm':
                 $text = 'Протокол аттестационной комиссии';
+                break;
+            case 'ProgressConfirm':
+                $text = 'Журнал посещаемости и успеваемости групповых занятий';
+                break;
+            case 'ProgressConfirmIndiv':
+                $text = 'Журнал посещаемости и успеваемости индивидуальных занятий';
                 break;
         }
         return 'Сообщение модуля "' . $text . '"';
@@ -168,9 +174,16 @@ class Mailbox extends Component
                 $modelSchoolplan = $this->model->schoolplan;
                 $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/schoolplan/default/protocol?id=' : '/admin/schoolplan/default/protocol?id=') . $modelSchoolplan->id;
                 break;
+            case 'ProgressConfirm':
+                $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/teachers/studyplan-progress' : '/admin/teachers/' . $this->model->teachers_id . '/studyplan-progress');
+                break;
+            case 'ProgressConfirmIndiv':
+                $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/teachers/studyplan-progress-indiv' : '/admin/teachers/' . $this->model->teachers_id . '/studyplan-progress-indiv');
+                break;
         }
         return $link;
     }
+
     protected function getContent()
     {
         $link = $this->getLink();
@@ -178,34 +191,34 @@ class Mailbox extends Component
         $htmlBody .= '<hr>';
         switch (1) {
             case $this->module == 'Schoolplan' && $this->action == 'modif':
-                $htmlBody .= '<p><b>Прошу Вас доработать карточку мероприятия: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . '</p>';
+                $htmlBody .= '<p><b>Прошу Вас доработать карточку мероприятия: </b>' . $this->model->title . ' за ' . $this->model->datetime_in . '</p>';
                 break;
             case $this->module == 'Schoolplan' && $this->action == 'approve':
-                $htmlBody .= '<p><b>Мероприятие: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . ' <b> утверждено.</b></p>';
+                $htmlBody .= '<p><b>Мероприятие: </b>' . $this->model->title . ' за ' . $this->model->datetime_in . ' <b> утверждено.</b></p>';
                 break;
             case $this->module == 'Schoolplan' && $this->action == 'send_approve':
-                $htmlBody .= '<p><b>Прошу Вас утвердить мероприятие: </b>' .  $this->model->title . ' за ' . $this->model->datetime_in . '.</p>';
+                $htmlBody .= '<p><b>Прошу Вас утвердить мероприятие: </b>' . $this->model->title . ' за ' . $this->model->datetime_in . '.</p>';
                 break;
             case $this->module == 'SchoolplanPerform' && $this->action == 'modif':
                 $modelSchoolplan = $this->model->schoolplan;
-                $htmlBody .= '<p><b>Прошу Вас доработать карточку выполнения плана и участия в мероприятии: </b>' . $modelSchoolplan->title  . ' за ' . $modelSchoolplan->datetime_in . '</p>';
+                $htmlBody .= '<p><b>Прошу Вас доработать карточку выполнения плана и участия в мероприятии: </b>' . $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . '</p>';
                 break;
             case $this->module == 'SchoolplanPerform' && $this->action == 'approve':
                 $modelSchoolplan = $this->model->schoolplan;
-                $htmlBody .= '<p><b>Карточка выполнения плана и участия в мероприятии: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . ' <b> согласована.</b></p>';
+                $htmlBody .= '<p><b>Карточка выполнения плана и участия в мероприятии: </b>' . $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . ' <b> согласована.</b></p>';
                 break;
             case $this->module == 'SchoolplanPerform' && $this->action == 'send_approve':
                 $modelSchoolplan = $this->model->schoolplan;
-                $htmlBody .= '<p><b>Прошу Вас утвердить карточку выполнения плана и участия в мероприятии: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . '.</p>';
+                $htmlBody .= '<p><b>Прошу Вас утвердить карточку выполнения плана и участия в мероприятии: </b>' . $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . '.</p>';
                 break;
-            case  $this->module =='SubjectScheduleConfirm' && $this->action == 'modif':
+            case  $this->module == 'SubjectScheduleConfirm' && $this->action == 'modif':
                 $htmlBody .= '<p><b>Прошу Вас доработать расписание занятий</b> за ' . strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год. ' . '</p>';
                 break;
-            case  $this->module =='SubjectScheduleConfirm' && $this->action == 'approve':
+            case  $this->module == 'SubjectScheduleConfirm' && $this->action == 'approve':
                 $htmlBody .= '<p><b>Расписание занятий</b> за ' . strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год <b> утверждено.</b></p>';
                 break;
             case $this->module == 'SubjectScheduleConfirm' && $this->action == 'send_approve':
-                $htmlBody .= '<p><b>Прошу Вас утвердить расписание занятий</b> за ' .  strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год.</p>';
+                $htmlBody .= '<p><b>Прошу Вас утвердить расписание занятий</b> за ' . strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год.</p>';
                 break;
             case  $this->module == 'ConsultScheduleConfirm' && $this->action == 'modif':
                 $htmlBody .= '<p><b>Прошу Вас доработать расписание консультаций</b> за ' . strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год. ' . '</p>';
@@ -214,7 +227,7 @@ class Mailbox extends Component
                 $htmlBody .= '<p><b>Расписание консультаций</b> за ' . strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год <b> утверждено.</b></p>';
                 break;
             case $this->module == 'ConsultScheduleConfirm' && $this->action == 'send_approve':
-                $htmlBody .= '<p><b>Прошу Вас утвердить расписание консультаций</b> за ' .  strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год.</p>';
+                $htmlBody .= '<p><b>Прошу Вас утвердить расписание консультаций</b> за ' . strip_tags(ArtHelper::getStudyYearsValue($this->model->plan_year)) . ' учебный год.</p>';
                 break;
             case  $this->module == 'StudyplanThematic' && $this->action == 'modif':
                 $htmlBody .= '<p><b>Прошу Вас доработать Тематический/репертуарный план</b> за ' . strip_tags(ArtHelper::getHalfYearValue($this->model->half_year)) . '</p>';
@@ -223,25 +236,43 @@ class Mailbox extends Component
                 $htmlBody .= '<p><b>Тематический/репертуарный план</b> за ' . strip_tags(ArtHelper::getHalfYearValue($this->model->half_year)) . ' <b> утвержден.</b></p>';
                 break;
             case $this->module == 'StudyplanThematic' && $this->action == 'send_approve':
-                $htmlBody .= '<p><b>Прошу Вас утвердить Тематический/репертуарный план</b> за ' .  strip_tags(ArtHelper::getHalfYearValue($this->model->half_year)) . '</p>';
+                $htmlBody .= '<p><b>Прошу Вас утвердить Тематический/репертуарный план</b> за ' . strip_tags(ArtHelper::getHalfYearValue($this->model->half_year)) . '</p>';
                 break;
             case $this->module == 'SchoolplanProtocolConfirm' && $this->action == 'modif':
                 $modelSchoolplan = $this->model->schoolplan;
-                $htmlBody .= '<p><b>Прошу Вас доработать протокол аттестационной комиссии для мероприятия: </b>' . $modelSchoolplan->title  . ' за ' . $modelSchoolplan->datetime_in . '</p>';
+                $htmlBody .= '<p><b>Прошу Вас доработать протокол аттестационной комиссии для мероприятия: </b>' . $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . '</p>';
                 break;
             case $this->module == 'SchoolplanProtocolConfirm' && $this->action == 'approve':
                 $modelSchoolplan = $this->model->schoolplan;
-                $htmlBody .= '<p><b>Протокол аттестационной комиссии для мероприятия: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . ' <b> утвержден.</b></p>';
+                $htmlBody .= '<p><b>Протокол аттестационной комиссии для мероприятия: </b>' . $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . ' <b> утвержден.</b></p>';
                 break;
             case $this->module == 'SchoolplanProtocolConfirm' && $this->action == 'send_approve':
                 $modelSchoolplan = $this->model->schoolplan;
-                $htmlBody .= '<p><b>Прошу Вас утвердить Протокол аттестационной комиссии для мероприятия: </b>' .  $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . '.</p>';
+                $htmlBody .= '<p><b>Прошу Вас утвердить Протокол аттестационной комиссии для мероприятия: </b>' . $modelSchoolplan->title . ' за ' . $modelSchoolplan->datetime_in . '.</p>';
+                break;
+            case $this->module == 'ProgressConfirm' && $this->action == 'modif':
+                $htmlBody .= '<p><b>Прошу Вас доработать журнал успеваемости групповых занятий</b> за <b>' . strip_tags(ArtHelper::getMonthsNominativeValue(date('n', $this->model->timestamp_month))) . '</b> - месяц по дисциплине  <b>' . $this->model->getSubject() . '</b></p>';
+                break;
+            case $this->module == 'ProgressConfirm' && $this->action == 'approve':
+                $htmlBody .= '<p><b>Журнал успеваемости групповых занятий</b> за <b>' . strip_tags(ArtHelper::getMonthsNominativeValue(date('n', $this->model->timestamp_month))) . '</b> - месяц по дисциплине  <b>' . $this->model->getSubject() . ' проверен.</b></p>';
+                break;
+            case $this->module == 'ProgressConfirm' && $this->action == 'send_approve':
+                $htmlBody .= '<p><b>Прошу Вас утвердить журнал успеваемости групповых занятий</b> за <b>' . strip_tags(ArtHelper::getMonthsNominativeValue(date('n', $this->model->timestamp_month))) . '</b> - месяц по дисциплине  <b>' . $this->model->getSubject() . '</b></p>';
+                break;
+            case $this->module == 'ProgressConfirmIndiv' && $this->action == 'modif':
+                $htmlBody .= '<p><b>Прошу Вас доработать журнал успеваемости индивидуальных занятий</b> за <b>' . strip_tags(ArtHelper::getMonthsNominativeValue(date('n', $this->model->timestamp_month))) . '</b> - месяц по дисциплине  <b>' . $this->model->getSubject() . '</b></p>';
+                break;
+            case $this->module == 'ProgressConfirmIndiv' && $this->action == 'approve':
+                $htmlBody .= '<p><b>Журнал успеваемости индивидуальных занятий</b> за <b>' . strip_tags(ArtHelper::getMonthsNominativeValue(date('n', $this->model->timestamp_month))) . '</b> - месяц по дисциплине  <b>' . $this->model->getSubject() . ' проверен.</b></p>';
+                break;
+            case $this->module == 'ProgressConfirmIndiv' && $this->action == 'send_approve':
+                $htmlBody .= '<p><b>Прошу Вас утвердить журнал успеваемости индивидуальных занятий</b> за <b>' . strip_tags(ArtHelper::getMonthsNominativeValue(date('n', $this->model->timestamp_month))) . '</b> - месяц по дисциплине  <b>' . $this->model->getSubject() . '</b></p>';
                 break;
         }
 
         $htmlBody .= '<p>' . $this->sign_message . '</p>';
         $htmlBody .= '<hr>';
-        $htmlBody .= '<p>Пройдите по ссылке: ' . Html::a(Html::encode($link), $link, [ 'target' => '_blank', 'data-pjax' => '0']) . ' (откроется в новом окне)</p>';
+        $htmlBody .= '<p>Пройдите по ссылке: ' . Html::a(Html::encode($link), $link, ['target' => '_blank', 'data-pjax' => '0']) . ' (откроется в новом окне)</p>';
         $htmlBody .= '<hr>';
         $htmlBody .= '<p><b>С уважением, ' . Html::encode($this->teachers_sender_fio) . '</b></p>';
         return $htmlBody;

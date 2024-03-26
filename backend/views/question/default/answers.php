@@ -14,6 +14,7 @@ foreach ($data['attributes'] as $attribute => $label) {
         'label' => $label,
         'headerOptions' => ['class' => "grid"],
         'format' => (isset($data['types'][$attribute]) && $data['types'][$attribute] == QuestionAttribute::TYPE_FILE) ? 'image' : 'html',
+        'hiddenFromExport'=> (isset($data['types'][$attribute]) && $data['types'][$attribute] == QuestionAttribute::TYPE_FILE) ? true : false,
     ];
 }
 $columns[] = [
@@ -96,7 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 $css = <<<CSS
-img {
+.question-answers img {
    width: 100px;
     height: 100px;
     border-radius: 10px;

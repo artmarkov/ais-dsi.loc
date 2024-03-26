@@ -253,6 +253,13 @@ class Question extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @return int
+     */
+    public function getCountAnswers()
+    {
+        return count($this->questionUsers);
+    }
+    /**
      * @param bool $insert
      * @return bool
      */

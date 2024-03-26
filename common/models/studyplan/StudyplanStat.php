@@ -42,6 +42,7 @@ class StudyplanStat
 //            'education_cat_name' => 'Категория обр. программы',
             'education_cat_short_name' => 'Категория обр. программы',
             'speciality' => 'Специальность',
+            'speciality_teachers_fio' => 'Преподаватель по специальности',
             'course' => 'Класс',
             'description' => 'Описание',
             'year_time_total' => 'Всего учебных часов в год',
@@ -100,6 +101,7 @@ class StudyplanStat
             $data[$id]['education_cat_name'] = $model['education_cat_name'];
             $data[$id]['education_cat_short_name'] = $model['education_cat_short_name'];
             $data[$id]['speciality'] = $model['speciality'];
+            $data[$id]['speciality_teachers_fio'] = $model['speciality_teachers_fio'];
             $data[$id]['course'] = $model['course'];
             $data[$id]['subject_form_name'] = $model['subject_form_name'];
             $data[$id]['plan_year'] = $model['plan_year'];

@@ -5,6 +5,7 @@ namespace backend\controllers\execution;
 use artsoft\helpers\ArtHelper;
 use common\models\education\LessonProgressView;
 use common\models\execution\ExecutionProgress;
+use common\models\execution\ExecutionProgressConfirm;
 use common\models\execution\ExecutionSchedule;
 use common\models\execution\ExecutionScheduleConsult;
 use common\models\execution\ExecutionSchoolplanPerform;
@@ -93,5 +94,29 @@ class DefaultController extends MainController
         $models = ExecutionProgress::getData($model_date);
         $model = $models->getDataTeachers();
         return $this->renderIsAjax('progress', compact('model','model_date'));
+    }
+
+    public function actionProgressConfirm()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['breadcrumbs'][] = 'Контроль проверок журналов успеваемости';
+
+        $session = Yii::$app->session;
+
+        $model_date = new DynamicModel(['date_in', 'teachers_id']);
+        $model_date->addRule(['date_in'], 'required')
+            ->addRule(['date_in'], 'date', ['format' => 'php:m.Y'])
+            ->addRule('teachers_id', 'integer');
+
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $mon = date('m');
+            $year = date('Y');
+            $model_date->date_in = $session->get('_execution_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+        }
+        $session->set('_execution_date_in', $model_date->date_in);
+
+        $models = ExecutionProgressConfirm::getData($model_date);
+        $model = $models->getDataTeachers();
+        return $this->renderIsAjax('progress-confirm', compact('model','model_date'));
     }
 }

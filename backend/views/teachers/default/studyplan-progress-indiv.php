@@ -12,16 +12,20 @@ use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $model_date */
 /* @var $modelTeachers */
+/* @var $modelConfirm */
 
 $this->title = $this->title = Yii::t('art/guide', 'Indiv Progress');
 $this->params['breadcrumbs'][] = $this->title;
+
+$readonly = (Teachers::isOwnTeacher($modelTeachers->id)) ? false : true;
+$confirm_available = count($model['columns']) == 1 && $model_date->subject_key;
 $columnsHeader = [];
 foreach ($model['columns'] as $my => $qty) {
     $columnsHeader[] = ['content' => $my, 'options' => ['colspan' => $qty, 'class' => 'text-center']];
 }
-//echo '<pre>' . print_r($columns, true) . '</pre>'; die();
+//echo '<pre>' . print_r($model['columns'], true) . '</pre>'; die();
 
-$editMarks = function ($model, $key, $index, $widget) use ($modelTeachers){
+$editMarks = function ($model, $key, $index, $widget) use ($modelTeachers) {
     $content = [];
     // if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
     $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
@@ -40,7 +44,7 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers){
     foreach ($model['lesson_timestamp'] as $id => $item) {
 //        if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
         $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']),'mode' => 'update'] :
+                \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date']), 'mode' => 'update'] :
                     ['/teachers/studyplan-progress-indiv/update', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $item['lesson_date'])], [
                     'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
                     'title' => Yii::t('art', 'Update'),
@@ -65,7 +69,7 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers){
 //        }
     }
     return [
-        'content' =>  $content,
+        'content' => $content,
         'contentOptions' => [      // content html attributes for each summary cell
             3 => ['class' => 'text-right text-end'],
         ],
@@ -132,10 +136,19 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
 <div class="teachers-progress-index">
     <div class="panel">
         <div class="panel-heading">
-            Журнал успеваемости индивидуальных занятий: <?php echo RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
+            Журнал успеваемости индивидуальных
+            занятий: <?php echo RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
+            <?php if (\artsoft\Art::isFrontend() && $readonly): ?>
+                <?php echo \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info-circle"></i> Для отправки на утверждение журнала успеваемости, выберите дисциплину и период не более одного месяца.',
+                    'options' => ['class' => 'alert-danger'],
+                ]);
+                ?>
+            <?php endif; ?>
             <?= $this->render('_search-progress-indiv', compact('modelTeachers', 'model_date', 'plan_year')) ?>
+            <?= $confirm_available ? $this->render('_confirm-progress-indiv', compact('model_confirm', 'readonly')) : null?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php
@@ -187,6 +200,28 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                 ],
             ]);
             ?>
+           <!-- --><?php
+/*            echo GridView::widget([
+                'pjax' => false,
+                'toolbar' => false,
+                'dataProvider' => new \yii\data\ArrayDataProvider([
+                    'allModels' => $modelConfirm,
+                    'sort' => false,
+                    'pagination' => false,
+                ]),
+                'panel' => [
+                    'heading' => '<h3 class="panel-title"><i class="fa fa-globe"></i> Проверка журнала</h3>',
+                    'type' => 'danger',
+                ],
+                'columns' => [
+                    ['class' => 'kartik\grid\SerialColumn'],
+                    'timestamp_month',
+                    'teachers_id',
+                    'teachers_sign',
+                    'confirm_status'
+                ],
+            ]);
+            */?>
         </div>
     </div>
 </div>

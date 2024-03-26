@@ -32,6 +32,27 @@ $form = ActiveForm::begin([
                     ])->label(Yii::t('art/teachers', 'Teacher'));
                 }
                 ?>
+
+                <?= $form->field($model_date, 'subject_sect_studyplan_id')->widget(\kartik\select2\Select2::class, [
+                    'data' => \common\models\education\LessonProgressView::getSectListForTeachers($modelTeachers->id, $plan_year),
+                    'options' => [
+                        'onchange' => 'js: $(this).closest("form").submit()',
+                        'placeholder' => Yii::t('art', 'Select...'),
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ])->label('Группа');
+                ?>
+            </div>
+        </div>
+        <div class="panel panel-info">
+            <div class="panel-body">
+                <?php echo \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info-circle"></i> Задайте период и нажмите кнопку "Применить".',
+                    'options' => ['class' => 'alert-info'],
+                ]);
+                ?>
                 <?= $form->field($model_date, "date_in")->widget(DatePicker::class, [
                         'type' => \kartik\date\DatePicker::TYPE_INPUT,
                         'options' => ['placeholder' => ''],
@@ -43,9 +64,9 @@ $form = ActiveForm::begin([
                             'todayBtn' => 'linked',
                             'todayHighlight' => true,
                         ],
-                        'pluginEvents' => ['changeDate' => "function(e){
-                                           $(e.target).closest('form').submit();
-                                        }"]
+//                        'pluginEvents' => ['changeDate' => "function(e){
+//                                           $(e.target).closest('form').submit();
+//                                        }"]
                     ]
                 )->label('Дата начала периода'); ?>
 
@@ -60,24 +81,20 @@ $form = ActiveForm::begin([
                             'todayBtn' => 'linked',
                             'todayHighlight' => true,
                         ],
-                        'pluginEvents' => ['changeDate' => "function(e){
-                                           $(e.target).closest('form').submit();
-                                        }"]
+//                        'pluginEvents' => ['changeDate' => "function(e){
+//                                           $(e.target).closest('form').submit();
+//                                        }"]
                     ]
                 )->label('Дата окончания периода');
                 ?>
-                <?= $form->field($model_date, 'subject_sect_studyplan_id')->widget(\kartik\select2\Select2::class, [
-                    'data' => \common\models\education\LessonProgressView::getSectListForTeachers($modelTeachers->id, $plan_year),
-                    'options' => [
-                        'onchange' => 'js: $(this).closest("form").submit()',
-                        'placeholder' => Yii::t('art', 'Select...'),
-                    ],
-                    'pluginOptions' => [
-                        'allowClear' => true
-                    ],
-                ])->label('Группа');
-                ?>
+            </div>
+            <div class="panel-footer">
+                <div class="form-group btn-group">
+                    <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Применить', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction']); ?>
+
+                </div>
             </div>
         </div>
     </div>
+
 <?php ActiveForm::end(); ?>
