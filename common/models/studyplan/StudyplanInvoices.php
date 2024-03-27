@@ -132,13 +132,15 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
         $check = self::find()->where(
             ['AND',
                 ['!=', 'id', $this->id],
-                ['=', 'teachers_id', $this->teachers_id],
                 ['=', 'studyplan_id', $this->studyplan_id],
                 ['=', 'invoices_id', $this->invoices_id],
                 ['=', 'invoices_summ', $this->invoices_summ],
                 ['=', 'invoices_reporting_month', $month],
 
             ]);
+        if ($this->teachers_id) {
+            $check = $check->andWhere(['=', 'teachers_id', $this->teachers_id]);
+        }
         if ($check->exists() === true) {
             $message = 'Квитанции уже была добавлены с данными значениями.';
             $this->addError('invoices_id', $message);
