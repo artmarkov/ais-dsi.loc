@@ -160,7 +160,7 @@ $columns = [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
-        'visible' => \artsoft\Art::isFrontend()  && Teachers::isOwnTeacher($modelTeachers->id)  && $model_confirm->confirm_status == 0,
+        'visible' => \artsoft\Art::isFrontend()  && Teachers::isOwnTeacher($modelTeachers->id) && in_array($model_confirm->confirm_status, [0,3]),
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {

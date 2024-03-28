@@ -56,7 +56,7 @@ class ProgressConfirm  extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'timestamp_month', 'teachers_id', 'teachers_sign', 'confirm_status'], 'required'],
+            [['subject_sect_studyplan_id', 'timestamp_month', 'teachers_id', 'teachers_sign'], 'required'],
             [['subject_sect_studyplan_id', 'timestamp_month', 'teachers_id', 'teachers_sign', 'confirm_status'], 'integer'],
             [['sign_message'], 'string', 'max' => 1024],
             [['confirm_status'], 'default', 'value' => self::DOC_STATUS_DRAFT],

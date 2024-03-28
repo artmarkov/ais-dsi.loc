@@ -57,7 +57,7 @@ class ProgressConfirmIndiv  extends \artsoft\db\ActiveRecord
     {
         return [
             [['subject_key', 'timestamp_month', 'teachers_id', 'teachers_sign'], 'required'],
-            [['timestamp_month', 'teachers_id', 'teachers_sign', 'confirm_status'], 'integer'],
+            [['timestamp_month', 'teachers_id', 'teachers_sign'], 'integer'],
             [['subject_key'], 'string'],
             [['sign_message'], 'string', 'max' => 1024],
             [['confirm_status'], 'default', 'value' => self::DOC_STATUS_DRAFT],

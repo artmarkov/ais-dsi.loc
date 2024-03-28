@@ -69,10 +69,25 @@ class m220409_114215_add_attendlog_tables extends \artsoft\db\BaseMigration
         order by timestamp, user_category, user_name
         ')->execute();
 
+        $this->createTable('working_time_log', [
+            'id' => $this->primaryKey(),
+            'user_common_id' => $this->integer()->notNull(),
+            'date' => $this->date(),
+            'timestamp_work_in' => $this->integer()->comment('Время прихода на работу'),
+            'timestamp_work_out' => $this->integer()->comment('Время ухода с работы'),
+            'timestamp_activities_in' => $this->integer()->comment('Время начала работы по расписанию'),
+            'timestamp_activities_out' => $this->integer()->comment('Время окончания работы по расписанию'),
+            'comment' => $this->string(),
+        ], $tableOptions);
+
+        $this->addCommentOnTable('working_time_log', 'Журнал посещаемости');
+        $this->addForeignKey('working_time_log_1', 'working_time_log', 'user_common_id', 'user_common', 'id', 'NO ACTION', 'NO ACTION');
+
     }
 
     public function down()
     {
+        $this->dropTable('working_time_log');
         $this->db->createCommand()->dropView('users_attendlog_view')->execute();
         $this->dropTable('users_attendlog_key');
         $this->dropTable('users_attendlog');
