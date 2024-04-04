@@ -9,7 +9,6 @@ use common\models\teachers\Teachers;
 use common\models\teachers\TeachersScheduleGenerator;
 use common\models\teachers\TeachersTimesheet;
 use common\models\user\UserCommon;
-use common\models\venue\VenueSity;
 use Yii;
 use yii\base\DynamicModel;
 use yii\db\Query;

@@ -142,7 +142,7 @@ class TeachersTimesheet
     {
         $data_schedule_total = [];
         $models = (new Query())->from('teachers_load_view')
-            ->select('direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(week_time) as time')
+            ->select('direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(load_time) as time')
             ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['subject_type_id' => $this->subject_type_id])

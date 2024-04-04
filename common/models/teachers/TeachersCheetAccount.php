@@ -61,7 +61,7 @@ class TeachersCheetAccount
         $attributes += $directions;
         // Бюджет - по нагрузке за неделю
         $models0 = (new Query())->from('teachers_load_view')
-            ->select('studyplan_subject_id, subject_sect_studyplan_id, direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(week_time) as time')
+            ->select('studyplan_subject_id, subject_sect_studyplan_id, direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(load_time) as time')
             ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['subject_type_id' => 1000])
