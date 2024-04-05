@@ -5,6 +5,8 @@ namespace frontend\controllers\studyplan;
 use common\models\education\LessonProgressView;
 use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
 use common\models\schedule\search\SubjectScheduleStudyplanViewSearch;
+use common\models\schoolplan\SchoolplanPerform;
+use common\models\schoolplan\search\SchoolplanPerformSearch;
 use common\models\schoolplan\search\SchoolplanProtocolViewSearch;
 use common\models\students\Student;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
@@ -252,22 +254,21 @@ class DefaultController extends MainController
 
     }
 
-    public function actionStudyplanPerform($id, $objectId = null, $mode = null)
+    public function actionStudyplanPerform($id, $objectId = null, $mode = null, $readonly = true)
     {
         $model = $this->findModel($id);
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['studyplan/default/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
+            $searchModel = new SchoolplanPerformSearch();
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['class'] = \yii\helpers\StringHelper::basename(get_class($model));
+            $params[$searchName]['studyplan_id'] = $id;
+            $dataProvider = $searchModel->search($params);
 
-        $searchModel = new SchoolplanProtocolViewSearch();
-
-        $searchName = StringHelper::basename($searchModel::className());
-        $params = Yii::$app->request->getQueryParams();
-        $params[$searchName]['studyplan_id'] = $id;
-        $dataProvider = $searchModel->search($params);
-
-        return $this->renderIsAjax('protocol-items', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('perform-items', ['dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'model' => $model]);
 
     }
 
@@ -369,7 +370,7 @@ class DefaultController extends MainController
             ['label' => 'Тематические/репертуарные планы', 'url' => ['/studyplan/default/thematic-items', 'id' => $id]],
             ['label' => 'Дневник успеваемости', 'url' => ['/studyplan/default/studyplan-progress', 'id' => $id]],
             ['label' => 'Оплата за обучение', 'url' => ['/studyplan/default/studyplan-invoices', 'id' => $id]],
-//            ['label' => 'Выполнение плана и участие в мероприятиях', 'url' => ['/studyplan/default/studyplan-perform', 'id' => $id]],
+            ['label' => 'Выполнение плана и участие в мероприятиях', 'url' => ['/studyplan/default/studyplan-perform', 'id' => $id]],
         ];
     }
 }

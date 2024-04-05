@@ -486,6 +486,23 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return ArrayHelper::map(self::getStudyplanSubjectListById($studyplan_id), 'id', 'name');
     }
 
+    public static function getStudyplanSubjectListByStudyplanAndTeachersId($studyplan_id, $teachers_id)
+    {
+        if (!$studyplan_id && !$teachers_id) return [];
+        return TeachersLoadStudyplanView::find()
+            ->select('studyplan_subject_id as id, subject as name')
+            ->distinct()
+            ->where(['studyplan_id' => $studyplan_id])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->asArray()
+            ->all();
+    }
+
+    public static function getStudyplanSubjectListByStudyplanAndTeachers($studyplan_id, $teachers_id)
+    {
+        return ArrayHelper::map(self::getStudyplanSubjectListByStudyplanAndTeachersId($studyplan_id, $teachers_id), 'id', 'name');
+    }
+
     /**
      * backend/views/studyplan/default/load-items.php
      * @param $studyplan_id

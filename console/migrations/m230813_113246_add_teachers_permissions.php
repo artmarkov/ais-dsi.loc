@@ -110,6 +110,7 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/teachers/studyplan/studyplan-invoices/grid-sort',
                         '/teachers/studyplan/studyplan-invoices/grid-page-size',
                         '/teachers/studyplan/studyplan-perform',
+                        '/teachers/studyplan/studyplan-perform?mode=view',
                         '/teachers/studyplan/studyplan-perform?mode=create',
                         '/teachers/studyplan/studyplan-perform?mode=update',
                         '/teachers/studyplan/studyplan-perform?mode=delete',

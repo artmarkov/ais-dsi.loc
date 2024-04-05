@@ -4,21 +4,25 @@ namespace common\models\schoolplan;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
+use artsoft\helpers\Schedule;
 use artsoft\models\User;
 use common\models\activities\ActivitiesOver;
 use common\models\auditory\Auditory;
 use common\models\education\LessonMark;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
+use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanThematicItems;
 use common\models\teachers\TeachersLoadStudyplanView;
 use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
@@ -983,5 +987,45 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         })->prepare();
         $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);
         exit;
+    }
+
+    public static function getSchoolplanListForStudyplan($studyplan_id)
+    {
+        $model = Studyplan::findOne(['id' => $studyplan_id]);
+        $timestamp = \artsoft\helpers\ArtHelper::getStudyYearParams($model->plan_year);
+        $teachersIds = TeachersLoadStudyplanView::find()
+            ->select('teachers_id')
+            ->distinct('teachers_id')
+            ->where(['=', 'studyplan_id', $studyplan_id])
+            ->andWhere(['IS NOT', 'teachers_id', NULL])
+            ->column();
+        $query = self::find()
+            ->innerJoin('teachers', new Expression('teachers.id = ANY (string_to_array(schoolplan.executors_list, \',\'::text)::integer[])'))
+            ->select(new \yii\db\Expression('schoolplan.id as id, concat(TO_CHAR(to_timestamp(datetime_in) :: DATE, \'dd.mm.yyyy\'), \' - \', title) as name'))
+            ->where(['between', 'datetime_in', $timestamp['timestamp_in'], $timestamp['timestamp_out']])
+            ->andWhere(['teachers.id' => $teachersIds])
+            ->orderBy('datetime_in')
+            ->asArray()
+            ->all();
+//        echo '<pre>' . print_r(ArrayHelper::map($query, 'id', 'name'), true) . '</pre>';
+        return ArrayHelper::map($query, 'id', 'name');
+    }
+
+    public static function getExecutorsListById($id)
+    {
+        if (!$id) return [];
+        $model = self::findOne(['id' => $id]);
+
+        $query = (new Query())->from('teachers_view')
+            ->select('teachers_id as id , fullname as name')
+            ->where(['teachers_id' => $model->executors_list])
+            ->all();
+        return $query;
+    }
+
+    public static function getExecutorsListByName($id)
+    {
+        if (!$id) return [];
+        return \yii\helpers\ArrayHelper::map(self::getExecutorsListById($id), 'id', 'name');
     }
 }

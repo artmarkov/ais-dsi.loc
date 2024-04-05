@@ -46,7 +46,6 @@ return [
     'Select Auditory...' => 'Выберите аудиторию...',
     'Select Division...' => 'Выберите отделение...',
     'Select Authors...' => 'Выберите автора...',
-    'Schoolplan Protocol Items' => 'Выполнение плана и участие в мероприятиях',
     'Name' => 'Название',
     'Division' => 'Отделение',
     'Department' => 'Отделы',

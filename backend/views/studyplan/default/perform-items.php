@@ -1,7 +1,8 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use yii\helpers\Url;
+use artsoft\models\User;
+use common\models\studyplan\StudyplanThematicItems;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
@@ -12,16 +13,20 @@ use artsoft\grid\GridPageSize;
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\schoolplan\search\SchoolplanPerformSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-/* @var $modelScoolplan \common\models\schoolplan\Schoolplan */
+/* @var $model */
 
+$this->title = 'Выполнение плана и участие в мероприяьтях';
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="schoolplan-perform-index">
     <div class="panel">
         <div class="panel-heading">
-            <?= \artsoft\Art::isBackend() || $modelScoolplan->isExecutors() ? \artsoft\helpers\ButtonHelper::createButton() : null; ?>
-
+            Выполнение плана и участие в мероприятиях: <?= RefBook::find('students_fullname')->getValue($model->student_id); ?>
+            <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.'; ?>
         </div>
         <div class="panel-body">
+            <?=  User::hasRole(['teacher', 'department']) ?  \artsoft\helpers\ButtonHelper::createButton() : null; ?>
+
             <div class="row">
                 <div class="col-sm-6">
                     <?php
@@ -49,16 +54,22 @@ use artsoft\grid\GridPageSize;
                 'id' => 'schoolplan-perform-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => false,
-                /*'bulkActionOptions' => [
-                    'gridId' => 'schoolplan-perform-grid',
-                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-                ],*/
+//                'bulkActionOptions' => [
+//                    'gridId' => 'schoolplan-perform-grid',
+//                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
+//                ],
                 'columns' => [
                     /* ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],*/
                     [
                         'attribute' => 'id',
                         'value' => function ($model) {
                             return sprintf('#%06d', $model->id);
+                        },
+                    ],
+                    [
+                        'attribute' => 'schoolplan_id',
+                        'value' => function ($model) {
+                            return isset($model->schoolplan) ? $model->schoolplan->title : '';
                         },
                     ],
                     [
@@ -72,6 +83,19 @@ use artsoft\grid\GridPageSize;
                         'value' => function ($model) {
                             return RefBook::find('subject_memo_4')->getValue($model->studyplan_subject_id);
                         },
+                    ],
+                    [
+                        'attribute' => 'thematic_items_list',
+                        'value' => function ($model) {
+                            if (!empty($model->thematic_items_list[0])) {
+                                $thematic_items_list = StudyplanThematicItems::find()->select('topic')->where(['id' => $model->thematic_items_list])->column();
+                                return implode(', ', $thematic_items_list);
+                            } else {
+                                return $model->task_ticket;
+                            }
+                        },
+                        'label' => 'Задание',
+                        'format' => 'raw'
                     ],
                     [
                         'attribute' => 'lesson_mark_id',
@@ -134,17 +158,17 @@ use artsoft\grid\GridPageSize;
                         },
                         'label' => 'Файл',
                         'format' => 'raw',
-                        'visible' => \artsoft\Art::isBackend()
                     ],
                     [
                         'class' => 'kartik\grid\ActionColumn',
+                        'visible' => User::hasRole(['teacher', 'department']),
                         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
                         'width' => '90px',
                         'template' => '{view} {update} {delete}',
                         'buttons' => [
                             'update' => function ($url, $model, $key) {
                                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                                    ['/schoolplan/default/perform', 'id' => $model->schoolplan_id, 'objectId' => $model->id, 'mode' => 'update'], [
+                                    [\artsoft\Art::isBackend() ? '/studyplan/default/studyplan-perform' : '/teachers/studyplan/studyplan-perform', 'id' => $model->studyplan_id, 'objectId' => $model->id, 'mode' => 'update'], [
                                         'title' => Yii::t('art', 'Edit'),
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
@@ -153,7 +177,7 @@ use artsoft\grid\GridPageSize;
                             },
                             'view' => function ($url, $model, $key) {
                                 return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
-                                    ['/schoolplan/default/perform', 'id' => $model->schoolplan_id, 'objectId' => $model->id, 'mode' => 'view'], [
+                                    [\artsoft\Art::isBackend() ? '/studyplan/default/studyplan-perform' : '/teachers/studyplan/studyplan-perform', 'id' => $model->studyplan_id, 'objectId' => $model->id, 'mode' => 'view'], [
                                         'title' => Yii::t('art', 'View'),
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
@@ -162,7 +186,7 @@ use artsoft\grid\GridPageSize;
                             },
                             'delete' => function ($url, $model, $key) {
                                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                                    ['/schoolplan/default/perform', 'id' => $model->schoolplan_id, 'objectId' => $model->id, 'mode' => 'delete'], [
+                                    [\artsoft\Art::isBackend() ? '/studyplan/default/studyplan-perform' : '/teachers/studyplan/studyplan-perform', 'id' => $model->studyplan_id, 'objectId' => $model->id, 'mode' => 'delete'], [
                                         'title' => Yii::t('art', 'Delete'),
                                         'aria-label' => Yii::t('art', 'Delete'),
                                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -177,10 +201,10 @@ use artsoft\grid\GridPageSize;
                                 return true;
                             },
                             'update' => function ($model) {
-                                return \artsoft\Art::isBackend() ? true : $model->isAuthor();
+                                return User::hasRole(['teacher', 'department']) ? true : false;
                             },
                             'delete' => function ($model) {
-                                return \artsoft\Art::isBackend() ? true : $model->isAuthor();
+                                 return User::hasRole(['teacher', 'department']) ? true : false;
                             },
                         ]
                     ],
@@ -188,7 +212,6 @@ use artsoft\grid\GridPageSize;
                 ],
             ]);
             ?>
-
             <?php Pjax::end() ?>
         </div>
     </div>

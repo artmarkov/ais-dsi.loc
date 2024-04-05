@@ -668,7 +668,7 @@ class StudyplanController extends MainController
 
         if ('create' == $mode) {
 
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol Items'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление карточки';
             $modelProtocolItems = new SchoolplanProtocol();
             if ($modelProtocolItems->load(Yii::$app->request->post()) AND $modelProtocolItems->save()) {
@@ -698,7 +698,7 @@ class StudyplanController extends MainController
 
         } elseif ($objectId) {
 
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol Items'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
             $modelProtocolItems = SchoolplanProtocol::findOne($objectId);
             if (!isset($modelProtocolItems)) {

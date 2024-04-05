@@ -18,7 +18,7 @@ class SchoolplanPerformSearch extends SchoolplanPerform
     public function rules()
     {
         return [
-            [['id', 'schoolplan_id', 'teachers_id', 'studyplan_subject_id', 'lesson_mark_id', 'status_exe', 'status_sign', 'signer_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['id', 'schoolplan_id', 'studyplan_id', 'teachers_id', 'studyplan_subject_id', 'lesson_mark_id', 'status_exe', 'status_sign', 'signer_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
             [['thematic_items_list', 'winner_id', 'resume'], 'safe'],
         ];
     }
@@ -66,6 +66,7 @@ class SchoolplanPerformSearch extends SchoolplanPerform
         $query->andFilterWhere([
             'id' => $this->id,
             'schoolplan_id' => $this->schoolplan_id,
+            'studyplan_id' => $this->studyplan_id,
             'teachers_id' => $this->teachers_id,
             'studyplan_subject_id' => $this->studyplan_subject_id,
             'lesson_mark_id' => $this->lesson_mark_id,

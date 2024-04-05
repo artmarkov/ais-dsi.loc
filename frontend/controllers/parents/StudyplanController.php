@@ -16,6 +16,7 @@ use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
 use common\models\schedule\search\SubjectScheduleStudyplanViewSearch;
 use common\models\schedule\SubjectSchedule;
 use common\models\schoolplan\SchoolplanProtocol;
+use common\models\schoolplan\search\SchoolplanPerformSearch;
 use common\models\schoolplan\search\SchoolplanProtocolViewSearch;
 use common\models\students\Student;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
@@ -623,15 +624,13 @@ class StudyplanController extends MainController
             }
             $model_date->addRule(['date_in', 'date_out'], 'required')
                 ->addRule(['date_in', 'date_out'], 'safe')
-                ->addRule('date_in', function ($attribute)
-                {
-                    if(Yii::$app->formatter->asTimestamp('01.'.$this->date_in) > Yii::$app->formatter->asTimestamp('01.'.$this->date_out)) $this->addError($attribute, 'Дата начала периода должна быть меньше даты окончания.');
+                ->addRule('date_in', function ($attribute) {
+                    if (Yii::$app->formatter->asTimestamp('01.' . $this->date_in) > Yii::$app->formatter->asTimestamp('01.' . $this->date_out)) $this->addError($attribute, 'Дата начала периода должна быть меньше даты окончания.');
                 })
-                ->addRule('date_in', function ($attribute)
-                {
-                    $plan_year_1 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_in));
-                    $plan_year_2 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_out));
-                    if($plan_year_1  != $plan_year_2 ) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
+                ->addRule('date_in', function ($attribute) {
+                    $plan_year_1 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.' . $this->date_in));
+                    $plan_year_2 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.' . $this->date_out));
+                    if ($plan_year_1 != $plan_year_2) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
                 });
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
@@ -665,66 +664,14 @@ class StudyplanController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['parents/studyplan/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
-        if ('create' == $mode) {
+        $searchModel = new SchoolplanPerformSearch();
+        $searchName = StringHelper::basename($searchModel::className());
+        $params = Yii::$app->request->getQueryParams();
+        $params[$searchName]['class'] = \yii\helpers\StringHelper::basename(get_class($model));
+        $params[$searchName]['studyplan_id'] = $id;
+        $dataProvider = $searchModel->search($params);
 
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol Items'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = 'Добавление карточки';
-            $modelProtocolItems = new SchoolplanProtocol();
-            if ($modelProtocolItems->load(Yii::$app->request->post()) AND $modelProtocolItems->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                $this->getSubmitAction($modelProtocolItems);
-            }
-
-            return $this->renderIsAjax('@backend/views/schoolplan/schoolplan-protocol-items/_form.php', [
-                'model' => $model,
-                'modelProtocolItems' => $modelProtocolItems,
-                'readonly' => false,
-            ]);
-
-        } elseif ('history' == $mode && $objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol Item'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['studyplan/default/studyplan-perform', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
-            $modelProtocolItems = SchoolplanProtocol::findOne($objectId);
-            $data = new ProtocolItemsHistory($objectId);
-            return $this->renderIsAjax('@backend/views/history/index.php', compact(['modelProtocolItems', 'data']));
-
-        } elseif ('delete' == $mode && $objectId) {
-            $modelProtocolItems = SchoolplanProtocol::findOne($objectId);
-            $modelProtocolItems->delete();
-
-            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-            return $this->redirect($this->getRedirectPage('delete', $modelProtocolItems));
-
-        } elseif ($objectId) {
-
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Protocol Items'), 'url' => ['studyplan/default/studyplan-perform', 'id' => $model->id]];
-            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $modelProtocolItems = SchoolplanProtocol::findOne($objectId);
-            if (!isset($modelProtocolItems)) {
-                throw new NotFoundHttpException("The SchoolplanProtocolItems was not found.");
-            }
-
-            if ($model->load(Yii::$app->request->post()) AND $modelProtocolItems->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction($model);
-            }
-
-            return $this->renderIsAjax('@backend/views/schoolplan/schoolplan-protocol-items/_form.php', [
-                'model' => $model,
-                'modelProtocolItems' => $modelProtocolItems,
-                'readonly' => false,
-            ]);
-
-        } else {
-            $searchModel = new SchoolplanProtocolViewSearch();
-
-            $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['studyplan_id'] = $id;
-            $dataProvider = $searchModel->search($params);
-
-            return $this->renderIsAjax('@backend/views/studyplan/default/protocol-items', compact('dataProvider', 'searchModel'));
-        }
+        return $this->renderIsAjax('@backend/views/studyplan/default/perform-items', ['dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'model' => $model]);
     }
 
     public function actionStudyplanInvoices($id, $objectId = null, $mode = null)
@@ -844,7 +791,7 @@ class StudyplanController extends MainController
             ['label' => 'Тематические/репертуарные планы', 'url' => ['/parents/studyplan/thematic-items', 'id' => $id]],
             ['label' => 'Дневник успеваемости', 'url' => ['/parents/studyplan/studyplan-progress', 'id' => $id]],
             ['label' => 'Оплата за обучение', 'url' => ['/parents/studyplan/studyplan-invoices', 'id' => $id]],
-//            ['label' => 'Выполнение плана и участие в мероприятиях', 'url' => ['/parents/studyplan/studyplan-perform', 'id' => $id]],
+            ['label' => 'Выполнение плана и участие в мероприятиях', 'url' => ['/parents/studyplan/studyplan-perform', 'id' => $id]],
         ];
     }
 }

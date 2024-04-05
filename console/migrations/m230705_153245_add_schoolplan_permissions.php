@@ -50,10 +50,12 @@ class m230705_153245_add_schoolplan_permissions extends PermissionsMigration
                         '/schoolplan/default/protocol?mode=delete',
                         '/schoolplan/default/studyplan',
                         '/schoolplan/default/studyplan-perform',
+                        '/schoolplan/default/executors-perform',
                         '/schoolplan/default/studyplan-subject',
                         '/schoolplan/default/studyplan-subject-perform',
                         '/schoolplan/default/studyplan-thematic',
-                        '/schoolplan/default/studyplan-thematic-perform'
+                        '/schoolplan/default/studyplan-thematic-perform',
+                        '/schoolplan/default/studyplan-subject-teachers-perform'
                     ],
                     'roles' => [
                         self::ROLE_TEACHER,
@@ -98,7 +100,11 @@ class m230705_153245_add_schoolplan_permissions extends PermissionsMigration
                         '/admin/schoolplan/default/protocol?mode=history',
                         '/admin/schoolplan/default/studyplan',
                         '/admin/schoolplan/default/studyplan-subject',
-                        '/admin/schoolplan/default/studyplan-thematic'
+                        '/admin/schoolplan/default/studyplan-thematic',
+                        '/admin/schoolplan/default/executors-perform',
+                        '/admin/schoolplan/default/studyplan-perform',
+                        '/admin/schoolplan/default/studyplan-subject-perform',
+                        '/admin/schoolplan/default/studyplan-subject-teachers-perform',
                     ],
                     'roles' => [
                         self::ROLE_SYSTEM,

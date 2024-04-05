@@ -455,6 +455,21 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
+    public function actionExecutorsPerform()
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+            if (!empty($parents)) {
+
+                $out = Schoolplan::getExecutorsListById($parents[0]);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
+
     public function actionStudyplanPerform()
     {
         $out = [];
@@ -479,6 +494,21 @@ class DefaultController extends MainController
             if (!empty($parents)) {
                 $cat_id = $parents[0];
                 $out = Studyplan::getStudyplanSubjectListById($cat_id);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
+
+    public function actionStudyplanSubjectTeachersPerform()
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $out = Studyplan::getStudyplanSubjectListByStudyplanAndTeachersId($_GET['studyplan_id'], $parents[0]);
 
                 return json_encode(['output' => $out, 'selected' => '']);
             }

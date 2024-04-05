@@ -7,6 +7,7 @@ use artsoft\fileinput\behaviors\FileManagerBehavior;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\education\LessonMark;
+use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\teachers\Teachers;
 use Yii;
@@ -37,6 +38,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property lessonMark $lessonMark
  * @property Schoolplan $schoolplan
+ * @property Studyplan $studyplan
  * @property StudyplanSubject $studyplanSubject
  * @property Teachers $teachers
  * @property User $user
@@ -94,7 +96,7 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
             [['admin_message'], 'required', 'when' => function ($model) {
                 return $model->admin_flag;
             }, 'enableClientValidation' => false],
-          //  [['studyplan_id'], 'unique', 'targetAttribute' => ['schoolplan_id', 'studyplan_subject_id', 'teachers_id'], 'message' => 'Ученик уже записан в реестр выполнения плана.'],
+            //  [['studyplan_id'], 'unique', 'targetAttribute' => ['schoolplan_id', 'studyplan_subject_id', 'teachers_id'], 'message' => 'Ученик уже записан в реестр выполнения плана.'],
         ];
     }
 
@@ -169,6 +171,16 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
     public function getStudyplanSubject()
     {
         return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
+    }
+
+    /**
+     * Gets query for [[Studyplan]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStudyplan()
+    {
+        return $this->hasOne(Studyplan::className(), ['id' => 'studyplan_id']);
     }
 
     /**
@@ -323,13 +335,13 @@ class SchoolplanPerform extends \artsoft\db\ActiveRecord
 
     public function modifMessage()
     {
-        $receiverId =  RefBook::find('teachers_users')->getValue($this->teachers_id);
+        $receiverId = RefBook::find('teachers_users')->getValue($this->teachers_id);
         Yii::$app->mailbox->send($receiverId, 'modif', $this, $this->admin_message);
     }
 
     public function approveMessage()
     {
-        $receiverId =  RefBook::find('teachers_users')->getValue($this->teachers_id);
+        $receiverId = RefBook::find('teachers_users')->getValue($this->teachers_id);
         Yii::$app->mailbox->send($receiverId, 'approve', $this, $this->admin_message);
     }
 
