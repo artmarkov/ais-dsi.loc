@@ -46,7 +46,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
         $model = new $this->modelClass;
 
-        if (Yii::$app->request->get('id')) {
+        if (Yii::$app->request->get('id') && !isset(Yii::$app->request->post()['SubjectSect'])) {
             $id = Yii::$app->request->get('id');
             $tmpModel = $this->findModel($id);
             $model->setAttributes($tmpModel->attributes);

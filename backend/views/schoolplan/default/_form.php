@@ -517,7 +517,7 @@ $readonlyResult = (\artsoft\Art::isFrontend() && $model->isAuthor() && Yii::$app
             <div class="panel-footer">
                 <div class="form-group btn-group">
                     <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : ($model->isAuthor() && $model->doc_status == Schoolplan::DOC_STATUS_DRAFT ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton()); ?>
-                    <?= !$readonlyResult ? \artsoft\helpers\ButtonHelper::saveButton() : ''; ?>
+                    <?= $readonly && !$readonlyResult ? \artsoft\helpers\ButtonHelper::saveButton() : ''; ?>
                 </div>
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>

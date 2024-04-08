@@ -9,7 +9,7 @@ use dosamigos\chartjs\ChartJs;
         ChartJs::widget([
             'type' => 'doughnut',
             'options' => [
-             'height' => 200,
+             'height' => 250,
             ],
             'clientOptions' => [
                 'legend' => [

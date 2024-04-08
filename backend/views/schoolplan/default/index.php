@@ -24,7 +24,7 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
         <div class="panel-heading">
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
         </div>
-            <?= $this->render('_search', compact('model_date')) ?>
+        <?= $this->render('_search', compact('model_date')) ?>
         <div class="panel-body">
             <?php if (\artsoft\Art::isFrontend()): ?>
                 <?php echo \yii\bootstrap\Alert::widget([
@@ -66,8 +66,8 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
 //                            'gridId' => 'schoolplan-plan-grid',
 //                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
 //                        ],
-                        'rowOptions' => function(Schoolplan $model) {
-                            if($model->isAuthor()) {
+                        'rowOptions' => function (Schoolplan $model) {
+                            if ($model->isAuthor()) {
                                 return ['class' => 'warning'];
                             }
                             return [];
@@ -139,7 +139,7 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                     'pluginOptions' => ['allowClear' => true],
                                 ],
                                 'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'value' => function (Schoolplan $model) use ($executorsBonus){
+                                'value' => function (Schoolplan $model) use ($executorsBonus) {
                                     $v = [];
                                     foreach ($model->executors_list as $id) {
                                         if (!$id) {
@@ -155,7 +155,7 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                             [
                                 'attribute' => 'result',
                                 'value' => function ($model) {
-                                    return  mb_strlen($model->result, 'UTF-8') > 200 ? mb_substr($model->result, 0, 200, 'UTF-8') . '...' : $model->result;
+                                    return mb_strlen($model->result, 'UTF-8') > 200 ? mb_substr($model->result, 0, 200, 'UTF-8') . '...' : $model->result;
                                 },
                                 'format' => 'raw',
                             ],
@@ -163,7 +163,7 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                 'attribute' => 'num_users',
                                 'label' => 'Участ.',
                                 'value' => function ($model) {
-                                    return $model->num_users ;
+                                    return $model->num_users;
                                 },
                             ],
                             [
@@ -186,10 +186,25 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                     return [$action, 'id' => $model->id];
                                 },
                                 'controller' => '/schoolplan/default',
-                                'template' => '{view} {update} {delete}',
+                                'template' => '{view} {update} {clone} {delete}',
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                'buttons' => [
+                                    'clone' => function ($key, $model) {
+                                        return Html::a('<span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>',
+                                            ['/schoolplan/default/create', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Clone'),
+                                                'data-method' => 'post',
+                                                'data-confirm' => Yii::t('art', 'Are you sure you want to clone this item?'),
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
                                 'visibleButtons' => [
                                     'update' => function ($model) {
+                                        return $model->isAuthor() || \artsoft\Art::isBackend();
+                                    },
+                                    'clone' => function ($model) {
                                         return $model->isAuthor() || \artsoft\Art::isBackend();
                                     },
                                     'delete' => function ($model) {
@@ -214,10 +229,10 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                             [
                                 'attribute' => 'signer_id',
                                 'value' => function (Schoolplan $model) {
-                                    return isset($model->user->userCommon ) ? $model->user->userCommon->lastFM : $model->signer_id;
+                                    return isset($model->user->userCommon) ? $model->user->userCommon->lastFM : $model->signer_id;
                                 },
                                 'options' => ['style' => 'width:150px'],
-                                'contentOptions' => ['style'=>"text-align:center; vertical-align: middle;"],
+                                'contentOptions' => ['style' => "text-align:center; vertical-align: middle;"],
                                 'format' => 'raw',
                             ],
                             [
@@ -231,11 +246,11 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                 'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
                                 'format' => 'raw',
                             ],
-                             [
+                            [
                                 'label' => 'Вып.плана',
                                 'visible' => \artsoft\Art::isBackend(),
                                 'value' => function (Schoolplan $model) {
-                                    return $model->schoolplanPerform ?  Html::a('<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> ' . count($model->schoolplanPerform),
+                                    return $model->schoolplanPerform ? Html::a('<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> ' . count($model->schoolplanPerform),
                                         ['/schoolplan/default/perform', 'id' => $model->id],
                                         [
                                             'data-pjax' => '0',

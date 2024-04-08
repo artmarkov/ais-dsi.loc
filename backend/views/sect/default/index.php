@@ -179,11 +179,11 @@ $this->params['breadcrumbs'][] = $this->title;
 //                                    return [$action, 'id' => $key];
 //                                },
                                 'controller' => '/sect/default',
-                                'template' => '{view} {update} {delete}',
+                                'template' => '{view} {update} {delete}', /*{clone}*/
                                 'buttons' => [
                                     'clone' => function ($key, $model) {
                                         return Html::a('<span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>',
-                                                Url::to(['/sect/default/create', 'id' => $model->id]), [
+                                                ['/sect/default/create', 'id' => $model->id], [
                                                 'title' => Yii::t('art', 'Clone'),
                                                 'data-method' => 'post',
                                                 'data-confirm' => Yii::t('art', 'Are you sure you want to clone this item?'),

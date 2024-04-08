@@ -75,6 +75,27 @@ class DefaultController extends MainController
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
 
+        if (Yii::$app->request->get('id') && !isset(Yii::$app->request->post()['Schoolplan'])) {
+            $id = Yii::$app->request->get('id');
+            $tmpModel = $this->findModel($id);
+            $attributes = $tmpModel->attributes;
+            unset($attributes['datetime_in']);
+            unset($attributes['datetime_out']);
+            unset($attributes['result']);
+            unset($attributes['num_users']);
+            unset($attributes['num_winners']);
+            unset($attributes['num_visitors']);
+            unset($attributes['bars_flag']);
+            unset($attributes['created_at']);
+            unset($attributes['created_by']);
+            unset($attributes['updated_at']);
+            unset($attributes['updated_by']);
+            unset($attributes['version']);
+            unset($attributes['doc_status']);
+//            echo '<pre>' . print_r($attributes, true) . '</pre>'; die();
+            $model->setAttributes($attributes);
+        }
+
         if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
             if ($valid) {
@@ -551,6 +572,7 @@ class DefaultController extends MainController
         }
         return json_encode(['output' => '', 'selected' => '']);
     }
+
     /**
      * @param $id
      * @return array

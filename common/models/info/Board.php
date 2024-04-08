@@ -87,7 +87,7 @@ class Board extends \artsoft\db\ActiveRecord implements OwnerAccess
     public function rules()
     {
         return [
-            [['category_id', 'title', 'description', 'board_date', 'delete_date'], 'required'],
+            [['category_id', 'title', 'description', 'board_date', 'delete_date', 'author_id'], 'required'],
             [['author_id'], 'required', 'when' => function () { return Art::isBackend(); }],
             [['category_id', 'delete_date'], 'default', 'value' => null],
             [['category_id', 'importance_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'version'], 'integer'],

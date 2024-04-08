@@ -50,12 +50,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'id' => 'question-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
-                'bulkActionOptions' => [
+                /*'bulkActionOptions' => [
                     'gridId' => 'question-grid',
                     'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-                ],
+                ],*/
                 'columns' => [
-                    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+//                    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
                         'attribute' => 'id',
                         'value' => function (Question $model) {
@@ -108,8 +108,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'options' => ['style' => 'width:350px'],
                         'format' => 'raw',
                     ],
-                    'timestamp_in:datetime',
-                    'timestamp_out:datetime',
+                    'timestamp_in:date',
+                    'timestamp_out:date',
                     [
                         'attribute' => 'author_id',
                         'filter' => artsoft\models\User::getUsersListByCategory(['teachers', 'employees']),
