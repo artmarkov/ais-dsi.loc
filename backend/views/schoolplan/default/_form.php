@@ -19,14 +19,12 @@ use yii\helpers\Url;
 <?php
 $subject_category_name_list = RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList();
 $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList();
+$readonlyResult = (\artsoft\Art::isFrontend() && $model->isAuthor() && Yii::$app->formatter->asTimestamp($model->datetime_out) < time()) ? false : $readonly; // для возможности редактировать результаты и добавлять файлы автору мероприятия
 ?>
     <div class="schoolplan-plan-form">
 
         <?php
         $form = ActiveForm::begin([
-            'fieldConfig' => [
-                'inputOptions' => ['readonly' => $readonly]
-            ],
             'id' => 'schoolplan-plan-form',
             'validateOnBlur' => false,
             'options' => ['enctype' => 'multipart/form-data'],
@@ -42,104 +40,107 @@ $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ?
                 <?php endif; ?>
             </div>
             <div class="panel-body">
+                <?php $text = !$readonlyResult ? 'Мероприятие завершено. Вы можете добавить информация в блоки "Загруженные материалы" и "Итоги мероприятия"' : 'После окончания мероприятия в любом статусе, Вы сможете добавить информацию в блоки "Загруженные материалы" и "Итоги мероприятия"' ?>
+                <?= (\artsoft\Art::isFrontend() && $model->isAuthor()) ? \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info"></i> ' . $text,
+                    'options' => ['class' => 'alert-info'],
+                ]) : null;
+                ?>
                 <div class="row">
+                    <div class="col-sm-12">
 
-                    <div class="row">
-                        <div class="col-sm-12">
+                        <?= $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Выберите запланированную дату и укажите время проведения мероприятия. Если на момент введения Вы не обладаете информацией о точном времени проведения мероприятия, указывается приблизительное время.'); ?>
 
-                            <?= $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Выберите запланированную дату и укажите время проведения мероприятия. Если на момент введения Вы не обладаете информацией о точном времени проведения мероприятия, указывается приблизительное время.'); ?>
+                        <?= $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]) ?>
 
-                            <?= $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]) ?>
+                        <?= $form->field($model, 'title')->textInput(['maxlength' => true])->hint('Введите официальное название мероприятия, которое указано в положении. Например: «X Международный фестиваль «Ипполитовская хоровая весна». В случае проведения самостоятельного мероприятия вместе с более крупным, укажите название более крупного мероприятия, используя связку «в рамках», например: Мастер-класс по лепке из глины в рамках Большого фестиваля детских школ искусств. Название указывается в кавычках. Если мероприятие посвящено какому-либо событию и (или) памятной дате, вводится пояснение с указанием основной цели мероприятия. Например: Концерт «Симфония весны», посвящённый Международному женскому дню 8 Марта.') ?>
 
-                            <?= $form->field($model, 'title')->textInput(['maxlength' => true])->hint('Введите официальное название мероприятия, которое указано в положении. Например: «X Международный фестиваль «Ипполитовская хоровая весна». В случае проведения самостоятельного мероприятия вместе с более крупным, укажите название более крупного мероприятия, используя связку «в рамках», например: Мастер-класс по лепке из глины в рамках Большого фестиваля детских школ искусств. Название указывается в кавычках. Если мероприятие посвящено какому-либо событию и (или) памятной дате, вводится пояснение с указанием основной цели мероприятия. Например: Концерт «Симфония весны», посвящённый Международному женскому дню 8 Марта.') ?>
+                        <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
+                            'data' => Department::getDepartmentList(),
+                            'options' => [
+                                'disabled' => $readonly,
+                                'placeholder' => Yii::t('art/teachers', 'Select Department...'),
+                                'multiple' => true,
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ])->label(Yii::t('art/guide', 'Department'));
+                        ?>
 
-                            <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
-                                'data' => Department::getDepartmentList(),
-                                'options' => [
-                                    'disabled' => $readonly,
-                                    'placeholder' => Yii::t('art/teachers', 'Select Department...'),
-                                    'multiple' => true,
-                                ],
-                                'pluginOptions' => [
-                                    'allowClear' => true
-                                ],
-                            ])->label(Yii::t('art/guide', 'Department'));
-                            ?>
+                        <?= $form->field($model->loadDefaultValues(), 'executors_list')->widget(\kartik\select2\Select2::class, [
+                            'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
+                            'showToggleAll' => false,
+                            'options' => [
+                                'disabled' => $readonly,
+                                'placeholder' => Yii::t('art', 'Select...'),
+                                'multiple' => true,
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => false,
+                                //'minimumInputLength' => 3,
+                            ],
 
-                            <?= $form->field($model->loadDefaultValues(), 'executors_list')->widget(\kartik\select2\Select2::class, [
-                                'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
-                                'showToggleAll' => false,
-                                'options' => [
-                                    'disabled' => $readonly,
-                                    'placeholder' => Yii::t('art', 'Select...'),
-                                    'multiple' => true,
-                                ],
-                                'pluginOptions' => [
-                                    'allowClear' => false,
-                                    //'minimumInputLength' => 3,
-                                ],
-
-                            ]);
-                            ?>
+                        ]);
+                        ?>
 
 
-                            <?= $form->field($model, 'category_id')->widget(\kartik\tree\TreeViewInput::class, [
-                                'id' => "schoolplan_category_tree",
-                                'options' => [
-                                    'disabled' => Yii::$app->user->isSuperAdmin ? false : !$model->isNewRecord,
-                                ],
-                                'query' => \common\models\guidesys\GuidePlanTree::find()->addOrderBy('root, lft'),
-                                'dropdownConfig' => [
-                                    'input' => ['placeholder' => 'Выберите категорию мероприятия...'],
-                                ],
-                                'fontAwesome' => true,
-                                'multiple' => false,
-                                'rootOptions' => [
-                                    'label' => '',
-                                    'class' => 'text-default'
-                                ],
-                                'childNodeIconOptions' => ['class' => ''],
-                                'defaultParentNodeIcon' => '',
-                                'defaultParentNodeOpenIcon' => '',
-                                'defaultChildNodeIcon' => '',
-                                'childNodeIconOptions' => ['class' => ''],
-                                'parentNodeIconOptions' => ['class' => ''],
-                            ]);
-                            ?>
-                            <div class="spinner">
-                                <div class="col-sm-3"></div>
-                                <div class="col-sm-9">
-                                    <?= \kartik\spinner\Spinner::widget(['preset' => 'small', 'align' => 'left']); ?>
-                                </div>
+                        <?= $form->field($model, 'category_id')->widget(\kartik\tree\TreeViewInput::class, [
+                            'id' => "schoolplan_category_tree",
+                            'options' => [
+                                'disabled' => Yii::$app->user->isSuperAdmin ? false : !$model->isNewRecord,
+                            ],
+                            'query' => \common\models\guidesys\GuidePlanTree::find()->addOrderBy('root, lft'),
+                            'dropdownConfig' => [
+                                'input' => ['placeholder' => 'Выберите категорию мероприятия...'],
+                            ],
+                            'fontAwesome' => true,
+                            'multiple' => false,
+                            'rootOptions' => [
+                                'label' => '',
+                                'class' => 'text-default'
+                            ],
+                            'childNodeIconOptions' => ['class' => ''],
+                            'defaultParentNodeIcon' => '',
+                            'defaultParentNodeOpenIcon' => '',
+                            'defaultChildNodeIcon' => '',
+                            'childNodeIconOptions' => ['class' => ''],
+                            'parentNodeIconOptions' => ['class' => ''],
+                        ]);
+                        ?>
+                        <div class="spinner">
+                            <div class="col-sm-3"></div>
+                            <div class="col-sm-9">
+                                <?= \kartik\spinner\Spinner::widget(['preset' => 'small', 'align' => 'left']); ?>
                             </div>
-                            <?= $form->field($model->loadDefaultValues(), 'formPlaces')->radioList(Schoolplan::getFormPlacesList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
-
-                            <?= $form->field($model, 'places')->textInput(['maxlength' => true])->hint('Укажите место проведения в соответствии с фактическим местом, где проводится мероприятие (в случае, если мероприятие будет проводиться на разных площадках, указывается основное место его проведения. Данные вводятся в формате полного названия места. Например: Парк культуры и отдыха имени Горького). Если мероприятие проводится дистанционно, то местом проведения указывается «сеть интернет».') ?>
-
-                            <?= $form->field($model, 'auditory_id')->widget(\kartik\select2\Select2::class, [
-                                'data' => RefBook::find('auditory_memo_1')->getList(),
-                                'showToggleAll' => false,
-                                'options' => [
-                                    'disabled' => $readonly,
-                                    'placeholder' => Yii::t('art', 'Select...'),
-                                    'multiple' => false,
-                                ],
-                                'pluginOptions' => [
-                                    'allowClear' => false,
-                                    //'minimumInputLength' => 3,
-                                ],
-
-                            ]);
-                            ?>
-
-                            <?php if (!$model->isNewRecord) : ?>
-                                <?php if ($model->category->preparing_flag) : ?>
-
-                                    <?= $form->field($model, 'period_over_flag')->checkbox(['disabled' => $readonly]) ?>
-
-                                <?php endif; ?>
-                            <?php endif; ?>
                         </div>
+                        <?= $form->field($model->loadDefaultValues(), 'formPlaces')->radioList(Schoolplan::getFormPlacesList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
+
+                        <?= $form->field($model, 'places')->textInput(['maxlength' => true])->hint('Укажите место проведения в соответствии с фактическим местом, где проводится мероприятие (в случае, если мероприятие будет проводиться на разных площадках, указывается основное место его проведения. Данные вводятся в формате полного названия места. Например: Парк культуры и отдыха имени Горького). Если мероприятие проводится дистанционно, то местом проведения указывается «сеть интернет».') ?>
+
+                        <?= $form->field($model, 'auditory_id')->widget(\kartik\select2\Select2::class, [
+                            'data' => RefBook::find('auditory_memo_1')->getList(),
+                            'showToggleAll' => false,
+                            'options' => [
+                                'disabled' => $readonly,
+                                'placeholder' => Yii::t('art', 'Select...'),
+                                'multiple' => false,
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => false,
+                                //'minimumInputLength' => 3,
+                            ],
+
+                        ]);
+                        ?>
+
+                        <?php if (!$model->isNewRecord) : ?>
+                            <?php if ($model->category->preparing_flag) : ?>
+
+                                <?= $form->field($model, 'period_over_flag')->checkbox(['disabled' => $readonly]) ?>
+
+                            <?php endif; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -153,7 +154,7 @@ $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ?
                                 <div class="row">
                                     <div class="col-sm-12">
 
-                                        <?= $form->field($model, 'period_over')->dropDownList(Schoolplan::getPeriodOverList()) ?>
+                                        <?= $form->field($model, 'period_over')->dropDownList(Schoolplan::getPeriodOverList(), ['disabled' => $readonly]) ?>
 
                                         <?= $form->field($model, 'executor_over_id')->widget(\kartik\select2\Select2::class, [
                                             'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
@@ -170,7 +171,7 @@ $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ?
 
                                         ]); ?>
 
-                                        <?= $form->field($model->loadDefaultValues(), 'title_over')->textInput(['maxlength' => true]) ?>
+                                        <?= $form->field($model->loadDefaultValues(), 'title_over')->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
 
                                     </div>
                                 </div>
@@ -195,13 +196,14 @@ $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ?
                                                 'pluginOptions' => [
                                                     'prefix' => '₽ ',
                                                     'suffix' => ' ',
-                                                    'allowNegative' => false
+                                                    'allowNegative' => false,
+                                                    'disabled' => $readonly
                                                 ]
                                             ])->hint('Укажите стоимость участия одного человека/организации в рублях.') ?>
 
                                             <?= $form->field($model, 'visit_poss')->radioList(Schoolplan::getVisitPossList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
 
-                                            <?= $form->field($model, 'visit_content')->textarea(['rows' => 2])->hint('Укажите, является запланированное мероприятие открытым или закрытым. Открытое мероприятие - вход возможен для всех желающих (в независимости от того, платный он или нет). Закрытое мероприятие - вход возможен для ограниченного круга лиц, например: «Приглашаются выпускники и их родители».') ?>
+                                            <?= $form->field($model, 'visit_content')->textarea(['rows' => 2, 'disabled' => $readonly])->hint('Укажите, является запланированное мероприятие открытым или закрытым. Открытое мероприятие - вход возможен для всех желающих (в независимости от того, платный он или нет). Закрытое мероприятие - вход возможен для ограниченного круга лиц, например: «Приглашаются выпускники и их родители».') ?>
 
                                             <?= $form->field($model, 'format_event')->radioList(Schoolplan::getFormatList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
 
@@ -213,16 +215,16 @@ $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ?
 
                                             <?php endif; ?>
 
-                                            <?= $form->field($model, 'site_url')->textInput(['maxlength' => true]) ?>
+                                            <?= $form->field($model, 'site_url')->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
 
-                                            <?= $form->field($model, 'site_media')->textInput(['maxlength' => true]) ?>
+                                            <?= $form->field($model, 'site_media')->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
 
                                             <div id="count_schoolplan-description" class="fa-pull-right"></div>
-                                            <?= $form->field($model, 'description')->textarea(['rows' => 6])->hint('Введите полное описание мероприятия, включающее важную и существенную информацию. Оно может содержать программу мероприятия, историю возникновения, значимость мероприятия для учреждения и участников, поименное перечисление участников, выступающих, организаторов, направленность мероприятия в форме развернутого ответа.') ?>
+                                            <?= $form->field($model, 'description')->textarea(['rows' => 6, 'disabled' => $readonly])->hint('Введите полное описание мероприятия, включающее важную и существенную информацию. Оно может содержать программу мероприятия, историю возникновения, значимость мероприятия для учреждения и участников, поименное перечисление участников, выступающих, организаторов, направленность мероприятия в форме развернутого ответа.') ?>
 
                                             <?php if ($model->category->rider_flag) : ?>
 
-                                                <?= $form->field($model, 'rider')->textarea(['rows' => 3])->hint('свет, микрофоны, хоровые станки и т.п.') ?>
+                                                <?= $form->field($model, 'rider')->textarea(['rows' => 3, 'disabled' => $readonly])->hint('свет, микрофоны, хоровые станки и т.п.') ?>
 
                                             <?php endif; ?>
 
@@ -249,7 +251,7 @@ $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ?
                                                 ]);
                                                 ?>
                                                 <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], /*'pluginOptions' => ['theme' => 'explorer'],*/
-                                                    'disabled' => $readonly]) ?>
+                                                    'disabled' => $readonlyResult]) ?>
                                             </div>
                                         </div>
                                     </div>
@@ -286,7 +288,7 @@ $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ?
                                                     ?>
                                                 </div>
                                                 <div id="protocolLeaderName">
-                                                    <?= $form->field($model, 'protocol_leader_name')->textInput()->hint('Введите Председателя комиссии(Фамилия Имя Отчество)') ?>
+                                                    <?= $form->field($model, 'protocol_leader_name')->textInput(['disabled' => $readonly])->hint('Введите Председателя комиссии(Фамилия Имя Отчество)') ?>
                                                 </div>
                                                 <?= $form->field($model, 'protocol_soleader_id')->widget(\kartik\select2\Select2::class, [
                                                     'data' => User::getUsersByIds(User::getUsersByRole('department,administrator')),
@@ -335,7 +337,7 @@ $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ?
                                                 ?>
 
                                                 <?= $form->field($model, 'protocol_subject_cat_id')->widget(\kartik\select2\Select2::class, [
-                                                    'data' =>  $subject_category_name_list,
+                                                    'data' => $subject_category_name_list,
                                                     'options' => [
                                                         'id' => 'protocol_subject_cat_id',
                                                         'placeholder' => Yii::t('art', 'Select...'),
@@ -412,13 +414,13 @@ $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ?
                                 <div class="panel-body">
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <?= $form->field($model, 'result')->textarea(['rows' => 6])->hint('Введите данные о результатах мероприятия с указанием фамилии и имени учащихся, ФИО преподавателей и концертмейстеров в формате: Иванов Иван (преп. Петров П.П., конц. Сидоров С.С.) – лауреат I степени. В случае, если учащийся не получил награды по итогам мероприятия, он вносится как участник. Если участие в мероприятии не состоялось, укажите причину, по которой оно было отменено.') ?>
+                                            <?= $form->field($model, 'result')->textarea(['rows' => 6, 'disabled' => $readonlyResult])->hint('Введите данные о результатах мероприятия с указанием фамилии и имени учащихся, ФИО преподавателей и концертмейстеров в формате: Иванов Иван (преп. Петров П.П., конц. Сидоров С.С.) – лауреат I степени. В случае, если учащийся не получил награды по итогам мероприятия, он вносится как участник. Если участие в мероприятии не состоялось, укажите причину, по которой оно было отменено.') ?>
 
-                                            <?= $form->field($model, 'num_users')->textInput()->hint('Укажите, какое количество человек предположительно будет принимать участие в мероприятии. В случае, если Вы сами являетесь организатором, указывается точное количество участников, включая организаторов и преподавателей. Если вы не являетесь организатором указанного мероприятия, то в критерии учитываются только участники непосредственно от учреждения.') ?>
+                                            <?= $form->field($model, 'num_users')->textInput(['disabled' => $readonlyResult])->hint('Укажите, какое количество человек предположительно будет принимать участие в мероприятии. В случае, если Вы сами являетесь организатором, указывается точное количество участников, включая организаторов и преподавателей. Если вы не являетесь организатором указанного мероприятия, то в критерии учитываются только участники непосредственно от учреждения.') ?>
 
-                                            <?= $form->field($model, 'num_winners')->textInput() ?>
+                                            <?= $form->field($model, 'num_winners')->textInput(['disabled' => $readonlyResult]) ?>
 
-                                            <?= $form->field($model, 'num_visitors')->textInput() ?>
+                                            <?= $form->field($model, 'num_visitors')->textInput(['disabled' => $readonlyResult]) ?>
 
                                         </div>
                                     </div>
@@ -515,6 +517,7 @@ $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ?
             <div class="panel-footer">
                 <div class="form-group btn-group">
                     <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : ($model->isAuthor() && $model->doc_status == Schoolplan::DOC_STATUS_DRAFT ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton()); ?>
+                    <?= !$readonlyResult ? \artsoft\helpers\ButtonHelper::saveButton() : ''; ?>
                 </div>
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>
