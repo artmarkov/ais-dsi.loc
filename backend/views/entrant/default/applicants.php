@@ -77,9 +77,10 @@ use artsoft\grid\GridPageSize;
                     [
                         'attribute' => 'fullname',
                         'value' => function (\common\models\entrant\EntrantView $model) {
-                            return Html::a($model->fullname,
-                                ['/students/default/view', 'id' => $model->student_id], ['title' => 'Перейти в реестр', 'target' => '_blank', 'data-pjax' => 0]);
-                        },
+                            return \artsoft\Art::isBackend() ? Html::a($model->fullname,
+                                ['/students/default/view', 'id' => $model->student_id], ['title' => 'Перейти в реестр', 'target' => '_blank', 'data-pjax' => 0])
+                        : $model->fullname;
+                            },
                         'format' => 'raw'
                     ],
                     [

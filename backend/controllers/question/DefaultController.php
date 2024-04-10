@@ -132,7 +132,7 @@ class DefaultController extends MainController
 
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsQuestionAttribute) && $valid;
-           // $valid = true;
+             $valid = true;
             $timesIDs = [];
             if (isset($_POST['QuestionOptions'])) {
                 foreach ($_POST['QuestionOptions'] as $index => $times) {
@@ -187,10 +187,9 @@ class DefaultController extends MainController
                     if ($flag) {
                         $transaction->commit();
                         return $this->getSubmitAction($model);
-                    } else {
-                        $transaction->rollBack();
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
+                    echo '<pre>' . print_r($e->getMessage(), true) . '</pre>';
                     $transaction->rollBack();
                 }
             }
@@ -305,7 +304,7 @@ class DefaultController extends MainController
         return [
             ['label' => 'Карточка формы', 'url' => ['/question/default/update', 'id' => $id]],
             ['label' => 'Ответы', 'url' => ['/question/default/answers', 'id' => $id]],
-           // ['label' => 'Статистика', 'url' => ['/question/default/stat', 'id' => $id]],
+            // ['label' => 'Статистика', 'url' => ['/question/default/stat', 'id' => $id]],
         ];
     }
 }
