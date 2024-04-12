@@ -3,14 +3,19 @@
 namespace backend\controllers\question;
 
 use artsoft\helpers\ArtHelper;
+use artsoft\helpers\StringHelper;
 use artsoft\models\OwnerAccess;
+use artsoft\models\User;
 use backend\models\Model;
+use common\models\history\QuestionAttributeHistory;
 use common\models\question\QuestionAnswers;
 use common\models\question\QuestionAttribute;
 use common\models\question\QuestionOptions;
 use artsoft\controllers\admin\BaseController;
 use common\models\question\QuestionUsers;
 use common\models\question\QuestionValue;
+use common\models\question\search\QuestionAttributeSearch;
+use himiklab\sortablegrid\SortableGridAction;
 use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
 use Yii;
@@ -22,6 +27,7 @@ use yii\web\NotFoundHttpException;
 class DefaultController extends MainController
 {
     public $modelClass = 'common\models\question\Question';
+    public $modelUsersClass = 'common\models\question\QuestionUsers';
     public $modelSearchClass = 'common\models\question\search\QuestionSearch';
     public $modelHistoryClass = 'common\models\history\QuestionHistory';
 
@@ -31,68 +37,14 @@ class DefaultController extends MainController
 
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
-        $modelsQuestionAttribute = [new QuestionAttribute()];
-        $modelsQuestionOptions = [[new QuestionOptions()]];
 
-        if ($model->load(Yii::$app->request->post())) {
-
-            $modelsQuestionAttribute = Model::createMultiple(QuestionAttribute::class);
-            Model::loadMultiple($modelsQuestionAttribute, Yii::$app->request->post());
-
-            // validate person and houses models
-            $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsQuestionAttribute) && $valid;
-
-            if (isset($_POST['QuestionOptions'])) {
-                foreach ($_POST['QuestionOptions'] as $index => $times) {
-                    foreach ($times as $indexTime => $time) {
-                        $data['QuestionOptions'] = $time;
-                        $modelQuestionOptions = new QuestionOptions;
-                        $modelQuestionOptions->load($data);
-                        $modelsQuestionOptions[$index][$indexTime] = $modelQuestionOptions;
-                        $valid = $modelQuestionOptions->validate();
-                    }
-                }
-            }
-            if ($valid) {
-                $transaction = Yii::$app->db->beginTransaction();
-                try {
-                    if ($flag = $model->save(false)) {
-                        foreach ($modelsQuestionAttribute as $index => $modelQuestionAttribute) {
-                            if ($flag === false) {
-                                break;
-                            }
-                            $modelQuestionAttribute->question_id = $model->id;
-                            if (!($flag = $modelQuestionAttribute->save(false))) {
-                                break;
-                            }
-                            if (isset($modelsQuestionOptions[$index]) && is_array($modelsQuestionOptions[$index])) {
-                                foreach ($modelsQuestionOptions[$index] as $indexTime => $modelQuestionOptions) {
-                                    $modelQuestionOptions->attribute_id = $modelQuestionAttribute->id;
-                                    if (!($flag = $modelQuestionOptions->save(false))) {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if ($flag) {
-                        $transaction->commit();
-                        $this->getSubmitAction($model);
-                    } else {
-                        $transaction->rollBack();
-                    }
-                } catch (Exception $e) {
-                    $transaction->rollBack();
-                }
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+            $this->getSubmitAction($model);
         }
 
         return $this->renderIsAjax($this->createView, [
                 'model' => $model,
-                'modelsQuestionAttribute' => (empty($modelsQuestionAttribute)) ? [new QuestionAttribute] : $modelsQuestionAttribute,
-                'modelsQuestionOptions' => (empty($modelsQuestionOptions)) ? [[new QuestionOptions]] : $modelsQuestionOptions,
                 'readonly' => false
             ]
         );
@@ -104,95 +56,14 @@ class DefaultController extends MainController
 
         /* @var $model \artsoft\db\ActiveRecord */
         $model = $this->findModel($id);
+
         if (!isset($model)) {
             throw new NotFoundHttpException("The Question was not found.");
         }
 
-        $modelsQuestionAttribute = $model->questionAttributes;
-        $modelsQuestionOptions = [];
-        $oldTimes = [];
-
-        if (!empty($modelsQuestionAttribute)) {
-            foreach ($modelsQuestionAttribute as $index => $modelQuestionAttribute) {
-                $times = $modelQuestionAttribute->questionOptions;
-                $modelsQuestionOptions[$index] = $times;
-                $oldTimes = ArrayHelper::merge(ArrayHelper::index($times, 'id'), $oldTimes);
-            }
-        }
-
-        if ($model->load(Yii::$app->request->post())) {
-
-            // reset
-            $modelsQuestionOptions = [];
-
-            $oldSubjectIDs = ArrayHelper::map($modelsQuestionAttribute, 'id', 'id');
-            $modelsQuestionAttribute = Model::createMultiple(QuestionAttribute::class, $modelsQuestionAttribute);
-            Model::loadMultiple($modelsQuestionAttribute, Yii::$app->request->post());
-            $deletedSubjectIDs = array_diff($oldSubjectIDs, array_filter(ArrayHelper::map($modelsQuestionAttribute, 'id', 'id')));
-
-            $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsQuestionAttribute) && $valid;
-             $valid = true;
-            $timesIDs = [];
-            if (isset($_POST['QuestionOptions'])) {
-                foreach ($_POST['QuestionOptions'] as $index => $times) {
-                    $timesIDs = ArrayHelper::merge($timesIDs, array_filter(ArrayHelper::getColumn($times, 'id')));
-                    foreach ($times as $indexTime => $time) {
-                        $data['QuestionOptions'] = $time;
-                        $modelQuestionOptions = (isset($time['id']) && isset($oldTimes[$time['id']])) ? $oldTimes[$time['id']] : new QuestionOptions;
-                        $modelQuestionOptions->load($data);
-                        $modelsQuestionOptions[$index][$indexTime] = $modelQuestionOptions;
-                        $valid = $modelQuestionOptions->validate();
-                    }
-                }
-            }
-
-            $oldTimesIDs = ArrayHelper::getColumn($oldTimes, 'id');
-            $deletedTimesIDs = array_diff($oldTimesIDs, $timesIDs);
-
-            if ($valid) {
-                $transaction = Yii::$app->db->beginTransaction();
-                try {
-                    if ($flag = $model->save(false)) {
-
-                        if (!empty($deletedTimesIDs)) {
-                            QuestionOptions::deleteAll(['id' => $deletedTimesIDs]);
-                        }
-
-                        if (!empty($deletedSubjectIDs)) {
-                            QuestionAttribute::deleteAll(['id' => $deletedSubjectIDs]);
-                        }
-
-                        foreach ($modelsQuestionAttribute as $index => $modelQuestionAttribute) {
-
-                            if ($flag === false) {
-                                break;
-                            }
-                            $modelQuestionAttribute->question_id = $model->id;
-                            if (!($flag = $modelQuestionAttribute->save(false))) {
-                                break;
-                            }
-
-                            if (isset($modelsQuestionOptions[$index]) && is_array($modelsQuestionOptions[$index])) {
-                                foreach ($modelsQuestionOptions[$index] as $indexTime => $modelQuestionOptions) {
-                                    $modelQuestionOptions->attribute_id = $modelQuestionAttribute->id;
-                                    if (!($flag = $modelQuestionOptions->save(false))) {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if ($flag) {
-                        $transaction->commit();
-                        return $this->getSubmitAction($model);
-                    }
-                } catch (\Exception $e) {
-                    echo '<pre>' . print_r($e->getMessage(), true) . '</pre>';
-                    $transaction->rollBack();
-                }
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+            $this->getSubmitAction($model);
         }
 
         return $this->renderIsAjax($this->updateView, [
@@ -268,6 +139,163 @@ class DefaultController extends MainController
         }
     }
 
+    public function actionQuestionAttribute($id, $objectId = null, $mode = null, $readonly = false)
+    {
+        $model = $this->findModel($id);
+
+        if (!isset($model)) {
+            throw new NotFoundHttpException("The Question was not found.");
+        }
+
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Questions'), 'url' => ['question/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['question/default/view', 'id' => $id]];
+
+        if ('create' == $mode) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Questions Attributes'), 'url' => ['/question/default/question-attribute', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = 'Добавление поля формы';
+
+            $modelAttribute = new QuestionAttribute();
+            $modelAttribute->question_id = $model->id;
+            $modelsItems = [new QuestionOptions()];
+
+            if ($modelAttribute->load(Yii::$app->request->post())) {
+                $modelsItems = Model::createMultiple(QuestionOptions::class);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+
+                // validate all models
+                $valid = $modelAttribute->validate();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
+                //$valid = true;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+
+                        if ($flag = $modelAttribute->save(false)) {
+                            foreach ($modelsItems as $modelItems) {
+                                $modelItems->attribute_id = $modelAttribute->id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction($modelAttribute);
+                        }
+                    } catch (\Exception $e) {
+                        print_r($e->getMessage());
+                        $transaction->rollBack();
+                    }
+                }
+            }
+
+            return $this->renderIsAjax('@backend/views/question/question-attribute/_form.php', [
+                'model' => $modelAttribute,
+                'modelsQuestionOptions' => (empty($modelsItems)) ? [new QuestionOptions] : $modelsItems,
+                'readonly' => $readonly
+            ]);
+
+        } elseif ('history' == $mode && $objectId) {
+            $modelAttribute = QuestionAttribute::findOne($objectId);
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Questions Attributes'), 'url' => ['/question/default/question-attribute', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $modelAttribute->id), 'url' => ['/question/default/question-attribute', 'id' => $modelAttribute->id, 'obJectId' => $objectId, 'mode' => 'update']];
+            $data = new QuestionAttributeHistory($objectId);
+            return $this->renderIsAjax('@backend/views/question/question-attribute/history', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $modelAttribute = QuestionAttribute::findOne($objectId);
+            $modelAttribute->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $modelAttribute));
+
+        } elseif ($objectId) {
+            if ('view' == $mode) {
+                $readonly = true;
+            }
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Questions Attributes'), 'url' => ['/question/default/question-attribute', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+
+            $modelAttribute = QuestionAttribute::findOne($objectId);
+            if (!isset($modelAttribute)) {
+                throw new NotFoundHttpException("The QuestionAttribute was not found.");
+            }
+            $modelsItems = $modelAttribute->questionOptions;
+
+            if ($modelAttribute->load(Yii::$app->request->post())) {
+
+                $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
+                $modelsItems = Model::createMultiple(QuestionOptions::class, $modelsItems);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
+
+                // validate all models
+                $valid = $modelAttribute->validate();
+//                print_r(Yii::$app->request->post()); die();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
+               // $valid = true;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        if ($flag = $modelAttribute->save(false)) {
+                            if (!empty($deletedIDs)) {
+                                QuestionOptions::deleteAll(['id' => $deletedIDs]);
+                            }
+                            foreach ($modelsItems as $modelItems) {
+
+                                $modelItems->attribute_id = $modelAttribute->id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction($modelAttribute);
+                        }
+                    } catch (\Exception $e) {
+                        print_r($e->getMessage());
+                        $transaction->rollBack();
+                    }
+                }
+            }
+
+            return $this->renderIsAjax('@backend/views/question/question-attribute/_form.php', [
+                'model' => $modelAttribute,
+                'modelsQuestionOptions' => (empty($modelsItems)) ? [new QuestionOptions] : $modelsItems,
+                'readonly' => $readonly
+            ]);
+
+        } else {
+            $searchModel = new QuestionAttributeSearch();
+
+            $searchName = \yii\helpers\StringHelper::basename($searchModel::className());
+            $params = $this->getParams();
+            $params[$searchName]['question_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('question-attribute', compact('dataProvider', 'searchModel'));
+        }
+    }
+
+    /**
+     * action sort for himiklab\sortablegrid\SortableGridBehavior
+     * @return type
+     */
+    public function actions()
+    {
+        return [
+            'grid-sort' => [
+                'class' => SortableGridAction::className(),
+                'modelName' => 'common\models\question\QuestionAttribute',
+            ],
+        ];
+    }
+
     /**
      * Скачивание файла
      * @param $id
@@ -294,6 +322,67 @@ class DefaultController extends MainController
             'dataProvider' => $dataProvider,
         ]);
     }
+    /**
+     * Activate all selected grid items
+     */
+    public function actionUsersBulkActivate()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelUsersClass;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+            $where = ['id' => Yii::$app->request->post('selection', [])];
+
+            if ($restrictAccess) {
+                $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $modelClass::updateAll(['read_flag' => 1], $where);
+        }
+    }
+
+    /**
+     * Deactivate all selected grid items
+     */
+    public function actionUsersBulkDeactivate()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelUsersClass;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+            $where = ['id' => Yii::$app->request->post('selection', [])];
+
+            if ($restrictAccess) {
+                $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $modelClass::updateAll(['read_flag' => 0], $where);
+        }
+    }
+
+    /**
+     * Deactivate all selected grid items
+     */
+    public function actionUsersBulkDelete()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelUsersClass;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+
+            foreach (Yii::$app->request->post('selection', []) as $id) {
+                $where = ['id' => $id];
+
+                if ($restrictAccess) {
+                    $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+                }
+
+                $model = $modelClass::findOne($where);
+
+                if ($model) $model->delete();
+            }
+        }
+    }
 
     /**
      * @param $id
@@ -303,6 +392,7 @@ class DefaultController extends MainController
     {
         return [
             ['label' => 'Карточка формы', 'url' => ['/question/default/update', 'id' => $id]],
+            ['label' => 'Поля формы', 'url' => ['/question/default/question-attribute', 'id' => $id]],
             ['label' => 'Ответы', 'url' => ['/question/default/answers', 'id' => $id]],
             // ['label' => 'Статистика', 'url' => ['/question/default/stat', 'id' => $id]],
         ];

@@ -26,6 +26,7 @@ class m220518_100419_add_table_question extends \artsoft\db\BaseMigration
             'status' => $this->smallInteger()->notNull()->defaultValue(1)->comment('Статус формы (Активная, Не активная)'),
             'email_flag' => $this->integer()->comment('Отправлять пользователям информацию на E-mail при наличии формы?'),
             'email_author_flag' => $this->integer()->comment('Отправлять автору формы информацию на E-mail при каждом заполнении?'),
+            'question_limit' => $this->integer()->comment('Ограничение колличества заявок, опросов'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -47,7 +48,8 @@ class m220518_100419_add_table_question extends \artsoft\db\BaseMigration
             'label' => $this->string(127)->notNull()->comment('Название атрибута формы'),
             'description' => $this->string(1024)->comment('Описание Поля'),
             'hint' => $this->string(512)->comment('Подсказка атрибута формы'),
-            'required' => $this->integer()->notNull()->comment('Обязательность атрибута (Да, Нет)'),
+            'required' => $this->integer()->notNull()->defaultValue(0)->comment('Обязательность атрибута (Да, Нет)'),
+            'unique_flag' => $this->integer()->notNull()->defaultValue(0)->comment('Уникальное значение (Да, Нет)'),
             'default_value' => $this->string(127)->defaultValue(null),
             'sort_order' => $this->integer()->defaultValue(null),
             'created_at' => $this->integer()->notNull(),
@@ -57,7 +59,7 @@ class m220518_100419_add_table_question extends \artsoft\db\BaseMigration
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 
-        $this->addCommentOnTable('question_attribute', 'Атрибуты формы');
+        $this->addCommentOnTable('question_attribute', 'Поля формы');
 
         $this->addForeignKey('question_attribute_ibfk_1', 'question_attribute', 'question_id', 'question', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('question_attribute_ibfk_2', 'question_attribute', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');

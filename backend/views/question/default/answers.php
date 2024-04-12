@@ -8,6 +8,13 @@ use yii\widgets\Pjax;
 
 //echo '<pre>' . print_r($data, true) . '</pre>'; die();
 $columns = [];
+
+$columns[] = ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($data) {
+    return ['value' => $data['question_users_id']];
+},
+    'visible' => \artsoft\Art::isBackend(),
+];
+
 foreach ($data['attributes'] as $attribute => $label) {
     $columns[] = [
         'attribute' => $attribute,
@@ -79,7 +86,15 @@ $this->params['breadcrumbs'][] = $this->title;
             ])
             ?>
             <?= \artsoft\grid\GridView::widget([
-                'id' => 'question-answers',
+                'id' => 'question-answers-grid',
+                'bulkActionOptions' => [
+                    'gridId' => 'question-answers-grid',
+                    'actions' => [
+                        Url::to(['users-bulk-activate']) => 'Перевести в статус "Просмотрено"',
+                        Url::to(['users-bulk-deactivate']) => 'Перевести в статус "В работе"',
+                        Url::to(['users-bulk-delete']) => Yii::t('yii', 'Delete'),
+                    ]
+                ],
                 'dataProvider' => new \yii\data\ArrayDataProvider([
                     'allModels' => $data['data'],
                     'sort' => [
@@ -97,7 +112,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 $css = <<<CSS
-.question-answers img {
+.question-answers-grid img {
    width: 100px;
     height: 100px;
     border-radius: 10px;

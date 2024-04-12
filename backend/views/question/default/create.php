@@ -16,8 +16,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="question-create">
     <?= $this->render('_form', [
         'model' => $model,
-        'modelsQuestionAttribute' => $modelsQuestionAttribute,
-        'modelsQuestionOptions' => $modelsQuestionOptions,
         'readonly' => $readonly
     ]) ?>
 </div>

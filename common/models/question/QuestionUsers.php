@@ -19,6 +19,9 @@ use yii\behaviors\TimestampBehavior;
  */
 class QuestionUsers extends \artsoft\db\ActiveRecord
 {
+    const READ_OFF = 0;
+    const READ_ON = 1;
+
     /**
      * {@inheritdoc}
      */
@@ -40,6 +43,7 @@ class QuestionUsers extends \artsoft\db\ActiveRecord
             ],
         ];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -47,23 +51,10 @@ class QuestionUsers extends \artsoft\db\ActiveRecord
     {
         return [
             [['question_id'], 'required'],
-            [['question_id', 'users_id', 'read_flag'], 'default', 'value' => null],
+            [['users_id'], 'default', 'value' => null],
             [['question_id', 'users_id', 'read_flag'], 'integer'],
-            [['question_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::className(), 'targetAttribute' => ['question_id' => 'id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'question_id' => 'Question ID',
-            'users_id' => 'Users ID',
-            'read_flag' => 'Read Flag',
-            'created_at' => Yii::t('art', 'Created'),
+            ['read_flag', 'default', 'value' => 0],
+            [['question_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::class, 'targetAttribute' => ['question_id' => 'id']],
         ];
     }
 
@@ -86,4 +77,27 @@ class QuestionUsers extends \artsoft\db\ActiveRecord
     {
         return $this->hasMany(QuestionValue::className(), ['question_users_id' => 'id']);
     }
+
+    /**
+     * @return array
+     */
+    public static function getReadList()
+    {
+        return array(
+            self::READ_OFF => 'В работе',
+            self::READ_ON => 'Просмотрено',
+        );
+    }
+
+    /**
+     * @param $val
+     * @return mixed
+     */
+    public static function getReadValue($val)
+    {
+        $ar = self::getReadList();
+
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+
 }

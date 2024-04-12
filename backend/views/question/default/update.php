@@ -15,8 +15,6 @@ $this->params['breadcrumbs'][] = sprintf('#%06d', $model->id)
 <div class="question-update">
     <?= $this->render('_form', [
         'model' => $model,
-        'modelsQuestionAttribute' => $modelsQuestionAttribute,
-        'modelsQuestionOptions' => $modelsQuestionOptions,
         'readonly' => $readonly
     ]) ?>
 </div>

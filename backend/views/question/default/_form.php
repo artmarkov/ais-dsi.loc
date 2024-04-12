@@ -16,43 +16,6 @@ use wbraganca\dynamicform\DynamicFormWidget;
 /* @var $modelsQuestionOptions common\models\question\QuestionOptions */
 /* @var $readonly */
 
-$js = <<<JS
-jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
-    jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("Поле: " + (index + 1))
-    });
-});
-
-jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
-    jQuery(".dynamicform_wrapper .panel-title-activities").each(function(index) {
-        jQuery(this).html("Поле: " + (index + 1))
-    });
-});
-
-
-JS;
-
-$this->registerJs($js);
-
-$this->registerJs(<<<JS
-   function toggle(index, value) {
-      if(value == 7 || value == 8 || value == 77 || value == 88) {
-             $('.questionForm_' + index).show();
-             // $('.field-questionattribute-' + index + '-default_value').hide();
-         } else {
-             $('.questionForm_' + index).hide();
-             // $('.field-questionattribute-' + index + '-default_value').show();
-         }
-    }
-    jQuery(".dynamicform_wrapper .typeId").each(function(index) {
-        let field = document.getElementById("questionattribute-" + index + "-type_id");
-        toggle(index, field.value);
-        field.addEventListener('change', (event) => {
-          toggle(index, event.target.value);
-        });
-    });
-JS
-    , \yii\web\View::POS_END);
 
 $js = <<<JS
     function toggleQuestion(value) {
@@ -163,7 +126,7 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
                         'options' => ['rows' => 6],
                         'language' => 'ru',
 
-                    ]);?>
+                    ]); ?>
 
                     <?= $form->field($model, 'timestamp_in')->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
@@ -171,13 +134,20 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
 
                     <?= $form->field($model, 'status')->dropDownList(Question::getStatusList(), ['disabled' => $readonly]) ?>
 
-                    <?= $form->field($model, 'email_flag')->checkbox(['disabled' => $readonly]) ?>
+                    <?= $form->field($model, 'email_flag')->checkbox(['disabled' => $readonly])->hint('При наличии в форме E-mail, пользовательполучет уведомление') ?>
 
-                    <?= $form->field($model, 'email_author_flag')->checkbox(['disabled' => $readonly]) ?>
+                    <?= $form->field($model, 'email_author_flag')->checkbox(['disabled' => $readonly])->hint('Автор формы получит уведомления при каждом заполнении формы') ?>
+
+                    <?= $form->field($model, 'question_limit')->widget(kartik\touchspin\TouchSpin::class, [
+                        'disabled' => $readonly,
+                        'pluginOptions' => [
+                            'min' => 0,
+                            'max' => 1000,
+                        ]])->hint('Укажите колличество заявок, опросов от 0 до 1000. 0 - колличество не ограничено'); ?>
                 </div>
             </div>
             <?php if (!$model->isNewRecord) : ?>
-                <div class="panel panel-info">
+                <div class="panel panel-default">
                     <div class="panel-heading">
                         Загруженные материалы
                     </div>
@@ -188,95 +158,6 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
                             </div>
                         </div>
                     </div>
-                </div>
-                <?php DynamicFormWidget::begin([
-                    'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-                    'widgetBody' => '.container-items', // required: css class selector
-                    'widgetItem' => '.item', // required: css class
-                    'limit' => 50, // the maximum times, an element can be added (default 999)
-                    'min' => 1, // 0 or 1 (default 1)
-                    'insertButton' => '.add-item', // css class
-                    'deleteButton' => '.remove-item', // css class
-                    'model' => $modelsQuestionAttribute[0],
-                    'formId' => 'question-form',
-                    'formFields' => [
-                        'type_id',
-                        'name',
-                        'label',
-                        'hint',
-                        'required',
-//                        'default_value',
-                        'description',
-                    ],
-                ]); ?>
-
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        Поля формы
-                    </div>
-                    <div class="panel-body">
-                        <div class="container-items"><!-- widgetBody -->
-                            <?php foreach ($modelsQuestionAttribute as $index => $modelQuestionAttribute): ?>
-                                <div class="item panel panel-info"><!-- widgetItem -->
-                                    <div class="panel-heading">
-                                        <span class="panel-title-activities">Поле: <?= ($index + 1) ?></span>
-                                        <?php if (!$readonly): ?>
-                                            <div class="pull-right">
-                                                <button type="button" class="remove-item btn btn-default btn-xs">
-                                                    удалить
-                                                </button>
-                                            </div>
-                                        <?php endif; ?>
-                                        <div class="clearfix"></div>
-                                    </div>
-                                    <div class="panel-body">
-                                        <?php
-                                        // necessary for update action.
-                                        if (!$modelQuestionAttribute->isNewRecord) {
-                                            echo Html::activeHiddenInput($modelQuestionAttribute, "[{$index}]id");
-                                        }
-                                        ?>
-                                        <div class="col-sm-12">
-                                            <?= $form->field($modelQuestionAttribute, "[{$index}]type_id")->dropDownList(
-                                                \common\models\question\QuestionAttribute::getTypeList(),
-                                                [
-                                                    'disabled' => $readonly,
-                                                    'class' => 'form-control typeId',
-                                                    'onChange' => "this.form.submit()"
-                                                ]) ?>
-                                            <?= $form->field($modelQuestionAttribute, "[{$index}]label")->textInput(['maxlength' => true, 'disabled' => false]) ?>
-
-                                            <?= $form->field($modelQuestionAttribute, "[{$index}]description")->textarea(['maxlength' => true, 'disabled' => false]) ?>
-
-                                            <?= $form->field($modelQuestionAttribute, "[{$index}]hint")->textInput(['maxlength' => true, 'disabled' => false])->hint('Так будет выглядеть подсказка поля') ?>
-
-                                            <?= $form->field($modelQuestionAttribute, "[{$index}]required")->checkbox(['disabled' => $readonly]) ?>
-
-                                        </div>
-                                        <?= $this->render('_form-options', [
-                                            'form' => $form,
-                                            'index' => $index,
-                                            'modelsQuestionOptions' => (empty($modelsQuestionOptions[$index])) ? [new QuestionOptions] : $modelsQuestionOptions[$index],
-
-                                            'model' => $modelQuestionAttribute,
-                                            'readonly' => $readonly,
-                                        ]) ?>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div><!-- .panel -->
-                    <?php if (!$readonly): ?>
-                        <div class="panel-footer">
-                            <div class="form-group btn-group">
-
-                                <button type="button" class="add-item btn btn-success btn-sm pull-right">
-                                    <i class="glyphicon glyphicon-plus"></i> Добавить
-                                </button>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                    <?php DynamicFormWidget::end(); ?>
                 </div>
             <?php endif; ?>
         </div>

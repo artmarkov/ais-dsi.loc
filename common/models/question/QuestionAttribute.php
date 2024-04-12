@@ -3,7 +3,7 @@
 namespace common\models\question;
 
 use artsoft\behaviors\DynamicAttributeBehavior;
-use artsoft\behaviors\SluggableBehavior;
+use himiklab\sortablegrid\SortableGridBehavior;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -18,6 +18,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string $label Название атрибута формы
  * @property string|null $hint Подсказка атрибута формы
  * @property int $required Обязательность атрибута (Да, Нет)
+ * @property int $unique_flag Уникальное значение (Да, Нет)
  * @property string|null $default_value
  * @property string $description Описание поля
  * @property int|null $sort_order
@@ -66,6 +67,10 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
                 'in_attribute' => 'label',
                 'out_attribute' => 'name'
             ],
+            'grid-sort' => [
+                'class' => SortableGridBehavior::className(),
+                'sortableAttribute' => 'sort_order',
+            ],
         ];
     }
 
@@ -75,11 +80,12 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['question_id', 'type_id', 'label', 'required'], 'required'],
-            [['question_id', 'type_id', 'name', 'required', 'sort_order'], 'integer'],
-            [['label', 'hint', 'default_value'], 'string', 'max' => 255],
+            [['question_id', 'type_id', 'label'], 'required'],
+            [['question_id', 'type_id', 'required', 'unique_flag', 'sort_order'], 'integer'],
+            [['hint'], 'string', 'max' => 512],
             [['description'], 'string', 'max' => 1024],
-            [['question_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::className(), 'targetAttribute' => ['question_id' => 'id']],
+            [['name', 'label', 'default_value'], 'string', 'max' => 127],
+            [['question_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::class, 'targetAttribute' => ['question_id' => 'id']],
         ];
     }
 
@@ -96,12 +102,13 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
             'label' => 'Название поля',
             'hint' => 'Подсказка поля',
             'required' => 'Обязательно к заполнению',
+            'unique_flag' => 'Уникальное значение',
             'default_value' => 'Значение по умолчанию',
             'description' => 'Описание Поля',
-            'sort_order' => 'Sort Order',
+            'sort_order' => Yii::t('art/guide', 'Order'),
             'created_at' => Yii::t('art', 'Created'),
-            'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
+            'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
         ];
@@ -179,6 +186,10 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
         if ($this->sort_order == null) {
             $this->sort_order = $this->id;
         }
+        if (in_array($this->type_id, [self::TYPE_RADIOLIST, self::TYPE_RADIOLIST_UNIQUE, self::TYPE_CHECKLIST, self::TYPE_CHECKLIST_UNIQUE])) {
+            $this->unique_flag = 0;
+        }
+
         return parent::beforeSave($insert);
     }
 }

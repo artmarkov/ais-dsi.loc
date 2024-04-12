@@ -36,6 +36,7 @@ class QuestionHistory extends BaseHistory
             'status',
             'email_flag',
             'email_author_flag',
+            'question_limit',
         ];
     }
 
@@ -78,7 +79,7 @@ class QuestionHistory extends BaseHistory
     /**
      * @return array
      */
-    public function getHistory()
+    /*public function getHistory()
     {
         $selfHistory = parent::getHistory();
 
@@ -89,5 +90,5 @@ class QuestionHistory extends BaseHistory
 
         krsort($selfHistory);
         return $selfHistory;
-    }
+    }*/
 }

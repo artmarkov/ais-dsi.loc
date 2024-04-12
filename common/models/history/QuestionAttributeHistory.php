@@ -24,6 +24,7 @@ class QuestionAttributeHistory extends BaseHistory
             'label',
             'hint',
             'required',
+            'unique_flag',
             'description',
             'default_value',
         ];
@@ -43,6 +44,8 @@ class QuestionAttributeHistory extends BaseHistory
                 return isset($model->type_id) ? $model::getTypeValue($value) : $value;
             case 'required':
                 return isset($model->required) ? ($model->required ? 'Да' : 'Нет') : $value;
+            case 'unique_flag':
+                return isset($model->unique_flag) ? ($model->unique_flag ? 'Да' : 'Нет') : $value;
 
         }
         return parent::getDisplayValue($model, $name, $value);

@@ -30,7 +30,7 @@ class QuestionAnswers extends DynamicModel
         $this->objectId = $config['objectId'] ?? 0;
         $this->models = $this->getModels();
         $this->model = $this->getModelQuestion();
-        $this->attributes = array_merge(array_values($this->attributes()), ['question_users_id', 'users_id']);
+        $this->attributes = array_merge(array_values($this->attributes()), ['question_users_id', 'users_id', 'read_flag']);
         $this->attributesTypes = $this->getAttributesType();
         $this->optionsValues = $this->getOptionsValue();
         $this->addRules();
@@ -114,6 +114,7 @@ class QuestionAnswers extends DynamicModel
     {
         $labels = ['question_users_id' => '#'];
         $labels += ['users_id' => 'Пользователь'];
+        $labels += ['read_flag' => 'Статус просмотра'];
         $labels += ArrayHelper::map($this->models->asArray()->all(), 'name', 'label');
         return $labels;
     }
@@ -130,6 +131,7 @@ class QuestionAnswers extends DynamicModel
                      question_attribute.type_id as type_id,
                      question_attribute.name as name,
                      question_users.users_id as users_id, 
+                     question_users.read_flag as read_flag, 
                      question_users.id as question_users_id,
                      question_value.id as question_value_id,
                      question_value.question_attribute_id as question_attribute_id,
@@ -179,6 +181,7 @@ class QuestionAnswers extends DynamicModel
         $user = User::findOne($model['users_id']);
         $data['question_id'] = $model['question_id'];
         $data['users_id'] = $user->username ?? 'Гость';
+        $data['read_flag'] = QuestionUsers::getReadValue($model['read_flag']);
         $data['question_users_id'] = $model['question_users_id'];
         $data[$model['name']] = $this->getValueManager($model);
         return $data;
@@ -301,6 +304,7 @@ class QuestionAnswers extends DynamicModel
         $user->question_id = $this->id;
         // $user->users_id = Yii::$app->getUser()->getId();
         $user->users_id = $data[$modelName]['users_id'];
+        $user->read_flag = $data[$modelName]['read_flag'];
         $valid = $user->validate();
         if ($valid) {
             $transaction = \Yii::$app->db->beginTransaction();

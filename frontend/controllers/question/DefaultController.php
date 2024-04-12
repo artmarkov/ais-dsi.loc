@@ -23,7 +23,7 @@ class DefaultController extends \frontend\controllers\DefaultController
         $this->view->params['tabMenu'] = $this->tabMenu;
         $query = Question::find()->where(['users_cat' => Question::GROUP_GUEST])
             ->andWhere(['<=', 'timestamp_in', time()])
-            ->andWhere(['>=', 'timestamp_out', time() + 86400])
+            ->andWhere(['>=', 'timestamp_out', time() - 86400])
             ->andWhere(['=', 'status', Question::STATUS_ACTIVE]);
         $searchModel = false;
         $dataProvider =  new ActiveDataProvider(['query' => $query]);

@@ -26,6 +26,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $status Статус формы (Активная, Не активная)
  * @property int $email_flag Отправлять пользователям информацию на E-mail при наличии формы?
  * @property int $email_author_flag Отправлять автору формы информацию на E-mail при каждом заполнении?
+ * @property int $question_limit Ограничение колличества заявок, опросов
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -46,6 +47,7 @@ class Question extends \artsoft\db\ActiveRecord
 
     const CAT_SURVEY = 1;
     const CAT_APP = 2;
+    const CAT_TICKET = 3;
 
     const VID_OPEN = 1;
     const VID_CLOSE = 2;
@@ -89,7 +91,7 @@ class Question extends \artsoft\db\ActiveRecord
             [['author_id', 'name', 'category_id', 'vid_id', 'timestamp_in', 'timestamp_out'], 'required'],
             [['category_id', 'users_cat', 'vid_id', 'status'], 'default', 'value' => null],
             [['email_flag', 'email_author_flag'], 'default', 'value' => 0],
-            [['author_id', 'category_id', 'users_cat', 'vid_id', 'status', 'email_flag', 'email_author_flag'], 'integer'],
+            [['author_id', 'category_id', 'users_cat', 'vid_id', 'status', 'email_flag', 'email_author_flag', 'question_limit'], 'integer'],
             [['timestamp_in', 'timestamp_out'], 'safe'],
             [['division_list', 'moderator_list'], 'safe'],
             [['description'], 'string', 'max' => 4000],
@@ -127,8 +129,9 @@ class Question extends \artsoft\db\ActiveRecord
             'description' => 'Описание формы',
             'timestamp_in' => 'Начало действия',
             'timestamp_out' => 'Окончание действия',
-            'email_flag' => 'Отправлять пользователям информацию на E-mail при наличии формы?',
-            'email_author_flag' => 'Отправлять автору формы информацию на E-mail при каждом заполнении?',
+            'email_flag' => 'Отправлять пользователям информацию на E-mail',
+            'email_author_flag' => 'Отправлять автору формы информацию на E-mail',
+            'question_limit' => 'Ограничение колличества заявок, вопросов',
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -189,6 +192,7 @@ class Question extends \artsoft\db\ActiveRecord
         return array(
             self::CAT_SURVEY => 'Опрос',
             self::CAT_APP => 'Заявка',
+            self::CAT_TICKET => 'Посещение',
         );
     }
 
