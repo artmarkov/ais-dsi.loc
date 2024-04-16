@@ -675,8 +675,12 @@ class StudyplanController extends MainController
         $params[$searchName]['class'] = \yii\helpers\StringHelper::basename(get_class($model));
         $params[$searchName]['studyplan_id'] = $id;
         $dataProvider = $searchModel->search($params);
+        $model_date = $this->modelDate;
 
-        return $this->renderIsAjax('@backend/views/studyplan/default/perform-items', ['dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'model' => $model]);
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
+        return $this->renderIsAjax('@backend/views/studyplan/default/perform-items', ['dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'model' => $model, 'model_date' => $model_date]);
     }
 
     public function actionStudyplanInvoices($id, $objectId = null, $mode = null)

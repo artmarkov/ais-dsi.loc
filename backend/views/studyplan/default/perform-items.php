@@ -15,8 +15,6 @@ use artsoft\grid\GridPageSize;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $model */
 
-$this->title = 'Выполнение плана и участие в мероприяьтях';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="schoolplan-perform-index">
     <div class="panel">
@@ -25,8 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= $model->getProgrammName() . ' - ' . $model->course . ' класс.'; ?>
         </div>
         <div class="panel-body">
+            <?= $this->render('_search-studyplan', compact('model_date')) ?>
             <?=  User::hasRole(['teacher', 'department']) ?  \artsoft\helpers\ButtonHelper::createButton() : null; ?>
-
             <div class="row">
                 <div class="col-sm-6">
                     <?php
@@ -91,7 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 $thematic_items_list = StudyplanThematicItems::find()->select('topic')->where(['id' => $model->thematic_items_list])->column();
                                 return implode(', ', $thematic_items_list);
                             } else {
-                                return $model->task_ticket;
+                                return $model->task_ticket ?? '';
                             }
                         },
                         'label' => 'Задание',
