@@ -579,10 +579,10 @@ class StudyplanController extends MainController
             $modelsItems = $model->getLessonProgress();
             if ($model->load(Yii::$app->request->post())) {
 
-                $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
+//                $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
                 $modelsItems = Model::createMultiple(LessonProgress::class);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
-                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
+//                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
 
                 // validate all models
                 $valid = $model->validate();
@@ -592,9 +592,9 @@ class StudyplanController extends MainController
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
                         if ($flag = $model->save(false)) {
-                            if (!empty($deletedIDs)) {
-                                LessonProgress::deleteAll(['id' => $deletedIDs]);
-                            }
+//                            if (!empty($deletedIDs)) {
+//                                LessonProgress::deleteAll(['id' => $deletedIDs]);
+//                            }
                             foreach ($modelsItems as $modelItems) {
                                 $modelItems->lesson_items_id = $model->id;
                                 if (!($flag = $modelItems->save(false))) {
