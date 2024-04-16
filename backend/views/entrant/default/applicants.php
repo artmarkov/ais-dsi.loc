@@ -21,6 +21,15 @@ use artsoft\grid\GridPageSize;
     <div class="panel">
         <div class="panel-heading">
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
+            <?= Html::a('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Добавить из файла',
+                ['/entrant/default/applicants', 'id' => $id, 'mode' => 'import'], [
+                    'class' => 'btn btn-sm btn-warning',
+                    'title' => 'Добавить из файла',
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                ]
+            );
+            ?>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -79,8 +88,8 @@ use artsoft\grid\GridPageSize;
                         'value' => function (\common\models\entrant\EntrantView $model) {
                             return \artsoft\Art::isBackend() ? Html::a($model->fullname,
                                 ['/students/default/view', 'id' => $model->student_id], ['title' => 'Перейти в реестр', 'target' => '_blank', 'data-pjax' => 0])
-                        : $model->fullname;
-                            },
+                                : $model->fullname;
+                        },
                         'format' => 'raw'
                     ],
                     [
@@ -88,7 +97,7 @@ use artsoft\grid\GridPageSize;
                         'filter' => false,
                         'value' => function (\common\models\entrant\EntrantView $model) {
                             $age = \artsoft\helpers\ArtHelper::age($model->birth_date);
-                            return Yii::$app->formatter->asDate($model->birth_date) . ' (' . $age['age_year'] . ' лет ' . $age['age_month'] . ' мес.)';
+                            return $model->birth_date ? Yii::$app->formatter->asDate($model->birth_date) . ' (' . $age['age_year'] . ' лет ' . $age['age_month'] . ' мес.)' : '';
                         },
                         'options' => ['style' => 'width:370px'],
                         'format' => 'raw'
@@ -118,18 +127,18 @@ use artsoft\grid\GridPageSize;
                         'options' => ['style' => 'width:350px'],
                         'format' => 'raw',
                     ],
-                   /* [
-                        'attribute' => 'last_experience',
-                        'value' => function (Entrant $model) {
-                            return $model->last_experience;
-                        },
-                        'format' => 'raw',
-                        'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
-                    ],*/
+                    /* [
+                         'attribute' => 'last_experience',
+                         'value' => function (Entrant $model) {
+                             return $model->last_experience;
+                         },
+                         'format' => 'raw',
+                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
+                     ],*/
                     [
                         'attribute' => 'mid_mark',
                         'value' => function (\common\models\entrant\EntrantView $model) {
-                            return str_replace('.',',', round($model->mid_mark, 2)); // str_replace для импорта в xlsx
+                            return str_replace('.', ',', round($model->mid_mark, 2)); // str_replace для импорта в xlsx
                         },
                         'format' => 'raw',
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
@@ -150,7 +159,7 @@ use artsoft\grid\GridPageSize;
                     ],
                     [
                         'attribute' => 'subject_id',
-                        'filter' =>  \common\models\subject\Subject::getSubjectByCategory(1000),
+                        'filter' => \common\models\subject\Subject::getSubjectByCategory(1000),
                         'filterType' => GridView::FILTER_SELECT2,
                         'filterWidgetOptions' => [
                             'pluginOptions' => ['allowClear' => true],
@@ -184,7 +193,7 @@ use artsoft\grid\GridPageSize;
                         ],
                         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                         'value' => function (\common\models\entrant\EntrantView $model) {
-                            return\common\models\subject\SubjectForm::getFormValue($model->subject_form_id) ?? '';
+                            return \common\models\subject\SubjectForm::getFormValue($model->subject_form_id) ?? '';
                         },
                         'format' => 'raw',
                     ],

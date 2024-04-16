@@ -6,6 +6,7 @@ use artsoft\helpers\ArtHelper;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use backend\models\Model;
+use common\models\entrant\EntrantImport;
 use common\models\entrant\EntrantMembers;
 use common\models\entrant\EntrantTest;
 use common\models\entrant\Entrant;
@@ -19,7 +20,9 @@ use Yii;
 use yii\base\DynamicModel;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
+use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
+use yii\web\UploadedFile;
 
 /**
  * DefaultController implements the CRUD actions for common\models\entrant\EntrantComm model.
@@ -40,7 +43,22 @@ class DefaultController extends MainController
 
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
-
+        if (Yii::$app->request->get('id') && !isset(Yii::$app->request->post()['EntrantComm'])) {
+            $id = Yii::$app->request->get('id');
+            $tmpModel = $this->findModel($id);
+            $tmpModel->plan_year = ArtHelper::getStudyYearDefault() + 1;
+            $attributes = $tmpModel->attributes;
+            unset($attributes['name']);
+            unset($attributes['timestamp_in']);
+            unset($attributes['timestamp_out']);
+            unset($attributes['created_at']);
+            unset($attributes['created_by']);
+            unset($attributes['updated_at']);
+            unset($attributes['updated_by']);
+            unset($attributes['version']);
+//            echo '<pre>' . print_r($attributes, true) . '</pre>'; die();
+            $model->setAttributes($attributes);
+        }
         if ($model->load(Yii::$app->request->post())) {
             $valid = $model->validate();
             if ($valid) {
@@ -171,7 +189,26 @@ class DefaultController extends MainController
                 ]
             );
 
-        } elseif ('history' == $mode && $objectId) {
+        } elseif ('import' == $mode) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Applicants'), 'url' => ['/entrant/default/applicants', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = 'Пакетная загрузка';
+            $modelImport = new EntrantImport();
+            $modelImport->com_id = $id;
+
+            if ($modelImport->load(Yii::$app->request->post())) {
+                $modelImport->file = UploadedFile::getInstance($modelImport, 'file');
+                if ($modelImport->upload()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                    $this->redirect(Url::to(['/entrant/default/applicants', 'id'=> $id]));
+                }
+
+            }
+            return $this->renderIsAjax('/entrant/applicants/_form-import', [
+                    'model' => $modelImport,
+                ]
+            );
+        }
+        elseif ('history' == $mode && $objectId) {
             $model = Entrant::findOne($objectId);
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Applicants'), 'url' => ['/entrant/default/applicants', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['/entrant/default/applicants', 'id' => $id, 'objectId' => $objectId, 'mode' => 'view']];

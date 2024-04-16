@@ -168,7 +168,7 @@ class Mailbox extends Component
                 $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/teachers/consult-items' : '/admin/teachers/' . $this->model->teachers_id . '/consult-items');
                 break;
             case 'StudyplanThematic':
-                $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? ($this->action == 'send_approve' ? '/execution/teachers/' . $this->model->getAuthorScalar() . '/thematic-items?objectId=' . $this->model->id . '&mode=update' : '/teachers/thematic-items') : '/admin/teachers/' . $this->model->getAuthorScalar() . '/thematic-items');
+                $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? ($this->action == 'send_approve' ? '/execution/teachers/' . $this->model->getAuthorScalar() . '/thematic-items?objectId=' . $this->model->id . '&mode=update' : '/teachers/thematic-items') : '/admin/teachers/' . $this->model->getAuthorScalar() . '/thematic-items?objectId=' . $this->model->id . '&mode=update');
                 break;
             case 'SchoolplanProtocolConfirm':
                 $modelSchoolplan = $this->model->schoolplan;

@@ -24,9 +24,7 @@ $this->params['breadcrumbs'][] = 'Поиск ученика';
     ]); ?>
     <div class="panel-body">
         <div class="row">
-            <?= $form->field($model, 'last_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Введите Фамилию ребенка.') ?>
-            <?= $form->field($model, 'first_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Введите Имя ребенка.') ?>
-            <?= $form->field($model, 'middle_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Введите Отчество ребенка, как указано в Свидетельстве о рождении. Если Отчества нет, оставьте поле пустым.') ?>
+            <?= $form->field($model, 'full_name')->textInput(['autocomplete' => 'off', 'maxlength' => 512])->hint('Введите Фамилию Имя Отчество ребенка. Если Отчества нет, то вводите только Фамилию Имя') ?>
             <?= $form->field($model, 'birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->hint('Введите Дату рождения ребенка.') ?>
 
         </div>

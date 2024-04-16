@@ -299,7 +299,7 @@ class Entrant extends \artsoft\db\ActiveRecord
             return [];
         }
         return EntrantGroup::find()
-            ->select(['id', 'CONCAT(name, \' - \', to_char(to_timestamp(timestamp_in), \'DD.MM.YYYY HH24:mi\')) as name'])
+            ->select(['id', 'CONCAT(name, \' - \', to_char(to_timestamp(timestamp_in + 10800), \'DD.MM.YYYY HH24:mi\')) as name'])
             ->andWhere(['=', 'comm_id', $comm_id])->orderBy('timestamp_in')->asArray()->all();
     }
 

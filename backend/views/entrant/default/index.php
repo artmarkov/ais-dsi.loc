@@ -53,6 +53,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     'gridId' => 'entrant-comm-grid',
                     'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                 ],
+                'rowOptions' => function(EntrantComm $model) {
+                    if($model->plan_year == \artsoft\helpers\ArtHelper::getStudyYearDefault() + 1) {
+                        return ['class' => 'success'];
+                    } elseif($model->plan_year == \artsoft\helpers\ArtHelper::getStudyYearDefault() - 1) {
+                        return ['class' => 'danger'];
+                    }
+                    return [];
+                },
                 'columns' => [
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                     [
@@ -110,7 +118,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return [$action, 'id' => $model->id];
                         },
                         'controller' => '/entrant/default',
-                        'template' => '{view} {update} {delete}',
+                        'template' => '{view} {update} {clone} {delete}',
                         'headerOptions' => ['class' => 'kartik-sheet-style'],
                         'buttons' => [
                             'update' => function ($url, $model, $key) {
@@ -138,6 +146,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'aria-label' => Yii::t('art', 'Delete'),
                                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                                         'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                            'clone' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>',
+                                    ['/entrant/default/create', 'id' => $model->id], [
+                                        'title' => Yii::t('art', 'Clone'),
+                                        'data-method' => 'post',
+                                        'data-confirm' => Yii::t('art', 'Are you sure you want to clone this item?'),
                                         'data-pjax' => '0',
                                     ]
                                 );

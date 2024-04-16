@@ -8,6 +8,7 @@ use yii\db\Query;
 
 class FindingForm extends Model
 {
+    public $full_name;
     public $first_name;
     public $middle_name;
     public $last_name;
@@ -19,17 +20,18 @@ class FindingForm extends Model
     public function rules()
     {
         return [
-            [['first_name', 'last_name', 'birth_date'], 'required'],
+            [['full_name', 'birth_date'], 'required'],
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'string', 'max' => 124],
-            [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
-            [['birth_date'],'safe'],
+            [['full_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
+            [['birth_date'], 'safe'],
         ];
     }
 
     public function attributeLabels()
     {
         return [
+            'full_name' => Yii::t('art', 'Full Name'),
             'first_name' => Yii::t('art', 'First Name'),
             'middle_name' => Yii::t('art', 'Middle Name'),
             'last_name' => Yii::t('art', 'Last Name'),
@@ -40,7 +42,7 @@ class FindingForm extends Model
     /**
      * Finds user by fio and birth-date
      * @param $model
-     * @return array|UserCommon|null|\yii\db\ActiveRecord
+     * @return array|bool
      */
     public static function findByFio($model)
     {
@@ -59,5 +61,16 @@ class FindingForm extends Model
         $user = $user->andWhere(['=', 'birth_date', $birth_date]);
 
         return $user->scalar();
+    }
+
+    public function afterValidate()
+    {
+        if ($this->full_name) {
+            $fullName = explode(' ', $this->full_name);
+            $this->last_name = $fullName[0] ?? '';
+            $this->first_name = $fullName[1] ?? '';
+            $this->middle_name = $fullName[2] ?? '';
+        }
+        parent::afterValidate();
     }
 }
