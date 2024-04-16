@@ -6,6 +6,7 @@ use yii\widgets\DetailView;
 <div class="student-info">
     <div class="panel">
         <div class="panel-body">
+            <?= $this->render('_search-studyplan', compact('model_date')) ?>
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Карточка ученика:

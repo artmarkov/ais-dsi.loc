@@ -235,9 +235,15 @@ class DefaultController extends MainController
         } elseif (Yii::$app->request->post('submitAction') == 'doc_statement') {
             $model->makeDocx(Studyplan::template_ss);
         }
+        $model_date = $this->modelDate;
+
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
         return $this->render('update', [
             'model' => $model,
             'modelsStudyplanSubject' => (empty($modelsStudyplanSubject)) ? [new StudyplanSubject] : $modelsStudyplanSubject,
+            'model_date' => $model_date,
             'readonly' => $readonly
         ]);
     }
@@ -1224,7 +1230,13 @@ class DefaultController extends MainController
         $studentDependence = $modelStudent->studentDependence;
         $this->view->params['breadcrumbs'][] = ['label' => 'Карточка ученика'];
         $this->view->params['tabMenu'] = $this->getMenu($id);
-        return $this->renderIsAjax('students_view', compact('modelStudent', 'studentDependence'));
+
+        $model_date = $this->modelDate;
+
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
+        return $this->renderIsAjax('students_view', compact('modelStudent', 'studentDependence', 'model_date'));
     }
 
     /**

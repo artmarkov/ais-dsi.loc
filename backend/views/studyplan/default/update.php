@@ -9,6 +9,7 @@ use yii\helpers\Html;
 
 ?>
 <div class="studyplan-update">
+    <?= $this->render('_search-studyplan', compact('model_date')) ?>
     <?= $this->render('_form', [
         'model' => $model,
         'modelsStudyplanSubject' => $modelsStudyplanSubject,

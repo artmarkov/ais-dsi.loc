@@ -12,19 +12,19 @@ use common\models\teachers\Teachers;
 /* @var $model_date */
 /* @var $teachers_id */
 ?>
+<?php if (\artsoft\Art::isBackend()): ?>
 
-<?php
-$form = ActiveForm::begin([
-    'id' => 'studyplan-search',
-    'validateOnBlur' => false,
-])
-?>
-<div class="studyplan-search">
-    <div class="panel">
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-sm-12">
-                    <?php if (\artsoft\Art::isBackend()): ?>
+    <?php
+    $form = ActiveForm::begin([
+        'id' => 'studyplan-search',
+        'validateOnBlur' => false,
+    ])
+    ?>
+    <div class="studyplan-search">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
                         <?= $form->field($model_date, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                             [
                                 'disabled' => false,
@@ -44,11 +44,11 @@ $form = ActiveForm::begin([
                             ],
                         ])->label('Ученик');
                         ?>
-                    <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<?php ActiveForm::end(); ?>
+    <?php ActiveForm::end(); ?>
+<?php endif; ?>
 

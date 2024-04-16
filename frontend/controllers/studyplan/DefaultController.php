@@ -59,12 +59,17 @@ class DefaultController extends MainController
         if (!isset($model)) {
             throw new NotFoundHttpException("The StudyplanSubject was not found.");
         }
+        $model_date = $this->modelDate;
 
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
         $modelsStudyplanSubject = $model->studyplanSubject;
 
         return $this->render('update', [
             'model' => $model,
             'modelsStudyplanSubject' => (empty($modelsStudyplanSubject)) ? [new StudyplanSubject] : $modelsStudyplanSubject,
+            'model_date' => $model_date,
             'readonly' => true
         ]);
     }

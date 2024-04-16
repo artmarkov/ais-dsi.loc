@@ -72,7 +72,12 @@ class StudyplanController extends MainController
         $model = Studyplan::findOne($id);
         $modelStudent = Student::findOne($model->student_id);
         $studentDependence = $modelStudent->studentDependence;
-        return $this->renderIsAjax('@backend/views/studyplan/default/students_view', compact('modelStudent', 'studentDependence'));
+        $model_date = $this->modelDate;
+
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
+        return $this->renderIsAjax('@backend/views/studyplan/default/students_view', compact('modelStudent', 'studentDependence', 'model_date'));
     }
 
     public function actionScheduleItems($id, $objectId = null, $mode = null)
