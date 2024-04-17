@@ -3,6 +3,8 @@
 namespace common\models\question;
 
 use artsoft\models\User;
+use common\widgets\qrcode\QRcode;
+use common\widgets\qrcode\widgets\Link;
 use kartik\date\DatePicker;
 use kartik\datetime\DateTimePicker;
 use Yii;
@@ -20,6 +22,7 @@ class QuestionAnswers extends DynamicModel
     public $models;
     private $attributes;
     private $attributesTypes;
+    private $attributesUnique;
     private $optionsValues;
     private $fileSize = 1024 * 1024 * 5; // Допустимый размер файла
     private $fileExt = 'png, jpg, JPEG'; // Допустимые расширения
@@ -32,10 +35,11 @@ class QuestionAnswers extends DynamicModel
         $this->model = $this->getModelQuestion();
         $this->attributes = array_merge(array_values($this->attributes()), ['question_users_id', 'users_id', 'read_flag']);
         $this->attributesTypes = $this->getAttributesType();
+        $this->attributesUnique = $this->getAttributesUnique();
         $this->optionsValues = $this->getOptionsValue();
         $this->addRules();
         $this->setAttributeLabels($this->labels());
-//         echo '<pre>' . print_r($opt_okuppied, true) . '</pre>';
+//        echo '<pre>' . print_r($this->model, true) . '</pre>';
 
         parent::__construct($this->attributes, $config);
     }
@@ -69,6 +73,11 @@ class QuestionAnswers extends DynamicModel
     public function getAttributesType()
     {
         return ArrayHelper::map($this->models->asArray()->all(), 'name', 'type_id');
+    }
+
+    public function getAttributesUnique()
+    {
+        return QuestionAttribute::find()->select('name')->where(['question_id' => $this->id])->where(['unique_flag' => 1])->column();
     }
 
     public function getOptionsValue()
@@ -304,7 +313,6 @@ class QuestionAnswers extends DynamicModel
         $user->question_id = $this->id;
         // $user->users_id = Yii::$app->getUser()->getId();
         $user->users_id = $data[$modelName]['users_id'];
-        $user->read_flag = $data[$modelName]['read_flag'];
         $valid = $user->validate();
         if ($valid) {
             $transaction = \Yii::$app->db->beginTransaction();
@@ -338,8 +346,9 @@ class QuestionAnswers extends DynamicModel
                             default:
                                 $modelAttribute->value_string = $data[$modelName][$attribute];
                         }
+                        $flag = $this->validateAttribute($id, $attribute, $modelAttribute); // Валидация на уникальность
 //                        echo '<pre>' . print_r($modelAttribute, true) . '</pre>';
-                        if (!($flag = $modelAttribute->save(false))) {
+                        if (!($flag && $flag = $modelAttribute->save(false))) {
                             $transaction->rollBack();
                             break;
                         }
@@ -364,6 +373,22 @@ class QuestionAnswers extends DynamicModel
         return QuestionUsers::deleteAll(['id' => $id, 'question_id' => $this->id]);
     }
 
+    protected function validateAttribute($id, $attribute, $modelAttribute)
+    {
+        $flag = true;
+        if (in_array($attribute, $this->attributesUnique)) {
+            $query = QuestionValue::find()->where(['question_attribute_id' => $id, 'value_string' => $modelAttribute->value_string]);
+            if (isset($modelAttribute->id)) {
+                $query = $query->andWhere(['!=', 'id', $modelAttribute->id]);
+            }
+            if ($query->exists()) {
+                $flag = false;
+                $this->addError($attribute, 'Запись с такими данными уже была введена.');
+            }
+        }
+        return $flag;
+    }
+
     /**
      * @return string
      */
@@ -374,26 +399,51 @@ class QuestionAnswers extends DynamicModel
 
     public function sendMessage($email)
     {
+        $sender = false;
+
         if ($email) {
+            $sender = Yii::$app->mailqueue->compose();
+
             $textBody = 'Сообщение модуля "Формы и заявки" ' . PHP_EOL;
             $htmlBody = '<p><b>Сообщение модуля "Формы и заявки"</b></p>';
 
             $textBody .= 'Вы успешно заполнили форму: ' . strip_tags($this->model->name) . PHP_EOL;
             $htmlBody .= '<p>Вы успешно заполнили форму: ' . strip_tags($this->model->name) . '</p>';
 
+            if ($this->model->category_id == Question::CAT_TICKET) {
+                $textBody .= 'Распечатайте или покажите на телефоне QR-код при посещении мероприятия.';
+                $htmlBody .= '<p>Распечатайте или покажите на телефоне QR-код при посещении мероприятия.</p>';
+                $sender = $this->addQrTicket($sender);
+            }
             $textBody .= '--------------------------' . PHP_EOL;
             $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
             $htmlBody .= '<hr>';
             $htmlBody .= '<p>Сообщение создано автоматически. Отвечать на него не нужно.</p>';
 
-            return Yii::$app->mailqueue->compose()
-                ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
+            $sender->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
                 ->setTo($email)
                 ->setSubject('Сообщение с сайта ' . Yii::$app->name)
                 ->setTextBody($textBody)
                 ->setHtmlBody($htmlBody)
                 ->queue();
         }
+        return $sender;
+    }
+
+    public function addQrTicket($sender)
+    {
+        $token = base64_encode(json_encode(['id' => $this->model->id, 'version' => $this->model->version]));
+        $link = Yii::$app->urlManager->createAbsoluteUrl(['/question/default/validate', 'token' => $token], 'https');
+        $fileName = Link::widget([
+            'outputDir' => '@runtime/qrcode',
+            'outputDirWeb' => '@runtime/qrcode',
+            'ecLevel' => QRcode::QR_ECLEVEL_L,
+            'text' => $link,
+            'size' => 6,
+        ]);
+        $sender->attach($fileName);
+
+        return $sender;
     }
 
     public function sendAuthorMessage()

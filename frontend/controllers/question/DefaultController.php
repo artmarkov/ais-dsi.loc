@@ -4,6 +4,7 @@ namespace frontend\controllers\question;
 
 use common\models\question\Question;
 use common\models\question\QuestionAnswers;
+use common\models\question\QuestionUsers;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
@@ -21,12 +22,18 @@ class DefaultController extends \frontend\controllers\DefaultController
     public function actionIndex()
     {
         $this->view->params['tabMenu'] = $this->tabMenu;
+        $subquery = QuestionUsers::find()->select('COUNT(id)')->where('question_id = question.id');
         $query = Question::find()->where(['users_cat' => Question::GROUP_GUEST])
             ->andWhere(['<=', 'timestamp_in', time()])
             ->andWhere(['>=', 'timestamp_out', time() - 86400])
-            ->andWhere(['=', 'status', Question::STATUS_ACTIVE]);
+            ->andWhere(['=', 'status', Question::STATUS_ACTIVE])
+            ->andWhere(['OR',
+                ['question_limit' => 0],
+                ['IS', 'question_limit', NULL],
+                ['<', 'question_limit', $subquery]
+            ]);
         $searchModel = false;
-        $dataProvider =  new ActiveDataProvider(['query' => $query]);
+        $dataProvider = new ActiveDataProvider(['query' => $query]);
 
         return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel'));
     }
@@ -44,7 +51,7 @@ class DefaultController extends \frontend\controllers\DefaultController
         }
         $modelVal = new QuestionAnswers(['id' => $id]);
 
-        $this->view->params['breadcrumbs'][] =  ['label' => Yii::t('art/question', 'Questions'), 'url' => ['question/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Questions'), 'url' => ['question/default/index']];
         $this->view->params['breadcrumbs'][] = 'Добавление ответа';
 
         if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
@@ -60,12 +67,12 @@ class DefaultController extends \frontend\controllers\DefaultController
 
     public function actionSuccess()
     {
-       return $this->renderIsAjax('success');
+        return $this->renderIsAjax('success');
     }
 
     public function beforeAction($action)
     {
-        if(Yii::$app->user->identity) { // Если по ссылке проходит залогиненный пользователь
+        if (Yii::$app->user->identity) { // Если по ссылке проходит залогиненный пользователь
             Yii::$app->user->logout();
             $this->redirect(Yii::$app->request->referrer);
         }
