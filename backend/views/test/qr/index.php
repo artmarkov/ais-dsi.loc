@@ -37,10 +37,6 @@ echo Text::widget([
     'size' => 3,
 ]);
 
-echo  common\widgets\qrcodereader\QrReader::widget([
-    'id' => 'qrInput',
-    'successCallback' => "function(data){ $('#qrInput').val(data) }"
-]);
 ////other type
 ////Create EMAIL
 //echo Email::widget([

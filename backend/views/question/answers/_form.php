@@ -6,7 +6,6 @@ use artsoft\helpers\ButtonHelper;
 use common\models\question\Question;
 use common\models\question\QuestionAttribute;
 use common\models\question\QuestionAnswers;
-use common\models\question\QuestionUsers;
 
 /* @var $this yii\web\View */
 /* @var $modelQuestion */
@@ -92,9 +91,6 @@ $options = [];
                     <?php else: ?>
                         <?= Html::activeHiddenInput($model, 'users_id'); ?>
                     <?php endif; ?>
-                    <div class="row">
-                        <?= $form->field($model, 'read_flag')->dropDownList(QuestionUsers::getReadList(), ['disabled' => true]) ?>
-                    </div>
 
                     <div class="panel panel-info">
                         <div class="panel-heading">
