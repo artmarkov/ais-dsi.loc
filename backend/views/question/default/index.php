@@ -67,6 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'value' => function (Question $model) {
                             return $model->name;
                         },
+                        'options' => ['style' => 'width:450px'],
                     ],
                     [
                         'attribute' => 'category_id',
