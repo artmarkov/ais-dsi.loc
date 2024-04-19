@@ -2,6 +2,7 @@
 
 namespace common\models\question;
 
+use artsoft\helpers\DocTemplate;
 use artsoft\models\User;
 use common\widgets\qrcode\QRcode;
 use common\widgets\qrcode\widgets\Link;
@@ -340,7 +341,7 @@ class QuestionAnswers extends DynamicModel
                             case QuestionAttribute::TYPE_EMAIL :
                                 $modelAttribute->value_string = $data[$modelName][$attribute];
                                 if ($this->model->email_flag) {
-                                    $this->sendMessage($modelAttribute->value_string);
+                                    $this->sendMessage($user->id, $modelAttribute->value_string);
                                 }
                                 break;
                             default:
@@ -397,7 +398,7 @@ class QuestionAnswers extends DynamicModel
         return is_resource($valueFileBin) ? 'data:image/png;base64,' . stream_get_contents($valueFileBin) : '';
     }
 
-    public function sendMessage($email)
+    public function sendMessage($user_id, $email)
     {
         $sender = false;
 
@@ -413,7 +414,7 @@ class QuestionAnswers extends DynamicModel
             if ($this->model->category_id == Question::CAT_TICKET) {
                 $textBody .= 'Распечатайте или покажите на телефоне QR-код при посещении мероприятия.';
                 $htmlBody .= '<p>Распечатайте или покажите на телефоне QR-код при посещении мероприятия.</p>';
-                $sender = $this->addQrTicket($sender);
+                $sender = $this->addQrTicket($user_id, $sender);
             }
             $textBody .= '--------------------------' . PHP_EOL;
             $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
@@ -430,18 +431,39 @@ class QuestionAnswers extends DynamicModel
         return $sender;
     }
 
-    public function addQrTicket($sender)
+    public function addQrTicket($user_id, $sender)
     {
-        $token = base64_encode(json_encode(['id' => $this->model->id, 'version' => $this->model->version]));
+        $template = 'document/ticket.docx';
+        $output_file_name = Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . time() . '_' . basename($template);
+
+        $token = base64_encode(json_encode(['id' => $this->model->id, 'version' => $this->model->version, 'user_id' => $user_id]));
         $link = Yii::$app->urlManager->createAbsoluteUrl(['/question/default/validate', 'token' => $token], 'https');
-        $fileName = Link::widget([
-            'outputDir' => '@runtime/qrcode',
-            'outputDirWeb' => '@runtime/qrcode',
-            'ecLevel' => QRcode::QR_ECLEVEL_L,
-            'text' => $link,
-            'size' => 6,
-        ]);
-        $sender->attach($fileName);
+        $data[] = [
+            'rank' => 'doc',
+            'name' => $this->model->name,
+            'num' => sprintf('#%03d%05d', $this->model->id, $user_id),
+            'description' => strip_tags($this->model->description)
+        ];
+
+        $data_qr[] = [
+            'rank' => 'qr',
+            'qr_code' => Link::widget([
+                'outputDir' => '@runtime/qrcode',
+                'outputDirWeb' => '@runtime/qrcode',
+                'ecLevel' => QRcode::QR_ECLEVEL_L,
+                'text' => $link,
+                'size' => 3
+            ]),
+        ];
+        $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data, $data_qr) {
+            /* @var $tbs clsTinyButStrong */
+            $tbs->MergeBlock('doc', $data);
+            $tbs->MergeBlock('qr', $data_qr);
+
+        })->prepare();
+        $tbs->Show(OPENTBS_STRING, $output_file_name);
+        file_put_contents($output_file_name, $tbs->Source);
+        $sender->attach($output_file_name);
 
         return $sender;
     }
