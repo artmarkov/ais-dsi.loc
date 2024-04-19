@@ -488,7 +488,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
     public static function getStudyplanSubjectListByStudyplanAndTeachersId($studyplan_id, $teachers_id)
     {
-        if (!$studyplan_id && !$teachers_id) return [];
+        if (!$studyplan_id || !$teachers_id) return [];
         return TeachersLoadStudyplanView::find()
             ->select('studyplan_subject_id as id, subject as name')
             ->distinct()

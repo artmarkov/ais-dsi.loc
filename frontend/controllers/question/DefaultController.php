@@ -46,9 +46,21 @@ class DefaultController extends \frontend\controllers\DefaultController
             throw new NotFoundHttpException("The id was not found.");
         }
         /* @var $model \artsoft\db\ActiveRecord */
-        $model = $this->findModel($id);
+//        $model = $this->findModel($id);
+        $subquery = QuestionUsers::find()->select('COUNT(id)')->where('question_id = question.id');
+        $model = Question::find()
+            ->where(['users_cat' => Question::GROUP_GUEST])
+            ->andWhere(['<=', 'timestamp_in', time()])
+            ->andWhere(['>=', 'timestamp_out', time() - 86400])
+            ->andWhere(['=', 'status', Question::STATUS_ACTIVE])
+            ->andWhere(['=', 'id', $id])
+            ->andWhere(['OR',
+                ['question_limit' => 0],
+                ['IS', 'question_limit', NULL],
+                ['>', 'question_limit', $subquery]
+            ])->one();
         if (!isset($model)) {
-            throw new NotFoundHttpException("The Question was not found.");
+            throw new NotFoundHttpException("Форма не активна.");
         }
         $modelVal = new QuestionAnswers(['id' => $id]);
 
