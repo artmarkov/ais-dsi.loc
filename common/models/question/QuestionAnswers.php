@@ -434,7 +434,7 @@ class QuestionAnswers extends DynamicModel
     public function addQrTicket($user_id, $sender)
     {
         $template = 'document/ticket.docx';
-        $output_file_name = Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . time() . '_' . basename($template);
+        $output_file_name = Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . Yii::$app->getSecurity()->generateRandomString() . '_' . basename($template);
 
         $token = base64_encode(json_encode(['id' => $this->model->id, 'version' => $this->model->version, 'user_id' => $user_id]));
         $link = Yii::$app->urlManager->createAbsoluteUrl(['/question/default/validate', 'token' => $token], 'https');
