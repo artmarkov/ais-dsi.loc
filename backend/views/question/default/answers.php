@@ -26,7 +26,7 @@ foreach ($data['attributes'] as $attribute => $label) {
 }
 $columns[] = [
     'class' => 'kartik\grid\ActionColumn',
-
+    'visible' => \artsoft\Art::isBackend(),
     'controller' => '/question/default',
     'template' => '{view} {update} {delete}',
     'buttons' => [
@@ -87,14 +87,14 @@ $this->params['breadcrumbs'][] = $this->title;
             ?>
             <?= \artsoft\grid\GridView::widget([
                 'id' => 'question-answers-grid',
-                'bulkActionOptions' => [
+                'bulkActionOptions' => \artsoft\Art::isBackend() ? [
                     'gridId' => 'question-answers-grid',
                     'actions' => [
                         Url::to(['users-bulk-activate']) => 'Перевести в статус "Просмотрено"',
                         Url::to(['users-bulk-deactivate']) => 'Перевести в статус "В работе"',
                         Url::to(['users-bulk-delete']) => Yii::t('yii', 'Delete'),
                     ]
-                ],
+                ] : false,
                 'dataProvider' => new \yii\data\ArrayDataProvider([
                     'allModels' => $data['data'],
                     'sort' => [

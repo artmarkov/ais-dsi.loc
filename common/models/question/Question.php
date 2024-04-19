@@ -269,13 +269,15 @@ class Question extends \artsoft\db\ActiveRecord
      */
     public function beforeSave($insert)
     {
-        if ($this->vid_id == self::VID_OPEN) {
-            $this->moderator_list = null;
-        } else {
+        if ($this->vid_id == self::VID_CLOSE) {
             $this->division_list = null;
             $this->users_cat = null;
         }
         return parent::beforeSave($insert);
     }
 
+    public function isModerator($user_id)
+    {
+        return in_array($user_id, $this->moderator_list);
+    }
 }

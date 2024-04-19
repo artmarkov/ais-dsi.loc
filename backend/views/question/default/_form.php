@@ -22,11 +22,11 @@ $js = <<<JS
       if (value === '1'){
           $('.field-question-users_cat').show();
           $('.field-question-division_list').show();
-          $('.field-question-moderator_list').hide();
+          // $('.field-question-moderator_list').hide();
       } else {
           $('.field-question-users_cat').hide();
           $('.field-question-division_list').hide();
-          $('.field-question-moderator_list').show();
+          // $('.field-question-moderator_list').show();
       }
     }
     toggleQuestion($('input[name="Question[vid_id]"]:checked').val());

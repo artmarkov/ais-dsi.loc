@@ -68,8 +68,6 @@ class DefaultController extends MainController
 
         return $this->renderIsAjax($this->updateView, [
             'model' => $model,
-            'modelsQuestionAttribute' => (empty($modelsQuestionAttribute)) ? [new QuestionAttribute] : $modelsQuestionAttribute,
-            'modelsQuestionOptions' => (empty($modelsQuestionOptions)) ? [[new QuestionOptions]] : $modelsQuestionOptions,
             'readonly' => $readonly
         ]);
     }
