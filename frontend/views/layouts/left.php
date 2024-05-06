@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\models\User;
 use artsoft\widgets\Nav;
 
 ?>
@@ -45,7 +46,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Каталог файлов', 'icon' => 'fa fa-minus', 'url' => ['/info/catalog/index']],
                     ['label' => 'Объявления', 'icon' => 'fa fa-minus', 'url' => ['/info/board/index']],
                     ['label' => 'Почта', 'icon' => 'fa fa-minus', 'url' => ['/mailbox/default/index']],
-                   // ['label' => 'Формы и заявки', 'icon' => 'fa fa-minus', 'url' => ['/info/forms/index']],
+                    ['label' => 'Формы и заявки', 'icon' => 'fa fa-minus', 'url' => ['/question/student/index'], 'visible' => User::hasRole(['student'], false)],
                 ],
             ],
 

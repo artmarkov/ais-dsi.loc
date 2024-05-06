@@ -312,8 +312,7 @@ class QuestionAnswers extends DynamicModel
         $data = Yii::$app->request->post();
         $user = QuestionUsers::findOne(['id' => $this->objectId, 'question_id' => $this->id]) ?? new QuestionUsers();
         $user->question_id = $this->id;
-        // $user->users_id = Yii::$app->getUser()->getId();
-        $user->users_id = $data[$modelName]['users_id'];
+        $user->users_id = $data[$modelName]['users_id'] ?? Yii::$app->getUser()->getId();
         $valid = $user->validate();
         if ($valid) {
             $transaction = \Yii::$app->db->beginTransaction();

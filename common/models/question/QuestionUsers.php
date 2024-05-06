@@ -2,6 +2,7 @@
 
 namespace common\models\question;
 
+use artsoft\widgets\Notice;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 
@@ -52,10 +53,26 @@ class QuestionUsers extends \artsoft\db\ActiveRecord
         return [
             [['question_id'], 'required'],
             [['users_id'], 'default', 'value' => null],
+            [['users_id'], 'checkUsers'],
             [['question_id', 'users_id', 'read_flag'], 'integer'],
             ['read_flag', 'default', 'value' => 0],
             [['question_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::class, 'targetAttribute' => ['question_id' => 'id']],
         ];
+    }
+
+    public function checkUsers()
+    {
+        if($this->users_id != null) {
+            $check = self::find()->where(['=', 'users_id', $this->users_id]);
+
+            if ($check->exists() === true) {
+                $message = 'Пользователь уже заполнил форму.';
+                Notice::registerWarning($message);
+                $this->addError('users_id', $message);
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
