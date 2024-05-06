@@ -69,7 +69,9 @@
     "kartik-v/yii2-widget-spinner": "dev-master",
     "2amigos/yii2-tinymce-widget": "~1.1",
     "nterms/yii2-mailqueue": "*",
-    "buttflattery/yii2-formwizard": "@dev"
+    "buttflattery/yii2-formwizard": "@dev",
+    "phpoffice/phpword": "^1.2",
+    "dompdf/dompdf": "^2.0"
 
   },
   "require-dev": {
