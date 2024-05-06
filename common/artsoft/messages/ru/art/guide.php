@@ -240,6 +240,7 @@ return [
     'Plan closed' => 'План закрыт',
     'Entrant Result' => 'Результаты испытаний',
     'Portfolio' => 'Портфолио',
+    'Cost Education' => 'Стоимость образовательных услуг',
 
 ];
 ?>

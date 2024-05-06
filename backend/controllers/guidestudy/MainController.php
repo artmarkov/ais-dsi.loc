@@ -12,5 +12,6 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Оценки уроков',  'url' => ['/guidestudy/lesson-mark/index']],
         ['label' => 'Виды испытаний',  'url' => ['/guidestudy/lesson-test/index']],
         ['label' => 'Приемные испытания',  'url' => ['/guidestudy/entrant-test/index']],
+        ['label' => 'Стоимость образовательных услуг',  'url' => ['/guidestudy/cost-education/index']],
     ];
 }
