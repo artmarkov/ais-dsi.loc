@@ -40,6 +40,15 @@ AND a.invoices_summ = b.invoices_summ
 AND a.invoices_reporting_month = b.invoices_reporting_month
 AND a.ctid <> b.ctid
 
+/////////////////////////////// нахождение дублей уроков
+SELECT MIN(ctid) as ctid, subject_sect_studyplan_id, studyplan_subject_id, lesson_test_id, lesson_date
+FROM lesson_items
+GROUP BY (subject_sect_studyplan_id, studyplan_subject_id, lesson_test_id, lesson_date) HAVING COUNT(*) > 1
+///////////////////////////////
+
 // добавление индекса уникального
 ALTER TABLE studyplan_invoices
 ADD UNIQUE (studyplan_id,invoices_id,invoices_summ,invoices_reporting_month)
+
+ALTER TABLE lesson_items
+ADD UNIQUE (subject_sect_studyplan_id, studyplan_subject_id, lesson_test_id, lesson_date)

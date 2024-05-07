@@ -136,6 +136,7 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
         $this->createIndex('lesson_items_studyplan_subject_id', 'lesson_items', ['studyplan_subject_id']);
         $this->createIndex('lesson_items_lesson_test_id', 'lesson_items', ['lesson_test_id']);
         $this->createIndex('lesson_items_lesson_date', 'lesson_items', ['lesson_date']);
+        $this->createIndex('lesson_items_subject_sect_studyplan_id_studyplan_subject_id_key', 'lesson_items', ['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'lesson_date'], true);
 
         $this->addForeignKey('lesson_items_ibfk_1', 'lesson_items', 'lesson_test_id', 'guide_lesson_test', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('lesson_items_ibfk_2', 'lesson_items', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
@@ -225,11 +226,12 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_view', '
-  SELECT 0 AS subject_sect_studyplan_id,
+   SELECT 0 AS subject_sect_studyplan_id,
     lesson_progress.studyplan_subject_id,
     studyplan_subject.studyplan_id,
     0 AS subject_sect_id,
     lesson_items.id AS lesson_items_id,
+    lesson_items.lesson_test_id,
     lesson_items.lesson_date,
     lesson_items.lesson_topic,
     lesson_items.lesson_rem,
@@ -250,10 +252,10 @@ UNION ALL
     concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
     studyplan.status,
     studyplan.plan_year,
-	studyplan_subject.subject_id,
-	studyplan_subject.subject_vid_id,
-	studyplan_subject.subject_type_id,
-	studyplan_subject.subject_cat_id
+    studyplan_subject.subject_id,
+    studyplan_subject.subject_vid_id,
+    studyplan_subject.subject_type_id,
+    studyplan_subject.subject_cat_id
    FROM lesson_items
      JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.subject_sect_studyplan_id = 0
      JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
@@ -268,6 +270,7 @@ UNION ALL
     studyplan_subject.studyplan_id,
     subject_sect.id AS subject_sect_id,
     lesson_items.id AS lesson_items_id,
+    lesson_items.lesson_test_id,
     lesson_items.lesson_date,
     lesson_items.lesson_topic,
     lesson_items.lesson_rem,
@@ -288,10 +291,10 @@ UNION ALL
     NULL::text AS subject_key,
     studyplan.status,
     studyplan.plan_year,
-	studyplan_subject.subject_id,
-	studyplan_subject.subject_vid_id,
-	studyplan_subject.subject_type_id,
-	studyplan_subject.subject_cat_id
+    studyplan_subject.subject_id,
+    studyplan_subject.subject_vid_id,
+    studyplan_subject.subject_type_id,
+    studyplan_subject.subject_cat_id
    FROM lesson_items
      LEFT JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.studyplan_subject_id = 0
      JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
@@ -300,7 +303,7 @@ UNION ALL
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      LEFT JOIN guide_lesson_test ON guide_lesson_test.id = lesson_items.lesson_test_id
      LEFT JOIN guide_lesson_mark ON guide_lesson_mark.id = lesson_progress.lesson_mark_id
-  ORDER BY 1, 2, 6;
+  ORDER BY 1, 2, 7, 6;
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_studyplan_view', '
