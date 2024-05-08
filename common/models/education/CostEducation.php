@@ -69,4 +69,20 @@ class CostEducation extends \artsoft\db\ActiveRecord
         return $this->standard_basic * $this->standard_basic_ratio;
     }
 
+    public static function initModels()
+    {
+        $models = self::find()
+            ->rightJoin('education_programm', 'guide_cost_education.programm_id = education_programm.id')
+            ->select('guide_cost_education.id as id, education_programm.id as programm_id, standard_basic, standard_basic_ratio')
+            ->where(['education_programm.status' => EducationProgramm::STATUS_ACTIVE])
+            ->andWhere(['IS', 'guide_cost_education.id', null])
+            ->all();
+        foreach ($models as $model) {
+            $modelCost = new self();
+            $modelCost->programm_id = $model->programm_id;
+            $modelCost->standard_basic = 0;
+            $modelCost->standard_basic_ratio = 1;
+            $modelCost->save();
+        }
+    }
 }

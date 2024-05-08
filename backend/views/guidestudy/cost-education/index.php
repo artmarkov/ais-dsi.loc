@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\RefBook;
+use common\widgets\editable\Editable;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -67,8 +68,44 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'format' => 'raw',
                             ],
-                            'standard_basic',
-                            'standard_basic_ratio',
+                            [
+                                'attribute' => 'standard_basic',
+                                'value' => function (CostEducation $model) {
+                                    return Editable::widget([
+                                        'buttonsTemplate' => "{reset}{submit}",
+                                        'name' => 'standard_basic',
+                                        'asPopover' => true,
+                                        'value' => $model->standard_basic,
+                                        'header' => 'Введите Норматив базовый, руб.',
+                                        'format' => Editable::FORMAT_LINK,
+                                        'inputType' => Editable::INPUT_TEXT,
+                                        'size' => 'md',
+                                        'formOptions' => [
+                                            'action' => Url::toRoute(['/guidestudy/cost-education/set-standart-basic', 'id' => $model->id]),
+                                        ],
+                                    ]);
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'standard_basic_ratio',
+                                'value' => function (CostEducation $model) {
+                                    return Editable::widget([
+                                        'buttonsTemplate' => "{reset}{submit}",
+                                        'name' => 'standard_basic_ratio',
+                                        'asPopover' => true,
+                                        'value' => $model->standard_basic_ratio,
+                                        'header' => 'Введите Коэффициент к базовому нормативу',
+                                        'format' => Editable::FORMAT_LINK,
+                                        'inputType' => Editable::INPUT_TEXT,
+                                        'size' => 'md',
+                                        'formOptions' => [
+                                            'action' => Url::toRoute(['/guidestudy/cost-education/set-basic-ratio', 'id' => $model->id]),
+                                        ],
+                                    ]);
+                                },
+                                'format' => 'raw',
+                            ],
                             [
                                 'attribute' => 'standard',
                                 'value' => function (CostEducation $model) {
