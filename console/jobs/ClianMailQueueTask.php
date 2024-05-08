@@ -2,7 +2,6 @@
 
 namespace console\jobs;
 
-use artsoft\models\UserVisitLog;
 use Yii;
 
 /**

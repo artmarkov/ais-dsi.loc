@@ -234,7 +234,7 @@ class DefaultController extends MainController
                 $valid = $modelAttribute->validate();
 //                print_r(Yii::$app->request->post()); die();
                 $valid = Model::validateMultiple($modelsItems) && $valid;
-               // $valid = true;
+                // $valid = true;
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
@@ -320,6 +320,7 @@ class DefaultController extends MainController
             'dataProvider' => $dataProvider,
         ]);
     }
+
     /**
      * Activate all selected grid items
      */
@@ -378,6 +379,17 @@ class DefaultController extends MainController
                 $model = $modelClass::findOne($where);
 
                 if ($model) $model->delete();
+            }
+        }
+    }
+
+    public function actionBulkSendMail()
+    {
+        if (Yii::$app->request->post('selection')) {
+            foreach (Yii::$app->request->post('selection', []) as $objectId) {
+                $model = QuestionUsers::findOne($objectId);
+                $modelVal = new QuestionAnswers(['id' => $model->question_id, 'objectId' => $objectId]);
+                $modelVal->sendUserMessage();
             }
         }
     }

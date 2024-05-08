@@ -102,7 +102,7 @@ class QuestionUsers extends \artsoft\db\ActiveRecord
     {
         return array(
             self::READ_OFF => 'В работе',
-            self::READ_ON => 'Просмотрено',
+            self::READ_ON => 'Зарегистрирован',
         );
     }
 

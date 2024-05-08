@@ -124,7 +124,7 @@ class QuestionAnswers extends DynamicModel
     {
         $labels = ['question_users_id' => '#'];
         $labels += ['users_id' => 'Пользователь'];
-        $labels += ['read_flag' => 'Статус просмотра'];
+        $labels += ['read_flag' => 'Статус'];
         $labels += ArrayHelper::map($this->models->asArray()->all(), 'name', 'label');
         return $labels;
     }
@@ -337,12 +337,6 @@ class QuestionAnswers extends DynamicModel
                                 $file->saveAs(Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . $file->name);
                                 $modelAttribute->value_file = base64_encode(file_get_contents(Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . $file->name));
                                 break;
-                            case QuestionAttribute::TYPE_EMAIL :
-                                $modelAttribute->value_string = $data[$modelName][$attribute];
-                                if ($this->model->email_flag) {
-                                    $this->sendMessage($user->id, $modelAttribute->value_string);
-                                }
-                                break;
                             default:
                                 $modelAttribute->value_string = $data[$modelName][$attribute];
                         }
@@ -355,8 +349,10 @@ class QuestionAnswers extends DynamicModel
                     }
                 }
                 if ($flag) {
-                    $this->sendAuthorMessage();
                     $transaction->commit();
+                    $this->objectId = $user->id;
+                    $this->sendAuthorMessage();
+                    $this->sendUserMessage();
                     return true;
                 }
             } catch (\Exception $e) {
@@ -472,7 +468,33 @@ class QuestionAnswers extends DynamicModel
         if ($this->model->email_author_flag) {
             $title = 'Сообщение модуля "Формы и заявки"';
             $content = '<p>Заполнена новая форма: ' . strip_tags($this->model->name) . '</p>';
-            Yii::$app->mailbox->mailing($this->model->author_id, $content, $title);
+            return Yii::$app->mailbox->mailing($this->model->author_id, $content, $title);
         }
+    }
+
+    /**
+     * Отправляет сообщение на Емайл пользователя, или на заполненный Емайл, если есть такое поле.
+     * @return bool
+     */
+    public function sendUserMessage()
+    {
+        $userEmail = null;
+        if ($this->model->email_flag) {
+            $user = QuestionUsers::findOne(['id' => $this->objectId, 'question_id' => $this->id]);
+            if ($user->users_id) {
+                $userModel = User::findOne($user->users_id);
+                $userEmail = $userModel->email;
+            } else {
+                foreach ($this->attributes() as $id => $attribute) {
+                    if ($this->attributesTypes[$attribute] == QuestionAttribute::TYPE_EMAIL) {
+                        $modelAttribute = QuestionValue::findOne(['question_users_id' => $user->id, 'question_attribute_id' => $id]);
+                        $userEmail = $modelAttribute->value_string;
+                        break;
+                    }
+                }
+            }
+            return $this->sendMessage($user->id, $userEmail);
+        }
+        return true;
     }
 }

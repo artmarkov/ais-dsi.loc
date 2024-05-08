@@ -90,9 +90,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'bulkActionOptions' => \artsoft\Art::isBackend() ? [
                     'gridId' => 'question-answers-grid',
                     'actions' => [
-                        Url::to(['users-bulk-activate']) => 'Перевести в статус "Просмотрено"',
+                        Url::to(['users-bulk-activate']) => 'Перевести в статус "Зарегистрирован"',
                         Url::to(['users-bulk-deactivate']) => 'Перевести в статус "В работе"',
                         Url::to(['users-bulk-delete']) => Yii::t('yii', 'Delete'),
+                        Url::to(['bulk-send-mail']) => 'Повторно отправить уведомления участникам',
                     ]
                 ] : false,
                 'dataProvider' => new \yii\data\ArrayDataProvider([
