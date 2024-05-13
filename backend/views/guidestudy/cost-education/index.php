@@ -118,7 +118,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return [$action, 'id' => $model->id];
                                 },
                                 'controller' => '/guidestudy/cost-education',
-                                'template' => '{update} {delete}',
+                                'template' => '{update}',
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
 
                             ],

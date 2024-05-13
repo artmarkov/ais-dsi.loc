@@ -31,12 +31,14 @@ use artsoft\helpers\Html;
                         'options' => [
                             'placeholder' => Yii::t('art', 'Select...'),
                             'multiple' => false,
+                            'disabled' => true,
                         ],
                         'pluginOptions' => [
                             'allowClear' => true
                         ]
                     ]);
                     ?>
+                    <?= $form->field($model, 'programm_id')->label(false)->hiddenInput(['value' => $model->programm_id]) ?>
 
                     <?= $form->field($model, 'standard_basic')->textInput(['maxlength' => true]) ?>
 
