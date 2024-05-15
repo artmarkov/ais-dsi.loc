@@ -63,7 +63,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 {
 // Шаблоны документов
     const template_csf = 'document/contract_student_free.docx';
-    const template_cs = 'document/contract_student.docx';
+    const template_cs = 'document/contract_student_new.docx';
     const template_ss = 'document/statement_student.docx';
 
     /**
@@ -343,6 +343,8 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $data[] = [
             'rank' => 'doc',
             'doc_date' => date('j', strtotime($model->doc_date)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_date))] . ' ' . date('Y', strtotime($model->doc_date)), // дата договора
+            'doc_date_year' =>  date('y', strtotime($model->doc_date)), // год договора
+            'doc_date_year_next' =>  date('y', strtotime($model->doc_date)) + 1, // год +1 договора
             'doc_signer' => $model->parent->fullName, // Полное имя подписанта-родителя
             'doc_signer_iof' => RefBook::find('parents_iof')->getValue($model->parent->id),
             'doc_signer_gen' => inflectName($model->parent->fullName, 'родительный'), // Полное имя подписанта-родителя родительный
@@ -356,10 +358,11 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'doc_contract_end' => date('j', strtotime($model->doc_contract_end)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_end))] . ' ' . date('Y', strtotime($model->doc_contract_end)), $model->doc_contract_end, // Дата окончания договора
             'programm_name' => $model->programm->name, // название программы
             'programm_level' => isset($modelProgrammLevel->level) ? $modelProgrammLevel->level->name : null, // уровень программы
-            'term_mastering' => 'Срок обучения:' . $model->programm->term_mastering, // Срок освоения образовательной программы
+            'term_mastering' => 'срок обучения: ' . $model->programm->term_mastering . ' лет(года)', // Срок освоения образовательной программы
             'course' => $model->course . ' класс',
             'year_time_total' => $model->year_time_total,
             'cost_month_total' => $model->cost_month_total,
+            'cost_month_total_half' => $model->cost_month_total/2,
             'cost_year_total' => $model->cost_year_total, // Полная стоимость обучения
             'cost_year_total_str' => PriceHelper::num2str($model->cost_year_total), // Полная стоимость обучения прописью
             'student_address' => $model->student->userAddress,

@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'programm_id',
                                 'value' => function (CostEducation $model) {
-                                    return RefBook::find('education_programm_short_name')->getValue($model->programm_id) ?? '';
+                                    return RefBook::find('education_programm_name')->getValue($model->programm_id) ?? '';
                                 },
                                 'format' => 'raw',
                             ],

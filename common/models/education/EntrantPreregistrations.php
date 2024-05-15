@@ -73,8 +73,8 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
-            [['entrant_programm_id'], 'unique', 'targetAttribute' => ['entrant_programm_id', 'plan_year', 'student_id'],
-                'message' => 'Ученик уже записан на выбранную программу.'],
+            [['entrant_programm_id'], 'unique', 'targetAttribute' => [/*'entrant_programm_id',*/ 'plan_year', 'student_id'],
+                'message' => 'Ученик уже записан на программу в рамках предварительной записи.'],
         ];
     }
 
@@ -172,8 +172,8 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
             $textBody .= 'Вы успешно записались на обучение по программе: ' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . PHP_EOL;
             $htmlBody .= '<p>Вы успешно записались на обучение по программе:' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . '</p>';
 
-            $textBody .= 'В ближайшее время с Вами свяжутся для уточнения деталей обучения и оплаты.' . PHP_EOL;
-            $htmlBody .= '<p>В ближайшее время с Вами свяжутся для уточнения деталей обучения и оплаты.' . '</p>';
+            $textBody .= 'Просьба связаться по телефону 8(926) 350-17-97 с понедельника по пятницу с 10:00 - 18:00 для уточнения деталей обучения и оплаты.' . PHP_EOL;
+            $htmlBody .= '<p>Просьба связаться по телефону 8(926) 350-17-97 с понедельника по пятницу с 10:00 - 18:00 для уточнения деталей обучения и оплаты.' . '</p>';
 
             $textBody .= '--------------------------' . PHP_EOL;
             $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';

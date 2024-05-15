@@ -78,7 +78,7 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['over_category', 'title', 'datetime_in', 'datetime_out', 'auditory_id', 'department_list'], 'required'],
+            [['over_category', 'title', 'datetime_in', 'datetime_out', 'auditory_id'/*, 'department_list'*/], 'required'],
             [['over_category', 'auditory_id'], 'integer'],
             [['over_category'], 'default', 'value' => 0],
             [['datetime_in', 'datetime_out'], 'safe'],

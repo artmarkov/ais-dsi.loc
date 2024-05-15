@@ -190,7 +190,7 @@ class QuestionAnswers extends DynamicModel
     {
         $user = User::findOne($model['users_id']);
         $data['question_id'] = $model['question_id'];
-        $data['users_id'] = $user->username ?? 'Гость';
+        $data['users_id'] = $user->userCommon->getFullName() ?? 'Гость';
         $data['read_flag'] = QuestionUsers::getReadValue($model['read_flag']);
         $data['question_users_id'] = $model['question_users_id'];
         $data[$model['name']] = $this->getValueManager($model);

@@ -190,7 +190,7 @@ $this->registerJs($js);
                                             <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_month_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
                                             <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false]) ?>
                                             <!--                                            --><?php //else: ?>
-                                            <?= $form->field($modelEducationProgrammLevel, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false])->label('Сумма в рублях за учебный год из средств бюджета') ?>
+<!--                                            --><?php //$form->field($modelEducationProgrammLevel, "[{$index}]cost_year_total")->textInput(['maxlength' => true, 'disabled' => false])->label('Сумма в рублях за учебный год из средств бюджета') ?>
                                             <!--                                            --><?php //endif; ?>
                                         </div>
                                     </div>
