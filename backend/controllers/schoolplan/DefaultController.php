@@ -2,6 +2,9 @@
 
 namespace backend\controllers\schoolplan;
 
+use artsoft\helpers\ArtHelper;
+use artsoft\models\OwnerAccess;
+use artsoft\models\User;
 use artsoft\widgets\Notice;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
@@ -573,6 +576,26 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
+    public function actionProtocolBulkDelete()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = 'common\models\schoolplan\SchoolplanProtocol';
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+
+            foreach (Yii::$app->request->post('selection', []) as $id) {
+                $where = ['id' => $id];
+
+                if ($restrictAccess) {
+                    $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+                }
+
+                $model = $modelClass::findOne($where);
+
+                if ($model) $model->delete();
+            }
+        }
+    }
     /**
      * @param $id
      * @return array

@@ -52,12 +52,12 @@ $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
                         'id' => 'protocol-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-//                'bulkActionOptions' => [
-//                    'gridId' => 'protocol-grid',
-//                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-//                ],
+                        'bulkActionOptions' => \artsoft\Art::isBackend() ? [
+                            'gridId' => 'protocol-grid',
+                            'actions' => [\yii\helpers\Url::to(['/schoolplan/default/protocol-bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
+                        ] : false,
                         'columns' => [
-//                    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'visible' => \artsoft\Art::isBackend()],
                             [
                                 'attribute' => 'id',
                                 'value' => function (SchoolplanProtocol $model) {

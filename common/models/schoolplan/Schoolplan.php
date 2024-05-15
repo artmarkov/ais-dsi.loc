@@ -764,10 +764,12 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         $data = TeachersLoadStudyplanView::find()
             ->select('studyplan_subject_id, teachers_id')
             ->distinct('studyplan_subject_id, teachers_id')
-            ->where(['subject_id' => $this->protocol_subject_id])
-            ->andWhere(['direction_id' => 1000])
-            ->andWhere(['course' => $this->protocol_class_list])
+            ->where(['direction_id' => 1000])
             ->andWhere(['=', 'plan_year', $plan_year])
+            ->andWhere(['subject_cat_id' => $this->protocol_subject_cat_id])
+            ->andWhere(['subject_id' => $this->protocol_subject_id])
+            ->andWhere(['subject_vid_id' => $this->protocol_subject_vid_id])
+            ->andWhere(['course' => $this->protocol_class_list])
             ->orderBy('teachers_id')
             ->asArray()
             ->all();
@@ -870,6 +872,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ->andWhere(['subject_cat_id' => $this->protocol_subject_cat_id])
             ->andWhere(['subject_id' => $this->protocol_subject_id])
             ->andWhere(['subject_vid_id' => $this->protocol_subject_vid_id])
+            ->andWhere(['course' => $this->protocol_class_list])
             ->asArray()
             ->all();
     }
