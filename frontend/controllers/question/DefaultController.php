@@ -7,6 +7,7 @@ use common\models\question\QuestionAnswers;
 use common\models\question\QuestionUsers;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -17,7 +18,7 @@ class DefaultController extends \frontend\controllers\DefaultController
     public $modelClass = 'common\models\question\Question';
     public $modelSearchClass = 'common\models\question\search\QuestionSearch';
 
-    public $freeAccessActions = ['index', 'new', 'success'];
+    public $freeAccessActions = ['index', 'new', 'success', 'validate', 'validate-success', 'validate-warning'];
 
     public function actionIndex()
     {
@@ -69,7 +70,7 @@ class DefaultController extends \frontend\controllers\DefaultController
 
         if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
 //                echo '<pre>' . print_r($modelVal, true) . '</pre>';
-            $this->redirect(['/question/default/success/']);
+            $this->redirect(['/question/default/success']);
         }
         return $this->renderIsAjax('@backend/views/question/answers/_form', [
             'model' => $modelVal,
@@ -78,16 +79,58 @@ class DefaultController extends \frontend\controllers\DefaultController
         ]);
     }
 
+    public function actionValidate()
+    {
+        $token = json_decode(base64_decode($_GET['token']), true);
+        $id = $token['id'];
+        $user_id = $token['user_id'];
+        $modelQuestion = Question::findOne(['id' => $id]);
+
+        if (!$modelQuestion->isModerator(Yii::$app->user->identity->getId())) {
+            throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
+        }
+
+        $model = QuestionUsers::findOne(['id' => $user_id]);
+        if ($model) {
+            if ($model->read_flag == QuestionUsers::READ_OFF) {
+                $model->read_flag = QuestionUsers::READ_ON;
+                $model->save(false);
+                $this->redirect(['/question/default/validate-success']);
+            } else {
+                $this->redirect(['/question/default/validate-warning']);
+            }
+        } else {
+            Yii::$app->session->setFlash('danger', 'Токен не найден!');
+            $this->redirect(Yii::$app->homeUrl);
+        }
+    }
+
     public function actionSuccess()
     {
         return $this->renderIsAjax('success');
     }
 
+    public function actionValidateSuccess()
+    {
+        return $this->renderIsAjax('validate-success');
+    }
+
+    public function actionValidateWarning()
+    {
+        return $this->renderIsAjax('validate-warning');
+    }
+
     public function beforeAction($action)
     {
-        if (Yii::$app->user->identity) { // Если по ссылке проходит залогиненный пользователь
-            Yii::$app->user->logout();
-            $this->redirect(Yii::$app->request->referrer);
+        if (!in_array($action->id, ['validate', 'validate-success', 'validate-warning'])) {
+            if (Yii::$app->user->identity) { // Если по ссылке проходит залогиненный пользователь
+                Yii::$app->user->logout();
+                $this->redirect(Yii::$app->request->referrer);
+            }
+        } else {
+            if (Yii::$app->user->isGuest) { // Если по ссылке проходит незалогиненный пользователь
+                $this->redirect('/auth/default/login');
+            }
         }
         return parent::beforeAction($action);
     }

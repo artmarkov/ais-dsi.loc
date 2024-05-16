@@ -79,6 +79,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         'group' => true,
                     ],
                     [
+                        'value' => function (EntrantPreregistrations $model) {
+                            return \common\models\education\EntrantProgramm::getEntrantRegVidCount($model->entrant_programm_id, EntrantPreregistrations::REG_ENTRANT, $model->plan_year) . '/' . $model->entrantProgramm->qty_entrant;
+                        },
+                        'label' => 'Кол-во',
+                        'format' => 'raw',
+                        'group' => true,
+                        'subGroupOf' => 2
+                    ],
+                    [
                         'attribute' => 'student_id',
                         'filter' => EntrantPreregistrations::getEntrantPreregistrationList(),
                         'filterType' => GridView::FILTER_SELECT2,
@@ -92,10 +101,18 @@ $this->params['breadcrumbs'][] = $this->title;
                                 [
                                     'target' => '_blank',
                                     'data-pjax' => '0',
-                                   // 'class' => 'btn btn-link',
+                                    // 'class' => 'btn btn-link',
                                     'title' => 'Открыть в новом окне'
                                 ]);
                         },
+                        'format' => 'raw'
+                    ],
+                    [
+                        'value' => function (EntrantPreregistrations $model) {
+                            $age = \artsoft\helpers\ArtHelper::age(Yii::$app->formatter->asTimestamp($model->student->user->birth_date));
+                            return $model->student->user->birth_date ? $age['age_year'] . ' ' . \artsoft\helpers\ArtHelper::per($age['age_year']) . ' ' . $age['age_month'] . ' мес.' : '';
+                        },
+                        'label' => 'Возраст',
                         'format' => 'raw'
                     ],
                     [

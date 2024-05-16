@@ -8,11 +8,11 @@ $this->title = 'Формы и заявки';
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="success">
-    <div class="alert alert-success alert-dismissible fade in" role="alert">
+<div class="danger">
+    <div class="alert alert-danger alert-dismissible fade in" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
-        Вход подтвержден.
+        Попытка повторного прохода.
     </div>
 </div>
