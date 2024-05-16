@@ -288,8 +288,9 @@ class RegistrationForm extends Model
                         $flag = $modelDependence->save(false);
                     }
                 }
-                if ($flag && Yii::$app->art->emailConfirmationRequired && $userParent->email) {
-                    $this->sendConfirmationEmail($userParent);
+                if ($flag && Yii::$app->art->emailConfirmationRequired) {
+                    $userStudent->email ? $this->sendConfirmationEmail($userStudent) : null;
+                    $userParent->email ? $this->sendConfirmationEmail($userParent) : null;
                 }
             }
 
