@@ -267,6 +267,11 @@ $readonlyResult = (\artsoft\Art::isFrontend() && $model->isAuthor() && Yii::$app
                                         Протокол мероприятия
                                     </div>
                                     <div class="panel-body">
+                                        <?php echo \yii\bootstrap\Alert::widget([
+                                            'body' => '<i class="fa fa-info-circle"></i> Оценки в протоколе могут выставлять только Председатель комиссии, Заместитель председателя комиссии и Секретарь комиссии',
+                                            'options' => ['class' => 'alert-info'],
+                                        ]);
+                                        ?>
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <?= $form->field($model, 'protocolLeaderFlag')->checkbox(['disabled' => $readonly])->label('Заполнить поле Председатель комиссии от руки') ?>
