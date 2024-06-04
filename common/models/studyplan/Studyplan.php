@@ -3,6 +3,7 @@
 namespace common\models\studyplan;
 
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\fileinput\behaviors\FileManagerBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\PriceHelper;
@@ -85,6 +86,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
             [
                 'class' => DateFieldBehavior::class,
                 'attributes' => ['doc_date', 'doc_contract_start', 'doc_contract_end'],
+            ],
+            [
+                'class' => FileManagerBehavior::class,
             ],
         ];
     }

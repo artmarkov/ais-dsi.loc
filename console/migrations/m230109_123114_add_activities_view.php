@@ -125,7 +125,8 @@ UNION ALL
     consult_schedule_view.datetime_in AS start_time,
     consult_schedule_view.datetime_out AS end_time
    FROM consult_schedule_view
-  WHERE consult_schedule_view.auditory_id IS NOT NULL
+  WHERE consult_schedule_view.status = 1 
+  AND consult_schedule_view.auditory_id IS NOT NULL
 UNION ALL
  SELECT \'activities_over\'::text AS resource,
     activities_over.id,
@@ -153,6 +154,7 @@ UNION ALL
     activities_schedule_view.datetime_in AS start_time,
     activities_schedule_view.datetime_out AS end_time
    FROM activities_schedule_view
+  WHERE activities_schedule_view.status = 1
   ORDER BY 10;
         ')->execute();
 

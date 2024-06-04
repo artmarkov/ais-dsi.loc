@@ -52,7 +52,7 @@ use yii\helpers\Url;
                             'data' => $modelSchoolplan->getTeachersListForProtocol(),
                             'options' => [
                                 'id' => 'teachers_id',
-                                'disabled' => $model->schoolplan->isExecutors() ? true : $readonly,
+                                'disabled' => /*$model->schoolplan->isExecutors() ? true :*/ $readonly,
                                 'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
                             ],
                             'pluginOptions' => [
@@ -99,15 +99,15 @@ use yii\helpers\Url;
                             ]);
                             ?>
                         </div>
+                        <?php if (!$model->isNewRecord): ?>
                         <div id="taskTicket">
                             <?= $form->field($model, 'task_ticket')->textInput(['disabled' => $readonly]) ?>
                         </div>
-                        <?php if (!$model->isNewRecord): ?>
                             <?= $form->field($model, 'lesson_mark_id')->widget(\kartik\select2\Select2::class, [
                                 'data' => RefBook::find('lesson_mark')->getList(),
                                 'showToggleAll' => false,
                                 'options' => [
-                                    'disabled' => (\artsoft\Art::isFrontend() && !$model->schoolplan->isProtocolSigner()) ? true : $readonly,
+                                    'disabled' => /*(\artsoft\Art::isFrontend() && !$model->schoolplan->isProtocolSigner()) ? true : */$readonly,
                                     'placeholder' => Yii::t('art', 'Select...'),
                                     'multiple' => false,
                                 ],
@@ -116,7 +116,7 @@ use yii\helpers\Url;
                                 ],
                             ]);
                             ?>
-                            <?= $form->field($model, 'resume')->textarea(['rows' => 3, 'maxlength' => true, 'disabled' => (\artsoft\Art::isFrontend() && !$model->schoolplan->isProtocolSigner()) ? true : $readonly]) ?>
+                            <?= $form->field($model, 'resume')->textarea(['rows' => 3, 'maxlength' => true, 'disabled' => /*(\artsoft\Art::isFrontend() && !$model->schoolplan->isProtocolSigner()) ? true :*/ $readonly]) ?>
                         <?php endif; ?>
                     </div>
 

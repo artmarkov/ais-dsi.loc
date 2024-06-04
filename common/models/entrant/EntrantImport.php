@@ -152,7 +152,7 @@ class EntrantImport extends Model
     protected function getSubject($name)
     {
         $subject = Subject::findOne(['name' => $this->getSubjectName($name)]);
-        return $subject->id ?? $name;
+        return $subject->id ?? null;
     }
 
     protected function getSubjectName($name)

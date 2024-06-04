@@ -11,7 +11,7 @@ use kartik\date\DatePicker;
 
 <?php
 $form = ActiveForm::begin([
-    'id' => 'studyplan-progress',
+    'id' => 'studyplan-progress-search',
     'validateOnBlur' => false,
 ])
 ?>

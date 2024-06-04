@@ -17,7 +17,7 @@ class DefaultController extends BaseController {
 
             $session = Yii::$app->session;
 
-            $model = new DynamicModel(['plan_year', 'teachers_id', 'auditory_id', 'studyplan_id']);
+            $model = new DynamicModel(['plan_year', 'teachers_id', 'auditory_id', 'studyplan_id', 'subject_sect_studyplan_id']);
             $model->addRule(['plan_year'], 'required')
                 ->addRule(['plan_year', 'teachers_id', 'auditory_id', 'studyplan_id'], 'integer');
             if (!($model->load(Yii::$app->request->post()) && $model->validate())) {

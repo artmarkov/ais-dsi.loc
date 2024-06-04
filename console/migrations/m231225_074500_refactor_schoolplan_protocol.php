@@ -32,7 +32,7 @@ class m231225_074500_refactor_schoolplan_protocol extends \artsoft\db\BaseMigrat
         $this->addColumnWithHistory('schoolplan', 'protocol_members_list', $this->string(1024)->comment('Члены комиссии user_id'));
         $this->addColumnWithHistory('schoolplan', 'protocol_class_list', $this->string(1024)->comment('Классы'));
         $this->addColumnWithHistory('schoolplan', 'protocol_subject_cat_id', $this->integer()->comment('Категория дисциплины'));
-        $this->addColumnWithHistory('schoolplan', 'protocol_subject_id', $this->integer()->comment('Дисциплина'));
+        $this->addColumnWithHistory('schoolplan', 'protocol_subject_id', $this->string(1024)->comment('Дисциплины'));
         $this->addColumnWithHistory('schoolplan', 'protocol_subject_vid_id', $this->integer()->comment('Вид дисциплины(групповое, инд)'));
 
         $this->addForeignKey('schoolplan_ibfk_7', 'schoolplan', 'protocol_leader_id', 'users', 'id', 'NO ACTION', 'NO ACTION');

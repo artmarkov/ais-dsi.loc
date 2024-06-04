@@ -36,7 +36,7 @@ class DefaultController extends MainController
             {
                 $plan_year_1 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_in));
                 $plan_year_2 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_out));
-                if($plan_year_1  != $plan_year_2 ) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
+               // if($plan_year_1  != $plan_year_2 ) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
             })
             ->addRule(['education_cat_id', 'course', 'subject_id', 'subject_type_id', 'subject_form_id', 'studyplan_mat_capital_flag', 'studyplan_invoices_status', 'direction_id', 'teachers_id', 'status', 'mat_capital_flag', 'limited_status_id'], 'integer');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {

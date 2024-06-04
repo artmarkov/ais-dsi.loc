@@ -326,7 +326,8 @@ $readonlyResult = (\artsoft\Art::isFrontend() && $model->isAuthor() && Yii::$app
 
                                                 ?>
                                                 <?= $form->field($model, 'protocol_members_list')->widget(\kartik\select2\Select2::class, [
-                                                    'data' => \common\models\teachers\Teachers::getUserTeachersForDepartment($model->department_list),
+//                                                    'data' => \common\models\teachers\Teachers::getUserTeachersForDepartment($model->department_list),
+                                                    'data' => User::getUsersByIds(User::getUsersByRole('department,administrator')),
                                                     'showToggleAll' => false,
                                                     'options' => [
                                                         'disabled' => $readonly,
@@ -359,7 +360,7 @@ $readonlyResult = (\artsoft\Art::isFrontend() && $model->isAuthor() && Yii::$app
                                                         'id' => 'protocol_subject_id',
                                                         'disabled' => $readonly,
                                                         'placeholder' => Yii::t('art', 'Select...'),
-                                                        'multiple' => false,
+                                                        'multiple' => true,
                                                     ],
                                                     'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
                                                     'select2Options' => ['pluginOptions' => ['allowClear' => true]],

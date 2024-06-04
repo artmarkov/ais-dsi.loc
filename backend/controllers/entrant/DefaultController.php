@@ -30,6 +30,7 @@ use yii\web\UploadedFile;
 class DefaultController extends MainController
 {
     public $modelClass = 'common\models\entrant\EntrantComm';
+    public $modelClassEntrant = 'common\models\entrant\Entrant';
     public $modelSearchClass = 'common\models\entrant\search\EntrantCommSearch';
     public $modelHistoryClass = 'common\models\history\EntrantCommHistory';
 
@@ -199,7 +200,7 @@ class DefaultController extends MainController
                 $modelImport->file = UploadedFile::getInstance($modelImport, 'file');
                 if ($modelImport->upload()) {
                     Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                    $this->redirect(Url::to(['/entrant/default/applicants', 'id'=> $id]));
+                    $this->redirect(Url::to(['/entrant/default/applicants', 'id' => $id]));
                 }
 
             }
@@ -207,8 +208,7 @@ class DefaultController extends MainController
                     'model' => $modelImport,
                 ]
             );
-        }
-        elseif ('history' == $mode && $objectId) {
+        } elseif ('history' == $mode && $objectId) {
             $model = Entrant::findOne($objectId);
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Applicants'), 'url' => ['/entrant/default/applicants', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['/entrant/default/applicants', 'id' => $id, 'objectId' => $objectId, 'mode' => 'view']];
@@ -223,16 +223,16 @@ class DefaultController extends MainController
             return $this->redirect($this->getRedirectPage('delete', $model));
 
         } elseif ('activate' == $mode && $objectId) {
-                if (Entrant::runActivate($objectId)) {
-                    Yii::$app->session->setFlash('success', 'Форма подключена к испытаниям.');
-                    return  $this->getSubmitAction($model);
-                }
-            } elseif ('deactivate' == $mode && $objectId) {
-                if (Entrant::runDeactivate($objectId)) {
-                    Yii::$app->session->setFlash('warning', 'Форма отключена от испытаний.');
-                    return  $this->getSubmitAction($model);
-                }
-            } elseif ($objectId) {
+            if (Entrant::runActivate($objectId)) {
+                Yii::$app->session->setFlash('success', 'Форма подключена к испытаниям.');
+                return $this->getSubmitAction($model);
+            }
+        } elseif ('deactivate' == $mode && $objectId) {
+            if (Entrant::runDeactivate($objectId)) {
+                Yii::$app->session->setFlash('warning', 'Форма отключена от испытаний.');
+                return $this->getSubmitAction($model);
+            }
+        } elseif ($objectId) {
 
             if ('view' == $mode) {
                 $readonly = true;
@@ -469,7 +469,7 @@ class DefaultController extends MainController
             }
         }
 
-        return $this->renderIsAjax('protocol', compact( 'model_date', 'model', 'id'));
+        return $this->renderIsAjax('protocol', compact('model_date', 'model', 'id'));
 
     }
 
@@ -520,6 +520,76 @@ class DefaultController extends MainController
         }
         return json_encode(['output' => '', 'selected' => '']);
     }
+
+    public function actionApplicantsBulkDelete()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelClassEntrant;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+
+            foreach (Yii::$app->request->post('selection', []) as $id) {
+                $where = ['id' => $id];
+
+                if ($restrictAccess) {
+                    $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+                }
+
+                $model = $modelClass::findOne($where);
+
+                if ($model) $model->delete();
+            }
+        }
+    }
+
+    public function actionApplicantsBulkWaiting()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelClassEntrant;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+            $where = ['id' => Yii::$app->request->post('selection', [])];
+
+            if ($restrictAccess) {
+                $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $modelClass::updateAll(['status' => 0], $where);
+        }
+    }
+
+    public function actionApplicantsBulkOpen()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelClassEntrant;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+            $where = ['id' => Yii::$app->request->post('selection', [])];
+
+            if ($restrictAccess) {
+                $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $modelClass::updateAll(['status' => 1], $where);
+        }
+    }
+
+    public function actionApplicantsBulkClose()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelClassEntrant;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+            $where = ['id' => Yii::$app->request->post('selection', [])];
+
+            if ($restrictAccess) {
+                $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $modelClass::updateAll(['status' => 2], $where);
+        }
+    }
+
 
     /**
      * @param $id

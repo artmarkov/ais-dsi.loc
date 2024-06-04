@@ -40,7 +40,7 @@ JS;
 $this->registerJs($js, \yii\web\View::POS_LOAD);
 
 //$readonly = $model->decision_id != 0 ? true : $readonly;
-$readonlyMarks = $model->status == 2 ? true : $readonly;
+$readonlyMarks = $model->status == 2 || $model->status == 0 ? true : $readonly;
 $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermission('fullEntrantAccess') ? true : $readonly;
 
 ?>
@@ -110,7 +110,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                         'data' => \common\models\entrant\Entrant::getCommGroupList($model->comm_id),
                         'type' => DepDrop::TYPE_SELECT2,
                         'options' => [
-                            'disabled' => $readonlyBase,
+                            'disabled' => $readonly /*$readonlyBase*/,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [

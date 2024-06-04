@@ -23,7 +23,7 @@ $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
             <div class="row">
                 <div class="panel">
                     <div class="panel-heading">
-                        <?= \artsoft\Art::isBackend() || ($model_confirm->schoolplan->isExecutors() && in_array($model_confirm->confirm_status, [0, 3])) ? \artsoft\helpers\ButtonHelper::createButton() : null; ?>
+                        <?= \artsoft\Art::isBackend() || /*($model_confirm->schoolplan->isExecutors() &&*/ in_array($model_confirm->confirm_status, [0, 3]) ? \artsoft\helpers\ButtonHelper::createButton() : null; ?>
                     </div>
                     <div class="panel-body">
                         <div class="col-sm-6">

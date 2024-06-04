@@ -12,7 +12,7 @@ class SummaryProgress
     protected $plan_year;
     protected $education_cat_id;
     protected $programm_id;
-    protected $vid_sert;
+//    protected $vid_sert;
     protected $subject_type_id;
     protected $subject_form_id;
     protected $course;
@@ -29,7 +29,7 @@ class SummaryProgress
         $this->plan_year = $model_date->plan_year;
         $this->education_cat_id = $model_date->education_cat_id;
         $this->programm_id = $model_date->programm_id;
-        $this->vid_sert = $model_date->vid_sert;
+//        $this->vid_sert = $model_date->vid_sert ?: null;
         $this->subject_type_id = $model_date->subject_type_id;
         $this->subject_form_id = $model_date->subject_form_id;
         $this->course = $model_date->course;
@@ -75,12 +75,13 @@ class SummaryProgress
         if ($this->subject_type_id) {
             $models = $models->andWhere(['subject_type_id' => $this->subject_type_id]);
         }
-        if ($this->vid_sert == LessonTest::MIDDLE_ATTESTATION) {
-            $models = $models->andWhere(['med_cert' => true]);
-        }
-        if ($this->vid_sert == LessonTest::FINISH_ATTESTATION) {
-            $models = $models->andWhere(['fin_cert' => true]);
-        }
+//        if ($this->vid_sert == LessonTest::MIDDLE_ATTESTATION) {
+//            $models = $models->andWhere(['med_cert' => true]);
+//        }
+//        if ($this->vid_sert == LessonTest::FINISH_ATTESTATION) {
+//            $models = $models->andWhere(['fin_cert' => true]);
+//        }
+        $models = $models->andWhere(['OR', ['med_cert' => true], ['fin_cert' => true]]);
         $models = $models->orderBy('subject_category_id, subject_vid_id, subject_id')->all();
 
         return $models;
@@ -99,7 +100,7 @@ class SummaryProgress
             ->select([
                 'subject_category_id', 'subject_category_name', 'subject_category_slug',
                 'subject_vid_id', 'subject_vid_name', 'subject_vid_slug',
-                'subject_type_id', 'subject_type_name', 'subject_type_slug',
+                //'subject_type_id', 'subject_type_name', 'subject_type_slug',// бало задвоение предметов
                 'subject_id', 'subject_name', 'subject_slug',
                 'concat(subject_id, \'|\', subject_vid_id, \'|\', subject_category_id) as subject_key'
             ])
@@ -120,7 +121,8 @@ class SummaryProgress
             ])
             ->where(['studyplan_subject_id' => $this->studyplanSubjectIds])
             ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['test_category' => $this->vid_sert])
+//            ->andWhere(['test_category' => $this->vid_sert])
+            ->andWhere(['test_category' => [LessonTest::MIDDLE_ATTESTATION, LessonTest::FINISH_ATTESTATION]])
             ->asArray()
             ->all();
         return $models;
@@ -135,12 +137,13 @@ class SummaryProgress
             ])
             ->where(['studyplan_subject_id' => $this->studyplanSubjectIds])
             ->andWhere(['status' => 1]);
-        if ($this->vid_sert == LessonTest::MIDDLE_ATTESTATION) {
-            $models = $models->andWhere(['med_cert' => true]);
-        }
-        if ($this->vid_sert == LessonTest::FINISH_ATTESTATION) {
-            $models = $models->andWhere(['fin_cert' => true]);
-        }
+//        if ($this->vid_sert == LessonTest::MIDDLE_ATTESTATION) {
+//            $models = $models->andWhere(['med_cert' => true]);
+//        }
+//        if ($this->vid_sert == LessonTest::FINISH_ATTESTATION) {
+//            $models = $models->andWhere(['fin_cert' => true]);
+//        }
+        $models = $models->andWhere(['OR', ['med_cert' => true], ['fin_cert' => true]]);
         $models = $models->all();
         return ArrayHelper::index($models, 'subject_key', 'studyplan_id');
     }

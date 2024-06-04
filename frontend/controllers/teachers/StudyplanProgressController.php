@@ -28,8 +28,9 @@ class StudyplanProgressController extends MainController
             $session->remove('_progress_subject_sect_studyplan_id');
         }
         $model_date = new DynamicModel(['date_in', 'date_out', 'subject_sect_studyplan_id']);
-        $model_date->addRule(['date_in', 'date_out', 'subject_sect_studyplan_id'], 'required', ['message' => 'Необходимо выбрать из списка.'])
+        $model_date->addRule(['date_in', 'date_out'/*, 'subject_sect_studyplan_id'*/], 'required', ['message' => 'Необходимо выбрать из списка.'])
             ->addRule(['date_in', 'date_out'], 'safe')
+            ->addRule(['subject_sect_studyplan_id'], 'safe')
             ->addRule('date_in', function ($attribute) {
                 if (Yii::$app->formatter->asTimestamp('01.' . $this->date_in) > Yii::$app->formatter->asTimestamp('01.' . $this->date_out)) $this->addError($attribute, 'Дата начала периода должна быть меньше даты окончания.');
             })
@@ -60,26 +61,29 @@ class StudyplanProgressController extends MainController
         $timestamp_in = $timestamp[0];
         $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
         $model = LessonProgressView::getDataTeachers($model_date, $this->teachers_id, $plan_year);
-        $model_confirm = ProgressConfirm::find()->where(['=', 'teachers_id', $modelTeachers->id])
-                ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
-                ->andWhere(['=', 'timestamp_month', $timestamp_in])
-                ->one() ?? new ProgressConfirm();
-        $model_confirm->teachers_id = $modelTeachers->id;
-        $model_confirm->timestamp_month = $timestamp_in;
-        $model_confirm->subject_sect_studyplan_id = $model_date->subject_sect_studyplan_id;
+        $model_confirm = [];
+        if($model_date->subject_sect_studyplan_id) {
+            $model_confirm = ProgressConfirm::find()->where(['=', 'teachers_id', $modelTeachers->id])
+                    ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
+                    ->andWhere(['=', 'timestamp_month', $timestamp_in])
+                    ->one() ?? new ProgressConfirm();
+            $model_confirm->teachers_id = $modelTeachers->id;
+            $model_confirm->timestamp_month = $timestamp_in;
+            $model_confirm->subject_sect_studyplan_id = $model_date->subject_sect_studyplan_id;
 
-        if ($model_confirm->load(Yii::$app->request->post()) && $model_confirm->validate()) {
-            if (Yii::$app->request->post('submitAction') == 'send_approve') {
-                $model_confirm->confirm_status = ProgressConfirm::DOC_STATUS_WAIT;
-                if ($model_confirm->sendApproveMessage()) {
-                    Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+            if ($model_confirm->load(Yii::$app->request->post()) && $model_confirm->validate()) {
+                if (Yii::$app->request->post('submitAction') == 'send_approve') {
+                    $model_confirm->confirm_status = ProgressConfirm::DOC_STATUS_WAIT;
+                    if ($model_confirm->sendApproveMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
+                } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
+                    $model_confirm->confirm_status = ProgressConfirm::DOC_STATUS_MODIF;
                 }
-            } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
-                $model_confirm->confirm_status = ProgressConfirm::DOC_STATUS_MODIF;
-            }
-            if ($model_confirm->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction();
+                if ($model_confirm->save()) {
+                    Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                    $this->getSubmitAction();
+                }
             }
         }
 

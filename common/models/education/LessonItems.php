@@ -391,4 +391,12 @@ class LessonItems extends \artsoft\db\ActiveRecord
         }
         return $modelsProgress;
     }
+
+    public function beforeDelete()
+    {
+        $this->updated_at = time();
+        $this->updated_by = Yii::$app->user->identity->getId();
+        $this->save();
+        return parent::beforeDelete();
+    }
 }

@@ -47,6 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?=
             GridView::widget([
                 'id' => 'studyplan-grid',
+                'pjax' => false,
                 'dataProvider' => $dataProvider,
                 'filterModel' => \artsoft\Art::isFrontend() && User::hasRole(['student']) ? false : $searchModel,
                 'bulkActionOptions' =>  \artsoft\Art::isBackend() ? [

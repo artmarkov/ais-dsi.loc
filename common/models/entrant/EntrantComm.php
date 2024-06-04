@@ -235,10 +235,12 @@ class EntrantComm extends \artsoft\db\ActiveRecord
             ->asArray()->all(), 'id', 'name');
 
         $models = (new Query())->from('entrant_members_view')
-            ->where(['in', 'members_id', $members_id != 0 ? $members_id : $this->members_list])
+            ->where(['=', 'comm_id', $this->id])
+            ->andWhere(['in', 'members_id', $members_id != 0 ? $members_id : $this->members_list])
             ->andWhere(['=', 'prep_flag', $prep_flag])
             ->orderBy('mid_mark DESC')->all();
         $models = ArrayHelper::index($models, null, ['student_id', 'entrant_test_id']);
+//        echo '<pre>' . print_r($models, true) . '</pre>';
         $modelsEntrant = (new Query())->from('entrant_view')
             ->where(['=', 'comm_id', $this->id])
             ->andWhere(['=', 'prep_flag', $prep_flag])
@@ -271,7 +273,9 @@ class EntrantComm extends \artsoft\db\ActiveRecord
                 if (isset($models[$model['student_id']][$ids])) {
                     $mark = [];
                     foreach ($models[$model['student_id']][$ids] as $item => $value) {
-                        $mark[] = $value['mark_value'];
+                        if($value['mark_value']) {
+                            $mark[] = $value['mark_value'];
+                        }
                     }
                     $data[$id][$ids] = (!empty($mark) && !$free_flag) ? round((array_sum($mark) / count($mark)), 2) : '';
                     $mid_mark[] = $data[$id][$ids];

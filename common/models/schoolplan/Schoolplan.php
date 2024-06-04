@@ -156,7 +156,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ],
             [
                 'class' => ArrayFieldBehavior::class,
-                'attributes' => ['department_list', 'executors_list', 'protocol_members_list', 'protocol_class_list'],
+                'attributes' => ['department_list', 'executors_list', 'protocol_members_list', 'protocol_class_list', 'protocol_subject_id'],
             ],
             'fileManager' => [
                 'class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class,
@@ -179,7 +179,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['department_list', 'executors_list', 'datetime_in', 'datetime_out'], 'safe'],
             [['auditory_id', 'category_id', 'activities_over_id', 'form_partic', 'visit_poss', 'important_event', 'format_event', 'num_users', 'num_winners', 'num_visitors', 'author_id', 'signer_id'], 'integer'],
             [['protocol_leader_id', 'protocol_soleader_id', 'protocol_secretary_id'], 'integer'],
-            [['protocol_subject_cat_id', 'protocol_subject_id', 'protocol_subject_vid_id'], 'integer'],
+            [['protocol_subject_cat_id', 'protocol_subject_vid_id'], 'integer'],
             [['visit_content', 'region_partners', 'rider', 'result'], 'string'],
             [['site_url', 'site_media'], 'url', 'defaultScheme' => 'http'],
             [['title'], 'string', 'max' => 512],
@@ -223,7 +223,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['signer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['signer_id' => 'id']],
             [['formPlaces'], 'safe'],
             [['protocolLeaderFlag'], 'boolean'],
-            [['protocol_members_list', 'protocol_class_list'], 'safe'],
+            [['protocol_members_list', 'protocol_class_list', 'protocol_subject_id'], 'safe'],
 //            [['protocol_leader_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_leader_id' => 'id']],
 //            [['protocol_soleader_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_leader_id' => 'id']],
             [['protocol_secretary_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_secretary_id' => 'id']],
@@ -830,20 +830,15 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function getStudyplanThematicItemsById($studyplan_subject_id)
     {
         $studyplan_subject_id = is_array($studyplan_subject_id) ? implode(',', $studyplan_subject_id) : $studyplan_subject_id;
+
         return Yii::$app->db->createCommand(' select DISTINCT studyplan_thematic_items.id as id,
 		                  studyplan_thematic_items.topic AS name
                     FROM studyplan_thematic_view 
                     INNER JOIN studyplan_thematic_items ON studyplan_thematic_view.studyplan_thematic_id = studyplan_thematic_items.studyplan_thematic_id 
                     where  studyplan_subject_id = ANY (string_to_array(:studyplan_subject_id, \',\')::int[]) 
-                    AND subject_cat_id = :subject_cat_id 
-                    AND subject_id = :subject_id 
-                    AND subject_vid_id = :subject_vid_id 
                     AND studyplan_thematic_items.topic != \'\'',
             [
-                'studyplan_subject_id' => $studyplan_subject_id,
-                'subject_cat_id' => $this->protocol_subject_cat_id,
-                'subject_id' => $this->protocol_subject_id,
-                'subject_vid_id' => $this->protocol_subject_vid_id,
+                'studyplan_subject_id' => $studyplan_subject_id
             ])->queryAll();
     }
 
@@ -871,8 +866,8 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ->andWhere(['=', 'plan_year', $plan_year])
             ->andWhere(['subject_cat_id' => $this->protocol_subject_cat_id])
             ->andWhere(['subject_id' => $this->protocol_subject_id])
-            ->andWhere(['subject_vid_id' => $this->protocol_subject_vid_id])
-            ->andWhere(['course' => $this->protocol_class_list])
+//            ->andWhere(['subject_vid_id' => $this->protocol_subject_vid_id])
+//            ->andWhere(['course' => $this->protocol_class_list])
             ->asArray()
             ->all();
     }
@@ -898,7 +893,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ->andWhere(['direction_id' => 1000])
             ->andWhere(['subject_cat_id' => $this->protocol_subject_cat_id])
             ->andWhere(['subject_id' => $this->protocol_subject_id])
-            ->andWhere(['subject_vid_id' => $this->protocol_subject_vid_id])
+//            ->andWhere(['subject_vid_id' => $this->protocol_subject_vid_id])
             ->column();
         $modelsTeachers = (new Query())->from('teachers_view')->where(['teachers_id' => $teachersIds])->all();
         return \yii\helpers\ArrayHelper::map($modelsTeachers, 'teachers_id', 'fio');
@@ -933,7 +928,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         $markHintsList = \yii\helpers\ArrayHelper::map($modelsMark, 'id', 'mark_hint');
 //        echo '<pre>' . print_r($modelsMark, true) . '</pre>';
 //        die();
-        $sign = [];
+        $sign = $subjects = [];
         foreach ($model->protocol_members_list as $id) {
             $user = UserCommon::findOne(['user_id' => $id]);
             $sign[] = [
@@ -947,11 +942,15 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         $protocol_soleader = UserCommon::findOne(['user_id' => $model->protocol_soleader_id]);
         $protocol_secretary = UserCommon::findOne(['user_id' => $model->protocol_secretary_id]);
 
+        foreach ($this->protocol_subject_id as $subject) {
+            $subjects[] = RefBook::find('subject_name')->getValue($subject);
+        }
+
         $data[] = [
             'rank' => 'doc',
             'date' => Yii::$app->formatter->asDate($timestamp),
-            'plan_year' => $plan_year,
-            'subject_name' => RefBook::find('subject_category_name')->getValue($this->protocol_subject_cat_id) . ': ' . RefBook::find('subject_name')->getValue($this->protocol_subject_id),
+            'plan_year' => ArtHelper::getStudyYearsValue($plan_year),
+            'subject_name' => RefBook::find('subject_category_name')->getValue($this->protocol_subject_cat_id) . ': ' . implode(', ', $subjects),
             'protocol_leader_fullname' => $model->protocol_leader_name != null ? $model->protocol_leader_name : ($protocol_leader ? $protocol_leader->getFullName() : ''),
             'protocol_soleader_fullname' => $protocol_soleader ? $protocol_soleader->getFullName() : '',
             'protocol_secretary_fullname' => $protocol_secretary ? $protocol_secretary->getFullName() : '',

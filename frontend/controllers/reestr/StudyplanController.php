@@ -63,8 +63,32 @@ class StudyplanController extends MainController
         return $this->renderIsAjax('@backend/views/studyplan/default/index.php', compact('dataProvider', 'searchModel', 'model_date', 'teachers_id'));
 
     }
+    public function actionView($id, $readonly = true)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
+        $this->view->params['tabMenu'] = $this->getMenu($id);
 
-    public function actionView($id)
+        if (!isset($model)) {
+            throw new NotFoundHttpException("The StudyplanSubject was not found.");
+        }
+
+        $modelsStudyplanSubject = $model->studyplanSubject;
+        $model_date = $this->modelDate;
+
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
+        return $this->renderIsAjax('@backend/views/studyplan/default/update', [
+            'model' => $model,
+            'modelsStudyplanSubject' => (empty($modelsStudyplanSubject)) ? [new StudyplanSubject] : $modelsStudyplanSubject,
+            'model_date' => $model_date,
+            'readonly' => $readonly
+        ]);
+    }
+
+    public function actionStudentsView($id)
     {
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['reestr/studyplan/index']];
         $this->view->params['tabMenu'] = $this->getMenu($id);
@@ -839,7 +863,8 @@ class StudyplanController extends MainController
     public function getMenu($id)
     {
         return [
-            ['label' => 'Карточка ученика', 'url' => ['/reestr/studyplan/view', 'id' => $id]],
+            ['label' => 'Карточка ученика', 'url' => ['/reestr/studyplan/students-view', 'id' => $id]],
+            ['label' => 'Карточка плана учащегося', 'url' => ['/reestr/studyplan/view', 'id' => $id]],
 //            ['label' => 'Нагрузка', 'url' => ['/reestr/studyplan/load-items', 'id' => $id]],
             ['label' => 'Элементы расписания', 'url' => ['/reestr/studyplan/schedule-items', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/reestr/studyplan/schedule', 'id' => $id]],

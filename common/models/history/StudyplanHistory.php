@@ -43,7 +43,7 @@ class StudyplanHistory extends BaseHistory
     {
         switch ($name) {
             case 'student_id':
-                return isset($model->student_id) ? $model->student->fullName : $value;
+                return isset($model->student) ? $model->student->fullName : $value;
             case 'programm_id':
                 return isset($model->programm_id) ? $model->programm->name : $value;
             case 'subject_form_id':

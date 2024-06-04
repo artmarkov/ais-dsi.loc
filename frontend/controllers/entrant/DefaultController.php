@@ -15,6 +15,7 @@ use common\models\entrant\search\EntrantSearch;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -23,8 +24,10 @@ use yii\web\NotFoundHttpException;
 class DefaultController extends \frontend\controllers\DefaultController
 {
     public $modelClass = 'common\models\entrant\EntrantComm';
+    public $modelClassEntrant = 'common\models\entrant\Entrant';
     public $modelSearchClass = 'common\models\entrant\search\EntrantCommSearch';
 
+    public $freeAccessActions = ['applicants-bulk-waiting', 'applicants-bulk-open', 'applicants-bulk-close', 'applicants-bulk-delete'];
     public function init()
     {
         $this->viewPath = '@backend/views/entrant/default';
@@ -186,6 +189,77 @@ class DefaultController extends \frontend\controllers\DefaultController
         }
     }
 
+
+    public function actionApplicantsBulkDelete()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelClassEntrant;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+
+            foreach (Yii::$app->request->post('selection', []) as $id) {
+                $where = ['id' => $id];
+
+                if ($restrictAccess) {
+                    $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+                }
+
+                $model = $modelClass::findOne($where);
+
+                if ($model) $model->delete();
+            }
+        }
+    }
+
+    public function actionApplicantsBulkWaiting()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelClassEntrant;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+            $where = ['id' => Yii::$app->request->post('selection', [])];
+
+            if ($restrictAccess) {
+                $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $modelClass::updateAll(['status' => 0], $where);
+        }
+    }
+
+    public function actionApplicantsBulkOpen()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelClassEntrant;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+            $where = ['id' => Yii::$app->request->post('selection', [])];
+
+            if ($restrictAccess) {
+                $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $modelClass::updateAll(['status' => 1], $where);
+        }
+    }
+
+    public function actionApplicantsBulkClose()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelClassEntrant;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+            $where = ['id' => Yii::$app->request->post('selection', [])];
+
+            if ($restrictAccess) {
+                $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+            }
+
+            $modelClass::updateAll(['status' => 2], $where);
+        }
+    }
+
+
     /**
      * @param $id
      * @return array
@@ -203,7 +277,11 @@ class DefaultController extends \frontend\controllers\DefaultController
 
     public function beforeAction($action)
     {
-
+        if (in_array($action->id, ['applicants-bulk-waiting', 'applicants-bulk-open', 'applicants-bulk-close', 'applicants-bulk-delete'])) {
+            if (!User::hasRole('entrantAdmin', false)) {
+                throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
+            }
+        }
         return parent::beforeAction($action);
     }
 }

@@ -109,7 +109,12 @@ foreach ($model['lessonDates'] as $id => $name) {
     ];
 }
 
-$hints = '<h3 class="panel-title">Сокращения:</h3><br/>';
+$hints = '<span class="panel-title"><b>Сокращения Вид занятия:</b></span><br/>';
+foreach (\common\models\education\LessonTest::getLessonTestHints() as $item => $hint) {
+    $hints .= $item . ' - ' . $hint . '; ';
+}
+$hints .= '<br/><br/>';
+$hints .= '<span class="panel-title"><b>Сокращения Оценки:</b></span><br/>';
 foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) {
     $hints .= $item . ' - ' . $hint . '; ';
 }

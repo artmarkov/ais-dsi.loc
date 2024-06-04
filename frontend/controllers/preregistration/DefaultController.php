@@ -99,7 +99,10 @@ class DefaultController extends \frontend\controllers\DefaultController
         $pre_status = Yii::$app->settings->get('module.pre_status', 0);
         $pre_date_in = Yii::$app->formatter->asTimestamp(Yii::$app->settings->get('module.pre_date_in', null));
         $pre_date_out = Yii::$app->formatter->asTimestamp(Yii::$app->settings->get('module.pre_date_out', null));
-
+        if (Yii::$app->user->identity) { // Если по ссылке проходит залогиненный пользователь
+            Yii::$app->user->logout();
+            $this->redirect(Yii::$app->request->referrer);
+        }
         if (!(Yii::$app->user->isGuest && $pre_status == 1 && $pre_date_in < time() && $pre_date_out > time())) {
             $this->redirect('/dashboard');
         }

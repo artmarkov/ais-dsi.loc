@@ -35,7 +35,7 @@ $form = ActiveForm::begin([
                                 'disabled' => false,
                             ])->label(Yii::t('art/studyplan', 'Plan Year'));
                         ?>
-                        <?= $form->field($model_date, "vid_sert")->radioList([LessonTest::MIDDLE_ATTESTATION => 'Промежуточная аттестация', LessonTest::FINISH_ATTESTATION => 'Итоговая аттестация',])->label('Вид аттестации'); ?>
+<!--                        --><?php // $form->field($model_date, "vid_sert")->radioList([LessonTest::MIDDLE_ATTESTATION => 'Промежуточная аттестация', LessonTest::FINISH_ATTESTATION => 'Итоговая аттестация',])->label('Вид аттестации'); ?>
                     </div>
                 </div>
                 <div class="panel panel-default">

@@ -275,11 +275,38 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = Yii::t('art', 'Create');
             $modelProtocol = new SchoolplanProtocol();
             $modelProtocol->schoolplan_id = $id;
-            $modelProtocol->teachers_id = $model->isExecutors() ? $this->teachers_id : null;
-
-            if ($modelProtocol->load(Yii::$app->request->post()) && $modelProtocol->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                $this->getSubmitAction($modelProtocol);
+            $flag = true;
+            if ($modelProtocol->load(Yii::$app->request->post())) {
+                $valid = $modelProtocol->validate();
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        foreach ($modelProtocol->studyplan_subject_id as $id => $studyplan_subject_id) {
+                            $m = new SchoolplanProtocol();
+                            $m->setAttributes(
+                                [
+                                    'thematicFlag' => $modelProtocol->thematicFlag,
+                                    'schoolplan_id' => $modelProtocol->schoolplan_id,
+                                    'teachers_id' => $modelProtocol->teachers_id,
+                                    'thematic_items_list' => $modelProtocol->thematic_items_list,
+                                    'studyplan_subject_id' => $studyplan_subject_id,
+                                ]
+                            );
+                            if (!($flag = $m->save())) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
+                            $this->redirect($this->getRedirectPage('index'));
+                        }
+                    } catch (\Exception $e) {
+                        print_r($e->getMessage());
+                        $transaction->rollBack();
+                    }
+                }
             }
 
             return $this->renderIsAjax('@backend/views/schoolplan/protocol/_form.php', [
@@ -334,13 +361,18 @@ class DefaultController extends MainController
             $model_confirm->schoolplan_id = $id;
 
             if ($model_confirm->load(Yii::$app->request->post()) && $model_confirm->validate()) {
-                if (Yii::$app->request->post('submitAction') == 'send_approve') {
-                    $model_confirm->confirm_status = SchoolplanProtocolConfirm::DOC_STATUS_WAIT;
-                    if ($model_confirm->sendApproveMessage()) {
+                if (Yii::$app->request->post('submitAction') == 'approve') {
+                    $model_confirm->confirm_status = SchoolplanProtocolConfirm::DOC_STATUS_AGREED;
+                    if ($model_confirm->approveMessage()) {
                         Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
                     }
-                } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
+                } elseif (Yii::$app->request->post('submitAction') == 'modif') {
                     $model_confirm->confirm_status = SchoolplanProtocolConfirm::DOC_STATUS_MODIF;
+                    if ($model_confirm->modifMessage()) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                    }
+                } elseif (Yii::$app->request->post('submitAction') == 'doc_protocol') {
+                    $model->makeProtocolDocx();
                 }
                 if ($model_confirm->save()) {
                     Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
@@ -350,6 +382,7 @@ class DefaultController extends MainController
             return $this->renderIsAjax('protocol', compact('dataProvider', 'searchModel', 'id', 'model_confirm'));
         }
     }
+
 
     public function actionPerform($id, $objectId = null, $mode = null, $readonly = false)
     {
@@ -452,8 +485,8 @@ class DefaultController extends MainController
         if (isset($_POST['depdrop_parents'])) {
             $parents = $_POST['depdrop_parents'];
             if (!empty($parents)) {
-
-                $out = TeachersLoadStudyplanView::getStudyplanListById($parents[0], $_GET['plan_year']);
+                $model = Schoolplan::findOne(['id' => $_GET['id']]);
+                $out = $model->getStudyplanSubjectListById($parents[0]);
 
                 return json_encode(['output' => $out, 'selected' => '']);
             }
@@ -469,7 +502,8 @@ class DefaultController extends MainController
 
             if (!empty($parents)) {
                 $cat_id = $parents[0];
-                $out = SchoolplanPerform::getStudyplanThematicItemsById($cat_id);
+                $model = Schoolplan::findOne($_GET['id']);
+                $out = $model->getStudyplanThematicItemsById($cat_id);
 
                 return json_encode(['output' => $out, 'selected' => '']);
             }
@@ -553,6 +587,7 @@ class DefaultController extends MainController
         }
         return json_encode(['output' => '', 'selected' => '']);
     }
+
     /**
      * @param $id
      * @return array

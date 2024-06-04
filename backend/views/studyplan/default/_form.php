@@ -456,12 +456,12 @@ JS
                                 echo '<hr>';
                                 $modelHist = new StudyplanHistory($model->id);
                                 $hist = $modelHist->getHistoryFirst();
-                                if($hist['status'] == Studyplan::STATUS_ACTIVE) {
+                                if ($hist['status'] == Studyplan::STATUS_ACTIVE) {
                                     $date_open = Yii::$app->formatter->asDatetime($hist['created_at']);
                                     echo '<span><strong>Дата создания плана: </strong>' . $date_open . '</span> ';
                                 }
                                 $hist = $modelHist->getHistoryLast();
-                                if($hist['status'] == Studyplan::STATUS_INACTIVE) {
+                                if ($hist['status'] == Studyplan::STATUS_INACTIVE) {
                                     $date_close = Yii::$app->formatter->asDatetime($hist['updated_at']);
                                     echo '<span><strong>Дата закрытия плана: </strong>' . $date_close . '</span>';
                                 }
@@ -515,6 +515,31 @@ JS
                         </div>
                     </div>
                 <?php endif; ?>
+                <?php if (!$model->isNewRecord): ?>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    Документы на печать
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <?= \yii\bootstrap\Alert::widget([
+                                                'body' => '<i class="fa fa-info"></i> Максимальный размер файла: 3 Mb',
+                                                'options' => ['class' => 'alert-info'],
+                                            ]);
+                                            ?>
+                                            <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], /*'pluginOptions' => ['theme' => 'explorer'],*/
+                                                'disabled' => $readonly]) ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <hr>
             <?php endif; ?>
         </div>
         <div class="panel-footer">

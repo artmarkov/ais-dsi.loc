@@ -83,6 +83,7 @@ class m230606_123245_add_reestr_permissions extends PermissionsMigration
                         '/reestr/studyplan/grid-page-size',
                         '/reestr/studyplan/index',
                         '/reestr/studyplan/view',
+                        '/reestr/studyplan/students-view',
                         '/reestr/studyplan/schedule-items',
                         '/reestr/studyplan/schedule-items/grid-sort',
                         '/reestr/studyplan/schedule-items/grid-page-size',

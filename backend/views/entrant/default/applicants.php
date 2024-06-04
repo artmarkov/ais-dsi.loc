@@ -59,19 +59,27 @@ use artsoft\grid\GridPageSize;
                 'id' => 'entrant-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
-                'bulkActionOptions' => [
+                'bulkActionOptions' => \artsoft\models\User::hasRole('entrantAdmin', false) ? [
                     'gridId' => 'entrant-grid',
-                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-                ],
+                    'actions' => [
+                        Url::to(['applicants-bulk-waiting']) => 'Перевести в статус "В ожидании испытаний"',
+                        Url::to(['applicants-bulk-open']) => 'Перевести в статус "Испытания открыты"',
+                        Url::to(['applicants-bulk-close']) => 'Перевести в статус "Испытания завершены"',
+                        Url::to(['applicants-bulk-delete']) => Yii::t('art', 'Delete')
+                    ] //Configure here you bulk actions
+                ] : false,
                 'columns' => [
-                    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
+                        return ['value' => $model->id];
+                    },
+                        'visible' => \artsoft\models\User::hasRole('entrantAdmin', false),
+                    ],
                     [
                         'attribute' => 'group_id',
                         'filter' => \common\models\entrant\Entrant::getCommGroupList($id),
                         'value' => function (\common\models\entrant\Entrant $model) use ($id) {
                             return \common\models\entrant\Entrant::getCommGroupValue($id, $model->group_id);
                         },
-                        'options' => ['style' => 'width:350px'],
                         'format' => 'raw',
                         'group' => true
                     ],
@@ -88,8 +96,9 @@ use artsoft\grid\GridPageSize;
                         'value' => function (\common\models\entrant\EntrantView $model) {
                             return \artsoft\Art::isBackend() ? Html::a($model->fullname,
                                 ['/students/default/view', 'id' => $model->student_id], ['title' => 'Перейти в реестр', 'target' => '_blank', 'data-pjax' => 0])
-                                : $model->fullname;
+                                : Html::a($model->fullname, ['/entrant/default/applicants', 'id' => $model->comm_id, 'objectId' => $model->id, 'mode' => 'update']);
                         },
+                        'options' => ['style' => 'width:350px'],
                         'format' => 'raw'
                     ],
                     [
@@ -120,21 +129,22 @@ use artsoft\grid\GridPageSize;
                                 if (!$id) {
                                     continue;
                                 }
+                                if (!Subject::findOne($id)) {
+                                    continue;
+                                }
                                 $v[] = Subject::findOne($id)->name;
                             }
                             return implode('<br/> ', $v);
                         },
-                        'options' => ['style' => 'width:350px'],
                         'format' => 'raw',
                     ],
-                    /* [
+                     [
                          'attribute' => 'last_experience',
                          'value' => function (Entrant $model) {
                              return $model->last_experience;
                          },
                          'format' => 'raw',
-                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
-                     ],*/
+                     ],
                     [
                         'attribute' => 'mid_mark',
                         'value' => function (\common\models\entrant\EntrantView $model) {
@@ -155,6 +165,7 @@ use artsoft\grid\GridPageSize;
                             return RefBook::find('education_programm_short_name')->getValue($model->programm_id) ?? '';
                         },
                         'format' => 'raw',
+                        'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
                         'label' => 'План'
                     ],
                     [
@@ -169,6 +180,7 @@ use artsoft\grid\GridPageSize;
                             return RefBook::find('subject_name')->getValue($model->subject_id) ?? '';
                         },
                         'format' => 'raw',
+                        'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
                     ],
                     [
                         'attribute' => 'course',
@@ -182,6 +194,7 @@ use artsoft\grid\GridPageSize;
                             return \artsoft\helpers\ArtHelper::getCourseList()[$model->course] ?? '';
                         },
                         'format' => 'raw',
+                        'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
                         'label' => 'Курс'
                     ],
                     [
@@ -196,6 +209,7 @@ use artsoft\grid\GridPageSize;
                             return \common\models\subject\SubjectForm::getFormValue($model->subject_form_id) ?? '';
                         },
                         'format' => 'raw',
+                        'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
                     ],
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',
@@ -205,7 +219,8 @@ use artsoft\grid\GridPageSize;
                             [1, 'Рекомендован', 'success'],
                             [2, 'Не рекомендован', 'danger'],
                         ],
-                        'options' => ['style' => 'width:120px']
+                        'options' => ['style' => 'width:120px'],
+                        'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
                     ],
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',
