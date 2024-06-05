@@ -83,14 +83,14 @@ use artsoft\grid\GridPageSize;
                         'format' => 'raw',
                         'group' => true
                     ],
-                    [
-                        'attribute' => 'id',
-                        'value' => function (Entrant $model) {
-                            return sprintf('#%06d', $model->id);
-                        },
-                        'options' => ['style' => 'width:100px'],
-                        'visible' => Yii::$app->user->isSuperadmin,
-                    ],
+//                    [
+//                        'attribute' => 'id',
+//                        'value' => function (Entrant $model) {
+//                            return sprintf('#%06d', $model->id);
+//                        },
+//                        'options' => ['style' => 'width:100px'],
+//                        'visible' => Yii::$app->user->isSuperadmin,
+//                    ],
                     [
                         'attribute' => 'fullname',
                         'value' => function (\common\models\entrant\EntrantView $model) {
@@ -98,7 +98,7 @@ use artsoft\grid\GridPageSize;
                                 ['/students/default/view', 'id' => $model->student_id], ['title' => 'Перейти в реестр', 'target' => '_blank', 'data-pjax' => 0])
                                 : Html::a($model->fullname, ['/entrant/default/applicants', 'id' => $model->comm_id, 'objectId' => $model->id, 'mode' => 'update']);
                         },
-                        'options' => ['style' => 'width:350px'],
+                        'options' => ['style' => 'width:100px'],
                         'format' => 'raw'
                     ],
                     [
@@ -108,7 +108,6 @@ use artsoft\grid\GridPageSize;
                             $age = \artsoft\helpers\ArtHelper::age($model->birth_date);
                             return $model->birth_date ? Yii::$app->formatter->asDate($model->birth_date) . ' (' . $age['age_year'] . ' лет ' . $age['age_month'] . ' мес.)' : '';
                         },
-                        'options' => ['style' => 'width:370px'],
                         'format' => 'raw'
                     ],
 //                    [
@@ -122,7 +121,7 @@ use artsoft\grid\GridPageSize;
 //            'comm_id',
                     [
                         'attribute' => 'subject_list',
-                        'filter' => RefBook::find('subject_name')->getList(),
+                        'filter' => RefBook::find('subject_name_dev')->getList(),
                         'value' => function (Entrant $model) {
                             $v = [];
                             foreach ($model->subject_list as $id) {
@@ -132,11 +131,12 @@ use artsoft\grid\GridPageSize;
                                 if (!Subject::findOne($id)) {
                                     continue;
                                 }
-                                $v[] = Subject::findOne($id)->name;
+                                $v[] = Subject::findOne($id)->slug;
                             }
                             return implode('<br/> ', $v);
                         },
                         'format' => 'raw',
+                        'label' => 'Предмет'
                     ],
                      [
                          'attribute' => 'last_experience',
@@ -144,6 +144,7 @@ use artsoft\grid\GridPageSize;
                              return $model->last_experience;
                          },
                          'format' => 'raw',
+                         'label' => 'Прим.'
                      ],
                     [
                         'attribute' => 'mid_mark',
@@ -152,15 +153,17 @@ use artsoft\grid\GridPageSize;
                         },
                         'format' => 'raw',
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
+                        'label' => 'Ср.оц.'
                     ],
                     [
                         'attribute' => 'programm_id',
+                        'contentOptions' => ['class' => 'success'],
                         'filter' => RefBook::find('education_programm_short_name')->getList(),
-                        'filterType' => GridView::FILTER_SELECT2,
-                        'filterWidgetOptions' => [
-                            'pluginOptions' => ['allowClear' => true],
-                        ],
-                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//                        'filterType' => GridView::FILTER_SELECT2,
+//                        'filterWidgetOptions' => [
+//                            'pluginOptions' => ['allowClear' => true],
+//                        ],
+//                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                         'value' => function (\common\models\entrant\EntrantView $model) {
                             return RefBook::find('education_programm_short_name')->getValue($model->programm_id) ?? '';
                         },
@@ -170,26 +173,29 @@ use artsoft\grid\GridPageSize;
                     ],
                     [
                         'attribute' => 'subject_id',
+                        'contentOptions' => ['class' => 'success'],
                         'filter' => \common\models\subject\Subject::getSubjectByCategory(1000),
-                        'filterType' => GridView::FILTER_SELECT2,
-                        'filterWidgetOptions' => [
-                            'pluginOptions' => ['allowClear' => true],
-                        ],
-                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//                        'filterType' => GridView::FILTER_SELECT2,
+//                        'filterWidgetOptions' => [
+//                            'pluginOptions' => ['allowClear' => true],
+//                        ],
+//                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                         'value' => function (\common\models\entrant\EntrantView $model) {
                             return RefBook::find('subject_name')->getValue($model->subject_id) ?? '';
                         },
                         'format' => 'raw',
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
+                        'label' => 'Спец.'
                     ],
                     [
                         'attribute' => 'course',
+                        'contentOptions' => ['class' => 'success'],
                         'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
-                        'filterType' => GridView::FILTER_SELECT2,
-                        'filterWidgetOptions' => [
-                            'pluginOptions' => ['allowClear' => true],
-                        ],
-                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//                        'filterType' => GridView::FILTER_SELECT2,
+//                        'filterWidgetOptions' => [
+//                            'pluginOptions' => ['allowClear' => true],
+//                        ],
+//                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                         'value' => function (\common\models\entrant\EntrantView $model) {
                             return \artsoft\helpers\ArtHelper::getCourseList()[$model->course] ?? '';
                         },
@@ -199,17 +205,19 @@ use artsoft\grid\GridPageSize;
                     ],
                     [
                         'attribute' => 'subject_form_id',
+                        'contentOptions' => ['class' => 'success'],
                         'filter' => \common\models\subject\SubjectForm::getFormList(),
-                        'filterType' => GridView::FILTER_SELECT2,
-                        'filterWidgetOptions' => [
-                            'pluginOptions' => ['allowClear' => true],
-                        ],
-                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+//                        'filterType' => GridView::FILTER_SELECT2,
+//                        'filterWidgetOptions' => [
+//                            'pluginOptions' => ['allowClear' => true],
+//                        ],
+//                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                         'value' => function (\common\models\entrant\EntrantView $model) {
                             return \common\models\subject\SubjectForm::getFormValue($model->subject_form_id) ?? '';
                         },
                         'format' => 'raw',
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
+                        'label' => 'Форма'
                     ],
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',
@@ -221,14 +229,15 @@ use artsoft\grid\GridPageSize;
                         ],
                         'options' => ['style' => 'width:120px'],
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
+                        'label' => 'Решение'
                     ],
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',
                         'attribute' => 'status',
                         'optionsArray' => [
-                            [0, 'В ожидании испытаний', 'default'],
-                            [1, 'Испытания открыты', 'success'],
-                            [2, 'Испытания завершены', 'warning'],
+                            [0, 'В ожидании', 'default'],
+                            [1, 'Открыты', 'success'],
+                            [2, 'Завершены', 'warning'],
                         ],
                         'options' => ['style' => 'width:120px']
                     ],
