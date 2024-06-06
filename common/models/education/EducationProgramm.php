@@ -11,6 +11,7 @@ use common\models\subject\SubjectVid;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -219,6 +220,18 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
         }
         return $data;
     }
+/*
+    public function getSubjectListByProgramm($category_id = 1000)
+    {
+        $data = (new Query())->from('education_programm_level')
+            ->innerJoin('education_programm_level_subject', 'education_programm_level_subject.programm_level_id = education_programm_level.id')
+            ->innerJoin('subject', 'subject.id = education_programm_level_subject.subject_id')
+            ->select('subject.id, subject.name')
+            ->where(['=', 'education_programm_level.programm_id', $this->id])
+            ->andWhere(['=', 'education_programm_level_subject.subject_cat_id', $category_id])
+            ->all();
+        echo '<pre>' . print_r($data, true) . '</pre>';
+    }*/
 
     /**
      * @return false|int|null|string

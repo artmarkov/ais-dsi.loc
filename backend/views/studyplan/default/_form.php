@@ -83,7 +83,7 @@ JS
                     ?>
 
                     <?= $form->field($model, 'subject_form_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \common\models\subject\SubjectForm::getFormList(),
+                        'data' => RefBook::find('subject_form_name', $model->isNewRecord ? \common\models\subject\SubjectForm::STATUS_ACTIVE : '')->getList(),
                         'options' => [
                             'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),

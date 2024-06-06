@@ -18,9 +18,27 @@ use artsoft\grid\GridPageSize;
     <div class="teachers-efficiency-index">
         <div class="panel">
             <div class="panel-heading">
-                <?= \artsoft\helpers\ButtonHelper::createButton();  ?>
+                <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
             </div>
             <div class="panel-body">
+                <?php $model = \common\models\schoolplan\Schoolplan::findOne($id) ?>
+                <?php if ($model): ?>
+                    <div class="panel">
+                        <div class="panel-heading">
+                            Показатели эффективности в рамках мероприятия
+                        </div>
+                        <div class="panel-body">
+                            <?= \yii\widgets\DetailView::widget([
+                                'model' => $model,
+                                'attributes' => [
+                                    'title',
+                                    'datetime_in',
+                                    'datetime_out',
+                                ],
+                            ]) ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <div class="row">
@@ -132,7 +150,7 @@ use artsoft\grid\GridPageSize;
                                             );
                                         },
                                     ],
-                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                    'headerOptions' => ['class' => 'kartik-sheet-style'],
                                 ],
                             ],
                         ]);

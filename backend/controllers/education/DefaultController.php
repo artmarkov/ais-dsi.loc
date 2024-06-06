@@ -251,6 +251,10 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
+//    public function actionTest($id){
+//        $model = $this->findModel($id);
+//        $model->getSubjectListByProgramm();
+//    }
 //    public function actionSubjectVid($id)
 //    {
 //        $model = $this->findModel($id);

@@ -109,6 +109,7 @@ use artsoft\grid\GridPageSize;
                             $age = \artsoft\helpers\ArtHelper::age($model->birth_date);
                             return $model->birth_date ? Yii::$app->formatter->asDate($model->birth_date) . ' (' . $age['age_year'] . ' лет ' . $age['age_month'] . ' мес.)' : '';
                         },
+                        'headerOptions' => ['style' =>'white-space:pre-line;'],
                         'format' => 'raw'
                     ],
 //                    [
@@ -122,22 +123,20 @@ use artsoft\grid\GridPageSize;
 //            'comm_id',
                     [
                         'attribute' => 'subject_list',
-                        'filter' => RefBook::find('subject_name_dev')->getList(),
+                        'filter' => \common\models\subject\Subject::getSubjectByCategory(1000),
                         'value' => function (Entrant $model) {
                             $v = [];
                             foreach ($model->subject_list as $id) {
                                 if (!$id) {
                                     continue;
                                 }
-                                if (!Subject::findOne($id)) {
-                                    continue;
-                                }
-                                $v[] = Subject::findOne($id)->slug;
+                                $v[] = RefBook::find('subject_name')->getValue($id) ?? '';
                             }
                             return implode('<br/> ', $v);
                         },
                         'format' => 'raw',
-                        'label' => 'Предмет'
+                        'headerOptions' => ['style' =>'white-space:pre-line;'],
+                        'label' => 'Выбранные дисциплины'
                     ],
                      [
                          'attribute' => 'last_experience',
@@ -190,7 +189,7 @@ use artsoft\grid\GridPageSize;
                         },
                         'format' => 'raw',
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
-                        'label' => 'Спец.'
+                        'label' => 'Спец-ть'
                     ],
                     [
                         'attribute' => 'course',
@@ -215,7 +214,7 @@ use artsoft\grid\GridPageSize;
                         'contentOptions' => function (Entrant $model) {
                             return ['class' => $model->decision_id == 1 ? 'success' : null];
                         },
-                        'filter' => \common\models\subject\SubjectForm::getFormList(),
+                        'filter' => RefBook::find('subject_form_name')->getList(),
 //                        'filterType' => GridView::FILTER_SELECT2,
 //                        'filterWidgetOptions' => [
 //                            'pluginOptions' => ['allowClear' => true],
