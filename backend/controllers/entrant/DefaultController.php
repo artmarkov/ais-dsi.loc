@@ -232,6 +232,11 @@ class DefaultController extends MainController
                 Yii::$app->session->setFlash('warning', 'Форма отключена от испытаний.');
                 return $this->getSubmitAction($model);
             }
+        } elseif ('make_studyplan' == $mode && $objectId) {
+            if (Entrant::runMakeStudyplan($objectId)) {
+                Yii::$app->session->setFlash('success', 'Учебный план сформирован успешно.');
+                return $this->getSubmitAction($model);
+            }
         } elseif ($objectId) {
 
             if ('view' == $mode) {
@@ -587,6 +592,27 @@ class DefaultController extends MainController
             }
 
             $modelClass::updateAll(['status' => 2], $where);
+        }
+    }
+
+    public function actionApplicantsBulkMake()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $modelClass = $this->modelClassEntrant;
+            $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
+                && !User::hasPermission($modelClass::getFullAccessPermission()));
+
+            foreach (Yii::$app->request->post('selection', []) as $id) {
+                $where = ['id' => $id, 'decision_id' => 1];
+
+                if ($restrictAccess) {
+                    $where[$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
+                }
+
+                $model = $modelClass::findOne($where);
+
+                if ($model) $model->makeStadylan();
+            }
         }
     }
 

@@ -371,7 +371,6 @@ SQL;
     public function beforeSave($insert)
     {
         if ($this->decision_id == 1) {
-            $this->makeStadylan();
             $this->reason = null;
 //            $this->status = 2;
         } elseif ($this->decision_id == 2) {
@@ -492,6 +491,18 @@ SQL;
         }
         $model->status = 2;
         if ($model->save(false)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function runMakeStudyplan($id)
+    {
+        $model = self::findOne($id);
+        if (!$model) {
+            return false;
+        }
+        if ($model->makeStadylan()) {
             return true;
         }
         return false;

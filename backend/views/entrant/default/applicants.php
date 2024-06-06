@@ -59,12 +59,13 @@ use artsoft\grid\GridPageSize;
                 'id' => 'entrant-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
-                'bulkActionOptions' => \artsoft\models\User::hasRole('entrantAdmin', false) ? [
+                'bulkActionOptions' => \artsoft\Art::isBackend() && \artsoft\models\User::hasRole('entrantAdmin') ? [
                     'gridId' => 'entrant-grid',
                     'actions' => [
                         Url::to(['applicants-bulk-waiting']) => 'Перевести в статус "В ожидании испытаний"',
                         Url::to(['applicants-bulk-open']) => 'Перевести в статус "Испытания открыты"',
                         Url::to(['applicants-bulk-close']) => 'Перевести в статус "Испытания завершены"',
+                        Url::to(['applicants-bulk-make']) => 'Сформировать учебный план',
                         Url::to(['applicants-bulk-delete']) => Yii::t('art', 'Delete')
                     ] //Configure here you bulk actions
                 ] : false,
@@ -72,7 +73,7 @@ use artsoft\grid\GridPageSize;
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
                         return ['value' => $model->id];
                     },
-                        'visible' => \artsoft\models\User::hasRole('entrantAdmin', false),
+                        'visible' => \artsoft\Art::isBackend() && \artsoft\models\User::hasRole('entrantAdmin'),
                     ],
                     [
                         'attribute' => 'group_id',
@@ -157,7 +158,9 @@ use artsoft\grid\GridPageSize;
                     ],
                     [
                         'attribute' => 'programm_id',
-                        'contentOptions' => ['class' => 'success'],
+                        'contentOptions' => function (Entrant $model) {
+                            return ['class' => $model->decision_id == 1 ? 'success' : 'default'];
+                        },
                         'filter' => RefBook::find('education_programm_short_name')->getList(),
 //                        'filterType' => GridView::FILTER_SELECT2,
 //                        'filterWidgetOptions' => [
@@ -173,7 +176,9 @@ use artsoft\grid\GridPageSize;
                     ],
                     [
                         'attribute' => 'subject_id',
-                        'contentOptions' => ['class' => 'success'],
+                        'contentOptions' => function (Entrant $model) {
+                            return ['class' => $model->decision_id == 1 ? 'success' : 'default'];
+                        },
                         'filter' => \common\models\subject\Subject::getSubjectByCategory(1000),
 //                        'filterType' => GridView::FILTER_SELECT2,
 //                        'filterWidgetOptions' => [
@@ -189,7 +194,9 @@ use artsoft\grid\GridPageSize;
                     ],
                     [
                         'attribute' => 'course',
-                        'contentOptions' => ['class' => 'success'],
+                        'contentOptions' => function (Entrant $model) {
+                            return ['class' => $model->decision_id == 1 ? 'success' : 'default'];
+                        },
                         'filter' => \artsoft\helpers\ArtHelper::getCourseList(),
 //                        'filterType' => GridView::FILTER_SELECT2,
 //                        'filterWidgetOptions' => [
@@ -205,7 +212,9 @@ use artsoft\grid\GridPageSize;
                     ],
                     [
                         'attribute' => 'subject_form_id',
-                        'contentOptions' => ['class' => 'success'],
+                        'contentOptions' => function (Entrant $model) {
+                            return ['class' => $model->decision_id == 1 ? 'success' : null];
+                        },
                         'filter' => \common\models\subject\SubjectForm::getFormList(),
 //                        'filterType' => GridView::FILTER_SELECT2,
 //                        'filterWidgetOptions' => [

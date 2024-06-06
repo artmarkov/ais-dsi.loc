@@ -347,6 +347,23 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                                 </div>
                             </div>
                         </div>
+                        <?php if (\artsoft\Art::isBackend() && \artsoft\models\User::hasPermission('adminEntrant')): ?>
+                        <div class="panel-footer">
+                            <div class="row">
+                                <div class="form-group btn-group">
+                                    <?php $Url = Yii::$app->request->resolve(); ?>
+                                    <?= \artsoft\helpers\Html::a('<i class="fa fa-id-card-o" aria-hidden="true"></i> Сформировать учебный план',
+                                        [$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'make_studyplan'], [
+                                            'class' => 'btn btn-info btn-md',
+                                            'data-method' => 'post',
+                                            'data-pjax' => '0',
+                                            'disabled' => $model->decision_id != 1
+                                        ]
+                                    ) ?>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
