@@ -162,7 +162,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             if (isset($modelsMarks[$modelProgress->studyplan_subject_id])) {
                 foreach ($modelsMarks[$modelProgress->studyplan_subject_id] as $id => $mark) {
                     $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
-                    $data[$item][$date_label] = !$readonly ? self::getEditableForm($date_label, $mark) : $mark->mark_label . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '');
+                    $data[$item][$date_label] = !$readonly ? self::getEditableForm($date_label, $mark). ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '') : $mark->mark_label . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '');
                 }
             }
         }
