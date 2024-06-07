@@ -371,7 +371,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'cost_year_total_str' => PriceHelper::num2str($model->cost_year_total), // Полная стоимость обучения прописью
             'student_address' => $model->student->userAddress,
             'student_phone' => $model->student->userPhone,
-            'student_sert_name' => Student::getDocumentValue($model->student->sert_name),
+            'student_sert_name' => Student::getDocumentValue($model->student->sert_name) ?: 'свидетельства о рождении',
             'student_sert_series' => $model->student->sert_series ?: '     ',
             'student_sert_num' => $model->student->sert_num ?: '      ',
             'student_sert_organ' => $model->student->sert_organ ?: '                                       ',
