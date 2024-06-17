@@ -16,6 +16,7 @@ use common\models\teachers\TeachersLoad;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -102,7 +103,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
 
     public function checkCourseAndTerm($attribute, $params)
     {
-        if($this->course_list[0] != '' && $this->course_flag) {
+        if ($this->course_list[0] != '' && $this->course_flag) {
             if ($this->$attribute < max($this->course_list)) {
                 $this->addError($attribute, 'Некорректно заданы атрибуты \'Ограничение по классам\' и \'Срок обучения\'.');
             }
@@ -380,10 +381,10 @@ SQL;
             for ($group = 1; $group <= $sub_group_qty; $group++) {
                 foreach ($course_list as $item => $course) {
                     $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $this->id])
-                            ->andWhere(['=', 'group_num', $group])
-                            ->andWhere(['=', 'plan_year', $model_date->plan_year])
-                            ->andWhere(['=', 'course', $course])->one();
-                    if(!$m) {
+                        ->andWhere(['=', 'group_num', $group])
+                        ->andWhere(['=', 'plan_year', $model_date->plan_year])
+                        ->andWhere(['=', 'course', $course])->one();
+                    if (!$m) {
                         $m = new SubjectSectStudyplan();
                         $m->subject_sect_id = $this->id;
                         $m->group_num = $group;
@@ -398,9 +399,9 @@ SQL;
         } else {
             for ($group = 1; $group <= $sub_group_qty; $group++) {
                 $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $this->id])
-                        ->andWhere(['=', 'group_num', $group])
-                        ->andWhere(['=', 'plan_year', $model_date->plan_year])->one();
-                if(!$m) {
+                    ->andWhere(['=', 'group_num', $group])
+                    ->andWhere(['=', 'plan_year', $model_date->plan_year])->one();
+                if (!$m) {
                     $m = new SubjectSectStudyplan();
                     $m->subject_sect_id = $this->id;
                     $m->group_num = $group;
@@ -457,6 +458,7 @@ SQL;
                 'plan_year' => $plan_year
             ])->queryScalar();
     }
+
     /**
      * @param $subject_sect_id
      * @return array
@@ -489,16 +491,42 @@ SQL;
         $models = self::find()->select(['id', 'sect_name'])
             ->where(['subject_cat_id' => $this->subject_cat_id])
             ->andWhere(['=', 'subject_vid_id', $this->subject_vid_id])
-            ->andWhere(['=', 'term_mastering', $this->term_mastering])
-            ->andWhere(['=', 'course_list', implode(',',  $this->course_list)])
-            ->andWhere(['=', 'subject_type_id', $this->subject_type_id])
+            ->andWhere(['=', 'term_mastering', $this->term_mastering]);
+        /* if ($this->course_list != '') {
+             $models = $models->andWhere(['=', 'course_list', implode(',', $this->course_list)]);
+         }*/
+        $models = $models->andWhere(['=', 'subject_type_id', $this->subject_type_id])
             ->andWhere(['!=', 'subject_id', $this->subject_id])
-            ->andWhere(['programm_list' => implode(',',  $this->programm_list)])
+            ->andWhere(['programm_list' => implode(',', $this->programm_list)])
             ->asArray()
             ->all();
 
-        return  ArrayHelper::map($models, 'id', 'sect_name');
+        return ArrayHelper::map($models, 'id', 'sect_name');
 
+    }
+
+    /**
+     * @param $studyplan_subject_list
+     * @return string
+     * @throws \yii\db\Exception
+     */
+    public function getSubjectSect($studyplan_subject_list, $model)
+    {
+        $ids = [];
+        if(!$studyplan_subject_list) return null;
+
+        foreach (explode(',', $studyplan_subject_list) as $id) {
+            $query = Yii::$app->db->createCommand('SELECT id
+	            FROM studyplan_subject 
+	            WHERE studyplan_id = (SELECT studyplan_id FROM studyplan_subject where id = :id) 
+	            AND subject_id = :subject_id',
+                ['id' => $id,
+                    'subject_id' => $model->subject_id
+                ])->queryScalar();
+            if($query) $ids[] = $query;
+        }
+//        echo '<pre>' . print_r(implode(',', $ids), true) . '</pre>'; die();
+        return implode(',', $ids);
     }
 
     /**
@@ -508,36 +536,38 @@ SQL;
      */
     public function cloneDistribution($ids, $model_date)
     {
-            echo '<pre>' . print_r($ids, true) . '</pre>'; die();
+//            echo '<pre>' . print_r($ids, true) . '</pre>'; die();
         foreach ($ids as $item => $id) {
             $model = self::findOne($id);
             $modelsSubjectSectStudyplan = $model->getSubjectSectStudyplans($model_date->plan_year);
             $data = Yii::$app->request->post();
+            $output = [];
             $output = array_map(
                 function ($itm) use ($model) {
                     $itm['subject_sect_id'] = $model->id;
-
+                    $itm['studyplan_subject_list'] = $this->getSubjectSect($itm['studyplan_subject_list'], $model);
                     return $itm;
                 },
                 $data['SubjectSectStudyplan']
             );
+
             $data['SubjectSectStudyplan'] = $output;
-          //  $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
+            $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
 
             $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
             Model::loadMultiple($modelsSubjectSectStudyplan, $data);
-          //  $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
+              $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
 
             // validate all models
             $valid = Model::validateMultiple($modelsSubjectSectStudyplan);
-                $valid = true;
+            $valid = true;
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     $flag = true;
-//                    if (!empty($deletedIDs)) {
-//                        SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
-//                    }
+                    if (!empty($deletedIDs)) {
+                        SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
+                    }
                     foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
                         if (!($flag = $modelSubjectSectStudyplan->save(false))) {
                             $transaction->rollBack();
@@ -547,13 +577,15 @@ SQL;
                     if ($flag) {
                         $transaction->commit();
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
+                    print_r($e->getMessage());
                     $transaction->rollBack();
                 }
 
             }
         }
     }
+
     /**
      * @param bool $insert
      * @return bool

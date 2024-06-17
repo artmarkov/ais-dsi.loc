@@ -879,6 +879,7 @@ class DefaultController extends MainController
                             }
                         }
                     } catch (Exception $e) {
+                        print_r($e->errorInfo);
                         $transaction->rollBack();
                     }
                 }

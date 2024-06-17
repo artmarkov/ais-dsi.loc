@@ -94,7 +94,7 @@ class m230109_123114_add_activities_view extends BaseMigration
                     WHEN subject_schedule_view.week_num IS NOT NULL AND subject_schedule_view.week_num <> 0 THEN subject_schedule_view.week_num = gen.week_num
                     ELSE true
                 END) data
-  WHERE data."timestamp" >= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year, 9, 1)::date) AND data."timestamp" <= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year + 1, 5, 31)::date);
+  WHERE data."timestamp" >= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year, 8, 1)::date) AND data."timestamp" <= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year + 1, 6, 30)::date);
   ')->execute();
 
 
