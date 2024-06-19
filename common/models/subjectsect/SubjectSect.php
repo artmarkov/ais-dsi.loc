@@ -513,18 +513,15 @@ SQL;
     public function getSubjectSect($studyplan_subject_list, $model)
     {
         $ids = [];
-        if(!$studyplan_subject_list) return null;
+        if (!$studyplan_subject_list) return null;
 
-        foreach (explode(',', $studyplan_subject_list) as $id) {
-            $query = Yii::$app->db->createCommand('SELECT id
+        $ids = Yii::$app->db->createCommand('SELECT id
 	            FROM studyplan_subject 
-	            WHERE studyplan_id = (SELECT studyplan_id FROM studyplan_subject where id = :id) 
+	            WHERE studyplan_id IN (SELECT studyplan_id FROM studyplan_subject where id = ANY (string_to_array(:studyplan_subject_list, \',\')::int[])) 
 	            AND subject_id = :subject_id',
-                ['id' => $id,
-                    'subject_id' => $model->subject_id
-                ])->queryScalar();
-            if($query) $ids[] = $query;
-        }
+            ['studyplan_subject_list' => $studyplan_subject_list,
+                'subject_id' => $model->subject_id
+            ])->queryColumn();
 //        echo '<pre>' . print_r(implode(',', $ids), true) . '</pre>'; die();
         return implode(',', $ids);
     }
@@ -539,49 +536,22 @@ SQL;
 //            echo '<pre>' . print_r($ids, true) . '</pre>'; die();
         foreach ($ids as $item => $id) {
             $model = self::findOne($id);
-            $modelsSubjectSectStudyplan = $model->getSubjectSectStudyplans($model_date->plan_year);
             $data = Yii::$app->request->post();
-            $output = [];
-            $output = array_map(
-                function ($itm) use ($model) {
-                    $itm['subject_sect_id'] = $model->id;
-                    $itm['studyplan_subject_list'] = $this->getSubjectSect($itm['studyplan_subject_list'], $model);
-                    return $itm;
-                },
-                $data['SubjectSectStudyplan']
-            );
+            foreach ($data['SubjectSectStudyplan'] as $itm => $dataItem) {
+                $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $model->id])
+                        ->andWhere(['=', 'group_num', $dataItem['group_num']])
+                        ->andWhere(['=', 'plan_year', $model_date->plan_year])
+                        ->andWhere(['=', 'course', $dataItem['course']])
+                        ->andWhere(['=', 'subject_type_id', $dataItem['subject_type_id']])
+                        ->one() ?? new SubjectSectStudyplan();
 
-            $data['SubjectSectStudyplan'] = $output;
-            $oldIDs = ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id');
-
-            $modelsSubjectSectStudyplan = Model::createMultiple(SubjectSectStudyplan::class, $modelsSubjectSectStudyplan);
-            Model::loadMultiple($modelsSubjectSectStudyplan, $data);
-              $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSubjectSectStudyplan, 'id', 'id')));
-
-            // validate all models
-            $valid = Model::validateMultiple($modelsSubjectSectStudyplan);
-            $valid = true;
-            if ($valid) {
-                $transaction = \Yii::$app->db->beginTransaction();
-                try {
-                    $flag = true;
-                    if (!empty($deletedIDs)) {
-                        SubjectSectStudyplan::deleteAll(['id' => $deletedIDs]);
-                    }
-                    foreach ($modelsSubjectSectStudyplan as $modelSubjectSectStudyplan) {
-                        if (!($flag = $modelSubjectSectStudyplan->save(false))) {
-                            $transaction->rollBack();
-                            break;
-                        }
-                    }
-                    if ($flag) {
-                        $transaction->commit();
-                    }
-                } catch (\Exception $e) {
-                    print_r($e->getMessage());
-                    $transaction->rollBack();
-                }
-
+                $m->subject_sect_id = $model->id;
+                $m->group_num = $dataItem['group_num'];
+                $m->plan_year = $model_date->plan_year;
+                $m->course = $dataItem['course'];
+                $m->subject_type_id = $dataItem['subject_type_id'];
+                $m->studyplan_subject_list = $this->getSubjectSect($dataItem['studyplan_subject_list'], $model);
+                $m->save(false);
             }
         }
     }

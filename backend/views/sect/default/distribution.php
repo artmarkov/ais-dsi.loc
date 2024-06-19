@@ -213,7 +213,7 @@ $group = 0;
                 <div class="row">
                     <?php
                     echo \yii\bootstrap\Alert::widget([
-                        'body' => '<i class="fa fa-info-circle"></i> Для клонирования состава характеристики группы должны быть идентичны и отличаться только предметом.',
+                        'body' => '<i class="fa fa-info-circle"></i> Для клонирования состава характеристики группы должны быть идентичны и отличаться только дисциплиной.',
                         'options' => ['class' => 'alert-warning'],
                     ]);
                     ?>

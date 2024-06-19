@@ -65,6 +65,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 // Шаблоны документов
     const template_csf = 'document/contract_student_free.docx';
     const template_cs = 'document/contract_student_new.docx';
+    const template_cs_mk = 'document/contract_student_new-mk.docx';
     const template_ss = 'document/statement_student.docx';
 
     /**
@@ -379,11 +380,12 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'student_snils' => $model->student->userSnils,
             'parent_address' => $model->parent->userAddress,
             'parent_phone' => $model->parent->userPhone,
-            'parent_sert_name' => Parents::getDocumentValue($model->parent->sert_name),
-            'parent_sert_series' => $model->parent->sert_series,
-            'parent_sert_num' => $model->parent->sert_num,
-            'parent_sert_organ' => $model->parent->sert_organ,
-            'parent_sert_date' => $model->parent->sert_date,
+            'parent_sert_name' => Parents::getDocumentValue($model->parent->sert_name) ?: 'паспорт',
+            'parent_sert_series' => $model->parent->sert_series ?: '     ',
+            'parent_sert_num' => $model->parent->sert_num ?: '      ',
+            'parent_sert_code' => $model->parent->sert_code ?: '      ',
+            'parent_sert_organ' => $model->parent->sert_organ ?: '                                       ',
+            'parent_sert_date' => $model->parent->sert_date ?: '             ',
             'parent_birth_date' => $model->parent->userBirthDate, // День рождения родителя
             'inn' => $invoices->inn,
             'kpp' => $invoices->kpp,
