@@ -62,6 +62,7 @@ use function morphos\Russian\inflectName;
  */
 class Studyplan extends \artsoft\db\ActiveRecord
 {
+
 // Шаблоны документов
     const template_csf = 'document/contract_student_free.docx';
     const template_cs = 'document/contract_student_new.docx';
@@ -180,6 +181,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             1 => 'Переведен в следующий класс',
             2 => 'Повторение учебной программы',
             3 => 'Окончание учебной программы',
+            4 => 'Завершение обучения(выпуск)',
         );
     }
 

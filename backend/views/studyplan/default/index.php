@@ -55,7 +55,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     'actions' =>  [
                         Url::to(['bulk-next-class']) => 'Перевести в следующий класс',
                         Url::to(['bulk-repeat-class']) => 'Повторить учебную программу',
-                        Url::to(['bulk-finish-plan']) => 'Завершить учебную программу',
+                        Url::to(['bulk-finish-all-plan']) => 'Завершить обучение(выпуск)',
+                        Url::to(['bulk-finish-plan']) => 'Закрыть учебную программу',
                         /*Url::to(['bulk-delete']) => Yii::t('yii', 'Delete'),*/
                     ]
                 ] : false,
@@ -146,6 +147,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             [Studyplan::STATUS_INACTIVE, 'План закрыт', 'danger'],
                         ],
                         'options' => ['style' => 'width:120px']
+                    ],
+                    [
+                        'attribute' => 'status_reason',
+                        'filter' => Studyplan::getStatusReasonList(),
+                        'value' => function (Studyplan $model) {
+                            return Studyplan::getStatusReasonValue($model->status_reason);
+                        },
+                        'options' => ['style' => 'width:100px'],
+                        'format' => 'raw',
                     ],
                     [
                         'class' => 'kartik\grid\ActionColumn',

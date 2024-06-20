@@ -101,7 +101,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             $message = 'Заданное расписание не соответствует планированию индивидуальных занятий!';
             $this->addError($attribute, $message);
             Notice::registerDanger($message);
-            print_r($this->teachersLoad->subject_sect_studyplan_id);
+            print_r(RefBook::find('subject_schedule_plan_year')->getValue($this->id));
         }
     }
 
@@ -116,7 +116,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
                 ['AND',
                     ['=', 'teachers_id', $this->teachersLoad->teachers_id],
                     ['auditory_id' => $this->auditory_id],
-                    ['plan_year' => RefBook::find('subject_schedule_plan_year')->getValue($this->id)],
+                    ['plan_year' => ArtHelper::getStudyYearDefault()],
                     ['AND',
                         ['<=', 'time_plan_in', Schedule::encodeTime($this->time_in)],
                         ['>=', 'time_plan_out', Schedule::encodeTime($this->time_out)],

@@ -176,13 +176,16 @@ class DefaultController extends MainController
                 $model->status = 0;
                 $model->status_reason = 1;
             } elseif (Yii::$app->request->post('submitAction') == 'repeat_class') {
-                $model->status = 0;
+                $model->status = $this->modelClass::STATUS_INACTIVE;
                 $model->status_reason = 2;
             } elseif (Yii::$app->request->post('submitAction') == 'finish_plan') {
-                $model->status = 0;
+                $model->status = $this->modelClass::STATUS_INACTIVE;
                 $model->status_reason = 3;
+            } elseif (Yii::$app->request->post('submitAction') == 'finish_all_plan') {
+                $model->status = $this->modelClass::STATUS_INACTIVE;
+                $model->status_reason = 4;
             } elseif (Yii::$app->request->post('submitAction') == 'restore') {
-                $model->status = 1;
+                $model->status = $this->modelClass::STATUS_INACTIVE;
             }
             $oldIDs = ArrayHelper::map($modelsStudyplanSubject, 'id', 'id');
             $modelsStudyplanSubject = Model::createMultiple(StudyplanSubject::class, $modelsStudyplanSubject);
@@ -1217,6 +1220,25 @@ class DefaultController extends MainController
             foreach ($models as $model) {
                 $model->status = $this->modelClass::STATUS_INACTIVE;
                 $model->status_reason = 3;
+                $ret = $model->update(false);
+            }
+            if ($ret) {
+                Yii::$app->session->setFlash('success', 'Все выбранные учебные планы успешно обработаны.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Ошибка пакетной обработки учебных планов');
+            }
+            return $this->redirect(Yii::$app->request->referrer);
+        }
+    }
+
+    public function actionBulkFinishAllPlan()
+    {
+        if (Yii::$app->request->post('selection')) {
+            $models = $this->modelClass::find()->where(['id' => Yii::$app->request->post('selection', [])])->all();
+            $ret = false;
+            foreach ($models as $model) {
+                $model->status = $this->modelClass::STATUS_INACTIVE;
+                $model->status_reason = 4;
                 $ret = $model->update(false);
             }
             if ($ret) {

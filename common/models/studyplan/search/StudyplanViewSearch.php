@@ -19,7 +19,7 @@ class StudyplanViewSearch extends StudyplanView
     public function rules()
     {
         return [
-            [['id', 'course', 'plan_year', 'status', 'subject_form_id', 'student_id'], 'integer'],
+            [['id', 'course', 'plan_year', 'status', 'status_reason', 'subject_form_id', 'student_id'], 'integer'],
             [['education_programm_name', 'education_programm_short_name', 'education_cat_name', 'education_cat_short_name', 'student_fio', 'subject_type_name'], 'safe'],
             [['description'], 'safe'],
         ];
@@ -71,6 +71,7 @@ class StudyplanViewSearch extends StudyplanView
             'plan_year' => $this->plan_year,
             'subject_form_id' => $this->subject_form_id,
             'status' => $this->status,
+            'status_reason' => $this->status_reason,
             'student_id' => $this->student_id,
         ]);
 

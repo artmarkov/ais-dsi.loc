@@ -51,7 +51,8 @@ class SummaryProgress
         }
         $models = (new \yii\db\Query())->from('studyplan_view')
             ->where(['programm_id' => $this->programm_id])
-            ->andWhere(['status' => 1]);
+            ->andWhere(['status' => 1])
+            ->andWhere(['plan_year' => $this->plan_year]);
         if ($this->subject_form_id) {
             $models = $models->andWhere(['subject_form_id' => $this->subject_form_id]);
         }

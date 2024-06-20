@@ -29,7 +29,7 @@ class StudyplanSearch extends Studyplan
     public function rules()
     {
         return [
-            [['id', 'student_id', 'course', 'plan_year', 'status', 'programm_id', 'subject_form_id'], 'integer'],
+            [['id', 'student_id', 'course', 'plan_year', 'status', 'status_reason', 'programm_id', 'subject_form_id'], 'integer'],
             [['description', 'programmName', 'studentFio'], 'safe'],
         ];
     }
@@ -69,6 +69,7 @@ class StudyplanSearch extends Studyplan
             'attributes' => [
                 'id',
                 'status',
+                'status_reason',
                 'plan_year',
                 'course',
                 'student_id',
@@ -104,6 +105,8 @@ class StudyplanSearch extends Studyplan
             'studyplan.status' => $this->status,
             'version' => $this->version,
             'subject_form_id' => $this->subject_form_id,
+            'status' => $this->status,
+            'status_reason' => $this->status_reason,
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);

@@ -447,7 +447,8 @@ JS
                                 <?php if (!$model->isNewRecord): ?>
                                     <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Перевести в следующий класс', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'next_class', 'disabled' => $model->status == 0]); ?>
                                     <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Повторить учебную программу', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'repeat_class', 'disabled' => $model->status == 0]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-arrow-down" aria-hidden="true"></i> Завершить учебную программу', ['class' => 'btn btn-sm btn-default', 'name' => 'submitAction', 'value' => 'finish_plan', 'disabled' => $model->status == 0]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-arrow-down" aria-hidden="true"></i> Завершить обучение(выпуск)', ['class' => 'btn btn-sm btn-warning', 'name' => 'submitAction', 'value' => 'finish_all_plan', 'disabled' => $model->status == 0]); ?>
+                                    <?= Html::submitButton('<i class="fa fa-arrow-down" aria-hidden="true"></i> Закрыть учебную программу', ['class' => 'btn btn-sm btn-default', 'name' => 'submitAction', 'value' => 'finish_plan', 'disabled' => $model->status == 0]); ?>
                                     <?= Html::submitButton('<i class="fa fa-arrow-left" aria-hidden="true"></i> Отменить решение', ['class' => 'btn btn-sm btn-danger', 'name' => 'submitAction', 'value' => 'restore', 'disabled' => $model->status == 1]); ?>
                                 <?php endif; ?>
                             </div>

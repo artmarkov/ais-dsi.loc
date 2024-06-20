@@ -69,7 +69,7 @@ $readonlyResult = (\artsoft\Art::isFrontend() && $model->isAuthor() && Yii::$app
                         ?>
 
                         <?= $form->field($model->loadDefaultValues(), 'executors_list')->widget(\kartik\select2\Select2::class, [
-                            'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
+                            'data' => RefBook::find('teachers_fio', UserCommon::STATUS_ACTIVE)->getList(),
                             'showToggleAll' => false,
                             'options' => [
                                 'disabled' => $readonly,

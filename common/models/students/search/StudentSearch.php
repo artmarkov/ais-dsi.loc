@@ -94,7 +94,7 @@ class StudentSearch extends Student
 
 
         $query->andFilterWhere([
-            'id' => $this->id,
+            'students.id' => $this->id,
             'user_common.status' => $this->userStatus,
 
         ]);
