@@ -57,6 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Url::to(['bulk-repeat-class']) => 'Повторить учебную программу',
                         Url::to(['bulk-finish-all-plan']) => 'Завершить обучение(выпуск)',
                         Url::to(['bulk-finish-plan']) => 'Закрыть учебную программу',
+                        Url::to(['bulk-dismiss-plan']) => 'Отчислить',
                         /*Url::to(['bulk-delete']) => Yii::t('yii', 'Delete'),*/
                     ]
                 ] : false,
