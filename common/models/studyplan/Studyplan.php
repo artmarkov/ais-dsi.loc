@@ -129,6 +129,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'studentFio' => Yii::t('art/student', 'Student'),
             'programm_id' => Yii::t('art/studyplan', 'Education Programm'),
             'programmName' => Yii::t('art/studyplan', 'Education Programm'),
+            'educationCatId' => Yii::t('art/guide', 'Education Cat'),
             'subject_form_id' => Yii::t('art/guide', 'Subject Form'),
             'course' => Yii::t('art/studyplan', 'Course'),
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
@@ -221,6 +222,11 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public function getProgrammName()
     {
         return $this->programm->short_name;
+    }
+
+    public function getEducationCatId()
+    {
+        return $this->programm->education_cat_id;
     }
 
     public function getSubjectForm()

@@ -15,6 +15,7 @@ class StudyplanSearch extends Studyplan
 {
     public $programmName;
     public $studentFio;
+    public $educationCatId;
 
     public $query;
 
@@ -29,7 +30,7 @@ class StudyplanSearch extends Studyplan
     public function rules()
     {
         return [
-            [['id', 'student_id', 'course', 'plan_year', 'status', 'status_reason', 'programm_id', 'subject_form_id'], 'integer'],
+            [['id', 'student_id', 'course', 'plan_year', 'status', 'status_reason', 'programm_id', 'subject_form_id', 'educationCatId'], 'integer'],
             [['description', 'programmName', 'studentFio'], 'safe'],
         ];
     }
@@ -74,9 +75,14 @@ class StudyplanSearch extends Studyplan
                 'course',
                 'student_id',
                 'subject_form_id',
+                'education_cat_id',
                 'programmName' => [
                     'asc' => ['education_programm.name' => SORT_ASC],
                     'desc' => ['education_programm.name' => SORT_DESC],
+                ],
+                'educationCatId' => [
+                    'asc' => ['education_programm.education_cat_id' => SORT_ASC],
+                    'desc' => ['education_programm.education_cat_id' => SORT_DESC],
                 ],
                 'studentFio' => [
                     'asc' => ['user_common.last_name' => SORT_ASC, 'user_common.first_name' => SORT_ASC],
@@ -95,6 +101,7 @@ class StudyplanSearch extends Studyplan
         $query->andFilterWhere([
             'id' => $this->id,
             'programm_id' => $this->programm_id,
+            'education_cat_id' => $this->educationCatId,
             'student_id' => $this->student_id,
             'course' => $this->course,
             'plan_year' => $this->plan_year,

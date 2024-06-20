@@ -93,6 +93,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' =>  'Телефон'
                     ],
                     [
+                        'attribute' => 'educationCatId',
+                        'filter' => RefBook::find('education_cat_short')->getList(),
+                        'value' => function (Studyplan $model) {
+                            return RefBook::find('education_cat_short')->getValue($model->educationCatId);
+                        },
+                        'options' => ['style' => 'width:100px'],
+                        'format' => 'raw',
+                    ],
+                    [
                         'attribute' => 'programmName',
                         'filter' => \common\models\education\EducationProgramm::getProgrammList(),
                         'filterType' => GridView::FILTER_SELECT2,
@@ -130,7 +139,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'label' => 'Специальность'
 
-],
+                    ],
                     /*[
                         'attribute' => 'plan_year',
                         'filter' => false,
