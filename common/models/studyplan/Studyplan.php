@@ -256,11 +256,23 @@ class Studyplan extends \artsoft\db\ActiveRecord
         return $this->hasMany(StudyplanSubject::class, ['studyplan_id' => 'id'])->innerJoin('guide_subject_category', 'guide_subject_category.id = studyplan_subject.subject_cat_id')->orderBy('sort_order, subject_vid_id');
     }
 
+    /**
+     * @return false|int|string|null
+     */
+    public function getSpecialityId()
+    {
+        return $this->getStudyplanSubject()->select('subject_id')->andWhere(['=', 'subject_cat_id', 1000])->scalar() ?: null;
+    }
+
+    /**
+     * @return string|null
+     */
     public function getSpeciality()
     {
-        $subject_id = $this->getStudyplanSubject()->select('subject_id')->andWhere(['=', 'subject_cat_id', 1000])->scalar();
+        $subject_id = $this->getSpecialityId();
         return $subject_id ? RefBook::find('subject_name')->getValue($subject_id) : '';
     }
+
 
 //    /**
 //     * Список нагрузок преподавателей
@@ -586,7 +598,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
                             $modelSub = new StudyplanSubject();
 
                             $modelSub->copyAttributes($model, $modelSubTime);
-
+                            if ($modelSub->subject_cat_id == 1000) {
+                                $modelSub->subject_id = $this->getSpecialityId();
+                            }
                             if (!($flag = $modelSub->save(false))) {
                                 $transaction->rollBack();
                                 break;
