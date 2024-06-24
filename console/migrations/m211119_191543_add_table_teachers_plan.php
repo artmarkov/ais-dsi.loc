@@ -38,7 +38,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
 
 
         $this->db->createCommand()->createView('teachers_load_studyplan_view', '
- SELECT studyplan_subject.id AS studyplan_subject_id,
+  SELECT studyplan_subject.id AS studyplan_subject_id,
     studyplan_subject.week_time,
     studyplan_subject.year_time_consult,
     0 AS subject_sect_studyplan_id,
@@ -52,12 +52,13 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
     studyplan.status,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
+    teachers_load.direction_vid_id,
     teachers_load.teachers_id,
     teachers_load.load_time,
     teachers_load.load_time_consult,
     guide_subject_category.sort_order,
     studyplan_subject.subject_vid_id,
-	studyplan_subject.subject_cat_id,
+    studyplan_subject.subject_cat_id,
     studyplan_subject.subject_type_id,
     studyplan_subject.subject_id,
     \'Индивидуально\'::text AS sect_name,
@@ -89,12 +90,13 @@ UNION ALL
     studyplan.status,
     teachers_load.id AS teachers_load_id,
     teachers_load.direction_id,
+    teachers_load.direction_vid_id,
     teachers_load.teachers_id,
     teachers_load.load_time,
     teachers_load.load_time_consult,
     guide_subject_category.sort_order,
     studyplan_subject.subject_vid_id,
-	studyplan_subject.subject_cat_id,
+    studyplan_subject.subject_cat_id,
     studyplan_subject.subject_type_id,
     studyplan_subject.subject_id,
     concat(subject_sect.sect_name, \' (\',
@@ -130,12 +132,13 @@ UNION ALL
     studyplan.status,
     NULL::integer AS teachers_load_id,
     NULL::integer AS direction_id,
+    NULL::integer AS direction_vid_id,
     NULL::integer AS teachers_id,
     NULL::double precision AS load_time,
     NULL::double precision AS load_time_consult,
     guide_subject_category.sort_order,
     studyplan_subject.subject_vid_id,
-	studyplan_subject.subject_cat_id,
+    studyplan_subject.subject_cat_id,
     studyplan_subject.subject_type_id,
     studyplan_subject.subject_id,
     NULL::text AS sect_name,
@@ -159,7 +162,7 @@ UNION ALL
              JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject_1.subject_cat_id AND subject_sect.subject_id = studyplan_subject_1.subject_id AND subject_sect.subject_vid_id = studyplan_subject_1.subject_vid_id
              JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject_1.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
              LEFT JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.studyplan_subject_id = 0))
-  ORDER BY 25, 20, 21, 15, 16;
+  ORDER BY 26, 21, 22, 16, 17;
         ')->execute();
 
         $this->db->createCommand()->createView('teachers_load_view', '

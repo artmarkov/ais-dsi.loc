@@ -132,7 +132,7 @@ class DefaultController extends MainController
         $model_distribution = new DynamicModel(['sect_list', 'distr_flag']);
         $model_distribution->addRule(['sect_list'], 'safe');
 
-        $modelsSubjectSectStudyplan = $model->setSubjectSect($model_date);
+        $modelsSubjectSectStudyplan = $model->setSubjectSect($model_date->plan_year);
 
         if (isset($_POST['SubjectSectStudyplan'])) {
 //        echo '<pre>' . print_r($model, true) . '</pre>';

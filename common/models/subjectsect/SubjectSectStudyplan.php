@@ -139,7 +139,13 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
         if (!empty($this->studyplan_subject_list)) {
             $modelsItems = (new Query())->from('studyplan_subject_view')
                 ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$this->studyplan_subject_list}', ',')::int[])"))
-                ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
+                ->andWhere(['OR',
+                    ['status' => Studyplan::STATUS_ACTIVE],
+                    ['AND',
+                        ['status' => Studyplan::STATUS_INACTIVE],
+                        ['status_reason' => [1, 2, 4]]
+                    ]
+                ])
                 ->orderBy('student_fio')
                 ->all();
            // print_r($this->studyplan_subject_list); die();
