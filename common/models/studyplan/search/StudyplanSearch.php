@@ -112,7 +112,7 @@ class StudyplanSearch extends Studyplan
             'studyplan.status' => $this->status,
             'version' => $this->version,
             'subject_form_id' => $this->subject_form_id,
-            'status' => $this->status,
+            'studyplan.status' => $this->status,
             'status_reason' => $this->status_reason,
         ]);
 

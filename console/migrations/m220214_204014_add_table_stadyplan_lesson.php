@@ -182,7 +182,8 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
     \'Индивидуально\'::text AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
     concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
-    studyplan.status
+    studyplan.status,
+    studyplan.status_reason
    FROM studyplan_subject
      JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
@@ -211,7 +212,8 @@ UNION ALL
         END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject,
     NULL::text AS subject_key,
-    studyplan.status
+    studyplan.status,
+    studyplan.status_reason
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      JOIN studyplan_subject ON studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[])
@@ -250,7 +252,8 @@ UNION ALL
            FROM teachers_load
           WHERE teachers_load.studyplan_subject_id = lesson_items.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0), \',\'::text) AS teachers_list,
     concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
-    studyplan.status,
+    studyplan.status, 
+	studyplan.status_reason,
     studyplan.plan_year,
     studyplan_subject.subject_id,
     studyplan_subject.subject_vid_id,
@@ -289,7 +292,8 @@ UNION ALL
            FROM teachers_load
           WHERE teachers_load.subject_sect_studyplan_id = lesson_items.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0), \',\'::text) AS teachers_list,
     NULL::text AS subject_key,
-    studyplan.status,
+    studyplan.status, 
+	studyplan.status_reason,
     studyplan.plan_year,
     studyplan_subject.subject_id,
     studyplan_subject.subject_vid_id,

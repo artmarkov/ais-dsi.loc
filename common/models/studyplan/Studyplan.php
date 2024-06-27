@@ -623,7 +623,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
                 }
             } catch (Exception $e) {
                 $transaction->rollBack();
-                echo '<pre>' . print_r($e, true) . '</pre>';
+                echo '<pre>' . print_r($e->getMessage(), true) . '</pre>';
                 return false;
             }
         }
@@ -632,84 +632,90 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
     public function makeStadylanLoad($next, $newModel)
     {
-        $data = TeachersLoadStudyplanView::find()
-            ->where(['studyplan_id' => $this->id])
-            ->andWhere(['=', 'plan_year', $this->plan_year])
-            ->andWhere(['IS NOT', 'subject_sect_studyplan_id', NULL])
-            ->asArray()
-            ->all();
+        try {
+            $data = TeachersLoadStudyplanView::find()
+                ->where(['studyplan_id' => $this->id])
+                ->andWhere(['=', 'plan_year', $this->plan_year])
+                ->andWhere(['IS NOT', 'subject_sect_studyplan_id', NULL])
+                ->asArray()
+                ->all();
 //        echo '<pre>' . print_r($data, true) . '</pre>';die();
-        foreach ($data as $modelSub) {
-            $model_subject = StudyplanSubject::find()
-                ->where(['=', 'studyplan_id', $newModel->id])
-                ->andWhere(['=', 'subject_type_id', $modelSub['subject_type_id']])
-                ->andWhere(['=', 'subject_vid_id', $modelSub['subject_vid_id']])
-                ->andWhere(['=', 'subject_cat_id', $modelSub['subject_cat_id']])
-                ->andWhere(['=', 'subject_id', $modelSub['subject_id']])
-                ->one();
-            if ($modelSub['subject_sect_studyplan_id'] == 0) {
-                if ($model_subject) {
-                    $model_load = TeachersLoad::find()
-                            ->where(['=', 'studyplan_subject_id', $model_subject->id])
-                            ->andWhere(['=', 'subject_sect_studyplan_id', 0])
-                            ->andWhere(['=', 'direction_id', $modelSub['direction_id']])
-                            ->andWhere(['=', 'direction_vid_id', $modelSub['direction_vid_id']])
-                            ->one() ?? new TeachersLoad();
-                    $model_load->subject_sect_studyplan_id = 0;
-                    $model_load->studyplan_subject_id = $model_subject->id;
-                    $model_load->direction_id = $modelSub['direction_id'] ?? null;
-                    $model_load->direction_vid_id = $modelSub['direction_vid_id'] ?? null;
-                    $model_load->teachers_id = $modelSub['teachers_id'] ?? null;
-                    $model_load->load_time = $model_subject->week_time;
-                    $model_load->load_time_consult = $model_subject->year_time_consult;
-//            echo '<pre>' . print_r($model_load, true) . '</pre>';die();
-                    $model_load->save(false);
-                }
-            } else {
-                $modelSect = SubjectSect::find()
-                    ->where(['=', 'id', $modelSub['subject_sect_id']])
+            foreach ($data as $modelSub) {
+                $model_subject = StudyplanSubject::find()
+                    ->where(['=', 'studyplan_id', $newModel->id])
+                    ->andWhere(['=', 'subject_type_id', $modelSub['subject_type_id']])
+                    ->andWhere(['=', 'subject_vid_id', $modelSub['subject_vid_id']])
+                    ->andWhere(['=', 'subject_cat_id', $modelSub['subject_cat_id']])
+                    ->andWhere(['=', 'subject_id', $modelSub['subject_id']])
                     ->one();
-                if ($modelSect) {
-                    $modelSect->setSubjectSect($newModel->plan_year);
-
-                    $modelSectStudyplan = SubjectSectStudyplan::find()
-                        ->where(['=', 'id', $modelSub['subject_sect_studyplan_id']])
+                // echo '<pre>' . print_r($model_subject, true) . '</pre>';die();
+                if ($modelSub['subject_sect_studyplan_id'] == 0) {
+                    if ($model_subject) {
+                        $model_load = TeachersLoad::find()
+                                ->where(['=', 'studyplan_subject_id', $model_subject->id])
+                                ->andWhere(['=', 'subject_sect_studyplan_id', 0])
+                                ->andWhere(['=', 'direction_id', $modelSub['direction_id']])
+                                ->andWhere(['=', 'direction_vid_id', $modelSub['direction_vid_id']])
+                                ->one() ?? new TeachersLoad();
+                        $model_load->subject_sect_studyplan_id = 0;
+                        $model_load->studyplan_subject_id = $model_subject->id;
+                        $model_load->direction_id = $modelSub['direction_id'] ?? null;
+                        $model_load->direction_vid_id = $modelSub['direction_vid_id'] ?? null;
+                        $model_load->teachers_id = $modelSub['teachers_id'] ?? null;
+                        $model_load->load_time = $model_subject->week_time;
+                        $model_load->load_time_consult = $model_subject->year_time_consult;
+//            echo '<pre>' . print_r($model_load, true) . '</pre>';die();
+                        $model_load->save(false);
+                    }
+                } else {
+                    $modelSect = SubjectSect::find()
+                        ->where(['=', 'id', $modelSub['subject_sect_id']])
                         ->one();
-                    if ($modelSectStudyplan) {
-                        $course = $modelSectStudyplan->course != null ? $modelSectStudyplan->course + $next : null;
-//                        echo '<pre>' . print_r([$newModel->plan_year, $course, $modelSectStudyplan->group_num], true) . '</pre>';
-                        $model_sect = SubjectSectStudyplan::find()
-                            ->where(['=', 'subject_sect_id', $modelSub['subject_sect_id']])
-                            ->andWhere(['=', 'plan_year', $newModel->plan_year]);
-                        if ($course != null) {
-                            $model_sect = $model_sect->andWhere(['=', 'course', $course]);
-                        }
-                        if ($modelSectStudyplan->group_num != null) {
-                            $model_sect = $model_sect->andWhere(['=', 'group_num', $modelSectStudyplan->group_num]);
-                        }
-                        $model_sect = $model_sect->one();
+                    if ($modelSect) {
+                        $modelSect->setSubjectSect($newModel->plan_year);
+
+                        $modelSectStudyplan = SubjectSectStudyplan::find()
+                            ->where(['=', 'id', $modelSub['subject_sect_studyplan_id']])
+                            ->one();
+                        if ($modelSectStudyplan) {
+                            $course = $modelSectStudyplan->course != null ? $modelSectStudyplan->course + $next : null;
+//                        echo '<pre>' . print_r([$newModel->plan_year, $course, $modelSectStudyplan->group_num], true) . '</pre>'; die();
+                            $model_sect = SubjectSectStudyplan::find()
+                                ->where(['=', 'subject_sect_id', $modelSub['subject_sect_id']])
+                                ->andWhere(['=', 'plan_year', $newModel->plan_year]);
+                            if ($course != null) {
+                                $model_sect = $model_sect->andWhere(['=', 'course', $course]);
+                            }
+                            if ($modelSectStudyplan->group_num != null) {
+                                $model_sect = $model_sect->andWhere(['=', 'group_num', $modelSectStudyplan->group_num]);
+                            }
+                            $model_sect = $model_sect->one();
 //                        echo '<pre>' . print_r($model_sect, true) . '</pre>'; die();
-                        if ($model_sect) {
-                            $model_sect->insertStudyplanSubject($model_subject->id);
-                            $model_load = TeachersLoad::find()
-                                    ->where(['=', 'studyplan_subject_id', 0])
-                                    ->andWhere(['=', 'subject_sect_studyplan_id', $model_sect->id])
-                                    ->andWhere(['=', 'direction_id', $modelSub['direction_id']])
-                                    ->andWhere(['=', 'direction_vid_id', $modelSub['direction_vid_id']])
-                                    ->one() ?? new TeachersLoad();
-                            $model_load->subject_sect_studyplan_id = $model_sect->id;
-                            $model_load->studyplan_subject_id = 0;
-                            $model_load->direction_id = $modelSub['direction_id'] ?? null;
-                            $model_load->direction_vid_id = $modelSub['direction_vid_id'] ?? null;
-                            $model_load->teachers_id = $modelSub['teachers_id'] ?? null;
-                            $model_load->load_time = $model_subject->week_time;
-                            $model_load->load_time_consult = $model_subject->year_time_consult;
-                            $model_load->save(false);
+                            if ($model_sect && $model_subject) {
+                                $model_sect->insertStudyplanSubject($model_subject->id);
+                                $model_load = TeachersLoad::find()
+                                        ->where(['=', 'studyplan_subject_id', 0])
+                                        ->andWhere(['=', 'subject_sect_studyplan_id', $model_sect->id])
+                                        ->andWhere(['=', 'direction_id', $modelSub['direction_id']])
+                                        ->andWhere(['=', 'direction_vid_id', $modelSub['direction_vid_id']])
+                                        ->one() ?? new TeachersLoad();
+                                $model_load->subject_sect_studyplan_id = $model_sect->id;
+                                $model_load->studyplan_subject_id = 0;
+                                $model_load->direction_id = $modelSub['direction_id'] ?? null;
+                                $model_load->direction_vid_id = $modelSub['direction_vid_id'] ?? null;
+                                $model_load->teachers_id = $modelSub['teachers_id'] ?? null;
+                                $model_load->load_time = $model_subject->week_time;
+                                $model_load->load_time_consult = $model_subject->year_time_consult;
+                                $model_load->save(false);
+                            }
                         }
                     }
-                }
 //                echo '<pre>' . print_r($data, true) . '</pre>';die();
+                }
             }
+        } catch (Exception $e) {
+            echo '<pre>' . print_r($e->getMessage(), true) . '</pre>';
+            return false;
         }
     }
 
@@ -727,7 +733,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             ->andWhere(['=', 'plan_year', $plan_year])
             ->andWhere(['=', 'course', $course])
             ->andWhere(['=', 'student_id', $this->student_id])->one();
-
+//        echo '<pre>' . print_r($model, true) . '</pre>';die();
         if ($model) {
             $model->delete(false);
         }

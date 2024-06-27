@@ -1281,7 +1281,6 @@ class DefaultController extends MainController
             $ret = false;
             foreach ($models as $model) {
                 $model->status = $this->modelClass::STATUS_ACTIVE;
-                $model->status_reason = 0;
                 $ret = $model->update(false);
             }
             if ($ret) {

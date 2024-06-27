@@ -61,7 +61,13 @@ class StudyplanController extends MainController
         $query = Studyplan::find()
             ->where(['in', 'studyplan.id', $studyplanIDS])
             ->andWhere(['=', 'plan_year', $model_date->plan_year])
-            ->andWhere(['=', 'studyplan.status', 1]);
+            ->andWhere(['OR',
+                ['studyplan.status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['studyplan.status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ]);
 
         $searchModel = new StudyplanSearch($query);
         $params = $this->getParams();

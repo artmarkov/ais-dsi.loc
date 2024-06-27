@@ -192,7 +192,13 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $modelsProgress = self::find()
                 ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
                 ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
-                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->andWhere(['OR',
+                    ['status' => Studyplan::STATUS_ACTIVE],
+                    ['AND',
+                        ['status' => Studyplan::STATUS_INACTIVE],
+                        ['status_reason' => [1, 2, 4]]
+                    ]
+                ])
                 ->andWhere(['plan_year' => $plan_year])
                 ->all();
             $dates_load = 0;
