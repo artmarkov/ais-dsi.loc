@@ -641,6 +641,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
                 ->all();
 //        echo '<pre>' . print_r($data, true) . '</pre>';die();
             foreach ($data as $modelSub) {
+                if(!$modelSub['teachers_id']) {
+                    continue;
+                }
                 $model_subject = StudyplanSubject::find()
                     ->where(['=', 'studyplan_id', $newModel->id])
                     ->andWhere(['=', 'subject_type_id', $modelSub['subject_type_id']])
@@ -656,6 +659,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
                                 ->andWhere(['=', 'subject_sect_studyplan_id', 0])
                                 ->andWhere(['=', 'direction_id', $modelSub['direction_id']])
                                 ->andWhere(['=', 'direction_vid_id', $modelSub['direction_vid_id']])
+                                ->andWhere(['=', 'teachers_id', $modelSub['teachers_id']])
                                 ->one() ?? new TeachersLoad();
                         $model_load->subject_sect_studyplan_id = 0;
                         $model_load->studyplan_subject_id = $model_subject->id;
@@ -698,6 +702,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
                                         ->andWhere(['=', 'subject_sect_studyplan_id', $model_sect->id])
                                         ->andWhere(['=', 'direction_id', $modelSub['direction_id']])
                                         ->andWhere(['=', 'direction_vid_id', $modelSub['direction_vid_id']])
+                                        ->andWhere(['=', 'teachers_id', $modelSub['teachers_id']])
                                         ->one() ?? new TeachersLoad();
                                 $model_load->subject_sect_studyplan_id = $model_sect->id;
                                 $model_load->studyplan_subject_id = 0;
