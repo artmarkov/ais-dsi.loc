@@ -20,7 +20,7 @@ class UsersVisitMap extends DashboardWidget
       
         if (User::hasPermission('viewUsers')) {
 
-            $visits = UserVisitLog::find()->all();
+            $visits = UserVisitLog::find()->where(['>','visit_time' , time()-(3*86400)])->all();
            
             foreach ($visits as $visit) {
 //                 echo '<pre>' . print_r($visit->geoLocation, true) . '</pre>';
