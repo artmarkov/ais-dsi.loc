@@ -206,6 +206,26 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
         return $this;
     }
 
+    /**
+     * Удаление задвоений в группе и сортировка по алфавиту
+     */
+    public function normaliseStudyplanSubject()
+    {
+        $studyplanSubjectIds = (new \yii\db\Query())->select(['studyplan_subject_id', 'student_fio'])
+            ->from('studyplan_subject_view')
+            ->distinct()
+            ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$this->studyplan_subject_list}', ',')::int[])"))
+            ->orderBy('student_fio')
+            ->column();
+        $this->studyplan_subject_list = implode(',', $studyplanSubjectIds);
+    }
+
+    public function beforeSave($insert)
+    {
+        $this->normaliseStudyplanSubject();
+        return parent::beforeSave($insert);
+    }
+
 //    public function beforeDelete()
 //    {
 //        $ids = $this->getTeachersLoads()->column();

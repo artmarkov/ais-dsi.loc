@@ -37,7 +37,7 @@ use artsoft\helpers\RefBook;
                     echo Html::activeHiddenInput($model, 'studyplan_subject_id');
                     ?>
                     <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => \common\models\teachers\Teachers::getTeachersAll($model->isNewRecord ? \common\models\teachers\Teachers::STATUS_ACTIVE : null),
+                        'data' => \common\models\teachers\Teachers::getTeachersAll( \common\models\teachers\Teachers::STATUS_ACTIVE),
                         'options' => [
                             'id' => 'teachers_id',
                             'disabled' => false,
