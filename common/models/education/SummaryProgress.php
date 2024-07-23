@@ -4,6 +4,7 @@ namespace common\models\education;
 
 use artsoft\helpers\ExcelObjectList;
 use common\models\students\Student;
+use common\models\studyplan\Studyplan;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -51,7 +52,13 @@ class SummaryProgress
         }
         $models = (new \yii\db\Query())->from('studyplan_view')
             ->where(['programm_id' => $this->programm_id])
-            ->andWhere(['status' => 1])
+            ->andWhere(['OR',
+                ['status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ])
             ->andWhere(['plan_year' => $this->plan_year]);
         if ($this->subject_form_id) {
             $models = $models->andWhere(['subject_form_id' => $this->subject_form_id]);
@@ -72,7 +79,13 @@ class SummaryProgress
     {
         $models = (new \yii\db\Query())->from('studyplan_subject_view')
             ->where(['studyplan_id' => $this->studyplanIds])
-            ->andWhere(['status' => 1]);
+            ->andWhere(['OR',
+                ['status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ]);
         if ($this->subject_type_id) {
             $models = $models->andWhere(['subject_type_id' => $this->subject_type_id]);
         }
@@ -107,7 +120,13 @@ class SummaryProgress
             ])
             ->distinct()
             ->where(['studyplan_subject_id' => $this->studyplanSubjectIds])
-            ->andWhere(['status' => 1])
+            ->andWhere(['OR',
+                ['status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ])
             ->orderBy('subject_category_id, subject_vid_id, subject_id')
             ->all();
         return $models;
@@ -117,14 +136,22 @@ class SummaryProgress
     {
         $models = LessonItemsProgressView::find()
             ->select([
-                'studyplan_id', 'mark_label', 'studyplan_subject_id',
+                'studyplan_id', 'mark_label', 'studyplan_subject_id', 'subject_sect_studyplan_id', 'test_category', 'med_cert', 'fin_cert',
+                'lesson_test_id','lesson_mark_id', 'test_name', 'lesson_date', 'lesson_progress_id',
                 'concat(subject_id, \'|\', subject_vid_id, \'|\', subject_cat_id) as subject_key'
             ])
             ->where(['studyplan_subject_id' => $this->studyplanSubjectIds])
             ->andWhere(['plan_year' => $this->plan_year])
-//            ->andWhere(['test_category' => $this->vid_sert])
-            ->andWhere(['test_category' => [LessonTest::MIDDLE_ATTESTATION, LessonTest::FINISH_ATTESTATION]])
-            ->asArray()
+            ->andWhere(['OR',
+                ['AND',
+                    ['test_category' => LessonTest::MIDDLE_ATTESTATION],
+                    ['med_cert' => true]],
+                ['AND',
+                    ['test_category' => LessonTest::FINISH_ATTESTATION],
+                    ['fin_cert' => true]
+                ]
+            ])
+//            ->asArray()
             ->all();
         return $models;
     }
@@ -137,7 +164,13 @@ class SummaryProgress
                 'concat(subject_id, \'|\', subject_vid_id, \'|\', subject_category_id) as subject_key'
             ])
             ->where(['studyplan_subject_id' => $this->studyplanSubjectIds])
-            ->andWhere(['status' => 1]);
+            ->andWhere(['OR',
+                ['status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ]);
 //        if ($this->vid_sert == LessonTest::MIDDLE_ATTESTATION) {
 //            $models = $models->andWhere(['med_cert' => true]);
 //        }
@@ -167,9 +200,9 @@ class SummaryProgress
      * @return array
      * @throws \yii\base\InvalidConfigException
      */
-    public function getData()
+    public function getData($readonly = false)
     {
-        $studuplanProgress = ArrayHelper::index($this->lessonItemsProgress, 'subject_key', 'studyplan_id');
+        $studyplanProgress = ArrayHelper::index($this->lessonItemsProgress, 'subject_key', 'studyplan_id');
         $subjectKeys = ArrayHelper::getColumn($this->studyplanSubjectAttr, 'subject_key');
         $attributes = [
             'student_id' => 'ID',
@@ -194,14 +227,17 @@ class SummaryProgress
             $data[$id]['subject_form_name'] = $model['subject_form_name'];
 
             foreach ($subjectKeys as $item => $subject_key) {
-                $data[$id][$subject_key] = $studuplanProgress[$id][$subject_key]['mark_label'] ?? null;
+                $data[$id][$subject_key] = null;
                 $dataNeeds[$id][$subject_key] = isset($this->studyplanSubjectMarkNeeds[$id][$subject_key]) ? true : false;
+                if (isset($studyplanProgress[$id][$subject_key])) {
+                    $data[$id][$subject_key] = !$readonly ? LessonProgressView::getEditableForm($studyplanProgress[$id][$subject_key]) : $studyplanProgress[$id][$subject_key]['mark_label'];
+                }
             }
         }
-//        echo '<pre>' . print_r($data, true) . '</pre>'; die();
 //        usort($data, function ($a, $b) {
 //            return $b['total'] <=> $a['total'];
 //        });
+//        echo '<pre>' . print_r($data, true) . '</pre>'; die();
 
         return ['data' => $data, 'dataNeeds' => $dataNeeds, 'subjectKeys' => $subjectKeys,  'attributes' => $attributes, 'header' => $this->getHeader()];
     }

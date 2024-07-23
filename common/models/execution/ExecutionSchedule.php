@@ -58,7 +58,13 @@ class ExecutionSchedule
             ->select('teachers_id,subject_sect_studyplan_id,studyplan_subject_id,subject_schedule_id,subject,sect_name,studyplan_id,subject_sect_id')
             ->where(['teachers_id' => $this->teachersIds])
             ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
+            ->andWhere(['OR',
+                ['status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ])
             ->asArray()
             ->all();
         return ArrayHelper::index($array, null, ['teachers_id', 'subject_sect_studyplan_id', 'studyplan_subject_id']);

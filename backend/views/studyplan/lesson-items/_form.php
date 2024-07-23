@@ -17,7 +17,7 @@ use common\models\education\LessonMark;
 /* @var $subject_sect_studyplan_id */
 
 $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($model->subject_sect_studyplan_id, $model->studyplan_subject_id);
-$mark_list = LessonMark::getMarkLabelForStudent([LessonMark::MARK,LessonMark::OFFSET_NONOFFSET,LessonMark::REASON_ABSENCE]);
+$mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark::MARK,LessonMark::OFFSET_NONOFFSET,LessonMark::REASON_ABSENCE]);
 
 if ($model->subject_sect_studyplan_id != 0) {
     $studyplanSubjectList = \common\models\subjectsect\SubjectSectStudyplan::findOne($model->subject_sect_studyplan_id)->studyplan_subject_list;
@@ -133,6 +133,9 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                                     if (!$modelItems->isNewRecord) {
                                         echo Html::activeHiddenInput($modelItems, "[{$index}]id");
                                     }
+                                    ?>
+                                    <?php
+                                        echo Html::activeHiddenInput($modelItems, "[{$index}]lesson_items_id");
                                     ?>
                                     <td>
                                         <span class="panel-title-activities"><?= ($index + 1) ?></span>

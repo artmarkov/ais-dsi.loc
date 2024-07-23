@@ -28,7 +28,7 @@ use yii\web\NotFoundHttpException;
 class DefaultController extends MainController
 {
     public $modelClass = 'common\models\studyplan\Studyplan';
-    public $modelSearchClass = 'common\models\studyplan\search\StudyplanSearch';
+    public $modelSearchClass = 'common\models\studyplan\search\StudyplanViewSearch';
 
     public function actionIndex()
     {

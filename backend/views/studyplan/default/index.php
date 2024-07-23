@@ -49,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'id' => 'studyplan-grid',
                 'pjax' => false,
                 'dataProvider' => $dataProvider,
-                'filterModel' => \artsoft\Art::isFrontend() && User::hasRole(['student']) ? false : $searchModel,
+                'filterModel' => \artsoft\Art::isFrontend() && (User::hasRole(['student']) || User::hasRole(['parents'])) ? false : $searchModel,
                 'bulkActionOptions' =>  \artsoft\Art::isBackend() ? [
                     'gridId' => 'studyplan-grid',
                     'actions' =>  [
@@ -75,43 +75,44 @@ $this->params['breadcrumbs'][] = $this->title;
                         'options' => ['style' => 'width:50px'],
                     ],
                     [
-                        'attribute' => 'studentFio',
+                        'attribute' => 'student_id',
                         'filter' => RefBook::find('students_fullname')->getList(),
                         'filterType' => GridView::FILTER_SELECT2,
                         'filterWidgetOptions' => [
                             'pluginOptions' => ['allowClear' => true],
                         ],
                         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                        'value' => function (Studyplan $model) {
-                            return $model->studentFio;
+                        'value' => function (StudyplanView $model) {
+                            return $model->student_fio;
                         },
                         'format' => 'raw',
                     ],
                     [
-                        'value' => function (Studyplan $model) {
-                            return $model->studentPhone;
+                        'attribute' => 'user_phone',
+                        'value' => function (StudyplanView $model) {
+                            return $model->user_phone;
                         },
-                        'label' =>  'Телефон'
+                        'visible' => (User::hasRole(['student']) || User::hasRole(['parents'])) ? false : true
                     ],
                     [
-                        'attribute' => 'educationCatId',
+                        'attribute' => 'education_cat_id',
                         'filter' => RefBook::find('education_cat_short')->getList(),
-                        'value' => function (Studyplan $model) {
-                            return RefBook::find('education_cat_short')->getValue($model->educationCatId);
+                        'value' => function (StudyplanView $model) {
+                            return $model->education_cat_short_name;
                         },
                         'options' => ['style' => 'width:100px'],
                         'format' => 'raw',
                     ],
                     [
-                        'attribute' => 'programmName',
+                        'attribute' => 'programm_id',
                         'filter' => \common\models\education\EducationProgramm::getProgrammList(),
                         'filterType' => GridView::FILTER_SELECT2,
                         'filterWidgetOptions' => [
                             'pluginOptions' => ['allowClear' => true],
                         ],
                         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                        'value' => function (Studyplan $model) {
-                            return $model->programmName;
+                        'value' => function (StudyplanView $model) {
+                            return $model->education_programm_short_name;
                         },
                         'options' => ['style' => 'width:100px'],
                         'format' => 'raw',
@@ -135,8 +136,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                     ],
                     [
-                        'value' => function (Studyplan $model) {
-                            return $model->getSpeciality();
+                        'attribute' => 'speciality',
+                        'filter' => \common\models\subject\Subject::getSubjectByCategoryForName(1000),
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => ['allowClear' => true],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                        'value' => function (StudyplanView $model) {
+                            return $model->speciality;
                         },
                         'label' => 'Специальность'
 

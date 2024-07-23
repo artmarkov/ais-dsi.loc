@@ -123,6 +123,15 @@ class Subject extends ActiveRecord
         return $data;
     }
 
+    public static function getSubjectByCategoryForName($category_id = null)
+    {
+        $data = self::find()->select(['name', 'name']);
+        $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
+        $data = $data->indexBy('name')->column();
+
+        return $data;
+    }
+
     /**
      * только групповые предметы С группировкой по виду
      * @return array

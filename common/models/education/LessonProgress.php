@@ -5,6 +5,7 @@ namespace common\models\education;
 use artsoft\helpers\RefBook;
 use artsoft\widgets\Notice;
 use common\models\studyplan\StudyplanSubject;
+use phpDocumentor\Reflection\Types\False_;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -55,7 +56,7 @@ class LessonProgress extends \artsoft\db\ActiveRecord
         return [
             [['lesson_items_id', 'studyplan_subject_id', 'lesson_mark_id', 'version'], 'integer'],
             [['studyplan_subject_id'/*, 'lesson_mark_id'*/], 'required'],
-            [['studyplan_subject_id'], 'checkProgressExist'],
+//            [['studyplan_subject_id'], 'checkProgressExist'],
             [['mark_rem'], 'string', 'max' => 127],
             [['lesson_items_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonItems::className(), 'targetAttribute' => ['lesson_items_id' => 'id']],
             [['lesson_mark_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonMark::className(), 'targetAttribute' => ['lesson_mark_id' => 'id']],
@@ -73,7 +74,9 @@ class LessonProgress extends \artsoft\db\ActiveRecord
             ]);
         if ($checkLesson->exists() === true) {
             $message = 'Ученику можно ставить только одну оценку за урок';
-            Notice::registerWarning($message);
+           // $this->addError($attribute, $message);
+             Notice::registerWarning($message);
+             return false;
         }
     }
 
@@ -134,4 +137,5 @@ class LessonProgress extends \artsoft\db\ActiveRecord
         $student_id = RefBook::find('studyplan_subject-student')->getValue($studyplan_subject_id);
         return RefBook::find('students_fio')->getValue($student_id);
     }
+
 }

@@ -61,12 +61,24 @@ class m230127_092207_add_subject_view extends Migration
     studyplan.doc_received_flag,
     studyplan.doc_sent_flag,
     studyplan.status,
+    studyplan.status_reason,
     education_programm.name AS education_programm_name,
     education_programm.short_name AS education_programm_short_name,
+    guide_education_cat.id AS education_cat_id,
     guide_education_cat.name AS education_cat_name,
     guide_education_cat.short_name AS education_cat_short_name,
     concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name, \' \') AS student_fio,
-    guide_subject_form.name AS subject_form_name
+    guide_subject_form.name AS subject_form_name,
+    ( SELECT subject.name
+           FROM studyplan_subject
+             JOIN subject ON studyplan_subject.subject_id = subject.id
+          WHERE studyplan_subject.subject_cat_id = 1000 AND studyplan_subject.studyplan_id = studyplan.id
+         LIMIT 1) AS speciality,
+        CASE
+            WHEN user_common.phone IS NOT NULL THEN user_common.phone
+            WHEN user_common.phone_optional IS NOT NULL THEN user_common.phone_optional
+            ELSE NULL::character varying
+        END AS user_phone
    FROM studyplan
      JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id

@@ -12,16 +12,22 @@ use yii\data\ActiveDataProvider;
  */
 class StudyplanViewSearch extends StudyplanView
 {
+    public $query;
 
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: StudyplanView::find();
+        parent::__construct();
+    }
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'course', 'plan_year', 'status', 'status_reason', 'subject_form_id', 'student_id'], 'integer'],
+            [['id', 'course', 'plan_year', 'status', 'status_reason', 'subject_form_id', 'student_id', 'education_cat_id', 'programm_id'], 'integer'],
             [['education_programm_name', 'education_programm_short_name', 'education_cat_name', 'education_cat_short_name', 'student_fio', 'subject_type_name'], 'safe'],
-            [['description'], 'safe'],
+            [['description', 'speciality', 'user_phone'], 'safe'],
         ];
     }
 
@@ -43,7 +49,7 @@ class StudyplanViewSearch extends StudyplanView
      */
     public function search($params)
     {
-        $query = StudyplanView::find();
+        $query = $this->query;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -73,6 +79,8 @@ class StudyplanViewSearch extends StudyplanView
             'status' => $this->status,
             'status_reason' => $this->status_reason,
             'student_id' => $this->student_id,
+            'education_cat_id' => $this->education_cat_id,
+            'programm_id' => $this->programm_id,
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);
@@ -82,6 +90,8 @@ class StudyplanViewSearch extends StudyplanView
             $query->andFilterWhere(['like', 'education_cat_short_name', $this->education_cat_short_name]);
             $query->andFilterWhere(['like', 'student_fio', $this->student_fio]);
             $query->andFilterWhere(['like', 'subject_form_name', $this->subject_form_name]);
+            $query->andFilterWhere(['like', 'speciality', $this->speciality]);
+            $query->andFilterWhere(['like', 'user_phone', $this->user_phone]);
 
 
         return $dataProvider;

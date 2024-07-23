@@ -19,7 +19,7 @@ use common\models\education\LessonMark;
 /* @var $modelTeachers */
 
 $models_sch = \common\models\schedule\SubjectScheduleStudyplanView::getScheduleIndiv($subject_key, $modelTeachers->id, $timestamp_in);
-$mark_list = LessonMark::getMarkLabelForStudent([LessonMark::MARK,LessonMark::OFFSET_NONOFFSET,LessonMark::REASON_ABSENCE]);
+$mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark::MARK,LessonMark::OFFSET_NONOFFSET,LessonMark::REASON_ABSENCE]);
 $subject = (new \yii\db\Query())->select('subject')
     ->from('lesson_progress_view')
     ->where(['=', 'subject_key', $subject_key])

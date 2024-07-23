@@ -1288,7 +1288,13 @@ class DefaultController extends MainController
                 ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $id]))
                 ->andWhere(['=', 'lesson_date', $timestamp_in])
                 ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
-                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->andWhere(['OR',
+                    ['status' => Studyplan::STATUS_ACTIVE],
+                    ['AND',
+                        ['status' => Studyplan::STATUS_INACTIVE],
+                        ['status_reason' => [1, 2, 4]]
+                    ]
+                ])
                 ->one();
             $model = LessonItems::findOne($modelLesson->lesson_items_id);
             $modelsItems = $model->getLessonProgressTeachers($id, $subject_key, $timestamp_in);

@@ -57,7 +57,13 @@ class ExecutionScheduleConsult
             ->select('teachers_id,subject_sect_studyplan_id,studyplan_subject_id,subject,sect_name,load_time_consult, SUM((datetime_out-datetime_in)/2700) as load_time_summ')
             ->where(['teachers_id' => $this->teachersIds])
             ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
+            ->andWhere(['OR',
+                ['status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ])
             ->groupBy('teachers_id,subject_sect_studyplan_id,studyplan_subject_id,subject,sect_name,load_time_consult')
             ->asArray()
             ->all();

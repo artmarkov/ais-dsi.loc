@@ -23,10 +23,12 @@ use common\models\students\Student;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
+use common\models\studyplan\search\StudyplanViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
 use common\models\studyplan\StudyplanInvoices;
 use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
+use common\models\studyplan\StudyplanView;
 use common\models\studyplan\SubjectCharacteristic;
 use common\models\schedule\search\SubjectScheduleStudyplanViewSearch;
 use common\models\schedule\SubjectSchedule;
@@ -76,15 +78,15 @@ class DefaultController extends MainController
                 ->distinct('studyplan_id')
                 ->where(['=', 'teachers_id', $model_date->teachers_id])
                 ->column();
-            $query = Studyplan::find()
-                ->where(['in', 'studyplan.id', $studyplanIDS])
+            $query = StudyplanView::find()
+                ->where(['in', 'id', $studyplanIDS])
                 ->andWhere(['=', 'plan_year', $model_date->plan_year]);
         } else {
-            $query = Studyplan::find()
+            $query = StudyplanView::find()
                 ->where(['=', 'plan_year', $model_date->plan_year]);
         }
 
-        $searchModel = new StudyplanSearch($query);
+        $searchModel = new StudyplanViewSearch($query);
         $params = $this->getParams();
         $dataProvider = $searchModel->search($params);
 
@@ -859,7 +861,7 @@ class DefaultController extends MainController
             if ($model->load(Yii::$app->request->post())) {
 
 //                $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
-                $modelsItems = Model::createMultiple(LessonProgress::class);
+//                $modelsItems = Model::createMultiple(LessonProgress::class);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
 //                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
 

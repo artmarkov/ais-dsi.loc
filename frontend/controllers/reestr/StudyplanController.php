@@ -23,12 +23,14 @@ use common\models\students\Student;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
+use common\models\studyplan\search\StudyplanViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanInvoices;
 use common\models\studyplan\StudyplanSubject;
 use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
+use common\models\studyplan\StudyplanView;
 use common\models\studyplan\SubjectCharacteristic;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadStudyplanView;
@@ -53,11 +55,11 @@ class StudyplanController extends MainController
     {
         $model_date = $this->modelDate;
         $teachers_id = null;
-        $query = Studyplan::find()
+        $query = StudyplanView::find()
             ->where(['=', 'plan_year', $model_date->plan_year])
-            ->andWhere(['=', 'studyplan.status', 1]);
+            ->andWhere(['=', 'status', 1]);
 
-        $searchModel = new StudyplanSearch($query);
+        $searchModel = new StudyplanViewSearch($query);
         $params = Yii::$app->request->getQueryParams();
         $dataProvider = $searchModel->search($params);
         return $this->renderIsAjax('@backend/views/studyplan/default/index.php', compact('dataProvider', 'searchModel', 'model_date', 'teachers_id'));

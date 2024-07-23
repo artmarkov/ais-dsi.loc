@@ -23,12 +23,14 @@ use common\models\students\Student;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
+use common\models\studyplan\search\StudyplanViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanInvoices;
 use common\models\studyplan\StudyplanSubject;
 use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
+use common\models\studyplan\StudyplanView;
 use common\models\studyplan\SubjectCharacteristic;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadStudyplanView;
@@ -58,18 +60,18 @@ class StudyplanController extends MainController
             ->where(['=', 'teachers_id', $model_date->teachers_id])
             ->column();
 
-        $query = Studyplan::find()
-            ->where(['in', 'studyplan.id', $studyplanIDS])
+        $query = StudyplanView::find()
+            ->where(['in', 'id', $studyplanIDS])
             ->andWhere(['=', 'plan_year', $model_date->plan_year])
             ->andWhere(['OR',
-                ['studyplan.status' => Studyplan::STATUS_ACTIVE],
+                ['status' => Studyplan::STATUS_ACTIVE],
                 ['AND',
-                    ['studyplan.status' => Studyplan::STATUS_INACTIVE],
+                    ['status' => Studyplan::STATUS_INACTIVE],
                     ['status_reason' => [1, 2, 4]]
                 ]
             ]);
 
-        $searchModel = new StudyplanSearch($query);
+        $searchModel = new StudyplanViewSearch($query);
         $params = $this->getParams();
         $dataProvider = $searchModel->search($params);
         return $this->renderIsAjax('@backend/views/studyplan/default/index.php', compact('dataProvider', 'searchModel', 'model_date', 'teachers_id'));

@@ -27,6 +27,7 @@ use yii\helpers\ArrayHelper;
  */
 class LessonMark extends \artsoft\db\ActiveRecord
 {
+    const PRESENCE = 0;
     const MARK = 1;
     const OFFSET_NONOFFSET = 2;
     const REASON_ABSENCE = 3;
@@ -104,6 +105,7 @@ class LessonMark extends \artsoft\db\ActiveRecord
     public static function getMarkCatogoryList()
     {
         return array(
+            self::PRESENCE => 'Факт присутствия',
             self::MARK => 'Оценка 5-ти бальная',
             self::MARK_10 => 'Оценка 10-ти бальная',
             self::OFFSET_NONOFFSET => 'Зачет/Незачет',
@@ -135,7 +137,7 @@ class LessonMark extends \artsoft\db\ActiveRecord
             ->asArray()->all(), 'id', 'mark_label');
     }
 
-    public static function getMarkLabelForStudent($mark_category = [self::MARK])
+    public static function getMarkLabelForStudent($mark_category = [self::MARK, self::PRESENCE])
     {
         return ArrayHelper::map(self::find()
             ->select('id, mark_label')

@@ -89,7 +89,13 @@ trait TeachersLoadTrait
         if ($this->subject_sect_studyplan_id !== null) {
             $studentsFio = (new \yii\db\Query())->select('student_fio')->from('studyplan_subject_view')->distinct()
                 ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$this->studyplan_subject_list}', ',')::int[])"))
-                ->andWhere(['status' => Studyplan::STATUS_ACTIVE])->orderBy('student_fio')
+                ->andWhere(['OR',
+                    ['status' => Studyplan::STATUS_ACTIVE],
+                    ['AND',
+                        ['status' => Studyplan::STATUS_INACTIVE],
+                        ['status_reason' => [1, 2, 4]]
+                    ]
+                ])->orderBy('student_fio')
                 ->column();
         }
         return $studentsFio;

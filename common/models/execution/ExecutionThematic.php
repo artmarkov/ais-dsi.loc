@@ -48,7 +48,13 @@ class ExecutionThematic
             ->where(['teachers_id' => $this->teachersIds])
             ->andWhere(['direction_id' => 1000])
             ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
+            ->andWhere(['OR',
+                ['status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ])
             ->asArray()
             ->all();
         $array1 = ThematicView::find()
@@ -57,7 +63,13 @@ class ExecutionThematic
             ->where(['teachers_id' => $this->teachersIds])
             ->andWhere(['direction_id' => 1000])
             ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
+            ->andWhere(['OR',
+                ['status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ])
             ->andWhere(['IS NOT', 'half_year', NULL])
             ->asArray()
             ->all();

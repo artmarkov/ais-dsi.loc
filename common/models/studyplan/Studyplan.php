@@ -674,6 +674,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
                 } else {
                     $modelSect = SubjectSect::find()
                         ->where(['=', 'id', $modelSub['subject_sect_id']])
+                        ->andWhere(['OR', new \yii\db\Expression(":course = any (string_to_array(course_list, ',')::int[])", [':course' => $this->course  + $next]), ['IS', 'course_list', NULL]]) // есть ли ограничения по классам?
                         ->one();
                     if ($modelSect) {
                         $modelSect->setSubjectSect($newModel->plan_year);
@@ -694,7 +695,8 @@ class Studyplan extends \artsoft\db\ActiveRecord
                                 $model_sect = $model_sect->andWhere(['=', 'group_num', $modelSectStudyplan->group_num]);
                             }
                             $model_sect = $model_sect->one();
-//                        echo '<pre>' . print_r($model_sect, true) . '</pre>'; die();
+
+                       // echo '<pre>' . print_r($model_sect, true) . '</pre>'; die();
                             if ($model_sect && $model_subject) {
                                 $model_sect->insertStudyplanSubject($model_subject->id);
                                 $model_load = TeachersLoad::find()
