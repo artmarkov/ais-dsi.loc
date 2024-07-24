@@ -5,7 +5,7 @@ use artsoft\helpers\Html;
 /* @var $this yii\web\View */
 $studyplan_id = null;
 
-$userId = Yii::$app->user->identity->getId();
+$userId = Yii::$app->user->identity ? Yii::$app->user->identity->getId() : null;
 
 if (\artsoft\models\User::hasRole(['student'])) {
     $student_id = \artsoft\helpers\RefBook::find('users_students')->getValue($userId) ?? null;

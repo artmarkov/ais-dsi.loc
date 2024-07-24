@@ -4,6 +4,7 @@ namespace frontend\widgets\board;
 
 use artsoft\models\User;
 use common\models\info\Board;
+use Yii;
 use yii\base\Widget;
 
 class BoardWidget extends Widget
@@ -23,7 +24,7 @@ class BoardWidget extends Widget
         } elseif(User::hasRole(['employees'])) {
             $categoryIds = [Board::CAT_ALL, Board::CAT_EMPLOYEES];
         }
-        $userId = \Yii::$app->user->identity->getId();
+        $userId = Yii::$app->user->identity ? Yii::$app->user->identity->getId() : null;
 
         $models = Board::find()
             ->where(['>', 'delete_date', time() - 86399]) // 86399 - включая день удаления
