@@ -152,4 +152,9 @@ class LessonTest extends \artsoft\db\ActiveRecord
             ->asArray()->all(), 'test_name_short', 'test_name');
     }
 
+    public function getLessonTestCategory($id)
+    {
+        $lessonTest = self::findOne($id);
+        return $lessonTest ? $lessonTest->test_category : false;
+    }
 }

@@ -74,7 +74,13 @@ class SubjectScheduleStudyplanView extends SubjectScheduleView
                     ['=', 'teachers_id', $teachers_id],
                     ['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)]
                 ])
-            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+            ->andWhere(['OR',
+                ['status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ])
             ->andWhere(['is', 'guide_teachers_direction.parent', null])
             ->all();
     }

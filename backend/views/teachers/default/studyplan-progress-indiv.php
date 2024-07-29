@@ -122,6 +122,16 @@ foreach ($model['lessonDates'] as $id => $name) {
     ];
 }
 
+foreach ($model['certif'] as $id => $name) {
+    $columns[] = [
+        'attribute' => $name,
+        'label' => $model['attributes'][$name],
+        'format' => 'raw',
+//        'headerOptions' => ['style' => 'height: 50px;'],
+        'contentOptions' => ['style' => 'background-color: #ebebeb;'],
+    ];
+}
+
 $hints = '<span class="panel-title"><b>Сокращения Вид занятия:</b></span><br/>';
 foreach (\common\models\education\LessonTest::getLessonTestHints() as $item => $hint) {
     $hints .= $item . ' - ' . $hint . '; ';
@@ -190,7 +200,8 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                         'columns' => [
                             ['content' => 'Учебный предмет/Группа/Ученик', 'options' => ['colspan' => 4, 'rowspan' => 2, 'class' => 'text-center warning', 'style' => 'vertical-align: middle;']],
                             ['content' => 'Посещаемость/успеваемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
-                        ],
+                            ['content' => 'Аттестация', 'options' => ['colspan' => count($model['certif']), 'class' => 'text-center info']],
+                            ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ],
                     [

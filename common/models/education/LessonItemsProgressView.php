@@ -12,6 +12,7 @@ use Yii;
  * @property int|null $studyplan_id
  * @property int|null $subject_sect_id
  * @property int|null $lesson_items_id
+ * @property int|null $lesson_test_id
  * @property int|null $lesson_date
  * @property string|null $lesson_topic
  * @property string|null $lesson_rem
@@ -49,6 +50,7 @@ class LessonItemsProgressView extends \artsoft\db\ActiveRecord
             'studyplan_id' => Yii::t('art/guide', 'Studyplan ID'),
             'subject_sect_id' => Yii::t('art/guide', 'Subject Sect ID'),
             'lesson_items_id' => Yii::t('art/guide', 'Lesson Items ID'),
+            'lesson_test_id' => Yii::t('art/guide', 'Lesson Test ID'),
             'lesson_date' => Yii::t('art/guide', 'Lesson Date'),
             'lesson_topic' => Yii::t('art/guide', 'Lesson Topic'),
             'lesson_rem' => Yii::t('art/guide', 'Lesson Rem'),

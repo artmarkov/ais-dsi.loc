@@ -168,6 +168,7 @@ return [
     'Test Name' => 'Название теста',
     'Plan Flag' => 'План подключен',
     'Current Work' => 'Раздел "Текущая работа"',
+    'Attestation' => 'Раздел "Аттестация"',
     'Middle Attestation' => 'Раздел "Промежуточная аттестация"',
     'Finish Attestation' => 'Раздел "Итоговая аттестация"',
     'Division List' => 'Отделения',

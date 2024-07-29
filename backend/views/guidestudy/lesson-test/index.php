@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <?=
                     SortableGridView::widget([
-                        'id' => 'piece-category-grid',
+                        'id' => 'lesson-test-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
                         'sortableAction' => ['grid-sort'],

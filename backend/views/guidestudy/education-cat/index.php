@@ -27,10 +27,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-6">
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
-                            /* echo GridQuickLinks::widget([
+                             echo GridQuickLinks::widget([
                                 'model' => EducationCat::className(),
                                 'searchModel' => $searchModel,
-                            ])*/
+                            ])
                             ?>
                         </div>
 

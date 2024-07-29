@@ -74,9 +74,9 @@ class LessonProgress extends \artsoft\db\ActiveRecord
             ]);
         if ($checkLesson->exists() === true) {
             $message = 'Ученику можно ставить только одну оценку за урок';
-           // $this->addError($attribute, $message);
-             Notice::registerWarning($message);
-             return false;
+            // $this->addError($attribute, $message);
+            Notice::registerWarning($message);
+            return false;
         }
     }
 

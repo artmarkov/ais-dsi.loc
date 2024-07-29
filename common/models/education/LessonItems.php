@@ -370,6 +370,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
         if (!$subject_key && !$timestamp_in && !$teachers_id) {
             throw new NotFoundHttpException("Отсутствует обязательный параметр teachers_id или subject_key или timestamp_in.");
         }
+        $test_category = LessonTest::getLessonTestCategory($model->lesson_test_id);
         $modelsProgress = LessonProgressView::find()
             ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->andWhere(['=', 'subject_key', $subject_key])
@@ -383,7 +384,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             ])
             ->all();
         foreach ($modelsProgress as $item => $modelProgress) {
-            if (!self::checkLessonSchedule($modelProgress, $model->lesson_date)) {
+            if ($test_category == LessonTest::CURRENT_WORK && !self::checkLessonSchedule($modelProgress, $model->lesson_date)) {
                 continue;
             }
             $m = new LessonProgress();
@@ -466,12 +467,12 @@ class LessonItems extends \artsoft\db\ActiveRecord
      * @param $lesson_date
      * @return bool
      */
-    public static function checkLessonIndiv($model, $lesson_date)
+    public static function checkLessonIndiv($modelProgress, $model)
     {
         return LessonItemsProgressView::find()
             ->where(['=', 'subject_sect_studyplan_id', 0])
-            ->andWhere(['=', 'studyplan_subject_id', $model->studyplan_subject_id])
-            ->andWhere(['=', 'lesson_date', strtotime($lesson_date)])
+            ->andWhere(['=', 'studyplan_subject_id', $modelProgress->studyplan_subject_id])
+            ->andWhere(['=', 'lesson_date', strtotime($model->lesson_date)])
             ->exists();
     }
 
@@ -483,10 +484,10 @@ class LessonItems extends \artsoft\db\ActiveRecord
      * @param $lesson_date
      * @return mixed
      */
-    public static function checkLessonsIndiv($modelsProgress, $lesson_date)
+    public static function checkLessonsIndiv($modelsProgress, $model)
     {
         foreach ($modelsProgress as $item => $modelProgress) {
-            if (self::checkLessonIndiv($modelProgress, $lesson_date)) {
+            if (self::checkLessonIndiv($modelProgress, $model)) {
                 unset($modelsProgress[$item]);
             }
         }
