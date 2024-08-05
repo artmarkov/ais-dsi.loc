@@ -19,5 +19,5 @@ return [
     'Age Out' => 'Возраст до',
     'Qty Entrant' => 'Для приема',
     'Qty Reserve' => 'Для резерва',
-    'Limited status list' => 'Список ограничений',
+    'Limited status list' => 'Дополнительные сведения',
 ];
