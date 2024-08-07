@@ -59,12 +59,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'student-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                        'bulkActionOptions' => [
+                        /*'bulkActionOptions' => [
                             'gridId' => 'student-grid',
                             'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-                        ],
+                        ],*/
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+//                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
                             [
                                 'attribute' => 'id',
                                 'options' => ['style' => 'width:30px'],
@@ -122,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return [$action, 'id' => $model->id];
                                 },
                                 'controller' => '/students/default',
-                                'template' => '{view} {update} {delete}',
+                                'template' => '{view} {update}',/* {delete}*/
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
 
                             ],

@@ -87,7 +87,7 @@ class EmployeesSearch extends Employees
         $query->joinWith(['user']);
 
         $query->andFilterWhere([
-            'id' => $this->id,
+            'employees.id' => $this->id,
             'access_work_flag' => $this->access_work_flag,
             'user_common.status' => $this->userStatus,
         ]);

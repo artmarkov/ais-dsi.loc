@@ -14,7 +14,7 @@ use yii\widgets\Pjax;
 /* @var $modelTeachers */
 /* @var $modelConfirm */
 
-$this->title = $this->title = Yii::t('art/guide', 'Group Progress');
+$this->title = Yii::t('art/guide', 'Group Progress');
 $this->params['breadcrumbs'][] = $this->title;
 //echo '<pre>' . print_r($model['columns'], true) . '</pre>'; die();
 $readonly = (Teachers::isOwnTeacher($modelTeachers->id)) ? false : true;

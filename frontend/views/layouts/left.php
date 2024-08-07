@@ -82,7 +82,7 @@ use artsoft\widgets\Nav;
                 'items' => [
                     // Преподаватели
                     ['label' => 'Карточка преподавателя', 'icon' => 'fa fa-minus', 'url' => ['/teachers/default/index']],
-                    ['label' => 'Мои ученики', 'icon' => 'fa fa-minus', 'url' => ['/teachers/studyplan/index']],
+                    ['label' => 'Ученики и группы', 'icon' => 'fa fa-minus', 'url' => ['/teachers/studyplan/index']],
                     ['label' => 'Нагрузка', 'icon' => 'fa fa-minus', 'url' => ['/teachers/load-items/index']],
                     ['label' => 'Табель учета', 'icon' => 'fa fa-minus', 'url' => ['/teachers/cheet-account/index']],
                     ['label' => 'Планирование индивидуальных занятий', 'icon' => 'fa fa-minus', 'url' => ['/teachers/teachers-plan/index']],

@@ -51,12 +51,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'parents-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                        'bulkActionOptions' => [
+                       /* 'bulkActionOptions' => [
                             'gridId' => 'parents-grid',
                             'actions' => [ Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
-                        ],
+                        ],*/
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'visible' => \artsoft\Art::isBackend(), 'options' => ['style' => 'width:10px']],
+//                            ['class' => 'artsoft\grid\CheckboxColumn', 'visible' => \artsoft\Art::isBackend(), 'options' => ['style' => 'width:10px']],
                             [
                                 'options' => ['style' => 'width:30px'],
                                 'attribute' => 'id',
@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'visible' => \artsoft\Art::isBackend(),
                                 'controller' => '/parents/default',
-                                'template' => '{view} {update} {delete}',
+                                'template' => '{view} {update}',/* {delete}*/
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
                             ],
                             [

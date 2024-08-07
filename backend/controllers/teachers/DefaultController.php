@@ -13,6 +13,7 @@ use common\models\education\LessonProgressView;
 use common\models\education\LessonTest;
 use common\models\education\ProgressConfirm;
 use common\models\education\ProgressConfirmIndiv;
+use common\models\education\search\LessonProgressViewSearch;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidejob\Bonus;
@@ -1197,7 +1198,7 @@ class DefaultController extends MainController
             // предустановка учеников
             if (isset($_POST['submitAction']) && $_POST['submitAction'] == 'next') {
                 $model->load(Yii::$app->request->post());
-               // echo '<pre>' . print_r($model, true) . '</pre>'; die();
+                // echo '<pre>' . print_r($model, true) . '</pre>'; die();
                 $lessonTest = LessonTest::findOne($model->lesson_test_id);
                 $modelsItems = $model->getLessonProgressTeachersNew($id, $subject_key, $timestamp_in, $model);
                 if ($lessonTest->test_category == LessonTest::CURRENT_WORK) {
@@ -1674,6 +1675,34 @@ class DefaultController extends MainController
         return $this->renderIsAjax('portfolio', compact(['dataProvider', 'model_date', 'id']));
     }
 
+    public function actionStudyplanList($id)
+    {
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
+
+        $model_date = $this->modelDate;
+
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
+
+        $query = LessonProgressView::find()
+            ->where(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $id]))
+            ->andWhere(['=', 'plan_year', $model_date->plan_year]);
+        $dataProvider = new ActiveDataProvider(['query' => $query, 'pagination' => [
+            'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
+        ],
+            'sort' => [
+                'defaultOrder' => [
+                    'subject_sect_id' => SORT_ASC,
+                ],
+            ],
+        ]);
+        $teachers_id = $id;
+        return $this->renderIsAjax('studyplan-list', compact(['dataProvider', 'model_date', 'teachers_id']));
+    }
+
     /**
      * @param $id
      * @return array
@@ -1686,7 +1715,7 @@ class DefaultController extends MainController
             ['label' => 'Нагрузка', 'url' => ['/teachers/default/load-items', 'id' => $id]],
             ['label' => 'Табель учета', 'url' => ['/teachers/default/cheet-account', 'id' => $id]],
             ['label' => 'Планирование инд. занятий', 'url' => ['/teachers/default/teachers-plan', 'id' => $id]],
-            ['label' => 'Злементы расписания', 'url' => ['/teachers/default/schedule-items', 'id' => $id]],
+            ['label' => 'Элементы расписания', 'url' => ['/teachers/default/schedule-items', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/teachers/default/schedule', 'id' => $id]],
             ['label' => 'Тематические/репертуарные планы', 'url' => ['/teachers/default/thematic-items', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/teachers/default/consult-items', 'id' => $id]],
@@ -1695,6 +1724,7 @@ class DefaultController extends MainController
             ['label' => 'Показатели эффективности', 'url' => ['/teachers/default/efficiency', 'id' => $id]],
             ['label' => 'Портфолио', 'url' => ['/teachers/default/portfolio', 'id' => $id]],
             ['label' => 'Документы', 'url' => ['/teachers/default/document', 'id' => $id]],
+            ['label' => 'Ученики и группы', 'url' => ['/teachers/default/studyplan-list', 'id' => $id]],
         ];
     }
 }

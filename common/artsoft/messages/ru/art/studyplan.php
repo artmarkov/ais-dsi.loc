@@ -32,5 +32,6 @@ return [
     'Lesson Tests' => 'Виды испытвний',
     'Status Reason' => 'Причина закрытия',
     'Mat Capital' => 'Оплата мат. капиталом',
+    'Students and groups' => 'Ученики и группы',
 
 ];

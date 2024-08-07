@@ -16,25 +16,21 @@ use common\models\schedule\ConsultSchedule;
 use common\models\schedule\search\ConsultScheduleStudyplanViewSearch;
 use common\models\schedule\search\SubjectScheduleStudyplanViewSearch;
 use common\models\schedule\SubjectSchedule;
-use common\models\schoolplan\Schoolplan;
 use common\models\schoolplan\SchoolplanPerform;
 use common\models\schoolplan\search\SchoolplanPerformSearch;
 use common\models\students\Student;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
-use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
-use common\models\studyplan\search\StudyplanViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanInvoices;
 use common\models\studyplan\StudyplanSubject;
 use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
-use common\models\studyplan\StudyplanView;
 use common\models\studyplan\SubjectCharacteristic;
 use common\models\teachers\TeachersLoad;
-use common\models\teachers\TeachersLoadStudyplanView;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
@@ -48,39 +44,34 @@ class StudyplanController extends MainController
     public $modelClass = 'common\models\studyplan\Studyplan';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanSearch';
 
-
     public function actionIndex()
     {
         $model_date = $this->modelDate;
         $teachers_id = $this->teachers_id;
         $model_date->teachers_id = $model_date->teachers_id ?? $teachers_id;
-        $studyplanIDS = TeachersLoadStudyplanView::find()
-            ->select('studyplan_id')
-            ->distinct('studyplan_id')
-            ->where(['=', 'teachers_id', $model_date->teachers_id])
-            ->column();
 
-        $query = StudyplanView::find()
-            ->where(['in', 'id', $studyplanIDS])
-            ->andWhere(['=', 'plan_year', $model_date->plan_year])
-            ->andWhere(['OR',
-                ['status' => Studyplan::STATUS_ACTIVE],
-                ['AND',
-                    ['status' => Studyplan::STATUS_INACTIVE],
-                    ['status_reason' => [1, 2, 4]]
-                ]
-            ]);
+        if (!isset($model_date)) {
+            throw new NotFoundHttpException("The model_date was not found.");
+        }
 
-        $searchModel = new StudyplanViewSearch($query);
-        $params = $this->getParams();
-        $dataProvider = $searchModel->search($params);
-        return $this->renderIsAjax('@backend/views/studyplan/default/index.php', compact('dataProvider', 'searchModel', 'model_date', 'teachers_id'));
-
+        $query = LessonProgressView::find()
+            ->where(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $model_date->teachers_id]))
+            ->andWhere(['=', 'plan_year', $model_date->plan_year]);
+        $dataProvider = new ActiveDataProvider(['query' => $query, 'pagination' => [
+            'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
+        ],
+            'sort' => [
+                'defaultOrder' => [
+                    'subject_sect_id' => SORT_ASC,
+                ],
+            ],
+        ]);
+        return $this->renderIsAjax('@backend/views/teachers/default/studyplan-list.php', ['dataProvider' => $dataProvider, 'model_date' => $model_date, 'teachers_id' => $model_date->teachers_id]);
     }
 
     public function actionView($id)
     {
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['teachers/studyplan/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Students and groups'), 'url' => ['teachers/studyplan/index']];
         $this->view->params['tabMenu'] = $this->getMenu($id);
         $this->view->params['breadcrumbs'][] = ['label' => 'Карточка ученика'];
         $model = Studyplan::findOne($id);
@@ -97,7 +88,7 @@ class StudyplanController extends MainController
     public function actionScheduleItems($id, $objectId = null, $mode = null)
     {
         $model = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['teachers/studyplan/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Students and groups'), 'url' => ['teachers/studyplan/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/studyplan/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
@@ -175,7 +166,7 @@ class StudyplanController extends MainController
     public function actionSchedule($id, $readonly = false)
     {
         $model = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['teachers/studyplan/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Students and groups'), 'url' => ['teachers/studyplan/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/studyplan/view', 'id' => $id]];
         $this->view->params['breadcrumbs'][] = 'Расписание занятий';
         $this->view->params['tabMenu'] = $this->getMenu($id);
@@ -200,7 +191,7 @@ class StudyplanController extends MainController
     public function actionConsultItems($id, $objectId = null, $mode = null)
     {
         $model = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['teachers/studyplan/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Students and groups'), 'url' => ['teachers/studyplan/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/studyplan/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
@@ -280,7 +271,7 @@ class StudyplanController extends MainController
     public function actionCharacteristicItems($id, $objectId = null, $mode = null)
     {
         $model = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['teachers/studyplan/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Students and groups'), 'url' => ['teachers/studyplan/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/studyplan/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
@@ -358,7 +349,7 @@ class StudyplanController extends MainController
     public function actionThematicItems($id, $objectId = null, $mode = null, $readonly = false)
     {
         $model = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['teachers/studyplan/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Students and groups'), 'url' => ['teachers/studyplan/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/studyplan/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
@@ -504,7 +495,7 @@ class StudyplanController extends MainController
     public function actionStudyplanProgress($id, $objectId = null, $mode = null)
     {
         $model = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['teachers/studyplan/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Students and groups'), 'url' => ['teachers/studyplan/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/studyplan/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
@@ -683,7 +674,7 @@ class StudyplanController extends MainController
     {
         $model = $this->findModel($id);
         $plan_year = $model->plan_year;
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['teachers/studyplan/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Students and groups'), 'url' => ['teachers/studyplan/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/studyplan/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 
@@ -768,7 +759,7 @@ class StudyplanController extends MainController
     public function actionStudyplanInvoices($id, $objectId = null, $mode = null)
     {
         $model = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['teachers/studyplan/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Students and groups'), 'url' => ['teachers/studyplan/index']];
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/studyplan/view', 'id' => $id]];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 

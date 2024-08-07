@@ -121,7 +121,7 @@ class ScheduleItemsController extends MainController
     public function getMenu()
     {
         return [
-            ['label' => 'Злементы расписания', 'url' => ['/teachers/schedule-items/index']],
+            ['label' => 'Элементы расписания', 'url' => ['/teachers/schedule-items/index']],
             ['label' => 'Расписание занятий', 'url' => ['/teachers/schedule-items/schedule']],
         ];
     }

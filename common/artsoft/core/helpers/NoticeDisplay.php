@@ -152,7 +152,8 @@ class NoticeDisplay
         if (isset($models[$model->subject_schedule_id])) {
             $info = [];
             foreach ($models[$model->subject_schedule_id] as $index => $itemModel) {
-                $info[] = $itemModel['student_fio'] . '(' . $itemModel['sect_name'] . ' ' . $itemModel['subject'] . ')';
+//                echo '<pre>' . print_r($itemModel, true) . '</pre>'; die();
+                $info[] = $itemModel['student_fio'] . '(' . $itemModel['sect_name'] . ' ' . $itemModel['subject'] . ') - ' . $this->getScheduleDisplay($itemModel). ' ' . RefBook::find('auditory_memo_1')->getValue($itemModel['auditory_id']);
             }
             $message = 'Ученик не может в одно и то же время находиться в разных аудиториях! ' . implode(', ', $info);
             //  Notice::registerDanger($message);
@@ -183,8 +184,16 @@ class NoticeDisplay
 							AND b.status = 1
 							AND a.plan_year = :plan_year
 							AND b.plan_year = :plan_year
-							AND (((a.time_in < b.time_out AND a.time_in >= b.time_in) OR (a.time_out <= b.time_out AND a.time_out > b.time_in))
-							AND ((b.time_in < a.time_out AND b.time_in >= a.time_in) OR (b.time_out <= a.time_out AND b.time_out > a.time_in)))
+							AND (
+							    ((a.time_in > b.time_in AND a.time_out < b.time_out) OR (b.time_in > a.time_in AND b.time_out < a.time_out))
+                                OR 
+                                (
+                                    (
+                                        ((a.time_in < b.time_out AND a.time_in >= b.time_in) OR (a.time_out <= b.time_out AND a.time_out > b.time_in))
+                                    AND ((b.time_in < a.time_out AND b.time_in >= a.time_in) OR (b.time_out <= a.time_out AND b.time_out > a.time_in))
+                                    )
+                                )
+							    )
 							AND b.subject_schedule_id = ANY (string_to_array(:subject_schedule_ids, \',\')::int[])',
             [
                 'plan_year' => $plan_year,

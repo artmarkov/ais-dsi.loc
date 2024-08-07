@@ -146,7 +146,7 @@ class TeachersController extends MainController
     {
         return [
             ['label' => 'Карточка', 'url' => ['/reestr/teachers/view', 'id' => $id]],
-            ['label' => 'Злементы расписания', 'url' => ['/reestr/teachers/schedule-items', 'id' => $id]],
+            ['label' => 'Элементы расписания', 'url' => ['/reestr/teachers/schedule-items', 'id' => $id]],
             ['label' => 'Расписание занятий', 'url' => ['/reestr/teachers/schedule', 'id' => $id]],
             ['label' => 'Расписание консультаций', 'url' => ['/reestr/teachers/consult-items', 'id' => $id]],
         ];

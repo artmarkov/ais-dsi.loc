@@ -93,7 +93,7 @@ class ParentsSearch extends Parents
         $query->joinWith(['user']);
 
         $query->andFilterWhere([
-            'id' => $this->id,
+            'parents.id' => $this->id,
             'user_common_id' => $this->user_common_id,
             'sert_date' => $this->sert_date,
             'user_common.status' => $this->userStatus,
