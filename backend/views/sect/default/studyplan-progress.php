@@ -72,7 +72,11 @@ $columns = [
         'label' => $models['attributes']['student_id'],
         'value' => function ($models) {
             return Html::a($models['student_fio'],
-                ['/students/default/view', 'id' => $models['student_id']],
+                ['/studyplan/default/schedule-items', 'id' => $models['studyplan_id']],
+                [
+                    'target' => '_blank',
+                    'data-pjax' => '0',
+                ],
                 [
                     'title' => 'Открыть карточку ученика'
                 ]);

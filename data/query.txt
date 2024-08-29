@@ -52,3 +52,9 @@ ADD UNIQUE (studyplan_id,invoices_id,invoices_summ,invoices_reporting_month)
 
 ALTER TABLE lesson_items
 ADD UNIQUE (subject_sect_studyplan_id, studyplan_subject_id, lesson_test_id, lesson_date)
+
+// обновление нагрузки концертмейстеров
+UPDATE public.teachers_load
+	SET load_time=1.5
+	WHERE id in (SELECT teachers_load_id
+	FROM public.teachers_load_view where programm_id in (1005,1003,1006,1007) AND plan_year = 2024 AND direction_id = 1001 AND load_time = 2.5);

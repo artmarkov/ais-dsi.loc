@@ -67,7 +67,7 @@ $columns = [
            Список учеников и групп: <?php echo RefBook::find('teachers_fullname')->getValue($teachers_id); ?>
         </div>
         <div class="panel-body">
-            <?= $this->render('_search', compact('model_date', 'teachers_id')) ?>
+            <?= $this->render('_search-studyplan', compact('model_date', 'teachers_id')) ?>
 
             <div class="row">
                 <div class="col-sm-6">

@@ -328,11 +328,15 @@ class DefaultController extends BaseController
                 $user = User::findOne($userCommon->user_id);
 //                echo '<pre>' . print_r($user, true) . '</pre>';
 //                die();
-                if ($user->status == User::STATUS_ACTIVE) {
-                    Yii::$app->session->setFlash('info', Yii::t('art/auth', "The user with the entered data is already registered in the system and the account is active."));
-                    return $this->redirect(['reset-password', 'username' => $user->username]);
+                if ($user) {
+                    if ($user->status == User::STATUS_ACTIVE) {
+                        Yii::$app->session->setFlash('info', Yii::t('art/auth', "The user with the entered data is already registered in the system and the account is active."));
+                        return $this->redirect(['reset-password', 'username' => $user->username]);
+                    } else {
+                        return $this->redirect(['signup', 'auth_key' => $user->auth_key]);
+                    }
                 } else {
-                    return $this->redirect(['signup', 'auth_key' => $user->auth_key]);
+                    Yii::$app->session->setFlash('error', Yii::t('art/auth', "User not found or blocked in the system"));
                 }
             } else {
                 Yii::$app->session->setFlash('error', Yii::t('art/auth', "User not found or blocked in the system"));

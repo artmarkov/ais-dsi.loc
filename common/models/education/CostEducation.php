@@ -16,7 +16,7 @@ use Yii;
  */
 class CostEducation extends \artsoft\db\ActiveRecord
 {
-    public $standard;
+//    public $standard;
 
     /**
      * {@inheritdoc}
@@ -48,9 +48,9 @@ class CostEducation extends \artsoft\db\ActiveRecord
         return [
             'id' => 'ID',
             'programm_id' => 'Программа обучения',
-            'standard_basic' => 'Норматив базовый, руб.',
-            'standard_basic_ratio' => 'Коэффициент к базовому нормативу',
-            'standard' => 'Норматив, руб.',
+            'standard_basic' => 'Нормативные затраты на 1 обучающегося в год, рублей',
+            'standard_basic_ratio' => 'Нормативные затраты с вариативной частью',
+//            'standard' => 'Норматив, руб.',
         ];
     }
 
@@ -64,10 +64,10 @@ class CostEducation extends \artsoft\db\ActiveRecord
         return $this->hasOne(EducationProgramm::className(), ['id' => 'programm_id']);
     }
 
-    public function getStandard()
-    {
-        return $this->standard_basic * $this->standard_basic_ratio;
-    }
+//    public function getStandard()
+//    {
+//        return $this->standard_basic * $this->standard_basic_ratio;
+//    }
 
     public static function initModels()
     {
@@ -81,7 +81,7 @@ class CostEducation extends \artsoft\db\ActiveRecord
             $modelCost = new self();
             $modelCost->programm_id = $model->programm_id;
             $modelCost->standard_basic = 0;
-            $modelCost->standard_basic_ratio = 1;
+            $modelCost->standard_basic_ratio = 0;
             $modelCost->save();
         }
     }

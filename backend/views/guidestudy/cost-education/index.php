@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'format' => 'raw',
                             ],
-                            [
+                          /*  [
                                 'attribute' => 'standard_basic',
                                 'value' => function (CostEducation $model) {
                                     return Editable::widget([
@@ -86,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     ]);
                                 },
                                 'format' => 'raw',
-                            ],
+                            ],*/
                             [
                                 'attribute' => 'standard_basic_ratio',
                                 'value' => function (CostEducation $model) {
@@ -95,7 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'name' => 'standard_basic_ratio',
                                         'asPopover' => true,
                                         'value' => $model->standard_basic_ratio,
-                                        'header' => 'Введите Коэффициент к базовому нормативу',
+                                        'header' => 'Введите норматив с вариативной частью',
                                         'format' => Editable::FORMAT_LINK,
                                         'inputType' => Editable::INPUT_TEXT,
                                         'size' => 'md',
@@ -106,12 +106,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'format' => 'raw',
                             ],
-                            [
+                            /*[
                                 'attribute' => 'standard',
                                 'value' => function (CostEducation $model) {
                                     return $model->getStandard();
                                 },
-                            ],
+                            ],*/
                             [
                                 'class' => 'kartik\grid\ActionColumn',
                                 'urlCreator' => function ($action, $model, $key, $index) {

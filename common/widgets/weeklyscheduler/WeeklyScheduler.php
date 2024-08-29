@@ -17,7 +17,7 @@ class WeeklyScheduler extends Widget
     public $options = [];
     public $clientOptions = [];
     public $data = [];
-    public $startTime = '09:00';
+    public $startTime = '08:00';
     public $endTime = '21:00';
     public $widthTime = 60 * 5;
     public $timeLineY = 50;

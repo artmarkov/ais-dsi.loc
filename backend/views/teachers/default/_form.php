@@ -251,17 +251,20 @@ EOF;
                                         ?>
                                         <?= $form->field($modelActivity, "[{$index}]direction_vid_id")->dropDownList(common\models\guidejob\DirectionVid::getDirectionVidList(), [
                                             'prompt' => Yii::t('art/teachers', 'Select Direction Vid...'),
-                                            'id' => 'work_id'
+                                            'id' => 'work_id',
+                                            'disabled' => $readonly,
                                         ])->label(Yii::t('art/teachers', 'Name Direction Vid'));
                                         ?>
                                         <?= $form->field($modelActivity, "[{$index}]direction_id")->dropDownList(\common\models\guidejob\Direction::getDirectionList(), [
                                             'prompt' => Yii::t('art/teachers', 'Select Direction...'),
-                                            'id' => 'direction_id'
+                                            'id' => 'direction_id',
+                                            'disabled' => $readonly,
                                         ])->label(Yii::t('art/teachers', 'Name Direction'));
                                         ?>
                                         <?= $form->field($modelActivity, "[{$index}]stake_id")->dropDownList(RefBook::find('stake_name', $modelActivity->isNewRecord ? \common\models\guidejob\Stake::STATUS_ACTIVE : '')->getList(), [
                                             'prompt' => Yii::t('art/teachers', 'Select Stake...'),
-                                            'id' => 'direction_id'
+                                            'id' => 'direction_id',
+                                            'disabled' => $readonly,
                                         ])->label(Yii::t('art/teachers', 'Name Stake'));
                                         ?>
                                     </div>

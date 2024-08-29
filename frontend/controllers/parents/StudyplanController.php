@@ -18,7 +18,9 @@ use common\models\schedule\SubjectSchedule;
 use common\models\schoolplan\SchoolplanProtocol;
 use common\models\schoolplan\search\SchoolplanPerformSearch;
 use common\models\schoolplan\search\SchoolplanProtocolViewSearch;
+use common\models\service\UsersCard;
 use common\models\students\Student;
+use common\models\students\StudentDependence;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
@@ -29,8 +31,10 @@ use common\models\studyplan\StudyplanInvoices;
 use common\models\studyplan\StudyplanSubject;
 use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
+use common\models\studyplan\StudyplanView;
 use common\models\studyplan\SubjectCharacteristic;
 use common\models\parents\TeachersLoad;
+use common\models\user\UserCommon;
 use Yii;
 use yii\base\DynamicModel;
 use yii\db\Exception;
@@ -52,11 +56,13 @@ class StudyplanController extends MainController
     {
         $model_date = $this->modelDate;
         $teachers_id = null;
-        $query = Studyplan::find()
+        $ids = Studyplan::find()
             ->innerJoin('student_dependence', 'studyplan.student_id=student_dependence.student_id')
             ->where(['=', 'student_dependence.parent_id', $this->parents_id])
             ->andWhere(['=', 'plan_year', $model_date->plan_year])
-            ->andWhere(['=', 'studyplan.status', 1]);
+            ->active()->column();
+
+        $query = StudyplanView::find()->where(['id' => $ids]);
 
         $searchModel = new StudyplanViewSearch($query);
         $params = Yii::$app->request->getQueryParams();
@@ -64,8 +70,79 @@ class StudyplanController extends MainController
         return $this->renderIsAjax('@backend/views/studyplan/default/index', compact('dataProvider', 'searchModel', 'model_date', 'teachers_id'));
     }
 
-
     public function actionView($id)
+    {
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['parents/studyplan/index']];
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => 'Карточка ученика'];
+        $model = Studyplan::findOne($id);
+        $model = Student::findOne($model->student_id);
+
+        $userCommon = UserCommon::findOne(['id' => $model->user_common_id, 'user_category' => UserCommon::USER_CATEGORY_STUDENTS]);
+        $userCard = UsersCard::findOne(['user_common_id' => $model->user_common_id]) ?: new UsersCard();
+        // $userCommon->scenario = UserCommon::SCENARIO_UPDATE;
+
+        if (!isset($model, $userCommon)) {
+            throw new NotFoundHttpException("The user was not found.");
+        }
+
+        $modelsDependence = $model->studentDependence;
+        foreach ($modelsDependence as $m) {
+            $m->scenario = StudentDependence::SCENARIO_PARENT;
+        }
+        if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
+
+            $oldIDs = ArrayHelper::map($modelsDependence, 'id', 'id');
+            $modelsDependence = Model::createMultiple(StudentDependence::class, $modelsDependence);
+            Model::loadMultiple($modelsDependence, Yii::$app->request->post());
+            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsDependence, 'id', 'id')));
+
+            // validate all models
+            $valid = $userCommon->validate();
+            // $valid = $userCard->validate() && $valid;
+            $valid = $model->validate() && $valid;
+            $valid = Model::validateMultiple($modelsDependence) && $valid;
+
+            if ($valid) {
+                $transaction = \Yii::$app->db->beginTransaction();
+                try {
+                    if ($flag = $userCommon->save(false)) {
+                        $userCard->user_common_id = $userCommon->id;
+                        if ($flag && $flag = $userCard->save(false)) {
+                            if ($flag = $model->save(false)) {
+                                if (!empty($deletedIDs)) {
+                                    StudentDependence::deleteAll(['id' => $deletedIDs]);
+                                }
+                                foreach ($modelsDependence as $modelDependence) {
+                                    $modelDependence->student_id = $model->id;
+                                    if (!($flag = $modelDependence->save(false))) {
+                                        $transaction->rollBack();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                        $this->getSubmitAction();
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                }
+            }
+        }
+
+        return $this->render('@backend/views/students/default/_form', [
+            'userCommon' => $userCommon,
+            'userCard' => $userCard,
+            'model' => $model,
+            'modelsDependence' => (empty($modelsDependence)) ? [new StudentDependence] : $modelsDependence,
+            'readonly' => true
+        ]);
+    }
+
+   /* public function actionView($id)
     {
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['parents/studyplan/index']];
         $this->view->params['tabMenu'] = $this->getMenu($id);
@@ -79,7 +156,7 @@ class StudyplanController extends MainController
             throw new NotFoundHttpException("The model_date was not found.");
         }
         return $this->renderIsAjax('@backend/views/studyplan/default/students_view', compact('modelStudent', 'studentDependence', 'model_date'));
-    }
+    }*/
 
     public function actionScheduleItems($id, $objectId = null, $mode = null)
     {

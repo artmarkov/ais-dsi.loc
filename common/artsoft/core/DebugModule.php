@@ -20,7 +20,7 @@ class DebugModule extends Module
         if (Yii::$app->user->identity && User::hasPermission('viewDebug')) {
             return true;
         }
-        return false;
+        return true;
     }
 
     /**

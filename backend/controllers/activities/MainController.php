@@ -9,6 +9,7 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Внеплановые мероприятия',  'url' => ['/activities/activities-over/index']],
         ['label' => 'Внешние мероприятия',  'url' => ['/activities/schoolplan-outside']],
         ['label' => 'Календарь мероприятий',  'url' => ['/activities/default/calendar']],
+        ['label' => 'Ежедневник по ученикам',  'url' => ['/activities/student-schedule/index']],
         ['label' => 'Ежедневник по аудиториям',  'url' => ['/activities/auditory-schedule/index']],
         ['label' => 'Ежедневник по преподавателям',  'url' => ['/activities/teachers-schedule/index']],
     ];

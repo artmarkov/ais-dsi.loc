@@ -15,3 +15,16 @@
 .jq-schedule .timeline, .jq-schedule .sc_main .tb {
     border-bottom: 1px solid #777;
 }
+.jq-schedule .sc_menu .sc_header .sc_time {
+    text-align: left;
+    background: #ebebeb;
+}
+.jq-schedule .sc_bar .text {
+    display: block;
+    margin-top: 0px;
+    font-weight: normal;
+    padding: 0 14px;
+    font-size: 10px;
+    height: 1.2em;
+    overflow: visible;
+}

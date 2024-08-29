@@ -2,6 +2,8 @@
 
 namespace backend\controllers\studyplan;
 
+use artsoft\helpers\ButtonHelper;
+use artsoft\widgets\Notice;
 use backend\models\Model;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\LessonItems;
@@ -52,19 +54,46 @@ class DefaultController extends MainController
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
+                if($action->id == 'index') {
+                    $model_date = $this->modelDate;
+                    $model_date->studyplan_id = null;
+                }
             if (isset($_GET['id'])) {
                 $id = $_GET['id'];
                 $model_date = $this->modelDate;
+               // echo '<pre>' . print_r($model_date, true) . '</pre>';
+                $m = StudyplanView::findOne(['id' => $id]);
                 if (!$model_date->studyplan_id) {
                     $model_date->studyplan_id = $id;
-                } elseif ($model_date->studyplan_id != $id) {
+                }
+                if ($model_date->studyplan_id != $id) {
                     $id = $model_date->studyplan_id;
                     $this->redirect(['/studyplan/' . $id . '/' . $action->id]);
+//                } else {
+//                    //  echo '<pre>' . print_r($model_date, true) . '</pre>'; die();
+//                    $studyplanId = StudyplanView::find()
+//                        ->where(['student_id' => $m->student_id])
+//                        ->andWhere(['programm_id' => $m->programm_id])
+//                        ->andWhere(['plan_year' => $model_date->plan_year])
+//                        ->scalar();
+//                    if ($studyplanId) {
+////                            $session = Yii::$app->session;
+////                            $session->set('__backendPlanYear', $model_date->plan_year);
+//                        $model_date->studyplan_id = $studyplanId;
+////                            echo '<pre>' . print_r($studyplanId, true) . '</pre>';
+////                            echo '<pre>' . print_r($model_date, true) . '</pre>'; die();
+//                        $this->redirect(['/studyplan/' . $studyplanId . '/' . $action->id]);
+//                    } else {
+//                        Notice::registerWarning('За выбранный ' . $model_date->plan_year . '/' . ($model_date->plan_year + 1) . '  учебный год плана текущего ученика не найдено!');
+//                        $model_date->plan_year = $m->plan_year;
+//                    }
+
                 }
             }
         }
         return true;
     }
+
     public function actionIndex()
     {
         $model_date = $this->modelDate;
@@ -874,7 +903,7 @@ class DefaultController extends MainController
                     try {
                         if ($flag = $model->save(false)) {
 //                            if (!empty($deletedIDs)) {
-                                // LessonProgress::deleteAll(['id' => $deletedIDs]);
+                            // LessonProgress::deleteAll(['id' => $deletedIDs]);
 //                            }
                             foreach ($modelsItems as $modelItems) {
                                 $modelItems->lesson_items_id = $model->id;
@@ -912,15 +941,13 @@ class DefaultController extends MainController
 
             $model_date->addRule(['date_in', 'date_out'], 'required')
                 ->addRule(['date_in', 'date_out'], 'safe')
-                ->addRule('date_in', function ($attribute)
-                {
-                    if(Yii::$app->formatter->asTimestamp('01.'.$this->date_in) > Yii::$app->formatter->asTimestamp('01.'.$this->date_out)) $this->addError($attribute, 'Дата начала периода должна быть меньше даты окончания.');
+                ->addRule('date_in', function ($attribute) {
+                    if (Yii::$app->formatter->asTimestamp('01.' . $this->date_in) > Yii::$app->formatter->asTimestamp('01.' . $this->date_out)) $this->addError($attribute, 'Дата начала периода должна быть меньше даты окончания.');
                 })
-                ->addRule('date_in', function ($attribute)
-                {
-                    $plan_year_1 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_in));
-                    $plan_year_2 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.'.$this->date_out));
-                    if($plan_year_1  != $plan_year_2 ) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
+                ->addRule('date_in', function ($attribute) {
+                    $plan_year_1 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.' . $this->date_in));
+                    $plan_year_2 = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, Yii::$app->formatter->asTimestamp('01.' . $this->date_out));
+                    if ($plan_year_1 != $plan_year_2) $this->addError($attribute, 'Задайте период в рамках одного учебного года.');
                 });
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
@@ -1044,7 +1071,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Studyplan Invoices'), 'url' => ['studyplan/default/studyplan-invoices', 'id' => $model->id]];
             $this->view->params['breadcrumbs'][] = 'Добавление карточки';
 
-            $model =  new StudyplanInvoices();
+            $model = new StudyplanInvoices();
             $model->status = StudyplanInvoices::STATUS_WORK;
 
             $studyplanIds = new DynamicModel(['ids']);

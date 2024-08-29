@@ -150,6 +150,13 @@ class TeachersPlan extends \artsoft\db\ActiveRecord
         return $this->time_plan_in ? $string : null;
     }
 
+    public function getPlanTimeDisplay()
+    {
+        $string =  $this->time_plan_in . '-' . $this->time_plan_out;
+        $string .= ' ' . $this->getTeachersPlanNotice();
+        return $this->time_plan_in ? $string : null;
+    }
+
     /**
      * В одной аудитории накладка по времени!
      * @param $model

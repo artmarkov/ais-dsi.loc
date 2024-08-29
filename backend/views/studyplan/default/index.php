@@ -1,7 +1,9 @@
 <?php
 
+use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
+use common\models\schoolplan\Schoolplan;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -63,7 +65,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]
                 ] : false,
                 'columns' => [
-                    ['class' => 'artsoft\grid\CheckboxColumn',  'visible' => \artsoft\Art::isBackend(), 'options' => ['style' => 'width:10px']],
+                    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
+                        return ['value' => $model->id];
+                    },
+                        'visible' => \artsoft\Art::isBackend(),
+                        'options' => ['style' => 'width:10px']
+                    ],
                     [
                         'attribute' => 'id',
                         'value' => function (Studyplan $model) {
@@ -83,7 +90,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                         'value' => function (StudyplanView $model) {
-                            return $model->student_fio;
+                            return User::hasRole(['parents']) ? Html::a($model->student_fio,
+                                ['/parents/studyplan/view', 'id' => $model->id],
+                                [
+                                    'data-pjax' => '0',
+//                                     'class' => 'btn btn-link',
+                                ]) : $model->student_fio;
                         },
                         'format' => 'raw',
                     ],
@@ -174,6 +186,24 @@ $this->params['breadcrumbs'][] = $this->title;
                             return Studyplan::getStatusReasonValue($model->status_reason);
                         },
                         'options' => ['style' => 'width:100px'],
+                        'format' => 'raw',
+                    ],
+                    [
+                        'label' => 'Док.пол.',
+                        'visible' => \artsoft\Art::isBackend(),
+                        'value' => function (Studyplan $model) {
+                            return $model->doc_received_flag ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да' : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> Нет';
+                        },
+                        'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
+                        'format' => 'raw',
+                    ],
+                    [
+                        'label' => 'Док.отпр.',
+                        'visible' => \artsoft\Art::isBackend(),
+                        'value' => function (Studyplan $model) {
+                            return $model->doc_sent_flag ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да' : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> Нет';
+                        },
+                        'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
                         'format' => 'raw',
                     ],
                     [

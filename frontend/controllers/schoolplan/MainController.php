@@ -19,7 +19,7 @@ class MainController extends \frontend\controllers\DefaultController
     {
         $this->viewPath = '@backend/views/schoolplan/default';
 
-        if(!User::hasRole(['teacher','department'])) {
+        if(!User::hasRole(['teacher','department','parents','student'])) {
             throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
         }
         $userId = Yii::$app->user->identity->getId();

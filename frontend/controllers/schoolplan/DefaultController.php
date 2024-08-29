@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\schoolplan;
 
+use artsoft\models\User;
 use backend\models\Model;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
@@ -598,8 +599,8 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         return [
             ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/view', 'id' => $id]],
-            ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id], 'visible' => $model->category->commission_sell == 0],
-            ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol', 'id' => $id], 'visible' => $model->category->commission_sell == 1],
+            ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id], 'visible' => $model->category->commission_sell == 0 && User::hasRole(['teacher','department'])],
+            ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol', 'id' => $id], 'visible' => $model->category->commission_sell == 1 && User::hasRole(['teacher','department'])],
 //            ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id], 'visible' => $model->category->efficiency_flag],
         ];
     }

@@ -56,7 +56,7 @@ class UsersBrowser extends DashboardWidget
         if (User::hasPermission('viewUsers'))
         {
 
-            $visits = UserVisitLog::find()->all();
+            $visits = UserVisitLog::find()->where(['>','visit_time' , time()-(3*86400)])->all();
 
             if(empty($visits)) {
                 return;

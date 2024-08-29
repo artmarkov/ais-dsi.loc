@@ -8,6 +8,7 @@ use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\PriceHelper;
 use artsoft\helpers\RefBook;
+use common\models\education\CostEducation;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
 use common\models\own\Invoices;
@@ -68,7 +69,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 {
 
 // Шаблоны документов
-    const template_csf = 'document/contract_student_free.docx';
+    const template_csf = 'document/contract_student_free_2.docx';
     const template_cs = 'document/contract_student_new.docx';
     const template_cs_mk = 'document/contract_student_new-mk.docx';
     const template_ss = 'document/statement_student.docx';
@@ -370,6 +371,10 @@ class Studyplan extends \artsoft\db\ActiveRecord
             ->one();
         $invoices = Invoices::findOne(1000);
         $save_as = str_replace(' ', '_', $model->student->fullName);
+        $costGrandModel = CostEducation::findOne(['programm_id' => $model->programm_id]);
+        $termMasteringGrand = $model->programm->term_mastering - $model->course + 1;
+        $costYearGrandTotal = $model->cost_year_total * $termMasteringGrand;
+        $costTotalDecline = $costGrandModel['standard_basic_ratio'] * $termMasteringGrand;
         $data[] = [
             'rank' => 'doc',
             'doc_date' => date('j', strtotime($model->doc_date)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_date))] . ' ' . date('Y', strtotime($model->doc_date)), // дата договора
@@ -389,12 +394,21 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'programm_name' => $model->programm->name, // название программы
             'programm_level' => isset($modelProgrammLevel->level) ? $modelProgrammLevel->level->name : null, // уровень программы
             'term_mastering' => 'срок обучения: ' . $model->programm->term_mastering . ' лет(года)', // Срок освоения образовательной программы
+            'term_mastering_grand' => 'срок обучения: ' . $termMasteringGrand . ' лет(года)', // Срок освоения образовательной программы с грантом
             'course' => $model->course . ' класс',
             'year_time_total' => $model->year_time_total,
+            'cost_grand' => $costGrandModel['standard_basic_ratio'],
             'cost_month_total' => $model->cost_month_total,
+            'cost_month_total_str' => PriceHelper::num2str($model->cost_month_total), // Стоимость обучения прописью
             'cost_month_total_half' => $model->cost_month_total / 2,
             'cost_year_total' => $model->cost_year_total, // Полная стоимость обучения
             'cost_year_total_str' => PriceHelper::num2str($model->cost_year_total), // Полная стоимость обучения прописью
+            'cost_year_grand_total' => $costYearGrandTotal, // Полная стоимость обучения
+            'cost_year_grand_total_str' => PriceHelper::num2str($costYearGrandTotal), // Полная стоимость обучения прописью
+            'cost_total_decline' => $costTotalDecline, // Снижение стоимости за счет средств гранта
+            'cost_total_decline_str' => PriceHelper::num2str($costTotalDecline),
+            'cost_grand_total' => $costYearGrandTotal + $costTotalDecline,
+            'cost_grand_total_str' => PriceHelper::num2str($costYearGrandTotal + $costTotalDecline),
             'student_address' => $model->student->userAddress,
             'student_phone' => $model->student->userPhone,
             'student_sert_name' => Student::getDocumentValue($model->student->sert_name) ?: 'свидетельства о рождении',
@@ -417,10 +431,12 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'oktmo' => $invoices->oktmo,
             'recipient' => $invoices->recipient,
             'payment_account' => $invoices->payment_account,
+            'personal_account' => $invoices->personal_account,
             'corr_account' => $invoices->corr_account,
             'bank_name' => $invoices->bank_name,
             'bik' => $invoices->bik,
             'kbk' => $invoices->kbk,
+            'student_fls' => sprintf('%06d', $model->student_id)
 
         ];
         $items = [];
@@ -482,7 +498,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
                 'week_day' => $modelSchedule->week_day,
                 'time_in' => $modelSchedule->time_in,
                 'time_out' => $modelSchedule->time_out,
-                'title' => $modelSchedule->sect_name,
+                'title' => $modelSchedule->sect_name . ' ' . RefBook::find('auditory_memo_1')->getValue($modelSchedule->auditory_id),
                 'data' => [
                     'studyplan_id' => $this->id,
                     'schedule_id' => $modelSchedule->subject_schedule_id,
@@ -666,8 +682,8 @@ class Studyplan extends \artsoft\db\ActiveRecord
                         $model_load->direction_id = $modelSub['direction_id'] ?? null;
                         $model_load->direction_vid_id = $modelSub['direction_vid_id'] ?? null;
                         $model_load->teachers_id = $modelSub['teachers_id'] ?? null;
-                        $model_load->load_time = $model_subject->week_time;
-                        $model_load->load_time_consult = $model_subject->year_time_consult;
+                        $model_load->load_time = $this->getLoadTime($model_load->direction_id, $model_subject->week_time);
+                        $model_load->load_time_consult = $model_load->direction_id == 1000 ? $model_subject->year_time_consult : 0;
 //            echo '<pre>' . print_r($model_load, true) . '</pre>';die();
                         $model_load->save(false);
                     }
@@ -726,6 +742,23 @@ class Studyplan extends \artsoft\db\ActiveRecord
         }
     }
 
+    protected function getLoadTime($direction_id, $week_time)
+    {
+        if($direction_id == 1000) {
+            return $week_time;
+        }
+        switch ($week_time) {
+            case 1:
+            case 2:
+                return 1;
+                break;
+            case 2.5:
+                return 1.5;
+                break;
+            default:
+                return $week_time;
+        }
+    }
     /**
      * @param int $next
      * @throws \Throwable
@@ -802,5 +835,10 @@ class Studyplan extends \artsoft\db\ActiveRecord
             }
         }
         return parent::beforeSave($insert);
+    }
+
+    public static function find()
+    {
+        return new StudyplanQuery(get_called_class());
     }
 }

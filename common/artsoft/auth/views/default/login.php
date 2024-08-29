@@ -48,7 +48,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?= Html::a(Yii::t('art/auth', "Forgot password?"), ['default/reset-password']) ?>
                             </div>
                         </div>
-
+                        <div class="row">
+                            <div class="col-sm-12 text-right">
+                                <?= Html::a(Yii::t('art/auth', "Forgot login?"), ['default/finding']) ?>
+                            </div>
+                        </div>
                         <?php ActiveForm::end() ?>
                     </div>
                 </div>

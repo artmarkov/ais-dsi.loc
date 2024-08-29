@@ -122,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return [$action, 'id' => $model->id];
                                 },
                                 'controller' => '/students/default',
-                                'template' => '{view} {update}',/* {delete}*/
+                                'template' => '{view} {update} {delete}',
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
 
                             ],

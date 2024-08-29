@@ -293,7 +293,7 @@ class ArtHelper
      * @param int $max
      * @return array
      */
-    public static function getCourseList($min = 1, $max = 8)
+    public static function getCourseList($min = 1, $max = 9)
     {
         $course = [];
         for ($i = $min; $i <= $max; $i++) {

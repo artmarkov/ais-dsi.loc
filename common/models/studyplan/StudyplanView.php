@@ -58,20 +58,23 @@ class StudyplanView extends Studyplan
         if (User::hasRole(['parents'])) {
             $userId = Yii::$app->user->identity->getId();
             $parents_id = \artsoft\helpers\RefBook::find('users_parents')->getValue($userId) ?? null;
-
-            $query = (new \yii\db\Query)->from('studyplan_view')
-                ->select(['studyplan_view.id', "CONCAT(student_fio, ' - ',education_programm_short_name) as name"])
-                ->innerJoin('student_dependence', 'studyplan_view.student_id=student_dependence.student_id')
-                ->where(['student_dependence.parent_id' => $parents_id])
-                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+            $ids = Studyplan::find()
+                ->innerJoin('student_dependence', 'studyplan.student_id=student_dependence.student_id')
+                ->where(['=', 'student_dependence.parent_id', $parents_id])
                 ->andWhere(['=', 'plan_year', $model->plan_year])
-                ->all();
+                ->active()->column();
+
+            $query = self::find()
+                ->select(['studyplan_view.id', "CONCAT(student_fio, ' - ',education_programm_short_name) as name"])
+                ->where(['id' => $ids])
+                ->asArray()->all();
+
         } elseif (User::hasRole(['student'])) {
 
             $query = self::find()->select('id,education_programm_short_name as name')
                 ->where(['=', 'student_id', $model->student_id])
                 ->andWhere(['=', 'plan_year', $model->plan_year])
-                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->active()
                 ->asArray()->all();
         }
         return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
@@ -81,7 +84,7 @@ class StudyplanView extends Studyplan
     {
             $query = self::find()->select('id, student_fio as name')
                 ->where(['=', 'plan_year', $plan_year])
-                ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+                ->active()
                 ->asArray()->all();
 
         return \yii\helpers\ArrayHelper::map($query, 'id', 'name');

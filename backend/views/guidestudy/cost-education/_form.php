@@ -40,7 +40,9 @@ use artsoft\helpers\Html;
                     ?>
                     <?= $form->field($model, 'programm_id')->label(false)->hiddenInput(['value' => $model->programm_id]) ?>
 
-                    <?= $form->field($model, 'standard_basic')->textInput(['maxlength' => true]) ?>
+                    <?php
+                   // $form->field($model, 'standard_basic')->textInput(['maxlength' => true])
+                    ?>
 
                     <?= $form->field($model, 'standard_basic_ratio')->textInput(['maxlength' => true]) ?>
 

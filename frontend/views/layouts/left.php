@@ -68,6 +68,7 @@ use artsoft\widgets\Nav;
                 'items' => [
                     ['label' => 'Производственный календарь', 'icon' => 'fa fa-minus', 'url' => ['/routine/default/calendar']],
                     ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/activities-over/index']],
+                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/student-schedule/index'], 'visible' => User::hasRole(['student','parents'])],
                     ['label' => 'Сетка расписания школы', 'icon' => 'fa fa-minus', 'url' => ['/schedule/default/index']], // common permission
                     ['label' => 'План работы школы', 'icon' => 'fa fa-minus', 'url' => ['/schoolplan/default/index']],
                     ['label' => 'Счета за обучение', 'icon' => 'fa fa-minus', 'url' => ['/invoices/default/index']],

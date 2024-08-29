@@ -24,7 +24,7 @@ class DefaultController extends MainController
         $query = TeachersPlan::find()->where(['=', 'plan_year', $model_date->plan_year]);
 
         $searchModel = new TeachersPlanSearch($query);
-        $params = Yii::$app->request->getQueryParams();
+        $params = $this->getParams();
         $dataProvider = $searchModel->search($params);
 
         return $this->renderIsAjax('index', compact('dataProvider', 'searchModel', 'model_date'));

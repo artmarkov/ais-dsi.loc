@@ -341,7 +341,7 @@ SQL;
                 'week_day' => $modelSchedule->week_day,
                 'time_in' => $modelSchedule->time_in,
                 'time_out' => $modelSchedule->time_out,
-                'title' => $modelSchedule->sect_name,
+                'title' => $modelSchedule->sect_name . ' ' . RefBook::find('auditory_memo_1')->getValue($modelSchedule->auditory_id),
                 'data' => [
                     'subject_sect_id' => $this->id,
                     'schedule_id' => $modelSchedule->subject_schedule_id,

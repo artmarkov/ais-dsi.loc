@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
@@ -103,9 +104,25 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                     ],
                     [
+                        'attribute' => 'week_num',
+                        'filter' => ArtHelper::getWeekList(),
+                        'value' => function (TeachersPlan $model) {
+                            return ArtHelper::getWeekValue('name', $model->week_num);
+                        },
+                        'format' => 'raw',
+                    ],
+                    [
+                        'attribute' => 'week_day',
+                        'filter' => ArtHelper::getWeekDayList('name', 1, 6),
+                        'value' => function (TeachersPlan $model) {
+                            return ArtHelper::getWeekdayValue('name', $model->week_day);
+                        },
+                        'format' => 'raw',
+                    ],
+                    [
                         'attribute' => 'planDisplay',
-                        'value' => function ($model) {
-                            return $model->getPlanDisplay();
+                        'value' => function (TeachersPlan $model) {
+                            return $model->getPlanTimeDisplay();
                         },
                         'format' => 'raw',
                     ],

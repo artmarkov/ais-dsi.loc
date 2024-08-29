@@ -2,6 +2,7 @@
 
 use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
+use artsoft\models\User;
 use artsoft\widgets\ActiveForm;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
@@ -36,6 +37,11 @@ function initSelect2Loading(a,b){ initS2Loading(a,b); }
 function initSelect2DropStyle(id, kvClose, ev){ initS2ToggleAll(id, kvClose, ev); }
 JS
     , \yii\web\View::POS_END);
+
+$readonlyParents = $readonly;
+if(User::hasRole(['parents'])) {
+    $readonlyParents = false;
+}
 ?>
 
 <div class="parents-form">
@@ -43,7 +49,7 @@ JS
     <?php
     $form = ActiveForm::begin([
         'fieldConfig' => [
-            'inputOptions' => ['readonly' => $readonly]
+            'inputOptions' => ['readonly' =>  User::hasRole(['parents'], false) ? false : $readonly]
         ],
         'id' => 'parents-form',
         'validateOnBlur' => false,
@@ -82,23 +88,23 @@ JS
                     <div class="row">
                         <div class="col-sm-12">
                             <?= $form->field($model, 'sert_name')->dropDownList(\common\models\parents\Parents::PARENT_DOC, [
-                                'disabled' => $readonly,
+                                'disabled' => $readonlyParents,
                                 'options' => [
                                     'password' => ['selected' => true]
                                 ]
                             ]) ?>
-                            <?= $form->field($model, 'sert_series')->textInput(['maxlength' => true]) ?>
-                            <?= $form->field($model, 'sert_num')->textInput(['maxlength' => true]) ?>
-                            <?= $form->field($model, 'sert_organ')->textInput(['maxlength' => true]) ?>
-                            <?= $form->field($model, 'sert_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => $readonly]); ?>
-                            <?= $form->field($model, 'sert_code')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'sert_series')->textInput(['maxlength' => true, 'disabled' => $readonlyParents]) ?>
+                            <?= $form->field($model, 'sert_num')->textInput(['maxlength' => true, 'disabled' => $readonlyParents]) ?>
+                            <?= $form->field($model, 'sert_organ')->textInput(['maxlength' => true, 'disabled' => $readonlyParents]) ?>
+                            <?= $form->field($model, 'sert_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => $readonlyParents]); ?>
+                            <?= $form->field($model, 'sert_code')->textInput(['maxlength' => true, 'disabled' => $readonlyParents]) ?>
                             <?php if (!$model->isNewRecord) : ?>
                                 <div class="form-group field-parents-attachment">
                                     <div class="col-sm-3">
                                         <label class="control-label" for="parents-attachment">Скан документа</label>
                                     </div>
                                     <div class="col-sm-9">
-                                        <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], 'pluginOptions' => ['theme' => 'explorer'], 'disabled' => $readonly]) ?>
+                                        <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], 'pluginOptions' => ['theme' => 'explorer'], 'disabled' => $readonlyParents]) ?>
                                     </div>
                                 </div>
                             <?php endif; ?>
@@ -106,8 +112,9 @@ JS
                     </div>
                 </div>
             </div>
+            <?php if(\artsoft\Art::isBackend()): ?>
             <?= $this->render('@backend/views/user/_form_card', ['form' => $form, 'model' => $userCard, 'readonly' => $readonly]) ?>
-
+            <?php endif;?>
             <?php DynamicFormWidget::begin([
                 'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items', // required: css class selector
@@ -150,6 +157,7 @@ JS
                                     ?>
                                     <?= $form->field($modelDependence, "[{$index}]relation_id")->dropDownList(\common\models\guidesys\UserRelation::getRelationList(), [
                                         'prompt' => Yii::t('art/student', 'Select Relations...'),
+                                        'disabled' => $readonly
                                     ])->label(Yii::t('art/student', 'Relation'));
                                     ?>
 
@@ -188,6 +196,8 @@ JS
             <div class="form-group btn-group">
                 <?php if(\artsoft\Art::isBackend()): ?>
                     <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+                <?php elseif(User::hasRole(['parents'])):?>
+                    <?= \artsoft\helpers\ButtonHelper::saveButton();?>
                 <?php endif;?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>

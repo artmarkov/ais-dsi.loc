@@ -174,10 +174,121 @@ UNION ALL
      JOIN auditory ON auditory.id = activities_view.auditory_id;
         ')->execute();
 
+        $this->db->createCommand()->createView('activities_schedule_studyplan_view', '
+  SELECT data.subject_schedule_id,
+    data.studyplan_subject_id,
+    data.subject_sect_studyplan_id,
+    data.subject_type_id,
+    data.direction_id,
+    data.teachers_id,
+    data.student_id,
+    data.title,
+    data.category_id,
+    data.auditory_id,
+    data.description,
+    data."timestamp" + data.time_in::double precision AS datetime_in,
+    data."timestamp" + data.time_out::double precision AS datetime_out,
+    data.status,
+    data.plan_year,
+    data.subject_key
+   FROM ( SELECT gen."timestamp",
+            subject_schedule_studyplan_view.subject_schedule_id,
+            subject_schedule_studyplan_view.studyplan_subject_id,
+            subject_schedule_studyplan_view.subject_sect_studyplan_id,
+            subject_schedule_studyplan_view.subject_type_id,
+            subject_schedule_studyplan_view.time_in,
+            subject_schedule_studyplan_view.time_out,
+            subject_schedule_studyplan_view.auditory_id,
+            subject_schedule_studyplan_view.description,
+            subject_schedule_studyplan_view.direction_id,
+            subject_schedule_studyplan_view.teachers_id,
+            subject_schedule_studyplan_view.student_id,
+            subject_schedule_studyplan_view.subject_vid_id AS category_id,
+            subject_schedule_studyplan_view.plan_year,
+            concat(subject_schedule_studyplan_view.student_fio, \' - \', subject_schedule_studyplan_view.sect_name, \' - \', subject_schedule_studyplan_view.subject) AS title,
+            subject_schedule_studyplan_view.status,
+            subject_schedule_studyplan_view.subject_key
+           FROM generator_date_view gen
+             JOIN subject_schedule_studyplan_view ON gen.week_day = subject_schedule_studyplan_view.week_day::double precision AND
+                CASE
+                    WHEN subject_schedule_studyplan_view.week_num IS NOT NULL AND subject_schedule_studyplan_view.week_num <> 0 THEN subject_schedule_studyplan_view.week_num = gen.week_num
+                    ELSE true
+                END) data
+  WHERE data."timestamp" >= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year, 8, 1)::date) AND data."timestamp" <= date_part(\'epoch\'::text, format(\'%s-%s-%s\'::text, data.plan_year + 1, 6, 30)::date);
+        ')->execute();
+
+        $this->db->createCommand()->createView('activities_studyplan_view', '
+  SELECT \'schoolplan\'::text AS resource,
+    schoolplan.id,
+    1003 AS category_id,
+    schoolplan.auditory_id,
+    NULL::integer AS direction_id,
+    schoolplan.executors_list,
+    NULL::text AS executor_name,
+    studyplan.student_id,
+    schoolplan.title,
+    schoolplan.description,
+    schoolplan.datetime_in AS start_time,
+    schoolplan.datetime_out AS end_time
+   FROM schoolplan
+     JOIN schoolplan_perform ON schoolplan_perform.schoolplan_id = schoolplan.id
+     JOIN studyplan ON studyplan.id = schoolplan_perform.studyplan_id
+  WHERE schoolplan.auditory_id IS NOT NULL
+UNION ALL
+ SELECT \'schoolplan\'::text AS resource,
+    schoolplan.id,
+    1003 AS category_id,
+    schoolplan.auditory_id,
+    NULL::integer AS direction_id,
+    schoolplan.executors_list,
+    NULL::text AS executor_name,
+    studyplan.student_id,
+    schoolplan.title,
+    schoolplan.description,
+    schoolplan.datetime_in AS start_time,
+    schoolplan.datetime_out AS end_time
+   FROM schoolplan
+     JOIN schoolplan_protocol ON schoolplan_protocol.schoolplan_id = schoolplan.id
+     JOIN studyplan_subject ON studyplan_subject.id = schoolplan_protocol.studyplan_subject_id
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+  WHERE schoolplan.auditory_id IS NOT NULL
+UNION ALL
+ SELECT \'subject_schedule\'::text AS resource,
+    activities_schedule_studyplan_view.subject_schedule_id AS id,
+    activities_schedule_studyplan_view.category_id,
+    activities_schedule_studyplan_view.auditory_id,
+    activities_schedule_studyplan_view.direction_id,
+    activities_schedule_studyplan_view.teachers_id::text AS executors_list,
+    NULL::text AS executor_name,
+    activities_schedule_studyplan_view.student_id,
+    activities_schedule_studyplan_view.title,
+    activities_schedule_studyplan_view.description,
+    activities_schedule_studyplan_view.datetime_in AS start_time,
+    activities_schedule_studyplan_view.datetime_out AS end_time
+   FROM activities_schedule_studyplan_view
+  WHERE activities_schedule_studyplan_view.status = 1
+UNION ALL
+ SELECT \'consult_schedule\'::text AS resource,
+    consult_schedule_studyplan_view.consult_schedule_id AS id,
+    1004 AS category_id,
+    consult_schedule_studyplan_view.auditory_id,
+    consult_schedule_studyplan_view.direction_id,
+    consult_schedule_studyplan_view.teachers_id::text AS executors_list,
+    NULL::text AS executor_name,
+    consult_schedule_studyplan_view.student_id,
+    concat(consult_schedule_studyplan_view.student_fio, \' - \', consult_schedule_studyplan_view.sect_name, \' - \', consult_schedule_studyplan_view.subject) AS title,
+    consult_schedule_studyplan_view.description,
+    consult_schedule_studyplan_view.datetime_in AS start_time,
+    consult_schedule_studyplan_view.datetime_out AS end_time
+   FROM consult_schedule_studyplan_view
+  WHERE consult_schedule_studyplan_view.status = 1 AND consult_schedule_studyplan_view.auditory_id IS NOT NULL;
+        ')->execute();
     }
 
     public function down()
     {
+        $this->db->createCommand()->dropView('activities_studyplan_view')->execute();
+        $this->db->createCommand()->dropView('activities_schedule_studyplan_view')->execute();
         $this->db->createCommand()->dropView('activities_teachers_view')->execute();
         $this->db->createCommand()->dropView('activities_view')->execute();
         $this->db->createCommand()->dropView('activities_schedule_view')->execute();

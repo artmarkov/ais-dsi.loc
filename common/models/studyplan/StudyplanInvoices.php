@@ -136,6 +136,7 @@ class StudyplanInvoices extends \artsoft\db\ActiveRecord
                 ['=', 'invoices_id', $this->invoices_id],
                 ['=', 'invoices_summ', $this->invoices_summ],
                 ['=', 'invoices_reporting_month', $month],
+                ['=', 'invoices_app', $this->invoices_app],
 
             ]);
         if ($this->teachers_id) {

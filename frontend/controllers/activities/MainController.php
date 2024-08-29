@@ -8,10 +8,12 @@ use yii\web\ForbiddenHttpException;
 
 class MainController extends \frontend\controllers\DefaultController
 {
+    public $isStudent;
+
     public function init()
     {
 
-        if(!User::hasRole(['employees', 'student','teacher','department'])) {
+        if(!User::hasRole(['employees','student','parents','teacher','department'])) {
             throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
         }
 
@@ -24,5 +26,6 @@ class MainController extends \frontend\controllers\DefaultController
         ['label' => 'Календарь мероприятий',  'url' => ['/activities/default/calendar']],
         ['label' => 'Ежедневник по аудиториям',  'url' => ['/activities/auditory-schedule/index']],
         ['label' => 'Ежедневник по преподавателям',  'url' => ['/activities/teachers-schedule/index']],
+        ['label' => 'Ежедневник по ученикам',  'url' => ['/activities/student-schedule/index']],
     ];
 }

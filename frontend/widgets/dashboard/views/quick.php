@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\helpers\Html;
+use artsoft\models\User;
 
 /* @var $this yii\web\View */
 $studyplan_id = null;
@@ -38,6 +39,15 @@ if (\artsoft\models\User::hasRole(['student'])) {
             );
             ?>
             <?= Html::a(
+                '<i class="fa fa-calendar-check-o" aria-hidden="true"></i> Календарь мероприятий',
+                ['/activities/student-schedule/index'],
+                [
+                    'class' => 'btn btn-default btn-lg',
+                    'visible' => User::hasRole(['student','parents'])
+                ]
+            );
+            ?>
+            <?= Html::a(
                 '<i class="fa fa-calendar" aria-hidden="true"></i> ' . Yii::t('art/calendar', 'Activities calendar'),
                 ['/activities/default/calendar'],
                 [
@@ -64,6 +74,14 @@ if (\artsoft\models\User::hasRole(['student'])) {
             <?= Html::a(
                 '<i class="fa fa-paper-plane-o" aria-hidden="true"></i> ' . Yii::t('art/studyplan', 'Individual plans'),
                 ['/parents/studyplan/index'],
+                [
+                    'class' => 'btn btn-default btn-lg',
+                ]
+            );
+            ?>
+            <?= Html::a(
+                '<i class="fa fa-address-book-o" aria-hidden="true"></i> Карточка родителя(официального представителя)',
+                ['/parents/default/index'],
                 [
                     'class' => 'btn btn-default btn-lg',
                 ]

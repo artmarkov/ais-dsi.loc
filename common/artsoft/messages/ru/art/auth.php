@@ -23,6 +23,7 @@ return [
     'E-mail with activation link has been sent to <b>{email}</b>. This link will expire in {minutes} min.' => 'E-mail со ссылкой активации был отправлен на < b>{email}< / b>. Срок действия этой ссылки истекает через {minutes} мин.',
     'E-mail' => 'E-mail',
     'Forgot password?' => 'Забыли пароль?',
+    'Forgot login?' => 'Забыли логин?',
     'Follow the link below to confirm your email:' => 'Перейдите по ссылке ниже, чтобы подтвердить свой E-mail:',
     'Follow the link below to reset your password:' => 'Следуйте ссылке ниже, чтобы сбросить пароль:',
     'Follow this link to confirm your E-mail and activate account:' => 'Перейдите по этой ссылке, чтобы подтвердить свой E-mail и активировать аккаунт:',

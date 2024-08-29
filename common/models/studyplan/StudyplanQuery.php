@@ -9,10 +9,16 @@ namespace common\models\studyplan;
  */
 class StudyplanQuery extends \yii\db\ActiveQuery
 {
-    /*public function active()
+    public function active()
     {
-        return $this->andWhere('[[status]]=1');
-    }*/
+        return $this->andWhere(['OR',
+            ['status' => Studyplan::STATUS_ACTIVE],
+            ['AND',
+                ['status' => Studyplan::STATUS_INACTIVE],
+                ['status_reason' => [1, 2, 4]]
+            ]
+        ]);
+    }
 
     /**
      * {@inheritdoc}

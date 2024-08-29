@@ -34,7 +34,7 @@ use yii\web\NotFoundHttpException;
  * @property int|null $updated_by
  * @property int $version
  *
- * @property GuideLessonTest $lessonTest
+ * @property LessonTest $lessonTest
  * @property LessonProgress[] $lessonProgresses
  */
 class LessonItems extends \artsoft\db\ActiveRecord
@@ -87,15 +87,18 @@ class LessonItems extends \artsoft\db\ActiveRecord
     public function checkLessonTestExist($attribute, $params)
     {
         if ($this->isNewRecord) {
-            $checkLesson = self::find()->where(
-                ['AND',
-                    ['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id],
-                    ['=', 'studyplan_subject_id', $this->studyplan_subject_id],
-                    ['=', 'lesson_test_id', $this->lesson_test_id],
+            $test = LessonTest::findOne($this->lesson_test_id);
+            if ($test->test_category != 1) {
+                $checkLesson = self::find()->where(
+                    ['AND',
+                        ['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id],
+                        ['=', 'studyplan_subject_id', $this->studyplan_subject_id],
+                        ['=', 'lesson_test_id', $this->lesson_test_id],
 
-                ]);
-            if ($checkLesson->exists() === true) {
-                $this->addError($attribute, 'Данный вид занятия уже существует для дисциплины!');
+                    ]);
+                if ($checkLesson->exists() === true) {
+                    $this->addError($attribute, 'Данный вид занятия уже существует для дисциплины!');
+                }
             }
         }
     }

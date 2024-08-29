@@ -87,7 +87,7 @@ UNION ALL
         ])->execute();
 
         $this->db->createCommand()->createView('subject_schedule_studyplan_view', '
-   SELECT studyplan_subject.id AS studyplan_subject_id,
+     SELECT studyplan_subject.id AS studyplan_subject_id,
     studyplan_subject.week_time,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
@@ -112,7 +112,8 @@ UNION ALL
     subject_schedule.description,
     \'Индивидуально\'::text AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
-    concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key
+    concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
+    studyplan_subject.subject_vid_id
    FROM studyplan_subject
      JOIN studyplan ON studyplan_subject.studyplan_id = studyplan.id
      LEFT JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
@@ -155,7 +156,8 @@ UNION ALL
             ELSE \'\'::text
         END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \' \', guide_subject_type.slug, \') \') AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \') \') AS subject,
-    NULL::text AS subject_key
+    NULL::text AS subject_key,
+    studyplan_subject.subject_vid_id
    FROM studyplan_subject
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
      JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
@@ -168,7 +170,7 @@ UNION ALL
      LEFT JOIN subject_schedule ON subject_schedule.teachers_load_id = teachers_load.id
      JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id
-  ORDER BY 25, 24, 14, 15;
+  ORDER BY 25, 24, 14, 15, 18, 19;
         ')->execute();
     }
 

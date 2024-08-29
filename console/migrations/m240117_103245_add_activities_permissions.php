@@ -25,12 +25,23 @@ class m240117_103245_add_activities_permissions extends PermissionsMigration
                     '/activities/default/*',
                     '/admin/activities/default/*',
                 ],
+                'viewActivitiesFrontendStudent' => [
+                    'title' => 'Доступ к разделу "Календарь мероприятий учеников"(фронтенд)',
+                    'links' => [
+                        '/activities/default/create-event',
+                        '/activities/student-schedule/index',
+                        '/activities/student-schedule/init-calendar',
+                    ],
+                    'roles' => [
+                        self::ROLE_STUDENT,
+                        self::ROLE_PARENTS,
+                    ],
+                ],
                 'viewActivitiesFrontend' => [
                     'title' => 'Доступ к разделу "Календарь мероприятий"(фронтенд)',
                     'links' => [
                         '/activities/default/calendar',
                         '/activities/default/init-calendar',
-                        '/activities/default/create-event',
                         '/activities/schoolplan-outside/index',
                         '/activities/schoolplan-outside/init-calendar',
                         '/activities/schoolplan-outside/create-event',
@@ -48,6 +59,9 @@ class m240117_103245_add_activities_permissions extends PermissionsMigration
                     'roles' => [
                         self::ROLE_EMPLOYEES,
                         self::ROLE_TEACHER,
+                    ],
+                    'childs' => [
+                        'viewActivitiesFrontendStudent',
                     ],
                 ],
                 'viewActivities' => [
@@ -70,6 +84,8 @@ class m240117_103245_add_activities_permissions extends PermissionsMigration
                         '/admin/activities/teachers-schedule/index',
                         '/admin/activities/teachers-schedule/teachers',
                         '/admin/activities/teachers-schedule/init-calendar',
+                        '/admin/activities/student-schedule/index',
+                        '/admin/activities/student-schedule/init-calendar',
                     ],
                     'roles' => [
                         self::ROLE_ADMIN,
@@ -91,6 +107,9 @@ class m240117_103245_add_activities_permissions extends PermissionsMigration
                         '/admin/activities/teachers-schedule/refactor-event',
                         '/admin/activities/teachers-schedule/update-event',
                         '/admin/activities/teachers-schedule/delete-event',
+                        '/admin/activities/student-schedule/refactor-event',
+                        '/admin/activities/student-schedule/update-event',
+                        '/admin/activities/student-schedule/delete-event',
                     ],
                     'roles' => [
                         'activitiesAdmin',

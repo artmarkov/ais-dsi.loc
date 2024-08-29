@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'visible' => \artsoft\Art::isBackend(),
                                 'controller' => '/parents/default',
-                                'template' => '{view} {update}',/* {delete}*/
+                                'template' => '{view} {update} {delete}',
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
                             ],
                             [
