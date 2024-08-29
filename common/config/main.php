@@ -13,7 +13,7 @@ Yii::$container->set(\kartik\date\DatePicker::class, [
         'autoclose' => true,
         'weekStart' => 1,
         'startDate' => '01.01.1930',
-        'endDate' => '01.01.2030',
+        'endDate' => '01.01.2040',
         'todayBtn' => 'linked',
         'todayHighlight' => true,
     ]
@@ -28,7 +28,7 @@ Yii::$container->set(\kartik\datetime\DateTimePicker::class, [
         'autoclose' => true,
         'weekStart' => 1,
         'startDateTime' => '01.01.1930 00:00',
-        'endDateTime' => '01.01.2030 00:00',
+        'endDateTime' => '01.01.2040 00:00',
         'todayBtn' => 'linked',
         'todayHighlight' => true,
     ]
