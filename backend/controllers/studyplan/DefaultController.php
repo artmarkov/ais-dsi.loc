@@ -2,7 +2,6 @@
 
 namespace backend\controllers\studyplan;
 
-use artsoft\helpers\ButtonHelper;
 use artsoft\widgets\Notice;
 use backend\models\Model;
 use common\models\education\EducationProgrammLevel;
@@ -23,7 +22,6 @@ use common\models\schoolplan\SchoolplanPerform;
 use common\models\schoolplan\search\SchoolplanPerformSearch;
 use common\models\students\Student;
 use common\models\studyplan\search\StudyplanInvoicesViewSearch;
-use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
 use common\models\studyplan\search\StudyplanViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
@@ -54,36 +52,31 @@ class DefaultController extends MainController
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
+            $model_date = $this->modelDate;
             if (isset($_GET['id'])) {
                 $id = $_GET['id'];
-                $model_date = $this->modelDate;
-               // echo '<pre>' . print_r($model_date, true) . '</pre>';
-                $m = StudyplanView::findOne(['id' => $id]);
                 if (!$model_date->studyplan_id) {
                     $model_date->studyplan_id = $id;
                 }
                 if ($model_date->studyplan_id != $id) {
                     $id = $model_date->studyplan_id;
                     $this->redirect(['/studyplan/' . $id . '/' . $action->id]);
-//                } else {
-//                    //  echo '<pre>' . print_r($model_date, true) . '</pre>'; die();
-//                    $studyplanId = StudyplanView::find()
-//                        ->where(['student_id' => $m->student_id])
-//                        ->andWhere(['programm_id' => $m->programm_id])
-//                        ->andWhere(['plan_year' => $model_date->plan_year])
-//                        ->scalar();
-//                    if ($studyplanId) {
-////                            $session = Yii::$app->session;
-////                            $session->set('__backendPlanYear', $model_date->plan_year);
-//                        $model_date->studyplan_id = $studyplanId;
-////                            echo '<pre>' . print_r($studyplanId, true) . '</pre>';
-////                            echo '<pre>' . print_r($model_date, true) . '</pre>'; die();
-//                        $this->redirect(['/studyplan/' . $studyplanId . '/' . $action->id]);
-//                    } else {
-//                        Notice::registerWarning('За выбранный ' . $model_date->plan_year . '/' . ($model_date->plan_year + 1) . '  учебный год плана текущего ученика не найдено!');
-//                        $model_date->plan_year = $m->plan_year;
-//                    }
-
+                } else {
+                    $m = StudyplanView::findOne(['id' => $id]);
+                    if ($m->plan_year != $model_date->plan_year) {
+                        $studyplanId = StudyplanView::find()
+                            ->where(['student_id' => $m->student_id])
+                            ->andWhere(['programm_id' => $m->programm_id])
+                            ->andWhere(['plan_year' => $model_date->plan_year])
+                            ->scalar();
+                        if ($studyplanId) {
+                            $model_date->studyplan_id = $studyplanId;
+                            $this->redirect(['/studyplan/' . $studyplanId . '/' . $action->id]);
+                        } else {
+                            $model_date->addError('plan_year', 'За выбранный ' . $model_date->plan_year . '/' . ($model_date->plan_year + 1) . '  учебный год плана текущего ученика не найдено!');
+                            $model_date->plan_year = $m->plan_year;
+                        }
+                    }
                 }
             }
         }
@@ -1322,6 +1315,8 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         $modelStudent = Student::findOne($model->student_id);
         $studentDependence = $modelStudent->studentDependence;
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
         $this->view->params['breadcrumbs'][] = ['label' => 'Карточка ученика'];
         $this->view->params['tabMenu'] = $this->getMenu($id);
 

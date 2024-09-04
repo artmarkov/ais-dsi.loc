@@ -828,7 +828,7 @@ class TeachersController extends MainController
                 if (empty($modelsItems)) {
                     Notice::registerDanger('Дата занятия не соответствует расписанию!');
                 } else {
-                    $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model->lesson_date);
+                    $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model);
                     if (empty($modelsItems)) {
                         Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
                     }
