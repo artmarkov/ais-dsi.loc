@@ -261,6 +261,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             throw new NotFoundHttpException("Отсутствует обязательный параметр studyplan_subject_id или subject_sect_studyplan_id.");
         }
         $modelsItems = [];
+        $i = 0;
         if ($this->subject_sect_studyplan_id != 0) {
             $studyplanSubjectList = LessonProgressView::find()->select('studyplan_subject_id')
                 ->andWhere(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
@@ -275,12 +276,13 @@ class LessonItems extends \artsoft\db\ActiveRecord
             foreach ($studyplanSubjectList as $item => $studyplan_subject_id) {
                 $m = new LessonProgress();
                 $m->studyplan_subject_id = $studyplan_subject_id;
-                $modelsItems[] = $m;
+                $modelsItems[$i] = $m;
+                $i++;
             }
         } else {
             $m = new LessonProgress();
             $m->studyplan_subject_id = $this->studyplan_subject_id;
-            $modelsItems[] = $m;
+            $modelsItems[1] = $m;
         }
         return $modelsItems;
     }
@@ -292,17 +294,26 @@ class LessonItems extends \artsoft\db\ActiveRecord
     public function getLessonProgress()
     {
         $modelsItems = [];
+        $i = 0;
         if ($this->subject_sect_studyplan_id != 0) {
             $studyplan = [];
             $models = LessonItemsProgressView::find()
                 ->where(['=', 'lesson_items_id', $this->id])
+                ->andWhere(['OR',
+                    ['status' => Studyplan::STATUS_ACTIVE],
+                    ['AND',
+                        ['status' => Studyplan::STATUS_INACTIVE],
+                        ['status_reason' => [1, 2, 4]]
+                    ]
+                ])
                 ->all();
 
             foreach ($models as $item => $modelItems) {
                 $m = LessonProgress::find()->where(['=', 'id', $modelItems->lesson_progress_id])->one();
                 if ($m) {
                     $studyplan[] = $modelItems->studyplan_subject_id;
-                    $modelsItems[] = $m;
+                    $modelsItems[$i] = $m;
+                    $i++;
                 }
             }
             $models = LessonProgressView::find()->select('studyplan_subject_id')
@@ -316,14 +327,14 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 ])
                 ->column();
             foreach ($models as $item => $studyplan_subject_id) {
-                if (in_array($studyplan_subject_id, $studyplan)) {
-                    continue;
-                }
+                if (!in_array($studyplan_subject_id, $studyplan)) {
                 $m = new LessonProgress();
                 $m->studyplan_subject_id = $studyplan_subject_id;
                 $m->lesson_items_id = $this->id;
                 $m->save(false);
-                $modelsItems[] = $m;
+                $modelsItems[$i] = $m;
+                $i++;
+                }
             }
         } else {
             $modelsItems = $this->lessonProgresses;

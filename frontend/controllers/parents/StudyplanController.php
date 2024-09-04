@@ -125,7 +125,7 @@ class StudyplanController extends MainController
                     }
                     if ($flag) {
                         $transaction->commit();
-                        $this->getSubmitAction();
+                        Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
                     }
                 } catch (Exception $e) {
                     $transaction->rollBack();

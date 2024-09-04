@@ -98,15 +98,17 @@ if(User::hasRole(['parents'])) {
                             <?= $form->field($model, 'sert_organ')->textInput(['maxlength' => true, 'disabled' => $readonlyParents]) ?>
                             <?= $form->field($model, 'sert_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => $readonlyParents]); ?>
                             <?= $form->field($model, 'sert_code')->textInput(['maxlength' => true, 'disabled' => $readonlyParents]) ?>
-                            <?php if (!$model->isNewRecord) : ?>
-                                <div class="form-group field-parents-attachment">
-                                    <div class="col-sm-3">
-                                        <label class="control-label" for="parents-attachment">Скан документа</label>
+                            <?php if(\artsoft\Art::isBackend()): ?>
+                                <?php if (!$model->isNewRecord) : ?>
+                                    <div class="form-group field-parents-attachment">
+                                        <div class="col-sm-3">
+                                            <label class="control-label" for="parents-attachment">Скан документа</label>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], 'pluginOptions' => ['theme' => 'explorer'], 'disabled' => $readonlyParents]) ?>
+                                        </div>
                                     </div>
-                                    <div class="col-sm-9">
-                                        <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], 'pluginOptions' => ['theme' => 'explorer'], 'disabled' => $readonlyParents]) ?>
-                                    </div>
-                                </div>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>

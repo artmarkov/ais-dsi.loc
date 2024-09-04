@@ -90,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
                         'value' => function (StudyplanView $model) {
-                            return User::hasRole(['parents']) ? Html::a($model->student_fio,
+                            return User::hasRole(['parents'], false) ? Html::a($model->student_fio,
                                 ['/parents/studyplan/view', 'id' => $model->id],
                                 [
                                     'data-pjax' => '0',

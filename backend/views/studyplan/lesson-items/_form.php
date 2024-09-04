@@ -2,7 +2,6 @@
 
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
-use common\models\education\LessonProgress;
 use artsoft\helpers\Html;
 use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
@@ -61,7 +60,7 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                 </tr>
                 </thead>
                 <tbody class="container-items">
-                <?php foreach ($models_sch as $index => $m): ?>
+                <?php foreach ($models_sch as $itm => $m): ?>
                     <?php
                     $string = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
                     $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out;
@@ -69,7 +68,7 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                     ?>
                     <tr class="item">
                         <td>
-                            <span class="panel-title"><?= $index + 1 ?></span>
+                            <span class="panel-title"><?= $itm + 1 ?></span>
                         </td>
                         <td>
                             <span class="panel-title"><?= $string ?></span>
@@ -105,7 +104,7 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                             echo Html::activeHiddenInput($model, 'lesson_date');
                         }
                         ?>
-                        <?= $form->field($model, 'lesson_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class/*, ['options' => ['disabled' => $model->lesson_date]]*/); ?>
+                        <?= $form->field($model, 'lesson_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['options' => ['disabled' => $model->lesson_date]]); ?>
                         <?= $form->field($model, 'lesson_topic')->textInput() ?>
                         <?= $form->field($model, 'lesson_rem')->textInput() ?>
                     </div>
@@ -138,7 +137,7 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                                         echo Html::activeHiddenInput($modelItems, "[{$index}]lesson_items_id");
                                     ?>
                                     <td>
-                                        <span class="panel-title-activities"><?= ($index + 1) ?></span>
+                                        <span class="panel-title-activities"><?= $index + 1 ?></span>
                                     </td>
                                     <td>
                                         <?= Html::activeHiddenInput($modelItems, "[{$index}]studyplan_subject_id"); ?>

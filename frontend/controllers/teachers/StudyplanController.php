@@ -47,22 +47,33 @@ class StudyplanController extends MainController
     public function actionIndex()
     {
         $model_date = $this->modelDate;
+        $session = Yii::$app->session;
         $teachers_id = $this->teachers_id;
-        $model_date->teachers_id = $model_date->teachers_id ?? $teachers_id;
-
+//        $model_date->teachers_id = $model_date->teachers_id ?? $teachers_id;
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->teachers_id = $session->get('__frontendTeachersId') ?? $teachers_id;
+        }
+        $session->set('__frontendTeachersId', $model_date->teachers_id);
         if (!isset($model_date)) {
             throw new NotFoundHttpException("The model_date was not found.");
         }
 
         $query = LessonProgressView::find()
             ->where(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $model_date->teachers_id]))
-            ->andWhere(['=', 'plan_year', $model_date->plan_year]);
-        $dataProvider = new ActiveDataProvider(['query' => $query, 'pagination' => [
-            'pageSize' => Yii::$app->request->cookies->getValue('_grid_page_size', 20),
-        ],
+            ->andWhere(['=', 'plan_year', $model_date->plan_year])
+            ->andWhere(['OR',
+                ['status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ]);
+        $dataProvider = new ActiveDataProvider(['query' => $query, 'pagination' => false,
             'sort' => [
                 'defaultOrder' => [
-                    'subject_sect_id' => SORT_ASC,
+                    'subject' => SORT_ASC,
+                    'sect_name' => SORT_ASC,
+                    'student_fio' => SORT_ASC,
                 ],
             ],
         ]);

@@ -80,7 +80,9 @@ $columns = [
                     ?>
                 </div>
                 <div class="col-sm-6 text-right">
-                    <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'studyplan-progress-grid-pjax']) ?>
+                    <?php
+//                    \artsoft\grid\GridPageSize::widget(['pjaxId' => 'teachers-studyplan-list-pjax'])
+                    ?>
                 </div>
             </div>
             <?php
@@ -89,9 +91,14 @@ $columns = [
             ])
             ?>
             <?= GridView::widget([
-                'id' => 'portfolio-grid',
+                'id' => 'teachers-studyplan-list',
                 'dataProvider' => $dataProvider,
                 'columns' => $columns,
+                'pjax' => false,
+                'toolbar' => [
+//                    '{toggleData}',
+                    '{export}'
+                ],
             ]);
             ?>
             <?php Pjax::end() ?>

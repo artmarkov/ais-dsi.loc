@@ -55,7 +55,7 @@ class Routine extends ActiveRecord implements DataItem
     public function rules()
     {
         return [
-            [['description', 'cat_id', 'start_date', 'end_date'], 'required'],
+            [[/*'description',*/ 'cat_id', 'start_date', 'end_date'], 'required'],
             [['start_date', 'end_date'], 'safe'],
             ['start_date', 'compareDate'],
             [['cat_id'], 'integer'],

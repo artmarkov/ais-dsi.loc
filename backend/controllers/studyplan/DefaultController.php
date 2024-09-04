@@ -54,10 +54,6 @@ class DefaultController extends MainController
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-                if($action->id == 'index') {
-                    $model_date = $this->modelDate;
-                    $model_date->studyplan_id = null;
-                }
             if (isset($_GET['id'])) {
                 $id = $_GET['id'];
                 $model_date = $this->modelDate;

@@ -30,6 +30,24 @@ if (\artsoft\models\User::hasRole(['student'])) {
                 ]
             );
             ?>
+            <?php if ($studyplan_id): ?>
+                <?= Html::a(
+                    '<i class="fa fa-calendar-check-o" aria-hidden="true"></i> Расписание занятий',
+                    ['/studyplan/default/schedule-items', 'id' => $studyplan_id],
+                    [
+                        'class' => 'btn btn-info btn-lg',
+                    ]
+                );
+                ?>
+                <?= Html::a(
+                    '<i class="fa fa-calendar-check-o" aria-hidden="true"></i> Расписание занятий',
+                    ['/parents/studyplan/schedule-items', 'id' => $studyplan_id],
+                    [
+                        'class' => 'btn btn-info btn-lg',
+                    ]
+                );
+                ?>
+            <?php endif;?>
             <?= Html::a(
                 '<i class="fa fa-hourglass-start" aria-hidden="true"></i> ' . Yii::t('art/guide', 'Entrant'),
                 ['/entrant/default/index'],

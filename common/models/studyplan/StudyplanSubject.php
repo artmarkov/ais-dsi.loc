@@ -348,7 +348,7 @@ SQL;
         if ($models) {
             foreach ($models as $id) {
                 $model = SubjectSectStudyplan::findOne($id);
-                $model->removeStudyplanSubject();
+                $model->removeStudyplanSubject($this->id);
             }
         }
         $loadIds = TeachersLoad::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
@@ -368,5 +368,45 @@ SQL;
 
         return parent::beforeDelete();
     }
+
+   /* public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        if (isset($changedAttributes['subject_id'])) {
+            $this->cliarStudyplanSubjectDependency();
+        }
+    }
+
+    protected function cliarStudyplanSubjectDependency()
+    {
+        $funcSql = <<< SQL
+            select subject_sect_studyplan_id as id
+            from studyplan_subject_view
+            where studyplan_subject_id = {$this->id}
+            AND subject_sect_studyplan_id IS NOT NULL
+SQL;
+        $models = Yii::$app->db->createCommand($funcSql)->queryColumn();
+        if ($models) {
+            foreach ($models as $id) {
+                $model = SubjectSectStudyplan::findOne($id);
+                $model->removeStudyplanSubject($this->id);
+            }
+        }
+        $loadIds = TeachersLoad::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
+            ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
+        TeachersLoad::deleteAll(['id' => $loadIds]);
+
+        $thematicIds = StudyplanThematic::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
+            ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
+        StudyplanThematic::deleteAll(['id' => $thematicIds]);
+
+//        $progressIds = LessonProgress::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])->column();
+//        LessonProgress::deleteAll(['id' => $progressIds]);
+
+        $lessonIds = LessonItems::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
+            ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
+        LessonItems::deleteAll(['id' => $lessonIds]);
+    }*/
 
 }

@@ -35,7 +35,7 @@ $JSOnDay = <<<EOF
                 <!--console.log(e.events[i].color);-->
                     content += '<div class="event-tooltip-content">'
                                     + '<div class="event-name" style="color:' + e.events[i].color + '">' + e.events[i].name + '</div>'
-                                    + '<div class="event-description">(' + e.events[i].description + ')</div>'
+                                    + '<div class="event-description">' + e.events[i].description + '</div>'
                                 + '</div>';
                 }
             

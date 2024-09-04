@@ -155,6 +155,7 @@ class StudyplanProgressController extends MainController
         }
         $model->scenario = LessonItems::SCENARIO_COMMON;
         $modelsItems = $model->getLessonProgress();
+//            echo '<pre>' . print_r($modelsItems, true) . '</pre>'; die();
         if ($model->load(Yii::$app->request->post())) {
 
             $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
@@ -165,7 +166,6 @@ class StudyplanProgressController extends MainController
             // validate all models
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelsItems) && $valid;
-
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
@@ -186,6 +186,7 @@ class StudyplanProgressController extends MainController
                         }
                     }
                 } catch (\Exception $e) {
+                    print_r($e->getMessage());
                     $transaction->rollBack();
                 }
             }
