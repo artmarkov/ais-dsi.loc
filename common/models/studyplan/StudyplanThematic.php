@@ -158,10 +158,15 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
     public function getTemplateList()
     {
         $userId = Yii::$app->user->identity->getId();
+        $author_flag = Yii::$app->settings->get('module.thematic_template_author_flag', 0);
+
         $models = self::find()->select(['id', 'template_name'])
-            ->where(['=', 'author_id', $userId])
-            ->andWhere(['is not', 'template_name', null])
-            ->orderBy('template_name')->all();
+            ->where(['is not', 'template_name', null]);
+
+        if ($author_flag == 0) {
+            $models = $models->andWhere(['=', 'author_id', $userId]);
+        }
+        $models = $models->orderBy('template_name')->all();
 
         return \yii\helpers\ArrayHelper::map($models, 'id', 'template_name');
     }

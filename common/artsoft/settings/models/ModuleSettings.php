@@ -13,6 +13,7 @@ class ModuleSettings extends BaseSettingsModel
 
     public $student_delta_time;
     public $study_plan_month_in;
+    public $thematic_template_author_flag;
 
     public $shelf_life_pass;
     public $shelf_life_attendlog;
@@ -59,7 +60,11 @@ class ModuleSettings extends BaseSettingsModel
             'day_in' => 'День начала периода',
             'day_out' => 'День окончания периода',
             'student_delta_time' => 'Возможный допуск на отклонение от полного времени проведения занятия',
+
             'study_plan_month_in' => 'Месяц начала учебного года(расчетного периода)',
+            'thematic_template_author_flag' => 'Шаблоны тематических планов',
+
+
             'shelf_life_pass' => 'Срок хранения проходов через СКУД (дней)',
             'shelf_life_attendlog' => 'Срок хранения Журнала выдачи ключей (дней)',
             'shelf_life_sitelog' => 'Срок хранения Лога посещения сайта (дней)',
