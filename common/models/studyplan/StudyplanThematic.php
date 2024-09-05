@@ -221,11 +221,9 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
                 $transaction->rollBack();
             }
         }
-
     }
 
     /**
-     * ���� �� ����� �����, �� ����� �� ��������.
      * @return int|null
      */
     public function getAuthorScalar()
