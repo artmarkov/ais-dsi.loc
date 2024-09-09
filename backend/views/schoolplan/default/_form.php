@@ -23,117 +23,147 @@ $readonlyResult = (\artsoft\Art::isFrontend() && $model->isAuthor() && Yii::$app
 ?>
     <div class="schoolplan-plan-form">
 
-        <?php
-        $form = ActiveForm::begin([
-            'id' => 'schoolplan-plan-form',
-            'validateOnBlur' => false,
-            'options' => ['enctype' => 'multipart/form-data'],
-        ])
+<?php
+$form = ActiveForm::begin([
+    'id' => 'schoolplan-plan-form',
+    'validateOnBlur' => false,
+    'options' => ['enctype' => 'multipart/form-data'],
+])
 
-        ?>
+?>
 
-        <div class="panel">
-            <div class="panel-heading">
-                Основные сведения
-                <?php if (!$model->isNewRecord): ?>
-                    <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
-                <?php endif; ?>
-            </div>
-            <div class="panel-body">
-                <?php $text = !$readonlyResult ? 'Мероприятие завершено. Вы можете добавить информация в блоки "Загруженные материалы" и "Итоги мероприятия"' : 'После окончания мероприятия в любом статусе, Вы сможете добавить информацию в блоки "Загруженные материалы" и "Итоги мероприятия"' ?>
-                <?= (\artsoft\Art::isFrontend() && $model->isAuthor()) ? \yii\bootstrap\Alert::widget([
-                    'body' => '<i class="fa fa-info"></i> ' . $text,
-                    'options' => ['class' => 'alert-info'],
-                ]) : null;
-                ?>
-                <div class="row">
-                    <div class="col-sm-12">
+    <div class="panel">
+        <div class="panel-heading">
+            Карточка мероприятия
+            <?php if (!$model->isNewRecord): ?>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
+            <?php endif; ?>
+        </div>
+        <div class="panel-body">
+            <?php $text = !$readonlyResult ? 'Мероприятие завершено. Вы можете добавить информация в блоки "Загруженные материалы" и "Итоги мероприятия"' : 'После окончания мероприятия в любом статусе, Вы сможете добавить информацию в блоки "Загруженные материалы" и "Итоги мероприятия"' ?>
+            <?= (\artsoft\Art::isFrontend() && $model->isAuthor()) ? \yii\bootstrap\Alert::widget([
+                'body' => '<i class="fa fa-info"></i> ' . $text,
+                'options' => ['class' => 'alert-info'],
+            ]) : null;
+            ?>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Дата и время мероприятия
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <?= $form->field($model, 'date_in')->widget(\kartik\date\DatePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Выберите запланированную дату.'); ?>
 
-                        <?= $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Выберите запланированную дату и укажите время проведения мероприятия. Если на момент введения Вы не обладаете информацией о точном времени проведения мероприятия, указывается приблизительное время.'); ?>
+                                    <?= $form->field($model, 'time_in')->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Укажите время проведения мероприятия. Если на момент введения Вы не обладаете информацией о точном времени проведения мероприятия, указывается приблизительное время.'); ?>
 
-                        <?= $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]) ?>
+                                    <?= $form->field($model, 'date_out')->widget(\kartik\date\DatePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
-                        <?= $form->field($model, 'title')->textInput(['maxlength' => true, 'disabled' => $readonly])->hint('Введите официальное название мероприятия, которое указано в положении. Например: «X Международный фестиваль «Ипполитовская хоровая весна». В случае проведения самостоятельного мероприятия вместе с более крупным, укажите название более крупного мероприятия, используя связку «в рамках», например: Мастер-класс по лепке из глины в рамках Большого фестиваля детских школ искусств. Название указывается в кавычках. Если мероприятие посвящено какому-либо событию и (или) памятной дате, вводится пояснение с указанием основной цели мероприятия. Например: Концерт «Симфония весны», посвящённый Международному женскому дню 8 Марта.') ?>
-
-                        <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
-                            'data' => Department::getDepartmentList(),
-                            'options' => [
-                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art/teachers', 'Select Department...'),
-                                'multiple' => true,
-                            ],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-                        ])->label(Yii::t('art/guide', 'Department'));
-                        ?>
-
-                        <?= $form->field($model->loadDefaultValues(), 'executors_list')->widget(\kartik\select2\Select2::class, [
-                            'data' => RefBook::find('teachers_fio', UserCommon::STATUS_ACTIVE)->getList(),
-                            'showToggleAll' => false,
-                            'options' => [
-                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art', 'Select...'),
-                                'multiple' => true,
-                            ],
-                            'pluginOptions' => [
-                                'allowClear' => false,
-                                //'minimumInputLength' => 3,
-                            ],
-
-                        ]);
-                        ?>
-
-
-                        <?= $form->field($model, 'category_id')->widget(\kartik\tree\TreeViewInput::class, [
-                            'id' => "schoolplan_category_tree",
-                            'options' => [
-                                'disabled' => Yii::$app->user->isSuperAdmin ? false : !$model->isNewRecord,
-                            ],
-                            'query' => \common\models\guidesys\GuidePlanTree::find()->addOrderBy('root, lft'),
-                            'dropdownConfig' => [
-                                'input' => ['placeholder' => 'Выберите категорию мероприятия...'],
-                            ],
-                            'fontAwesome' => true,
-                            'multiple' => false,
-                            'rootOptions' => [
-                                'label' => '',
-                                'class' => 'text-default'
-                            ],
-                            'childNodeIconOptions' => ['class' => ''],
-                            'defaultParentNodeIcon' => '',
-                            'defaultParentNodeOpenIcon' => '',
-                            'defaultChildNodeIcon' => '',
-                            'childNodeIconOptions' => ['class' => ''],
-                            'parentNodeIconOptions' => ['class' => ''],
-                        ]);
-                        ?>
-                        <div class="spinner">
-                            <div class="col-sm-3"></div>
-                            <div class="col-sm-9">
-                                <?= \kartik\spinner\Spinner::widget(['preset' => 'small', 'align' => 'left']); ?>
+                                    <?= $form->field($model, 'time_out')->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
+                                </div>
                             </div>
                         </div>
-                        <?= $form->field($model->loadDefaultValues(), 'formPlaces')->radioList(Schoolplan::getFormPlacesList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
+                    </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                Основные сведения
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <?php
+                                        //                        echo $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Выберите запланированную дату и укажите время проведения мероприятия. Если на момент введения Вы не обладаете информацией о точном времени проведения мероприятия, указывается приблизительное время.');
+                                        ?>
+                                        <?php
+                                        //                        echo $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])
+                                        ?>
 
-                        <?= $form->field($model, 'places')->textInput(['maxlength' => true])->hint('Укажите место проведения в соответствии с фактическим местом, где проводится мероприятие (в случае, если мероприятие будет проводиться на разных площадках, указывается основное место его проведения. Данные вводятся в формате полного названия места. Например: Парк культуры и отдыха имени Горького). Если мероприятие проводится дистанционно, то местом проведения указывается «сеть интернет».') ?>
+                                        <?= $form->field($model, 'title')->textInput(['maxlength' => true, 'disabled' => $readonly])->hint('Введите официальное название мероприятия, которое указано в положении. Например: «X Международный фестиваль «Ипполитовская хоровая весна». В случае проведения самостоятельного мероприятия вместе с более крупным, укажите название более крупного мероприятия, используя связку «в рамках», например: Мастер-класс по лепке из глины в рамках Большого фестиваля детских школ искусств. Название указывается в кавычках. Если мероприятие посвящено какому-либо событию и (или) памятной дате, вводится пояснение с указанием основной цели мероприятия. Например: Концерт «Симфония весны», посвящённый Международному женскому дню 8 Марта.') ?>
 
-                        <?= $form->field($model, 'auditory_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => RefBook::find('auditory_memo_1')->getList(),
-                            'showToggleAll' => false,
-                            'options' => [
-                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art', 'Select...'),
-                                'multiple' => false,
-                            ],
-                            'pluginOptions' => [
-                                'allowClear' => false,
-                                //'minimumInputLength' => 3,
-                            ],
+                                        <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
+                                            'data' => Department::getDepartmentList(),
+                                            'options' => [
+                                                'disabled' => $readonly,
+                                                'placeholder' => Yii::t('art/teachers', 'Select Department...'),
+                                                'multiple' => true,
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ])->label(Yii::t('art/guide', 'Department'));
+                                        ?>
 
-                        ]);
-                        ?>
+                                        <?= $form->field($model->loadDefaultValues(), 'executors_list')->widget(\kartik\select2\Select2::class, [
+                                            'data' => RefBook::find('teachers_fio', UserCommon::STATUS_ACTIVE)->getList(),
+                                            'showToggleAll' => false,
+                                            'options' => [
+                                                'disabled' => $readonly,
+                                                'placeholder' => Yii::t('art', 'Select...'),
+                                                'multiple' => true,
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => false,
+                                                //'minimumInputLength' => 3,
+                                            ],
 
+                                        ]);
+                                        ?>
+
+
+                                        <?= $form->field($model, 'category_id')->widget(\kartik\tree\TreeViewInput::class, [
+                                            'id' => "schoolplan_category_tree",
+                                            'options' => [
+                                                'disabled' => Yii::$app->user->isSuperAdmin ? false : !$model->isNewRecord,
+                                            ],
+                                            'query' => \common\models\guidesys\GuidePlanTree::find()->addOrderBy('root, lft'),
+                                            'dropdownConfig' => [
+                                                'input' => ['placeholder' => 'Выберите категорию мероприятия...'],
+                                            ],
+                                            'fontAwesome' => true,
+                                            'multiple' => false,
+                                            'rootOptions' => [
+                                                'label' => '',
+                                                'class' => 'text-default'
+                                            ],
+                                            'childNodeIconOptions' => ['class' => ''],
+                                            'defaultParentNodeIcon' => '',
+                                            'defaultParentNodeOpenIcon' => '',
+                                            'defaultChildNodeIcon' => '',
+                                            'childNodeIconOptions' => ['class' => ''],
+                                            'parentNodeIconOptions' => ['class' => ''],
+                                        ]);
+                                        ?>
+                                        <div class="spinner">
+                                            <div class="col-sm-3"></div>
+                                            <div class="col-sm-9">
+                                                <?= \kartik\spinner\Spinner::widget(['preset' => 'small', 'align' => 'left']); ?>
+                                            </div>
+                                        </div>
+                                        <?= $form->field($model->loadDefaultValues(), 'formPlaces')->radioList(Schoolplan::getFormPlacesList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
+
+                                        <?= $form->field($model, 'places')->textInput(['maxlength' => true])->hint('Укажите место проведения в соответствии с фактическим местом, где проводится мероприятие (в случае, если мероприятие будет проводиться на разных площадках, указывается основное место его проведения. Данные вводятся в формате полного названия места. Например: Парк культуры и отдыха имени Горького). Если мероприятие проводится дистанционно, то местом проведения указывается «сеть интернет».') ?>
+
+                                        <?= $form->field($model, 'auditory_id')->widget(\kartik\select2\Select2::class, [
+                                            'data' => RefBook::find('auditory_memo_1')->getList(),
+                                            'showToggleAll' => false,
+                                            'options' => [
+                                                'disabled' => $readonly,
+                                                'placeholder' => Yii::t('art', 'Select...'),
+                                                'multiple' => false,
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => false,
+                                                //'minimumInputLength' => 3,
+                                            ],
+
+                                        ]);
+                                        ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <?php if (!$model->isNewRecord) : ?>
                             <?php if ($model->category->preparing_flag) : ?>
 
@@ -535,6 +565,12 @@ $readonlyResult = (\artsoft\Art::isFrontend() && $model->isAuthor() && Yii::$app
 
 <?php
 $js = <<<JS
+$("#schoolplan-date_in").on("input change", function () {
+     var value = $(this).val();
+     // if(!$("#schoolplan-date_out").val()) {
+        $("#schoolplan-date_out").val(value);
+     // }
+   });
 // Показ поля Стоимость участия
 let input =  $('input[type=radio][name="Schoolplan[form_partic]"]');
 let field =  $('.field-schoolplan-partic_price');

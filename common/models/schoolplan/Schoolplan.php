@@ -101,6 +101,10 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public $admin_flag;
     public $formPlaces;
     public $protocolLeaderFlag;
+    public $date_in;
+    public $time_in;
+    public $date_out;
+    public $time_out;
 
     const FORM_PARTIC = [
         1 => 'Беcплатное',
@@ -165,13 +169,29 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         ];
     }
 
+    public function beforeValidate()
+    {
+        $this->datetime_in = $this->date_in . ' ' . $this->time_in;
+        $this->datetime_out = $this->date_out . ' ' . $this->time_out;
+        return parent::beforeValidate();
+    }
+
+    public function afterFind()
+    {
+        $this->date_in = Yii::$app->formatter->asDate($this->datetime_in);
+        $this->time_in = Yii::$app->formatter->asDatetime($this->datetime_in, 'php:H:i');
+        $this->date_out = Yii::$app->formatter->asDate($this->datetime_out);
+        $this->time_out = Yii::$app->formatter->asDatetime($this->datetime_out, 'php:H:i');
+        parent::afterFind();
+    }
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['title', 'datetime_in', 'datetime_out', 'category_id', 'author_id', 'signer_id'], 'required'],
+            [['title', /*'datetime_in', 'datetime_out',*/ 'category_id', 'author_id', 'signer_id'], 'required'],
+            [['date_in','time_in','date_out','time_out'], 'required'],
             [['department_list', 'executors_list'], 'required'],
             [['partic_price'], 'required', 'when' => function ($model) {
                 return $model->form_partic == '2';
@@ -199,6 +219,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['activities_over_id'], 'exist', 'skipOnError' => true, 'targetClass' => ActivitiesOver::class, 'targetAttribute' => ['activities_over_id' => 'id']],
             [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['datetime_out'], 'compareTimestamp', 'skipOnEmpty' => false],
+            [['date_in','time_in','date_out','time_out'], 'safe'],
             ['bars_flag', 'boolean'],
             [['title_over', 'admin_message'], 'string'],
             ['period_over', 'integer'],
@@ -325,6 +346,10 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'protocol_subject_cat_id' => 'Категория дисциплины',
             'protocol_subject_id' => 'Дисциплина',
             'protocol_subject_vid_id' => 'Вид дисциплины',
+            'date_in' => 'Дата начала',
+            'time_in' => 'Время начала',
+            'date_out' => 'Дата окончания',
+            'time_out' => 'Время окончания',
         ];
     }
 
@@ -790,11 +815,6 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 //        echo '<pre>' . print_r($data, true) . '</pre>';
     }
 
-    public function afterFind()
-    {
-        $this->protocolLeaderFlag = $this->protocol_leader_name != '' ? true : false;
-        parent::afterFind();
-    }
 
     /**
      * @param bool $insert
