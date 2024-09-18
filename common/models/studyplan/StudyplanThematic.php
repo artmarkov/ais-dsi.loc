@@ -5,6 +5,8 @@ namespace common\models\studyplan;
 use artsoft\Art;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
+use common\models\subjectsect\SubjectSect;
+use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersLoad;
 use Yii;
@@ -160,8 +162,16 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
         $userId = Yii::$app->user->identity->getId();
         $author_flag = Yii::$app->settings->get('module.thematic_template_author_flag', 0);
 
+        $subject_id = $this->subject_sect_studyplan_id != null ? SubjectSectStudyplan::find()->select(['subject_sect.subject_id'])->joinWith('subjectSect')->where(['subject_sect_studyplan.id' => $this->subject_sect_studyplan_id])->scalar() : StudyplanSubject::find()->select(['subject_id'])->where(['id' => $this->studyplan_subject_id])->scalar();
+
+        $ids = StudyplanThematicView::find()
+            ->select('studyplan_thematic_id')
+            ->where(['subject_id' => $subject_id])
+            ->andWhere(['is not', 'studyplan_thematic_id', null])
+            ->column();
         $models = self::find()->select(['id', 'template_name'])
-            ->where(['is not', 'template_name', null]);
+            ->where(['is not', 'template_name', null])
+            ->andWhere(['id' => array_unique($ids)]);
 
         if ($author_flag == 0) {
             $models = $models->andWhere(['=', 'author_id', $userId]);

@@ -40,12 +40,14 @@ $form = ActiveForm::begin([
             <?php endif; ?>
         </div>
         <div class="panel-body">
-            <?php $text = !$readonlyResult ? 'Мероприятие завершено. Вы можете добавить информация в блоки "Загруженные материалы" и "Итоги мероприятия"' : 'После окончания мероприятия в любом статусе, Вы сможете добавить информацию в блоки "Загруженные материалы" и "Итоги мероприятия"' ?>
-            <?= (\artsoft\Art::isFrontend() && $model->isAuthor()) ? \yii\bootstrap\Alert::widget([
+            <?php if (!$model->isNewRecord): ?>
+                <?php $text = $readonlyResult ? 'Мероприятие завершено. Вы можете добавить информация в блоки "Загруженные материалы" и "Итоги мероприятия"' : 'После окончания мероприятия в любом статусе, Вы сможете добавить информацию в блоки "Загруженные материалы" и "Итоги мероприятия"' ?>
+    <?= (\artsoft\Art::isFrontend() && $model->isAuthor()) ? \yii\bootstrap\Alert::widget([
                 'body' => '<i class="fa fa-info"></i> ' . $text,
                 'options' => ['class' => 'alert-info'],
             ]) : null;
             ?>
+            <?php endif; ?>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="panel panel-info">
@@ -55,11 +57,15 @@ $form = ActiveForm::begin([
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <?= $form->field($model, 'date_in')->widget(\kartik\date\DatePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Выберите запланированную дату.'); ?>
+                                    <?= $form->field($model, 'date_in')->widget(\kartik\date\DatePicker::className(), ['pluginOptions' => [
+                                        'orientation' => 'bottom',
+                                    ]])->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Выберите запланированную дату.'); ?>
 
                                     <?= $form->field($model, 'time_in')->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Укажите время проведения мероприятия. Если на момент введения Вы не обладаете информацией о точном времени проведения мероприятия, указывается приблизительное время.'); ?>
 
-                                    <?= $form->field($model, 'date_out')->widget(\kartik\date\DatePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
+                                    <?= $form->field($model, 'date_out')->widget(\kartik\date\DatePicker::className(), ['pluginOptions' => [
+                                        'orientation' => 'bottom',
+                                    ]])->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
                                     <?= $form->field($model, 'time_out')->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
                                 </div>

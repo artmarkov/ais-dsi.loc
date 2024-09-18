@@ -2,6 +2,7 @@
 
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\subjectsect\SubjectSect */
@@ -56,14 +57,17 @@ $form = ActiveForm::begin([
                     ]); ?>
 
                     <?= $form->field($model, 'subject_id')->widget(\kartik\depdrop\DepDrop::class, [
-                        'data' => $model::getSubjectForUnionAndCat($model->programm_list, $model->subject_cat_id),
+                        'data' => /*$model::getSubjectForUnionAndCat($model->programm_list, $model->subject_cat_id)*/
+                            \common\models\subject\Subject::getSubjectByCategory($model->subject_cat_id),
                         'options' => [
                             'placeholder' => Yii::t('art', 'Select...'),
                             'disabled' => $readonly,
                         ],
                         'pluginOptions' => [
-                            'depends' => ['programm_list', 'subject_cat_id'],
-                            'url' => \yii\helpers\Url::to(['/sect/default/subject'])
+//                            'depends' => ['programm_list', 'subject_cat_id'],
+//                            'url' => \yii\helpers\Url::to(['/sect/default/subject'])
+                            'depends' => ['subject_cat_id'],
+                            'url' => Url::to(['/subject/default/subject'])
                         ]
                     ]); ?>
 

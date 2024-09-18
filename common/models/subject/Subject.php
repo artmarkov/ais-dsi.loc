@@ -107,7 +107,7 @@ class Subject extends ActiveRecord
      * @return \yii\db\ActiveQuery
      */
     public static function getSubjectById($category_id = null) {
-        $data = self::find()->select(['id','name']);
+        $data = self::find()->select(['id','name'])->orderBy('name');
              $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
         $data = $data->asArray()->all();
 
@@ -116,7 +116,7 @@ class Subject extends ActiveRecord
 
     public static function getSubjectByCategory($category_id = null)
     {
-        $data = self::find()->select(['name', 'id']);
+        $data = self::find()->select(['name', 'id'])->orderBy('name');
         $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
         $data = $data->indexBy('id')->column();
 
@@ -125,7 +125,7 @@ class Subject extends ActiveRecord
 
     public static function getSubjectByCategoryForName($category_id = null)
     {
-        $data = self::find()->select(['name', 'name']);
+        $data = self::find()->select(['name', 'name'])->orderBy('name');
         $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
         $data = $data->indexBy('name')->column();
 

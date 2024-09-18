@@ -192,7 +192,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => 'Док.пол.',
                         'visible' => \artsoft\Art::isBackend(),
                         'value' => function (Studyplan $model) {
-                            return $model->doc_received_flag ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да' : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> Нет';
+                            return $model->doc_received_flag ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да' : ($model->docWaitingPrint() ? '<i class="fa fa-thumbs-down text-warning" style="font-size: 1.5em;"></i> Нет' : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> Нет');
                         },
                         'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
                         'format' => 'raw',

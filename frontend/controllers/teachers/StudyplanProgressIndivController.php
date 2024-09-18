@@ -70,6 +70,9 @@ class StudyplanProgressIndivController extends MainController
                 ->andWhere(['=', 'subject_key', $model_date->subject_key])
                 ->andWhere(['=', 'timestamp_month', $timestamp_in])
                 ->one() ?? new ProgressConfirmIndiv();
+        if($model_confirm->isNewRecord) {
+            $model_confirm->teachers_sign = ProgressConfirmIndiv::getLastSigner($modelTeachers->id);
+        }
         $model_confirm->teachers_id = $modelTeachers->id;
         $model_confirm->timestamp_month = $timestamp_in;
         $model_confirm->subject_key = $model_date->subject_key;

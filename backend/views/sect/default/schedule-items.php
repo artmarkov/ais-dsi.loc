@@ -31,12 +31,23 @@ $columns = [
         'format' => 'raw',
     ],
     [
+        'value' => function ($model) {
+            return implode('<br/>', $model->getSectList());
+        },
+        'hidden' => true,
+        'group' => true,
+        'hiddenFromExport'=> false,
+        'format' => 'raw',
+        'label' => 'Список группы'
+    ],
+    [
         'attribute' => 'week_time',
         'value' => function ($model) {
             return $model->week_time;
         },
         'group' => true,
         'subGroupOf' => 1,
+        'hiddenFromExport'=> true
     ],
     [
         'attribute' => 'direction_id',
@@ -69,7 +80,8 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,  // enable grouping
-        'subGroupOf' => 4
+        'subGroupOf' => 4,
+        'hiddenFromExport'=> true
     ],
     [
         'attribute' => 'scheduleDisplay',
@@ -80,7 +92,6 @@ $columns = [
     ],
     [
         'attribute' => 'auditory_id',
-        'options' => ['style' => 'width:300px'],
         'width' => '300px',
         'value' => function ($model) use ($auditory_list){
             return $auditory_list[$model->auditory_id] ?? '';
@@ -89,7 +100,6 @@ $columns = [
     [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
-        'width' => '90px',
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {

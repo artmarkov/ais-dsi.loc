@@ -394,6 +394,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'programm_name' => $model->programm->name, // название программы
             'programm_level' => isset($modelProgrammLevel->level) ? $modelProgrammLevel->level->name : null, // уровень программы
             'term_mastering' => 'срок обучения: ' . $model->programm->term_mastering . ' лет(года)', // Срок освоения образовательной программы
+            'term_mastering_op' => $termMasteringGrand, // Срок освоения образовательной программы
             'term_mastering_grand' => 'срок обучения: ' . $termMasteringGrand . ' лет(года)', // Срок освоения образовательной программы с грантом
             'course' => $model->course . ' класс',
             'year_time_total' => $model->year_time_total,
@@ -712,7 +713,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
                             }
                             $model_sect = $model_sect->one();
 
-                       // echo '<pre>' . print_r($model_sect, true) . '</pre>'; die();
+                            // echo '<pre>' . print_r($model_sect, true) . '</pre>'; die();
                             if ($model_sect && $model_subject) {
                                 $model_sect->insertStudyplanSubject($model_subject->id);
                                 $model_load = TeachersLoad::find()
@@ -840,5 +841,17 @@ class Studyplan extends \artsoft\db\ActiveRecord
     public static function find()
     {
         return new StudyplanQuery(get_called_class());
+    }
+
+    /**
+     * Проверка готовы ли документы к печати
+     * @return bool
+     */
+    public function docWaitingPrint()
+    {
+        if ($this->doc_contract_start && $this->doc_contract_end && $this->doc_signer) {
+            return true;
+        }
+        return false;
     }
 }

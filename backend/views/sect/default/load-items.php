@@ -20,8 +20,17 @@ $columns = [
     [
         'attribute' => 'sect_name',
         'width' => '310px',
-        'value' => function ($model, $key, $index, $widget) {
+        /*'value' => function ($model, $key, $index, $widget) {
             return $model->sect_name ? $model->sect_name . $model->getSectNotice() : null;
+        },*/
+        'value' => function ($model)  {
+            return \artsoft\Art::isBackend() && $model->sect_name ? Html::a($model->sect_name,
+                ['/sect/default/studyplan-progress', 'id' => $model->subject_sect_id, 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id],
+                [
+//                    'target' => '_blank',
+                    'data-pjax' => '0',
+//                    'class' => 'btn btn-info',
+                ]) . $model->getSectNotice() : ($model->sect_name ? $model->sect_name . $model->getSectNotice() : null);
         },
         'format' => 'raw',
         'group' => true,  // enable grouping

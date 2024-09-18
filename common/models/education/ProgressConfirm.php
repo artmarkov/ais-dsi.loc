@@ -161,4 +161,13 @@ class ProgressConfirm  extends \artsoft\db\ActiveRecord
     public function getSubject() {
         return RefBook::find('sect_name_2')->getValue($this->subject_sect_studyplan_id);
     }
+
+    public static function getLastSigner($teachers_id)
+    {
+        return self::find()->select(['teachers_sign'])
+            ->where(['teachers_id' => $teachers_id])
+            ->andWhere(['IS NOT', 'teachers_sign', null])
+            ->orderBy('id DESC')
+            ->scalar();
+    }
 }

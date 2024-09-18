@@ -244,8 +244,8 @@ class DefaultController extends MainController
 
             $query = TeachersLoadView::find()
                 ->where(['=', 'subject_sect_id', $id])
-                ->andWhere(['=', 'plan_year', $model_date->plan_year])
-                ->andWhere(['is not', 'studyplan_subject_list', NULL]);
+                ->andWhere(['=', 'plan_year', $model_date->plan_year]);
+              //  ->andWhere(['is not', 'studyplan_subject_list', NULL]);
             $searchModel = new TeachersLoadViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
             $dataProvider = $searchModel->search($params);

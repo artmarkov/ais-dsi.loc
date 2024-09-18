@@ -167,4 +167,13 @@ class ProgressConfirmIndiv  extends \artsoft\db\ActiveRecord
             ->where(['=', 'subject_key', $this->subject_key])
             ->scalar();
     }
+
+    public static function getLastSigner($teachers_id)
+    {
+        return self::find()->select(['teachers_sign'])
+            ->where(['teachers_id' => $teachers_id])
+            ->andWhere(['IS NOT', 'teachers_sign', null])
+            ->orderBy('id DESC')
+            ->scalar();
+    }
 }

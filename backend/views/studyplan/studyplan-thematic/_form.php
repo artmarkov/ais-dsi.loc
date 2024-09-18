@@ -67,7 +67,7 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
                             echo $form->field($model, 'thematic_flag')->checkbox(['disabled' => $readonly])->label('Взять из шаблона');
 
                             echo $form->field($model, 'thematic_list')->widget(\kartik\select2\Select2::class, [
-                                'data' => \common\models\studyplan\StudyplanThematic::getTemplateList(),
+                                'data' => $model->getTemplateList(),
                                 'options' => [
                                     'disabled' => $readonly,
                                     'placeholder' => Yii::t('art', 'Select...'),
@@ -75,7 +75,7 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
                                 'pluginOptions' => [
                                     'allowClear' => true
                                 ],
-                            ])->label('Список щаблонов');
+                            ])->label('Список шаблонов');
                         } else {
 
                             echo $form->field($model, 'template_flag')->checkbox(['disabled' => $readonly]);

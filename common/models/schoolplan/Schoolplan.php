@@ -218,7 +218,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuidePlanTree::class, 'targetAttribute' => ['category_id' => 'id']],
             [['activities_over_id'], 'exist', 'skipOnError' => true, 'targetClass' => ActivitiesOver::class, 'targetAttribute' => ['activities_over_id' => 'id']],
             [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
-            [['datetime_out'], 'compareTimestamp', 'skipOnEmpty' => false],
+            [['date_out'], 'compareTimestamp', 'skipOnEmpty' => false],
             [['date_in','time_in','date_out','time_out'], 'safe'],
             ['bars_flag', 'boolean'],
             [['title_over', 'admin_message'], 'string'],

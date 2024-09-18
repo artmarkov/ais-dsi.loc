@@ -36,6 +36,7 @@ $form = ActiveForm::begin([
             <?= $form->field($model_date, 'activity_list')->widget(DepDrop::class, [
                 'data' =>  \artsoft\helpers\RefBook::find('teachers_activity_memo', \common\models\user\UserCommon::STATUS_ACTIVE)->getList(),
                 'type' => DepDrop::TYPE_SELECT2,
+                'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                 'options' => [
                     'id' => 'activity_list',
                     'placeholder' => Yii::t('art', 'Select...'),

@@ -505,10 +505,13 @@ class DefaultController extends BaseController
      */
     public function actionResetPasswordRequest($token)
     {
-        if (!Yii::$app->user->isGuest) {
+       /* if (!Yii::$app->user->isGuest) {
             throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
-        }
+        }*/
 
+        if (Yii::$app->user->identity) { // Если по ссылке проходит залогиненный пользователь
+            Yii::$app->user->logout();
+        }
         $user = User::findByConfirmationToken($token);
 
         if (!$user) {
@@ -675,7 +678,7 @@ class DefaultController extends BaseController
             if ($model->validate()) {
                 try {
                     return AvatarHelper::saveAvatar($model->image);
-                } catch (Exception $exc) {
+                } catch (\Exception $exc) {
                     Yii::$app->response->statusCode = 400;
                     return Yii::t('art', 'An unknown error occurred.');
                 }

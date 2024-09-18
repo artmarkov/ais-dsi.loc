@@ -25,8 +25,8 @@ class SchoolplanViewSearch extends SchoolplanView
     public function rules()
     {
         return [
-            [['id', 'datetime_in', 'datetime_out', 'auditory_id', 'category_id', 'form_partic', 'visit_poss', 'important_event', 'num_users', 'num_winners', 'num_visitors', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'author_id', 'doc_status', 'bars_flag'], 'integer'],
-            [['title', 'places', 'department_list', 'executors_list', 'partic_price', 'visit_content', 'region_partners', 'site_url', 'site_media', 'description', 'rider', 'result', 'auditory_places'], 'safe'],
+            [['id', 'auditory_id', 'category_id', 'form_partic', 'visit_poss', 'important_event', 'num_users', 'num_winners', 'num_visitors', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'author_id', 'doc_status', 'bars_flag'], 'integer'],
+            [['title', 'places', 'department_list', 'executors_list', 'partic_price', 'visit_content', 'region_partners', 'site_url', 'site_media', 'description', 'rider', 'result', 'auditory_places', 'datetime_in', 'datetime_out'], 'safe'],
         ];
     }
 

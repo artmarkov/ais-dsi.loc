@@ -299,6 +299,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             $studyplan = [];
             $models = LessonItemsProgressView::find()
                 ->where(['=', 'lesson_items_id', $this->id])
+                ->andWhere(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
                 ->andWhere(['OR',
                     ['status' => Studyplan::STATUS_ACTIVE],
                     ['AND',

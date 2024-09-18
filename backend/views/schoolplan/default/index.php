@@ -90,6 +90,44 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
 //                                    }
 //                                },
 //                            ],
+                        // столбцы только на экпорт
+                            [
+                                'value' => function (Schoolplan $model) {
+                                    return Yii::$app->formatter->asDate($model->datetime_in);
+                                },
+                                'format' => 'raw',
+                                'hidden' => true,
+                                'hiddenFromExport'=> false,
+                                'label' => 'Дата начала мероприятия'
+                            ],
+                            [
+                                'value' => function (Schoolplan $model) {
+                                    return Yii::$app->formatter->asDatetime($model->datetime_in,'php:H:i');
+                                },
+                                'format' => 'raw',
+                                'hidden' => true,
+                                'hiddenFromExport'=> false,
+                                'label' => 'Время начала мероприятия'
+                            ],
+                            [
+                                'value' => function (Schoolplan $model) {
+                                    return Yii::$app->formatter->asDate($model->datetime_out);
+                                },
+                                'format' => 'raw',
+                                'hidden' => true,
+                                'hiddenFromExport'=> false,
+                                'label' => 'Дата окончания мероприятия'
+                            ],
+                            [
+                                'value' => function (Schoolplan $model) {
+                                    return Yii::$app->formatter->asDatetime($model->datetime_out,'php:H:i');
+                                },
+                                'format' => 'raw',
+                                'hidden' => true,
+                                'hiddenFromExport'=> false,
+                                'label' => 'Время окончания мероприятия'
+                            ],
+                            // end столбцы только на экпорт
                             [
                                 'attribute' => 'datetime_in',
                                 'value' => function (Schoolplan $model) {
@@ -97,6 +135,7 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                 },
                                 'options' => ['style' => 'width:150px'],
                                 'format' => 'raw',
+                                'hiddenFromExport'=> true,
                                 'label' => 'Дата мероприятия'
                             ],
                             [

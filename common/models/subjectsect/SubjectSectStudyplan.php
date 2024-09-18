@@ -3,6 +3,7 @@
 namespace common\models\subjectsect;
 
 use artsoft\helpers\RefBook;
+use common\models\education\LessonProgress;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subject\SubjectType;

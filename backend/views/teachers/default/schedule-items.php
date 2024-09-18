@@ -235,6 +235,14 @@ $columns = [
                 </div>
 
                 <div class="col-sm-6 text-right">
+                    <?php if (\artsoft\Art::isBackend()): ?>
+                        <?= Html::a('<i class="fa fa-calendar" aria-hidden="true"></i> Отчет по расписанию',
+                            ['/reports/default/teachers-schedule', 'id' => $model->id],
+                            [
+                                'target' => '_blank',
+                                'class' => 'btn btn-warning',
+                            ]); ?>
+                    <?php endif;?>
                     <?php /*\artsoft\grid\GridPageSize::widget(['pjaxId' => 'subject-schedule-grid-pjax']) */?>
                 </div>
             </div>

@@ -639,10 +639,10 @@ class DefaultController extends MainController
                 }
             }
             if (Yii::$app->request->post('submitAction') == 'doc_contract') {
-                if ($model->subject_form_id == SubjectType::BASIS_FREE) {
+                if ($model->subject_form_id != 1001) {
                     $model->makeDocx(Studyplan::template_csf);
                 } else {
-                    $model->makeDocx(Studyplan::template_cs);
+                    !$model->mat_capital_flag ? $model->makeDocx(Studyplan::template_cs) : $model->makeDocx(Studyplan::template_cs_mk);
                 }
             } elseif (Yii::$app->request->post('submitAction') == 'doc_statement') {
                 $model->makeDocx(Studyplan::template_ss);
