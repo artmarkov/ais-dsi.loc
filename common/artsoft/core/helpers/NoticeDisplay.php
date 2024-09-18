@@ -25,6 +25,7 @@ class NoticeDisplay
     protected $teachersOverLapping;
     protected $teachersPlanScheduleOverLapping;
     protected $studentScheduleOverLapping;
+    protected $studentScheduleOverPause;
     protected $scheduleAccompLimit;
 
     public static function getData($models, $plan_year)
@@ -45,6 +46,7 @@ class NoticeDisplay
         $this->teachersOverLapping = $this->getTeachersOverLapping($this->plan_year); // Преподаватель не может работать в одно и тоже время в разных аудиториях!
         $this->teachersPlanScheduleOverLapping = $this->getTeachersPlanScheduleOverLapping($this->plan_year); // Заданное расписание не соответствует планированию индивидуальных занятий!
         $this->studentScheduleOverLapping = $this->getStudentScheduleOverLapping($this->plan_year); // Ученик не может в одно и то же время находиться в разных аудиториях!
+        $this->studentScheduleOverPause = $this->getStudentScheduleOverPause($this->plan_year); // Ученик должен иметь перерыв в разных аудиториях 5 мин (300 сек)!
         $this->scheduleAccompLimit = $this->getScheduleAccompLimit($this->plan_year); // Концертмейстер может работать только в рамках расписания преподавателя
 
     }
@@ -158,6 +160,18 @@ class NoticeDisplay
             $message = 'Ученик не может в одно и то же время находиться в разных аудиториях! ' . implode(', ', $info);
             //  Notice::registerDanger($message);
             $tooltip[] = Tooltip::widget(['type' => 'danger', 'message' => $message]);
+        } else {
+            $models = $this->studentScheduleOverPause;
+            if (isset($models[$model->subject_schedule_id])) {
+                $info = [];
+                foreach ($models[$model->subject_schedule_id] as $index => $itemModel) {
+//                echo '<pre>' . print_r($itemModel, true) . '</pre>'; die();
+                    $info[] = $itemModel['student_fio'] . '(' . $itemModel['sect_name'] . ' ' . $itemModel['subject'] . ') - ' . $this->getScheduleDisplay($itemModel) . ' ' . RefBook::find('auditory_memo_1')->getValue($itemModel['auditory_id']);
+                }
+                $message = 'Ученик должен иметь перерыв не менее 5 мин! ' . implode(', ', $info);
+                //  Notice::registerDanger($message);
+                $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
+            }
         }
 //
         return implode('', $tooltip);
@@ -299,6 +313,39 @@ class NoticeDisplay
 
     }
 
+    /**
+     * Ученик должен иметь перерыв в разных аудиториях 5 мин (300 сек)!
+     * @param $plan_year
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public function getStudentScheduleOverPause($plan_year)
+    {
+        $thereIsAnOverlapping = \Yii::$app->db->createCommand('SELECT b.subject_schedule_id, a.week_num, a.week_day, 
+                              a.time_in, a.time_out, a.auditory_id, a.sect_name, a.subject, a.student_fio
+	                        FROM subject_schedule_studyplan_view a, subject_schedule_studyplan_view b 
+	                        WHERE a.subject_schedule_id != b.subject_schedule_id
+							AND a.auditory_id != b.auditory_id 
+							AND a.direction_id = 1000
+							AND a.direction_id = b.direction_id
+							AND a.week_num = b.week_num
+							AND a.week_day = b.week_day
+							AND a.plan_year = :plan_year
+							AND b.plan_year = :plan_year
+							AND a.status = :status
+							AND b.status = :status
+							AND a.student_id = b.student_id
+							AND NOT(a.time_in >= b.time_out+300 OR b.time_in >= a.time_out+300)
+							AND b.subject_schedule_id = ANY (string_to_array(:subject_schedule_ids, \',\')::int[])',
+            [
+                'plan_year' => $plan_year,
+                'status' => 1,
+                'subject_schedule_ids' => implode(',', $this->subjectScheduleIds),
+            ])->queryAll();
+
+        return $thereIsAnOverlapping ? ArrayHelper::index($thereIsAnOverlapping, null, ['subject_schedule_id']) : [];
+
+    }
     /**
      * @param $plan_year
      * @return array
