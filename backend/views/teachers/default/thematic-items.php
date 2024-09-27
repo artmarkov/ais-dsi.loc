@@ -274,6 +274,7 @@ $columns = [
             <?=
             GridView::widget([
                 'id' => 'studyplan-thematic-grid',
+                'pjax' => false,
                 'dataProvider' => $dataProvider,
 //                'filterModel' => $searchModel,
                 'columns' => $columns,

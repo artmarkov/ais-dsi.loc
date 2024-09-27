@@ -21,7 +21,7 @@ class StudyplanStat
     protected function getStudyplans()
     {
         $models = (new Query())->from('studyplan_stat_view')
-            ->andWhere(['plan_year' => $this->plan_year])
+            ->where(['plan_year' => $this->plan_year])
             ->all();
         return $models;
     }
@@ -34,6 +34,7 @@ class StudyplanStat
     {
 //        echo '<pre>' . print_r($this->getStudyplans(), true) . '</pre>';
         $attributes = [
+            'created_at' => 'Дата создания плана',
             'student_id' => 'ФЛС',
             'student_fio' => 'ФИО ученика',
             'plan_year' => 'Учебный год',
@@ -94,7 +95,8 @@ class StudyplanStat
             foreach (explode(',', $model['limited_status_list']) as $item => $status) {
                 $limit[] = Student::getLimitedStatusValue($status);
             }
-            $data[$id]['student_id'] = sprintf('#%06d', $model['student_id']);
+            $data[$id]['created_at'] = Yii::$app->formatter->asDate($model['created_at']);
+            $data[$id]['student_id'] = sprintf('%06d', $model['student_id']);
             $data[$id]['student_fio'] = $model['student_fio'];
             $data[$id]['education_programm_name'] = $model['education_programm_name'];
             $data[$id]['education_programm_short_name'] = $model['education_programm_short_name'];
@@ -124,7 +126,7 @@ class StudyplanStat
             $data[$id]['student_info'] = $model['student_info'];
             $data[$id]['student_email'] = $model['student_email'];
             $data[$id]['student_sert_name'] = Student::getDocumentValue($model['student_sert_name']);
-            $data[$id]['student_sert_doc'] = 'серия ' . $model['student_sert_series'] . ' №' . $model['student_sert_num'] . ' выдан ' . $model['student_sert_organ'] . ' ' . Yii::$app->formatter->asDate($model['student_sert_date']);
+            $data[$id]['student_sert_doc'] = $model['student_sert_series'] ? 'серия ' . $model['student_sert_series'] . ' №' . $model['student_sert_num'] . ' выдан ' . $model['student_sert_organ'] . ' ' . Yii::$app->formatter->asDate($model['student_sert_date']) : '';
             $data[$id]['limited_status_list'] = implode(',', $limit);
             $data[$id]['signer_fio'] = $model['signer_fio'];
             $data[$id]['signer_address'] = $model['signer_address'];
@@ -136,7 +138,7 @@ class StudyplanStat
             $data[$id]['signer_info'] = $model['signer_info'];
             $data[$id]['signer_email'] = $model['signer_email'];
             $data[$id]['signer_sert_name'] = Parents::getDocumentValue($model['signer_sert_name']);
-            $data[$id]['signer_doc'] = 'серия ' . $model['signer_sert_series'] . ' №' . $model['signer_sert_num'] . ' выдан ' . $model['signer_sert_organ'] . ' ' . Yii::$app->formatter->asDate($model['signer_sert_date']) . ' код ' . $model['signer_sert_code'];
+            $data[$id]['signer_doc'] = $model['signer_sert_series'] ? 'серия ' . $model['signer_sert_series'] . ' №' . $model['signer_sert_num'] . ' выдан ' . $model['signer_sert_organ'] . ' ' . Yii::$app->formatter->asDate($model['signer_sert_date']) . ' код ' . $model['signer_sert_code'] : '';
         }
 //        usort($data, function ($a, $b) {
 //            return $b['total'] <=> $a['total'];

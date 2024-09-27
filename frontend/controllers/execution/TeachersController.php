@@ -11,6 +11,8 @@ use common\models\education\LessonItems;
 use common\models\education\LessonItemsProgressView;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
+use common\models\education\ProgressConfirm;
+use common\models\education\ProgressConfirmIndiv;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidejob\Bonus;
@@ -43,6 +45,7 @@ use common\models\teachers\search\TeachersPlanSearch;
 use common\models\teachers\search\TeachersSearch;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersActivity;
+use common\models\teachers\TeachersCheetAccount;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadView;
 use common\models\teachers\TeachersPlan;
@@ -784,8 +787,15 @@ class TeachersController extends MainController
 //            if (Yii::$app->request->post('submitAction') == 'excel') {
 //                // TeachersEfficiency::sendXlsx($data);
 //            }
+            $model_confirm = ProgressConfirm::find()->where(['=', 'teachers_id', $id])
+                    ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id == '' ? 0 : $model_date->subject_sect_studyplan_id])
+                    ->andWhere(['=', 'timestamp_month', $timestamp_in])
+                    ->one() ?? new ProgressConfirm();
+            $model_confirm->teachers_id = $id;
+            $model_confirm->timestamp_month = $timestamp_in;
+            $model_confirm->subject_sect_studyplan_id = $model_date->subject_sect_studyplan_id;
 
-            return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
+            return $this->renderIsAjax('studyplan-progress', compact(['model', 'model_date', 'modelTeachers', 'plan_year', 'model_confirm']));
         }
     }
 
@@ -976,7 +986,7 @@ class TeachersController extends MainController
             if ($session->get('_progress_teachers_id') != $id) {
                 $session->remove('_progress_subject_key');
             }
-            $model_date = new DynamicModel(['date_in', 'subject_key', 'teachers_id']);
+            $model_date = new DynamicModel(['date_in', 'date_out', 'subject_key', 'teachers_id']);
             $model_date->addRule(['date_in'], 'required')
                 ->addRule(['date_in'], 'safe')
                 ->addRule('teachers_id', 'integer')
@@ -987,15 +997,15 @@ class TeachersController extends MainController
                 $year = date('Y');
 
                 $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
+                $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, date("t"), $year), 'php:m.Y');
                 $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
                 $timestamp_in = $timestamp[0];
                 $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
                 $model_date->subject_key = $session->get('_progress_subject_key') ?? LessonProgressView::getIndivListForTeachersDefault($id, $plan_year);
-                $model_date->teachers_id = $id;
-//                print_r(LessonProgressView::getIndivListForTeachers($id, $plan_year)); die();
             }
 
             $session->set('_progress_date_in', $model_date->date_in);
+            $session->set('_progress_date_out', $model_date->date_out);
             $session->set('_progress_subject_key', $model_date->subject_key);
             $session->set('_progress_teachers_id', $id);
 
@@ -1007,7 +1017,14 @@ class TeachersController extends MainController
                 // TeachersEfficiency::sendXlsx($data);
             }
 
-            return $this->renderIsAjax('studyplan-progress-indiv', compact(['model', 'model_date', 'modelTeachers', 'plan_year']));
+            $model_confirm = ProgressConfirmIndiv::find()->where(['=', 'teachers_id', $id])
+                    ->andWhere(['=', 'subject_key', $model_date->subject_key])
+                    ->andWhere(['=', 'timestamp_month', $timestamp_in])
+                    ->one() ?? new ProgressConfirmIndiv();
+            $model_confirm->teachers_id = $id;
+            $model_confirm->timestamp_month = $timestamp_in;
+            $model_confirm->subject_key = $model_date->subject_key;
+            return $this->renderIsAjax('studyplan-progress-indiv', compact(['model', 'model_date', 'modelTeachers', 'plan_year', 'model_confirm']));
         }
     }
 
@@ -1232,7 +1249,8 @@ class TeachersController extends MainController
         $model_date->subject_type_id = SubjectType::find()->column();
 
 //        echo '<pre>' . print_r($model_date->activity_list, true) . '</pre>'; die();
-        $model = new TeachersTimesheet($model_date);
+        $model = new TeachersCheetAccount($model_date);
+        $model->geTeachersScheduleNeedNotice($id);
         $model = $model->getTeachersCheetData();
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
         $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp[0]);

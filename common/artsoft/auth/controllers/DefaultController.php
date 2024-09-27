@@ -281,8 +281,12 @@ class DefaultController extends BaseController
      */
     public function actionLogin()
     {
-        if (!Yii::$app->user->isGuest) {
+       /* if (!Yii::$app->user->isGuest) {
             throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
+        }*/
+
+        if (Yii::$app->user->identity) { // Если по ссылке проходит залогиненный пользователь
+            Yii::$app->user->logout();
         }
 
         $model = new LoginForm();

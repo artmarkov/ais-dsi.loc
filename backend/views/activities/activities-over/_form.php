@@ -49,13 +49,11 @@ use common\models\user\UserCommon;
                         <?= $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
                         <?= $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]) ?>
-                        <?php if ($model->isNewRecord): ?>
                             <?= $form->field($model, 'cloneFlag')->checkbox(['disabled' => $readonly]) ?>
 
                             <div id="cloneDatetime">
                                 <?= $form->field($model, 'cloneDatetime')->widget(kartik\date\DatePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
                             </div>
-                        <?php endif; ?>
                         <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
                         <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [

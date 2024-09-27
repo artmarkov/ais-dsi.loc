@@ -203,20 +203,27 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
 
     public function save($runValidation = true, $attributeNames = null)
     {
-        if ($this->cloneFlag && $this->isNewRecord) {
+        if ($this->cloneFlag) {
             $stopTime = Yii::$app->formatter->asTimestamp($this->cloneDatetime) + 86400;
             $delta = 60 * 60 * 24 * 7;
             $i = 1;
             if ($stopTime - Yii::$app->formatter->asTimestamp($this->datetime_in) >= $delta) {
                 do {
                     $model = new self();
-                    $model->setAttributes($this->getAttributes());
+//                     echo '<pre>' . print_r($this->getAttributes(), true) . '</pre>'; die();
                     $timestamp_in = Yii::$app->formatter->asTimestamp($this->datetime_in) + $delta * $i;
                     $timestamp_out = Yii::$app->formatter->asTimestamp($this->datetime_out) + $delta * $i;
                     $model->datetime_in = Yii::$app->formatter->asDatetime($timestamp_in);
                     $model->datetime_out = Yii::$app->formatter->asDatetime($timestamp_out);
+                    $model->executorFlag = $this->executorFlag;
+                    $model->title = $this->title;
+                    $model->over_category = $this->over_category;
+                    $model->auditory_id = $this->auditory_id;
+                    $model->department_list = explode(',', $this->department_list);
+                    $model->executors_list = explode(',', $this->executors_list);
+                    $model->executor_name = $this->executor_name;
+                    $model->description = $this->description;
                     $model->save();
-                    // echo '<pre>' . print_r($model, true) . '</pre>';
                     $i++;
                 } while ($timestamp_in + $delta < $stopTime);
             }

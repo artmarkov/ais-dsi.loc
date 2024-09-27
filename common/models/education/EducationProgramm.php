@@ -243,4 +243,13 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             ->select('id')
             ->scalar();
     }
+
+    public function beforeDelete()
+    {
+        $model = CostEducation::findOne(['programm_id' => $this->id]);
+        if (!$model->delete()) {
+            return false;
+        }
+        return parent::beforeDelete();
+    }
 }

@@ -228,11 +228,10 @@ class NoticeDisplay
     public function getTeachersOverLapping($plan_year)
     {
         $thereIsAnOverlapping = \Yii::$app->db->createCommand('SELECT b.subject_schedule_id, a.week_num, a.week_day, 
-                              a.time_in, a.time_out, a.auditory_id, a.sect_name, a.subject
+                              a.time_in, a.time_out, a.auditory_id, a.sect_name, a.subject, a.subject_sect_studyplan_id
 	                        FROM subject_schedule_view a, subject_schedule_view b 
 	                        WHERE a.subject_schedule_id != b.subject_schedule_id
 							AND a.auditory_id != b.auditory_id 
-							AND a.direction_id = b.direction_id
 							AND a.teachers_id = b.teachers_id
 							AND a.week_num = b.week_num
 							AND a.week_day = b.week_day
@@ -418,8 +417,9 @@ class NoticeDisplay
         });
         $subjectScheduleAccomp = \yii\helpers\ArrayHelper::getColumn($subjectScheduleAccomp, 'subject_schedule_id');
         $subjectScheduleAccomp = array_diff($subjectScheduleAccomp, array_keys($this->scheduleAccompLimit));
-     //   echo '<pre>' . print_r($subjectScheduleNull, true) . '</pre>'; die();
-        return !empty($this->models) && empty($this->teachersLoadData) /*&& empty($this->scheduleOverLapping)*/ && empty($this->teachersOverLapping) && empty($this->teachersPlanScheduleOverLapping) /*&& empty($this->studentScheduleOverLapping) */&& empty($subjectScheduleAccomp) && empty($subjectScheduleNull);
+        $teachersOverLapping = $this->removeElementWithValue($this->teachersOverLapping, 'subject_sect_studyplan_id', 0); // убираем групповые занятия
+      //  echo '<pre>' . print_r([$this->teachersLoadData,$teachersOverLapping,$this->teachersPlanScheduleOverLapping,$subjectScheduleAccomp,$subjectScheduleNull], true) . '</pre>'; die();
+        return !empty($this->models) && empty($this->teachersLoadData) /*&& empty($this->scheduleOverLapping)*/ && empty($teachersOverLapping) && empty($this->teachersPlanScheduleOverLapping) /*&& empty($this->studentScheduleOverLapping) */&& empty($subjectScheduleAccomp) && empty($subjectScheduleNull);
     }
 
     public function getScheduleDisplay($model)
@@ -430,4 +430,14 @@ class NoticeDisplay
         return implode(' ', $string);
     }
 
+    protected function removeElementWithValue($array, $key, $value){
+        foreach ($array as $subKey => $subArray) {
+            foreach ($subArray as $subArrayKey => $subSubarray) {
+                if ($subSubarray[$key] == $value) {
+                    unset($array[$subKey]);
+                }
+            }
+        }
+        return $array;
+    }
 }
