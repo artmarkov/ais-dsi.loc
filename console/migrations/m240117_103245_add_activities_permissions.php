@@ -71,6 +71,7 @@ class m240117_103245_add_activities_permissions extends PermissionsMigration
                         '/admin/activities/default/view',
                         '/admin/activities/default/grid-sort',
                         '/admin/activities/default/grid-page-size',
+                        '/admin/activities/default/calendar',
                         '/admin/activities/activities-over/index',
                         '/admin/activities/activities-over/view',
                         '/admin/activities/activities-over/grid-sort',
@@ -96,6 +97,9 @@ class m240117_103245_add_activities_permissions extends PermissionsMigration
                     'links' => [
                         '/admin/activities/default/update',
                         '/admin/activities/default/delete',
+                        '/admin/activities/default/refactor-event',
+                        '/admin/activities/default/update-event',
+                        '/admin/activities/default/delete-event',
                         '/admin/activities/activities-over/update',
                         '/admin/activities/activities-over/delete',
                         '/admin/activities/schoolplan-outside/refactor-event',

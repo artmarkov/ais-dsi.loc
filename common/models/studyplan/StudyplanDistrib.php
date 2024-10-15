@@ -8,6 +8,7 @@ use artsoft\helpers\RefBook;
 use common\models\teachers\Teachers;
 use Yii;
 use yii\db\Query;
+use yii\helpers\ArrayHelper;
 
 class StudyplanDistrib
 {
@@ -19,7 +20,7 @@ class StudyplanDistrib
     public function __construct($model_date)
     {
         $this->plan_year = $model_date->plan_year;
-        $this->template_name = $this->template;
+        $this->template_name = self::template;
     }
 
     protected function getStudyplans()
@@ -30,66 +31,88 @@ class StudyplanDistrib
             ->all();
         return $models;
     }
+    public function getData()
+    {
+        $data = [];
+        $data['rank'] = 'doc';
+        $mask = [
+            '7' => [['Фортепиано'],[]],
+            '9' => [['Баян'],[]],
+            '10' => [['Аккордеон'],[]],
+            '11' => [['Домра'],[]],
+            '12' => [['Балалайка'],[]],
+            '13' => [['Гитара'],[]],
+            '14' => [['Гусли'],[]],
+            '15' => [['Гармонь'],[]],
+            '17' => [['Флейта'],[]],
+            '18' => [['Гобой'],[]],
+            '19' => [['Кларнет'],[]],
+            '20' => [['Фагот'],[]],
+            '21' => [['Саксофон'],[]],
+            '22' => [['Труба'],[]],
+            '23' => [['Валторна'],[]],
+            '24' => [['Трамбон', 'Баритон'],[]],
+            '25' => [['Туба'],[]],
+            '26' => [['Ударные'],[]],
+            '28' => [['Скрипка'],[]],
+            '29' => [['Виолончель'],[]],
+            '30' => [['Альт'],[]],
+            '31' => [['Контрабас'],[]],
+            '32' => [['Арфа'],[]],
+            '33' => [['Ударные','Саксофон','Бас-гитара','Тромбон','Труба'],[1011,1012,1024,1025]],
+            '34' => [['Хор'],[]],
+            '35' => [['Фольклорный ансамбль'],[]],
+            '36' => [[''],[1013,1034]],
+            '37' => [[],[]],
+            '38' => [[''],[1044]],
+            '39' => [[''],[1051,1052]],
+            '40' => [[],[]],
+            '41' => [[''],[1046,1047,1048,1049]],
+            '42' => [[],[]],
+            '43' => [[''],[1033]],
+            '44' => [[],[]],
+            '46' => [[],[]],
+            '47' => [['Электрогитара'],[]],
+            '48' => [['Эстрадный вокал'],[]],
+            '49' => [['Академический вокал'],[]],
+            '50' => [[],[]],
+            '51' => [[],[]],
+            '52' => [[],[]],
+        ];
+        $st = $this->getStudyplans();
+        $spec = ArrayHelper::index($st, null, ['speciality']);
+        foreach ($mask as $index => $array) {
+            $data[$index . '_all'] = 0;
+            if (!empty($array[0])) {
+                foreach ($array[0] as $value) {
+                    if (isset($spec[$value])) {
+                        if (empty($array[1])) {
+                            $data[$index . '_all'] += count($spec[$value]);
+                        } else {
+                            foreach ($spec[$value] as $val) {
+                                $data[$index . '_all'] += in_array($val['programm_id'], $array[1]) ? 1 : 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
+       // echo '<pre>' . print_r($spec, true) . '</pre>';
+      //  echo '<pre>' . print_r($data, true) . '</pre>';
+        //echo '<pre>' . print_r($spec, true) . '</pre>';
+        return $data;
+    }
     /**
      * @throws \yii\base\InvalidConfigException
      */
     public function makeXlsx()
     {
-        $data = [];
-        $items = [];
-        $department_list = [];
-        $total['summ_qty_15'] = $total['summ_qty_31'] = $total['summ_time_15'] = $total['summ_time_31'] = 0;
-
-        $userId = Yii::$app->user->identity->getId();
-        $teachersId = RefBook::find('users_teachers')->getValue($userId);
-        $teachersModel = Teachers::findOne(['id' => $teachersId]);
-
-        foreach ($this->activities as $item => $d) {
-            $department_list[] = $d->department_list;
-            $mega = $this->getTeachersDays($d->direction_id, $d->direction_vid_id, $d->teachers_id);
-            $items[] = [
-                'rank' => 'a',
-                'item' => $item + 1,
-                'last_name' => $d->last_name,
-                'first_name' => $d->first_name,
-                'middle_name' => $d->middle_name,
-                'stake_slug' => $d->stake_slug,
-                'tab_num' => $d->tab_num,
-                'direction_slug' => $d->direction_slug . ' - ' . $d->direction_vid_slug,
-                'days' => $mega,
-            ];
-
-        }
-        $departmentsIds = array_unique(explode(',', implode(',', $department_list)));
-
-        $data[] = [
-            'rank' => 'doc',
-            'tabel_num' => $this->mon,
-            'period_in' => date('j', $this->timestamp_in),
-            'period_out' => !$this->is_avans ? date('j', $this->timestamp_out) : 15,
-            'period_month' => ArtHelper::getMonthsList()[$this->mon],
-            'period_year' => date('Y', $this->timestamp_in),
-            'subject_type_name' => RefBook::find('subject_type_name')->getValue($this->subject_type_id),
-            'org_briefname' => Yii::$app->settings->get('own.shortname'),
-            'departments' => $this->getDepartmentsString($departmentsIds),
-            'leader_iof' => Yii::$app->settings->get('own.head'),
-            'employee_post' => isset($teachersModel->position) ? $teachersModel->position->name : '',
-            'employee_iof' => RefBook::find('teachers_fio')->getValue($teachersId),
-            'doc_data_mark' => Yii::$app->formatter->asDate(time(), 'php:d.m.Y'),
-            'data_doc' => Yii::$app->formatter->asDate(time(), 'php:d.m.Y'),
-            'doc_accountant_post' => 'Бухгалтер',
-            'doc_accountant_iof' => Yii::$app->settings->get('own.chief_accountant_post'),
-        ];
-//        print_r($items); die();
-
+        $data[] = $this->getData();
         $output_file_name = Yii::$app->formatter->asDate(time(), 'php:Y-m-d_H-i-s') . '_' . basename($this->template_name);
-
-        $tbs = DocTemplate::get($this->template_name)->setHandler(function ($tbs) use ($data, $items) {
+        $tbs = DocTemplate::get($this->template_name)->setHandler(function ($tbs) use ($data) {
             /* @var $tbs clsTinyButStrong */
             $tbs->MergeBlock('doc', $data);
-            $tbs->MergeBlock('a', $items);
-
         })->prepare();
         $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);
         exit;

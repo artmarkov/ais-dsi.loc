@@ -61,7 +61,16 @@ class DefaultController extends \frontend\controllers\DefaultController
                 ['>', 'question_limit', $subquery]
             ])->one();
         if (!isset($model)) {
-            throw new NotFoundHttpException("Форма не активна.");
+            $model = Question::find()
+                ->where(['users_cat' => Question::GROUP_GUEST])
+                ->andWhere(['=', 'id', $id])
+                ->one();
+            if (isset($model)) {
+                $message = 'Форма будет активна ' . Yii::$app->formatter->asDate($model->timestamp_in);
+                return $this->renderIsAjax('validate-warning', ['message' => $message]);
+            } else {
+                throw new NotFoundHttpException("Форма не найдена.");
+            }
         }
         $modelVal = new QuestionAnswers(['id' => $id]);
 
@@ -117,7 +126,7 @@ class DefaultController extends \frontend\controllers\DefaultController
 
     public function actionValidateWarning()
     {
-        return $this->renderIsAjax('validate-warning');
+        return $this->renderIsAjax('validate-warning', ['message' => 'Попытка повторного прохода.']);
     }
 
     public function beforeAction($action)

@@ -377,7 +377,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $costTotalDecline = $costGrandModel['standard_basic_ratio'] * $termMasteringGrand;
         $data[] = [
             'rank' => 'doc',
-            'doc_date' => date('j', strtotime($model->doc_date)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_date))] . ' ' . date('Y', strtotime($model->doc_date)), // дата договора
+            'doc_date' => date('j', strtotime($model->doc_date)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_date))] . ' ' . date('Y', strtotime($model->doc_date)), // дата договора - месяц прописью
+            'doc_date_start' => $model->doc_date, // дата начала действия согласия
+            'doc_date_valid' => Yii::$app->formatter->asDate(strtotime('+5 year', strtotime($model->doc_date))), // дата окончания +5 лет действия согласия
             'doc_date_year' => date('y', strtotime($model->doc_date)), // год договора
             'doc_date_year_next' => date('y', strtotime($model->doc_date)) + 1, // год +1 договора
             'doc_signer' => $model->parent->fullName, // Полное имя подписанта-родителя
@@ -420,6 +422,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'student_snils' => $model->student->userSnils,
             'parent_address' => $model->parent->userAddress,
             'parent_phone' => $model->parent->userPhone,
+            'parent_email' => $model->parent->userEmail,
             'parent_sert_name' => Parents::getDocumentValue($model->parent->sert_name) ?: 'паспорт',
             'parent_sert_series' => $model->parent->sert_series ?: '     ',
             'parent_sert_num' => $model->parent->sert_num ?: '      ',

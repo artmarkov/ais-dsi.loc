@@ -293,13 +293,15 @@ class LessonItems extends \artsoft\db\ActiveRecord
      */
     public function getLessonProgress()
     {
+        print_r($this->subject_sect_studyplan_id);
         $modelsItems = [];
         $i = 0;
         if ($this->subject_sect_studyplan_id != 0) {
             $studyplan = [];
-            $models = LessonItemsProgressView::find()
+            $models1 = LessonItemsProgressView::find()
                 ->where(['=', 'lesson_items_id', $this->id])
                 ->andWhere(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
+               // ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
                 ->andWhere(['OR',
                     ['status' => Studyplan::STATUS_ACTIVE],
                     ['AND',
@@ -309,7 +311,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 ])
                 ->all();
 
-            foreach ($models as $item => $modelItems) {
+            foreach ($models1 as $item => $modelItems) {
                 $m = LessonProgress::find()->where(['=', 'id', $modelItems->lesson_progress_id])->one();
                 if ($m) {
                     $studyplan[] = $modelItems->studyplan_subject_id;
@@ -317,8 +319,9 @@ class LessonItems extends \artsoft\db\ActiveRecord
                     $i++;
                 }
             }
-            $models = LessonProgressView::find()->select('studyplan_subject_id')
+            $models2 = LessonProgressView::find()->select('studyplan_subject_id')
                 ->where(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
+               // ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
                 ->andWhere(['OR',
                     ['status' => Studyplan::STATUS_ACTIVE],
                     ['AND',
@@ -327,13 +330,13 @@ class LessonItems extends \artsoft\db\ActiveRecord
                     ]
                 ])
                 ->column();
-            foreach ($models as $item => $studyplan_subject_id) {
+            foreach ($models2 as $item => $studyplan_subject_id) {
                 if (!in_array($studyplan_subject_id, $studyplan)) {
-                $m = new LessonProgress();
-                $m->studyplan_subject_id = $studyplan_subject_id;
-                $m->lesson_items_id = $this->id;
-                $m->save(false);
-                $modelsItems[$i] = $m;
+                $m_new = new LessonProgress();
+                    $m_new->studyplan_subject_id = $studyplan_subject_id;
+                    $m_new->lesson_items_id = $this->id;
+                    $m_new->save(false);
+                $modelsItems[$i] = $m_new;
                 $i++;
                 }
             }

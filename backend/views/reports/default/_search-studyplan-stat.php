@@ -25,6 +25,7 @@ $form = ActiveForm::begin([
                 ])->label(Yii::t('art/studyplan', 'Plan Year'));
             ?>
             <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
+            <?= Html::submitButton('<i class="fa fa-file-excel" aria-hidden="true"></i> Выгрузить статистику', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'distrib']); ?>
         </div>
     </div>
 </div>

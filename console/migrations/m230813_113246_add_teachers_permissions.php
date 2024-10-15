@@ -9,6 +9,8 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
     {
         $this->addPermissionsGroup('teachersManagement', 'Управление Учебной Работой преподавателей');
         $this->addRole('teachersAdmin', 'Администратор Карточки преподавателей');
+        $this->addRole('teachersStudyplanAdmin', 'Администратор Карточки учебного плана');
+        $this->addRole('teachersSectAdmin', 'Администратор Карточки учебной группы');
         $this->addRole('teachersLoadAdmin', 'Администратор Нагрузки преподавателей');
         $this->addRole('teachersScheduleAdmin', 'Администратор Расписания занятий');
         $this->addRole('teachersConsultAdmin', 'Администратор Расписания консультаций');
@@ -24,6 +26,8 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
     {
         $this->deletePermissionsGroup('teachersManagement');
         $this->deleteRole('teachersAdmin');
+        $this->deleteRole('teachersStudyplanAdmin');
+        $this->deleteRole('teachersSectAdmin');
         $this->deleteRole('teachersLoadAdmin');
         $this->deleteRole('teachersScheduleAdmin');
         $this->deleteRole('teachersConsultAdmin');
@@ -41,6 +45,7 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
             'teachersManagement' => [
                 'links' => [
                     '/admin/invoices/default/*',
+                    '/admin/schedule/default/*',
                     '/admin/teachers/default/load-items/*',
                     '/admin/teachers/default/cheet-account/*',
                     '/admin/teachers/default/schedule-items/*',
@@ -51,6 +56,7 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                     '/admin/teachers/default/efficiency/*',
                     '/admin/teachers/default/portfolio/*',
                     '/admin/studyplan/default/*',
+                    '/admin/efficiency/default/*',
                     '/admin/sect/default/*',
                     '/teachers/default/*',
                     '/teachers/studyplan/*',
@@ -167,6 +173,13 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/invoices/default/grid-page-size',
                         '/invoices/default/view',
                         '/invoices/default/make-invoices',
+                        '/admin/efficiency/default/efficiency',
+                        '/admin/efficiency/default/index',
+                        '/admin/efficiency/default/grid-sort',
+                        '/admin/efficiency/default/grid-page-size',
+                        '/admin/efficiency/default/view',
+                        '/admin/efficiency/default/summary',
+                        '/admin/efficiency/default/bar',
                     ],
                     'roles' => [
                         self::ROLE_TEACHER,
@@ -176,6 +189,7 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                     'title' => 'Доступ к учебной работе(backend)',
                     'links' => [
                         '/admin/invoices/default/index',
+                        '/admin/schedule/default/index',
                         '/admin/invoices/default/grid-sort',
                         '/admin/invoices/default/grid-page-size',
                         '/admin/invoices/default/view',
@@ -209,6 +223,9 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/admin/teachers/default/portfolio/grid-sort',
                         '/admin/teachers/default/portfolio/grid-page-size',
                         '/admin/studyplan/default/index',
+                        '/admin/studyplan/default/grid-sort',
+                        '/admin/studyplan/default/grid-page-size',
+                        '/admin/studyplan/default/view',
                         '/admin/studyplan/default/students-view',
                         '/admin/studyplan/default/load-items',
                         '/admin/studyplan/default/load-items/grid-sort',
@@ -238,6 +255,9 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/admin/studyplan/default/studyplan-perform/grid-sort',
                         '/admin/studyplan/default/studyplan-perform/grid-page-size',
                         '/admin/sect/default/index',
+                        '/admin/sect/default/index/grid-sort',
+                        '/admin/sect/default/index/grid-page-size',
+                        '/admin/sect/default/view',
                         '/admin/sect/default/distribution',
                         '/admin/sect/default/distribution/grid-sort',
                         '/admin/sect/default/distribution/grid-page-size',
@@ -260,6 +280,41 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                     ],
                     'roles' => [
                         self::ROLE_ADMIN,
+                    ],
+                ],
+                'fullTeachersStudyplanAccess' => [
+                    'title' => 'Полный доступ к карточке учебного плана',
+                    'links' => [
+                        '/admin/studyplan/default/create',
+                        '/admin/studyplan/default/update',
+                        '/admin/studyplan/default/delete',
+                        '/admin/studyplan/default/history',
+                        '/admin/studyplan/default/bulk-next-class',
+                        '/admin/studyplan/default/bulk-repeat-class',
+                        '/admin/studyplan/default/bulk-finish-all',
+                        '/admin/studyplan/default/bulk-finish-plan',
+                        '/admin/studyplan/default/bulk-dismiss-plan',
+                        '/admin/studyplan/default/bulk-restore-plan',
+                    ],
+                    'roles' => [
+                        'teachersStudyplanAdmin',
+                    ],
+                    'childs' => [
+                        'accessTeachersBackend',
+                    ],
+                ],
+                'fullTeachersSectAccess' => [
+                    'title' => 'Полный доступ к карточке группы',
+                    'links' => [
+                        '/admin/sect/default/create',
+                        '/admin/sect/default/update',
+                        '/admin/sect/default/delete',
+                    ],
+                    'roles' => [
+                        'teachersSectAdmin',
+                    ],
+                    'childs' => [
+                        'accessTeachersBackend',
                     ],
                 ],
                 'fullTeachersLoadAccess' => [
@@ -366,6 +421,10 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/admin/teachers/default/efficiency?mode=update',
                         '/admin/teachers/default/efficiency?mode=delete',
                         '/admin/teachers/default/efficiency?mode=history',
+                        '/admin/efficiency/default/create',
+                        '/admin/efficiency/default/update',
+                        '/admin/efficiency/default/delete',
+                        '/admin/efficiency/default/history',
                     ],
                     'roles' => [
                         'teachersEfficiencyAdmin',

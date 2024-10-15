@@ -219,8 +219,8 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
                     $model->title = $this->title;
                     $model->over_category = $this->over_category;
                     $model->auditory_id = $this->auditory_id;
-                    $model->department_list = explode(',', $this->department_list);
-                    $model->executors_list = explode(',', $this->executors_list);
+                    $model->department_list = $this->department_list;
+                    $model->executors_list = $this->executors_list;
                     $model->executor_name = $this->executor_name;
                     $model->description = $this->description;
                     $model->save();

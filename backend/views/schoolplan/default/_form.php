@@ -121,7 +121,7 @@ $form = ActiveForm::begin([
                                         <?= $form->field($model, 'category_id')->widget(\kartik\tree\TreeViewInput::class, [
                                             'id' => "schoolplan_category_tree",
                                             'options' => [
-                                                'disabled' => Yii::$app->user->isSuperAdmin ? false : !$model->isNewRecord,
+                                                'disabled' => $readonly,
                                             ],
                                             'query' => \common\models\guidesys\GuidePlanTree::find()->addOrderBy('root, lft'),
                                             'dropdownConfig' => [
@@ -193,7 +193,7 @@ $form = ActiveForm::begin([
                                         <?= $form->field($model, 'period_over')->dropDownList(Schoolplan::getPeriodOverList(), ['disabled' => $readonly]) ?>
 
                                         <?= $form->field($model, 'executor_over_id')->widget(\kartik\select2\Select2::class, [
-                                            'data' => RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
+                                            'data' => RefBook::find('teachers_fio', UserCommon::STATUS_ACTIVE)->getList(),
                                             'showToggleAll' => false,
                                             'options' => [
                                                 'disabled' => $readonly,

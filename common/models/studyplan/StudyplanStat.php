@@ -34,7 +34,8 @@ class StudyplanStat
     {
 //        echo '<pre>' . print_r($this->getStudyplans(), true) . '</pre>';
         $attributes = [
-            'created_at' => 'Дата создания плана',
+            'student_created_at' => 'Дата создания учетной записи',
+            'studyplan_created_at' => 'Дата создания плана',
             'student_id' => 'ФЛС',
             'student_fio' => 'ФИО ученика',
             'plan_year' => 'Учебный год',
@@ -95,7 +96,8 @@ class StudyplanStat
             foreach (explode(',', $model['limited_status_list']) as $item => $status) {
                 $limit[] = Student::getLimitedStatusValue($status);
             }
-            $data[$id]['created_at'] = Yii::$app->formatter->asDate($model['created_at']);
+            $data[$id]['studyplan_created_at'] = Yii::$app->formatter->asDate($model['studyplan_created_at']);
+            $data[$id]['student_created_at'] = Yii::$app->formatter->asDate($model['student_created_at']);
             $data[$id]['student_id'] = sprintf('%06d', $model['student_id']);
             $data[$id]['student_fio'] = $model['student_fio'];
             $data[$id]['education_programm_name'] = $model['education_programm_name'];

@@ -2,6 +2,7 @@
 
 namespace backend\controllers\reports;
 
+use common\models\studyplan\StudyplanDistrib;
 use common\models\studyplan\StudyplanStat;
 use common\models\subject\SubjectType;
 use common\models\teachers\TarifStatement;
@@ -109,6 +110,11 @@ class DefaultController extends MainController
             $models = new StudyplanStat($model_date);
             $data = $models->getData();
             $models->sendXlsx($data);
+        }
+        if (Yii::$app->request->post('submitAction') == 'distrib') {
+            $models = new StudyplanDistrib($model_date);
+            $data = $models->makeXlsx();
+          //  $models->sendXlsx($data);
         }
 
         return $this->renderIsAjax('studyplan-stat', [

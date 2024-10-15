@@ -2,6 +2,7 @@
 
 /**
  * @var yii\web\View $this
+ * @var $message
  */
 
 $this->title = 'Формы и заявки';
@@ -13,6 +14,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
-        Попытка повторного прохода.
+        <?= $message ?>
     </div>
 </div>

@@ -159,7 +159,7 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
         $this->createIndex('lesson_progress_lesson_items_id', 'lesson_progress', ['lesson_items_id']);
         $this->createIndex('lesson_progress_studyplan_subject_id', 'lesson_progress', ['studyplan_subject_id']);
         $this->createIndex('lesson_progress_lesson_mark_id', 'lesson_progress', ['lesson_mark_id']);
-        $this->createIndex('lesson_progress_lesson_items_id_studyplan_subject_id_lesson_key', 'lesson_progress', ['lesson_items_id','studyplan_subject_id','lesson_mark_id'], true);
+        $this->createIndex('lesson_progress_lesson_items_id_studyplan_subject_id_lesson_key', 'lesson_progress', ['lesson_items_id','studyplan_subject_id'], true);
 
         $this->addForeignKey('lesson_progress_ibfk_1', 'lesson_progress', 'lesson_items_id', 'lesson_items', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('lesson_progress_ibfk_2', 'lesson_progress', 'studyplan_subject_id', 'studyplan_subject', 'id', 'CASCADE', 'CASCADE');

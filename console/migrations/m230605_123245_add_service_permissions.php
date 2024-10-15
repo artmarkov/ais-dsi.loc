@@ -80,7 +80,7 @@ class m230605_123245_add_service_permissions extends PermissionsMigration
                         '/admin/service/sigur/grid-page-size',
                     ],
                     'roles' => [
-                        self::ROLE_SYSTEM,
+                        self::ROLE_ADMIN,
                     ],
                 ],
             ],
