@@ -37,6 +37,11 @@ $readonly = (\artsoft\Art::isFrontend() && in_array($model->status_sign, [1, 2])
             </div>
             <div class="panel-body">
                 <div class="col-sm-12">
+                    <?= \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-warning"></i> В списке отображаются только мероприятия в которых может участвовать ученик исходя из нагрузки преподавателя. Преподаватель также должен быть в списке ответственных за мероприятие.',
+                        'options' => ['class' => 'alert-warning'],
+                    ]);
+                    ?>
                     <?php if ($model->isNewRecord): ?>
                         <?= \yii\bootstrap\Alert::widget([
                             'body' => '<i class="fa fa-info"></i> Возможность загрузки файлов появится после первого сохранения формы.',

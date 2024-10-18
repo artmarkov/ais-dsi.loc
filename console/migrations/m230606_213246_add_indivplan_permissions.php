@@ -62,6 +62,7 @@ class m230606_213246_add_indivplan_permissions extends PermissionsMigration
                         '/admin/indivplan/default/delete',
                         '/admin/indivplan/default/history',
                         '/admin/indivplan/default/bulk-delete',
+                        '/admin/teachers/default/teachers',
                         '/admin/teachers/default/teachers-plan?mode=create',
                         '/admin/teachers/default/teachers-plan?mode=update',
                         '/admin/teachers/default/teachers-plan?mode=delete',

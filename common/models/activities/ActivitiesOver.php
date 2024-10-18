@@ -37,6 +37,11 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
     public $cloneFlag;
     public $cloneDatetime;
 
+    public $date_in;
+    public $time_in;
+    public $date_out;
+    public $time_out;
+
     const OVER_CATEGORY = [
         1 => 'Внеплановое мероприятие',
         2 => 'Подготовка к мероприятию',
@@ -78,7 +83,9 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['over_category', 'title', 'datetime_in', 'datetime_out', 'auditory_id'/*, 'department_list'*/], 'required'],
+            [['over_category', 'title', /*'datetime_in', 'datetime_out',*/ 'auditory_id'/*, 'department_list'*/], 'required'],
+            [['date_in','time_in','date_out','time_out'], 'required'],
+            [['date_in','time_in','date_out','time_out'], 'safe'],
             [['over_category', 'auditory_id'], 'integer'],
             [['over_category'], 'default', 'value' => 0],
             [['datetime_in', 'datetime_out'], 'safe'],
@@ -149,6 +156,10 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
             'version' => Yii::t('art', 'Version'),
             'cloneFlag' => 'Клонировать по дням недели',
             'cloneDatetime' => 'до Даты включительно',
+            'date_in' => 'Дата начала',
+            'time_in' => 'Время начала',
+            'date_out' => 'Дата окончания',
+            'time_out' => 'Время окончания',
         ];
     }
 
@@ -195,8 +206,20 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
+    public function beforeValidate()
+    {
+        $this->datetime_in = $this->date_in . ' ' . $this->time_in;
+        $this->datetime_out = $this->date_out . ' ' . $this->time_out;
+        return parent::beforeValidate();
+    }
+
     public function afterFind()
     {
+        $this->date_in = Yii::$app->formatter->asDate($this->datetime_in);
+        $this->time_in = Yii::$app->formatter->asDatetime($this->datetime_in, 'php:H:i');
+        $this->date_out = Yii::$app->formatter->asDate($this->datetime_out);
+        $this->time_out = Yii::$app->formatter->asDatetime($this->datetime_out, 'php:H:i');
+
         $this->executorFlag = $this->executors_list == '' ? true : false;
         parent::afterFind();
     }
@@ -207,6 +230,9 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
             $stopTime = Yii::$app->formatter->asTimestamp($this->cloneDatetime) + 86400;
             $delta = 60 * 60 * 24 * 7;
             $i = 1;
+            $this->datetime_in = $this->date_in . ' ' . $this->time_in;
+            $this->datetime_out = $this->date_out . ' ' . $this->time_out;
+
             if ($stopTime - Yii::$app->formatter->asTimestamp($this->datetime_in) >= $delta) {
                 do {
                     $model = new self();
@@ -223,7 +249,7 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
                     $model->executors_list = $this->executors_list;
                     $model->executor_name = $this->executor_name;
                     $model->description = $this->description;
-                    $model->save();
+                    $model->save(false);
                     $i++;
                 } while ($timestamp_in + $delta < $stopTime);
             }

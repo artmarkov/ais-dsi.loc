@@ -72,6 +72,8 @@ class m240117_103245_add_activities_permissions extends PermissionsMigration
                         '/admin/activities/default/grid-sort',
                         '/admin/activities/default/grid-page-size',
                         '/admin/activities/default/calendar',
+                        '/admin/activities/default/init-calendar',
+                        '/admin/activities/default/create-event',
                         '/admin/activities/activities-over/index',
                         '/admin/activities/activities-over/view',
                         '/admin/activities/activities-over/grid-sort',

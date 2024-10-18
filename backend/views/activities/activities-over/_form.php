@@ -46,14 +46,26 @@ use common\models\user\UserCommon;
                         ]);
                         ?>
 
-                        <?= $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
+                    </div>
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'date_in')->widget(\kartik\date\DatePicker::className(), ['pluginOptions' => [
+                            'orientation' => 'bottom',
+                        ]])->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Выберите запланированную дату.'); ?>
 
-                        <?= $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]) ?>
-                            <?= $form->field($model, 'cloneFlag')->checkbox(['disabled' => $readonly]) ?>
+                        <?= $form->field($model, 'time_in')->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Укажите время проведения мероприятия. Если на момент введения Вы не обладаете информацией о точном времени проведения мероприятия, указывается приблизительное время.'); ?>
 
-                            <div id="cloneDatetime">
-                                <?= $form->field($model, 'cloneDatetime')->widget(kartik\date\DatePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
-                            </div>
+                        <?= $form->field($model, 'date_out')->widget(\kartik\date\DatePicker::className(), ['pluginOptions' => [
+                            'orientation' => 'bottom',
+                        ]])->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
+
+                        <?= $form->field($model, 'time_out')->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
+                    </div>
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'cloneFlag')->checkbox(['disabled' => $readonly]) ?>
+
+                        <div id="cloneDatetime">
+                            <?= $form->field($model, 'cloneDatetime')->widget(kartik\date\DatePicker::class)->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
+                        </div>
                         <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
                         <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::className(), [
@@ -113,6 +125,12 @@ use common\models\user\UserCommon;
     </div>
 <?php
 $js = <<<JS
+    $("#activitiesover-date_in").on("input change", function () {
+     var value = $(this).val();
+     // if(!$("#activitiesover-date_out").val()) {
+        $("#activitiesover-date_out").val(value);
+     // }
+    });
  // Ввести ответственного вручную
      if($('input[type=checkbox][name="ActivitiesOver[executorFlag]"]').prop('checked')) {
        $('#executorsList').hide();

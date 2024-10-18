@@ -15,6 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="panel">
         <div class="panel-heading">
             <?= Html::encode($this->title) ?>  <?= $this->render('_search-calendar', compact('model_date')) ?>
+            <?= Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . 'Добавить внеплановое мероприятие', ['/activities/activities-over/create'], ['class' => 'btn btn-sm btn-warning']);?>
         </div>
         <div class="panel-body">
             <?= \yii\bootstrap\Alert::widget([
