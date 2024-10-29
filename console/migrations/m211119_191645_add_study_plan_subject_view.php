@@ -65,7 +65,8 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
     tmp_table.memo_2,
     tmp_table.memo_3,
     tmp_table.memo_4,
-    tmp_table.sect_name
+    tmp_table.sect_name,
+    tmp_table.speciality
    FROM ( SELECT studyplan_subject.id AS studyplan_subject_id,
             NULL::integer AS subject_sect_studyplan_id,
             NULL::integer AS subject_sect_id,
@@ -103,7 +104,12 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             concat(subject.name, \'(\', guide_subject_category.slug, \' \', guide_subject_type.slug, \')\') AS memo_2,
             concat(subject.name, \'(\', guide_subject_category.slug, \'&nbsp;\', guide_subject_type.slug, \')&nbsp;-&nbsp;\', guide_subject_vid.slug, \'&nbsp;\', studyplan_subject.week_time * 4::double precision, \'&nbsp;час/мес\') AS memo_3,
             concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'. - \', subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS memo_4,
-            \'Индивидуально\'::text AS sect_name
+            \'Индивидуально\'::text AS sect_name,
+            ( SELECT subject_1.slug
+                   FROM studyplan_subject studyplan_subject_1
+                     JOIN subject subject_1 ON studyplan_subject_1.subject_id = subject_1.id
+                  WHERE studyplan_subject_1.subject_cat_id = 1000 AND studyplan_subject_1.studyplan_id = studyplan.id
+                 LIMIT 1) AS speciality
            FROM studyplan_subject
              JOIN studyplan ON studyplan_subject.studyplan_id = studyplan.id
              JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
@@ -156,7 +162,12 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
                 CASE
                     WHEN subject_sect_studyplan.course::text <> \'\'::text THEN concat(subject_sect_studyplan.course, \'/\', subject_sect.term_mastering, \'_\')
                     ELSE \'\'::text
-                END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \' \', guide_subject_type.slug, \') \') AS sect_name
+                END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \' \', guide_subject_type.slug, \') \') AS sect_name,
+            ( SELECT subject_1.slug
+                   FROM studyplan_subject studyplan_subject_1
+                     JOIN subject subject_1 ON studyplan_subject_1.subject_id = subject_1.id
+                  WHERE studyplan_subject_1.subject_cat_id = 1000 AND studyplan_subject_1.studyplan_id = studyplan.id
+                 LIMIT 1) AS speciality
            FROM studyplan_subject
              JOIN studyplan ON studyplan_subject.studyplan_id = studyplan.id
              LEFT JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id

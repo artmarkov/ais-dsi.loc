@@ -37,6 +37,8 @@ class DefaultController extends MainController
     public $modelClass = 'common\models\subjectsect\SubjectSect';
     public $modelSearchClass = 'common\models\subjectsect\search\SubjectSectSearch';
 
+//    public $freeAccessActions = ['subject', 'set-type', 'set-studyplan'];
+
     /**
      * @return mixed|string|\yii\web\Response
      * @throws \yii\db\Exception

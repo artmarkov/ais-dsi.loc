@@ -58,6 +58,13 @@ use yii\widgets\DetailView;
                                 },
                                 'label' => 'Е-майл'
                             ],
+                            [
+                                'attribute' => 'snils',
+                                'value' => function ($model) {
+                                    return $model->userSnils;
+                                },
+                                'label' => 'СНИЛС'
+                            ],
                         ],
                     ]) ?>
                 </div>
@@ -115,6 +122,13 @@ use yii\widgets\DetailView;
                                         return $model->userEmail;
                                     },
                                     'label' => 'Е-майл'
+                                ],
+                                [
+                                    'attribute' => 'snils',
+                                    'value' => function ($model) {
+                                        return $model->userSnils;
+                                    },
+                                    'label' => 'СНИЛС'
                                 ],
                             ],
                         ]);

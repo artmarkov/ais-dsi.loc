@@ -55,6 +55,8 @@ SettingsAsset::register($this);
 
                             <?= $form->field($model, 'schoolplan_perform_doc')->checkbox()->hint('Поставьте флажок чтобы включить уведомления в модуле "Выполнение плана и участие в мероприятии".') ?>
 
+                            <?= $form->field($model, 'confirm_progress_perform_doc')->checkbox()->hint('Поставьте флажок чтобы включить уведомления в модуле "Проверка журнала успеваемости".') ?>
+
                         </div>
                     </div>
                 </div>

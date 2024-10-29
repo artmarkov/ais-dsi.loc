@@ -18,7 +18,7 @@ $this->title = Yii::t('art/guide', 'Group Progress');
 $this->params['breadcrumbs'][] = $this->title;
 //echo '<pre>' . print_r($model['columns'], true) . '</pre>'; die();
 $readonly = (Teachers::isOwnTeacher($modelTeachers->id)) ? false : true;
-$confirm_available = (count($model['columns']) == 1 && $model_date->subject_sect_studyplan_id  && \artsoft\Art::isFrontend()) || \artsoft\Art::isBackend();
+$confirm_available = (count($model['columns']) == 1 && $model_date->subject_sect_studyplan_id  && \artsoft\Art::isFrontend() && Yii::$app->settings->get('mailing.confirm_progress_perform_doc')) || \artsoft\Art::isBackend();
 $columnsHeader = [];
 foreach ($model['columns'] as $my => $qty) {
     $columnsHeader[] = ['content' => $my, 'options' => ['colspan' => $qty, 'class' => 'text-center']];

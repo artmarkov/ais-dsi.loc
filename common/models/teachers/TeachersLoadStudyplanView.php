@@ -26,6 +26,7 @@ class TeachersLoadStudyplanView extends TeachersLoadView
         $attr = parent::attributeLabels();
         $attr['student_fio'] = Yii::t('art/student', 'Student');
         $attr['subject'] = Yii::t('art/guide', 'Subject');
+        $attr['department_list'] = Yii::t('art/guide', 'Department');
 
         return $attr;
     }

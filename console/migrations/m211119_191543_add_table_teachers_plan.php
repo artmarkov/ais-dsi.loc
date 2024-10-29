@@ -63,7 +63,8 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
     studyplan_subject.subject_id,
     \'Индивидуально\'::text AS sect_name,
     subject.name AS subject_name,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
+    subject.department_list
    FROM studyplan
      JOIN studyplan_subject ON studyplan_subject.studyplan_id = studyplan.id
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
@@ -105,7 +106,8 @@ UNION ALL
             ELSE \'\'::text
         END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
     subject.name AS subject_name,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject,
+    subject.department_list
    FROM studyplan
      JOIN studyplan_subject ON studyplan.id = studyplan_subject.studyplan_id
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
@@ -143,7 +145,8 @@ UNION ALL
     studyplan_subject.subject_id,
     NULL::text AS sect_name,
     subject.name AS subject_name,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject,
+    subject.department_list
    FROM studyplan_subject
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id

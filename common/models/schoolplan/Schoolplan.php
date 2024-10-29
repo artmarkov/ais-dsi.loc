@@ -2,6 +2,7 @@
 
 namespace common\models\schoolplan;
 
+use artsoft\Art;
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\ArtHelper;
@@ -1019,17 +1020,16 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         $model = Studyplan::findOne(['id' => $studyplan_id]);
         $timestamp = \artsoft\helpers\ArtHelper::getStudyYearParams($model->plan_year);
-        $teachersIds = TeachersLoadStudyplanView::find()
-            ->select('teachers_id')
-            ->distinct('teachers_id')
+        $departmentList = TeachersLoadStudyplanView::find()
+            ->select('department_list')
             ->where(['=', 'studyplan_id', $studyplan_id])
             ->andWhere(['IS NOT', 'teachers_id', NULL])
             ->column();
+        $departmentList = implode(',', $departmentList);
         $query = self::find()
-            ->innerJoin('teachers', new Expression('teachers.id = ANY (string_to_array(schoolplan.executors_list, \',\'::text)::integer[])'))
             ->select(new \yii\db\Expression('schoolplan.id as id, concat(TO_CHAR(to_timestamp(datetime_in) :: DATE, \'dd.mm.yyyy\'), \' - \', title) as name'))
             ->where(['between', 'datetime_in', $timestamp['timestamp_in'], $timestamp['timestamp_out']])
-            ->andWhere(['teachers.id' => $teachersIds])
+            ->andWhere(new Expression("department_list LIKE ANY (string_to_array('{$departmentList}', ','::text)::text[])"))
             ->orderBy('datetime_in')
             ->asArray()
             ->all();
@@ -1037,21 +1037,33 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         return ArrayHelper::map($query, 'id', 'name');
     }
 
-    public static function getExecutorsListById($id)
+    public static function getExecutorsListById($studyplan_id)
     {
-        if (!$id) return [];
-        $model = self::findOne(['id' => $id]);
+        if (!$studyplan_id) return [];
+        $teachersList = TeachersLoadStudyplanView::find()
+            ->select('teachers_id')
+            ->where(['=', 'studyplan_id', $studyplan_id])
+            ->andWhere(['direction_id' => 1000])
+            ->andWhere(['IS NOT', 'teachers_id', NULL])
+            ->column();
+        if (Art::isFrontend()) {
+            $userId = Yii::$app->user->identity->getId();
+            $teachers_id = RefBook::find('users_teachers')->getValue($userId) ?? null;
+            if (in_array($teachers_id, $teachersList)) {
+                $teachersList = $teachers_id;
+            }
+        }
 
         $query = (new Query())->from('teachers_view')
             ->select('teachers_id as id , fullname as name')
-            ->where(['teachers_id' => $model->executors_list])
+            ->where(['teachers_id' => $teachersList])
             ->all();
         return $query;
     }
 
-    public static function getExecutorsListByName($id)
+    public static function getExecutorsListByName($studyplan_id)
     {
-        if (!$id) return [];
-        return \yii\helpers\ArrayHelper::map(self::getExecutorsListById($id), 'id', 'name');
+        if (!$studyplan_id) return [];
+        return \yii\helpers\ArrayHelper::map(self::getExecutorsListById($studyplan_id), 'id', 'name');
     }
 }

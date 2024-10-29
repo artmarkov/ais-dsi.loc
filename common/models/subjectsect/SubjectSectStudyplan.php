@@ -172,7 +172,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
 //               '<div class="fa-pull-right">' . RefBook::find('subject_memo_1')->getValue($studyplan_subject_id) . '</div></div>';
      return '<div style="overflow: hidden;">
                 <div class="pull-left">' . $model['student_fullname'] . '</div>' .
-               '<div class="fa-pull-right">' . $model['memo_2'] . ' ' . $model['education_programm_short_name'] . ' ' . $model['course'] . ' кл.</div></div>';
+               '<div class="fa-pull-right">' . $model['memo_2'] . ' ' . $model['education_programm_short_name'] . ' ' . $model['course'] . ' кл. ' . $model['speciality'] . '</div></div>';
     }
 
     /**
