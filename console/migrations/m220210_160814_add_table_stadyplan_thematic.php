@@ -147,7 +147,7 @@ UNION ALL
   ORDER BY 17, 16, 11; 		   
         ')->execute();
         $this->db->createCommand()->createView('studyplan_thematic_view', '
-            SELECT studyplan.id AS studyplan_id,
+             SELECT studyplan.id AS studyplan_id,
     studyplan.student_id,
     studyplan.plan_year,
     studyplan.programm_id,
@@ -158,20 +158,19 @@ UNION ALL
     studyplan_subject.subject_id,
     studyplan_subject.subject_type_id,
     studyplan_subject.subject_vid_id,
-	teachers_load.teachers_id,
+    teachers_load.teachers_id,
     studyplan_thematic.id AS studyplan_thematic_id,
     studyplan_thematic.subject_sect_studyplan_id,
-    studyplan_thematic.thematic_category,
     studyplan_thematic.half_year,
     studyplan_thematic.doc_status,
     studyplan_thematic.doc_sign_teachers_id,
     studyplan_thematic.doc_sign_timestamp,
     studyplan_thematic.created_by AS author_id,
-    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS sect_name,
+    concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name) AS sect_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject
    FROM studyplan
      JOIN studyplan_subject ON studyplan.id = studyplan_subject.studyplan_id
-	 LEFT JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
+     LEFT JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0 AND teachers_load.direction_id = 1000
      JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id AND guide_subject_vid.qty_min = 1 AND guide_subject_vid.qty_max = 1
      JOIN subject ON subject.id = studyplan_subject.subject_id
      JOIN education_programm ON education_programm.id = studyplan.programm_id
@@ -179,9 +178,8 @@ UNION ALL
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
      JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
      LEFT JOIN studyplan_thematic ON studyplan_thematic.studyplan_subject_id = studyplan_subject.id AND studyplan_thematic.subject_sect_studyplan_id = 0
-	 JOIN students ON students.id = studyplan.student_id
+     JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id
-
 UNION ALL
  SELECT studyplan.id AS studyplan_id,
     studyplan.student_id,
@@ -194,10 +192,9 @@ UNION ALL
     studyplan_subject.subject_id,
     studyplan_subject.subject_type_id,
     studyplan_subject.subject_vid_id,
-	teachers_load.teachers_id,
+    teachers_load.teachers_id,
     studyplan_thematic.id AS studyplan_thematic_id,
     subject_sect_studyplan.id AS subject_sect_studyplan_id,
-    studyplan_thematic.thematic_category,
     studyplan_thematic.half_year,
     studyplan_thematic.doc_status,
     studyplan_thematic.doc_sign_teachers_id,
@@ -211,14 +208,14 @@ UNION ALL
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject
    FROM studyplan
      JOIN studyplan_subject ON studyplan_subject.studyplan_id = studyplan.id
-	 LEFT JOIN teachers_load ON teachers_load.studyplan_subject_id = studyplan_subject.id AND teachers_load.subject_sect_studyplan_id = 0
      LEFT JOIN subject_sect ON subject_sect.subject_cat_id = studyplan_subject.subject_cat_id AND subject_sect.subject_id = studyplan_subject.subject_id AND subject_sect.subject_vid_id = studyplan_subject.subject_vid_id
      JOIN subject_sect_studyplan ON subject_sect_studyplan.subject_sect_id = subject_sect.id AND (studyplan_subject.id = ANY (string_to_array(subject_sect_studyplan.studyplan_subject_list, \',\'::text)::integer[]))
+     LEFT JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = subject_sect_studyplan.id AND teachers_load.direction_id = 1000
      JOIN subject ON subject.id = studyplan_subject.subject_id
      JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
      JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id
      LEFT JOIN studyplan_thematic ON studyplan_thematic.subject_sect_studyplan_id = subject_sect_studyplan.id AND studyplan_thematic.studyplan_subject_id = 0
-  ORDER BY 22, 21;
+  ORDER BY 21, 20;
   		   
         ')->execute();
 

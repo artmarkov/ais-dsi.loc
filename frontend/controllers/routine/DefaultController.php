@@ -27,7 +27,8 @@ class DefaultController extends \frontend\controllers\DefaultController
         $this->view->title = 'Производственный календарь';
         $this->view->params['breadcrumbs'][] = $this->view->title;
         $dataProvider = new ActiveDataProvider([
-            'query' => $this->modelClass::find()
+            'query' => $this->modelClass::find(),
+            'pagination' => false,
         ]);
 
         return $this->render('calendar', [

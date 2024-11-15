@@ -3,6 +3,7 @@
 namespace backend\controllers\reports;
 
 use common\models\studyplan\StudyplanDistrib;
+use common\models\studyplan\StudyplanHistory;
 use common\models\studyplan\StudyplanStat;
 use common\models\subject\SubjectType;
 use common\models\teachers\TarifStatement;
@@ -171,4 +172,26 @@ class DefaultController extends MainController
         ]);
     }
 
+    public function actionStudentHistory()
+    {
+        $session = Yii::$app->session;
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model_date = $this->modelDate;
+        $model_date->addRule(['studyplan_id'], 'required', ['message' => 'Необходимо выбрать "Учебный план"']);
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+        }
+        $session->set('__backendPlanYear', $model_date->plan_year);
+
+        return $this->renderIsAjax('student-history', [
+            'model_date' => $model_date,
+        ]);
+    }
+
+    public function actionStudentHistoryExcel($id)
+    {
+        $models = new StudyplanHistory($id);
+        $models->makeXlsx();
+    }
 }

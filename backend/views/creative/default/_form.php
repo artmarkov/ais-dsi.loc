@@ -235,8 +235,8 @@ JS
                                         ],
                                     ])->label(Yii::t('art/teachers', 'Teachers'));
                                     ?>
-                                    <?= $form->field($modelEfficiency, "[{$index}]bonus_vid_id")->radioList(\common\models\efficiency\EfficiencyTree::getBobusVidList(), ['itemOptions' => ['disabled' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]]) ?>
-                                    <?= $form->field($modelEfficiency, "[{$index}]bonus")->textInput(['maxlength' => true, 'readonly' => $readonly ? $readonly : !Yii::$app->user->isSuperadmin]) ?>
+                                    <?= $form->field($modelEfficiency, "[{$index}]bonus_vid_id")->radioList(\common\models\efficiency\EfficiencyTree::getBobusVidList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
+                                    <?= $form->field($modelEfficiency, "[{$index}]bonus")->textInput(['maxlength' => true, 'readonly' => $readonly]) ?>
                                     <?= $form->field($modelEfficiency, "[{$index}]date_in")->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
                                 </div>
                             </div>

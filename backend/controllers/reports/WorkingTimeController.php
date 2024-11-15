@@ -86,7 +86,7 @@ class WorkingTimeController extends \backend\controllers\DefaultController
     public function getMenu()
     {
         return [
-            ['label' => 'Жкрнал посещаемости', 'url' => ['/reports/working-time/index']],
+            ['label' => 'Журнал посещаемости', 'url' => ['/reports/working-time/index']],
             ['label' => 'Сводная таблица',  'url' => ['/reports/working-time/summary']],
             ['label' => 'График',  'url' => ['/reports/working-time/bar']],
         ];

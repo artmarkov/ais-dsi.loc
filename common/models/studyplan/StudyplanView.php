@@ -82,7 +82,7 @@ class StudyplanView extends Studyplan
 
     public static function getStudyplanListByPlanYear($plan_year)
     {
-            $query = self::find()->select('id, student_fio as name')
+            $query = self::find()->select(['id', 'CONCAT(student_fio, \' - \', education_programm_short_name) as name'])
                 ->where(['=', 'plan_year', $plan_year])
                 ->active()
                 ->asArray()->all();

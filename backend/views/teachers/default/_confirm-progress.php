@@ -43,7 +43,7 @@ $form = ActiveForm::begin([
                     echo $form->field($model_confirm, 'teachers_sign')->widget(\kartik\select2\Select2::class, [
                         'data' => Teachers::getTeachersByIds(User::getUsersByRole('signerProgress')),
                         'options' => [
-                            'disabled' => false,
+                            'disabled' => \artsoft\Art::isFrontend() ? true : false,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [
@@ -84,7 +84,7 @@ $form = ActiveForm::begin([
                             <div class="col-sm-12">
                                 <div class="form-group btn-group pull-right">
                                     <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на утверждение', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' =>  in_array($model_confirm->confirm_status, [0,3]) ? $readonly : true]); ?>
-                                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' =>  !in_array($model_confirm->confirm_status, [0,3]) ? false : true]); ?>
+                                    <?php /*echo Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' =>  !in_array($model_confirm->confirm_status, [0,3]) ? false : true]); */?>
                                 </div>
                             </div>
                         </div>

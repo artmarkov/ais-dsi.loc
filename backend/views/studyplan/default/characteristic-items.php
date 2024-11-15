@@ -12,14 +12,15 @@ use artsoft\grid\GridView;
 
 $this->title = Yii::t('art/guide', 'Subject Characteristic');
 $this->params['breadcrumbs'][] = $this->title;
+$studyplan_subject_list = RefBook::find('subject_memo_1')->getList();
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'studyplan_subject_id',
         'width' => '320px',
-        'value' => function ($model) {
-            return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
+        'value' => function ($model) use($studyplan_subject_list) {
+            return $studyplan_subject_list[$model->studyplan_subject_id] ?: null;
         },
         'group' => true,
     ],

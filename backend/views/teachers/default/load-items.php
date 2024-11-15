@@ -138,7 +138,12 @@ $columns = [
     ],
     [
         'attribute' => 'teachers_id',
-        'filter' => false,
+        'filter' => \common\models\teachers\TeachersLoad::getTeachersForTeachersLoad($model->id),
+        'filterType' => GridView::FILTER_SELECT2,
+        'filterWidgetOptions' => [
+            'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
         'value' => function ($model) {
             return RefBook::find('teachers_fio')->getValue($model->teachers_id);
         },

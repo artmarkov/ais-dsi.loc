@@ -10,5 +10,6 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Контингент учащихся', 'url' => ['/reports/default/studyplan-stat']],
         ['label' => 'Расписание преподавателя', 'url' => ['/reports/default/teachers-schedule']],
         ['label' => 'График работы преподавателей', 'url' => ['/reports/default/generator-schedule']],
+        ['label' => 'Выписка из учебного плана', 'url' => ['/reports/default/student-history']],
     ];
 }

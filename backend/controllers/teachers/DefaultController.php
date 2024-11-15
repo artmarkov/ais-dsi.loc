@@ -65,6 +65,11 @@ use Yii;
 class DefaultController extends MainController
 {
 
+    /**
+     * @var array
+     */
+    public $freeAccessActions = ['direction','direction-vid'];
+
     public $modelClass = 'common\models\teachers\Teachers';
     public $modelSearchClass = 'common\models\teachers\search\TeachersSearch';
     public $modelHistoryClass = 'common\models\history\TeachersHistory';

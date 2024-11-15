@@ -15,6 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $teachers_list = RefBook::find('teachers_fio')->getList();
 $auditory_list = RefBook::find('auditory_memo_1')->getList();
+$studyplan_subject_list = RefBook::find('subject_memo_1')->getList();
 
 $noteModel = NoticeConsultDisplay::getData($dataProvider->models, $model->plan_year);
 
@@ -22,8 +23,8 @@ $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
         'attribute' => 'studyplan_subject_id',
-        'value' => function ($model) {
-            return RefBook::find('subject_memo_1')->getValue($model->studyplan_subject_id);
+        'value' => function ($model) use($studyplan_subject_list) {
+            return $studyplan_subject_list[$model->studyplan_subject_id] ?: null;
         },
         'group' => true,
     ],

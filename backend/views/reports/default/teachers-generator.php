@@ -2,7 +2,6 @@
 
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\activities\search\ActivitiesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'График работы преподавателей';

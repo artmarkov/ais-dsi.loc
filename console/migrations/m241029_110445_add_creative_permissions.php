@@ -44,11 +44,13 @@ class m241029_110445_add_creative_permissions extends PermissionsMigration
                 'editCreative' => [
                     'title' => 'Доступ к разделу "Работы и сертификаты"(редактирование)',
                     'links' => [
+                        '/admin/creative/default/create',
                         '/admin/creative/default/update',
                         '/admin/creative/default/delete',
                         '/admin/creative/default/bulk-activate',
                         '/admin/creative/default/bulk-deactivate',
                         '/admin/creative/default/bulk-delete',
+                        '/admin/creative/category/create',
                         '/admin/creative/category/update',
                         '/admin/creative/category/delete',
                         '/admin/creative/category/bulk-delete',

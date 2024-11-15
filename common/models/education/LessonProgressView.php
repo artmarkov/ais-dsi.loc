@@ -485,7 +485,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             'asPopover' => true,
             'disabled' => $teachers_id !== null ? (\artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($teachers_id)) : false,
             'value' => $mark->lesson_mark_id,
-            'header' =>  Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y') . ' - ' . $mark->test_name /*.$mark->lesson_progress_id*/,
+            'header' =>  Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y') . ' - ' . $mark->test_name . ($mark->lesson_topic ? ' (' . $mark->lesson_topic . ')' : ''),
             'displayValueConfig' => $mark_list,
             'format' => Editable::FORMAT_LINK,
             'inputType' => Editable::INPUT_DROPDOWN_LIST,

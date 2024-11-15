@@ -5,6 +5,7 @@ namespace common\models\teachers;
 use artsoft\widgets\Tooltip;
 use common\models\guidejob\Direction;
 use common\models\studyplan\Studyplan;
+use common\models\user\UserCommon;
 
 trait TeachersLoadTrait
 {
@@ -36,6 +37,26 @@ trait TeachersLoadTrait
             ->andWhere(['subject_sect_studyplan_id' => $query1])
             ->orWhere(['studyplan_subject_id' => $query2])
             ->column();
+    }
+
+    public static function getTeachersForTeachersLoad($teachers_id)
+    {
+       $teachersLoadIds = self::getTeachersSubjectAll($teachers_id);
+
+        $teachersIds = TeachersLoadView::find()
+            ->select('teachers_id')
+            ->distinct()
+            ->where(['teachers_load_id' => $teachersLoadIds])
+            ->column();
+
+        $query = Teachers::find()
+            ->select(['teachers.id as id', 'CONCAT(user_common.last_name, \' \',user_common.first_name, \' \',user_common.middle_name) as name'])
+            ->joinWith(['user'])
+            ->where(['teachers.id' => $teachersIds])
+            ->andWhere(['=', 'status', UserCommon::STATUS_ACTIVE])
+            ->asArray()
+            ->all();
+        return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
     }
 
     public function getTeachersStudyplanFullLoad()

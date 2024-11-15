@@ -642,7 +642,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $model->title = $this->title_over;
             $model->over_category = 2;
             $model->department_list = $this->department_list;
-            $model->executors_list = [$this->executor_over_id];
+            $model->executors_list = Art::isBackend() ? [$this->executor_over_id] : $this->executor_over_id; // TODO не пойму в чем проблема костыль!
             if ($model->save(false)) {
                 $this->activities_over_id = $model->id;
                 $transaction->commit();
