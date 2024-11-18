@@ -25,6 +25,8 @@ $subject = (new \yii\db\Query())->select('subject')
     ->where(['=', 'subject_key', $subject_key])
     ->scalar();
 //print_r($model);
+$auditoryList = RefBook::find('auditory_memo_1')->getList();
+$studentFioList = RefBook::find('studyplan_subject-student_fio')->getList();
 ?>
 <div class="lesson-items-form">
     <?php
@@ -72,7 +74,7 @@ $subject = (new \yii\db\Query())->select('subject')
                             <span class="panel-title"><?= $string ?></span>
                         </td>
                         <td>
-                            <span class="panel-title"><?= RefBook::find('auditory_memo_1')->getValue($m['auditory_id']) ?></span>
+                            <span class="panel-title"><?= $auditoryList[$m['auditory_id']] ?></span>
                         </td>
                     <tr/>
                 <?php endforeach; ?>
@@ -134,7 +136,7 @@ $subject = (new \yii\db\Query())->select('subject')
                                                 </td>
                                                 <td>
                                                     <?= Html::activeHiddenInput($modelItems, "[{$index}]studyplan_subject_id"); ?>
-                                                    <?= RefBook::find('studyplan_subject-student_fio')->getValue($modelItems->studyplan_subject_id); ?>
+                                                    <?= $studentFioList[$modelItems->studyplan_subject_id]; ?>
                                                 </td>
                                                 <td>
                                                     <?php

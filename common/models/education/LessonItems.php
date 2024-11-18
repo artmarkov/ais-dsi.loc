@@ -401,8 +401,17 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 ]
             ])
             ->all();
+        $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress,'studyplan_subject_id');
+        $modelsSubjectSchedule = SubjectScheduleView::find()->where(
+            ['AND',
+                ['subject_sect_studyplan_id' => 0],
+                ['studyplan_subject_id' => $studyplanSubjectIds],
+                ['=', 'week_day', Schedule::timestamp2WeekDay(strtotime($model->lesson_date))],
+            ])->all();
+        $modelsSubjectSchedule = ArrayHelper::index($modelsSubjectSchedule, null, ['subject_sect_studyplan_id', 'studyplan_subject_id']);
+
         foreach ($modelsProgress as $item => $modelProgress) {
-            if ($test_category == LessonTest::CURRENT_WORK && !self::checkLessonSchedule($modelProgress, $model->lesson_date)) {
+            if ($test_category == LessonTest::CURRENT_WORK && !isset($modelsSubjectSchedule[$modelProgress->subject_sect_studyplan_id][$modelProgress->studyplan_subject_id])) {
                 continue;
             }
             $m = new LessonProgress();
@@ -441,8 +450,16 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 ]
             ])
             ->all();
+        $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress,'studyplan_subject_id');
+        $modelsSubjectSchedule = SubjectScheduleView::find()->where(
+            ['AND',
+                ['subject_sect_studyplan_id' => 0],
+                ['studyplan_subject_id' => $studyplanSubjectIds],
+                ['=', 'week_day', Schedule::timestamp2WeekDay(strtotime(\Yii::$app->formatter->asDate($timestamp_in, 'php:d.m.Y')))],
+            ])->all();
+        $modelsSubjectSchedule = ArrayHelper::index($modelsSubjectSchedule, null, ['subject_sect_studyplan_id', 'studyplan_subject_id']);
         foreach ($modelsProgress as $item => $model) {
-            if (!self::checkLessonSchedule($model, \Yii::$app->formatter->asDate($timestamp_in, 'php:d.m.Y'))) {
+            if (!isset($modelsSubjectSchedule[$modelProgress->subject_sect_studyplan_id][$modelProgress->studyplan_subject_id])) {
                 continue;
             }
             $modelProgress = LessonItemsProgressView::find()
@@ -468,7 +485,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
      * @param $lesson_date
      * @return bool
      */
-    public static function checkLessonSchedule($model, $lesson_date)
+   /* public static function checkLessonSchedule($model, $lesson_date)
     {
         return SubjectScheduleView::find()->where(
             ['AND',
@@ -477,7 +494,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 ['=', 'week_day', Schedule::timestamp2WeekDay(strtotime($lesson_date))],
 
             ])->exists();
-    }
+    }*/
 
     /**
      * Проверка на существование урока для индивидуальных занятий
@@ -485,14 +502,14 @@ class LessonItems extends \artsoft\db\ActiveRecord
      * @param $lesson_date
      * @return bool
      */
-    public static function checkLessonIndiv($modelProgress, $model)
+   /* public static function checkLessonIndiv($modelProgress, $model)
     {
         return LessonItemsProgressView::find()
             ->where(['=', 'subject_sect_studyplan_id', 0])
             ->andWhere(['=', 'studyplan_subject_id', $modelProgress->studyplan_subject_id])
             ->andWhere(['=', 'lesson_date', strtotime($model->lesson_date)])
             ->exists();
-    }
+    }*/
 
     /**
      * Проверка всех уроков индивидуальных занятий и удаление существующих уроков
@@ -504,8 +521,16 @@ class LessonItems extends \artsoft\db\ActiveRecord
      */
     public static function checkLessonsIndiv($modelsProgress, $model)
     {
+        $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress,'studyplan_subject_id');
+        $modelsSubjectSchedule = LessonItemsProgressView::find()->where(
+            ['AND',
+                ['subject_sect_studyplan_id' => 0],
+                ['studyplan_subject_id' => $studyplanSubjectIds],
+                ['=', 'lesson_date', strtotime($model->lesson_date)],
+            ])->all();
+        $modelsSubjectSchedule = ArrayHelper::index($modelsSubjectSchedule, null, ['subject_sect_studyplan_id', 'studyplan_subject_id']);
         foreach ($modelsProgress as $item => $modelProgress) {
-            if (self::checkLessonIndiv($modelProgress, $model)) {
+            if (isset($modelsSubjectSchedule[0][$modelProgress->studyplan_subject_id])) {
                 unset($modelsProgress[$item]);
             }
         }

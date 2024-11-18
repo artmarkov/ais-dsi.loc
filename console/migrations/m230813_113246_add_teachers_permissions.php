@@ -486,6 +486,9 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/admin/invoices/default/update',
                         '/admin/invoices/default/delete',
                         '/admin/invoices/default/history',
+                        '/admin/invoices/default/bulk-new',
+                        '/admin/invoices/default/bulk-status',
+                        '/admin/invoices/default/bulk-delete',
                     ],
                     'roles' => [
                         'teachersInvoicesAdmin',
