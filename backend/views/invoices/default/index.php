@@ -18,11 +18,6 @@ $this->params['breadcrumbs'][] = $this->title;
 $invModel = \artsoft\helpers\InvoicesHelper::getData($dataProvider->models, $model_date);
 
 $columns = [
-    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
-        return ['value' => $model->studyplan_id . '|' . $model->studyplan_invoices_id];
-    },
-        'visible' => \artsoft\Art::isBackend(),
-    ],
     [
         'attribute' => 'student_id',
         'value' => function ($model) {
@@ -62,7 +57,7 @@ $columns = [
             return $model->education_cat_short_name;
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'programm_id',
@@ -70,7 +65,7 @@ $columns = [
             return $model->programm_short_name;
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 2
+        'subGroupOf' => 1
     ],
     [
         'attribute' => 'status',
@@ -91,7 +86,7 @@ $columns = [
          },*/
         'format' => 'raw',
         'group' => true,  // enable grouping
-        'subGroupOf' => 3
+        'subGroupOf' => 2
     ],
     [
         'attribute' => 'course',
@@ -99,7 +94,7 @@ $columns = [
             return \artsoft\helpers\ArtHelper::getCourseList()[$model->course];
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 5
+        'subGroupOf' => 4
     ],
     [
         'attribute' => 'subject_list',
@@ -110,8 +105,13 @@ $columns = [
         'format' => 'raw',
         'noWrap' => false,
         'group' => true,  // enable grouping
-        'subGroupOf' => 5,
+        'subGroupOf' => 4,
         'footer' => 'ИТОГО: (руб)'
+    ],
+    ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
+        return ['value' => $model->studyplan_id . '|' . $model->studyplan_invoices_id];
+    },
+        'visible' => \artsoft\Art::isBackend(),
     ],
     [
         'attribute' => 'invoices_summ',
@@ -232,7 +232,7 @@ $columns = [
                     <div class="col-sm-12">
                         <?php if (\artsoft\Art::isBackend()): ?>
                             <?= \yii\bootstrap\Alert::widget([
-                                'body' => '<i class="fa fa-info"></i> Для добавления нескольких квитанцый, нажмите чекбоксы слева.',
+                                'body' => '<i class="fa fa-info"></i> Для добавления нескольких квитанций, нажмите чекбоксы слева.',
                                 'options' => ['class' => 'alert-info'],
                             ]);
                             ?>

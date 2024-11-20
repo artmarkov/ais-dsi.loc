@@ -108,6 +108,12 @@ class m230705_153245_add_schoolplan_permissions extends PermissionsMigration
                         '/admin/schoolplan/default/studyplan-subject-perform',
                         '/admin/schoolplan/default/studyplan-subject-teachers-perform',
                         '/admin/schoolplan/default/studyplan-thematic-perform',
+                        '/admin/schoolplan/default/teachers-efficiency',
+                        '/admin/schoolplan/default/teachers-efficiency?mode=create',
+                        '/admin/schoolplan/default/teachers-efficiency?mode=view',
+                        '/admin/schoolplan/default/teachers-efficiency?mode=update',
+                        '/admin/schoolplan/default/teachers-efficiency?mode=delete',
+                        '/admin/schoolplan/default/teachers-efficiency?mode=history',
                     ],
                     'roles' => [
                         self::ROLE_SYSTEM,

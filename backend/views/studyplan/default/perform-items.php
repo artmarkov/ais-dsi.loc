@@ -73,6 +73,12 @@ $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
                         },
                     ],
                     [
+                        'value' => function ($model) {
+                            return isset($model->schoolplan) ? $model->schoolplan->datetime_in : '';
+                        },
+                        'label' => 'Дата мероприятия'
+                    ],
+                    [
                         'attribute' => 'teachers_id',
                         'value' => function ($model) use($teachers_list) {
                             return $teachers_list[$model->teachers_id] ?: null;

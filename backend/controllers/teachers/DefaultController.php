@@ -68,7 +68,7 @@ class DefaultController extends MainController
     /**
      * @var array
      */
-    public $freeAccessActions = ['direction','direction-vid'];
+    public $freeAccessActions = ['direction','direction-vid', 'select'];
 
     public $modelClass = 'common\models\teachers\Teachers';
     public $modelSearchClass = 'common\models\teachers\search\TeachersSearch';

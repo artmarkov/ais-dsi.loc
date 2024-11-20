@@ -123,7 +123,7 @@ class Schedule
             case in_array($astr_hour, range(3300, 3420)):
                 $academ_hour = 1.25;
                 break;
-            case in_array($astr_hour, range(4020, 4500)):
+            case in_array($astr_hour, range(3900, 4500)):
                 $academ_hour = 1.5;
                 break;
             case in_array($astr_hour, range(5400, 5400)):
