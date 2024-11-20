@@ -13,9 +13,9 @@ use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
- * StudentController implements the CRUD actions for common\models\question\Question model.
+ * TeachersController implements the CRUD actions for common\models\question\Question model.
  */
-class StudentController extends \frontend\controllers\DefaultController
+class TeachersController extends \frontend\controllers\DefaultController
 {
     public $modelClass = 'common\models\question\Question';
     public $modelSearchClass = 'common\models\question\search\QuestionSearch';
@@ -33,14 +33,14 @@ class StudentController extends \frontend\controllers\DefaultController
 
     public function actionIndex()
     {
-        if (!User::hasRole(['student'], false)) {
+        if (!User::hasRole(['teacher'], false)) {
             throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
         }
 
         $this->view->params['tabMenu'] = $this->tabMenu;
         $subquery = QuestionUsers::find()->select('COUNT(id)')->where('question_id = question.id');
         $query = Question::find()
-            ->where(['users_cat' => Question::GROUP_STUDENTS])
+            ->where(['users_cat' => Question::GROUP_TEACHERS])
             ->andWhere(['<=', 'timestamp_in', time()])
             ->andWhere(['>=', 'timestamp_out', time() - 86400])
             ->andWhere(['=', 'status', Question::STATUS_ACTIVE])
@@ -65,7 +65,7 @@ class StudentController extends \frontend\controllers\DefaultController
 //        $model = $this->findModel($id);
         $subquery = QuestionUsers::find()->select('COUNT(id)')->where('question_id = question.id');
         $model = Question::find()
-            ->where(['users_cat' => Question::GROUP_STUDENTS])
+            ->where(['users_cat' => Question::GROUP_TEACHERS])
             ->andWhere(['<=', 'timestamp_in', time()])
             ->andWhere(['>=', 'timestamp_out', time() - 86400])
             ->andWhere(['=', 'status', Question::STATUS_ACTIVE])
@@ -77,7 +77,7 @@ class StudentController extends \frontend\controllers\DefaultController
             ])->one();
         if (!isset($model)) {
             $model = Question::find()
-                ->where(['users_cat' => Question::GROUP_STUDENTS])
+                ->where(['users_cat' => Question::GROUP_TEACHERS])
                 ->andWhere(['=', 'id', $id])
                 ->one();
             if (isset($model)) {
@@ -97,12 +97,12 @@ class StudentController extends \frontend\controllers\DefaultController
         }
         $modelVal = new QuestionAnswers(['id' => $id]);
         $modelVal->users_id = $this->users_id;
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Questions'), 'url' => ['question/student/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/question', 'Questions'), 'url' => ['question/teachers/index']];
         $this->view->params['breadcrumbs'][] = 'Добавление ответа';
 
         if ($modelVal->load(Yii::$app->request->post()) && $modelVal->save()) {
 //                echo '<pre>' . print_r($modelVal, true) . '</pre>';
-            $this->redirect(['/question/student/success/']);
+            $this->redirect(['/question/teachers/success/']);
         }
         return $this->renderIsAjax('@backend/views/question/answers/_form', [
             'model' => $modelVal,
@@ -121,7 +121,7 @@ class StudentController extends \frontend\controllers\DefaultController
         if (Yii::$app->user->isGuest) { // Если по ссылке проходит незалогиненный пользователь
             $this->redirect('/auth/default/login');
         } else {
-            if (!User::hasRole(['student'], false)) {
+            if (!User::hasRole(['teacher'], false)) {
                 throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
             }
             if (!Yii::$app->user->isGuest) {

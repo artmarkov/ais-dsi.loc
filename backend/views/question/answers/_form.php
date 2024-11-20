@@ -115,7 +115,8 @@ $options = [];
                                         <div class="col-sm-1">
                                             <?php
                                             if (!empty($model[$item['name']])) {
-                                                echo Html::a('<img src="' . QuestionAnswers::getFileContent($model[$item['name']]) . '"/>', ['question/default/download', 'id' => $model->getValueId($item['name'])]);
+                                               // echo Html::a('<img src="' . QuestionAnswers::getFileContent($model[$item['name']]) . '"/>', ['question/default/download', 'id' => $model->getValueId($item['name'])]);
+                                                echo Html::a('Скачать', ['question/default/download', 'id' => $model->getValueId($item['name'])], ['class' => 'btn btn-default']);
                                             }
                                             ?>
                                         </div>

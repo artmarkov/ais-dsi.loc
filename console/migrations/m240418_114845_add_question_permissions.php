@@ -53,6 +53,7 @@ class m240418_114845_add_question_permissions extends PermissionsMigration
                         '/admin/question/default/update',
                         '/admin/question/default/delete',
                         '/admin/question/default/stat',
+                        '/admin/question/default/question-attribute?mode=create',
                         '/admin/question/default/question-attribute?mode=update',
                         '/admin/question/default/question-attribute?mode=history',
                         '/admin/question/default/question-attribute?mode=delete',

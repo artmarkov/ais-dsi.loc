@@ -26,7 +26,7 @@ class QuestionAnswers extends DynamicModel
     private $attributesUnique;
     private $optionsValues;
     private $fileSize = 1024 * 1024 * 5; // Допустимый размер файла
-    private $fileExt = 'png, jpg, JPEG'; // Допустимые расширения
+    private $fileExt = 'png, jpg, JPEG, doc, docx, pdf'; // Допустимые расширения
 
     public function __construct($config = [])
     {
@@ -335,6 +335,7 @@ class QuestionAnswers extends DynamicModel
                             case QuestionAttribute::TYPE_FILE :
                                 $file = UploadedFile::getInstanceByName('QuestionAnswers[' . $attribute . ']');
                                 $file->saveAs(Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . $file->name);
+                                $modelAttribute->value_string = $file->name;
                                 $modelAttribute->value_file = base64_encode(file_get_contents(Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . $file->name));
                                 break;
                             default:
