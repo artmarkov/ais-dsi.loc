@@ -126,7 +126,7 @@ use kartik\date\DatePicker;
         <div class="panel-footer">
             <div class="form-group btn-group">
                 <?= \artsoft\helpers\ButtonHelper::exitButton(); ?>
-                <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit', 'btn-md'); ?>
+                <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit', 'btn-md js-validate'); ?>
                 <?= $model->isNewRecord ? null : \artsoft\helpers\ButtonHelper::deleteButton(); ?>
 
             </div>
@@ -145,3 +145,19 @@ use kartik\date\DatePicker;
     </div>
     <?php ActiveForm::end(); ?>
 </div>
+
+<?php
+$js = <<<JS
+        $('select[name="StudyplanInvoices[invoices_id]"]').click(function(){
+         // console.log($(this).val());
+        if($(this).val() === '1000') {
+            document.getElementsByClassName("js-validate")[0].removeAttribute("data-confirm");
+        } else if($(this).val() !== '') {
+         document.getElementsByClassName("js-validate")[0].setAttribute("data-confirm", "Вы уверены в выборе Вида платежа?");
+        }
+        });
+
+JS;
+
+$this->registerJs($js, \yii\web\View::POS_LOAD);
+?>

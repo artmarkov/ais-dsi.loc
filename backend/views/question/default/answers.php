@@ -114,9 +114,9 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 $css = <<<CSS
 .question-answers-grid img {
-   width: 100px;
-    height: 100px;
-    border-radius: 10px;
+   width: 60px;
+    height: 70px;
+    border-radius: 5px;
     border: 1px solid #3b5876;
     padding: 3px;
     vertical-align: middle;

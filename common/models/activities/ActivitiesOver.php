@@ -4,6 +4,7 @@ namespace common\models\activities;
 
 use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\widgets\Notice;
 use common\models\auditory\Auditory;
 use common\models\schoolplan\Schoolplan;
 use Yii;
@@ -110,6 +111,7 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
                 'whenClient' => "function (attribute, value) {
                                 return $('input[id=\"activitiesover-executorflag\"]').prop('checked') === true;
                             }"],
+            [['date_in'], 'validateActivitiesOver', 'skipOnEmpty' => false, 'skipOnError' => false],
         ];
     }
 
@@ -122,6 +124,72 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
             $message = 'Время окончания мероприятия не может быть меньше или равно времени начала.';
             $this->addError($attribute, $message);
         }
+    }
+
+    public function validateActivitiesOver($attribute, $params, $validator)
+    {
+        $message = '';
+        if ($this->getActivitiesOverOverLapping()->exists() === true) {
+            $info = [];
+            foreach ($this->getActivitiesOverOverLapping()->all() as $itemModel) {
+                $info[] = ' ' . $itemModel->datetime_in . ' - ' . $itemModel->datetime_out . ' (' . $itemModel->title . ')';
+            }
+            $message = 'Накладка по времени - Вне плана: ' . implode('; ', $info);
+            Notice::registerDanger($message);
+        }
+        if ($this->getSchoolplanOverLapping()->exists() === true) {
+            $info = [];
+            foreach ($this->getSchoolplanOverLapping()->all() as $itemModel) {
+                $info[] = ' ' . $itemModel->datetime_in . ' - ' . $itemModel->datetime_out . ' (' . $itemModel->title . ')';
+            }
+            $message = 'Накладка по времени -  По плану работы: ' . implode('; ', $info);
+            Notice::registerDanger($message);
+        }
+        if (!empty($info)) {
+            $this->addError($attribute, 'В одной аудитории накладка по времени!' . ' ' . $message);
+        }
+    }
+
+    public function getActivitiesOverOverLapping()
+    {
+        $thereIsAnOverlapping = self::find()->where(
+            ['AND',
+                ['!=', 'id', $this->id],
+                ['auditory_id' => $this->auditory_id],
+                ['OR',
+                    ['AND',
+                        ['<', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>=', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                    ['AND',
+                        ['<=', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                ],
+            ]);
+
+        return $thereIsAnOverlapping;
+    }
+
+    public function getSchoolplanOverLapping()
+    {
+        $thereIsAnOverlapping = Schoolplan::find()->where(
+            ['AND',
+                ['!=', 'activities_over_id', $this->id],
+                ['auditory_id' => $this->auditory_id],
+                ['OR',
+                    ['AND',
+                        ['<', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>=', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                    ['AND',
+                        ['<=', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                ],
+            ]);
+
+        return $thereIsAnOverlapping;
     }
 
     public function checkFormatDateTime($attribute, $params)

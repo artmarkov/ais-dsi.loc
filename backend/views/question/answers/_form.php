@@ -115,8 +115,9 @@ $options = [];
                                         <div class="col-sm-1">
                                             <?php
                                             if (!empty($model[$item['name']])) {
-                                               // echo Html::a('<img src="' . QuestionAnswers::getFileContent($model[$item['name']]) . '"/>', ['question/default/download', 'id' => $model->getValueId($item['name'])]);
-                                                echo Html::a('Скачать', ['question/default/download', 'id' => $model->getValueId($item['name'])], ['class' => 'btn btn-default']);
+                                               // echo '<pre>' . print_r($model[$item['name']], true) . '</pre>';
+                                                echo Html::a('<img src="' . $model[$item['name']] . '"/> Скачать', ['question/default/download', 'id' => $model->getValueId($item['name'])], ['title' => 'Скачать']);
+                                                //echo Html::a('Скачать', ['question/default/download', 'id' => $model->getValueId($item['name'])], ['class' => 'btn btn-default']);
                                             }
                                             ?>
                                         </div>
@@ -158,9 +159,9 @@ $options = [];
     <?php
     $css = <<<CSS
 #answers-form img {
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
+    width: 30px;
+    height: 35px;
+    border-radius: 3px;
     border: 1px solid #3b5876;
     padding: 1px;
     vertical-align: middle;

@@ -23,11 +23,22 @@ class DefaultController extends MainController
 
     public function actionPerform() {
         $this->view->params['tabMenu'] = $this->tabMenu;
-        $this->view->params['breadcrumbs'][] = 'Выполнения планов на подписи';
+        $this->view->params['breadcrumbs'][] = 'Контроль выполнения планов отдела';
         $id = $this->teachers_id;
         $model_date = $this->modelDate;
         $data = ArtHelper::getStudyYearParams($model_date->plan_year);
-        $dataProvider = new ActiveDataProvider(['query' => PortfolioView::find()->where(['signer_id' => Yii::$app->user->identity->getId()])->andWhere(['between', 'datetime_in', $data['timestamp_in'], $data['timestamp_out']])]);
+
+        if(Yii::$app->settings->get('mailing.schoolplan_perform_doc')) {
+            $query = PortfolioView::find()
+                ->where(['signer_id' => Yii::$app->user->identity->getId()])
+                ->andWhere(['between', 'datetime_in', $data['timestamp_in'], $data['timestamp_out']]);
+        } else {
+            $query = PortfolioView::find()
+                ->where(['in', 'teachers_id', Teachers::getTeachersForTeacher($this->teachers_id)])
+                ->andWhere(['!=', 'teachers_id', $this->teachers_id])
+                ->andWhere(['between', 'datetime_in', $data['timestamp_in'], $data['timestamp_out']]);
+        }
+        $dataProvider = new ActiveDataProvider(['query' => $query]);
         return $this->renderIsAjax('perform', compact(['dataProvider', 'model_date', 'id']));
     }
 

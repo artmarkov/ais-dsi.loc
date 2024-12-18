@@ -138,4 +138,11 @@ class LessonProgress extends \artsoft\db\ActiveRecord
         return RefBook::find('students_fio')->getValue($student_id);
     }
 
+    public function beforeDelete()
+    {
+        $this->updated_at = time();
+        $this->updated_by = Yii::$app->user->identity->getId();
+        $this->save();
+        return parent::beforeDelete();
+    }
 }

@@ -2,8 +2,10 @@
 
 use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
+use artsoft\models\User;
 use common\models\own\Department;
 use common\models\user\UserCommon;
+use yii\db\Query;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -18,6 +20,13 @@ use artsoft\grid\GridPageSize;
 $this->title = Yii::t('art/guide', 'School Plans');
 $this->params['breadcrumbs'][] = $this->title;
 $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
+$teachers_list = RefBook::find('teachers_fio',1)->getList();
+$department_list =  \yii\helpers\ArrayHelper::map(Department::find()->select('id, name')->asArray()->all(), 'id', 'name');
+$signer_list = \yii\helpers\ArrayHelper::map((new Query())->from('users_view')
+    ->select('id , user_name as name')
+    ->where(['=', 'status', User::STATUS_ACTIVE])
+    ->all(), 'id', 'name');
+$author_id = Schoolplan::getAuthorId();
 ?>
 <div class="schoolplan-plan-index">
     <div class="panel">
@@ -66,8 +75,8 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
 //                            'gridId' => 'schoolplan-plan-grid',
 //                            'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
 //                        ],
-                        'rowOptions' => function (Schoolplan $model) {
-                            if ($model->isAuthor()) {
+                        'rowOptions' => function (Schoolplan $model) use ($author_id) {
+                            if ( $author_id == $model->author_id) {
                                 return ['class' => 'warning'];
                             }
                             return [];
@@ -157,13 +166,13 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                             [
                                 'attribute' => 'department_list',
                                 'filter' => Department::getDepartmentList(),
-                                'value' => function (Schoolplan $model) {
+                                'value' => function (Schoolplan $model) use ($department_list) {
                                     $v = [];
                                     foreach ($model->department_list as $id) {
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = Department::findOne($id)->name;
+                                        $v[] = $department_list[$id] ?? '';
                                     }
                                     return implode(',<br/> ', $v);
                                 },
@@ -172,19 +181,20 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                             ],
                             [
                                 'attribute' => 'executors_list',
-                                'filter' => RefBook::find('teachers_fio', UserCommon::STATUS_ACTIVE)->getList(),
+                                'filter' => $teachers_list,
                                 'filterType' => GridView::FILTER_SELECT2,
                                 'filterWidgetOptions' => [
                                     'pluginOptions' => ['allowClear' => true],
                                 ],
                                 'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                                'value' => function (Schoolplan $model) use ($executorsBonus) {
+                                'value' => function (Schoolplan $model) use ($executorsBonus, $teachers_list) {
                                     $v = [];
                                     foreach ($model->executors_list as $id) {
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = RefBook::find('teachers_fio')->getValue($id) . (\artsoft\Art::isBackend() ? (isset($executorsBonus[$model->id][$id]) ? $executorsBonus[$model->id][$id] : null) : null);
+                                    $teachers_fio = $teachers_list[$id] ?? $id;
+                                        $v[] = $teachers_fio . (\artsoft\Art::isBackend() ? (isset($executorsBonus[$model->id][$id]) ? $executorsBonus[$model->id][$id] : null) : null);
                                     }
                                     return implode(',<br/> ', $v);
                                 },
@@ -240,14 +250,14 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                                     },
                                 ],
                                 'visibleButtons' => [
-                                    'update' => function ($model) {
-                                        return $model->isAuthor() || \artsoft\Art::isBackend();
+                                    'update' => function ($model) use ($author_id) {
+                                        return $author_id == $model->author_id || \artsoft\Art::isBackend();
                                     },
-                                    'clone' => function ($model) {
-                                        return $model->isAuthor() || \artsoft\Art::isBackend();
+                                    'clone' => function ($model) use ($author_id) {
+                                        return $author_id == $model->author_id || \artsoft\Art::isBackend();
                                     },
-                                    'delete' => function ($model) {
-                                        return $model->isAuthor() || \artsoft\Art::isBackend();
+                                    'delete' => function ($model) use ($author_id) {
+                                        return $author_id == $model->author_id || \artsoft\Art::isBackend();
                                     },
                                     'view' => function ($model) {
                                         return true;
@@ -267,8 +277,8 @@ $executorsBonus = Schoolplan::getEfficiencyForExecutors($dataProvider->models);
                             ],
                             [
                                 'attribute' => 'signer_id',
-                                'value' => function (Schoolplan $model) {
-                                    return isset($model->user->userCommon) ? $model->user->userCommon->lastFM : $model->signer_id;
+                                'value' => function (Schoolplan $model) use($signer_list) {
+                                    return $signer_list[$model->signer_id] ?? '';
                                 },
                                 'options' => ['style' => 'width:150px'],
                                 'contentOptions' => ['style' => "text-align:center; vertical-align: middle;"],

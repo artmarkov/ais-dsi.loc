@@ -38,6 +38,7 @@ class DefaultController extends MainController
 
     public function actionIndex()
     {
+       // ini_set('memory_limit', '2048');
         $session = Yii::$app->session;
 
         $day_in = 1;

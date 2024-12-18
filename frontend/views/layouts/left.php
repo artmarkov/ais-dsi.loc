@@ -68,9 +68,9 @@ use artsoft\widgets\Nav;
                 'url' => '#',
                 'items' => [
                     ['label' => 'Производственный календарь', 'icon' => 'fa fa-minus', 'url' => ['/routine/default/calendar']],
-                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/activities-over/index']],
-                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/student-schedule/index'], 'visible' => User::hasRole(['student','parents'])],
                     ['label' => 'Сетка расписания школы', 'icon' => 'fa fa-minus', 'url' => ['/schedule/default/index']], // common permission
+                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/default/calendar']],
+                    ['label' => 'Календарь мероприятий', 'icon' => 'fa fa-minus', 'url' => ['/activities/student-schedule/index'], 'visible' => User::hasRole(['student','parents'])],
                     ['label' => 'План работы школы', 'icon' => 'fa fa-minus', 'url' => ['/schoolplan/default/index']],
                     ['label' => 'Счета за обучение', 'icon' => 'fa fa-minus', 'url' => ['/invoices/default/index']],
 //                    ['label' => 'Табель учета пед.часов', 'icon' => 'fa fa-minus', 'url' => ['/timesheet/default/index']],
@@ -112,7 +112,7 @@ use artsoft\widgets\Nav;
                 'url' => '#',
                 'items' => [
                     ['label' => 'Тематические/репертуарные планы на подписи', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/thematic-sign']],
-                    ['label' => 'Выполнения планов на подписи', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/perform']],
+                    ['label' => 'Контроль выполнения планов отдела', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/perform']],
                     ['label' => 'Контроль заполнения журналов успеваемости', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/progress']],
                     ['label' => 'Отдел на контроле', 'icon' => 'fa fa-minus', 'url' => ['/execution/teachers/index']],
 //                    ['label' => 'Сводная успеваемость', 'icon' => 'fa fa-minus', 'url' => ['/summary-progress/default/index']],

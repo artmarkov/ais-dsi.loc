@@ -276,7 +276,9 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/admin/efficiency/default/grid-page-size',
                         '/admin/efficiency/default/view',
                         '/admin/efficiency/default/summary',
+                        '/admin/efficiency/default/details',
                         '/admin/efficiency/default/bar',
+                        '/admin/efficiency/default/user-bar',
                         '/admin/efficiency/default/select',
                     ],
                     'roles' => [

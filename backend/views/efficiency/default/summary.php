@@ -23,7 +23,7 @@ $columns[] = [
     'controller' => '/efficiency/default',
     'title' => function ($data) {
         return Html::a($data['name'],
-            Url::to(['efficiency/default/details', 'id' => $data['id'], 'timestamp_in' => $data['date_in'], 'timestamp_out' => $data['date_out']]), [
+            ['efficiency/default/details', 'id' => $data['id'], 'timestamp_in' => $data['date_in'], 'timestamp_out' => $data['date_out']], [
                 'data-method' => 'post',
                 'data-pjax' => '0',
             ]);
@@ -32,14 +32,14 @@ $columns[] = [
     'buttons' => [
         'details' => function ($url, $data, $key) {
             return Html::a('Показатели',
-                Url::to(['efficiency/default/details', 'id' => $data['id'], 'timestamp_in' => $data['date_in'], 'timestamp_out' => $data['date_out']]), [
+                ['efficiency/default/details', 'id' => $data['id'], 'timestamp_in' => $data['date_in'], 'timestamp_out' => $data['date_out']], [
                     'data-method' => 'post',
                     'data-pjax' => '0',
                 ]);
         },
         'bar' => function ($url, $data, $key) {
             return Html::a('График',
-                Url::to(['efficiency/default/user-bar', 'id' => $data['id'], 'timestamp_in' => $data['date_in'], 'timestamp_out' => $data['date_out']]), [
+                ['efficiency/default/user-bar', 'id' => $data['id'], 'timestamp_in' => $data['date_in'], 'timestamp_out' => $data['date_out']], [
                     'data-method' => 'post',
                     'data-pjax' => '0',
                 ]);

@@ -206,12 +206,13 @@ class RegistrationForm extends Model
     public function registration()
     {
         $userStudent = new User();
-        $userParent = new User();
         $userCommonStudent = new UserCommon();
-        $userCommonParent = new UserCommon();
         $modelStudent = new Student();
-        $modelParent = new Parents();
         $modelDependence = new StudentDependence();
+
+        $userCommonParent = $this->findParentByFio(); // Если родитель был уже зарегистрирован с другим ребенком
+        $userParent = $userCommonParent->user ?: new User();
+        $modelParent = Parents::findOne(['user_common_id' => $userCommonParent->id]) ?: new Parents();
 
         $userCommonStudent->setAttributes([
             'first_name' => $this->student_first_name,
@@ -259,7 +260,7 @@ class RegistrationForm extends Model
             $userStudent->email = $userCommonStudent->email;
             $userStudent->generateAuthKey();
 
-            $userParent->username = $userCommonParent->generateUsername($userStudent->username);
+            $userParent->username = $userParent->username ?: $userCommonParent->generateUsername($userStudent->username);
             $userParent->email = $userCommonParent->email;
             $userParent->generateAuthKey();
 
@@ -318,5 +319,21 @@ class RegistrationForm extends Model
             ->setTo($user->email)
             ->setSubject(Yii::t('art/auth', 'E-mail confirmation for') . ' ' . Yii::$app->name)
             ->send();
+    }
+
+    protected function findParentByFio()
+    {
+        $birth_date = Yii::$app->formatter->asTimestamp($this->parent_birth_date);
+
+        $user = UserCommon::find()
+            ->where(['like', 'last_name', $this->parent_last_name])
+            ->andWhere(['like', 'first_name', $this->parent_first_name]);
+
+        if ($this->parent_middle_name != null) {
+            $user = $user->andWhere(['like', 'middle_name', $this->parent_middle_name]);
+        }
+        $user = $user->andWhere(['=', 'birth_date', $birth_date]);
+
+        return $user->one() ?: new UserCommon();
     }
 }

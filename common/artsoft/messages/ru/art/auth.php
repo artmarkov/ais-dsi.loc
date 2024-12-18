@@ -53,7 +53,7 @@ return [
     'Save profile picture' => 'Сохранить изображение профиля',
     'Set Password' => 'Заполнить пароль',
     'Set Username' => 'Заполнить Имя пользователя',
-    'Signup' => 'Регистрация',
+    'Signup' => 'Регистрация(восстановление)',
     'This E-mail already exists' => 'Этот E-mail уже существует',
     'Token not found. It may be expired' => 'Секретный ключ просрочен. Обратитесь к администратору.',
     'Token not found. It may be expired. Try reset password once more' => 'Секретный ключ просрочен. Попробуйте сбросить пароль еще раз',

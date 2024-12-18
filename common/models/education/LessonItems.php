@@ -459,7 +459,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             ])->all();
         $modelsSubjectSchedule = ArrayHelper::index($modelsSubjectSchedule, null, ['subject_sect_studyplan_id', 'studyplan_subject_id']);
         foreach ($modelsProgress as $item => $model) {
-            if (!isset($modelsSubjectSchedule[$modelProgress->subject_sect_studyplan_id][$modelProgress->studyplan_subject_id])) {
+            if (!isset($modelsSubjectSchedule[$model->subject_sect_studyplan_id][$model->studyplan_subject_id])) {
                 continue;
             }
             $modelProgress = LessonItemsProgressView::find()

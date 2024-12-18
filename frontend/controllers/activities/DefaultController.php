@@ -105,7 +105,7 @@ class DefaultController extends MainController
 
         $events = $this->modelClass::find()
             ->where(
-                "start_time > :start_time and end_time < :end_time and auditory_id = :auditory_id",
+                "start_time > :start_time and end_time < :end_time and auditory_id = :auditory_id and (direction_id = 1000 OR direction_id IS NULL)",
                 [
                     ":start_time" => $start_time,
                     ":end_time" => $end_time,

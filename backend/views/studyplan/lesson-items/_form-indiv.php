@@ -74,7 +74,7 @@ $studentFioList = RefBook::find('studyplan_subject-student_fio')->getList();
                             <span class="panel-title"><?= $string ?></span>
                         </td>
                         <td>
-                            <span class="panel-title"><?= $auditoryList[$m['auditory_id']] ?></span>
+                            <span class="panel-title"><?= $auditoryList[$m['auditory_id']] ?? '' ?></span>
                         </td>
                     <tr/>
                 <?php endforeach; ?>

@@ -9,8 +9,8 @@ use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
-use artsoft\helpers\Schedule;
 use artsoft\models\User;
+use artsoft\widgets\Notice;
 use common\models\activities\ActivitiesOver;
 use common\models\auditory\Auditory;
 use common\models\education\LessonMark;
@@ -186,6 +186,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         $this->time_out = Yii::$app->formatter->asDatetime($this->datetime_out, 'php:H:i');
         parent::afterFind();
     }
+
     /**
      * {@inheritdoc}
      */
@@ -193,7 +194,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         return [
             [['title', /*'datetime_in', 'datetime_out',*/ 'category_id', 'author_id', 'signer_id'], 'required'],
-            [['date_in','time_in','date_out','time_out'], 'required'],
+            [['date_in', 'time_in', 'date_out', 'time_out'], 'required'],
             [['department_list', 'executors_list'], 'required'],
             [['partic_price'], 'required', 'when' => function ($model) {
                 return $model->form_partic == '2';
@@ -221,7 +222,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['activities_over_id'], 'exist', 'skipOnError' => true, 'targetClass' => ActivitiesOver::class, 'targetAttribute' => ['activities_over_id' => 'id']],
             [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['date_out'], 'compareTimestamp', 'skipOnEmpty' => false],
-            [['date_in','time_in','date_out','time_out'], 'safe'],
+            [['date_in', 'time_in', 'date_out', 'time_out'], 'safe'],
             ['bars_flag', 'boolean'],
             [['title_over', 'admin_message'], 'string'],
             ['period_over', 'integer'],
@@ -268,6 +269,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
                 'whenClient' => "function (attribute, value) {
                                 return $('input[id=\"schoolplan-protocolleaderflag\"]').prop('checked') === false && $('input[id=\"schoolplan-protocolflag\"]').prop('checked') === true;
                             }"],
+            [['date_in'], 'validateOwnSchoolplan', 'skipOnEmpty' => false, 'skipOnError' => false],
         ];
     }
 
@@ -287,6 +289,73 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         }
     }
 
+    public function validateOwnSchoolplan($attribute, $params, $validator)
+    {
+        $message = '';
+        if($this->auditory_id) {
+            if ($this->getOwnSchoolplanOverLapping()->exists() === true) {
+                $info = [];
+                foreach ($this->getOwnSchoolplanOverLapping()->all() as $itemModel) {
+                    $info[] = ' ' . $itemModel->datetime_in . ' - ' . $itemModel->datetime_out . ' (' . $itemModel->title . ')';
+                }
+                $message = 'Накладка по времени - По плану работы: ' . implode('; ', $info);
+                Notice::registerDanger($message);
+            }
+            if ($this->getActivitiesOverOverLapping()->exists() === true) {
+                $info = [];
+                foreach ($this->getActivitiesOverOverLapping()->all() as $itemModel) {
+                    $info[] = ' ' . $itemModel->datetime_in . ' - ' . $itemModel->datetime_out . ' (' . $itemModel->title . ')';
+                }
+                $message = 'Накладка по времени - Вне плана: ' . implode('; ', $info);
+                Notice::registerDanger($message);
+            }
+            if (!empty($info)) {
+                $this->addError($attribute, 'В одной аудитории накладка по времени!' . ' ' . $message);
+            }
+        }
+    }
+
+    public function getOwnSchoolplanOverLapping()
+    {
+        $thereIsAnOverlapping = self::find()->where(
+            ['AND',
+                ['!=', 'id', $this->id],
+                ['auditory_id' => $this->auditory_id],
+                ['OR',
+                    ['AND',
+                        ['<', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>=', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                    ['AND',
+                        ['<=', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                ],
+            ]);
+
+        return $thereIsAnOverlapping;
+    }
+
+    public function getActivitiesOverOverLapping()
+    {
+        $thereIsAnOverlapping = ActivitiesOver::find()->where(
+            ['AND',
+                ['!=', 'id', $this->activities_over_id],
+                ['auditory_id' => $this->auditory_id],
+                ['OR',
+                    ['AND',
+                        ['<', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>=', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                    ['AND',
+                        ['<=', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                ],
+            ]);
+
+        return $thereIsAnOverlapping;
+    }
 
     public function checkFormatDateTime($attribute, $params)
 
@@ -642,7 +711,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $model->title = $this->title_over;
             $model->over_category = 2;
             $model->department_list = $this->department_list;
-            $model->executors_list = Art::isBackend() ? [$this->executor_over_id] : $this->executor_over_id; // TODO не пойму в чем проблема костыль!
+            $model->executors_list = Art::isBackend() ? [$this->executor_over_id] : [$this->executor_over_id]; // TODO не пойму в чем проблема костыль!
             if ($model->save(false)) {
                 $this->activities_over_id = $model->id;
                 $transaction->commit();
@@ -1025,11 +1094,11 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ->where(['=', 'studyplan_id', $studyplan_id])
             ->andWhere(['IS NOT', 'teachers_id', NULL])
             ->column();
-        $departmentList = implode(',', $departmentList);
+        $departmentList = implode(',', array_unique(explode(',', implode(',', $departmentList))));
         $query = self::find()
             ->select(new \yii\db\Expression('schoolplan.id as id, concat(TO_CHAR(to_timestamp(datetime_in) :: DATE, \'dd.mm.yyyy\'), \' - \', title) as name'))
             ->where(['between', 'datetime_in', $timestamp['timestamp_in'], $timestamp['timestamp_out']])
-            ->andWhere(new Expression("department_list LIKE ANY (string_to_array('{$departmentList}', ','::text)::text[])"))
+            ->andWhere(new Expression("string_to_array(department_list, ','::text)::text[] && string_to_array('{$departmentList}', ','::text)::text[]")) // сравнение массивов
             ->orderBy('datetime_in')
             ->asArray()
             ->all();

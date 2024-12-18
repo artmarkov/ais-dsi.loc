@@ -45,12 +45,12 @@ $columns = [
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
     ],
-    /*  [
-          'attribute' => 'teachers_id',
-          'value' => function ($model) use ($teachers_list) {
-              return $teachers_list[$model->teachers_id] ?? '';
-          },
-      ],*/
+    [
+        'attribute' => 'teachers_id',
+        'value' => function ($model) use ($teachers_list) {
+            return $teachers_list[$model->teachers_id] ?? '';
+        },
+    ],
     [
         'attribute' => 'resume',
         'value' => function ($model) {
@@ -98,13 +98,17 @@ $columns = [
         'attribute' => 'status_sign',
         'optionsArray' => \common\models\schoolplan\SchoolplanPerform::getStatusSignOptionsList(),
         'options' => ['style' => 'width:100px'],
+        'visible' => Yii::$app->settings->get('mailing.schoolplan_perform_doc')
     ],
     [
         'attribute' => 'signer_id',
         'value' => function (\common\models\teachers\PortfolioView $model) {
-            return $model->user->userCommon ? $model->user->userCommon->lastFM : $model->signer_id;
+            if ($model->signer_id) {
+                return $model->user->userCommon ? $model->user->userCommon->lastFM : $model->signer_id;
+            }
         },
         'contentOptions' => ['style'=>"text-align:center; vertical-align: middle;"],
+        'visible' => Yii::$app->settings->get('mailing.schoolplan_perform_doc'),
         'format' => 'raw',
     ],
     [
@@ -133,7 +137,7 @@ $columns = [
 <div class="portfolio-index">
     <div class="panel">
         <div class="panel-heading">
-            Выполнения планов на подписи: <?php echo RefBook::find('teachers_fio')->getValue($id); ?>
+            Контроль выполнения планов отдела <?php /*echo RefBook::find('teachers_fio')->getValue($id);*/ ?>
         </div>
         <div class="panel-body">
             <?php

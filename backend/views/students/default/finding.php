@@ -2,7 +2,7 @@
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
 
-/* @var $model \artsoft\auth\models\forms\FindingForm */
+/* @var $model common\models\forms\FindingForm */
 
 use artsoft\widgets\ActiveForm;
 use yii\widgets\MaskedInput;

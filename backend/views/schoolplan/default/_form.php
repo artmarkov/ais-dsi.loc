@@ -533,7 +533,7 @@ $form = ActiveForm::begin([
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <?php if (!$model->isNewRecord && \artsoft\Art::isBackend()) : ?>
+                                <?php if (!$model->isNewRecord && \artsoft\Art::isBackend() && !$readonly) : ?>
                                     <div class="row">
                                         <hr>
                                         <div class="col-sm-12">
@@ -542,7 +542,7 @@ $form = ActiveForm::begin([
                                                 <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора мароприятия и нажмите "Отправить на доработку"') ?>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>Статус подписи
                                     <div class="form-group btn-group">
                                         <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->doc_status == 1]); ?>
                                         <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-default pull-right', 'name' => 'submitAction', 'value' => 'modif']); ?>

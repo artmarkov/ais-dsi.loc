@@ -65,9 +65,9 @@ if (StringHelper::basename($modelDependence::className()) == 'Schoolplan') {
                     <?= $form->field($model, 'efficiency_id')->widget(\kartik\tree\TreeViewInput::class, [
                         'id' => 'efficiency_tree',
                         'options' => [
-                            'disabled' => isset($model->class) ? true : $readonly,
+                            'disabled' => /*isset($model->class) ? true :*/ $readonly,
                         ],
-                        'query' =>  isset($model->class) ? EfficiencyTree::find()->addOrderBy('root, lft') : $dataEfficiencyTree,
+                        'query' =>  !isset($model->class) ? EfficiencyTree::find()->addOrderBy('root, lft') : $dataEfficiencyTree,
                         'dropdownConfig' => [
                             'input' => ['placeholder' => 'Выберите показатель эффективности...'],
                         ],
@@ -88,7 +88,7 @@ if (StringHelper::basename($modelDependence::className()) == 'Schoolplan') {
                     <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
                         'data' => (StringHelper::basename($modelDependence::className()) == 'Schoolplan') ? $modelDependence->getExecutorsList() : RefBook::find('teachers_fio', $model->isNewRecord ? UserCommon::STATUS_ACTIVE : '')->getList(),
                         'options' => [
-                            'disabled' => isset($model->class) ? true : $readonly,
+                            'disabled' => /*isset($model->class) ? true : */$readonly,
                             'placeholder' => Yii::t('art/teachers', 'Select Teacher...'),
                             'multiple' => $model->isNewRecord ? true : false,
                         ],

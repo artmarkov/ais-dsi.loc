@@ -302,7 +302,7 @@ class DefaultController extends MainController
     public function actionDownload($id)
     {
         $content = QuestionValue::findOne(['id' => $id]);
-        $tmp_img = Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . ($content->value_string ? $content->value_string : 'attachment.png');
+        $tmp_img = Yii::getAlias('@runtime/cache') . DIRECTORY_SEPARATOR . 'attachment.' . (json_decode($content->value_string, true)['extension'] ?? 'png');
         file_put_contents($tmp_img, base64_decode(stream_get_contents($content->value_file)));
         return Yii::$app->response->sendFile($tmp_img);
     }

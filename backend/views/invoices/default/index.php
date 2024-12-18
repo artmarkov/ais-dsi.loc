@@ -106,7 +106,7 @@ $columns = [
         'noWrap' => false,
         'group' => true,  // enable grouping
         'subGroupOf' => 4,
-        'footer' => 'ИТОГО: (руб)'
+        'footer' => 'ИТОГО: оплачено/неоплачено(руб)'
     ],
     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
         return ['value' => $model->studyplan_id . '|' . $model->studyplan_invoices_id];
@@ -232,7 +232,7 @@ $columns = [
                     <div class="col-sm-12">
                         <?php if (\artsoft\Art::isBackend()): ?>
                             <?= \yii\bootstrap\Alert::widget([
-                                'body' => '<i class="fa fa-info"></i> Для добавления нескольких квитанций, нажмите чекбоксы слева.',
+                                'body' => '<i class="fa fa-info"></i> Для добавления нескольких квитанций, нажмите чекбоксы справа.',
                                 'options' => ['class' => 'alert-info'],
                             ]);
                             ?>
@@ -240,11 +240,12 @@ $columns = [
                     </div>
                     <div class="col-sm-6">
                         <?php echo Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Создать новые квитанции',
-                            ['#'],
+                            ['new'],
                             [
                                 // 'target' => '_blank',
                                 'data-pjax' => false,
                                 'class' => 'btn btn-success bulk-new disabled',
+                                'visible' => true,
                                 //    'title' => 'Открыть в новом окне'
                             ]);
                         ?>

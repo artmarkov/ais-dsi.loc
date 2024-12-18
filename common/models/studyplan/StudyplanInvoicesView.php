@@ -76,13 +76,15 @@ class StudyplanInvoicesView extends StudyplanInvoices
 
     public static function getTotalSumm($provider)
     {
-        $total = 0;
+        $total = [0,0];
         foreach ($provider as $item) {
-            if (in_array($item['studyplan_invoices_status'], [self::STATUS_RECEIPT, self::STATUS_PAYD])) {
-            $total += $item['invoices_summ'];
+            if (in_array($item['studyplan_invoices_status'], [self::STATUS_WORK, self::STATUS_ARREARS])) {
+                $total[0] += $item['invoices_summ'];
+            } elseif (in_array($item['studyplan_invoices_status'], [self::STATUS_RECEIPT, self::STATUS_PAYD])) {
+                $total[1] += $item['invoices_summ'];
             }
         }
 
-        return $total;
+        return $total[1] . '/' . $total[0];
     }
 }

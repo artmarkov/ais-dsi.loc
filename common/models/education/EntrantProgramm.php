@@ -139,11 +139,11 @@ class EntrantProgramm extends \artsoft\db\ActiveRecord
     public static function getEntrantProgrammLimitList($age, $plan_year)
     {
         $query =\Yii::$app->db->createCommand('SELECT id, name, age_in, age_out, qty_entrant, qty_reserve, description, status, summ_entrant, summ_reserve
-            FROM (SELECT id, name, age_in, age_out, qty_entrant, qty_reserve, description, status,
+            FROM (SELECT id, name, course, age_in, age_out, qty_entrant, qty_reserve, description, status,
                     (SELECT COUNT(entrant_preregistrations.id) FROM entrant_preregistrations where entrant_preregistrations.entrant_programm_id = entrant_programm.id AND reg_vid = 1 AND (entrant_preregistrations.status = 0 OR entrant_preregistrations.status = 1) AND plan_year = :plan_year) as summ_entrant,
                     (SELECT COUNT(entrant_preregistrations.id) FROM entrant_preregistrations where entrant_preregistrations.entrant_programm_id = entrant_programm.id AND reg_vid = 2 AND (entrant_preregistrations.status = 0 OR entrant_preregistrations.status = 1) AND plan_year = :plan_year) as summ_reserve
-            FROM entrant_programm) data
-            WHERE (qty_entrant > summ_entrant OR qty_reserve > summ_reserve)  AND age_in <= :age AND age_out >= :age AND status = :status ',
+            FROM entrant_programm  ORDER BY course, name) data
+            WHERE (qty_entrant > summ_entrant OR qty_reserve > summ_reserve) AND age_in <= :age AND age_out >= :age AND status = :status ',
             [
                 'plan_year' => $plan_year,
                 'age' => $age,
