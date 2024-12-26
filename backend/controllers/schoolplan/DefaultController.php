@@ -507,7 +507,7 @@ class DefaultController extends MainController
             $parents = $_POST['depdrop_parents'];
             if (!empty($parents)) {
 
-                $out = Schoolplan::getExecutorsListById($_GET['studyplan_id'], $parents[0]);
+                $out = Schoolplan::getExecutorsListById($parents[0]);
 
                 return json_encode(['output' => $out, 'selected' => '']);
             }

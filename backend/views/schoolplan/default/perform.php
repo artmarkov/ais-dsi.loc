@@ -20,7 +20,7 @@ $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
 <div class="schoolplan-perform-index">
     <div class="panel">
         <div class="panel-heading">
-            <?= \artsoft\Art::isBackend() || $modelScoolplan->isExecutors() ? \artsoft\helpers\ButtonHelper::createButton() : null; ?>
+            <?= /*\artsoft\Art::isBackend() || $modelScoolplan->isExecutors() ?*/ \artsoft\helpers\ButtonHelper::createButton() /*: null*/; ?>
 
         </div>
         <div class="panel-body">

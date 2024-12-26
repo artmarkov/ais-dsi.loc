@@ -68,7 +68,7 @@ $readonly = (\artsoft\Art::isFrontend() && in_array($model->status_sign, [1, 2])
                         ]);
                         ?>
                         <?= $form->field($model, 'teachers_id')->widget(\kartik\depdrop\DepDrop::class, [
-                            'data' => \common\models\schoolplan\Schoolplan::getExecutorsListByName($model->studyplan_id, $model->schoolplan_id),
+                            'data' => \common\models\schoolplan\Schoolplan::getExecutorsListByName($model->studyplan_id),
                             'options' => [
                                 'id' => 'teachers_id',
                                 'disabled' => /*$model->schoolplan->isExecutors() ? true :*/ $readonly,
@@ -78,9 +78,9 @@ $readonly = (\artsoft\Art::isFrontend() && in_array($model->status_sign, [1, 2])
                             'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
                             'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                             'pluginOptions' => [
-                                'depends' => ['schoolplan_id'],
+                                'depends' => ['studyplan_id'],
                                 'placeholder' => Yii::t('art', 'Select...'),
-                                'url' => Url::to(['/schoolplan/default/executors-perform', 'studyplan_id' => $model->studyplan_id])
+                                'url' => Url::to(['/schoolplan/default/executors-perform'])
                             ],
                         ])->label(Yii::t('art/teachers', 'Teacher'));
                         ?>

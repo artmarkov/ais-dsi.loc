@@ -50,8 +50,8 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                             echo Html::activeHiddenInput($model, "schoolplan_id");
 //                        }
                         ?>
-                        <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => $model->schoolplan->getExecutorsList(),
+                        <?= $form->field($model->loadDefaultValues(), 'teachers_id')->widget(\kartik\select2\Select2::class, [
+                            'data' => RefBook::find('teachers_fio', UserCommon::STATUS_ACTIVE)->getList()/*$model->schoolplan->getExecutorsList()*/,
                             'options' => [
                                 'id' => 'teachers_id',
                                 'disabled' => /*$model->schoolplan->isExecutors() ? true :*/ $readonly,
