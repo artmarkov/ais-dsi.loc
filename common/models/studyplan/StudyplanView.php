@@ -80,14 +80,15 @@ class StudyplanView extends Studyplan
         return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
     }
 
-    public static function getStudyplanListByPlanYear($plan_year)
+    public static function getStudyplanListByPlanYear($plan_year, $active = true)
     {
-            $query = self::find()->select(['id', 'CONCAT(student_fio, \' - \', education_programm_short_name) as name'])
-                ->where(['=', 'plan_year', $plan_year])
-                ->active()
-                ->asArray()->all();
+        $query = self::find()->select(['id', 'CONCAT(student_fio, \' - \', education_programm_short_name) as name'])
+            ->where(['=', 'plan_year', $plan_year]);
+        if ($active) {
+            $query = $query->active();
+        }
 
-        return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
+        return \yii\helpers\ArrayHelper::map($query->asArray()->all(), 'id', 'name');
     }
 
 }

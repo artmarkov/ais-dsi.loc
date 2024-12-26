@@ -26,7 +26,7 @@ $form = ActiveForm::begin([
                 ])->label(Yii::t('art/studyplan', 'Plan Year'));
             ?>
             <?= $form->field($model_date, 'studyplan_id')->widget(\kartik\select2\Select2::class, [
-                'data' => StudyplanView::getStudyplanListByPlanYear($model_date->plan_year),
+                'data' => StudyplanView::getStudyplanListByPlanYear($model_date->plan_year, false),
                 'options' => [
                     'onchange' => 'js: $(this).closest("form").submit()',
                     'placeholder' => Yii::t('art', 'Select...'),

@@ -15,6 +15,7 @@ use artsoft\grid\GridPageSize;
 
 $teachers_list = RefBook::find('teachers_fio')->getList();
 $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
+$schoolplan = \common\models\schoolplan\Schoolplan::findOne($id);
 ?>
 <div class="protocol-index">
     <div class="panel">
@@ -23,9 +24,19 @@ $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
             <div class="row">
                 <div class="panel">
                     <div class="panel-heading">
+                    <?php if($schoolplan->protocol_subject_id[0]): ?>
                         <?= \artsoft\Art::isBackend() || /*($model_confirm->schoolplan->isExecutors() &&*/ in_array($model_confirm->confirm_status, [0, 3]) ? \artsoft\helpers\ButtonHelper::createButton() : null; ?>
+
+                    <?php endif;?>
                     </div>
                     <div class="panel-body">
+                        <?php if(!$schoolplan->protocol_subject_id[0]): ?>
+                            <?php echo \yii\bootstrap\Alert::widget([
+                                'body' => '<i class="fa fa-info-circle"></i> Заполните аттестационную комиссию в карточке мероприятия.',
+                                'options' => ['class' => 'alert-danger'],
+                            ]);
+                            ?>
+                        <?php endif;?>
                         <div class="col-sm-6">
                             <?php
                             /* Uncomment this to activate GridQuickLinks */

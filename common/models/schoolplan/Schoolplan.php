@@ -1106,14 +1106,17 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         return ArrayHelper::map($query, 'id', 'name');
     }
 
-    public static function getExecutorsListById($studyplan_id)
+    public static function getExecutorsListById($studyplan_id, $schoolplan_id)
     {
-        if (!$studyplan_id) return [];
+        if (!$studyplan_id || !$schoolplan_id) return [];
+        $schoolplan = self::findOne($schoolplan_id);
+        $executors_list = $schoolplan ? $schoolplan->executors_list : [];
         $teachersList = TeachersLoadStudyplanView::find()
             ->select('teachers_id')
             ->where(['=', 'studyplan_id', $studyplan_id])
             ->andWhere(['direction_id' => 1000])
             ->andWhere(['IS NOT', 'teachers_id', NULL])
+            ->andWhere(['teachers_id' => $executors_list])
             ->column();
         if (Art::isFrontend()) {
             $userId = Yii::$app->user->identity->getId();
@@ -1130,9 +1133,9 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         return $query;
     }
 
-    public static function getExecutorsListByName($studyplan_id)
+    public static function getExecutorsListByName($studyplan_id, $schoolplan_id)
     {
         if (!$studyplan_id) return [];
-        return \yii\helpers\ArrayHelper::map(self::getExecutorsListById($studyplan_id), 'id', 'name');
+        return \yii\helpers\ArrayHelper::map(self::getExecutorsListById($studyplan_id, $schoolplan_id), 'id', 'name');
     }
 }

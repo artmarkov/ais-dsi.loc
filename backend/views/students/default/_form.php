@@ -45,7 +45,7 @@ JS
     , \yii\web\View::POS_END);
 
 $readonlyStudent = $readonly;
-if(User::hasRole(['parents'])) {
+if (User::hasRole(['parents'])) {
     $readonlyStudent = false;
 }
 ?>
@@ -55,7 +55,7 @@ if(User::hasRole(['parents'])) {
     <?php
     $form = ActiveForm::begin([
         'fieldConfig' => [
-            'inputOptions' => ['readonly' =>  User::hasRole(['parents'], false) ? false : $readonly]
+            'inputOptions' => ['readonly' => User::hasRole(['parents'], false) ? false : $readonly]
         ],
         'id' => 'student-form',
         'validateOnBlur' => false,
@@ -83,7 +83,25 @@ if(User::hasRole(['parents'])) {
             <?php endif; ?>
         </div>
         <div class="panel-body">
+            <?php if (User::hasRole(['student'], false)): ?>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= \yii\bootstrap\Alert::widget([
+                            'body' => '<i class="fa fa-info-circle"></i> Редактирование личных данных доступно ученику в ' . Html::a('Профиле пользователя.',
+                                    ['/auth/default/profile'],
+                                    [
+//                                        'target' => '_blank',
+                                        'data-pjax' => '0',
+                                        'visible' => true
+//                    'class' => 'btn btn-info',
+                                    ]) . ' Полное редактирование данных ученика и родителя доступно родителю из своего Личного кабинета.',
+                            'options' => ['class' => 'alert-info'],
 
+                        ]);
+                        ?>
+                    </div>
+                </div>
+            <?php endif; ?>
             <?= $this->render('@backend/views/user/_form', ['form' => $form, 'model' => $userCommon, 'readonly' => $readonly]) ?>
             <div class="panel panel-info">
                 <div class="panel-heading">
@@ -125,7 +143,7 @@ if(User::hasRole(['parents'])) {
                             <?= $form->field($model, 'sert_num')->textInput(['maxlength' => true, 'disabled' => $readonlyStudent]) ?>
                             <?= $form->field($model, 'sert_organ')->textInput(['maxlength' => true, 'disabled' => $readonlyStudent]) ?>
                             <?= $form->field($model, 'sert_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname(), ['disabled' => $readonlyStudent]); ?>
-                            <?php if(\artsoft\Art::isBackend()): ?>
+                            <?php if (\artsoft\Art::isBackend()): ?>
                                 <?php if (!$model->isNewRecord) : ?>
                                     <div class="form-group field-student-attachment">
                                         <div class="col-sm-3">
@@ -142,9 +160,9 @@ if(User::hasRole(['parents'])) {
                     </div>
                 </div>
             </div>
-            <?php if(\artsoft\Art::isBackend()): ?>
-            <?= $this->render('@backend/views/user/_form_card', ['form' => $form, 'model' => $userCard, 'readonly' => $readonly]) ?>
-            <?php endif;?>
+            <?php if (\artsoft\Art::isBackend()): ?>
+                <?= $this->render('@backend/views/user/_form_card', ['form' => $form, 'model' => $userCard, 'readonly' => $readonly]) ?>
+            <?php endif; ?>
             <?php DynamicFormWidget::begin([
                 'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items', // required: css class selector
@@ -226,19 +244,19 @@ if(User::hasRole(['parents'])) {
                     </div>
                 <?php endif; ?>
                 <?php DynamicFormWidget::end(); ?>
-                </div>
             </div>
-        </div>
-        <div class="panel-footer">
-            <div class="form-group btn-group">
-                <?php if(\artsoft\Art::isBackend()): ?>
-                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
-                <?php elseif(User::hasRole(['parents'])):?>
-                    <?= \artsoft\helpers\ButtonHelper::saveButton();?>
-                <?php endif;?>
-            </div>
-            <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>
     </div>
-    <?php ActiveForm::end(); ?>
+    <div class="panel-footer">
+        <div class="form-group btn-group">
+            <?php if (\artsoft\Art::isBackend()): ?>
+                <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
+            <?php elseif (User::hasRole(['parents'])): ?>
+                <?= \artsoft\helpers\ButtonHelper::saveButton(); ?>
+            <?php endif; ?>
+        </div>
+        <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
+    </div>
+</div>
+<?php ActiveForm::end(); ?>
 </div>

@@ -37,6 +37,12 @@ class Schedule
             case '3':
                 $astr_hour = 8100;
                 break;
+            case '4':
+                $astr_hour = 10800;
+                break;
+            case '4.5':
+                $astr_hour = 12150;
+                break;
             default:
                 $astr_hour = round(($academ_hour * 2700), 2);
         };
@@ -126,10 +132,13 @@ class Schedule
             case in_array($astr_hour, range(3900, 4500)):
                 $academ_hour = 1.5;
                 break;
-            case in_array($astr_hour, range(5400, 5400)):
+            case in_array($astr_hour, range(5400, 5700)):
                 $academ_hour = 2;
                 break;
-            case in_array($astr_hour, range(6900, 6900)):
+            case in_array($astr_hour, range(6000, 6375)):
+                $academ_hour = 2.25;
+                break;
+            case in_array($astr_hour, range(6600, 6900)):
                 $academ_hour = 2.5;
                 break;
             case in_array($astr_hour, range(8100, 8400)):

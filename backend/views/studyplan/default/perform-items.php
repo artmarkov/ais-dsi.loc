@@ -87,7 +87,7 @@ $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
                     [
                         'attribute' => 'studyplan_subject_id',
                         'value' => function ($model) use($studyplan_subject_list) {
-                            return $studyplan_subject_list[$model->studyplan_subject_id] ?: null;
+                            return $studyplan_subject_list[$model->studyplan_subject_id] ?? null;
                         },
                     ],
                     [

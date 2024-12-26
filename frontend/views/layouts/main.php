@@ -78,6 +78,7 @@ AvatarAsset::register($this);
             $menuItems[] = [
                 'label' => '<img src="' . $avatar . '" class="user-image" alt="User Image"/>' . Yii::$app->user->identity->username,
                 'url' => ['/auth/default/profile'],
+                'linkOptions' => ['title' => 'Профиль пользователя'],
                 'visible' => true
             ];
 

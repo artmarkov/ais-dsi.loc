@@ -14,6 +14,8 @@ use artsoft\grid\GridPageSize;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $modelScoolplan \common\models\schoolplan\Schoolplan */
 
+$teachers_list = RefBook::find('teachers_fio')->getList();
+$studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
 ?>
 <div class="schoolplan-perform-index">
     <div class="panel">
@@ -63,15 +65,17 @@ use artsoft\grid\GridPageSize;
                     ],
                     [
                         'attribute' => 'teachers_id',
-                        'value' => function ($model) {
-                            return RefBook::find('teachers_fio')->getValue($model->teachers_id);
+                        'value' => function (SchoolplanPerform $model) use ($teachers_list) {
+                            return $teachers_list[$model->teachers_id] ?? '';
                         },
+                        'format' => 'raw',
                     ],
                     [
                         'attribute' => 'studyplan_subject_id',
-                        'value' => function ($model) {
-                            return RefBook::find('subject_memo_4')->getValue($model->studyplan_subject_id);
+                        'value' => function (SchoolplanPerform $model) use ($studyplan_subject_list) {
+                            return $studyplan_subject_list[$model->studyplan_subject_id] ?? '';
                         },
+                        'format' => 'raw',
                     ],
                     [
                         'attribute' => 'lesson_mark_id',
