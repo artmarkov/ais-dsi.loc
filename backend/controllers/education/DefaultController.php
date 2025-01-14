@@ -15,6 +15,11 @@ use Yii;
  */
 class DefaultController extends MainController
 {
+    /**
+     * @var array
+     */
+    public $freeAccessActions = ['programm', 'subject'];
+
     public $modelClass = 'common\models\education\EducationProgramm';
     public $modelSearchClass = 'common\models\education\search\EducationProgrammSearch';
     public $modelHistoryClass = 'common\models\history\EducationProgrammHistory';

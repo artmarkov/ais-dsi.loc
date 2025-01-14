@@ -312,7 +312,11 @@ $author_id = Schoolplan::getAuthorId();
                                 'label' => 'Файл',
                                 'visible' => \artsoft\Art::isBackend(),
                                 'value' => function (Schoolplan $model) {
-                                    return $model->getFilesCount() ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> ' . $model->getFilesCount() :
+                                    return $model->getFilesCount() ? Html::a('<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> ' . $model->getFilesCount(),
+                                        ['/schoolplan/default/view', 'id' => $model->id, '#' => 'file'],
+                                        [
+                                            'data-pjax' => '0',
+                                        ]) :
                                         '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> Нет';
                                 },
                                 'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],

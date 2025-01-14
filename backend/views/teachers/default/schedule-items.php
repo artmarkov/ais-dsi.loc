@@ -22,6 +22,8 @@ $teachers_list = RefBook::find('teachers_fio')->getList();
 $auditory_list = RefBook::find('auditory_memo_1')->getList();
 $noteModel = NoticeDisplay::getData($dataProvider->models, $model_date->plan_year);
 $readonly = ($noteModel->confirmIsAvailable() && Teachers::isOwnTeacher($model->id)) ? false : true;
+$directionModel = $model->direction ?? false;
+
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
@@ -74,8 +76,8 @@ $columns = [
     ],
     [
         'attribute' => 'direction_id',
-        'value' => function ($model, $key, $index, $widget) {
-            return $model->direction ? $model->direction->name : null;
+        'value' => function ($model, $key, $index, $widget) use ($directionModel) {
+            return $directionModel ? $directionModel->name : null;
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 3

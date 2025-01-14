@@ -65,7 +65,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'name',
                         'value' => function ($model) {
                             return Html::a($model->name,
-                                [User::hasRole(['student']) ? '/question/student/new' : User::hasRole(['teacher']) ? '/question/teachers/new' : '/question/default/new', 'id' => $model->id],
+                                [User::hasRole(['student']) ? '/question/student/new' : User::hasRole(['teacher','department']) ? '/question/teachers/new' : '/question/default/new', 'id' => $model->id],
                                 [
                                     'title' => 'Создать заявку',
                                     'data-pjax' => '0',
@@ -90,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'buttons' => [
                             'create' => function ($key, $model) {
                                 return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                                    Url::to([User::hasRole(['student']) ? '/question/student/new' : User::hasRole(['teacher']) ? '/question/teachers/new' : '/question/default/new', 'id' => $model->id]), [
+                                    Url::to([User::hasRole(['student']) ? '/question/student/new' : User::hasRole(['teacher','department']) ? '/question/teachers/new' : '/question/default/new', 'id' => $model->id]), [
                                         'title' => 'Создать заявку',
                                         'data-method' => 'post',
                                         'data-pjax' => '0',

@@ -3,6 +3,7 @@
 namespace backend\controllers\teachers;
 
 use artsoft\helpers\ArtHelper;
+use artsoft\helpers\RefBook;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use artsoft\widgets\Notice;
@@ -1145,6 +1146,8 @@ class DefaultController extends MainController
             $model_confirm->teachers_id = $id;
             $model_confirm->timestamp_month = $timestamp_in;
             $model_confirm->subject_sect_studyplan_id = $model_date->subject_sect_studyplan_id;
+            $userId = Yii::$app->user->identity->getId();
+            $model_confirm->teachers_sign = $model_confirm->teachers_sign ?? (RefBook::find('users_teachers')->getValue($userId) ?? null);
 
             if ($model_confirm->load(Yii::$app->request->post()) && $model_confirm->validate()) {
                 if (Yii::$app->request->post('submitAction') == 'approve') {
@@ -1409,6 +1412,8 @@ class DefaultController extends MainController
             $model_confirm->teachers_id = $id;
             $model_confirm->timestamp_month = $timestamp_in;
             $model_confirm->subject_key = $model_date->subject_key;
+            $userId = Yii::$app->user->identity->getId();
+            $model_confirm->teachers_sign = $model_confirm->teachers_sign ?? (RefBook::find('users_teachers')->getValue($userId) ?? null);
 
             if ($model_confirm->load(Yii::$app->request->post()) && $model_confirm->validate()) {
                 if (Yii::$app->request->post('submitAction') == 'approve') {

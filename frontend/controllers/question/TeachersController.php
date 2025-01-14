@@ -33,7 +33,7 @@ class TeachersController extends \frontend\controllers\DefaultController
 
     public function actionIndex()
     {
-        if (!User::hasRole(['teacher'], false)) {
+        if (!User::hasRole(['teacher','department'], false)) {
             throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
         }
 
@@ -121,7 +121,7 @@ class TeachersController extends \frontend\controllers\DefaultController
         if (Yii::$app->user->isGuest) { // Если по ссылке проходит незалогиненный пользователь
             $this->redirect('/auth/default/login');
         } else {
-            if (!User::hasRole(['teacher'], false)) {
+            if (!User::hasRole(['teacher','department'], false)) {
                 throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
             }
             if (!Yii::$app->user->isGuest) {

@@ -222,6 +222,9 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['activities_over_id'], 'exist', 'skipOnError' => true, 'targetClass' => ActivitiesOver::class, 'targetAttribute' => ['activities_over_id' => 'id']],
             [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['date_out'], 'compareTimestamp', 'skipOnEmpty' => false],
+            [['date_in'], 'addNew', 'skipOnEmpty' => false, 'when' => function ($model) {
+                return Art::isFrontend() && $model->isNewRecord;
+            }, 'enableClientValidation' => false],
             [['date_in', 'time_in', 'date_out', 'time_out'], 'safe'],
             ['bars_flag', 'boolean'],
             [['title_over', 'admin_message'], 'string'],
@@ -285,6 +288,16 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 
         if ($this->datetime_out && $timestamp_in >= $timestamp_out) {
             $message = 'Время окончания мероприятия не может быть меньше или равно времени начала.';
+            $this->addError($attribute, $message);
+        }
+    }
+
+    public function addNew($attribute, $params, $validator)
+    {
+        $timestamp_in = Yii::$app->formatter->asTimestamp($this->datetime_in);
+
+        if ($this->datetime_in && $timestamp_in < time()) {
+            $message = 'Нельзя веести мероприятие задним числом.';
             $this->addError($attribute, $message);
         }
     }

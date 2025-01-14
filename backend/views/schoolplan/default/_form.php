@@ -279,7 +279,7 @@ $form = ActiveForm::begin([
                                         Загруженные материалы
                                     </div>
                                     <div class="panel-body">
-                                        <div class="row">
+                                        <div class="row" id="file">
                                             <div class="col-sm-12">
                                                 <?= \yii\bootstrap\Alert::widget([
                                                     'body' => '<i class="fa fa-info"></i> Максимальный размер файла: 3 Mb',

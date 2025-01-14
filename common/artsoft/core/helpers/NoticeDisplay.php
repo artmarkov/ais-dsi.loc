@@ -383,7 +383,7 @@ class NoticeDisplay
     {
         $models = $this->scheduleAccompLimit;
 
-        if ($model->direction->parent != null && $model->subject_schedule_id != null) {
+        if (/*$model->direction->parent != null */ $model->direction_id == 1001 && $model->subject_schedule_id != null) {
             if (!isset($models[$model->subject_schedule_id])) {
                 $message = 'Концертмейстер может работать только в рамках расписания преподавателя!';
 
