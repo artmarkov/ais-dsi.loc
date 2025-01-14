@@ -332,7 +332,9 @@ UNION ALL
     lesson_progress.mark_rem,
     teachers_load.direction_id,
     teachers_load.teachers_id,
+    concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
     studyplan.status,
+    studyplan.status_reason,
     studyplan.plan_year
    FROM lesson_items
      JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.subject_sect_studyplan_id = 0
@@ -365,7 +367,9 @@ UNION ALL
     lesson_progress.mark_rem,
     teachers_load.direction_id,
     teachers_load.teachers_id,
+    NULL::text AS subject_key,
     studyplan.status,
+    studyplan.status_reason,
     studyplan.plan_year
    FROM lesson_items
      JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.studyplan_subject_id = 0

@@ -14,6 +14,7 @@ use common\models\subjectsect\SubjectSectStudyplan;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
@@ -438,10 +439,10 @@ class LessonItems extends \artsoft\db\ActiveRecord
         if (!$subject_key && !$timestamp_in && !$teachers_id) {
             throw new NotFoundHttpException("Отсутствует обязательный параметр teachers_id или subject_key или timestamp_in.");
         }
-        $modelsProgress = LessonProgressView::find()
-            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
+        $modelsProgress = (new Query())->from('lesson_items_progress_studyplan_view')
+            ->where(['teachers_id' => $teachers_id])
             ->andWhere(['=', 'subject_key', $subject_key])
-            ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
+            ->andWhere(['=', 'lesson_date', $timestamp_in])
             ->andWhere(['OR',
                 ['status' => Studyplan::STATUS_ACTIVE],
                 ['AND',
@@ -459,19 +460,19 @@ class LessonItems extends \artsoft\db\ActiveRecord
             ])->all();
         $modelsSubjectSchedule = ArrayHelper::index($modelsSubjectSchedule, null, ['subject_sect_studyplan_id', 'studyplan_subject_id']);
         foreach ($modelsProgress as $item => $model) {
-            if (!isset($modelsSubjectSchedule[$model->subject_sect_studyplan_id][$model->studyplan_subject_id])) {
+            if (!isset($modelsSubjectSchedule[$model['subject_sect_studyplan_id']][$model['studyplan_subject_id']])) {
                 continue;
             }
             $modelProgress = LessonItemsProgressView::find()
                 ->where(
                     ['AND',
-                        ['=', 'subject_sect_studyplan_id', $model->subject_sect_studyplan_id],
-                        ['=', 'studyplan_subject_id', $model->studyplan_subject_id],
+                        ['=', 'subject_sect_studyplan_id', $model['subject_sect_studyplan_id']],
+                        ['=', 'studyplan_subject_id', $model['studyplan_subject_id']],
                         ['=', 'lesson_date', $timestamp_in],
                     ])
                 ->one();
             $m = LessonProgress::findOne(['id' => $modelProgress['lesson_progress_id']]) ?? new LessonProgress();
-            $m->studyplan_subject_id = $model->studyplan_subject_id;
+            $m->studyplan_subject_id = $model['studyplan_subject_id'];
             $m->lesson_items_id = $modelProgress['lesson_items_id'];
             $m->save(false);
             $modelsItems[] = $m;

@@ -52,6 +52,7 @@ use common\models\teachers\TeachersPlan;
 use common\models\user\UserCommon;
 use yii\data\ActiveDataProvider;
 use yii\db\Exception;
+use yii\db\Query;
 use yii\helpers\Json;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
@@ -1278,13 +1279,13 @@ class DefaultController extends MainController
             $subject_key = $keyArray[0];
             $timestamp_in = $keyArray[1];
 
-            $models = LessonItemsProgressView::find()
-                ->where(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $id]))
+            $models = (new Query())->from('lesson_items_progress_studyplan_view')
+                ->where(['teachers_id' => $id])
                 ->andWhere(['=', 'subject_key', $subject_key])
                 ->andWhere(['=', 'lesson_date', $timestamp_in])
                 ->all();
             foreach ($models as $model) {
-                $modelLesson = LessonItems::findOne(['id' => $model->lesson_items_id]);
+                $modelLesson = LessonItems::findOne(['id' => $model['lesson_items_id']]);
                 $modelLesson ? $modelLesson->delete() : null;
             }
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
@@ -1298,11 +1299,10 @@ class DefaultController extends MainController
             $subject_key = $keyArray[0];
             $timestamp_in = $keyArray[1];
 
-            $modelLesson = LessonItemsProgressView::find()
-                ->where(['=', 'subject_key', $subject_key])
-                ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $id]))
+            $modelLesson = (new Query())->from('lesson_items_progress_studyplan_view')
+                ->where(['teachers_id' => $id])
+                ->andWhere(['=', 'subject_key', $subject_key])
                 ->andWhere(['=', 'lesson_date', $timestamp_in])
-                ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
                 ->andWhere(['OR',
                     ['status' => Studyplan::STATUS_ACTIVE],
                     ['AND',
@@ -1311,7 +1311,7 @@ class DefaultController extends MainController
                     ]
                 ])
                 ->one();
-            $model = LessonItems::findOne($modelLesson->lesson_items_id);
+            $model = LessonItems::findOne($modelLesson['lesson_items_id']);
             $modelsItems = $model->getLessonProgressTeachers($id, $subject_key, $timestamp_in);
 
             if ($model->load(Yii::$app->request->post())) {

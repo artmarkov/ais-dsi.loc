@@ -14,6 +14,7 @@ use common\models\studyplan\Studyplan;
 use common\models\teachers\Teachers;
 use Yii;
 use yii\base\DynamicModel;
+use yii\db\Query;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -189,14 +190,13 @@ class StudyplanProgressIndivController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Indiv Progress'), 'url' => ['teachers/studyplan-progress-indiv', 'id' => $id]];
         $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
 
-        $modelLesson = LessonItemsProgressView::find()
-            ->where(['=', 'subject_key', $subject_key])
-            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $this->teachers_id]))
+        $modelLesson = $modelLesson = (new Query())->from('lesson_items_progress_studyplan_view')
+            ->where(['teachers_id' => $id])
+            ->andWhere(['=', 'subject_key', $subject_key])
             ->andWhere(['=', 'lesson_date', $timestamp_in])
-            ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
             ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
             ->one();
-        $model = LessonItems::findOne($modelLesson->lesson_items_id);
+        $model = LessonItems::findOne($modelLesson['lesson_items_id']);
         // echo '<pre>' . print_r($model, true) . '</pre>';
         $modelsItems = $model->getLessonProgressTeachers($this->teachers_id, $subject_key, $timestamp_in);
 
@@ -264,16 +264,16 @@ class StudyplanProgressIndivController extends MainController
         $subject_key = $keyArray[0];
         $timestamp_in = $keyArray[1];
 
-        $models = LessonItemsProgressView::find()
-            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $id]))
-            ->where(['=', 'subject_key', $subject_key])
+        $models = (new Query())->from('lesson_items_progress_studyplan_view')
+            ->where(['teachers_id' => $id])
+            ->andWhere(['=', 'subject_key', $subject_key])
             ->andWhere(['=', 'lesson_date', $timestamp_in])
             ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
             ->all();
 //        echo '<pre>' . print_r($models, true) . '</pre>'; die();
         foreach ($models as $model) {
-            $modelLesson = LessonItems::findOne(['id' => $model->lesson_items_id]);
-            $modelLesson->delete();
+            $modelLesson = LessonItems::findOne(['id' => $model['lesson_items_id']]);
+            //$modelLesson ? $modelLesson->delete() : null;
         }
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
         return $this->redirect($this->getRedirectPage('delete', $model));

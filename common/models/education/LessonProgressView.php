@@ -340,7 +340,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->asArray()->all();
 
         $modelsProgress = self::find()
-            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
+            ->where(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->andWhere(['=', 'subject_key', $model_date->subject_key])
             ->andWhere(['OR',
                 ['status' => Studyplan::STATUS_ACTIVE],
