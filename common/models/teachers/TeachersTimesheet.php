@@ -15,6 +15,7 @@ use yii\helpers\ArrayHelper;
 class TeachersTimesheet
 {
     const template_timesheet_budget = 'document/tabel_teachers_budget.xlsx';
+    const template_timesheet_budget_half = 'document/tabel_teachers_budget_half.xlsx';
     const template_timesheet_extra_budget = 'document/tabel_teachers_extra_budget.xlsx';
     const template_timesheet_extra_budget_half = 'document/tabel_teachers_extra_budget_half.xlsx';
 
@@ -60,7 +61,7 @@ class TeachersTimesheet
         $this->teachers_day_schedule = $this->getTeachersDaySchedule();
         $this->teachers_day_schedule_total = $this->subject_type_id == 1000 ? $this->getTeachersDayScheduleTotal() : []; // для бюджета
         $this->teachers_day_consult = $this->getTeachersDayConsult();
-        $this->template_name = $this->subject_type_id == 1000 ? self::template_timesheet_budget : ($this->is_avans ? self::template_timesheet_extra_budget_half : self::template_timesheet_extra_budget);
+        $this->template_name = $this->subject_type_id == 1000 ? ($this->is_avans ? self::template_timesheet_budget_half : self::template_timesheet_budget) : ($this->is_avans ? self::template_timesheet_extra_budget_half : self::template_timesheet_extra_budget);
 //        echo '<pre>' . print_r($this->lesson_fact, true) . '</pre>';
 //        die();
     }

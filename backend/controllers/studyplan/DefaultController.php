@@ -49,6 +49,8 @@ class DefaultController extends MainController
     public $modelClass = 'common\models\studyplan\Studyplan';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanSearch';
 
+    public $freeAccessActions = ['subject'];
+
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {

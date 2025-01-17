@@ -316,7 +316,7 @@ SQL;
      *
      * @return array
      */
-    public static function getUsersListByCategory($category = [])
+    public static function getUsersListByCategory($category = [], $category_view = true)
     {
         $users = static::find()->select([
             'users.id as id',
@@ -335,7 +335,7 @@ SQL;
             ->andWhere(['=', 'users.status', self::STATUS_ACTIVE])
             ->orderBy('category_name, fullname')
             ->asArray()->all();
-        return ArrayHelper::map($users, 'id', 'fullname', 'category_name');
+        return $category_view ? ArrayHelper::map($users, 'id', 'fullname', 'category_name') : ArrayHelper::map($users, 'id', 'fullname');
     }
 
     /**
