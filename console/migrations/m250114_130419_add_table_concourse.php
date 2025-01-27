@@ -13,7 +13,9 @@ class m250114_130419_add_table_concourse extends \artsoft\db\BaseMigration
 
         $this->createTable('concourse', [
             'id' => $this->primaryKey(),
-            'author_id' => $this->integer()->notNull(),
+            'author_id' => $this->integer(),
+            'vid_id' => $this->integer()->notNull()->defaultValue(1),
+            'authors_ban_flag' => $this->boolean(),
             'name' => $this->string(127)->notNull()->comment('Название конкурса'),
             'users_list' => $this->string(2048)->comment('Список участников'),
             'description' => $this->string()->comment('Описание конкурса'),
@@ -84,9 +86,10 @@ class m250114_130419_add_table_concourse extends \artsoft\db\BaseMigration
 
         $this->addCommentOnTable('concourse_value', 'Оценки работ');
         $this->addForeignKey('concourse_value_ibfk_1', 'concourse_value', 'users_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('concourse_value_ibfk_2', 'concourse_value', 'concourse_item_id', 'concourse_item', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('concourse_value_ibfk_3', 'concourse_value', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
-        $this->addForeignKey('concourse_value_ibfk_4', 'concourse_value', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('concourse_value_ibfk_2', 'concourse_value', 'concourse_item_id', 'concourse_item', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('concourse_value_ibfk_3', 'concourse_value', 'concourse_criteria_id', 'concourse_criteria', 'id', 'CASCADE', 'CASCADE');
+        $this->addForeignKey('concourse_value_ibfk_4', 'concourse_value', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
+        $this->addForeignKey('concourse_value_ibfk_5', 'concourse_value', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->createIndex('concourse_value_users_id_concourse_item_id_concourse_criter_key', 'concourse_value', ['users_id', 'concourse_item_id', 'concourse_criteria_id'], true);
 
     }

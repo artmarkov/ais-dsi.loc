@@ -12,6 +12,23 @@ use kartik\select2\Select2;
 /* @var $form artsoft\widgets\ActiveForm */
 
 $readonly = false;
+
+
+$js = <<<JS
+    function toggleConcourse(value) {
+      if (value === '2') {
+          $('.field-concourse-users_list').show();
+      } else {
+          $('.field-concourse-users_list').hide();
+      }
+    }
+    toggleConcourse($('input[name="Concourse[vid_id]"]:checked').val());
+    $('input[name="Concourse[vid_id]"]').click(function(){
+       toggleConcourse($(this).val());
+     });
+JS;
+
+$this->registerJs($js, \yii\web\View::POS_LOAD);
 ?>
 
 <div class="concourse-form">
@@ -38,22 +55,25 @@ $readonly = false;
                         'language' => 'ru',
 
                     ]); ?>
-                    <?= $form->field($model->loadDefaultValues(), 'author_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => User::getUsersListByCategory(['teachers', 'employees']),
-                        'showToggleAll' => false,
-                        'options' => [
-                            'disabled' => $readonly,
-                            //'value' => $model->author_id,
-                            'placeholder' => Yii::t('art/guide', 'Select Authors...'),
-                            'multiple' => false,
-                        ],
-                        'pluginOptions' => [
-                            'allowClear' => false,
-                            //'minimumInputLength' => 3,
-                        ],
+<!--                    = $form->field($model->loadDefaultValues(), 'author_id')->widget(\kartik\select2\Select2::class, [-->
+<!--                        'data' => User::getUsersListByCategory(['teachers', 'employees']),-->
+<!--                        'showToggleAll' => false,-->
+<!--                        'options' => [-->
+<!--                            'disabled' => $readonly,-->
+<!--                            //'value' => $model->author_id,-->
+<!--                            'placeholder' => Yii::t('art/guide', 'Select Authors...'),-->
+<!--                            'multiple' => false,-->
+<!--                        ],-->
+<!--                        'pluginOptions' => [-->
+<!--                            'allowClear' => false,-->
+<!--                            //'minimumInputLength' => 3,-->
+<!--                        ],-->
+<!---->
+<!--                    ])->hint('Укажите автора формы.');-->
 
-                    ])->hint('Укажите автора формы.');
-                    ?>
+                    <?= $form->field($model->loadDefaultValues(), 'vid_id')->radioList(Concourse::getVidList()) ?>
+                    <?= $form->field($model, 'authors_ban_flag')->checkbox() ?>
+
                     <?= $form->field($model, 'users_list')->widget(Select2::className(), [
                         'data' => User::getUsersListByCategory(['teachers']),
                         'options' => [

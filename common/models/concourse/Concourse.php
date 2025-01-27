@@ -15,6 +15,8 @@ use yii\behaviors\TimestampBehavior;
  * @property int $id
  * @property int $author_id
  * @property string $name Название конкурса
+ * @property int $vid_id Выбор участников
+ * @property bool $authors_ban_flag Запрет на оценку своих работ
  * @property string|null $users_list Список участников
  * @property string|null $description Описание конкурса
  * @property int $timestamp_in Начало действия
@@ -33,6 +35,9 @@ use yii\behaviors\TimestampBehavior;
  */
 class Concourse extends \artsoft\db\ActiveRecord
 {
+    const VID_AUTHORS = 1;
+    const VID_USERS = 2;
+
     /**
      * {@inheritdoc}
      */
@@ -69,16 +74,24 @@ class Concourse extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['author_id', 'name', 'timestamp_in', 'timestamp_out', 'users_list'], 'required'],
+            [['name', 'timestamp_in', 'timestamp_out'], 'required'],
             [['author_id', 'status'], 'default', 'value' => null],
-            [['author_id', 'status'], 'integer'],
+            [['vid_id'], 'default', 'value' => 1],
+            [['author_id', 'status', 'vid_id'], 'integer'],
             [['name'], 'string', 'max' => 127],
+            [['authors_ban_flag'], 'boolean'],
             [['timestamp_in', 'timestamp_out'], 'safe'],
             [['users_list'], 'safe'],
             [['description'], 'string', 'max' => 255],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['author_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
+            [['users_list'], 'required', 'when' => function ($model) {
+                return $model->vid_id === '2';
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[name=\"Concourse[vid_id]\"]:checked').val() === '2';
+                            }"],
         ];
     }
 
@@ -91,10 +104,12 @@ class Concourse extends \artsoft\db\ActiveRecord
             'id' => 'ID',
             'author_id' => 'Автор конкурса',
             'name' => 'Название конкурса',
+            'vid_id' => 'Выбор участников',
             'users_list' => 'Список участников',
             'description' => 'Описание конкурса',
             'timestamp_in' => 'Начало действия',
             'timestamp_out' => 'Окончание действия',
+            'authors_ban_flag' => 'Запрет на оценку своих работ',
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -151,5 +166,35 @@ class Concourse extends \artsoft\db\ActiveRecord
     public function getConcourseItems()
     {
         return $this->hasMany(ConcourseItem::className(), ['concourse_id' => 'id']);
+    }
+
+    public static function getVidList()
+    {
+        return array(
+            self::VID_AUTHORS => 'Авторы работ',
+            self::VID_USERS => 'Список участников',
+        );
+    }
+
+    /**
+     * @param $val
+     * @return mixed
+     */
+    public static function getVidValue($val)
+    {
+        $ar = self::getVidList();
+
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if ($this->vid_id == self::VID_AUTHORS) {
+            $this->users_list = null;
+        }
+        return parent::beforeSave($insert);
     }
 }

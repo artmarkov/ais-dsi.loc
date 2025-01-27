@@ -15,6 +15,7 @@ $this->title = 'Конкурсные работы';
 $this->params['breadcrumbs'][] = $this->title;
 
 $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
+
 ?>
 <div class="concourse-item-index">
     <div class="panel">
@@ -50,7 +51,7 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'rowOptions' => function (ConcourseItem $model) use ($modelsAnswers) {
-                    if ($modelsAnswers->getConcourseItemFullness($model->id) == 100) {
+                    if ($modelsAnswers->getConcourseItemFullnessForUser($model->id)) {
                         return ['class' => 'success'];
                     };
                     return [];
@@ -91,48 +92,31 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
                     ],
                     'description:ntext',
                     [
-                        'label' => 'Заполненность %',
+                        'label' => 'Статус',
                         'value' => function (ConcourseItem $model) use ($modelsAnswers) {
-
-                            return round($modelsAnswers->getConcourseItemFullness($model->id), 2) . '%';
-
+                            return $modelsAnswers->getConcourseItemFullnessForUser($model->id) ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Заполнено'
+                                : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> В работе';
                         },
-                        'options' => ['style' => 'width:150px'],
-                        'format' => 'raw',
-                    ],
-                    [
-                        'label' => 'Средний балл',
-                        'value' => function (ConcourseItem $model) use ($modelsAnswers) {
-
-                            return str_replace('.', ',', round($modelsAnswers->getMiddleMark($model->id), 2));
-
-                        },
-                        'options' => ['style' => 'width:150px'],
+                        'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
                         'format' => 'raw',
                     ],
                     [
                         'class' => 'kartik\grid\ActionColumn',
-                        'template' => '{update} {delete}',
+                        'template' => '{view}',
                         'buttons' => [
-                            'update' => function ($url, $model, $key) {
-                                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                                    ['concourse/default/concourse-item', 'id' => $model->concourse_id, 'objectId' => $model->id, 'mode' => 'update'], [
-                                        'title' => Yii::t('art', 'Edit'),
+                            'view' => function ($url, $model, $key) use ($modelsAnswers) {
+                                return Html::a('<span class="glyphicon glyphicon-certificate" aria-hidden="true"></span> Оценить работу',
+                                    ['/concourse/default/concourse-item', 'id' => $model->concourse_id, 'objectId' => $model->id, 'mode' => 'view'], [
+                                        'title' => 'Оценить работу',
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
+                                        'class' => 'btn btn-xs btn-primary',
+                                        'visible' => true,
+                                        'disabled' => $modelsAnswers->getConcourseItemFullnessForUser($model->id)
                                     ]
                                 );
                             },
-                            'delete' => function ($url, $model, $key) {
-                                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                                    ['concourse/default/concourse-item', 'id' => $model->concourse_id, 'objectId' => $model->id, 'mode' => 'delete'], [
-                                        'title' => Yii::t('art', 'Delete'),
-                                        'aria-label' => Yii::t('art', 'Delete'),
-                                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                        'data-method' => 'post',
-                                        'data-pjax' => '0',
-                                    ]);
-                            }
+
                         ],
                         'options' => ['style' => 'width:250px'],
                         'headerOptions' => ['class' => 'kartik-sheet-style'],

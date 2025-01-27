@@ -48,6 +48,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Почта', 'icon' => 'fa fa-minus', 'url' => ['/mailbox/default/index']],
                     ['label' => 'Формы и заявки', 'icon' => 'fa fa-minus', 'url' => ['/question/student/index'], 'visible' => User::hasRole(['student'], false)],
                     ['label' => 'Формы и заявки', 'icon' => 'fa fa-minus', 'url' => ['/question/teachers/index'], 'visible' => User::hasRole(['teacher','department'], false)],
+                    ['label' => 'Конкурсы', 'icon' => 'fa fa-minus', 'url' => ['/concourse/default/index'], 'visible' => User::hasRole(['teacher','department'], false)],
                 ],
             ],
 

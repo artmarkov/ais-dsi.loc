@@ -69,7 +69,7 @@ $readonly = false;
                     </div>
                 </div>
 
-                <?= $this->render('@backend/views/concourse/concourse-answers/index', compact(['data'])); ?>
+                <?= isset($data) ? $this->render('@backend/views/concourse/concourse-answers/index', compact(['data'])) : null; ?>
 
             <?php endif; ?>
         </div>

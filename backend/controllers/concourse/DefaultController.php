@@ -192,8 +192,9 @@ class DefaultController extends MainController
             $params = $this->getParams();
             $params[$searchName]['concourse_id'] = $id;
             $dataProvider = $searchModel->search($params);
+            $modelsAnswers = new ConcourseAnswers(['id' => $id]);
 
-            return $this->renderIsAjax('concourse-item', compact('dataProvider', 'searchModel'));
+            return $this->renderIsAjax('concourse-item', compact('dataProvider', 'searchModel', 'modelsAnswers'));
         }
     }
 
@@ -213,11 +214,9 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['concourse/default/update', 'id' => $id]];
 
         if ('delete' == $mode && $objectId) {
-            $modelItem = ConcourseItem::findOne($objectId);
-            $modelItem->delete();
-
-            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-            return $this->redirect($this->getRedirectPage('delete', $modelItem));
+            ConcourseValue::deleteAll(['users_id' => $userId,'concourse_item_id' => $objectId]);
+            Yii::$app->session->setFlash('info', 'Оценки успешно удалены.');
+            $this->redirect(['/concourse/default/concourse-item', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']);
 
         } elseif ($objectId) {
             $this->view->params['breadcrumbs'][] = ['label' => 'Конкурсные работы', 'url' => ['/concourse/default/concourse-item', 'id' => $id]];
@@ -320,7 +319,7 @@ class DefaultController extends MainController
             ['label' => 'Карточка конкурса', 'url' => ['/concourse/default/update', 'id' => $id]],
             ['label' => 'Критерии оценки конкурса', 'url' => ['/concourse/default/concourse-criteria', 'id' => $id]],
             ['label' => 'Конкурсные работы', 'url' => ['/concourse/default/concourse-item', 'id' => $id]],
-            ['label' => 'Статистика и результаты конкурса', 'url' => ['/concourse/default/stat', 'id' => $id]],
+//            ['label' => 'Статистика и результаты конкурса', 'url' => ['/concourse/default/stat', 'id' => $id]],
         ];
     }
 }

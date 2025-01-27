@@ -3,7 +3,6 @@
 namespace common\models\concourse;
 
 use artsoft\models\User;
-use himiklab\sortablegrid\SortableGridBehavior;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -55,7 +54,8 @@ class ConcourseValue extends \artsoft\db\ActiveRecord
     {
         return [
             [['users_id', 'concourse_item_id', 'concourse_criteria_id', 'concourse_mark'], 'required'],
-            [['users_id', 'concourse_item_id', 'concourse_criteria_id', 'concourse_mark', 'version'], 'default', 'value' => null],
+            [['users_id', 'concourse_item_id', 'concourse_criteria_id', 'concourse_mark'], 'default', 'value' => null],
+            [['version'], 'default', 'value' => 0],
             [['users_id', 'concourse_item_id', 'concourse_criteria_id', 'concourse_mark', 'version'], 'integer'],
             [['concourse_string'], 'string', 'max' => 1024],
             [['users_id', 'concourse_item_id', 'concourse_criteria_id'], 'unique', 'on' => $this->isNewRecord],

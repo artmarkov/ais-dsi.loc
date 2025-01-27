@@ -12,6 +12,13 @@ use yii\data\ActiveDataProvider;
  */
 class ConcourseItemSearch extends ConcourseItem
 {
+    public $query;
+
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: ConcourseItem::find();
+        parent::__construct();
+    }
     /**
      * @inheritdoc
      */
@@ -41,7 +48,7 @@ class ConcourseItemSearch extends ConcourseItem
      */
     public function search($params)
     {
-        $query = ConcourseItem::find();
+        $query = $this->query;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
