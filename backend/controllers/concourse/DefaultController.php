@@ -223,8 +223,8 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['/concourse/default/concourse-item', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
             $this->view->params['breadcrumbs'][] = 'Карточка оценки конкурсной работы';
 
-            $modelsAnswers = new ConcourseAnswers(['id' => $id, 'objectId' => $objectId]);
-            $modelsItems = $modelsAnswers->getAnswersConcourseUsers($userId);
+            $modelsAnswers = new ConcourseAnswers(['id' => $id, 'objectId' => $objectId, 'userId' => $userId]);
+            $modelsItems = $modelsAnswers->getAnswersConcourseUsers();
             if (isset($_POST['ConcourseValue'])) {
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
 

@@ -256,7 +256,8 @@ class ConcourseAnswers
             return $a['name'] <=> $b['name'];
         });
 
-        return ['data' => $data, 'all_mid' => $all_summ / count($root) / count($users), 'attributes' => $attributes, 'root' => $root];
+        $all_mid = (count($root) != 0 && count($users) != 0) ? $all_summ / count($root) / count($users) : 0;
+        return ['data' => $data, 'all_mid' => $all_mid, 'attributes' => $attributes, 'root' => $root];
     }
 
     public static function getEditableForm($mark, $users_id, $concourse_item_id, $concourse_criteria_id)
