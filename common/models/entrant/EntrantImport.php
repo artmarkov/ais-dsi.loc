@@ -25,7 +25,7 @@ class EntrantImport extends Model
     {
         return [
             [['file'], 'required'],
-            [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => 'xlsx'],
+            [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => ['xlsx']],
             [['com_id'], 'integer'],
         ];
     }
@@ -57,6 +57,13 @@ class EntrantImport extends Model
                             'fullname' => $v[3],
                             'snils' => $v[4],
                             'subjects' => $v[5],
+                        ];
+                    } else {
+                        if (1 == $i) {
+                            continue;
+                        }
+                        $data[] = [
+                            'fullname' => $v[3],
                         ];
                     }
                 }
@@ -176,7 +183,7 @@ class EntrantImport extends Model
     {
         $model = EntrantGroup::find()->where(['comm_id' => $comm_id])->andWhere(['name' => 'Mos.ru'])->one() ?? new EntrantGroup();
         $model->name = 'Mos.ru';
-        $model->timestamp_in = \Yii::$app->formatter->asDatetime(time(), 'php:d.m.Y H:i');
+        $model->timestamp_in = \Yii::$app->formatter->asDatetime(time()-10800, 'php:d.m.Y H:i');
         $model->comm_id = $comm_id;
         $model->prep_flag = 0;
 

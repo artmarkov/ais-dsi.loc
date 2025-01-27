@@ -67,7 +67,7 @@ AvatarAsset::register($this);
             $menuItems[] = [
                 'label' => '<i class="fa fa-user-plus" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Signup'),
                 'url' => \yii\helpers\Url::to(['/auth/default/finding']),
-                'visible' => true
+                'visible' => false
             ];
             $menuItems[] = [
                 'label' => '<i class="fa fa-sign-in" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Enter'),

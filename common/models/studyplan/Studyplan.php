@@ -356,15 +356,16 @@ class Studyplan extends \artsoft\db\ActiveRecord
      * формирование документов: Согласие на обработку пд и Договор об оказании услуг
      *
      * @param $template
+     * @param $add_flag дополнительное соглашение по внебюджету у бюджетного плана
      * @throws \yii\base\InvalidConfigException
      */
-    public function makeDocx($template)
+    public function makeDocx($template, $add_flag = false)
     {
         $model = $this;
         if (!isset($model->parent)) {
             throw new NotFoundHttpException("The Parent was not found.");
         }
-        $modelsDependence = $model->studyplanSubject;
+        $modelsDependence = $add_flag ? $model->getStudyplanSubject()->andWhere(['subject_type_id' => 1001])->all() : $model->getStudyplanSubject()->all();
         $modelProgrammLevel = EducationProgrammLevel::find()
             ->where(['programm_id' => $model->programm_id])
             ->andWhere(['course' => $model->course])
@@ -443,7 +444,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'student_fls' => sprintf('%06d', $model->student_id)
 
         ];
+//        echo '<pre>' . print_r($data, true) . '</pre>'; die();
         $items = [];
+        $cost_year_total = $cost_month_total = $year_time_total = 0;
         foreach ($modelsDependence as $item => $modelDep) {
             $items[] = [
                 'rank' => 'dep',
@@ -459,7 +462,17 @@ class Studyplan extends \artsoft\db\ActiveRecord
                 'cost_year_summ' => $modelDep->cost_year_summ,
                 'year_time_consult' => $modelDep->year_time_consult,
             ];
+            $cost_year_total += $modelDep->cost_year_summ;
+            $cost_month_total += $modelDep->cost_month_summ;
+            $year_time_total += $modelDep->year_time;
         }
+
+            if($add_flag) {
+                $data[0]['cost_month_total'] = $cost_month_total;
+                $data[0]['cost_year_total_str'] = PriceHelper::num2str($cost_year_total);
+                $data[0]['year_time_total'] = $year_time_total;
+                $data[0]['cost_year_total'] = $cost_year_total;
+            }
         $output_file_name = str_replace('.', '_' . $save_as . '_' . $model->doc_date . '.', basename($template));
 
         $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data, $items) {
@@ -854,6 +867,20 @@ class Studyplan extends \artsoft\db\ActiveRecord
     {
         if ($this->doc_contract_start && $this->doc_contract_end && $this->doc_signer) {
             return true;
+        }
+        return false;
+    }
+
+    /**
+     * Определяем, есть ли в плане бюджетника внебюджетные дисциплины для доп договора
+     * @return bool
+     */
+    public function isAdditionalContract()
+    {
+        if ($this->subject_form_id != 1001) {
+            if ($this->getStudyplanSubject()->andWhere(['subject_type_id' => 1001])->exists()) {
+                return true;
+            }
         }
         return false;
     }

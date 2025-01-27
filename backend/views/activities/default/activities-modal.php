@@ -80,6 +80,7 @@ switch ($model->resource) {
                         [
                             'target' => '_blank',
                             'class' => 'btn btn-info',
+                            'visible' => true
                         ]); ?>
                 </div>
             </div>

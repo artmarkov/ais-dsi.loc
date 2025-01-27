@@ -264,6 +264,8 @@ class DefaultController extends MainController
             }
         } elseif (Yii::$app->request->post('submitAction') == 'doc_statement') {
             $model->makeDocx(Studyplan::template_ss);
+        } elseif (Yii::$app->request->post('submitAction') == 'doc_contract_add') {
+            $model->makeDocx(Studyplan::template_cs, true);
         }
         $model_date = $this->modelDate;
 
