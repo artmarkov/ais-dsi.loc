@@ -444,7 +444,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'student_fls' => sprintf('%06d', $model->student_id)
 
         ];
-//        echo '<pre>' . print_r($data, true) . '</pre>'; die();
+
         $items = [];
         $cost_year_total = $cost_month_total = $year_time_total = 0;
         foreach ($modelsDependence as $item => $modelDep) {
@@ -473,12 +473,36 @@ class Studyplan extends \artsoft\db\ActiveRecord
                 $data[0]['year_time_total'] = $year_time_total;
                 $data[0]['cost_year_total'] = $cost_year_total;
             }
+
+//        echo '<pre>' . print_r(ArtHelper::getMonthsInRange($model->doc_contract_start, $model->doc_contract_end), true) . '</pre>'; die();
+        $month_range = ArtHelper::getMonthsInRange($model->doc_contract_start, $model->doc_contract_end, "m.Y");
+        $items_month = [];
+        $i = 1;
+        foreach ($month_range as $item => $month) {
+            $month_total_item = $model->cost_month_total;
+            if($i == 1) {
+                $n = count($month_range);
+                if(($month_total_item * $n) < $model->cost_year_total) {
+                    $month_total_item = $model->cost_year_total - ($month_total_item * $n) + $month_total_item;
+                } else {
+                    $month_total_item = $month_total_item - (($month_total_item * $n) - $model->cost_year_total);
+                }
+            }
+            $i++;
+            $items_month[] = [
+                'rank' => 'm',
+                'period' => $month,
+                'cost_month_total_item' => $month_total_item,
+            ];
+
+        }
         $output_file_name = str_replace('.', '_' . $save_as . '_' . $model->doc_date . '.', basename($template));
 
-        $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data, $items) {
+        $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data, $items, $items_month) {
             /* @var $tbs clsTinyButStrong */
             $tbs->MergeBlock('doc', $data);
             $tbs->MergeBlock('dep', $items);
+            $tbs->MergeBlock('m', $items_month);
 
         })->prepare();
         $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);

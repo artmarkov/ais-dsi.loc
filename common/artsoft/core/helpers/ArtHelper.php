@@ -511,4 +511,25 @@ class ArtHelper
         $array = explode(',', $date);
         return count($array) > 1;
     }
+
+    /**
+     * На выходе массив в формате 2010-02
+     * @param $startDate
+     * @param $endDate
+     * @return array
+     * @throws \Exception
+     */
+    public static function getMonthsInRange($startDate, $endDate, $format = "Y-m")
+    {
+        $data= [];
+        $start    = (new \DateTime($startDate))->modify('first day of this month');
+        $end      = (new \DateTime($endDate))->modify('first day of next month');
+        $interval = \DateInterval::createFromDateString('1 month');
+        $period   = new \DatePeriod($start, $interval, $end);
+
+        foreach ($period as $dt) {
+           $data[] = $dt->format($format);
+        }
+        return $data;
+    }
 }
