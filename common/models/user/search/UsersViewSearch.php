@@ -60,7 +60,6 @@ class UsersViewSearch extends UsersView
             'id' => $this->id,
             'superadmin' => $this->superadmin,
             'status' => $this->status,
-            'roles' => $this->roles,
             'registration_ip' => $this->registration_ip,
             'email_confirmed' => $this->email_confirmed,
             'user_common_id' => $this->user_common_id,
@@ -72,6 +71,7 @@ class UsersViewSearch extends UsersView
             ->andFilterWhere(['like', 'phone', $this->phone])
             ->andFilterWhere(['like', 'phone_optional', $this->phone_optional])
             ->andFilterWhere(['like', 'user_common_status', $this->user_common_status])
+            ->andFilterWhere(['like', 'roles', $this->roles])
             ->andFilterWhere(['like', 'email', $this->email]);
 
         return $dataProvider;

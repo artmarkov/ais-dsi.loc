@@ -134,16 +134,16 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
 
                     <?= $form->field($model, 'status')->dropDownList(Question::getStatusList(), ['disabled' => $readonly]) ?>
 
-                    <?= $form->field($model, 'email_flag')->checkbox(['disabled' => $readonly])->hint('При наличии в форме E-mail, пользовательполучет уведомление') ?>
+                    <?= $form->field($model, 'email_flag')->checkbox(['disabled' => $readonly])->hint('При наличии в форме E-mail, пользователь получит уведомление.') ?>
 
-                    <?= $form->field($model, 'email_author_flag')->checkbox(['disabled' => $readonly])->hint('Автор формы получит уведомления при каждом заполнении формы') ?>
+                    <?= $form->field($model, 'email_author_flag')->checkbox(['disabled' => $readonly])->hint('Автор формы получит уведомление при каждом её заполнении.') ?>
 
                     <?= $form->field($model, 'question_limit')->widget(kartik\touchspin\TouchSpin::class, [
                         'disabled' => $readonly,
                         'pluginOptions' => [
                             'min' => 0,
                             'max' => 1000,
-                        ]])->hint('Укажите колличество заявок, опросов от 0 до 1000. 0 - колличество не ограничено'); ?>
+                        ]])->hint('Укажите колличество заявок, опросов от 0 до 1000. 0 - колличество не ограничено.'); ?>
                 </div>
             </div>
             <?php if (!$model->isNewRecord) : ?>

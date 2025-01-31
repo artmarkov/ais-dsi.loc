@@ -50,7 +50,7 @@ class ConcourseSearch extends Concourse
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'id' => SORT_DESC,
+                    'timestamp_in' => SORT_ASC,
                 ],
             ],
         ]);

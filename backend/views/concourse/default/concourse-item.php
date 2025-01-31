@@ -74,7 +74,6 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
                     ],
                     [
                         'attribute' => 'authors_list',
-                        'filter' => $users_list,
                         'value' => function (ConcourseItem $model) use ($users_list) {
                             $v = [];
                             foreach ($model->authors_list as $id) {
@@ -86,7 +85,28 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
                             return implode(', ', $v);
 
                         },
-                        'options' => ['style' => 'width:350px'],
+                        'options' => ['style' => 'width:400px'],
+                        'hidden' => true,
+                        'hiddenFromExport'=> false,
+                        'format' => 'raw',
+                    ],
+                    [
+                        'attribute' => 'authors_list',
+                        'filter' => $users_list,
+                        'value' => function (ConcourseItem $model) use ($users_list) {
+                            $v = [];
+                            foreach ($model->authors_list as $id) {
+                                if (!$id) {
+                                    continue;
+                                }
+                                $v[] = $users_list[$id] ?? $id;
+                            }
+                            return implode(', </br>', $v);
+
+                        },
+                        'options' => ['style' => 'width:400px'],
+                        'hidden' => false,
+                        'hiddenFromExport'=> true,
                         'format' => 'raw',
                     ],
                     'description:ntext',
@@ -134,9 +154,7 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
                                     ]);
                             }
                         ],
-                        'options' => ['style' => 'width:250px'],
                         'headerOptions' => ['class' => 'kartik-sheet-style'],
-
                     ],
                 ],
             ]);

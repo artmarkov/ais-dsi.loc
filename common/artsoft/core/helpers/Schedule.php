@@ -3,7 +3,11 @@ namespace artsoft\helpers;
 
 class Schedule
 {
-// определение в секундах значения академического времени
+    /**
+     * Перевод академических часов в секунды
+     * @param $academ_hour
+     * @return int
+     */
     public static function academ2astr($academ_hour)
     {
         switch ($academ_hour) {
@@ -50,87 +54,37 @@ class Schedule
         return $astr_hour;
     }
 
-// определение в секундах значения академического времени
-//    public static function astr2academ($astr_hour)
-//    {
-//        switch (true) {
-//            case ($astr_hour == 0):
-//                $academ_hour = 0;
-//                break;
-//            case in_array($astr_hour, range(750, 750)):
-//                $academ_hour = 0.25;
-//                break;
-//            case in_array($astr_hour, range(1200, 1499)):
-//                $academ_hour = 0.5;
-//                break;
-//            case in_array($astr_hour, range(1500, 1799)):
-//                $academ_hour = 0.6;
-//                break;
-//            case in_array($astr_hour, range(1800, 1889)):
-//                $academ_hour = 0.7;
-//                break;
-//            case in_array($astr_hour, range(1890, 2099)):
-//                $academ_hour = 0.8;
-//                break;
-//            case in_array($astr_hour, range(2100, 2400)):
-//                $academ_hour = 0.9;
-//                break;
-//            case in_array($astr_hour, range(2700, 2700)):
-//                $academ_hour = 1;
-//                break;
-//            case in_array($astr_hour, range(3300, 3300)):
-//                $academ_hour = 1.2;
-//                break;
-//            case in_array($astr_hour, range(3360, 3420)):
-//                $academ_hour = 1.25;
-//                break;
-//            case in_array($astr_hour, range(3510, 3620)):
-//                $academ_hour = 1.3;
-//                break;
-//            case in_array($astr_hour, range(3900, 4500)):
-//                $academ_hour = 1.5;
-//                break;
-//            case in_array($astr_hour, range(4800, 4800)):
-//                $academ_hour = 1.8;
-//                break;
-//            case in_array($astr_hour, range(5400, 5400)):
-//                $academ_hour = 2;
-//                break;
-//            case in_array($astr_hour, range(6900, 6900)):
-//                $academ_hour = 2.5;
-//                break;
-//            case in_array($astr_hour, range(8100, 8400)):
-//                $academ_hour = 3;
-//                break;
-//            default:
-//                $academ_hour = round(($astr_hour / 2700), 1);
-//        };
-//
-//        return $academ_hour;
-//    }
+    /**
+     * Перевод секунд в академические часы
+     * @param $astr_hour
+     * @return float|int
+     */
     public static function astr2academ($astr_hour)
     {
         switch (true) {
             case ($astr_hour == 0):
                 $academ_hour = 0;
                 break;
-            case in_array($astr_hour, range(750, 750)):
+            case in_array($astr_hour, range(525, 825)):
                 $academ_hour = 0.25;
                 break;
             case in_array($astr_hour, range(1200, 1500)):
                 $academ_hour = 0.5;
                 break;
-            case in_array($astr_hour, range(2100, 2400)):
+            case in_array($astr_hour, range(1875, 2325)):
                 $academ_hour = 0.75;
                 break;
-            case in_array($astr_hour, range(2700, 2700)):
+            case in_array($astr_hour, range(2550, 2850)):
                 $academ_hour = 1;
                 break;
-            case in_array($astr_hour, range(3300, 3420)):
+            case in_array($astr_hour, range(3225, 3525)):
                 $academ_hour = 1.25;
                 break;
-            case in_array($astr_hour, range(3900, 4500)):
+            case in_array($astr_hour, range(3750, 4350)):
                 $academ_hour = 1.5;
+                break;
+            case in_array($astr_hour, range(4425, 5025)):
+                $academ_hour = 1.75;
                 break;
             case in_array($astr_hour, range(5400, 5700)):
                 $academ_hour = 2;
@@ -138,11 +92,26 @@ class Schedule
             case in_array($astr_hour, range(6000, 6375)):
                 $academ_hour = 2.25;
                 break;
-            case in_array($astr_hour, range(6600, 6900)):
+            case in_array($astr_hour, range(6450, 7050)):
                 $academ_hour = 2.5;
                 break;
-            case in_array($astr_hour, range(8100, 8400)):
+             case in_array($astr_hour, range(7125, 7725)):
+                $academ_hour = 2.75;
+                break;
+            case in_array($astr_hour, range(7800, 8400)):
                 $academ_hour = 3;
+                break;
+            case in_array($astr_hour, range(8475, 9075)):
+                $academ_hour = 3.25;
+                break;
+            case in_array($astr_hour, range(9150, 9750)):
+                $academ_hour = 3.5;
+                break;
+            case in_array($astr_hour, range(9825, 10425)):
+                $academ_hour = 3.75;
+                break;
+            case in_array($astr_hour, range(10500, 11100)):
+                $academ_hour = 4;
                 break;
             default:
                 $academ_hour = round(($astr_hour / 2700), 1);
@@ -150,6 +119,12 @@ class Schedule
 
         return $academ_hour;
     }
+
+    /**
+     * Преобразование часы:минуты в метку времени
+     * @param $value
+     * @return false|int|string
+     */
     public static function encodeTime($value)
     {
         $t = explode(":", $value);
@@ -157,17 +132,34 @@ class Schedule
 
     }
 
+    /**
+     * Преобразование метки времени в часы:минуты
+     * @param $value
+     * @return false|string
+     */
     public static function decodeTime($value)
     {
         return  $value ? date('H:i', $value) : '';
     }
 
+    /**
+     * Получение дня недели из параметров день, месяц, год
+     * @param $day
+     * @param $mon
+     * @param $year
+     * @return false|int|string
+     */
     public static function getWeekDay($day, $mon, $year)
     {
         $week_day = date("w", mktime(0, 0, 0, $mon, $day, $year));
         return $week_day != 0 ? $week_day : 7;
     }
 
+    /**
+     * Извлечение дня недели из метки времени
+     * @param $timestamp
+     * @return false|int|string
+     */
     public static function timestamp2WeekDay($timestamp)
     {
         $week_day = date("w", $timestamp);
@@ -179,6 +171,11 @@ class Schedule
         return ((int)(($day + date("w", mktime(0, 0, 0, $mon, 1, $year)) - 2) / 7)) + 1;
     }
 
+    /**
+     * Извлечение номера недели из метки времени
+     * @param $timestamp
+     * @return int
+     */
     public static function timestamp2WeekNum($timestamp)
     {
         $day = date('d', $timestamp);
@@ -187,6 +184,7 @@ class Schedule
 
 
     /**
+     * Получение начала и окончания суток по метке времени
      * @param bool $timestamp
      * @return array
      */

@@ -477,25 +477,27 @@ class Studyplan extends \artsoft\db\ActiveRecord
 //        echo '<pre>' . print_r(ArtHelper::getMonthsInRange($model->doc_contract_start, $model->doc_contract_end), true) . '</pre>'; die();
         $month_range = ArtHelper::getMonthsInRange($model->doc_contract_start, $model->doc_contract_end, "m.Y");
         $items_month = [];
-        $i = 1;
         foreach ($month_range as $item => $month) {
-            $month_total_item = $model->cost_month_total;
-            if($i == 1) {
-                $n = count($month_range);
-                if(($month_total_item * $n) < $model->cost_year_total) {
-                    $month_total_item = $model->cost_year_total - ($month_total_item * $n) + $month_total_item;
-                } else {
-                    $month_total_item = $month_total_item - (($month_total_item * $n) - $model->cost_year_total);
-                }
-            }
-            $i++;
-            $items_month[] = [
+            $items_month[$item] = [
                 'rank' => 'm',
                 'period' => $month,
-                'cost_month_total_item' => $month_total_item,
+                'cost_month_total_item' => $model->cost_month_total,
             ];
-
         }
+
+            $month_total_item = $model->cost_month_total;
+            $n = count($month_range);
+            if(($month_total_item * $n) < $model->cost_year_total) {
+                $month_total_item = $model->cost_year_total - ($month_total_item * $n) + $month_total_item;
+            } else {
+                $month_total_item = $month_total_item - (($month_total_item * $n) - $model->cost_year_total);
+            }
+
+            if($month_total_item < 0) {
+                $items_month[0]['cost_month_total_item'] = $month_total_item + $model->cost_month_total;
+                $items_month[$n-1]['cost_month_total_item'] = 0;
+            }
+
         $output_file_name = str_replace('.', '_' . $save_as . '_' . $model->doc_date . '.', basename($template));
 
         $tbs = DocTemplate::get($template)->setHandler(function ($tbs) use ($data, $items, $items_month) {

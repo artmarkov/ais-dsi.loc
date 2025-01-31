@@ -110,7 +110,6 @@ $columns[] = [
                     ]);
             }
         ],
-        'options' => ['style' => 'width:250px'],
         'headerOptions' => ['class' => 'kartik-sheet-style'],
 ];
 
