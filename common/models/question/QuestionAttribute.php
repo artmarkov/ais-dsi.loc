@@ -164,7 +164,7 @@ class QuestionAttribute extends \artsoft\db\ActiveRecord
      */
     public function getQuestionOptions()
     {
-        return $this->hasMany(QuestionOptions::className(), ['attribute_id' => 'id'])->orderBy('question_options.name');
+        return $this->hasMany(QuestionOptions::className(), ['attribute_id' => 'id'])->orderBy('question_options.id');
     }
 
     /**

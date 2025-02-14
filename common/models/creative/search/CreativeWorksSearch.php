@@ -13,6 +13,13 @@ use common\models\creative\CreativeWorks;
 class CreativeWorksSearch extends CreativeWorks
 {
     public $published_at_operand;
+    public $query;
+
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: CreativeWorks::find();
+        parent::__construct();
+    }
 
     /**
      * @inheritdoc
@@ -43,7 +50,7 @@ class CreativeWorksSearch extends CreativeWorks
      */
     public function search($params)
     {
-        $query = CreativeWorks::find();
+        $query = $this->query;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

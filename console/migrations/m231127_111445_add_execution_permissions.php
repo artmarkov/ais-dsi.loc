@@ -85,6 +85,7 @@ class m231127_111445_add_execution_permissions extends PermissionsMigration
                         '/admin/execution/default/perform',
                         '/admin/execution/default/thematic',
                         '/admin/execution/default/progress',
+                        '/admin/execution/default/progress-confirm',
                     ],
                     'roles' => [
                         self::ROLE_SYSTEM,

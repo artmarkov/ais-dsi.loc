@@ -210,6 +210,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['protocol_leader_name'], 'string', 'max' => 127],
             [['description'], 'default', 'value' => null],
             [['doc_status'], 'default', 'value' => 0],
+            [['category_id'], 'default', 'value' => 17],
             [['partic_price', 'site_url', 'site_media'], 'string', 'max' => 255],
             ['description', 'string', 'max' => 4000, 'when' => function ($model) {
                 return $model->category->description_flag && !$model->isNewRecord;

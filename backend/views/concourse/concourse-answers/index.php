@@ -14,39 +14,6 @@ use artsoft\grid\GridPageSize;
 $columns = [];
 $columns[] = ['class' => 'yii\grid\SerialColumn'];
 
-/*$columns[] = [
-    'attribute' => 'name',
-    'label' => $data['attributes']['name'],
-    'class' => 'artsoft\grid\columns\TitleActionColumn',
-    'controller' => '/efficiency/default',
-    'title' => function ($data) {
-        return \artsoft\helpers\Html::a($data['name'],
-            ['efficiency/default/details', 'id' => $data['id']], [
-                'data-method' => 'post',
-                'data-pjax' => '0',
-            ]);
-    },
-    'buttonsTemplate' => '{details} {bar}',
-    'buttons' => [
-        'details' => function ($url, $data, $key) {
-            return Html::a('Показатели',
-                ['efficiency/default/details', 'id' => $data['id']], [
-                    'data-method' => 'post',
-                    'data-pjax' => '0',
-                ]);
-        },
-        'bar' => function ($url, $data, $key) {
-            return Html::a('График',
-                ['efficiency/default/user-bar', 'id' => $data['id']], [
-                    'data-method' => 'post',
-                    'data-pjax' => '0',
-                ]);
-        }
-    ],
-    'format' => 'raw',
-    'options' => ['style' => 'width:250px'],
-    'headerOptions' => ['class' => "grid"],
-];*/
 $columns[] = [
     'attribute' => 'name',
     'label' => $data['attributes']['name'],
@@ -115,12 +82,19 @@ $columns[] = [
 
 ?>
 
-<div class="teachers-efficiency-summary">
+<div class="concourse-answers-index">
     <div class="panel panel-default">
         <div class="panel-heading">
             Оценки конкурсной работы
         </div>
         <div class="panel-body">
+            <div class="col-sm-12">
+                <?=  \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info-circle"></i> Нулевые значения в средней оценке не учитываются.',
+                    'options' => ['class' => 'alert-info'],
+                ]);
+                ?>
+            </div>
             <?= GridView::widget([
                 'id' => 'concourse-answers',
                 'dataProvider' => new \yii\data\ArrayDataProvider([

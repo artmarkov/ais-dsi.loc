@@ -24,6 +24,13 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
         </div>
         <div class="panel-body">
             <div class="row">
+                <div class="col-sm-12">
+                    <?= $model->authors_ban_flag ? \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-info-circle"></i> Участники конкурса не могут оценивать свою работу.',
+                        'options' => ['class' => 'alert-danger'],
+                    ]) : '';
+                    ?>
+                </div>
                 <div class="col-sm-6">
                     <?php
                     /* Uncomment this to activate GridQuickLinks */
@@ -51,6 +58,9 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'rowOptions' => function (ConcourseItem $model) use ($modelsAnswers) {
+                    if (!$modelsAnswers->isUsersItem($model->id)) {
+                        return ['class' => 'danger'];
+                    };
                     if ($modelsAnswers->getConcourseItemFullnessForUser($model->id)) {
                         return ['class' => 'success'];
                     };
@@ -94,8 +104,8 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
                     [
                         'label' => 'Статус',
                         'value' => function (ConcourseItem $model) use ($modelsAnswers) {
-                            return $modelsAnswers->getConcourseItemFullnessForUser($model->id) ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Заполнено'
-                                : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> В работе';
+                            return $modelsAnswers->isUsersItem($model->id) ? ($modelsAnswers->getConcourseItemFullnessForUser($model->id) ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Заполнено'
+                                : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> В работе') : '';
                         },
                         'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
                         'format' => 'raw',
@@ -112,7 +122,7 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
                                         'data-pjax' => '0',
                                         'class' => 'btn btn-xs btn-primary',
                                         'visible' => true,
-                                        'disabled' => $modelsAnswers->getConcourseItemFullnessForUser($model->id)
+                                        'disabled' => $modelsAnswers->getConcourseItemFullnessForUser($model->id) || !$modelsAnswers->isUsersItem($model->id)
                                     ]
                                 );
                             },

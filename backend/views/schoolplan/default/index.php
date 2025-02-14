@@ -206,6 +206,17 @@ $author_id = Schoolplan::getAuthorId();
                                 'value' => function ($model) {
                                     return mb_strlen($model->result, 'UTF-8') > 200 ? mb_substr($model->result, 0, 200, 'UTF-8') . '...' : $model->result;
                                 },
+                                'hidden' => false,
+                                'hiddenFromExport'=> true,
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'result',
+                                'value' => function ($model) {
+                                    return $model->result;
+                                },
+                                'hidden' => true,
+                                'hiddenFromExport'=> false,
                                 'format' => 'raw',
                             ],
                             [

@@ -262,8 +262,24 @@ class DefaultController extends MainController
         }
     }
 
-    public function actionStat()
+    public function actionStat($id)
     {
+        $model = $this->findModel($id);
+
+        if (!isset($model)) {
+            throw new NotFoundHttpException("The Concourse was not found.");
+        }
+
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => 'Конкурсы', 'url' => ['concourse/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['concourse/default/update', 'id' => $id]];
+
+        $modelsAnswers = new ConcourseAnswers(['id' => $id]);
+
+        return $this->renderIsAjax('concourse-stat', [
+            'model' => $model,
+            'data' => $modelsAnswers->getStatData(),
+        ]);
 
     }
 
@@ -319,7 +335,7 @@ class DefaultController extends MainController
             ['label' => 'Карточка конкурса', 'url' => ['/concourse/default/update', 'id' => $id]],
             ['label' => 'Критерии оценки конкурса', 'url' => ['/concourse/default/concourse-criteria', 'id' => $id]],
             ['label' => 'Конкурсные работы', 'url' => ['/concourse/default/concourse-item', 'id' => $id]],
-//            ['label' => 'Статистика и результаты конкурса', 'url' => ['/concourse/default/stat', 'id' => $id]],
+            ['label' => 'Статистика активности пользователей', 'url' => ['/concourse/default/stat', 'id' => $id]],
         ];
     }
 }

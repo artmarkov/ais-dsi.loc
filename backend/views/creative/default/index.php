@@ -54,14 +54,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'creative-works-grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                        'bulkActionOptions' => [
+                        'bulkActionOptions' => \artsoft\Art::isBackend() ? [
                             'gridId' => 'creative-works-grid',
                             'actions' => [
                                 Url::to(['bulk-activate']) => Yii::t('art/creative', 'Оpen for viewing'),
                                 Url::to(['bulk-deactivate']) => Yii::t('art/creative', 'Close for viewing'),
                                 Url::to(['bulk-delete']) => Yii::t('yii', 'Delete'),
                             ]
-                        ],
+                        ] : false,
                         'rowOptions' => function(CreativeWorks $model) {
                             if($model->getFilesCount() > 0) {
                                 return ['class' => 'success'];
@@ -69,7 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return [];
                         },
                         'columns' => [
-                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
+                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'visible' => \artsoft\Art::isBackend()],
                             [
                                 'options' => ['style' => 'width:30px'],
                                 'attribute' => 'id',
@@ -122,6 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
+                                'visible' => \artsoft\Art::isBackend(),
                             ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
@@ -159,6 +160,18 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'controller' => '/creative/default',
                                 'template' => '{view} {update} {delete}',
                                 'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                'visible' => \artsoft\Art::isBackend()
+
+                            ],
+                            [
+                                'class' => 'kartik\grid\ActionColumn',
+                                'urlCreator' => function ($action, $model, $key, $index) {
+                                    return [$action, 'id' => $model->id];
+                                },
+                                'controller' => '/teachers/creative',
+                                'template' => '{view}',
+                                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                                'visible' => \artsoft\Art::isFrontend()
 
                             ],
                         ],

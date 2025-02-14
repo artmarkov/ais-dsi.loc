@@ -129,14 +129,14 @@ class DefaultController extends \frontend\controllers\DefaultController
                 return $this->renderIsAjax('validate-warning', ['message' => $message]);
             }
             $query = ConcourseItem::find()->where(['concourse_id' => $id]);
-            if ($model->authors_ban_flag) {
+           /* if ($model->authors_ban_flag) {
                 $query = $query->andWhere(new \yii\db\Expression("{$this->users_id} <> all (string_to_array(authors_list, ',')::int[])"));
-            }
+            }*/
             $searchModel = new ConcourseItemSearch($query);
             $params = $this->getParams();
             $dataProvider = $searchModel->search($params);
 
-            return $this->renderIsAjax('concourse-item', compact('dataProvider', 'searchModel', 'modelsAnswers'));
+            return $this->renderIsAjax('concourse-item', compact('dataProvider', 'searchModel', 'modelsAnswers', 'model'));
         }
     }
 

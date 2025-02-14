@@ -5,7 +5,9 @@ namespace common\models\concourse;
 use artsoft\models\User;
 use common\widgets\editable\Editable;
 use Yii;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
@@ -17,6 +19,7 @@ class ConcourseAnswers
     public $objectId;
     public $userId;
     public $modelsCriteria;
+    public $modelsCriteriaCount;
     public $models;
 
     const mark_list = [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6, 7 => 7, 8 => 8, 9 => 9, 10 => 10]; // веса оценок
@@ -28,6 +31,7 @@ class ConcourseAnswers
         $this->userId = $config['userId'] ?? false;
         $this->model = $this->getModelConcourse(); // модель конкурса
         $this->modelsCriteria = $this->getModelsCriteria(); // все критерии конкурса
+        $this->modelsCriteriaCount = $this->modelsCriteria->count(); // число критериев
         $this->modelsItems = $this->getModelsConcourseItems(); // все модели работ
     }
 
@@ -50,10 +54,13 @@ class ConcourseAnswers
      * @return bool
      * @throws NotFoundHttpException
      */
-    public function isUsersItem()
+    public function isUsersItem($itemId = false)
     {
         if (!$this->userId) {
             throw new NotFoundHttpException("Отсутствует обязательный параметр userId.");
+        }
+        if ($itemId) {
+            $this->objectId = $itemId;
         }
         if (!$this->objectId) {
             throw new NotFoundHttpException("Отсутствует обязательный параметр objectId.");
@@ -70,7 +77,7 @@ class ConcourseAnswers
     public function getConcourseItemFullness($item_id)
     {
         $users_list = $this->getUsers($item_id);
-        return $users_list ? ConcourseValue::find()->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $users_list])->count() / $this->modelsCriteria->count() / count($users_list) * 100 : 0;
+        return $users_list ? ConcourseValue::find()->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $users_list])->count() / $this->modelsCriteriaCount / count($users_list) * 100 : 0;
     }
 
     /**
@@ -84,7 +91,7 @@ class ConcourseAnswers
         if (!$this->userId) {
             throw new NotFoundHttpException("Отсутствует обязательный параметр userId.");
         }
-        return ConcourseValue::find()->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $this->userId])->count() === $this->modelsCriteria->count();
+        return ConcourseValue::find()->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $this->userId])->count() === $this->modelsCriteriaCount;
     }
 
     /**
@@ -94,7 +101,7 @@ class ConcourseAnswers
      */
     /*public function getConcourseUserFullness($user_id)
     {
-        return ConcourseValue::find()->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $user_id])->count() / $this->modelsCriteria->count() / count($users_list) * 100;
+        return ConcourseValue::find()->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $user_id])->count() / $this->modelsCriteriaCount / count($users_list) * 100;
     }*/
 
     /**
@@ -105,7 +112,8 @@ class ConcourseAnswers
     public function getMiddleMark($item_id)
     {
         $users_list = $this->getUsers($item_id);
-        return $users_list ? ConcourseValue::find()->select(new \yii\db\Expression('SUM(concourse_mark)'))->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $users_list])->scalar() / $this->modelsCriteria->count() / count($users_list) : 0;
+        $countUsers = ConcourseValue::find()->select('users_id')->distinct()->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $users_list])->count();
+        return $countUsers != 0 ? ConcourseValue::find()->select(new \yii\db\Expression('SUM(concourse_mark)'))->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $users_list])->scalar() / $this->modelsCriteriaCount / $countUsers : 0;
     }
 
     /**
@@ -199,7 +207,7 @@ class ConcourseAnswers
     public function getAllUsers()
     {
         $users_list = [];
-            $users = ArrayHelper::getColumn($this->getModelsConcourseItems(), 'authors_list');
+            $users = ArrayHelper::getColumn($this->modelsItems, 'authors_list');
             foreach ($users as $item => $val) {
                 $users_list = array_merge($users_list, $val);
             }
@@ -241,7 +249,10 @@ class ConcourseAnswers
             $res[$model['users_id']][$model['concourse_criteria_id']] = self::getEditableForm($model['concourse_mark'], $model['users_id'], $this->objectId, $model['concourse_criteria_id']);
             $res[$model['users_id']]['summ'] = isset($res[$model['users_id']]['summ']) ? $res[$model['users_id']]['summ'] + $model['concourse_mark'] : $model['concourse_mark'];
         }
-        $users = User::getUsersByIds($this->getUsers($this->objectId));
+        $users_list = $this->getUsers($this->objectId);
+        $users = User::getUsersByIds($users_list);
+        $countUsers = ConcourseValue::find()->select('users_id')->distinct()->where(['concourse_item_id' => $this->objectId])->andWhere(['users_id' => $users_list])->count();
+
         foreach ($users as $id => $name) {
             $data[$id] = $res[$id] ?? ['summ' => null];
             $data[$id]['modelId'] = $this->id;
@@ -256,8 +267,66 @@ class ConcourseAnswers
             return $a['name'] <=> $b['name'];
         });
 
-        $all_mid = (count($root) != 0 && count($users) != 0) ? $all_summ / count($root) / count($users) : 0;
+        $all_mid = (count($root) != 0 && $countUsers != 0) ? $all_summ / count($root) / $countUsers : 0;
         return ['data' => $data, 'all_mid' => $all_mid, 'attributes' => $attributes, 'root' => $root];
+    }
+
+    public function getStatData()
+    {
+        $data = [];
+
+        $attributes = ['name' => 'Участник'];
+        $attributes += ['scale' => 'Шкала заполнения'];
+
+        $users_list = $this->getAllUsers();
+        $users = User::getUsersByIds($users_list);
+
+        foreach ($users as $id => $name) {
+            $data[$id]['name'] = $name;
+            $models = (new Query())->from('concourse_item')
+                ->select(new \yii\db\Expression('concourse_value.users_id users_id, concourse_item.id id, count(concourse_value.id) count'))
+                ->innerJoin('concourse_value', 'concourse_item.id = concourse_value.concourse_item_id')
+                ->where(['concourse_item.concourse_id' => $this->id])
+                ->groupBy(['concourse_value.users_id', 'concourse_item.id'])
+                ->all();
+            $models = ArrayHelper::index($models, 'id',['users_id']);
+            $modelsUsers = $models[$id] ?? [];
+       // echo '<pre>' . print_r($models, true) . '</pre>'; die();
+            $data[$id]['scale'] = $this->getCheckLabels($id, $modelsUsers);
+        }
+        usort($data, function ($a, $b) {
+            return $a['name'] <=> $b['name'];
+        });
+
+        return ['data' => $data, 'attributes' => $attributes];
+    }
+
+    protected function getCheckLabels($userId, $modelsUsers)
+    {
+        $models = ConcourseItem::find()->where(['concourse_id' => $this->id]);
+        if ($this->model->authors_ban_flag) {
+            $models = $models->andWhere(new \yii\db\Expression("{$userId} <> all (string_to_array(authors_list, ',')::int[])"));
+        }
+        $models = $models->orderBy(['id' => SORT_ASC])->asArray()->all();
+//        echo '<pre>' . print_r($models, true) . '</pre>'; die();
+        $check = [];
+        foreach ($models as $item => $model) {
+            $check[$item] = '<i class="fa fa-square-o" aria-hidden="true" style="color: grey"></i>';
+            if (!empty($modelsUsers)) {
+                if (isset($modelsUsers[$model['id']]) && $modelsUsers[$model['id']]['count'] === $this->modelsCriteriaCount) {
+                    $check[$item] = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
+                }
+            }
+            $check[$item] = Html::a($check[$item],
+                ['/concourse/default/concourse-answers', 'id' => $this->id, 'objectId' => $model['id'], 'userId' => $userId, 'mode' => 'update'], [
+                    'title' => $model['name'] != NULL ? $model['name'] : 'Конкурсная работа ' . $model['id'],
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                ]
+            );
+        }
+        return implode('', $check);
+
     }
 
     public static function getEditableForm($mark, $users_id, $concourse_item_id, $concourse_criteria_id)

@@ -22,6 +22,13 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
         </div>
         <div class="panel-body">
+            <div class="col-sm-12">
+                <?=  \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info-circle"></i> Нулевые значения в средней оценке не учитываются.',
+                    'options' => ['class' => 'alert-info'],
+                ]);
+                ?>
+            </div>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

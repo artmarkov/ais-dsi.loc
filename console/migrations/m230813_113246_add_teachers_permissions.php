@@ -70,6 +70,7 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                     '/teachers/thematic-items/*',
                     '/teachers/efficiency/*',
                     '/teachers/portfolio/*',
+                    '/teachers/creative/*',
                     '/invoices/default/*',
                 ],
                 'accessTeachersFrontend' => [
@@ -167,6 +168,10 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/teachers/portfolio/index',
                         '/teachers/portfolio/grid-sort',
                         '/teachers/portfolio/grid-page-size',
+                        '/teachers/creative/index',
+                        '/teachers/creative/grid-sort',
+                        '/teachers/creative/grid-page-size',
+                        '/teachers/creative/view',
                         '/studyplan/lesson-progress/set-mark',
                         '/invoices/default/index',
                         '/invoices/default/grid-sort',

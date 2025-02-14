@@ -96,7 +96,7 @@ class QuestionAnswers extends DynamicModel
     public function getOptionsValue()
     {
         $models = QuestionOptions::find()->innerJoin('question_attribute', 'question_attribute.id = question_options.attribute_id')
-            ->where(['=', 'question_attribute.question_id', $this->id])->orderBy('question_options.name')->asArray()->all();
+            ->where(['=', 'question_attribute.question_id', $this->id])->orderBy('question_options.id')->asArray()->all();
         return ArrayHelper::map($models, 'id', 'name');
     }
 
@@ -300,7 +300,7 @@ class QuestionAnswers extends DynamicModel
 
     public function getOptionsList($id)
     {
-        $modelOptions = QuestionOptions::find()->select(['id', 'name'])->where(['=', 'attribute_id', $id])->orderBy('name')->asArray()->all();
+        $modelOptions = QuestionOptions::find()->select(['id', 'name'])->where(['=', 'attribute_id', $id])->orderBy('id')->asArray()->all();
         return ArrayHelper::map($modelOptions, 'id', 'name');
     }
 
