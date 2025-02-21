@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div id="signup-wrapper">
     <?php echo \yii\bootstrap\Alert::widget([
-        'body' => '<i class="fa fa-info-circle"></i> Если Вы забыли свой логин и пароль, пройдите процедуру Регистрации или Восстнановления учетной записи.',
+        'body' => '<i class="fa fa-info-circle"></i> Если Вы забыли свой логин и пароль, пройдите процедуру Восстнановления учетной записи.',
         'options' => ['class' => 'alert-info'],
     ]);
     ?>

@@ -8,13 +8,14 @@ use wbraganca\dynamicform\DynamicFormWidget;
 use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\question\QuestionAttribute */
+/* @var $model common\models\concourse\ConcourseAnswers */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $modelsItems */
 /* @var $objectId */
 
 $criteriaList = $model->attributesCriteria();
 $mark_list = $model->getMarkList();
+$modelItem = \common\models\concourse\ConcourseItem::findOne($objectId);
 ?>
 
 <div class="concourse-answers-form">
@@ -31,7 +32,10 @@ $mark_list = $model->getMarkList();
 
     <div class="panel">
         <div class="panel-heading">
-            Карточка оценки конкурсной работы
+            <?php if (\artsoft\Art::isBackend()): ?>
+                <div>Карточка оценки конкурсной работы: <?= $modelItem->name; ?></div>
+                <div>Пользователь: <?= $model->getUserFio(); ?></div>
+            <?php endif; ?>
         </div>
         <div class="panel-body">
             <table class="table table-bordered table-striped">

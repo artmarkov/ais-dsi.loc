@@ -75,7 +75,7 @@ class FileInput extends \yii\base\Widget
                 'uploadUrl' => Url::toRoute(['/fileinput/file-manager/file-upload'],'https'),
                 'hideThumbnailContent' => false,
                 'preferIconicPreview' => false,
-                'previewFileIcon' => '<i class="fa fa-files"></i>',
+                'previewFileIcon' => '<i class="fa fa-file-o"></i>',
                 'previewFileIconSettings' => [
                     'txt' => '<i class="fa fa-file-text-o text-default"></i>',
                     'doc' => '<i class="fa fa-file-word-o text-primary"></i>',
@@ -88,6 +88,7 @@ class FileInput extends \yii\base\Widget
                     'rar' => '<i class="fa fa-file-archive-o text-muted"></i>',
                     'pdf' => '<i class="fa fa-file-pdf-o text-warning"></i>',
                     'jpg' => '<i class="fa fa-file-image-o text-primary"></i>',
+                    'jpeg' => '<i class="fa fa-file-image-o text-primary"></i>',
                     'png' => '<i class="fa fa-file-image-o text-primary"></i>',
                     'mp4' => '<i class="fa fa-film text-primary"></i>',
                     'mp3' => '<i class="fa fa-file-audio-o text-primary"></i>',

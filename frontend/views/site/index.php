@@ -33,14 +33,6 @@ $this->title = Block::getTitle('main-info');
                     );
                     ?>
                     <?= Html::a(
-                        '<i class="fa fa-user-plus" aria-hidden="true"></i> ' . 'Регистрация',
-                        ['/auth/default/finding'],
-                        [
-                            'class' => 'btn btn-warning btn-lg',
-                        ]
-                    );
-                    ?>
-                    <?= Html::a(
                         '<i class="fa fa-paper-plane-o" aria-hidden="true"></i> ' . 'Обратная звязь',
                         ['/site/contact'],
                         [

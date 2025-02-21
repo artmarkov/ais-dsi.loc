@@ -35,6 +35,16 @@ class ConcourseAnswers
         $this->modelsItems = $this->getModelsConcourseItems(); // все модели работ
     }
 
+    public function getUserFio()
+    {
+        if (!$this->userId) {
+            throw new NotFoundHttpException("Отсутствует обязательный параметр userId.");
+        }
+        return (new Query())->from('users_view')
+            ->select('user_name')
+            ->where(['id' => $this->userId])
+            ->scalar();
+    }
     /**
      * Проверка, есть ли пользователь в списке участников конкурса
      * @return bool
@@ -45,7 +55,11 @@ class ConcourseAnswers
         if (!$this->userId) {
             throw new NotFoundHttpException("Отсутствует обязательный параметр userId.");
         }
-        $users_list = $this->getAllUsers();
+        if ($this->model->vid_id == Concourse::VID_USERS) {
+            $users_list = $this->model->users_list;
+        } else {
+            $users_list = $this->getAllUsers();
+        }
         return in_array($this->userId, $users_list);
     }
 

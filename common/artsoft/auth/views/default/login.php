@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <div class="row registration-block">
                             <div class="col-sm-6">
-                                <?= Html::a(Yii::t('art/auth', "Registration"), ['default/finding']) ?>
+                                <?= \artsoft\helpers\Html::a(Yii::t('art/auth', "Registration"), ['default/finding'], ['disabled' => true]) ?>
                             </div>
                             <div class="col-sm-6 text-right">
                                 <?= Html::a(Yii::t('art/auth', "Forgot password?"), ['default/reset-password']) ?>

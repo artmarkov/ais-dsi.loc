@@ -116,7 +116,16 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers'], false);
                         'hiddenFromExport'=> true,
                         'format' => 'raw',
                     ],
-                    'description:ntext',
+                    [
+                        'attribute' => 'description',
+                        'value' => function (ConcourseItem $model)  {
+
+                            return $model->description;
+
+                        },
+                        'hiddenFromExport'=> true,
+                        'format' => 'raw',
+                    ],
                     [
                         'label' => 'Заполненность %',
                         'value' => function (ConcourseItem $model) use ($modelsAnswers) {
