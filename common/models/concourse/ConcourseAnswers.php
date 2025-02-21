@@ -55,11 +55,7 @@ class ConcourseAnswers
         if (!$this->userId) {
             throw new NotFoundHttpException("Отсутствует обязательный параметр userId.");
         }
-        if ($this->model->vid_id == Concourse::VID_USERS) {
-            $users_list = $this->model->users_list;
-        } else {
-            $users_list = $this->getAllUsers();
-        }
+        $users_list = $this->getUsers();
         return in_array($this->userId, $users_list);
     }
 
@@ -79,7 +75,7 @@ class ConcourseAnswers
         if (!$this->objectId) {
             throw new NotFoundHttpException("Отсутствует обязательный параметр objectId.");
         }
-        $users_list = $this->getUsers($this->objectId);
+        $users_list = $this->getUsersForItem($this->objectId);
         return in_array($this->userId, $users_list);
     }
 
@@ -90,7 +86,7 @@ class ConcourseAnswers
      */
     public function getConcourseItemFullness($item_id)
     {
-        $users_list = $this->getUsers($item_id);
+        $users_list = $this->getUsersForItem($item_id);
         return $users_list ? ConcourseValue::find()->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $users_list])->count() / $this->modelsCriteriaCount / count($users_list) * 100 : 0;
     }
 
@@ -125,7 +121,7 @@ class ConcourseAnswers
      */
     public function getMiddleMark($item_id)
     {
-        $users_list = $this->getUsers($item_id);
+        $users_list = $this->getUsersForItem($item_id);
         $countUsers = ConcourseValue::find()->select('users_id')->distinct()->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $users_list])->count();
         return $countUsers != 0 ? ConcourseValue::find()->select(new \yii\db\Expression('SUM(concourse_mark)'))->where(['concourse_item_id' => $item_id])->andWhere(['users_id' => $users_list])->scalar() / $this->modelsCriteriaCount / $countUsers : 0;
     }
@@ -196,17 +192,27 @@ class ConcourseAnswers
     }
 
     /**
-     * Все участники для оценки работы(могут участвовать как авторы работ так и отдельные участники, указанные в карточке конкурса)
-     * @param $item_id
+     * Все участники для оценки(могут участвовать как авторы работ так и отдельные участники, указанные в карточке конкурса)
      * @return array|string|null
      */
-    public function getUsers($item_id)
+    public function getUsers()
     {
         if ($this->model->vid_id == Concourse::VID_USERS) {
             $users_list = $this->model->users_list;
         } else {
             $users_list = $this->getAllUsers();
         }
+        return $users_list;
+    }
+
+    /**
+     * Все участники для оценки работы
+     * @param $item_id
+     * @return array|string|null
+     */
+    public function getUsersForItem($item_id)
+    {
+        $users_list = $this->getUsers();
         if ($this->model->authors_ban_flag) {
             $modelItem = $this->getModelConcourseItem($item_id); // модель работы
 //            echo '<pre>' . print_r($modelItem, true) . '</pre>'; die();
@@ -263,7 +269,7 @@ class ConcourseAnswers
             $res[$model['users_id']][$model['concourse_criteria_id']] = self::getEditableForm($model['concourse_mark'], $model['users_id'], $this->objectId, $model['concourse_criteria_id']);
             $res[$model['users_id']]['summ'] = isset($res[$model['users_id']]['summ']) ? $res[$model['users_id']]['summ'] + $model['concourse_mark'] : $model['concourse_mark'];
         }
-        $users_list = $this->getUsers($this->objectId);
+        $users_list = $this->getUsersForItem($this->objectId);
         $users = User::getUsersByIds($users_list);
         $countUsers = ConcourseValue::find()->select('users_id')->distinct()->where(['concourse_item_id' => $this->objectId])->andWhere(['users_id' => $users_list])->count();
 
@@ -292,7 +298,7 @@ class ConcourseAnswers
         $attributes = ['name' => 'Участник'];
         $attributes += ['scale' => 'Шкала заполнения'];
 
-        $users_list = $this->getAllUsers();
+        $users_list = $this->getUsers();
         $users = User::getUsersByIds($users_list);
 
         foreach ($users as $id => $name) {
