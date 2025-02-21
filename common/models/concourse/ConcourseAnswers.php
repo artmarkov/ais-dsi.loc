@@ -300,16 +300,16 @@ class ConcourseAnswers
 
         $users_list = $this->getUsers();
         $users = User::getUsersByIds($users_list);
+        $models = (new Query())->from('concourse_item')
+            ->select(new \yii\db\Expression('concourse_value.users_id users_id, concourse_item.id id, count(concourse_value.id) count'))
+            ->innerJoin('concourse_value', 'concourse_item.id = concourse_value.concourse_item_id')
+            ->where(['concourse_item.concourse_id' => $this->id])
+            ->groupBy(['concourse_value.users_id', 'concourse_item.id'])
+            ->all();
+        $models = ArrayHelper::index($models, 'id', ['users_id']);
 
         foreach ($users as $id => $name) {
             $data[$id]['name'] = $name;
-            $models = (new Query())->from('concourse_item')
-                ->select(new \yii\db\Expression('concourse_value.users_id users_id, concourse_item.id id, count(concourse_value.id) count'))
-                ->innerJoin('concourse_value', 'concourse_item.id = concourse_value.concourse_item_id')
-                ->where(['concourse_item.concourse_id' => $this->id])
-                ->groupBy(['concourse_value.users_id', 'concourse_item.id'])
-                ->all();
-            $models = ArrayHelper::index($models, 'id',['users_id']);
             $modelsUsers = $models[$id] ?? [];
        // echo '<pre>' . print_r($models, true) . '</pre>'; die();
             $data[$id]['scale'] = $this->getCheckLabels($id, $modelsUsers);
