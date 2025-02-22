@@ -323,14 +323,12 @@ class ConcourseAnswers
 
     protected function getCheckLabels($userId, $modelsUsers)
     {
-        $models = ConcourseItem::find()->where(['concourse_id' => $this->id]);
-        if ($this->model->authors_ban_flag) {
-            $models = $models->andWhere(new \yii\db\Expression("{$userId} <> all (string_to_array(authors_list, ',')::int[])"));
-        }
-        $models = $models->orderBy(['id' => SORT_ASC])->asArray()->all();
-//        echo '<pre>' . print_r($models, true) . '</pre>'; die();
+        $models = $this->modelsItems;
         $check = [];
         foreach ($models as $item => $model) {
+            if ($this->model->authors_ban_flag && in_array($userId, $model->authors_list)) {
+                continue;
+            }
             $check[$item] = '<i class="fa fa-square-o" aria-hidden="true" style="color: grey"></i>';
             if (!empty($modelsUsers)) {
                 if (isset($modelsUsers[$model['id']]) && $modelsUsers[$model['id']]['count'] === $this->modelsCriteriaCount) {

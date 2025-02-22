@@ -9,8 +9,6 @@ use common\models\concourse\ConcourseItem;
 use common\models\concourse\ConcourseValue;
 use common\models\concourse\search\ConcourseCriteriaSearch;
 use common\models\concourse\search\ConcourseItemSearch;
-use common\models\education\LessonItems;
-use common\models\education\LessonProgress;
 use himiklab\sortablegrid\SortableGridAction;
 use Yii;
 use yii\db\Exception;
