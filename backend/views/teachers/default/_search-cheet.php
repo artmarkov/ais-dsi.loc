@@ -43,6 +43,7 @@ $form = ActiveForm::begin([
                             'minViewMode' => 1,
                             'todayBtn' => 'linked',
                             'todayHighlight' => true,
+                            'orientation' => 'bottom',
                         ],
                         'pluginEvents' => ['changeDate' => "function(e){
                            $(e.target).closest('form').submit();

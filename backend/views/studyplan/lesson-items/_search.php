@@ -28,6 +28,7 @@ $form = ActiveForm::begin([
                             'minViewMode' => 1,
                             'todayBtn' => 'linked',
                             'todayHighlight' => true,
+                            'orientation' => 'bottom',
                         ]
                     ]
             )->label('Месяц и год'); ?>
