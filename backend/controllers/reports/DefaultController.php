@@ -101,6 +101,7 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model_date = $this->modelDate;
+        $model_date->addRule('options', 'safe');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
         }
