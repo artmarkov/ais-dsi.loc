@@ -94,6 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     'class' => 'btn btn-sm btn-warning',
                                 ]);
                         },
+                        'visible' => false,
                     ],
                     [
                         'options' => ['style' => 'width:20px'],
