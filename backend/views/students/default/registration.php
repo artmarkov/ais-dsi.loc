@@ -101,6 +101,7 @@ $this->params['breadcrumbs'][] = 'Регистрация';
                                 <?= $form->field($model, 'parent_sert_organ')->textInput(['maxlength' => true]) ?>
                                 <?= $form->field($model, 'parent_sert_code')->textInput(['maxlength' => true]) ?>
                                 <?= $form->field($model, 'parent_sert_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()/*, ['disabled' => $readonly]*/); ?>
+                                <?= $form->field($model, 'parent_sert_country')->textInput(['maxlength' => true]) ?>
                             </div>
                         </div>
                     </div>

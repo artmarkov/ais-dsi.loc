@@ -430,6 +430,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'parent_sert_code' => $model->parent->sert_code ?: '      ',
             'parent_sert_organ' => $model->parent->sert_organ ?: '                                       ',
             'parent_sert_date' => $model->parent->sert_date ?: '             ',
+            'parent_sert_country' => $model->parent->sert_country ?: '             ',
             'parent_birth_date' => $model->parent->userBirthDate, // День рождения родителя
             'inn' => $invoices->inn,
             'kpp' => $invoices->kpp,

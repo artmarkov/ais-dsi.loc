@@ -7,5 +7,6 @@ return [
     'Sertificate Organ' => 'Кем выдан',
     'Sertificate Date' => 'Дата выдачи',
     'Sertificate Code' => 'Код подразделения',
+    'Sertificate Country' => 'Страна',
     'Select Parents...' => 'Выберите родителя...',
     ];

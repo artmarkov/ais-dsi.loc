@@ -47,6 +47,7 @@ class RegistrationForm extends Model
     public $parent_sert_organ;
     public $parent_sert_code;
     public $parent_sert_date;
+    public $parent_sert_country;
 
 
     /**
@@ -102,33 +103,38 @@ class RegistrationForm extends Model
             ['student_sert_date', 'default', 'value' => NULL],
             [['parent_sert_date'], 'date'],
             [['parent_sert_name', 'parent_sert_series', 'parent_sert_num', 'parent_sert_code'], 'string', 'max' => 32],
-            [['parent_sert_organ'], 'string', 'max' => 127],
+            [['parent_sert_organ', 'parent_sert_country'], 'string', 'max' => 127],
             [['parent_sert_series', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_code', 'parent_sert_date'], 'required', 'on' => self::SCENARIO_FRONFEND],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
             [['parent_sert_num', 'parent_sert_organ', 'parent_sert_code', 'parent_sert_date'], 'required', 'when' => function ($model) {
-                return $model->parent_sert_series != NULL;
+                return $model->parent_sert_series != NULL && $model->parent_sert_name != 'password_foreign';
             }, 'whenClient' => "function (attribute, value) {
-                        return $('#registrationform-parent_sert_series').val() != NULL;
+                        return $('#registrationform-parent_sert_series').val() != NULL && $('#registrationform-sert_name').val() != 'pasport_foreign;
                     }"],
             [['parent_sert_series', 'parent_sert_organ', 'parent_sert_code', 'parent_sert_date'], 'required', 'when' => function ($model) {
-                return $model->parent_sert_num != NULL;
+                return $model->parent_sert_num != NULL && $model->parent_sert_name != 'password_foreign';
             }, 'whenClient' => "function (attribute, value) {
-                        return $('#registrationform-parent_sert_num').val() != NULL;
+                        return $('#registrationform-parent_sert_num').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign;
                     }"],
             [['parent_sert_series', 'parent_sert_num', 'parent_sert_code', 'parent_sert_date'], 'required', 'when' => function ($model) {
-                return $model->parent_sert_organ != NULL;
+                return $model->parent_sert_organ != NULL && $model->parent_sert_name != 'password_foreign';
             }, 'whenClient' => "function (attribute, value) {
-                        return $('#registrationform-parent_sert_organ').val() != NULL;
+                        return $('#registrationform-parent_sert_organ').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign;
                     }"],
             [['parent_sert_series', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_date'], 'required', 'when' => function ($model) {
-                return $model->parent_sert_code != NULL;
+                return $model->parent_sert_code != NULL && $model->parent_sert_name != 'password_foreign';
             }, 'whenClient' => "function (attribute, value) {
-                        return $('#registrationform-parent_sert_code').val() != NULL;
+                        return $('#registrationform-parent_sert_code').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign;
                     }"],
             [['parent_sert_series', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_code'], 'required', 'when' => function ($model) {
-                return $model->parent_sert_date != NULL;
+                return $model->parent_sert_date != NULL && $model->parent_sert_name != 'password_foreign';
             }, 'whenClient' => "function (attribute, value) {
-                        return $('#registrationform-parent_sert_date').val() != NULL;
+                        return $('#registrationform-parent_sert_date').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign;
+                    }"],
+            [['parent_sert_num', 'parent_sert_country'], 'required', 'when' => function ($model) {
+                return $model->parent_sert_name == 'password_foreign';
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#registrationform-parent_sert_name').val() == 'pasport_foreign';
                     }"],
             ['parent_sert_date', 'default', 'value' => NULL],
             [['student_gender'], 'required'],
@@ -198,6 +204,7 @@ class RegistrationForm extends Model
             'parent_sert_organ' => Yii::t('art/parents', 'Sertificate Organ'),
             'parent_sert_date' => Yii::t('art/parents', 'Sertificate Date'),
             'parent_sert_code' => Yii::t('art/parents', 'Sertificate Code'),
+            'parent_sert_country' => Yii::t('art/parents', 'Sertificate Country'),
             'student_gender' => Yii::t('art', 'Gender'),
             'parent_gender' => Yii::t('art', 'Gender'),
         ];

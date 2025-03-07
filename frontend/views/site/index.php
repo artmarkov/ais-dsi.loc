@@ -7,6 +7,12 @@ use artsoft\block\models\Block;
 
 $this->title = Block::getTitle('main-info');
 ?>
+<?php
+$pre_status = Yii::$app->settings->get('module.pre_status');
+$pre_date_in = Yii::$app->formatter->asTimestamp(Yii::$app->settings->get('module.pre_date_in'));
+$pre_date_out = Yii::$app->formatter->asTimestamp(Yii::$app->settings->get('module.pre_date_out'));
+//    print_r([$pre_status,$pre_date_in,$pre_date_out,time()]);
+?>
 <div class="site-index">
     <?php if (Yii::$app->user->isGuest): ?>
         <div class="panel panel-default">
@@ -15,14 +21,15 @@ $this->title = Block::getTitle('main-info');
             </div>
             <div class="panel-body">
                 <div class="form-group btn-group">
-                    <?= Html::a(
+                    <?= (Yii::$app->user->isGuest && $pre_status == 1 && $pre_date_in < time() && $pre_date_out > time()) ?
+                        Html::a(
                         '<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('art/guide', 'Reg Entrant'),
                         ['/preregistration/default/finding'],
                         [
                             'title' => 'Запись на обучение',
                             'class' => 'btn btn-default btn-lg',
                         ]
-                    );
+                    ) : null;
                     ?>
                     <?= Html::a(
                         '<i class="fa fa-sign-in" aria-hidden="true"></i> ' . 'Вход в АИС',

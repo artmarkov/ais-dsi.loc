@@ -31,6 +31,7 @@ class m210310_145345_create_table_employees_parents extends \artsoft\db\BaseMigr
             'sert_organ' => $this->string(127),
             'sert_date' => $this->integer(),
             'sert_code' => $this->string(32),
+            'sert_country' => $this->string(127),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

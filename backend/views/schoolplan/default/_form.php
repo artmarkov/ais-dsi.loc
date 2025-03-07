@@ -147,6 +147,7 @@ $form = ActiveForm::begin([
                                                 <?= \kartik\spinner\Spinner::widget(['preset' => 'small', 'align' => 'left']); ?>
                                             </div>
                                         </div>
+                                        <?php $model->formPlaces = $model->getFormPlaces() ?>
                                         <?= $form->field($model->loadDefaultValues(), 'formPlaces')->radioList(Schoolplan::getFormPlacesList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
 
                                         <?= $form->field($model, 'places')->textInput(['maxlength' => true])->hint('Укажите место проведения в соответствии с фактическим местом, где проводится мероприятие (в случае, если мероприятие будет проводиться на разных площадках, указывается основное место его проведения. Данные вводятся в формате полного названия места. Например: Парк культуры и отдыха имени Горького). Если мероприятие проводится дистанционно, то местом проведения указывается «сеть интернет».') ?>

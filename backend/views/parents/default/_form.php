@@ -98,6 +98,7 @@ if(User::hasRole(['parents'])) {
                             <?= $form->field($model, 'sert_organ')->textInput(['maxlength' => true, 'disabled' => $readonlyParents]) ?>
                             <?= $form->field($model, 'sert_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => $readonlyParents]); ?>
                             <?= $form->field($model, 'sert_code')->textInput(['maxlength' => true, 'disabled' => $readonlyParents]) ?>
+                            <?= $form->field($model,  'sert_country')->textInput(['maxlength' => true, 'disabled' => $readonlyParents]) ?>
                             <?php if(\artsoft\Art::isBackend()): ?>
                                 <?php if (!$model->isNewRecord) : ?>
                                     <div class="form-group field-parents-attachment">

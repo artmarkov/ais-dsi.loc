@@ -96,7 +96,7 @@ class WorkingTimeLog extends \artsoft\db\ActiveRecord
         $attributes += ['total_out' => 'Суммарное время уходов с работы раньше положенного'];
         $attributes += ['total_truancy' => 'Колличество прогулов за период'];
         $attributes += ['total_reserv' => 'Число приходов на работу менее чем за ' . self::TIME_RESERV/60 . ' минут'];
-        $attributes += ['total_exit' => 'Число уходов с работы поэже ' . self::TIME_EXIT/60 . ' минут после окончания работы'];
+        $attributes += ['total_exit' => 'Число уходов с работы позже ' . self::TIME_EXIT/60 . ' минут после окончания работы'];
 
         $models = self::find()
             ->where(['between', 'date', Yii::$app->formatter->asDate($timestamp_in, 'php:Y-m-d'), Yii::$app->formatter->asDate($timestamp_out, 'php:Y-m-d')])
