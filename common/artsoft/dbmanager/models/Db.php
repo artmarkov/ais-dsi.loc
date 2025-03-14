@@ -4,6 +4,7 @@ namespace artsoft\dbmanager\models;
 
 use Yii;
 use yii\base\Model;
+use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 
 class Db extends Model
@@ -18,23 +19,35 @@ class Db extends Model
             $filePath);
     }
 
-    public function getFiles($files)
+    public function getFilesAllSize($files)
     {
-        Yii::$app->params['count_db'] = count($files);
+        $data = ArrayHelper::getColumn($this->getFilesData($files), 'file_size');
+        return Yii::$app->formatter->asSize(array_sum($data));
+    }
+
+    public function getFilesData($files)
+    {
         $arr = array();
         foreach ($files as $key => $file) {
             $arr[] = array(
                 'dump' => $file,
+                'file_size' => filesize($file),
                 'size' => Yii::$app->formatter->asSize(filesize($file)),
                 'create_at' => Yii::$app->formatter->asDatetime(filectime($file), 'php:Y-m-d h:i:s'),
                 'type' => pathinfo($file, PATHINFO_EXTENSION),
             );
         }
+        return $arr;
+    }
+
+    public function getFiles($files)
+    {
+        Yii::$app->params['count_db'] = count($files);
 
         $dataProvider = new \yii\data\ArrayDataProvider([
-            'allModels' => $arr,
+            'allModels' => $this->getFilesData($files),
             'sort' => [
-                'attributes' => ['size', 'create_at'],
+                'attributes' => ['dump', 'size', 'create_at'],
                 'defaultOrder' => [
                     'create_at' => SORT_DESC,
                 ],

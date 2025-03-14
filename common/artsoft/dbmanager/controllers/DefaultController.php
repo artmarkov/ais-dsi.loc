@@ -40,6 +40,8 @@ class DefaultController extends BaseController {
        
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'model' => $model,
+            'files' => $files
         ]);
     }
     

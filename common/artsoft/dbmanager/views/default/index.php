@@ -48,21 +48,24 @@ $this->params['breadcrumbs'][] = $this->title;
                                 . '<div class="row">'
                                 . '<div class="col-xs-12 text-center">{pager}</div>'
                                 . '</div>',
+                'showFooter' => true,
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn', 'options' => ['style' => 'width:20px']],
                     [
-                        'options' => ['style' => 'width:70%'],
+                        'options' => ['style' => 'width:500px'],
                         'attribute' => 'dump',
                         'value' => function($data) {
                             return Html::encode($data['dump']);
                         },
                         'label' => Yii::t('art/dbmanager', 'Dump'),
-
+                        'footer' => 'Всего занято на диске:',
                     ],                   
                     [
                         'attribute' => 'size',
+                        'options' => ['style' => 'width:200px'],
                         'format' => 'text',
                         'label' => Yii::t('art/dbmanager', 'Size'),
+                        'footer' => $model->getFilesAllSize($files)
                     ],
                     [
                         'attribute' => 'create_at',
