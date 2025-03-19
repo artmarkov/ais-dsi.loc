@@ -11,7 +11,7 @@ use yii\widgets\DetailView;
 
 switch ($model->resource) {
     case 'schoolplan':
-        $url = \yii\helpers\Url::to(['schoolplan/default/view', 'id' => $model->id]);
+        $url = \yii\helpers\Url::to(['schoolplan/default/update', 'id' => $model->id]);
         break;
     case 'consult_schedule':
         $url = \yii\helpers\Url::to(['teachers/default/consult-items', 'id' => $model->executors_list, 'objectId' => $model->id, 'mode' => 'update']);
