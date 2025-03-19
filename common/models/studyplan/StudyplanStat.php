@@ -71,7 +71,7 @@ class StudyplanStat
 //            'signer_sert_code=> ''
     ];
 
-    const OPTIONS_FIELDS_DEFAULT = ['student_created_at', 'studyplan_created_at', 'student_id', 'student_fio', 'plan_year'];
+    const OPTIONS_FIELDS_DEFAULT = ['student_created_at', 'studyplan_created_at', 'student_id', 'student_fio', 'plan_year', 'education_programm_short_name', 'education_cat_short_name', 'speciality', 'course', 'description', 'doc_contract_start', 'status', 'subject_form_name', 'student_birth_age', 'student_gender', 'limited_status_list'];
 
     public function __construct($model_date)
     {
