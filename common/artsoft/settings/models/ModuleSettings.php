@@ -19,6 +19,7 @@ class ModuleSettings extends BaseSettingsModel
     public $shelf_life_attendlog;
     public $shelf_life_sitelog;
     public $shelf_life_requestlog;
+    public $shelf_life_dbdump;
 
     public $pre_status;
     public $pre_date_in;
@@ -42,8 +43,8 @@ class ModuleSettings extends BaseSettingsModel
                 [['day_in', 'day_out', 'student_delta_time', 'study_plan_month_in'], 'required'],
                 [['day_in', 'day_out', 'student_delta_time', 'study_plan_month_in'], 'string'],
 
-                [['shelf_life_pass', 'shelf_life_attendlog', 'shelf_life_sitelog', 'shelf_life_requestlog'], 'required'],
-                [['shelf_life_pass', 'shelf_life_attendlog', 'shelf_life_sitelog', 'shelf_life_requestlog'], 'string'],
+                [['shelf_life_pass', 'shelf_life_attendlog', 'shelf_life_sitelog', 'shelf_life_requestlog', 'shelf_life_dbdump'], 'required'],
+                [['shelf_life_pass', 'shelf_life_attendlog', 'shelf_life_sitelog', 'shelf_life_requestlog', 'shelf_life_dbdump'], 'string'],
 
                 [['pre_status', 'pre_date_in', 'pre_date_out', 'pre_plan_year', 'pre_date_start'], 'required'],
                 [['pre_status', 'pre_plan_year'], 'string'],
@@ -69,6 +70,7 @@ class ModuleSettings extends BaseSettingsModel
             'shelf_life_attendlog' => 'Срок хранения Журнала выдачи ключей (дней)',
             'shelf_life_sitelog' => 'Срок хранения Лога посещения сайта (дней)',
             'shelf_life_requestlog' => 'Срок хранения Лога запросов (дней)',
+            'shelf_life_dbdump' => 'Срок хранения Дампов БД (дней)',
 
             'pre_status' => 'Статус набора',
             'pre_date_in' => 'Открытие формы предварительной записи',

@@ -41,6 +41,7 @@ SettingsAsset::register($this);
                             <?= $form->field($model, 'shelf_life_attendlog')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'shelf_life_sitelog')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'shelf_life_requestlog')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'shelf_life_dbdump')->textInput(['maxlength' => true]) ?>
 
                         </div>
                     </div>
