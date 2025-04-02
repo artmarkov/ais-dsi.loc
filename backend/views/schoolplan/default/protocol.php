@@ -20,6 +20,23 @@ $schoolplan = \common\models\schoolplan\Schoolplan::findOne($id);
 <div class="protocol-index">
     <div class="panel">
         <div class="panel-body">
+            <?php if ($schoolplan): ?>
+                <div class="panel">
+                    <div class="panel-heading">
+                        Протокол аттестационной комиссии
+                    </div>
+                    <div class="panel-body">
+                        <?= \yii\widgets\DetailView::widget([
+                            'model' => $schoolplan,
+                            'attributes' => [
+                                'title',
+                                'datetime_in',
+                                'datetime_out',
+                            ],
+                        ]) ?>
+                    </div>
+                </div>
+            <?php endif; ?>
             <?= $this->render('_confirm', ['model_confirm' => $model_confirm, 'readonly' => (\artsoft\Art::isFrontend() && !$model_confirm->schoolplan->isProtocolSigner()) ? true : false]) ?>
             <div class="row">
                 <div class="panel">

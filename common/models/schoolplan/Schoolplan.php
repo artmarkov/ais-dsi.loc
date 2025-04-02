@@ -243,10 +243,14 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 //            }, 'enableClientValidation' => false],
             [['auditory_id'], 'required', 'when' => function ($model) {
                 return $model->formPlaces == 1;
-            }, 'enableClientValidation' => false],
+            }, 'whenClient' => "function (attribute, value) {
+                                return document.querySelector('input[type=\"radio\"][name=\"Schoolplan[formPlaces]\"]:checked').value == 1;
+                            }"],
             [['places'], 'required', 'when' => function ($model) {
                 return $model->formPlaces == 2;
-            }, 'enableClientValidation' => false],
+            }, 'whenClient' => "function (attribute, value) {
+                                return document.querySelector('input[type=\"radio\"][name=\"Schoolplan[formPlaces]\"]:checked').value == 2;
+                            }"],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['author_id' => 'id']],
             [['signer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['signer_id' => 'id']],
             [['formPlaces'], 'safe'],
@@ -448,7 +452,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 
     public function getFormPlaces()
     {
-        if ($this->auditory_id != null) {
+        if ($this->auditory_id) {
             return 1;
         } elseif ($this->places != '') {
             return 2;

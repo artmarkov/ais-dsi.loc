@@ -24,6 +24,23 @@ $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
 
         </div>
         <div class="panel-body">
+            <?php if ($modelScoolplan): ?>
+                <div class="panel">
+                    <div class="panel-heading">
+                        Выполнение плана и участие в мероприятии
+                    </div>
+                    <div class="panel-body">
+                        <?= \yii\widgets\DetailView::widget([
+                            'model' => $modelScoolplan,
+                            'attributes' => [
+                                'title',
+                                'datetime_in',
+                                'datetime_out',
+                            ],
+                        ]) ?>
+                    </div>
+                </div>
+            <?php endif; ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

@@ -24,8 +24,6 @@ $form = ActiveForm::begin([
 //                    'onchange'=>'js: $(this).closest("form").submit()',
                 ])->label(Yii::t('art/studyplan', 'Plan Year'));
             ?>
-            <?= $form->field($model_date, 'options')->checkboxList( StudyplanStat::OPTIONS_FIELDS, ['value' => StudyplanStat::OPTIONS_FIELDS_DEFAULT])->label('Поля для выгрузки');
-            ?>
             <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
         </div>
     </div>

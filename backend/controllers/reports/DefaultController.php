@@ -2,6 +2,7 @@
 
 namespace backend\controllers\reports;
 
+use common\models\studyplan\SchoolWorkload;
 use common\models\studyplan\StudyplanDistrib;
 use common\models\studyplan\StudyplanHistory;
 use common\models\studyplan\StudyplanStat;
@@ -18,6 +19,7 @@ use yii\helpers\ArrayHelper;
 
 class DefaultController extends MainController
 {
+    public $freeAccessActions = ['studyplan-distrib','school-workload'];
 
     public function actionIndex()
     {
@@ -113,13 +115,52 @@ class DefaultController extends MainController
             $data = $models->getData();
             $models->sendXlsx($data);
         }
-        if (Yii::$app->request->post('submitAction') == 'distrib') {
-            $models = new StudyplanDistrib($model_date);
-            $data = $models->makeXlsx();
-          //  $models->sendXlsx($data);
-        }
 
         return $this->renderIsAjax('studyplan-stat', [
+            'model_date' => $model_date,
+        ]);
+    }
+
+    public function actionStudyplanDistrib()
+    {
+        $session = Yii::$app->session;
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model_date = $this->modelDate;
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+        }
+        $session->set('__backendPlanYear', $model_date->plan_year);
+
+
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            $models = new StudyplanDistrib($model_date);
+            $data = $models->makeXlsx();
+        }
+
+        return $this->renderIsAjax('studyplan-distrib', [
+            'model_date' => $model_date,
+        ]);
+    }
+
+    public function actionSchoolWorkload()
+    {
+        $session = Yii::$app->session;
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model_date = $this->modelDate;
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+        }
+        $session->set('__backendPlanYear', $model_date->plan_year);
+
+
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            $models = new SchoolWorkload($model_date);
+            $data = $models->makeXlsx();
+        }
+
+        return $this->renderIsAjax('studyplan-distrib', [
             'model_date' => $model_date,
         ]);
     }

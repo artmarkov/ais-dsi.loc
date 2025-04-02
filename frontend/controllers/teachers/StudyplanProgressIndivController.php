@@ -273,7 +273,7 @@ class StudyplanProgressIndivController extends MainController
 //        echo '<pre>' . print_r($models, true) . '</pre>'; die();
         foreach ($models as $model) {
             $modelLesson = LessonItems::findOne(['id' => $model['lesson_items_id']]);
-            //$modelLesson ? $modelLesson->delete() : null;
+            $modelLesson ? $modelLesson->delete() : null;
         }
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
         return $this->redirect($this->getRedirectPage('delete', $model));
