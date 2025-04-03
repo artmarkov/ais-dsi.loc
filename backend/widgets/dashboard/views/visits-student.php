@@ -4,7 +4,7 @@
 ?>
 
 <div class="panel panel-default dw-widget">
-    <div class="panel-heading">Количество посещений учеников на текущий день (ожидаемое, согласно расписанию)</div>
+    <div class="panel-heading">Количество посещений учеников на <?= $date ?> (согласно расписанию)</div>
     <div class="panel-body">
         <?php if ($active): ?>
             <div class="clearfix">
