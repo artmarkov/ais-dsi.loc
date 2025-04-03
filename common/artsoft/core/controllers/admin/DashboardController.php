@@ -30,6 +30,7 @@ class DashboardController extends BaseController
                         'class' => 'col-md-8',
                         'content' => [
                             'artsoft\user\widgets\dashboard\UsersVisitMap',
+                            'backend\widgets\dashboard\VisitsStudent',
                             'artsoft\user\widgets\dashboard\UsersActive',
                         ],
                     ],
@@ -41,23 +42,23 @@ class DashboardController extends BaseController
                         ],
                     ],
                 ],
-               /* [
-                    [
-                        'class' => 'col-md-6',
-                        'content' => [
-//                        'artsoft\post\widgets\dashboard\Posts',
-//                        'artsoft\comment\widgets\dashboard\Comments',
-                        ],
-                    ],
+                /* [
+                     [
+                         'class' => 'col-md-6',
+                         'content' => [
+ //                        'artsoft\post\widgets\dashboard\Posts',
+ //                        'artsoft\comment\widgets\dashboard\Comments',
+                         ],
+                     ],
 
-                    [
-                        'class' => 'col-md-6',
-                        'content' => [
-//                            'artsoft\user\widgets\dashboard\Users',
-//                            'artsoft\media\widgets\dashboard\Media',
-                        ],
-                    ],
-                ],*/
+                     [
+                         'class' => 'col-md-6',
+                         'content' => [
+ //                            'artsoft\user\widgets\dashboard\Users',
+ //                            'artsoft\media\widgets\dashboard\Media',
+                         ],
+                     ],
+                 ],*/
             ];
         }
 
