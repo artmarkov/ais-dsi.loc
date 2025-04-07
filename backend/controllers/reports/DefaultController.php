@@ -236,4 +236,29 @@ class DefaultController extends MainController
         $models = new StudyplanHistory($id);
         $models->makeXlsx();
     }
+
+    public function actionUsersStat()
+    {
+        $session = Yii::$app->session;
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model_date = $this->modelDate;
+        $model_date->addRule('options', 'safe');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+        }
+        $session->set('__backendPlanYear', $model_date->plan_year);
+
+
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            $models = new StudyplanStat($model_date);
+            $data = $models->getData();
+            $models->sendXlsx($data);
+        }
+
+        return $this->renderIsAjax('studyplan-stat', [
+            'model_date' => $model_date,
+        ]);
+    }
+
 }

@@ -157,7 +157,10 @@ class m230127_092207_add_subject_view extends Migration
     parents.sert_num AS signer_sert_num,
     parents.sert_organ AS signer_sert_organ,
     parents.sert_date AS signer_sert_date,
-    parents.sert_code AS signer_sert_code
+    parents.sert_code AS signer_sert_code,
+    s.last_name AS student_last_name,
+    s.first_name AS student_first_name,
+    s.middle_name AS student_middle_name
    FROM studyplan
      JOIN students ON students.id = studyplan.student_id
      JOIN user_common s ON s.id = students.user_common_id

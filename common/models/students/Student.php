@@ -130,6 +130,10 @@ class Student extends ActiveRecord
             'version' => Yii::t('art', 'Version'),
             'userStatus' => Yii::t('art', 'Status'),
             'limited_status_list' => Yii::t('art/student', 'Limited status list'),
+            'first_name' => Yii::t('art', 'First Name'),
+            'middle_name' => Yii::t('art', 'Middle Name'),
+            'last_name' => Yii::t('art', 'Last Name'),
+
         ];
     }
 

@@ -72,14 +72,40 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return sprintf('#%06d', $model->id);
                                 },
                             ],
+
                             [
-                                'options' => ['style' => 'width:300px'],
                                 'attribute' => 'fullName',
+                                'hidden' => false,
+                                'hiddenFromExport'=> true,
+                                'options' => ['style' => 'width:100%'],
                                 'value' => function (Student $model) {
                                     return $model->fullName;
                                 },
                             ],
-
+                            [
+                                'attribute' => 'last_name',
+                                'hidden' => true,
+                                'hiddenFromExport'=> false,
+                                'value' => function (Student $model) {
+                                    return $model->user->last_name;
+                                },
+                            ],
+                            [
+                                'attribute' => 'first_name',
+                                'hidden' => true,
+                                'hiddenFromExport'=> false,
+                                'value' => function (Student $model) {
+                                    return $model->user->first_name;
+                                },
+                            ],
+                            [
+                                'attribute' => 'middle_name',
+                                'hidden' => true,
+                                'hiddenFromExport'=> false,
+                                'value' => function (Student $model) {
+                                    return $model->user->middle_name ?? '';
+                                },
+                            ],
                             [
                                 'class' => 'artsoft\grid\columns\DateFilterColumn',
                                 'attribute' => 'userBirthDate',

@@ -66,7 +66,11 @@ class Employees extends \artsoft\db\ActiveRecord
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
             'userStatus' => Yii::t('art', 'Status'),
-            'access_work_flag' => 'Разрешение на доступ к работе получено'
+            'access_work_flag' => 'Разрешение на доступ к работе получено',
+            'first_name' => Yii::t('art', 'First Name'),
+            'middle_name' => Yii::t('art', 'Middle Name'),
+            'last_name' => Yii::t('art', 'Last Name'),
+
         ];
     }
 
