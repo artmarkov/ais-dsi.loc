@@ -40,6 +40,9 @@ $form = ActiveForm::begin([
 //                                ],
                             ])->label(Yii::t('art/studyplan', 'Plan Year'));
                         ?>
+
+                        <?= \artsoft\helpers\Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
+
                     </div>
                 </div>
             </div>

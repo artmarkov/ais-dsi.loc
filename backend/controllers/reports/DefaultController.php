@@ -9,6 +9,7 @@ use common\models\studyplan\StudyplanStat;
 use common\models\subject\SubjectType;
 use common\models\teachers\TarifStatement;
 use common\models\teachers\Teachers;
+use common\models\teachers\TeachersSchedule;
 use common\models\teachers\TeachersScheduleGenerator;
 use common\models\teachers\TeachersTimesheet;
 use common\models\user\UserCommon;
@@ -176,10 +177,15 @@ class DefaultController extends MainController
             $model_date->teachers_id = isset($_GET['id']) ? $_GET['id'] : ($session->get('_teachersScheduleReports') ?? Teachers::find()->joinWith(['user'])->where(['status' => Teachers::STATUS_ACTIVE])->scalar());
         }
         $session->set('_teachersScheduleReports', $model_date->teachers_id);
-//        echo '<pre>' . print_r($model_date->plan_year, true) . '</pre>';die();
         $modelTeachers = Teachers::findOne($model_date->teachers_id);
         $data = $modelTeachers->getTeachersScheduleQuery($model_date->plan_year);
         $models = ArrayHelper::index($data, null, ['week_day']);
+//        echo '<pre>' . print_r($models, true) . '</pre>';die();
+
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            $models = new TeachersSchedule($models, $model_date, $modelTeachers);
+            $models->makeXlsx();
+        }
         return $this->render('teachers-schedule', [
             'models' => $models,
             'model_date' => $model_date,
