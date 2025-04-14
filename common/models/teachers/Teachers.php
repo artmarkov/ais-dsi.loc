@@ -373,7 +373,13 @@ class Teachers extends ActiveRecord
             ->where(['teachers_id' => $this->id])
             ->andWhere(['not', ['subject_schedule_id' => null]])
             ->andWhere(['=', 'plan_year', $plan_year])
-            ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
+            ->andWhere(['OR',
+                ['status' => 1],
+                ['AND',
+                    ['status' => 0],
+                    ['status_reason' => [1, 2, 4]]
+                ],
+            ])
             ->orderBy('week_day, time_in')
             ->all();
     }

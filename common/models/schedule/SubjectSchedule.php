@@ -37,7 +37,7 @@ use yii\helpers\ArrayHelper;
  * @property int|null $updated_by
  * @property int $version
  *
- * @property TeachersKoad $teachersLoad
+ * @property TeachersLoad $teachersLoad
  * @property Direction $direction
  */
 class SubjectSchedule  extends \artsoft\db\ActiveRecord
@@ -116,7 +116,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
                 ['AND',
                     ['=', 'teachers_id', $this->teachersLoad->teachers_id],
                     ['auditory_id' => $this->auditory_id],
-                    ['plan_year' => ArtHelper::getStudyYearDefault()],
+                    ['plan_year' => $this->teachersLoad->studyplanSubject->studyplan->plan_year ?? ArtHelper::getStudyYearDefault()],
                     ['AND',
                         ['<=', 'time_plan_in', Schedule::encodeTime($this->time_in)],
                         ['>=', 'time_plan_out', Schedule::encodeTime($this->time_out)],

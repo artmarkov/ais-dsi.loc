@@ -6,10 +6,14 @@ use artsoft\helpers\Schedule;
 
 $stat = [];
 $total[1000][1000] = $total[1000][1001] = $total[1001][1000] = $total[1001][1001] = 0;
+$auditory_list = RefBook::find('auditory_memo_1')->getList();
+$direction_list = \common\models\guidejob\Direction::getDirectionShortList();
+
 ?>
 
 <div class="teachers-schedule">
-    <div class="panel">
+    <?= $this->render('_search-schedule', compact('model_date')) ?>
+    <div class="panel panel-info">
         <div class="panel-heading">
             Расписание занятий: <?php echo RefBook::find('teachers_fio')->getValue($modelTeachers->id); ?>
         </div>
@@ -23,7 +27,6 @@ $total[1000][1000] = $total[1000][1001] = $total[1001][1000] = $total[1001][1001
                 ]); ?>
         </div>
         <div class="panel-body">
-            <?= $this->render('_search-schedule', compact('model_date')) ?>
             <div class="row">
                 <div class="col-sm-12">
                     <?php foreach ($models as $day => $data): ?>
@@ -67,10 +70,10 @@ $total[1000][1000] = $total[1000][1001] = $total[1001][1000] = $total[1001][1001
                                         <?= $items->subject; ?>
                                     </td>
                                     <td>
-                                        <?= \common\models\guidejob\Direction::getDirectionShortList()[$items->direction_id]; ?>
+                                        <?= $direction_list[$items->direction_id] ?? ''; ?>
                                     </td>
                                     <td>
-                                        <?= RefBook::find('auditory_memo_1')->getValue($items->auditory_id); ?>
+                                        <?= $auditory_list[$items->auditory_id] ?? ''; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

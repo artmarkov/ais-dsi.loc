@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\widgets\ActiveForm;
+use artsoft\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $form artsoft\widgets\ActiveForm */
@@ -23,7 +24,7 @@ $form = ActiveForm::begin([
                             echo $form->field($model_date, 'teachers_id')->widget(\kartik\select2\Select2::class, [
                                 'data' => \artsoft\helpers\RefBook::find('teachers_fio', 1)->getList(),
                                 'options' => [
-                                    'onchange'=>'js: $(this).closest("form").submit()',
+//                                    'onchange'=>'js: $(this).closest("form").submit()',
                                     'placeholder' => Yii::t('art', 'Select...'),
                                 ],
                                 'pluginOptions' => [
@@ -35,13 +36,14 @@ $form = ActiveForm::begin([
                         <?= $form->field($model_date, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                             [
                                 'disabled' => false,
-                                'onchange'=>'js: $(this).closest("form").submit()',
+//                                'onchange'=>'js: $(this).closest("form").submit()',
 //                                'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' =>  true ],
 //                                ],
                             ])->label(Yii::t('art/studyplan', 'Plan Year'));
                         ?>
 
-                        <?= \artsoft\helpers\Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
+                        <?= Html::submitButton('<i class="fa fa-html5" aria-hidden="true"></i> Получить данные в Html', ['class' => 'btn btn-info', 'name' => 'submitAction', 'value' => 'send']); ?>
+                        <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
 
                     </div>
                 </div>

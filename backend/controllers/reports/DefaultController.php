@@ -20,7 +20,7 @@ use yii\helpers\ArrayHelper;
 
 class DefaultController extends MainController
 {
-    public $freeAccessActions = ['studyplan-distrib','school-workload'];
+    public $freeAccessActions = ['studyplan-distrib', 'school-workload'];
 
     public function actionIndex()
     {
@@ -178,16 +178,14 @@ class DefaultController extends MainController
         }
         $session->set('_teachersScheduleReports', $model_date->teachers_id);
         $modelTeachers = Teachers::findOne($model_date->teachers_id);
-        $data = $modelTeachers->getTeachersScheduleQuery($model_date->plan_year);
-        $models = ArrayHelper::index($data, null, ['week_day']);
+        $models = new TeachersSchedule($model_date);
 //        echo '<pre>' . print_r($models, true) . '</pre>';die();
 
         if (Yii::$app->request->post('submitAction') == 'excel') {
-            $models = new TeachersSchedule($models, $model_date, $modelTeachers);
             $models->makeXlsx();
         }
         return $this->render('teachers-schedule', [
-            'models' => $models,
+            'models' => $models->getData(),
             'model_date' => $model_date,
             'modelTeachers' => $modelTeachers,
         ]);
