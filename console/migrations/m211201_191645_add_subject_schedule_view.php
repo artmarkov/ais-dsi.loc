@@ -7,7 +7,7 @@ class m211201_191645_add_subject_schedule_view extends \artsoft\db\BaseMigration
     public function up()
     {
         $this->db->createCommand()->createView('subject_schedule_view', '
-  SELECT studyplan_subject.id AS studyplan_subject_id,
+   SELECT studyplan_subject.id AS studyplan_subject_id,
     0 AS subject_sect_studyplan_id,
     studyplan_subject.id::text AS studyplan_subject_list,
     studyplan_subject.subject_type_id,
@@ -30,6 +30,7 @@ class m211201_191645_add_subject_schedule_view extends \artsoft\db\BaseMigration
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
     studyplan_subject.subject_vid_id,
     studyplan.status,
+    studyplan.status_reason,
     studyplan.id AS studyplan_id,
     concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
     studyplan.programm_id::text AS programm_list
@@ -74,9 +75,10 @@ UNION ALL
     concat(subject.name, \'(\', guide_subject_vid.slug, \') \') AS subject,
     subject_sect.subject_vid_id,
     subject_sect.status,
+    0 AS status_reason,
     0 AS studyplan_id,
     NULL::text AS subject_key,
-	subject_sect.programm_list
+    subject_sect.programm_list
    FROM subject_sect_studyplan
      JOIN subject_sect ON subject_sect.id = subject_sect_studyplan.subject_sect_id
      JOIN teachers_load ON subject_sect_studyplan.id = teachers_load.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0
