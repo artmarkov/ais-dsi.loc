@@ -25,7 +25,7 @@ class EntrantImport extends Model
     {
         return [
             [['file'], 'required'],
-            [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => ['xlsx']],
+//            ['file', 'file', 'skipOnEmpty' => true, 'extensions' => 'xlsx'],
             [['com_id'], 'integer'],
         ];
     }
@@ -33,7 +33,7 @@ class EntrantImport extends Model
     public function attributeLabels()
     {
         return [
-            'file' => 'Файл для импорта с портала Mos.ru',
+            'file' => 'Файл для импорта с портала Mos.ru или Мосбилета',
         ];
     }
 
@@ -58,6 +58,14 @@ class EntrantImport extends Model
                             'snils' => $v[4],
                             'subjects' => $v[5],
                         ];
+                    } elseif ($v[1] == 'МПГУ') {
+                        $data[] = [
+                            'fullname' => $v[4],
+                            'snils' => $v[5],
+                            'subjects' => $v[3],
+                            'birth_date' => $v[6],
+                            'gender' => $v[7],
+                        ];
                     } else {
                         if (1 == $i) {
                             continue;
@@ -68,9 +76,10 @@ class EntrantImport extends Model
                     }
                 }
             }
-            $data = ArrayHelper::index($data, null, ['fullname']);
-            foreach ($data as $fullName => $val) {
-//            echo '<pre>' . print_r($data, true) . '</pre>';
+            $data_array = ArrayHelper::index($data, null,'fullname');
+            $data = ArrayHelper::index($data, 'fullname');
+           // echo '<pre>' . print_r($data, true) . '</pre>'; die();
+            foreach (array_unique($data, SORT_REGULAR) as $fullName => $val) {
                 $student_id = self::findByFio($fullName);
                 if (!$student_id) {
                     $array = explode(' ', $fullName);
@@ -82,6 +91,7 @@ class EntrantImport extends Model
                         $userCommon->last_name = $array[0];
                         $userCommon->first_name = $array[1];
                         $userCommon->middle_name = $array[2];
+                        $userCommon->birth_date = $val['birth_date'] ?? null;
                         $user->username = $userCommon->generateUsername();
                         $user->generateAuthKey();
                         $user->status = User::STATUS_INACTIVE;
@@ -92,7 +102,10 @@ class EntrantImport extends Model
                             $userCommon->user_id = $user->id;
                             $userCommon->user_category = UserCommon::USER_CATEGORY_STUDENTS;
                             $userCommon->status = UserCommon::STATUS_ACTIVE;
-                            $userCommon->snils = $val[0]['snils'];
+                            $userCommon->snils = $val['snils'];
+                            $userCommon->gender = $this->getGender($val['gender']);
+                           // echo '<pre>' . print_r($data, true) . '</pre>';
+                            //echo '<pre>' . print_r($this->getSubjects($data_array[$fullName]), true) . '</pre>';
                             if ($flag = $userCommon->save(false)) {
                                 $modelStudent->user_common_id = $userCommon->id;
                                 if (!($flag = $modelStudent->save(false))) {
@@ -118,7 +131,7 @@ class EntrantImport extends Model
                         $model->comm_id = $this->com_id;
                         $model->status = 0;
                         $model->group_id = $this->getGroup($this->com_id);
-                        $model->subject_list = $this->getSubjects($val);
+                        $model->subject_list = $this->getSubjects($data_array[$fullName]);
                         $model->save(false);
                     }
                 }
@@ -162,8 +175,15 @@ class EntrantImport extends Model
         return $subject->id ?? null;
     }
 
+    protected function getGender($name)
+    {
+        return $name == 'Мужской' ? UserCommon::GENDER_MALE : ($name == 'Женский' ? UserCommon::GENDER_FEMALE : UserCommon::GENDER_NOT_SET);
+    }
+
     protected function getSubjectName($name)
     {
+        $array = explode(',', $name);
+        $name =  $array[0];
         switch ($name) {
             case 'Музыкальный фольклор' :
                 $name = 'Фольклорный ансамбль';

@@ -173,6 +173,7 @@ class DefaultController extends MainController
 
         $this->view->params['breadcrumbs'][] = 'Расписание преподавателя';
         $model_date = $this->modelDate;
+        $model_date->addRule(['teachers_id'], 'required');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $model_date->teachers_id = isset($_GET['id']) ? $_GET['id'] : ($session->get('_teachersScheduleReports') ?? Teachers::find()->joinWith(['user'])->where(['status' => Teachers::STATUS_ACTIVE])->scalar());
         }
