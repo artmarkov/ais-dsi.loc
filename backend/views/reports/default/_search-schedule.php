@@ -43,7 +43,8 @@ $form = ActiveForm::begin([
                         ?>
 
                         <?= Html::submitButton('<i class="fa fa-html5" aria-hidden="true"></i> Получить данные в Html', ['class' => 'btn btn-info', 'name' => 'submitAction', 'value' => 'send']); ?>
-                        <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
+                        <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Расписание в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
+                        <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Консультации в Excel', ['class' => 'btn btn-warning', 'name' => 'submitAction', 'value' => 'excel_consult']); ?>
 
                     </div>
                 </div>

@@ -10,6 +10,7 @@ use common\models\subject\SubjectType;
 use common\models\teachers\TarifStatement;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersSchedule;
+use common\models\teachers\TeachersConsult;
 use common\models\teachers\TeachersScheduleGenerator;
 use common\models\teachers\TeachersTimesheet;
 use common\models\user\UserCommon;
@@ -183,6 +184,10 @@ class DefaultController extends MainController
 //        echo '<pre>' . print_r($models, true) . '</pre>';die();
 
         if (Yii::$app->request->post('submitAction') == 'excel') {
+            $models->makeXlsx();
+        }
+        if (Yii::$app->request->post('submitAction') == 'excel_consult') {
+            $models = new TeachersConsult($model_date);
             $models->makeXlsx();
         }
         return $this->render('teachers-schedule', [

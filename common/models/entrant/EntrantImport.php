@@ -65,6 +65,7 @@ class EntrantImport extends Model
                             'subjects' => $v[3],
                             'birth_date' => $v[6],
                             'gender' => $v[7],
+                            'phone' => $v[9],
                         ];
                     } else {
                         if (1 == $i) {
@@ -92,6 +93,7 @@ class EntrantImport extends Model
                         $userCommon->first_name = $array[1];
                         $userCommon->middle_name = $array[2];
                         $userCommon->birth_date = $val['birth_date'] ?? null;
+                        $userCommon->phone = $val['phone'] ?? null;
                         $user->username = $userCommon->generateUsername();
                         $user->generateAuthKey();
                         $user->status = User::STATUS_INACTIVE;
@@ -105,7 +107,6 @@ class EntrantImport extends Model
                             $userCommon->snils = $val['snils'];
                             $userCommon->gender = $this->getGender($val['gender']);
                            // echo '<pre>' . print_r($data, true) . '</pre>';
-                            //echo '<pre>' . print_r($this->getSubjects($data_array[$fullName]), true) . '</pre>';
                             if ($flag = $userCommon->save(false)) {
                                 $modelStudent->user_common_id = $userCommon->id;
                                 if (!($flag = $modelStudent->save(false))) {
