@@ -56,7 +56,7 @@ class SummaryProgress
                 ['status' => Studyplan::STATUS_ACTIVE],
                 ['AND',
                     ['status' => Studyplan::STATUS_INACTIVE],
-                    ['status_reason' => [1, 2, 4]]
+                    ['status_reason' => [1, 2, 3, 4]]
                 ]
             ])
             ->andWhere(['plan_year' => $this->plan_year]);
@@ -83,7 +83,7 @@ class SummaryProgress
                 ['status' => Studyplan::STATUS_ACTIVE],
                 ['AND',
                     ['status' => Studyplan::STATUS_INACTIVE],
-                    ['status_reason' => [1, 2, 4]]
+                    ['status_reason' => [1, 2, 3, 4]]
                 ]
             ]);
         if ($this->subject_type_id) {
@@ -124,7 +124,7 @@ class SummaryProgress
                 ['status' => Studyplan::STATUS_ACTIVE],
                 ['AND',
                     ['status' => Studyplan::STATUS_INACTIVE],
-                    ['status_reason' => [1, 2, 4]]
+                    ['status_reason' => [1, 2, 3, 4]]
                 ]
             ])
             ->orderBy('subject_category_id, subject_vid_id, subject_id')
@@ -168,7 +168,7 @@ class SummaryProgress
                 ['status' => Studyplan::STATUS_ACTIVE],
                 ['AND',
                     ['status' => Studyplan::STATUS_INACTIVE],
-                    ['status_reason' => [1, 2, 4]]
+                    ['status_reason' => [1, 2, 3, 4]]
                 ]
             ]);
 //        if ($this->vid_sert == LessonTest::MIDDLE_ATTESTATION) {

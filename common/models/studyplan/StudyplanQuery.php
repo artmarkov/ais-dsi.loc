@@ -15,7 +15,7 @@ class StudyplanQuery extends \yii\db\ActiveQuery
             ['status' => Studyplan::STATUS_ACTIVE],
             ['AND',
                 ['status' => Studyplan::STATUS_INACTIVE],
-                ['status_reason' => [1, 2, 4]]
+                ['status_reason' => [1, 2, 3, 4]]
             ]
         ]);
     }
