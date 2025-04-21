@@ -71,12 +71,12 @@ class TeachersConsult
         //echo '<pre>' . print_r($this->getData(), true) . '</pre>'; die();
 
         foreach ($this->models ?? $this->getData() as $index => $items) {
-
+            $time = Schedule::astr2academ(Yii::$app->formatter->asTimestamp($items->datetime_out) - Yii::$app->formatter->asTimestamp($items->datetime_in));
             $dataSchedule[] = [
                 'rank' => 'item',
                 'index' => $index,
                 'time' => $this->getTime($items),
-                'time_load' => $items->load_time_consult,
+                'time_load' => $time,
                 'sect_name' => $items->sect_name,
                 'subject_type' => RefBook::find('subject_type_name_dev')->getValue($items->subject_type_id),
                 'subject' => $items->subject,

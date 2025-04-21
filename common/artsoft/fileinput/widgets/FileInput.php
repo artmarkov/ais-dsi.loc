@@ -23,7 +23,7 @@ class FileInput extends \yii\base\Widget
     public $pluginEvents = [];
     public $maxFileCount = 50;
     public $allowedFileExtensions = ['txt', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', 'pdf', 'jpg', 'png', 'mp4', 'mp3', 'jpeg'];
-    public $maxFileSize = 3000;
+    public $maxFileSize = 1024;
 
     private $rawWidgetHtml;
 

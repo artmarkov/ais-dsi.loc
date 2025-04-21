@@ -934,7 +934,7 @@ class DefaultController extends MainController
                 throw new NotFoundHttpException("The model_date was not found.");
             }
             $query = ConsultScheduleView::find()->where(['=', 'teachers_id', $id])
-                ->andWhere(['status' => 1])
+                //->andWhere(['status' => 1])
                 ->andWhere(['=', 'plan_year', $model_date->plan_year]);
             $searchModel = new ConsultScheduleViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
