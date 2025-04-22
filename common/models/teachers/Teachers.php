@@ -377,7 +377,7 @@ class Teachers extends ActiveRecord
                 ['status' => 1],
                 ['AND',
                     ['status' => 0],
-                    ['status_reason' => [1, 2, 3, 4]]
+                    ['status_reason' => [1, 2, 4]]
                 ],
             ])
             ->orderBy('week_day, time_in')
