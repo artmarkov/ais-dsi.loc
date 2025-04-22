@@ -259,24 +259,24 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 //            [['protocol_leader_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_leader_id' => 'id']],
 //            [['protocol_soleader_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_leader_id' => 'id']],
             [['protocol_secretary_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_secretary_id' => 'id']],
-            [['protocol_secretary_id', 'protocol_members_list', 'protocol_class_list', 'protocol_soleader_id', 'protocol_subject_cat_id', 'protocol_subject_id', 'protocol_subject_vid_id'], 'required', 'when' => function ($model) {
+            [['protocol_members_list', 'protocol_class_list', 'protocol_subject_cat_id', 'protocol_subject_id', 'protocol_subject_vid_id'], 'required', 'when' => function ($model) {
                 return $model->protocolFlag == true;
             },
                 'whenClient' => "function (attribute, value) {
                                 return $('input[id=\"schoolplan-protocolflag\"]').prop('checked') === true;
                             }"],
-            [['protocol_leader_name'], 'required', 'when' => function ($model) {
-                return $model->protocolFlag == true && $model->protocolLeaderFlag == true && $model->category->commission_sell == 1 && !$model->isNewRecord;
-            },
-                'whenClient' => "function (attribute, value) {
-                                return $('input[id=\"schoolplan-protocolleaderflag\"]').prop('checked') === true && $('input[id=\"schoolplan-protocolflag\"]').prop('checked') === true;
-                            }"],
-            [['protocol_leader_id'], 'required', 'when' => function ($model) {
-                return $model->protocolFlag == true && $model->protocolLeaderFlag == false && $model->category->commission_sell == 1 && !$model->isNewRecord;
-            },
-                'whenClient' => "function (attribute, value) {
-                                return $('input[id=\"schoolplan-protocolleaderflag\"]').prop('checked') === false && $('input[id=\"schoolplan-protocolflag\"]').prop('checked') === true;
-                            }"],
+//            [['protocol_leader_name'], 'required', 'when' => function ($model) {
+//                return $model->protocolFlag == true && $model->protocolLeaderFlag == true && $model->category->commission_sell == 1 && !$model->isNewRecord;
+//            },
+//                'whenClient' => "function (attribute, value) {
+//                                return $('input[id=\"schoolplan-protocolleaderflag\"]').prop('checked') === true && $('input[id=\"schoolplan-protocolflag\"]').prop('checked') === true;
+//                            }"],
+//            [['protocol_leader_id'], 'required', 'when' => function ($model) {
+//                return $model->protocolFlag == true && $model->protocolLeaderFlag == false && $model->category->commission_sell == 1 && !$model->isNewRecord;
+//            },
+//                'whenClient' => "function (attribute, value) {
+//                                return $('input[id=\"schoolplan-protocolleaderflag\"]').prop('checked') === false && $('input[id=\"schoolplan-protocolflag\"]').prop('checked') === true;
+//                            }"],
             [['date_in'], 'validateOwnSchoolplan', 'skipOnEmpty' => false, 'skipOnError' => false],
         ];
     }

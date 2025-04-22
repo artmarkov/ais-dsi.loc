@@ -283,7 +283,7 @@ $form = ActiveForm::begin([
                                         <div class="row" id="file">
                                             <div class="col-sm-12">
                                                 <?= \yii\bootstrap\Alert::widget([
-                                                    'body' => '<i class="fa fa-info"></i> Максимальный размер файла: 3 Mb',
+                                                    'body' => '<i class="fa fa-info"></i> Максимальный размер файла: 1 Mb',
                                                     'options' => ['class' => 'alert-info'],
                                                 ]);
                                                 ?>
@@ -366,7 +366,7 @@ $form = ActiveForm::begin([
                                                     ?>
                                                     <?= $form->field($model, 'protocol_members_list')->widget(\kartik\select2\Select2::class, [
     //                                                    'data' => \common\models\teachers\Teachers::getUserTeachersForDepartment($model->department_list),
-                                                        'data' => User::getUsersByIds(User::getUsersByRole('department,administrator')),
+                                                        'data' => User::getUsersByIds(User::getUsersByRole('department,teachers,administrator')),
                                                         'showToggleAll' => false,
                                                         'options' => [
                                                             'disabled' => $readonly,

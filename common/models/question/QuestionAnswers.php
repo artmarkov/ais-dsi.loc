@@ -179,6 +179,7 @@ class QuestionAnswers extends DynamicModel
 
     public function getDataArrayAll()
     {
+        ini_set('memory_limit', '4096M');
         $data = [];
 //        echo '<pre>' . print_r($this->loadValues(), true) . '</pre>'; die();
         foreach ($this->loadValues() as $model) {
