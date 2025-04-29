@@ -70,7 +70,7 @@ class Question extends \artsoft\db\ActiveRecord
             BlameableBehavior::class,
             [
                 'class' => ArrayFieldBehavior::class,
-                'attributes' => ['division_list', 'moderator_list'],
+                'attributes' => ['division_list', 'moderator_list', 'users_cat'],
             ],
             [
                 'class' => DateFieldBehavior::class,
@@ -91,9 +91,9 @@ class Question extends \artsoft\db\ActiveRecord
             [['author_id', 'name', 'category_id', 'vid_id', 'timestamp_in', 'timestamp_out'], 'required'],
             [['category_id', 'users_cat', 'vid_id', 'status'], 'default', 'value' => null],
             [['email_flag', 'email_author_flag'], 'default', 'value' => 0],
-            [['author_id', 'category_id', 'users_cat', 'vid_id', 'status', 'email_flag', 'email_author_flag', 'question_limit'], 'integer'],
+            [['author_id', 'category_id', 'vid_id', 'status', 'email_flag', 'email_author_flag', 'question_limit'], 'integer'],
             [['timestamp_in', 'timestamp_out'], 'safe'],
-            [['division_list', 'moderator_list'], 'safe'],
+            [['users_cat', 'division_list', 'moderator_list'], 'safe'],
             [['description'], 'string', 'max' => 4000],
             [['name'], 'string', 'max' => 127],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['author_id' => 'id']],
@@ -159,23 +159,28 @@ class Question extends \artsoft\db\ActiveRecord
 
     public function getUsersCategory()
     {
-        switch ($this->users_cat) {
-            case self::GROUP_STUDENTS:
-                return ['students'];
-                break;
-            case self::GROUP_EMPLOYEES:
-                return ['employees'];
-                break;
-            case self::GROUP_TEACHERS:
-                return ['teachers'];
-                break;
-            case self::GROUP_PARENTS:
-                return ['parents'];
-                break;
-            default:
-                return [];
+        $v = [];
+        foreach ($this->users_cat as $id) {
+            switch ($id) {
+                case self::GROUP_STUDENTS:
+                    $v[] = 'students';
+                    break;
+                case self::GROUP_EMPLOYEES:
+                    $v[] = 'employees';
+                    break;
+                case self::GROUP_TEACHERS:
+                    $v[] = 'teachers';
+                    break;
+                case self::GROUP_PARENTS:
+                    $v[] = 'parents';
+                    break;
+                default:
+                    $v[] = null;
+            }
         }
+        return  $v;
     }
+
     /**
      * @param $val
      * @return mixed
@@ -263,6 +268,7 @@ class Question extends \artsoft\db\ActiveRecord
     {
         return count($this->questionUsers);
     }
+
     /**
      * @param bool $insert
      * @return bool

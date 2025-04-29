@@ -81,9 +81,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'users_cat',
                         'filter' => Question::getGroupList(),
                         'value' => function (Question $model) {
-                            return Question::getGroupValue($model->users_cat);
+                            $v = [];
+                            foreach ($model->users_cat as $id) {
+                                $v[] = Question::getGroupValue($id);
+                            }
+                            return implode(';<br/> ', $v);
                         },
-
+                        'format' => 'raw',
                     ],
                     [
                         'attribute' => 'vid_id',
@@ -91,7 +95,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'value' => function (Question $model) {
                             return Question::getVidValue($model->vid_id);
                         },
-
                     ],
                     [
                         'attribute' => 'division_list',

@@ -89,7 +89,7 @@ $this->registerJs($js, \yii\web\View::POS_LOAD);
                         'options' => [
                             'disabled' => $readonly,
                             'placeholder' => Yii::t('art', 'Select...'),
-                            'multiple' => false,
+                            'multiple' => true,
                         ],
                         'pluginOptions' => [
                             'allowClear' => true

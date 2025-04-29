@@ -526,6 +526,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
         $modelsSubjectSchedule = LessonItemsProgressView::find()->where(
             ['AND',
                 ['subject_sect_studyplan_id' => 0],
+                //['NOT IN', 'test_category', [2,3]],
                 ['studyplan_subject_id' => $studyplanSubjectIds],
                 ['=', 'lesson_date', strtotime($model->lesson_date)],
             ])->all();

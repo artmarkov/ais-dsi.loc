@@ -137,6 +137,7 @@ class QuestionAnswers extends DynamicModel
     {
         $labels = ['question_users_id' => '#'];
         $labels += ['users_id' => 'Пользователь'];
+        $labels += ['question_created_at' => 'Добавлено'];
         $labels += ['read_flag' => 'Статус'];
         $labels += ArrayHelper::map($this->models->asArray()->all(), 'name', 'label');
         return $labels;
@@ -156,6 +157,7 @@ class QuestionAnswers extends DynamicModel
                      question_users.users_id as users_id, 
                      question_users.read_flag as read_flag, 
                      question_users.id as question_users_id,
+                     question_users.created_at as question_created_at,
                      question_value.id as question_value_id,
                      question_value.question_attribute_id as question_attribute_id,
                      question_value.value_string as value_string,
@@ -169,7 +171,7 @@ class QuestionAnswers extends DynamicModel
 
     private function loadValues()
     {
-        return $this->loadQuery()->asArray()->all();
+        return $this->loadQuery()->asArray()->orderBy('question_created_at DESC')->all();
     }
 
     public function loadValue()
@@ -207,6 +209,7 @@ class QuestionAnswers extends DynamicModel
         $data['users_id'] = isset($user->userCommon) ? $user->userCommon->getFullName() : 'Гость';
         $data['read_flag'] = QuestionUsers::getReadValue($model['read_flag']);
         $data['question_users_id'] = $model['question_users_id'];
+        $data['question_created_at'] = Yii::$app->formatter->asDatetime($model['question_created_at']);
         $data[$model['name']] = $this->getValueManager($model);
         return $data;
     }

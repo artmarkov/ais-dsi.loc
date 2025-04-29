@@ -40,7 +40,7 @@ class StudentController extends \frontend\controllers\DefaultController
         $this->view->params['tabMenu'] = $this->tabMenu;
         $subquery = QuestionUsers::find()->select('COUNT(id)')->where('question_id = question.id');
         $query = Question::find()
-            ->where(['users_cat' => Question::GROUP_STUDENTS])
+            ->where(['like', 'users_cat' , Question::GROUP_STUDENTS])
             ->andWhere(['<=', 'timestamp_in', time()])
             ->andWhere(['>=', 'timestamp_out', time() - 86400])
             ->andWhere(['=', 'status', Question::STATUS_ACTIVE])
@@ -65,7 +65,7 @@ class StudentController extends \frontend\controllers\DefaultController
 //        $model = $this->findModel($id);
         $subquery = QuestionUsers::find()->select('COUNT(id)')->where('question_id = question.id');
         $model = Question::find()
-            ->where(['users_cat' => Question::GROUP_STUDENTS])
+            ->where(['like', 'users_cat' , Question::GROUP_STUDENTS])
             ->andWhere(['<=', 'timestamp_in', time()])
             ->andWhere(['>=', 'timestamp_out', time() - 86400])
             ->andWhere(['=', 'status', Question::STATUS_ACTIVE])
@@ -77,7 +77,7 @@ class StudentController extends \frontend\controllers\DefaultController
             ])->one();
         if (!isset($model)) {
             $model = Question::find()
-                ->where(['users_cat' => Question::GROUP_STUDENTS])
+                ->where(['like', 'users_cat' , Question::GROUP_STUDENTS])
                 ->andWhere(['=', 'id', $id])
                 ->one();
             if (isset($model)) {

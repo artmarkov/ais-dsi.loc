@@ -16,7 +16,7 @@ class m220518_100419_add_table_question extends \artsoft\db\BaseMigration
             'author_id' => $this->integer()->notNull(),
             'name' => $this->string(127)->notNull()->comment('Название формы'),
             'category_id' => $this->integer()->notNull()->defaultValue(1)->comment('Категория формы (Опрос, Заявка)'),
-            'users_cat' => $this->integer()->comment('Группа пользователей (Сотрудники, Преподаватели, Ученики, Родители, Гости)'),
+            'users_cat' => $this->string(1024)->comment('Группа пользователей (Сотрудники, Преподаватели, Ученики, Родители, Гости)'),
             'moderator_list' => $this->string(1024)->comment('Список модераторов'),
             'vid_id' => $this->integer()->notNull()->defaultValue(1)->comment('Вид формы (Открытая, Закрытая)'),
             'division_list' => $this->string(1024)->comment('Список отделений'),

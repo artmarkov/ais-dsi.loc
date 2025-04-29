@@ -18,8 +18,8 @@ class QuestionSearch extends Question
     public function rules()
     {
         return [
-            [['id', 'author_id', 'name', 'category_id', 'users_cat', 'vid_id', 'timestamp_in', 'timestamp_out', 'status', 'email_flag', 'email_author_flag', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['division_list', 'description'], 'safe'],
+            [['id', 'author_id', 'name', 'category_id', 'vid_id', 'timestamp_in', 'timestamp_out', 'status', 'email_flag', 'email_author_flag', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['division_list', 'description', 'users_cat'], 'safe'],
         ];
     }
 
@@ -68,7 +68,6 @@ class QuestionSearch extends Question
             'author_id' => $this->author_id,
             'name' => $this->name,
             'category_id' => $this->category_id,
-            'users_cat' => $this->users_cat,
             'vid_id' => $this->vid_id,
             'timestamp_in' => $this->timestamp_in,
             'timestamp_out' => $this->timestamp_out,
@@ -83,7 +82,8 @@ class QuestionSearch extends Question
         ]);
 
         $query->andFilterWhere(['like', 'division_list', $this->division_list])
-            ->andFilterWhere(['like', 'description', $this->description]);
+            ->andFilterWhere(['like', 'description', $this->description])
+            ->andFilterWhere(['like', 'users_cat', $this->users_cat]);
 
         return $dataProvider;
     }

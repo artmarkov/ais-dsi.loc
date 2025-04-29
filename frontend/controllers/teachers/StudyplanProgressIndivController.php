@@ -123,6 +123,7 @@ class StudyplanProgressIndivController extends MainController
                 $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model);
                 if (empty($modelsItems)) {
                     Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
+                    $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
                 }
             }
         } elseif ($model->load(Yii::$app->request->post())) {
