@@ -98,7 +98,7 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'slug' => $this->string(32),
         ], $tableOptions);
 
-        $this->addCommentOnTable('guide_teachers_work' ,'Вмд работы');
+        $this->addCommentOnTable('guide_teachers_work' ,'Вид работы');
 
         $this->db->createCommand()->batchInsert('guide_teachers_work', ['id', 'name', 'slug'], [
             [1000, 'На постоянной основе', 'Пост'],
@@ -111,7 +111,6 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'name' => $this->string(128),
             'slug' => $this->string(32),
         ], $tableOptions);
-
         $this->addCommentOnTable('guide_teachers_position' ,'Должность');
 
         $this->db->createCommand()->batchInsert('guide_teachers_position', ['id', 'name', 'slug'], [

@@ -30,7 +30,7 @@ class DashboardController extends BaseController
                         'class' => 'col-md-8',
                         'content' => [
                             'artsoft\user\widgets\dashboard\UsersVisitMap',
-                            'backend\widgets\dashboard\VisitsStudent',
+                            'backend\widgets\dashboard\Visits',
                             'artsoft\user\widgets\dashboard\UsersActive',
                         ],
                     ],
