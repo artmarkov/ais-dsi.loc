@@ -169,11 +169,11 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
             $textBody = 'Сообщение модуля "Предварительная регистрация на обучение" ' . PHP_EOL;
             $htmlBody = '<p><b>Сообщение модуля "Предварительная регистрация на обучение"</b></p>';
 
-            $textBody .= 'Вы успешно записались на обучение по программе: ' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . PHP_EOL;
-            $htmlBody .= '<p>Вы успешно записались на обучение по программе:' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . '</p>';
+            $textBody .= 'Вы записали ребенка на программу обучения: ' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . PHP_EOL;
+            $htmlBody .= '<p>Вы записали ребенка на программу обучения:' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . '</p>';
 
-            $textBody .= 'Просьба связаться по телефону 8(926) 350-17-97 с понедельника по пятницу с 10:00 - 18:00 для уточнения деталей обучения и оплаты.' . PHP_EOL;
-            $htmlBody .= '<p>Просьба связаться по телефону 8(926) 350-17-97 с понедельника по пятницу с 10:00 - 18:00 для уточнения деталей обучения и оплаты.' . '</p>';
+            $textBody .= 'Просьба написать по телефону в whats app или Telegram 8-926-350-17-97 с 10:00 - 18:00 с понедельника по пятницу для уточнения информации по обучению и оплате.' . PHP_EOL;
+            $htmlBody .= '<p>Просьба написать по телефону в whats app или Telegram 8-926-350-17-97 с 10:00 - 18:00 с понедельника по пятницу для уточнения информации по обучению и оплате.' . '</p>';
 
             $textBody .= '--------------------------' . PHP_EOL;
             $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';
