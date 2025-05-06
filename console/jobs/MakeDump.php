@@ -19,7 +19,7 @@ class MakeDump extends \yii\base\BaseObject implements \yii\queue\JobInterface
         if (file_exists($path)) {
             if (is_dir($path)) {
                 if (is_writable($path)) {
-                    $fileName = 'dump_' . date('Y_m_d_H_i_s') . '.pgsql';
+                    $fileName = 'dump_' . date('Y_m_d_H_i_s') . '.tar';
                     $filePath = $path . DIRECTORY_SEPARATOR . $fileName;
                     $db = Yii::$app->getDb();
                     if ($db) {

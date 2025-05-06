@@ -14,7 +14,7 @@ class ClianDbDump extends \yii\base\BaseObject implements \yii\queue\JobInterfac
     {
         $path = '@frontend/web/db/';
         $path = FileHelper::normalizePath(Yii::getAlias($path));
-        $files = FileHelper::findFiles($path, ['only' => ['*.pgsql'], 'recursive' => FALSE]);
+        $files = FileHelper::findFiles($path, ['only' => ['*.tar'], 'recursive' => FALSE]);
         $shelf_life_dbdump = Yii::$app->settings->get('module.shelf_life_dbdump', 60);
         $datetime = time() - $shelf_life_dbdump * 86400;
         foreach ($files as $key => $file) {

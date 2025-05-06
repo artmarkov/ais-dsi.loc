@@ -11,7 +11,7 @@ class Db extends Model
 {
     public function makeExportComand($db, $filePath)
     {
-        return sprintf("PGPASSWORD='%s' pg_dump -h %s -p 5432 -U %s --disable-triggers -d %s > %s",
+        return sprintf("PGPASSWORD='%s' pg_dump -h %s -p 5432 -U %s -Ft --disable-triggers -d %s > %s",
             $db->password,
             $this->getDsnAttribute('host', $db->dsn),
             $db->username,
@@ -90,7 +90,7 @@ class Db extends Model
                     Yii::$app->session->setFlash('info', Yii::t('art/dbmanager', 'Directory is not writable.'));
                     return Yii::$app->response->redirect(['dbmanager/default/index']);
                 }
-                $fileName = 'dump_' . date('Y_m_d_H_i_s') . '.pgsql';
+                $fileName = 'dump_' . date('Y_m_d_H_i_s') . '.tar';
                 $filePath = $path . DIRECTORY_SEPARATOR . $fileName;
                 $db = Yii::$app->getDb();
                 if (!$db) {

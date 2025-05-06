@@ -34,7 +34,7 @@ class DefaultController extends BaseController {
     
     public function actionIndex($path = null){         
         $path = FileHelper::normalizePath(Yii::getAlias($this->getModule()->dumpPath));
-        $files = FileHelper::findFiles($path, ['only' => ['*.pgsql'], 'recursive' => FALSE]);
+        $files = FileHelper::findFiles($path, ['only' => ['*.tar'], 'recursive' => FALSE]);
         $model = new Db();
         $dataProvider = $model->getFiles($files);
        
@@ -71,7 +71,7 @@ class DefaultController extends BaseController {
     {
         $fail = [];
         $path = FileHelper::normalizePath(Yii::getAlias($this->getModule()->dumpPath));
-        $files = FileHelper::findFiles($path, ['only' => ['*.pgsql'], 'recursive' => FALSE]);
+        $files = FileHelper::findFiles($path, ['only' => ['*.tar'], 'recursive' => FALSE]);
         foreach ($files as $key => $file)
         {
             $path = \yii\helpers\Html::encode($file);
