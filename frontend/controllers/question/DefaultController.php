@@ -25,7 +25,7 @@ class DefaultController extends \frontend\controllers\DefaultController
         $this->view->params['tabMenu'] = $this->tabMenu;
         $subquery = QuestionUsers::find()->select('COUNT(id)')->where('question_id = question.id');
         $query = Question::find()
-            ->where(['like', 'users_cat' , Question::GROUP_GUEST])
+            ->where(new \yii\db\Expression("0 = any (string_to_array(users_cat, ',')::int[])"))
             ->andWhere(['<=', 'timestamp_in', time()])
             ->andWhere(['>=', 'timestamp_out', time() - 86400])
             ->andWhere(['=', 'status', Question::STATUS_ACTIVE])

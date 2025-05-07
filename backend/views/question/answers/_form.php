@@ -63,7 +63,7 @@ $options = [];
                         ]);
                         ?>
                     <?php endif; ?>
-                    <?php if ($modelQuestion->users_cat != Question::GROUP_GUEST): ?>
+                    <?php if (!in_array(Question::GROUP_GUEST, $modelQuestion->users_cat)): ?>
                         <div class="panel panel-info">
                             <div class="panel-heading">
                                 Пользователь

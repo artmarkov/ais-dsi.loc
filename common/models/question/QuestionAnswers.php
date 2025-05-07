@@ -125,7 +125,7 @@ class QuestionAnswers extends DynamicModel
                     $this->addRule($model['name'], 'email');
                     break;
                 case QuestionAttribute::TYPE_FILE :
-                    $this->addRule($model['name'], 'file', ['skipOnEmpty' => true, 'extensions' => $this->fileExt, 'maxSize' => $this->fileSize, 'tooBig' => 'Максимальный размер файла: 1Mb']);
+                    $this->addRule($model['name'], 'file', ['skipOnEmpty' => true, 'extensions' => $this->fileExt, 'maxSize' => $this->fileSize, 'tooBig' => 'Максимальный размер файла: ' . \artsoft\helpers\StringHelper::formatBytes($this->fileSize,1)]);
                     break;
                 default:
                     $this->addRule($model['name'], 'safe');
