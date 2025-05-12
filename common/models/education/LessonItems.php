@@ -166,6 +166,17 @@ class LessonItems extends \artsoft\db\ActiveRecord
      * @param $lesson_timestamp
      * @return bool
      */
+
+    public static function isLessonAllExist($subject_sect_studyplan_id, $studyplan_subject_id, $lesson_timestamp)
+    {
+        return self::find()->joinWith('lessonTest')->where(
+            ['AND',
+                ['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id],
+                ['=', 'studyplan_subject_id', $studyplan_subject_id],
+                ['=', 'lesson_date', $lesson_timestamp],
+            ])->scalar();
+    }
+
     public static function isLessonExist($subject_sect_studyplan_id, $studyplan_subject_id, $lesson_timestamp)
     {
         return self::find()->joinWith('lessonTest')->where(
