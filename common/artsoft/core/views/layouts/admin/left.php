@@ -49,6 +49,7 @@ use artsoft\widgets\Nav;
                 'url' => '#',
                 'items' => [
                     ['label' => 'Производственный календарь', 'icon' => 'fa fa-minus', 'url' => ['/routine/default/index']],
+                    ['label' => 'Планировщик задач', 'icon' => 'fa fa-minus', 'url' => ['/planfix/default/index']],
                     ['label' => 'Планирование инд.занятий', 'icon' => 'fa fa-minus', 'url' => ['/indivplan/default/index']],
                     ['label' => 'План работы школы', 'icon' => 'fa fa-minus', 'url' => ['/schoolplan/default/index']],
                     ['label' => 'Образовательные программы', 'icon' => 'fa fa-minus', 'url' => ['/education/default/index']],
