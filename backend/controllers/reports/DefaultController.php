@@ -6,6 +6,7 @@ use common\models\studyplan\SchoolWorkload;
 use common\models\studyplan\StudyplanDistrib;
 use common\models\studyplan\StudyplanHistory;
 use common\models\studyplan\StudyplanStat;
+use common\models\reports\TimeReserveStat;
 use common\models\subject\SubjectType;
 use common\models\teachers\TarifStatement;
 use common\models\teachers\Teachers;
@@ -267,6 +268,29 @@ class DefaultController extends MainController
         }
 
         return $this->renderIsAjax('studyplan-stat', [
+            'model_date' => $model_date,
+        ]);
+    }
+
+    public function actionTimeReserve()
+    {
+        $session = Yii::$app->session;
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model_date = $this->modelDate;
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+        }
+        $session->set('__backendPlanYear', $model_date->plan_year);
+
+
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            $models = new TimeReserveStat($model_date);
+            $data = $models->getData();
+            $models->sendXlsx($data);
+        }
+
+        return $this->renderIsAjax('time-reserve', [
             'model_date' => $model_date,
         ]);
     }
