@@ -16,11 +16,6 @@ class GuidePlanTree extends \kartik\tree\models\Tree
         1 => 'Внутреннее мероприятие',
         2 => 'Внешнее мероприятие',
     ];
-    const COMMISSION_SELL = [
-        0 => 'Выполнение плана и участие в мероприятии',
-        1 => 'Протокол аттестационной комиссии',
-        2 => 'Протокол приемной комиссии',
-    ];
 
     /**
      * {@inheritdoc}
@@ -54,7 +49,8 @@ class GuidePlanTree extends \kartik\tree\models\Tree
 
         $rules[] = ['description', 'string', 'max' => 512];
         $rules[] = ['category_sell', 'integer'];
-        $rules[] = ['commission_sell', 'integer'];
+        $rules[] = ['protocol_flag', 'boolean'];
+        $rules[] = ['perform_flag', 'boolean'];
         $rules[] = ['preparing_flag', 'boolean'];
         $rules[] = ['description_flag', 'boolean'];
         $rules[] = ['afisha_flag', 'boolean'];
@@ -76,7 +72,8 @@ class GuidePlanTree extends \kartik\tree\models\Tree
         $attr = parent::attributeLabels();
         $attr['description'] = Yii::t('art', 'Description');
         $attr['category_sell'] = 'Категория мероприятия';
-        $attr['commission_sell'] = 'Требуется комиссия';
+        $attr['protocol_flag'] = 'Требуется протокол мероприятия';
+        $attr['perform_flag'] = 'Требуется отчет по выполнению плана';
         $attr['preparing_flag'] = 'Требуется подготовка к мероприятию';
         $attr['description_flag'] = 'Требуется описание мероприятия (1000 знаков)';
         $attr['afisha_flag'] = 'Возможность добавления афиши и программы';
@@ -131,15 +128,6 @@ class GuidePlanTree extends \kartik\tree\models\Tree
     {
         $ar = self::getCategoryList();
         return isset($ar[$val]) ? $ar[$val] : $val;
-    }
-
-    /**
-     * getStatusList
-     * @return array
-     */
-    public static function getComissionList()
-    {
-        return self::COMMISSION_SELL;
     }
 
     /**

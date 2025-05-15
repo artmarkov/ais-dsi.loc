@@ -120,20 +120,8 @@ class PlanfixActivity extends ActiveRecord
     {
         return [
             1 => 'В работе',
-            2 => 'Принято',
+            2 => 'Выполнено',
             3 => 'Отклонено',
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    public static function getStatusActivityOptionsList()
-    {
-        return [
-            [1, 'В работе', 'info'],
-            [2, 'Принято', 'success'],
-            [3, 'Отклонено', 'danger']
         ];
     }
 

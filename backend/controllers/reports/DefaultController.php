@@ -22,7 +22,7 @@ use yii\helpers\ArrayHelper;
 
 class DefaultController extends MainController
 {
-    public $freeAccessActions = ['studyplan-distrib', 'school-workload'];
+    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve'];
 
     public function actionIndex()
     {

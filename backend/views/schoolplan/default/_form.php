@@ -296,7 +296,7 @@ $form = ActiveForm::begin([
                             </div>
                         </div>
                     <?php endif; ?>
-                    <?php if ($model->category->commission_sell == 1) : ?>
+                    <?php if ($model->category->protocol_flag) : ?>
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="panel panel-info">
@@ -313,6 +313,7 @@ $form = ActiveForm::begin([
                                         ?>
                                             <div class="row">
                                                 <div class="col-sm-12">
+                                                    <?php $model->protocolLeaderFlag = $model->protocol_leader_name != null ? true : false; ?>
                                                     <?= $form->field($model, 'protocolLeaderFlag')->checkbox(['disabled' => $readonly])->label('Заполнить поле Председатель комиссии от руки') ?>
                                                     <div id="protocolLeaderId">
                                                         <?= $form->field($model, 'protocol_leader_id')->widget(\kartik\select2\Select2::class, [

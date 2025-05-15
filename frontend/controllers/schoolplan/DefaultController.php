@@ -599,8 +599,8 @@ class DefaultController extends MainController
         $model = $this->findModel($id);
         return [
             ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/view', 'id' => $id]],
-            ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id], 'visible' => $model->category->commission_sell == 0 && User::hasRole(['teacher','department'])],
-            ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol', 'id' => $id], 'visible' => $model->category->commission_sell == 1 && User::hasRole(['teacher','department'])],
+            ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id], 'visible' => $model->category->perform_flag && User::hasRole(['teacher','department'])],
+            ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol', 'id' => $id], 'visible' => $model->category->protocol_flag && User::hasRole(['teacher','department'])],
 //            ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id], 'visible' => $model->category->efficiency_flag],
         ];
     }

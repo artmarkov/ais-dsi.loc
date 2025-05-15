@@ -6,7 +6,6 @@
 
 use artsoft\widgets\ActiveForm;
 use common\models\user\UserCommon;
-use kartik\date\DatePicker;
 use yii\widgets\MaskedInput;
 
 $this->params['breadcrumbs'][] = 'Регистрация';
@@ -36,7 +35,7 @@ $this->params['breadcrumbs'][] = 'Регистрация';
                         <?= $form->field($model, 'student_first_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124]) ?>
                         <?= $form->field($model, 'student_middle_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Важно: Поле необходимо заполнить как в документе. При отсутствии Отчества заполнение не требуется.') ?>
                         <?= $form->field($model, 'student_gender')->dropDownList(UserCommon::getGenderList()/*, ['disabled' => $readonly]*/) ?>
-                        <?= $form->field($model, 'student_birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')]); ?>
+                        <?= $form->field($model, 'student_birth_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
                         <?= $form->field($model, 'student_snils')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
                     </div>
                 </div>
@@ -56,7 +55,7 @@ $this->params['breadcrumbs'][] = 'Регистрация';
                                 <?= $form->field($model, 'student_sert_series')->textInput(['maxlength' => true]) ?>
                                 <?= $form->field($model, 'student_sert_num')->textInput(['maxlength' => true]) ?>
                                 <?= $form->field($model, 'student_sert_organ')->textInput(['maxlength' => true]) ?>
-                                <?= $form->field($model, 'student_sert_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()/*, ['disabled' => $readonly]*/); ?>
+                                <?= $form->field($model, 'student_sert_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
 
                             </div>
                         </div>
@@ -79,7 +78,7 @@ $this->params['breadcrumbs'][] = 'Регистрация';
                         <?= $form->field($model, 'parent_first_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124]) ?>
                         <?= $form->field($model, 'parent_middle_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Важно: Поле необходимо заполнить как в документе. При отсутствии Отчества заполнение не требуется.') ?>
                         <?= $form->field($model, 'parent_gender')->dropDownList(UserCommon::getGenderList()) ?>
-                        <?= $form->field($model, 'parent_birth_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')]); ?>
+                        <?= $form->field($model, 'parent_birth_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
                         <?= $form->field($model, 'parent_snils')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
                     </div>
                 </div>
@@ -100,24 +99,24 @@ $this->params['breadcrumbs'][] = 'Регистрация';
                                 <?= $form->field($model, 'parent_sert_num')->textInput(['maxlength' => true]) ?>
                                 <?= $form->field($model, 'parent_sert_organ')->textInput(['maxlength' => true]) ?>
                                 <?= $form->field($model, 'parent_sert_code')->textInput(['maxlength' => true]) ?>
-                                <?= $form->field($model, 'parent_sert_date')->widget(MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::classname()/*, ['disabled' => $readonly]*/); ?>
+                                <?= $form->field($model, 'parent_sert_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
                                 <?= $form->field($model, 'parent_sert_country')->textInput(['maxlength' => true]) ?>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="panel panel-success">
-                    <div class="panel-heading">
-                        Информация для связи
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <?= $form->field($model, 'phone')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                                <?= $form->field($model, 'phone_optional')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                                <?= $form->field($model, 'email')->textInput(['maxlength' => 124])->hint('Введите емайл, который будет использоваться для регистрации и востановления доступа.') ?>
-                            </div>
-                        </div>
+            </div>
+        </div>
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                Информация для связи
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'phone')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                        <?= $form->field($model, 'phone_optional')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
+                        <?= $form->field($model, 'email')->textInput(['maxlength' => 124])->hint('Введите емайл, который будет использоваться для регистрации и востановления доступа.') ?>
                     </div>
                 </div>
             </div>

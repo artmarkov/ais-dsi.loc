@@ -8,11 +8,15 @@ use common\models\studyplan\StudyplanView;
 use common\models\teachers\Teachers;
 use common\models\user\UserCommon;
 use yii\helpers\Url;
+use common\models\education\LessonMark;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\schoolplan\SchoolplanProtocol */
 /* @var $modelSchoolplan common\models\schoolplan\Schoolplan */
 /* @var $form artsoft\widgets\ActiveForm */
+
+$mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark::MARK,LessonMark::OFFSET_NONOFFSET,LessonMark::REASON_ABSENCE]);
+
 ?>
 
     <div class="protocol-form">
@@ -104,7 +108,7 @@ use yii\helpers\Url;
                             <?= $form->field($model, 'task_ticket')->textInput(['disabled' => $readonly]) ?>
                         </div>
                             <?= $form->field($model, 'lesson_mark_id')->widget(\kartik\select2\Select2::class, [
-                                'data' => RefBook::find('lesson_mark')->getList(),
+                                'data' => $mark_list,
                                 'showToggleAll' => false,
                                 'options' => [
                                     'disabled' => /*(\artsoft\Art::isFrontend() && !$model->schoolplan->isProtocolSigner()) ? true : */$readonly,

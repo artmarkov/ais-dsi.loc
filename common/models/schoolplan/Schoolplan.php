@@ -927,7 +927,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         } else {
             $this->protocol_leader_name = null;
         }
-        if ($this->category->commission_sell == 1 && $this->protocol_subject_vid_id == 1000) { // добавляем только для индивидуальных занятий, где требуется вводить программу для каждого ученика
+        if ($this->category->protocol_flag && $this->protocol_subject_vid_id == 1000) { // добавляем только для индивидуальных занятий, где требуется вводить программу для каждого ученика
             $this->setSchoolplanProtocols();
         }
         return parent::beforeSave($insert);
