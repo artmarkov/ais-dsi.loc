@@ -142,7 +142,7 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey(),
             'entrant_id' => $this->integer()->notNull(),
             'members_id' => $this->integer()->notNull()->comment('Член комиссии'),
-            'mark_rem' => $this->string(127),
+            'mark_rem' => $this->string(1024),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

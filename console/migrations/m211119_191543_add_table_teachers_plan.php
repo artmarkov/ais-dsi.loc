@@ -38,7 +38,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
 
 
         $this->db->createCommand()->createView('teachers_load_studyplan_view', '
-  SELECT studyplan_subject.id AS studyplan_subject_id,
+   SELECT studyplan_subject.id AS studyplan_subject_id,
     studyplan_subject.week_time,
     studyplan_subject.year_time_consult,
     0 AS subject_sect_studyplan_id,
@@ -64,7 +64,9 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
     \'Индивидуально\'::text AS sect_name,
     subject.name AS subject_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
-    subject.department_list
+    subject.department_list,
+    studyplan_subject.med_cert,
+    studyplan_subject.fin_cert
    FROM studyplan
      JOIN studyplan_subject ON studyplan_subject.studyplan_id = studyplan.id
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
@@ -107,7 +109,9 @@ UNION ALL
         END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
     subject.name AS subject_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject,
-    subject.department_list
+    subject.department_list,
+    studyplan_subject.med_cert,
+    studyplan_subject.fin_cert
    FROM studyplan
      JOIN studyplan_subject ON studyplan.id = studyplan_subject.studyplan_id
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
@@ -146,7 +150,9 @@ UNION ALL
     NULL::text AS sect_name,
     subject.name AS subject_name,
     concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject,
-    subject.department_list
+    subject.department_list,
+    studyplan_subject.med_cert,
+    studyplan_subject.fin_cert
    FROM studyplan_subject
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id

@@ -59,6 +59,9 @@ class EntrantImport extends Model
                             'subjects' => $v[5],
                         ];
                     } elseif ($v[1] == 'МПГУ') {
+                        if (is_a($v[6], 'DateTime')) { // если объект DateTime
+                            $v[6] = $v[6]->format('d.m.Y');
+                        }
                         $data[] = [
                             'fullname' => $v[4],
                             'snils' => $v[5],

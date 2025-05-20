@@ -59,21 +59,26 @@ use artsoft\grid\GridPageSize;
                 'id' => 'entrant-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
-                'bulkActionOptions' => \artsoft\Art::isBackend() && \artsoft\models\User::hasRole('entrantAdmin') ? [
+                'bulkActionOptions' =>  \artsoft\models\User::hasRole('entrantAdmin') ? [
                     'gridId' => 'entrant-grid',
-                    'actions' => [
+                    'actions' => \artsoft\Art::isBackend() ? [
                         Url::to(['applicants-bulk-waiting']) => 'Перевести в статус "В ожидании испытаний"',
                         Url::to(['applicants-bulk-open']) => 'Перевести в статус "Испытания открыты"',
                         Url::to(['applicants-bulk-close']) => 'Перевести в статус "Испытания завершены"',
                         Url::to(['applicants-bulk-make']) => 'Сформировать учебный план',
                         Url::to(['applicants-bulk-delete']) => Yii::t('art', 'Delete')
-                    ] //Configure here you bulk actions
+                    ] : [
+                        Url::to(['applicants-bulk-waiting']) => 'Перевести в статус "В ожидании испытаний"',
+                        Url::to(['applicants-bulk-open']) => 'Перевести в статус "Испытания открыты"',
+                        Url::to(['applicants-bulk-close']) => 'Перевести в статус "Испытания завершены"',
+                    ]
+                    //Configure here you bulk actions
                 ] : false,
                 'columns' => [
                     ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'checkboxOptions' => function ($model, $key, $index, $column) {
                         return ['value' => $model->id];
                     },
-                        'visible' => \artsoft\Art::isBackend() && \artsoft\models\User::hasRole('entrantAdmin'),
+                        'visible' => \artsoft\models\User::hasRole('entrantAdmin'),
                     ],
                     [
                         'attribute' => 'group_id',

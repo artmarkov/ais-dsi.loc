@@ -887,6 +887,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ->andWhere(['subject_id' => $this->protocol_subject_id])
             ->andWhere(['subject_vid_id' => $this->protocol_subject_vid_id])
             ->andWhere(['course' => $this->protocol_class_list])
+            ->andWhere(['fin_cert' => true])
             ->orderBy('teachers_id')
             ->asArray()
             ->all();
@@ -1113,10 +1114,11 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ->andWhere(['IS NOT', 'teachers_id', NULL])
             ->column();
         $departmentList = implode(',', array_unique(explode(',', implode(',', $departmentList))));
-        $query = self::find()
+        $query = self::find()->joinWith('category')
             ->select(new \yii\db\Expression('schoolplan.id as id, concat(TO_CHAR(to_timestamp(datetime_in) :: DATE, \'dd.mm.yyyy\'), \' - \', title) as name'))
             ->where(['between', 'datetime_in', $timestamp['timestamp_in'], $timestamp['timestamp_out']])
             ->andWhere(new Expression("string_to_array(department_list, ','::text)::text[] && string_to_array('{$departmentList}', ','::text)::text[]")) // сравнение массивов
+            ->andWhere(['guide_plan_tree.perform_flag' => true])
             ->orderBy('datetime_in')
             ->asArray()
             ->all();

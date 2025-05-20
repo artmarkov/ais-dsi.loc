@@ -26,7 +26,12 @@ $form = ActiveForm::begin([
                 <div class="row">
                     <div class="col-sm-12">
                         <?= \yii\bootstrap\Alert::widget([
-                            'body' => '<i class="fa fa-info"></i> Заполните поля, помеченные * и нажмите "Получить данные". <br/> Поля, помеченные * сохраняются в текущей сессии.',
+                            'body' => '<i class="fa fa-info"></i> Заполните поля, помеченные * и нажмите "Получить данные". <br/> Будут показаны оценки ПА и ИА за выбранный учебный год и более ранние учебные года.',
+                            'options' => ['class' => 'alert-warning'],
+                        ]);
+                        ?>
+                        <?= \yii\bootstrap\Alert::widget([
+                            'body' => '<i class="fa fa-info"></i> Поля, помеченные * сохраняются в текущей сессии.',
                             'options' => ['class' => 'alert-info'],
                         ]);
                         ?>
@@ -117,6 +122,8 @@ $form = ActiveForm::begin([
                                         'allowClear' => true
                                     ],
                                 ])->label(Yii::t('art/studyplan', 'Course'));
+                                ?>
+                                <?= $form->field($model_date, 'finish_flag')->checkbox()->label('Только Выпускные классы');
                                 ?>
                             </div>
                         </div>

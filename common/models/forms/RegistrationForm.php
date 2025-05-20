@@ -74,7 +74,7 @@ class RegistrationForm extends Model
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             [['student_snils', 'parent_snils'], 'string', 'max' => 16],
             // ['email', 'validateEmail'],
-           // ['email', 'email'],
+            // ['email', 'email'],
             [['student_sert_date'], 'date'],
             [['student_sert_name', 'student_sert_series', 'student_sert_num'], 'string', 'max' => 32],
             [['student_sert_organ'], 'string', 'max' => 127],
@@ -218,8 +218,9 @@ class RegistrationForm extends Model
         $modelDependence = new StudentDependence();
 
         $userCommonParent = $this->findParentByFio(); // Если родитель был уже зарегистрирован с другим ребенком
-        $userParent = $userCommonParent->user ?: new User();
-        $modelParent = Parents::findOne(['user_common_id' => $userCommonParent->id]) ?: new Parents();
+        $parentsAvailable = $userCommonParent->user ? true : false;
+        $userParent = $userCommonParent->user ?? new User();
+        $modelParent = Parents::findOne(['user_common_id' => $userCommonParent->id]) ?? new Parents();
 
         $userCommonStudent->setAttributes([
             'first_name' => $this->student_first_name,
@@ -239,25 +240,27 @@ class RegistrationForm extends Model
             'sert_organ' => $this->student_sert_organ,
             'sert_date' => $this->student_sert_date,
         ]);
-        $userCommonParent->setAttributes([
-            'first_name' => $this->parent_first_name,
-            'middle_name' => $this->parent_middle_name,
-            'last_name' => $this->parent_last_name,
-            'birth_date' => $this->parent_birth_date,
-            'gender' => $this->parent_gender,
-            'phone' => $this->phone,
-            'phone_optional' => $this->phone_optional,
-            'snils' => $this->parent_snils,
-            'email' => $this->email,
-        ]);
-        $modelParent->setAttributes([
-            'sert_name' => $this->parent_sert_name,
-            'sert_series' => $this->parent_sert_series,
-            'sert_num' => $this->parent_sert_num,
-            'sert_organ' => $this->parent_sert_organ,
-            'sert_code' => $this->parent_sert_code,
-            'sert_date' => $this->parent_sert_date,
-        ]);
+        if (!$parentsAvailable) {
+            $userCommonParent->setAttributes([
+                'first_name' => $this->parent_first_name,
+                'middle_name' => $this->parent_middle_name,
+                'last_name' => $this->parent_last_name,
+                'birth_date' => $this->parent_birth_date,
+                'gender' => $this->parent_gender,
+                'phone' => $this->phone,
+                'phone_optional' => $this->phone_optional,
+                'snils' => $this->parent_snils,
+                'email' => $this->email,
+            ]);
+            $modelParent->setAttributes([
+                'sert_name' => $this->parent_sert_name,
+                'sert_series' => $this->parent_sert_series,
+                'sert_num' => $this->parent_sert_num,
+                'sert_organ' => $this->parent_sert_organ,
+                'sert_code' => $this->parent_sert_code,
+                'sert_date' => $this->parent_sert_date,
+            ]);
+        }
         $modelDependence->relation_id = $this->relation_id;
 
         $transaction = \Yii::$app->db->beginTransaction();
@@ -266,28 +269,35 @@ class RegistrationForm extends Model
             $userStudent->username = $userCommonStudent->generateUsername();
             $userStudent->email = $userCommonStudent->email;
             $userStudent->generateAuthKey();
-
-            $userParent->username = $userParent->username ?: $userCommonParent->generateUsername($userStudent->username);
-            $userParent->email = $userCommonParent->email;
-            $userParent->generateAuthKey();
+            if (!$parentsAvailable) {
+                $userParent->username = $userParent->username ?? $userCommonParent->generateUsername();
+                $userParent->email = $userCommonParent->email;
+                $userParent->generateAuthKey();
+            }
 
             if (Yii::$app->art->emailConfirmationRequired) {
                 $userStudent->status = User::STATUS_INACTIVE;
                 $userStudent->generateConfirmationToken();
 
-                $userParent->status = User::STATUS_INACTIVE;
-                $userParent->generateConfirmationToken();
+                if (!$parentsAvailable) {
+                    $userParent->status = User::STATUS_INACTIVE;
+                    $userParent->generateConfirmationToken();
+                }
             }
-            if ($flag = $userStudent->save(false) && $flag = $userParent->save(false)) {
+            if (!$parentsAvailable) {
+                $userParent->save(false);
+            }
+            if ($flag = $userStudent->save(false)) {
                 $userStudent->assignRoles(['student']);
                 $userCommonStudent->user_category = UserCommon::USER_CATEGORY_STUDENTS;
                 $userCommonStudent->user_id = $userStudent->id;
-
-                $userParent->assignRoles(['parents']);
-                $userCommonParent->user_category = UserCommon::USER_CATEGORY_PARENTS;
-                $userCommonParent->user_id = $userParent->id;
-
-                if ($flag = $userCommonStudent->save(false) && $flag = $userCommonParent->save(false)) {
+                if (!$parentsAvailable) {
+                    $userParent->assignRoles(['parents']);
+                    $userCommonParent->user_category = UserCommon::USER_CATEGORY_PARENTS;
+                    $userCommonParent->user_id = $userParent->id;
+                    $userCommonParent->save(false);
+                }
+                if ($flag = $userCommonStudent->save(false)) {
                     $modelStudent->user_common_id = $userCommonStudent->id;
                     $modelParent->user_common_id = $userCommonParent->id;
                     if ($modelStudent->save(false) && $modelParent->save(false)) {
@@ -298,7 +308,7 @@ class RegistrationForm extends Model
                 }
                 if ($flag && Yii::$app->art->emailConfirmationRequired) {
                     $userStudent->email ? $this->sendConfirmationEmail($userStudent) : null;
-                    $userParent->email ? $this->sendConfirmationEmail($userParent) : null;
+                    $userParent->email && !$parentsAvailable ? $this->sendConfirmationEmail($userParent) : null;
                 }
             }
 
@@ -341,6 +351,6 @@ class RegistrationForm extends Model
         }
         $user = $user->andWhere(['=', 'birth_date', $birth_date]);
 
-        return $user->one() ?: new UserCommon();
+        return $user->one() ?? new UserCommon();
     }
 }

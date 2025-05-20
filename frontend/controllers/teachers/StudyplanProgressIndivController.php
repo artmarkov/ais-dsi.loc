@@ -9,6 +9,7 @@ use common\models\education\LessonItems;
 use common\models\education\LessonItemsProgressView;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
+use common\models\education\LessonTest;
 use common\models\education\ProgressConfirmIndiv;
 use common\models\studyplan\Studyplan;
 use common\models\teachers\Teachers;
@@ -116,15 +117,20 @@ class StudyplanProgressIndivController extends MainController
         // предустановка учеников
         if (isset($_POST['submitAction']) && $_POST['submitAction'] == 'next') {
             $model->load(Yii::$app->request->post());
+            // echo '<pre>' . print_r($model, true) . '</pre>'; die();
+            //$lessonTest = LessonTest::findOne($model->lesson_test_id);
             $modelsItems = $model->getLessonProgressTeachersNew($this->teachers_id, $subject_key, $timestamp_in, $model);
-            if (empty($modelsItems)) {
-                Notice::registerDanger('Дата занятия не соответствует расписанию!');
-            } else {
-                $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model);
+            //if ($lessonTest->test_category == LessonTest::CURRENT_WORK) {
                 if (empty($modelsItems)) {
-                    Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
-                    $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
-                }
+                    Notice::registerDanger('Дата занятия не соответствует расписанию!');
+                    $model->addError('lesson_date', 'Дата занятия не соответствует расписанию!');
+                } else {
+                    $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model);
+                    if (empty($modelsItems)) {
+                        Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
+                        $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
+                    }
+              //  }
             }
         } elseif ($model->load(Yii::$app->request->post())) {
             $modelsItems = Model::createMultiple(LessonProgress::class);

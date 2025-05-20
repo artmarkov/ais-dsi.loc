@@ -50,7 +50,7 @@ class EntrantMembers extends \artsoft\db\ActiveRecord
     {
         return [
             [['entrant_id', 'members_id'], 'required'],
-            [['mark_rem'], 'string', 'max' => 127],
+            [['mark_rem'], 'string', 'max' => 1024],
             [['entrant_id'], 'exist', 'skipOnError' => true, 'targetClass' => Entrant::className(), 'targetAttribute' => ['entrant_id' => 'id']],
         ];
     }

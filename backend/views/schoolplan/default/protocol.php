@@ -101,6 +101,7 @@ $schoolplan = \common\models\schoolplan\Schoolplan::findOne($id);
                                 'format' => 'raw',
                             ],
                             [
+                                'filter' => false,
                                 'attribute' => 'studyplan_subject_id',
                                 'value' => function (SchoolplanProtocol $model) use ($studyplan_subject_list) {
                                     return $studyplan_subject_list[$model->studyplan_subject_id] ?? '';

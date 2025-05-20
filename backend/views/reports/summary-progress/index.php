@@ -42,10 +42,10 @@ $columns = [
         'attribute' => 'education_programm_short_name',
         'label' => $model['attributes']['education_programm_short_name'],
     ],
-    [
-        'attribute' => 'course',
-        'label' => $model['attributes']['course'],
-    ],
+//    [
+//        'attribute' => 'course',
+//        'label' => $model['attributes']['course'],
+//    ],
     [
         'attribute' => 'subject_form_name',
         'label' => $model['attributes']['subject_form_name'],
@@ -60,7 +60,7 @@ foreach ($model['subjectKeys'] as $item => $val) {
         'label' => $model['attributes'][$val],
         'format' => 'raw',
         'contentOptions' => function ($models) use ($model, $val) {
-            return $model['dataNeeds'][$models['studyplan_id']][$val] ? ['class' => 'info', 'style'=>'text-align:center; vertical-align: middle;'] : ['class' => '', 'style'=>'text-align:center; vertical-align: middle;'];
+            return $model['dataNeeds'][$models['student_id']][$val] ? ['class' => 'info', 'style'=>'text-align:center; vertical-align: middle;'] : ['class' => '', 'style'=>'text-align:center; vertical-align: middle;'];
 
         },
     ];
@@ -78,6 +78,11 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
         </div>
             <?= $this->render('_search', compact('model_date')) ?>
         <div class="panel-body">
+            <?= \yii\bootstrap\Alert::widget([
+                'body' => '<span style="font-size:85%; " class="label label-success">5</span> - Показаны оценки из Протокола аттестационной комиссии.',
+                'options' => ['class' => 'alert-primary'],
+            ]);
+            ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php
@@ -117,8 +122,8 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Ученик/Программа/Класс', 'options' => ['colspan' => 6, 'rowspan' => 3, 'class' => 'text-center', 'style' => 'vertical-align: middle;']],
-                            ['content' => 'Посещаемость/успеваемость', 'options' => ['colspan' => count($model['subjectKeys']), 'class' => 'text-center']],
+                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 5, 'rowspan' => 3, 'class' => 'text-center', 'style' => 'vertical-align: middle;']],
+                            ['content' => 'Сводная успеваемость', 'options' => ['colspan' => count($model['subjectKeys']), 'class' => 'text-center']],
                         ],
 //                        'options' => ['class' => 'skip-export'] // remove this row from export
                     ],

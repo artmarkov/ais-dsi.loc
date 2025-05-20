@@ -144,7 +144,10 @@ class SchoolplanProtocolConfirm extends \artsoft\db\ActiveRecord
     public function modifMessage()
     {
         $receiverId = $this->schoolplan->protocol_secretary_id;
-        Yii::$app->mailbox->send($receiverId, 'modif', $this, $this->sign_message);
+        if ($receiverId) {
+            Yii::$app->mailbox->send($receiverId, 'modif', $this, $this->sign_message);
+        }
+
     }
 
     public function approveMessage()

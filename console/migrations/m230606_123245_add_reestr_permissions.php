@@ -52,6 +52,7 @@ class m230606_123245_add_reestr_permissions extends PermissionsMigration
                         '/admin/students/default/view',
                         '/admin/students/default/grid-sort',
                         '/admin/students/default/grid-page-size',
+                        '/admin/students/default/studyplan',
                         '/admin/parents/default/index',
                         '/admin/parents/default/view',
                         '/admin/parents/default/grid-sort',

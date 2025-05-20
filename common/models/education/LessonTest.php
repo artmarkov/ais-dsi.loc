@@ -125,7 +125,7 @@ class LessonTest extends \artsoft\db\ActiveRecord
      * @param $model
      * @return array
      */
-    public static function getLessonTestList($model)
+    public static function getLessonTestList($model, $category = [1,2,3])
     {
         $query = self::find()->select(new \yii\db\Expression('
         id, test_name, test_category,
@@ -134,10 +134,10 @@ class LessonTest extends \artsoft\db\ActiveRecord
                 WHEN test_category = ' . self::MIDDLE_ATTESTATION . ' THEN \'' . Yii::t('art/guide', 'Middle Attestation') . '\'
                 WHEN test_category = ' . self::FINISH_ATTESTATION . ' THEN \'' . Yii::t('art/guide', 'Finish Attestation') . '\'
             END test_category_name
-            '));
+            '))->where(['test_category' => $category]);
 
         if ($model->isNewRecord) {
-            $query = $query->where(['=', 'status', self::STATUS_ACTIVE]);
+            $query = $query->andWhere(['=', 'status', self::STATUS_ACTIVE]);
         }
         return \yii\helpers\ArrayHelper::map($query->orderBy('test_category, sort_order')->asArray()->all(), 'id', 'test_name', 'test_category_name');
     }

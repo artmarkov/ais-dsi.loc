@@ -1208,9 +1208,9 @@ class DefaultController extends MainController
             if (isset($_POST['submitAction']) && $_POST['submitAction'] == 'next') {
                 $model->load(Yii::$app->request->post());
                 // echo '<pre>' . print_r($model, true) . '</pre>'; die();
-                $lessonTest = LessonTest::findOne($model->lesson_test_id);
+               // $lessonTest = LessonTest::findOne($model->lesson_test_id);
                 $modelsItems = $model->getLessonProgressTeachersNew($id, $subject_key, $timestamp_in, $model);
-                if ($lessonTest->test_category == LessonTest::CURRENT_WORK) {
+               // if ($lessonTest->test_category == LessonTest::CURRENT_WORK) {
                     if (empty($modelsItems)) {
                         Notice::registerDanger('Дата занятия не соответствует расписанию!');
                         $model->addError('lesson_date', 'Дата занятия не соответствует расписанию!');
@@ -1220,7 +1220,7 @@ class DefaultController extends MainController
                             Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
                             $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
                         }
-                    }
+                   // }
                 }
             } elseif ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class);
