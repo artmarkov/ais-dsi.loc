@@ -111,7 +111,7 @@ $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark
                                 'data' => $mark_list,
                                 'showToggleAll' => false,
                                 'options' => [
-                                    'disabled' => /*(\artsoft\Art::isFrontend() && !$model->schoolplan->isProtocolSigner()) ? true : */$readonly,
+                                    'disabled' => (\artsoft\Art::isFrontend() && !$model->schoolplan->isProtocolMembers()) ? true : $readonly,
                                     'placeholder' => Yii::t('art', 'Select...'),
                                     'multiple' => false,
                                 ],

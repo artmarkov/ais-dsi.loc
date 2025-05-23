@@ -79,7 +79,7 @@ class SummaryProgress
             ->where(['programm_id' => $this->programm_id])
             ->andWhere(['student_id' => $studentIds])
             ->andWhere(['<=', 'plan_year', $this->plan_year]);
-        $models = $models->orderBy('student_fio ASC, course DESC')->all();
+        $models = $models->orderBy('course DESC, student_fio ASC')->all();
         return $models;
     }
 
@@ -170,6 +170,7 @@ class SummaryProgress
             ->where(['studyplan_subject_id' => $this->studyplanSubjectIds])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['fin_cert' => true])
+            ->andWhere(['IS NOT', 'lesson_mark_id' , NULL])
             ->all();
         return $models;
     }
@@ -229,7 +230,7 @@ class SummaryProgress
             'plan_year' => 'Учебный год',
             'education_cat_short_name' => 'Кат.',
             'education_programm_short_name' => 'Прогр.',
-//            'course' => 'Класс',
+            'course' => 'Класс',
             'subject_form_name' => 'Форма',
         ];
         $attributes += ArrayHelper::map($this->studyplanSubjectAttr, 'subject_key', 'subject_slug');
@@ -246,8 +247,10 @@ class SummaryProgress
                 $data[$id]['plan_year'] = $model['plan_year'];
                 $data[$id]['education_cat_short_name'] = $model['education_cat_short_name'];
                 $data[$id]['education_programm_short_name'] = $model['education_programm_short_name'];
-//            $data[$id]['course'] = $model['course'];
                 $data[$id]['subject_form_name'] = $model['subject_form_name'];
+                if(!isset($data[$id]['course'])) {
+                    $data[$id]['course'] = $model['course'];
+                }
 
                 foreach ($subjectKeys as $item => $subject_key) {
 //                    $data[$id][$subject_key] = null;

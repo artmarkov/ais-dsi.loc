@@ -719,7 +719,11 @@ class Schoolplan extends \artsoft\db\ActiveRecord
      */
     public function setActivitiesOver($id = null)
     {
+       // print_r($this->executor_over_id);die();
         if ($this->period_over_flag) {
+            if(is_array($this->executor_over_id)) {
+                $this->executor_over_id = [];
+            }
             $transaction = \Yii::$app->db->beginTransaction();
             $timestamp = Yii::$app->formatter->asTimestamp($this->datetime_in) - $this->period_over * 60;
             $model = $id ? ActivitiesOver::findOne($id) : new ActivitiesOver();
@@ -729,7 +733,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $model->title = $this->title_over;
             $model->over_category = 2;
             $model->department_list = $this->department_list;
-            $model->executors_list = Art::isBackend() ? [$this->executor_over_id] : [$this->executor_over_id]; // TODO не пойму в чем проблема костыль!
+            $model->executors_list = [$this->executor_over_id] /*Art::isBackend() ? [$this->executor_over_id] : [$this->executor_over_id[0]]*/; // TODO не пойму в чем проблема костыль!
             if ($model->save(false)) {
                 $this->activities_over_id = $model->id;
                 $transaction->commit();

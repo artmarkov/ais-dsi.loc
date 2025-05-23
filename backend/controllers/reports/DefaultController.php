@@ -2,6 +2,8 @@
 
 namespace backend\controllers\reports;
 
+use common\models\reports\ProgressHistory;
+use common\models\reports\ProgressReport;
 use common\models\studyplan\SchoolWorkload;
 use common\models\studyplan\StudyplanDistrib;
 use common\models\studyplan\StudyplanHistory;
@@ -22,7 +24,7 @@ use yii\helpers\ArrayHelper;
 
 class DefaultController extends MainController
 {
-    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve'];
+    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve', 'progress-history'];
 
     public function actionIndex()
     {
@@ -294,5 +296,30 @@ class DefaultController extends MainController
             'model_date' => $model_date,
         ]);
     }
+
+    public function actionProgressHistory()
+    {
+        $session = Yii::$app->session;
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model_date = $this->modelDate;
+        $model_date->addRule(['teachers_id'], 'required', ['message' => 'Необходимо выбрать преподавателя'])
+            ->addRule(['is_history'], 'integer');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->teachers_id = isset($_GET['id']) ? $_GET['id'] : ($session->get('_teachersProgressReports') ?? Teachers::find()->joinWith(['user'])->where(['status' => Teachers::STATUS_ACTIVE])->scalar());
+            $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+        }
+        $session->set('__backendPlanYear', $model_date->plan_year);
+        $session->set('_teachersProgressReports', $model_date->teachers_id);
+
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            $models = new ProgressReport($model_date);
+            $models->sendXls();
+        }
+        return $this->renderIsAjax('progress-history', [
+            'model_date' => $model_date,
+        ]);
+    }
+
 
 }

@@ -42,10 +42,10 @@ $columns = [
         'attribute' => 'education_programm_short_name',
         'label' => $model['attributes']['education_programm_short_name'],
     ],
-//    [
-//        'attribute' => 'course',
-//        'label' => $model['attributes']['course'],
-//    ],
+    [
+        'attribute' => 'course',
+        'label' => $model['attributes']['course'],
+    ],
     [
         'attribute' => 'subject_form_name',
         'label' => $model['attributes']['subject_form_name'],
@@ -122,7 +122,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                 'beforeHeader' => [
                     [
                         'columns' => [
-                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 5, 'rowspan' => 3, 'class' => 'text-center', 'style' => 'vertical-align: middle;']],
+                            ['content' => 'Ученик/Программа', 'options' => ['colspan' => 6, 'rowspan' => 3, 'class' => 'text-center', 'style' => 'vertical-align: middle;']],
                             ['content' => 'Сводная успеваемость', 'options' => ['colspan' => count($model['subjectKeys']), 'class' => 'text-center']],
                         ],
 //                        'options' => ['class' => 'skip-export'] // remove this row from export

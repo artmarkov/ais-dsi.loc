@@ -307,7 +307,7 @@ $form = ActiveForm::begin([
                                         <?= $form->field($model, 'protocolFlag')->checkbox(['disabled' => $readonly])->label('Раскрыть карточку комиссии для протокола мероприятия') ?>
                                         <div class="col-sm-12" id="protocol">
                                         <?php echo \yii\bootstrap\Alert::widget([
-                                            'body' => '<i class="fa fa-info-circle"></i> Оценки в протоколе могут выставлять только Председатель комиссии, Заместитель председателя комиссии и Секретарь комиссии',
+                                            'body' => '<i class="fa fa-info-circle"></i> Оценки в протоколе могут выставлять только Члены комиссии.',
                                             'options' => ['class' => 'alert-info'],
                                         ]);
                                         ?>

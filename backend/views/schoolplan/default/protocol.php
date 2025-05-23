@@ -84,6 +84,12 @@ $schoolplan = \common\models\schoolplan\Schoolplan::findOne($id);
                             'gridId' => 'protocol-grid',
                             'actions' => [\yii\helpers\Url::to(['/schoolplan/default/protocol-bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
                         ] : false,
+                        'rowOptions' => function(SchoolplanProtocol $model) {
+                            if($model->isAuthor()) {
+                                return ['class' => 'success'];
+                            }
+                            return [];
+                        },
                         'columns' => [
                             ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px'], 'visible' => \artsoft\Art::isBackend()],
                             [
@@ -171,10 +177,10 @@ $schoolplan = \common\models\schoolplan\Schoolplan::findOne($id);
                                         return \artsoft\Art::isBackend() ? true : in_array($model_confirm->confirm_status, [0, 3]);
                                     },
                                     'update' => function ($model) use ($model_confirm) {
-                                        return \artsoft\Art::isBackend() ? true : (($model->isAuthor() || $model->schoolplan->isProtocolSigner()) && in_array($model_confirm->confirm_status, [0, 3]));
+                                        return \artsoft\Art::isBackend() ? true : (($model->isAuthor() || $model->schoolplan->isProtocolMembers()) && in_array($model_confirm->confirm_status, [0, 3]));
                                     },
                                     'delete' => function ($model) use ($model_confirm) {
-                                        return \artsoft\Art::isBackend() ? true : (($model->isAuthor() || $model->schoolplan->isProtocolSigner()) && in_array($model_confirm->confirm_status, [0, 3]));
+                                        return \artsoft\Art::isBackend() ? true : (($model->isAuthor() || $model->schoolplan->isProtocolMembers()) && in_array($model_confirm->confirm_status, [0, 3]));
                                     },
                                 ]
                             ],
