@@ -37,7 +37,7 @@ class ProgressReport
         $this->sect_list = LessonProgressView::getSectListForTeachersQuery($this->teachers_id, $this->plan_year, $this->history)->column();
         $this->subject_key = LessonProgressView::getIndivListForTeachers($this->teachers_id, $this->plan_year);
 
-       // echo '<pre>' . print_r($this->plan_year + 1, true) . '</pre>';
+        // echo '<pre>' . print_r($this->plan_year + 1, true) . '</pre>';
         // $this->template_name = self::template_studyplan_history;
     }
 
@@ -75,18 +75,29 @@ class ProgressReport
 
     public function sendXls()
     {
+        ini_set('memory_limit', '2024M');
+
+        $cc = range('A', 'Z');
+        $c = range('A', 'Z');
+        foreach ($c as $ic) $cc[] = 'A' . $ic;
+        foreach ($c as $ic) $cc[] = 'B' . $ic;
+        foreach ($c as $ic) $cc[] = 'C' . $ic;
+        foreach ($c as $ic) $cc[] = 'D' . $ic;
+        foreach ($c as $ic) $cc[] = 'E' . $ic;
+        foreach ($c as $ic) $cc[] = 'F' . $ic;
+
         $spr = new Spreadsheet();
         $i = 0;
         // групповые
         foreach ($this->sect_list as $item => $subject_sect_studyplan_id) {
             $dataArray = $this->getData($subject_sect_studyplan_id);
-            $spr = $this->getSheetData($spr, $dataArray, $i);
+            $spr = $this->getSheetData($spr, $cc, $dataArray, $i);
             $i++;
         }
         // индивидуальные
         foreach (array_keys($this->subject_key) as $item => $subject_key) {
             $dataArray = $this->getDataIndiv($subject_key);
-            $spr = $this->getSheetData($spr, $dataArray, $i);
+            $spr = $this->getSheetData($spr, $cc, $dataArray, $i);
             $i++;
         }
         $tmplName = ArtHelper::slug($this->teachers_fio) . '-' . (string)$this->plan_year . '.xlsx';
@@ -107,16 +118,9 @@ class ProgressReport
      * @param $i
      * @return mixed
      */
-    protected function getSheetData($spr, $dataArray, $i)
+    protected function getSheetData($spr, $cc, $dataArray, $i)
     {
-        $cc = range('A', 'Z');
-        $c = range('A', 'Z');
-        foreach ($c as $ic) $cc[] = 'A' . $ic;
-        foreach ($c as $ic) $cc[] = 'B' . $ic;
-        foreach ($c as $ic) $cc[] = 'C' . $ic;
-        foreach ($c as $ic) $cc[] = 'D' . $ic;
-        foreach ($c as $ic) $cc[] = 'E' . $ic;
-        foreach ($c as $ic) $cc[] = 'F' . $ic;
+
         // echo '<pre>' . print_r(count($cc), true) . '</pre>'; die();
         $spr->createSheet();
         $spr->setActiveSheetIndex($i);

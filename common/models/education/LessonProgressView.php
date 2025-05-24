@@ -430,13 +430,13 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             if (isset($modelsMarks[$modelProgress->subject_sect_studyplan_id][$modelProgress->studyplan_subject_id])) {
                 foreach ($modelsMarks[$modelProgress->subject_sect_studyplan_id][$modelProgress->studyplan_subject_id] as $id => $mark) {
                     $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
-                    $data[$item][$date_label] = $editTable ? self::getEditableForm($mark, $teachers_id) . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '') : ($mark->mark_label ? $mark->mark_label . '(' . $mark->test_name_short . ')' : '');
+                    $data[$item][$date_label] = $editTable ? self::getEditableForm($mark, $teachers_id) . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '') : $mark->mark_label;
                 }
             }
 
             if (isset($modelsMarksCertif[$modelProgress->subject_sect_studyplan_id][$modelProgress->studyplan_subject_id])) {
                 foreach ($modelsMarksCertif[$modelProgress->subject_sect_studyplan_id][$modelProgress->studyplan_subject_id] as $id => $mark) {
-                    $data[$item][$mark->lesson_test_id] = $editTable ? self::getEditableForm($mark, $teachers_id) . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '') : ($mark->mark_label ? $mark->mark_label . '(' . $mark->test_name_short . ')' : '');
+                    $data[$item][$mark->lesson_test_id] = $editTable ? self::getEditableForm($mark, $teachers_id) . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '') : $mark->mark_label;
                 }
             }
         }
