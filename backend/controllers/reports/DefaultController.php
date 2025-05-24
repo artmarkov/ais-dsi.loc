@@ -312,9 +312,16 @@ class DefaultController extends MainController
         $session->set('__backendPlanYear', $model_date->plan_year);
         $session->set('_teachersProgressReports', $model_date->teachers_id);
 
-        if (Yii::$app->request->post('submitAction') == 'excel') {
+        if (Yii::$app->request->post()) {
             $models = new ProgressReport($model_date);
-            $models->sendXls();
+            $models->saveXls();
+            if (Yii::$app->request->post('submitAction') == 'excel') {
+                $models->uploadFile();
+            } elseif (Yii::$app->request->post('submitAction') == 'doc') {
+                $models->makeDocument();
+                Yii::$app->session->setFlash('success', 'Файл создан и сохранен в папку "Документы"');
+            }
+            $models->cliarTemp();
         }
         return $this->renderIsAjax('progress-history', [
             'model_date' => $model_date,

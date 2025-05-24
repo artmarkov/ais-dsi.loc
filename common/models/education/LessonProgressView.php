@@ -213,10 +213,9 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $timestamp_in = $timestamp[0];
         $timestamp_out = $timestamp[1];
 
-        $attributes = ['studyplan_subject_id' => Yii::t('art/guide', 'Subject Name')];
-        $attributes += ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
-        $attributes += ['student_id' => Yii::t('art/student', 'Student')];
-
+        $attributes = ['studyplan_subject_id' => 'Название предмета'];
+        $attributes += ['subject_sect_studyplan_id' => 'Название группы'];
+        $attributes += ['student_id' => 'Ученик'];
         $dates_load_total = 0;
         if ($model_date->subject_sect_studyplan_id != 0) {
             $lessonDates = LessonItemsProgressView::find()->select('lesson_date, test_name_short')->distinct()
@@ -322,9 +321,9 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $timestamp_in = $timestamp[0];
         $timestamp_out = $timestamp[1];
 
-        $attributes = ['studyplan_subject_id' => Yii::t('art/guide', 'Subject Name')];
-        $attributes += ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
-        $attributes += ['student_id' => Yii::t('art/student', 'Student')];
+        $attributes = ['studyplan_subject_id' => 'Название предмета'];
+        $attributes += ['subject_sect_studyplan_id' => 'Название группы'];
+        $attributes += ['student_id' => 'Ученик'];
 
         $lessonDates = LessonItemsProgressView::find()->select('lesson_date, test_name_short')->distinct()
             ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])

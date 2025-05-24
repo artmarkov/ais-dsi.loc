@@ -13,7 +13,7 @@ class m220407_085200_create_table_document extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey(),
             'user_common_id' => $this->integer()->notNull(),
             'title' => $this->string(127)->notNull(),
-            'description' => $this->string(1024)->notNull(),
+            'description' => $this->string(1024),
             'doc_date' => $this->integer()->notNull(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),

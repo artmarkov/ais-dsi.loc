@@ -2,12 +2,16 @@
 
 namespace common\models\reports;
 
+use artsoft\fileinput\models\FileManager;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use common\models\education\LessonProgressView;
+use common\models\info\Document;
+use common\models\teachers\Teachers;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Yii;
+use yii\db\Exception;
 
 
 class ProgressReport
@@ -22,6 +26,8 @@ class ProgressReport
     protected $subject_key;
     protected $model_date;
     protected $history;
+    protected $tmplName;
+    protected $template;
 
     public function __construct($model_date)
     {
@@ -36,8 +42,10 @@ class ProgressReport
         $this->date_out = Yii::$app->formatter->asDate($timestamp['timestamp_out'], 'php:m.Y');
         $this->sect_list = LessonProgressView::getSectListForTeachersQuery($this->teachers_id, $this->plan_year, $this->history)->column();
         $this->subject_key = LessonProgressView::getIndivListForTeachers($this->teachers_id, $this->plan_year);
+        $this->tmplName = ArtHelper::slug($this->teachers_fio) . '-' . Yii::$app->formatter->asDate(time(), 'php:YmdHis') . '.xlsx';
+        $this->template = Yii::getAlias('@runtime/') . $this->tmplName;
 
-       // echo '<pre>' . print_r($this->plan_year + 1, true) . '</pre>';
+        // echo '<pre>' . print_r($this->plan_year + 1, true) . '</pre>';
         // $this->template_name = self::template_studyplan_history;
     }
 
@@ -68,56 +76,97 @@ class ProgressReport
     }
 
     /**
-     *
-     * @throws \yii\db\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws \yii\base\InvalidConfigException
      */
 
-    public function sendXls()
+    public function saveXls()
     {
+        $cc = range('A', 'Z');
+        $c = range('A', 'Z');
+        foreach (range('A', 'F') as $ii) {
+            foreach ($c as $ic) $cc[] = $ii . $ic;
+        }
+
         $spr = new Spreadsheet();
         $i = 0;
         // групповые
         foreach ($this->sect_list as $item => $subject_sect_studyplan_id) {
             $dataArray = $this->getData($subject_sect_studyplan_id);
-            $spr = $this->getSheetData($spr, $dataArray, $i);
+            $spr = $this->getSheetData($spr, $cc, $dataArray, $i);
             $i++;
         }
         // индивидуальные
         foreach (array_keys($this->subject_key) as $item => $subject_key) {
             $dataArray = $this->getDataIndiv($subject_key);
-            $spr = $this->getSheetData($spr, $dataArray, $i);
+            $spr = $this->getSheetData($spr, $cc, $dataArray, $i);
             $i++;
         }
-        $tmplName = ArtHelper::slug($this->teachers_fio) . '-' . (string)$this->plan_year . '.xlsx';
-        $patch = Yii::getAlias('@runtime/');
-        $template = $patch . $tmplName;
         $writer = new Xlsx($spr);
-        $writer->save($template);
+        $writer->save($this->template);
+        
+    }
 
-        if (file_exists($template)) {
-            Yii::$app->response->sendFile($template, $tmplName)->send();
-            unlink($template);
+    /**
+     * @param $this->tmplName
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function makeDocument()
+    {
+        $transaction = \Yii::$app->db->beginTransaction();
+        try {
+            $title = 'Выписки из журнала успеваемости за ' . $this->plan_year . '/' . $this->plan_year_next . ' учебный год';
+            $modelTeachers = Teachers::findOne($this->teachers_id);
+            $modelDoc = Document::find()
+                    ->where(['user_common_id' => $modelTeachers->user_common_id])
+                    ->andWhere(['title' => $title])
+                    ->one() ?? new Document();
+            $modelDoc->user_common_id = $modelTeachers->user_common_id;
+            $modelDoc->doc_date = Yii::$app->formatter->asDate(time());
+            $modelDoc->title = $title;
+            $flag = $modelDoc->save(false);
+            $file = new FileManager();
+            $file->orig_name = $this->tmplName;
+            $file->name = $this->tmplName;
+            $file->size = filesize($this->template);
+            $file->type = 'xlsx';
+            $file->item_id = $modelDoc->id;
+            $file->class = 'Document';
+            $file->sort = 0;
+            $filename_new = Yii::getAlias('@frontend/') . "web/uploads/fileinput/document/" . $file->name;
+            copy($this->template, $filename_new);
+            $flag = $flag && $file->save(false);
+
+            if ($flag) {
+                $transaction->commit();
+            }
+        } catch (Exception $e) {
+            print_r($e->errorInfo);
+            $transaction->rollBack();
         }
     }
 
+    public function cliarTemp() {
+        if (file_exists($this->template)) {
+            unlink($this->template);
+        }
+    }
+
+     public function uploadFile() {
+        if (file_exists($this->template)) {
+            Yii::$app->response->sendFile($this->template, $this->tmplName)->send();
+        }
+    }
+    
     /**
      * @param $spr
      * @param $dataArray
      * @param $i
      * @return mixed
      */
-    protected function getSheetData($spr, $dataArray, $i)
+    protected function getSheetData($spr, $cc, $dataArray, $i)
     {
-        $cc = range('A', 'Z');
-        $c = range('A', 'Z');
-        foreach ($c as $ic) $cc[] = 'A' . $ic;
-        foreach ($c as $ic) $cc[] = 'B' . $ic;
-        foreach ($c as $ic) $cc[] = 'C' . $ic;
-        foreach ($c as $ic) $cc[] = 'D' . $ic;
-        foreach ($c as $ic) $cc[] = 'E' . $ic;
-        foreach ($c as $ic) $cc[] = 'F' . $ic;
-        // echo '<pre>' . print_r(count($cc), true) . '</pre>'; die();
         $spr->createSheet();
         $spr->setActiveSheetIndex($i);
 
@@ -138,7 +187,6 @@ class ProgressReport
         }
         foreach ($data as $s => $coll) {
             $spr->getActiveSheet()->setTitle(mb_substr($coll['subject'], 0, 30, 'UTF-8'));
-            //$spr->getActiveSheet()->setCellValue($cc[0] . ($s + 1), (string)$s);
             foreach (array_keys($field_value) as $k => $n) {
 
                 switch ($n) {
