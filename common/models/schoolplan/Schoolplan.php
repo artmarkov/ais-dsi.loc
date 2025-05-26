@@ -722,7 +722,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
        // print_r($this->executor_over_id);die();
         if ($this->period_over_flag) {
             if(is_array($this->executor_over_id)) {
-                $this->executor_over_id = [];
+                $this->executor_over_id = $this->executor_over_id[0];
             }
             $transaction = \Yii::$app->db->beginTransaction();
             $timestamp = Yii::$app->formatter->asTimestamp($this->datetime_in) - $this->period_over * 60;

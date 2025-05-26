@@ -3,6 +3,7 @@
 namespace common\models\history;
 
 use common\models\entrant\EntrantMembers;
+use common\models\user\UserCommon;
 use common\widgets\history\BaseHistory;
 
 class EntrantMembersHistory extends BaseHistory
@@ -21,11 +22,18 @@ class EntrantMembersHistory extends BaseHistory
     {
         return [
 //            'entrant_id',
-//            'members_id',
+            'members_id',
             'mark_rem',
         ];
     }
-
+    protected static function getDisplayValue($model, $name, $value)
+    {
+        switch ($name) {
+            case 'members_id':
+                return UserCommon::findOne(['user_id' => $model->members_id]) ? UserCommon::findOne(['user_id' => $model->members_id])->getLastFM() : $model->members_id;
+        }
+        return parent::getDisplayValue($model, $name, $value);
+    }
 
     /**
      * @return array
