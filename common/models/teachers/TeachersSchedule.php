@@ -2,12 +2,15 @@
 
 namespace common\models\teachers;
 
+use artsoft\fileinput\models\FileManager;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use common\models\info\Document;
 use common\models\schedule\SubjectScheduleConfirm;
 use Yii;
+use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 
 class TeachersSchedule
@@ -15,17 +18,24 @@ class TeachersSchedule
     const template_timesheet = 'document/teachers_schedule.xlsx';
 
     protected $models;
-    protected $modelTeachers;
     protected $plan_year;
+    protected $plan_year_next;
     protected $teachers_id;
+    protected $teachers_fio;
     protected $modelConfirm;
+    protected $tmplName;
+    protected $template;
 
     public function __construct($model_date)
     {
         $this->plan_year = $model_date->plan_year;
+        $this->plan_year_next = $model_date->plan_year + 1;
         $this->teachers_id = $model_date->teachers_id;
+        $this->teachers_fio = RefBook::find('teachers_fullname')->getValue($this->teachers_id);
         $this->modelTeachers = Teachers::findOne($this->teachers_id);
         $this->modelConfirm = $this->getConfirmData();
+        $this->tmplName = ArtHelper::slug($this->teachers_fio) . '-' . Yii::$app->formatter->asDate(time(), 'php:YmdHis') . '.xlsx';
+        $this->template = Yii::getAlias('@runtime/') . $this->tmplName;
     }
 
     public function getData()
@@ -49,7 +59,7 @@ class TeachersSchedule
      * @param $template
      * @throws \yii\base\InvalidConfigException
      */
-    public function makeXlsx()
+    public function saveXls()
     {
         $auditory_list = RefBook::find('auditory_memo_1')->getList();
         $direction_list = \common\models\guidejob\Direction::getDirectionShortList();
@@ -87,14 +97,63 @@ class TeachersSchedule
 //        echo '<pre>' . print_r($dataSchedule, true) . '</pre>'; die();
         $output_file_name = str_replace('.', '_' . ArtHelper::slug(RefBook::find('teachers_fio')->getValue($this->teachers_id)) . '.' . Yii::$app->formatter->asDate(time(), 'php:Y_m_d H_i') . '.', basename(self::template_timesheet));
 
-        $tbs = DocTemplate::get(self::template_timesheet)->setHandler(function ($tbs) use ($data, $dataSchedule) {
+        return DocTemplate::get(self::template_timesheet)->setHandler(function ($tbs) use ($data, $dataSchedule) {
             /* @var $tbs clsTinyButStrong */
             $tbs->MergeBlock('doc', $data);
             $tbs->MergeBlock('day', $dataSchedule);
 
-        })->prepare();
-        $tbs->Show(OPENTBS_DOWNLOAD, $output_file_name);
-        exit;
+        })->save($this->template);
+    }
+
+    /**
+     * @param $this->tmplName
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function makeDocument()
+    {
+        $transaction = \Yii::$app->db->beginTransaction();
+        try {
+            $title = 'Выписки из расписания занятий за ' . $this->plan_year . '/' . $this->plan_year_next . ' учебный год';
+            $modelTeachers = Teachers::findOne($this->teachers_id);
+            $modelDoc = Document::find()
+                    ->where(['user_common_id' => $modelTeachers->user_common_id])
+                    ->andWhere(['title' => $title])
+                    ->one() ?? new Document();
+            $modelDoc->user_common_id = $modelTeachers->user_common_id;
+            $modelDoc->doc_date = Yii::$app->formatter->asDate(time());
+            $modelDoc->title = $title;
+            $flag = $modelDoc->save(false);
+            $file = new FileManager();
+            $file->orig_name = $this->tmplName;
+            $file->name = $this->tmplName;
+            $file->size = filesize($this->template);
+            $file->type = 'xlsx';
+            $file->item_id = $modelDoc->id;
+            $file->class = 'Document';
+            $file->sort = 0;
+            $filename_new = Yii::getAlias('@frontend/') . "web/uploads/fileinput/document/" . $file->name;
+            copy($this->template, $filename_new);
+            $flag = $flag && $file->save(false);
+
+            if ($flag) {
+                $transaction->commit();
+            }
+        } catch (Exception $e) {
+            print_r($e->errorInfo);
+            $transaction->rollBack();
+        }
+    }
+
+    public function cliarTemp() {
+        if (file_exists($this->template)) {
+            unlink($this->template);
+        }
+    }
+
+    public function uploadFile() {
+        if (file_exists($this->template)) {
+            Yii::$app->response->sendFile($this->template, $this->tmplName)->send();
+        }
     }
 
 }

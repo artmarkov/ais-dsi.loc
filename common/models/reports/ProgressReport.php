@@ -85,7 +85,7 @@ class ProgressReport
     {
         $cc = range('A', 'Z');
         $c = range('A', 'Z');
-        foreach (range('A', 'F') as $ii) {
+        foreach (range('A', 'K') as $ii) {
             foreach ($c as $ic) $cc[] = $ii . $ic;
         }
 
@@ -193,13 +193,15 @@ class ProgressReport
                     case 'student_id' :
                         $coll[$n] = $coll['student_fio'];
                         $spr->getActiveSheet()->getColumnDimension($cc[$k])->setWidth(50);
-
                         break;
+                    default :
+                        $spr->getActiveSheet()->getColumnDimension($cc[$k])->setWidth(4);
                 }
                 $spr->getActiveSheet()->setCellValue($cc[$k] . ($s + 8), $coll[$n] ?? '');
-                // $spr->getActiveSheet()->getColumnDimension($cc[$k])/*->setAutoSize(true)*/;
+//                $spr->getActiveSheet()->getColumnDimension($cc[$k])->setAutoSize(true);
             }
         }
+
         $planYearStr = $this->plan_year . '/' . $this->plan_year_next;
         $spr->getActiveSheet()->setCellValue($cc[0] . 1, 'Выписка из журнала за : ' . $planYearStr . ' учебный год');
         $spr->getActiveSheet()->setCellValue($cc[0] . 3, 'Преподаватель : ' . $this->teachers_fio);

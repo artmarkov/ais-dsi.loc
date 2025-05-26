@@ -41,7 +41,7 @@ $form = ActiveForm::begin([
             </div>
             <div class="panel-footer">
                 <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-success', 'name' => 'submitAction', 'value' => 'excel']); ?>
-                <?= Html::submitButton('<i class="fa fa-copy" aria-hidden="true"></i> Скопировать в папку "Документы"', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'doc']); ?>
+                <?= Html::submitButton('<i class="fa fa-copy" aria-hidden="true"></i> Создать документ в папке "Документы"', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'doc']); ?>
             </div>
         </div>
     </div>

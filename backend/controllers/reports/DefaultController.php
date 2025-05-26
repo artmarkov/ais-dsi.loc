@@ -24,7 +24,7 @@ use yii\helpers\ArrayHelper;
 
 class DefaultController extends MainController
 {
-    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve', 'progress-history'];
+    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve', 'progress-history', 'teachers-consult'];
 
     public function actionIndex()
     {
@@ -186,17 +186,47 @@ class DefaultController extends MainController
         $models = new TeachersSchedule($model_date);
 //        echo '<pre>' . print_r($models, true) . '</pre>';die();
 
+        $models->saveXls();
         if (Yii::$app->request->post('submitAction') == 'excel') {
-            $models->makeXlsx();
+            $models->uploadFile();
+        } elseif (Yii::$app->request->post('submitAction') == 'doc') {
+            $models->makeDocument();
+            Yii::$app->session->setFlash('success', 'Файл создан и сохранен в папку "Документы"');
         }
-        if (Yii::$app->request->post('submitAction') == 'excel_consult') {
-            $models = new TeachersConsult($model_date);
-            $models->makeXlsx();
-        }
+        $models->cliarTemp();
         return $this->render('teachers-schedule', [
             'models' => $models->getData(),
             'model_date' => $model_date,
             'modelTeachers' => $modelTeachers,
+        ]);
+    }
+
+    public function actionTeachersConsult()
+    {
+        $session = Yii::$app->session;
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $this->view->params['breadcrumbs'][] = 'Расписание преподавателя';
+        $model_date = $this->modelDate;
+        $model_date->addRule(['teachers_id'], 'required');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->teachers_id = isset($_GET['id']) ? $_GET['id'] : ($session->get('_teachersScheduleReports') ?? Teachers::find()->joinWith(['user'])->where(['status' => Teachers::STATUS_ACTIVE])->scalar());
+        }
+        $session->set('_teachersScheduleReports', $model_date->teachers_id);
+        $modelTeachers = Teachers::findOne($model_date->teachers_id);
+//        echo '<pre>' . print_r($models, true) . '</pre>';die();
+
+            $models = new TeachersConsult($model_date);
+            $models->saveXls();
+            if (Yii::$app->request->post('submitAction') == 'excel') {
+                $models->uploadFile();
+            } elseif (Yii::$app->request->post('submitAction') == 'doc') {
+                $models->makeDocument();
+                Yii::$app->session->setFlash('success', 'Файл создан и сохранен в папку "Документы"');
+            }
+            $models->cliarTemp();
+        return $this->render('teachers-consult', [
+            'model_date' => $model_date,
         ]);
     }
 
