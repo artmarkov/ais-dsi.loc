@@ -9,6 +9,7 @@ use common\models\entrant\EntrantComm;
 use kartik\depdrop\DepDrop;
 use wbraganca\dynamicform\DynamicFormWidget;
 use yii\helpers\Url;
+use common\models\students\Student;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\entrant\Entrant */
@@ -62,7 +63,6 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
             Карточка поступающего
             <?php if (!$model->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
-            <?php endif; ?>
             <span class="pull-right">
             <?= Html::a('<i class="fa fa-user-o" aria-hidden="true"></i> Открыть в новом окне',
                 ['/students/default/view', 'id' => $model->student_id],
@@ -71,6 +71,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                     'class' => 'btn btn-info',
                 ]); ?>
             </span>
+            <?php endif; ?>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -81,7 +82,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                     }
                     ?>
                     <?= $form->field($model, 'student_id')->widget(\kartik\select2\Select2::class, [
-                        'data' => Entrant::getEntrantList(),
+                        'data' => Student::getStudentList(),
                         'options' => [
                             'disabled' => $model->student_id ? true : false,
                             'placeholder' => Yii::t('art', 'Select...'),
@@ -227,7 +228,7 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                                                 echo $field->begin();
                                                 ?>
                                                 <div class="col-sm-12">
-                                                    <?= \yii\helpers\Html::activeTextarea($modelMembers, "[{$index}]mark_rem", ['rows' => 3, 'class' => 'form-control', 'disabled' => $readonly]); ?>
+                                                    <?= \yii\helpers\Html::activeTextarea($modelMembers, "[{$index}]mark_rem", ['rows' => 3, 'class' => 'form-control', 'disabled' => $readonlyMarks]); ?>
                                                     <p class="help-block help-block-error"></p>
                                                 </div>
                                                 <?= $field->end(); ?>

@@ -3,6 +3,7 @@
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
 use kartik\datetime\DateTimePicker;
+use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\entrant\EntrantGroup */
@@ -36,12 +37,15 @@ use kartik\datetime\DateTimePicker;
                     if (!$model->isNewRecord) {
                         echo Html::activeHiddenInput($model, "comm_id");
                     }
+                    else {
+                        $model->prep_flag = 0;
+                    }
                     ?>
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'prep_flag')->radioList($model->getPrepList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
 
-                    <?= $form->field($model, 'timestamp_in')->widget(DateTimePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
+                    <?= $form->field($model, 'timestamp_in')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->widget(DateTimePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
                     <?= $form->field($model, 'description')->textarea(['rows' => '3', 'maxlength' => true]) ?>
 

@@ -44,6 +44,7 @@ class EntrantGroup extends \artsoft\db\ActiveRecord
             [['comm_id', 'timestamp_in', 'prep_flag', 'name'], 'required'],
             [['comm_id', 'prep_flag', 'version'], 'integer'],
             [['timestamp_in'], 'safe'],
+            [['prep_flag'], 'default', 'value' => 0],
             [['name'], 'string', 'max' => 255],
             [['description'], 'string', 'max' => 1024],
             [['comm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantComm::className(), 'targetAttribute' => ['comm_id' => 'id']],

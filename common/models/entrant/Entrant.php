@@ -308,11 +308,11 @@ class Entrant extends \artsoft\db\ActiveRecord
      */
     public static function getEntrantList()
     {
-        $qyery = (new Query())->from('entrant_view')
-            ->select(['student_id', 'CONCAT(fullname, \' - \', to_char(to_timestamp(birth_date+(3*3600)), \'DD.MM.YYYY\'), \' (\', birth_date_age, \' лет)\') as fio'])
+        $query = (new Query())->from('entrant_view')
+            ->select(['student_id', 'CONCAT(fullname, \' - \', to_char(to_timestamp(birth_date + 10800), \'DD.MM.YYYY\'), \' (\', birth_date_age, \' лет)\') as fio'])
             ->distinct()
             ->all();
-        return \yii\helpers\ArrayHelper::map($qyery, 'student_id', 'fio');
+        return \yii\helpers\ArrayHelper::map($query, 'student_id', 'fio');
 
     }
 
@@ -441,7 +441,7 @@ SQL;
                         $modelsSubTime = $modelProgrammLevel->educationProgrammLevelSubject;
                         foreach ($modelsSubTime as $modelSubTime) {
                             $modelSub = new StudyplanSubject();
-                            if($modelSubTime->subject_cat_id == 1000) {
+                            if ($modelSubTime->subject_cat_id == 1000) {
                                 $modelSubTime->subject_id = $this->subject_id;
                             }
                             $modelSub->copyAttributes($model, $modelSubTime);

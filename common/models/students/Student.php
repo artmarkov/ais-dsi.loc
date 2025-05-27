@@ -10,6 +10,7 @@ use common\models\user\UserCommon;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Query;
 
 /**
  * This is the model class for table "students".
@@ -250,4 +251,13 @@ class Student extends ActiveRecord
         return parent::beforeDelete();
     }
 
+    public static function getStudentList()
+    {
+        $query = (new Query())->from('students_view')
+            ->select(['students_id', 'CONCAT(fullname, \' - \', to_char(to_timestamp(birth_date + 10800), \'DD.MM.YYYY\'), \' (\', birth_date_age, \' лет)\') as fio'])
+            ->distinct()
+            ->all();
+        return \yii\helpers\ArrayHelper::map($query, 'students_id', 'fio');
+
+    }
 }
