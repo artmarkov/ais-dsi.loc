@@ -309,7 +309,7 @@ class Entrant extends \artsoft\db\ActiveRecord
     public static function getEntrantList()
     {
         $qyery = (new Query())->from('entrant_view')
-            ->select(['student_id', 'CONCAT(fullname, \' - \', to_char(to_timestamp(birth_date), \'DD.MM.YYYY\'), \' (\', birth_date_age, \' лет)\') as fio'])
+            ->select(['student_id', 'CONCAT(fullname, \' - \', to_char(to_timestamp(birth_date+(3*3600)), \'DD.MM.YYYY\'), \' (\', birth_date_age, \' лет)\') as fio'])
             ->distinct()
             ->all();
         return \yii\helpers\ArrayHelper::map($qyery, 'student_id', 'fio');

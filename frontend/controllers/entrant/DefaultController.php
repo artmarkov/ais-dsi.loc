@@ -43,7 +43,7 @@ class DefaultController extends \frontend\controllers\DefaultController
         $userId = Yii::$app->user->identity->getId();
         $query = EntrantComm::find()->where(new \yii\db\Expression("{$userId} = any (string_to_array(members_list::text, ',')::int[])"));
         $searchModel = new EntrantCommSearch($query);
-        $params = Yii::$app->request->getQueryParams();
+        $params = $this->getParams();
         $dataProvider = $searchModel->search($params);
 
         return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel'));
@@ -177,7 +177,7 @@ class DefaultController extends \frontend\controllers\DefaultController
             $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
                 && !User::hasPermission($modelClass::getFullAccessPermission()));
             $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
+            $params = $this->getParams();
 
             if ($restrictAccess) {
                 $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;

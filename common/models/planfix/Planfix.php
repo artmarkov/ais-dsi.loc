@@ -19,7 +19,7 @@ use artsoft\behaviors\DateFieldBehavior;
  * @property string|null $description Описание задания
  * @property int $planfix_author Автор задания
  * @property string|null $executors_list Исполнители задания
- * @property int $importance Приоритет работы(высокий, обычный, низкий, в последнюю очередь)
+ * @property int $importance Приоритет работы(высокий, обычный, низкий)
  * @property int $planfix_date Планируемая дата выполнения
  * @property int $status Статус работы(В работе, Выполнено, Не выполнено)
  * @property string|null $status_reason Причина невыполнения
@@ -173,7 +173,6 @@ class Planfix extends ActiveRecord
             1 => 'Высокий',
             2 => 'Обычный',
             3 => 'Низкий',
-            4 => 'В последнюю очередь'
         ];
     }
 
@@ -186,7 +185,6 @@ class Planfix extends ActiveRecord
             [1, 'Высокий', 'danger'],
             [2, 'Обычный', 'info'],
             [3, 'Низкий', 'default'],
-            [4, 'В последнюю очередь', 'default']
         ];
     }
 

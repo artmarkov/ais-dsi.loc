@@ -306,14 +306,17 @@ class DefaultController extends MainController
                                 if ($flag === false) {
                                     break;
                                 }
-                                $modelMembers->entrant_id = $model->id;
-                                if (!($flag = $modelMembers->save(false))) {
-                                    break;
+                                if($modelMembers->mark_rem) { // Если записи комментария нет, то не сохраняем
+                                    $modelMembers->entrant_id = $model->id;
+                                    if (!($flag = $modelMembers->save(false))) {
+                                        break;
+                                    }
                                 }
                                 $modelMembers = EntrantMembers::findOne(['id' => $modelMembers->id]);
                                 if (isset($modelsTest[$index]) && is_array($modelsTest[$index])) {
                                     foreach ($modelsTest[$index] as $indexTest => $modelTest) {
                                         $modelTest->entrant_members_id = $modelMembers->id;
+                                        if(!$modelTest->entrant_mark_id) continue;// если нет оценки, то не сохраняем
                                         if (!($flag = $modelTest->save(false))) {
                                             break;
                                         }
@@ -348,7 +351,7 @@ class DefaultController extends MainController
             $restrictAccess = (ArtHelper::isImplemented($modelClass, OwnerAccess::CLASSNAME)
                 && !User::hasPermission($modelClass::getFullAccessPermission()));
             $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
+            $params = $this->getParams();
 
             if ($restrictAccess) {
                 $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;

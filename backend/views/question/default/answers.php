@@ -99,6 +99,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     'sort' => [
                         'attributes' => array_keys($data['attributes'])
                     ],
+                    'pagination' => [
+                        'pageSize' => \Yii::$app->request->cookies->getValue('_grid_page_size', 20),
+                    ],
                 ]),
                 'columns' => $columns,
                 'showFooter' => true,

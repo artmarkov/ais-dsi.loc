@@ -37,7 +37,7 @@ class m250429_165652_create_table_planfix extends \artsoft\db\BaseMigration
             'description' => $this->string(1024)->comment('Описание задания'),
             'planfix_author' => $this->integer()->notNull()->comment('Автор задания'),
             'executors_list' => $this->string(1024)->notNull()->comment('Исполнители задания'),
-            'importance' => $this->integer()->notNull()->comment('Приоритет работы(высокий, обычный, низкий, в последнюю очередь)'),
+            'importance' => $this->integer()->notNull()->comment('Приоритет работы(высокий, обычный, низкий)'),
             'planfix_date' => $this->integer()->notNull()->comment('Планируемая дата выполнения'),
             'status' => $this->integer()->notNull()->defaultValue(1)->comment('Статус работы(В работе, Выполнено, Не выполнено)'),
             'status_reason' => $this->string(1024)->comment('Причина невыполнения'),
