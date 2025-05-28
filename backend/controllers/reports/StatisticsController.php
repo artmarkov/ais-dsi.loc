@@ -2,6 +2,7 @@
 
 namespace backend\controllers\reports;
 
+use common\models\reports\StudyplanReport;
 use Yii;
 use yii\base\DynamicModel;
 
@@ -41,10 +42,10 @@ class StatisticsController extends \backend\controllers\DefaultController
         }
 
         $session->set('__backendPlanYear', $model_date->plan_year);
-        //  $model = new SummaryProgress($model_date);
+          $model = new StudyplanReport($model_date);
         return $this->renderIsAjax('studyplan-stat', [
             'model_date' => $model_date,
-            // 'model' => $model->getData(),
+            'data' => $model->getData(),
         ]);
     }
 
