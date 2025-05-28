@@ -22,11 +22,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= $this->title ?>
                 </div>
                 <div class="panel-body">
-                    <?= \yii\bootstrap\Alert::widget([
-                        'body' => '<i class="fa fa-info-circle"></i> Test',
-                        'options' => ['class' => 'alert-success'],
-                    ]);
-                    ?>
                     <div class="row">
                         <div class="col-sm-12">
                             <table class="table table-bordered table-striped">
@@ -38,16 +33,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </tr>
                                 </thead>
                                 <tbody class="container-items">
-                                <?php foreach ($data[2] as $index => $items): ?>
+                                <?php foreach ($data as $index => $items): ?>
                                     <tr>
                                         <td>
-                                            <?= $items['name'] ?? ''; ?>
+                                            <?= $items['name']; ?>
+                                        </td>
+                                        <td>
+                                            <?= $items['qty_all']; ?>
                                         </td>
                                         <td>
                                             <?= $items['qty']; ?>
-                                        </td>
-                                        <td>
-                                            <?= $data[1][$index]['qty'] ?? ''; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

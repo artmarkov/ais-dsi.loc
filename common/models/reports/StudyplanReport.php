@@ -2,19 +2,8 @@
 
 namespace common\models\reports;
 
-use artsoft\fileinput\models\FileManager;
-use artsoft\helpers\ArtHelper;
-use artsoft\helpers\RefBook;
-use common\models\education\LessonProgressView;
-use common\models\info\Document;
-use common\models\teachers\Teachers;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Yii;
-use yii\db\Exception;
 use yii\db\Query;
-use yii\helpers\ArrayHelper;
-
 
 class StudyplanReport
 {
@@ -31,8 +20,7 @@ class StudyplanReport
         $this->timestamp_in = mktime(0, 0, 0, 1, 1, $year);
         $this->timestamp_out = mktime(0, 0, 0, 6, 1, $year);
 
-        //  echo '<pre>' . print_r($this->getData(), true) . '</pre>'; die();
-        // $this->template_name = self::template_studyplan_history;
+         // echo '<pre>' . print_r($this->getData(), true) . '</pre>'; die();
     }
 
     /**
@@ -41,26 +29,16 @@ class StudyplanReport
      */
     public function getData()
     {
-        $models = (new Query())->from('studyplan_hist')
-            ->innerJoin('guide_subject_form', 'guide_subject_form.id=studyplan_hist.subject_form_id')
-            ->select('guide_subject_form.name AS name, COUNT(DISTINCT studyplan_hist.id) AS qty')
-            ->where(['plan_year' => $this->plan_year])
-            ->andWhere(['studyplan_hist.status' => 0])
-            ->andWhere(['status_reason' => 5])
-            ->andWhere(['op' => 'U'])
-            ->andWhere(['between', 'updated_at', $this->timestamp_in, $this->timestamp_out])
+        $models = (new Query())->from('studyplan_hist AS h')
+            ->innerJoin('guide_subject_form', 'guide_subject_form.id=h.subject_form_id')
+            ->select(new \yii\db\Expression("guide_subject_form.name AS name, COUNT(DISTINCT h.id) FILTER(WHERE h.updated_at BETWEEN '{$this->timestamp_in}' AND '{$this->timestamp_out}') AS qty, COUNT(DISTINCT h.id) AS qty_all"))
+            ->where(['h.plan_year' => $this->plan_year])
+            ->andWhere(['h.status' => 0])
+            ->andWhere(['h.status_reason' => 5])
+            ->andWhere(['h.op' => 'U'])
             ->groupBy('guide_subject_form.name')
             ->all();
-        $models2 = (new Query())->from('studyplan_hist')
-            ->innerJoin('guide_subject_form', 'guide_subject_form.id=studyplan_hist.subject_form_id')
-            ->select('guide_subject_form.name AS name, COUNT(DISTINCT studyplan_hist.id) AS qty')
-            ->where(['plan_year' => $this->plan_year])
-            ->andWhere(['studyplan_hist.status' => 0])
-            ->andWhere(['status_reason' => 5])
-            ->andWhere(['op' => 'U'])
-            ->groupBy('guide_subject_form.name')
-            ->all();
-        return [1 => $models, 2 => $models2];
+        return $models;
     }
 
 }
