@@ -146,7 +146,6 @@ class m230606_123245_add_reestr_permissions extends PermissionsMigration
                         '/admin/students/default/update',
                         '/admin/students/default/history',
                         '/admin/students/default/studyplan?mode=create',
-                        '/admin/students/default/entrant?mode=create',
                         '/admin/parents/default/create',
                         '/admin/parents/default/update',
                         '/admin/parents/default/history',

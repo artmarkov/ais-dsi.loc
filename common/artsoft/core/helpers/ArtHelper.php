@@ -390,17 +390,47 @@ class ArtHelper
         return $per_pr;
     }
 
-    public static function age($birthday, $timestamp = false)
+//    public static function age($birthday, $timestamp = false)// не точная
+//    {
+//        $current_time = $timestamp != false ? $timestamp : time();
+//        $period = $current_time - $birthday; // возрастной период в секундах
+//
+//        $age_year = floor($period / (365.2421896 * 24 * 60 * 60)); // полных лет
+//        $age_month = floor((round(($period / (365.2421896 * 24 * 60 * 60)), 2) - $age_year) * 12); // полных месяцев за вычетом полных лет
+//
+//        return [
+//            'age_year' => $age_year,
+//            'age_month' => $age_month,
+//        ];
+//    }
+
+// Количество лет, месяцев и дней, прошедших со дня рождения
+    /**
+     * @param $sec_birthday
+     * @param bool $timestamp
+     * @return array
+     */
+    public function age($sec_birthday, $timestamp = false)
     {
-        $current_time = $timestamp != false ? $timestamp : time();
-        $period = $current_time - $birthday; // возрастной период в секундах
-
-        $age_year = floor($period / (365.2421896 * 24 * 60 * 60)); // полных лет
-        $age_month = floor((round(($period / (365.2421896 * 24 * 60 * 60)), 2) - $age_year) * 12); // полных месяцев за вычетом полных лет
-
+        // Сегодняшняя дата или $timestamp
+        $sec_now = $timestamp != false ? $timestamp : time();
+        // Подсчитываем количество месяцев, лет
+        for($time = $sec_birthday, $month = 0;
+            $time < $sec_now;
+            $time = $time + date('t', $time) * 86400, $month++){
+            $rtime = $time;
+        }
+        $month = $month - 1;
+        // Количество лет
+        $year = intval($month / 12);
+        // Количество месяцев
+        $month = $month % 12;
+        // Количество дней
+        $day = intval(($sec_now - $rtime) / 86400);
         return [
-            'age_year' => $age_year,
-            'age_month' => $age_month,
+            'age_year' => $year,
+            'age_month' => $month,
+            'age_day' => $day,
         ];
     }
 

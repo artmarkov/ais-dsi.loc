@@ -254,7 +254,7 @@ class Student extends ActiveRecord
     public static function getStudentList()
     {
         $query = (new Query())->from('students_view')
-            ->select(['students_id', 'CONCAT(fullname, \' - \', to_char(to_timestamp(birth_date + 10800), \'DD.MM.YYYY\'), \' (\', birth_date_age, \' лет)\') as fio'])
+            ->select(['students_id', 'CONCAT(fullname, \' - \', to_char(to_timestamp(birth_date + 10800), \'DD.MM.YYYY\'), \' (\', birth_date_age, \')\') as fio'])
             ->distinct()
             ->all();
         return \yii\helpers\ArrayHelper::map($query, 'students_id', 'fio');

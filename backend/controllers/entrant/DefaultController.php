@@ -29,6 +29,8 @@ use yii\web\UploadedFile;
  */
 class DefaultController extends MainController
 {
+    public $freeAccessActions = ['groups','department', 'subject'];
+
     public $modelClass = 'common\models\entrant\EntrantComm';
     public $modelClassEntrant = 'common\models\entrant\Entrant';
     public $modelSearchClass = 'common\models\entrant\search\EntrantCommSearch';
