@@ -80,6 +80,7 @@ use artsoft\widgets\Nav;
                 'url' => '#',
                 'items' => [
                     ['label' => 'Отчеты', 'icon' => 'fa fa-minus', 'url' => ['/reports/default/index']],
+                    ['label' => 'Статистика', 'icon' => 'fa fa-minus', 'url' => ['/reports/statistics/index']],
                     ['label' => 'Показатели эфективности', 'icon' => 'fa fa-minus', 'url' => ['/efficiency/default/index']],
                     ['label' => 'Контроль исполнения', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/index']],
                     ['label' => 'Сводная успеваемость', 'icon' => 'fa fa-minus', 'url' => ['/reports/summary-progress/index']],
