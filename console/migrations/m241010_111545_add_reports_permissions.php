@@ -23,6 +23,7 @@ class m241010_111545_add_reports_permissions extends PermissionsMigration
                     '/admin/reports/default/*',
                     '/admin/reports/summary-progress/*',
                     '/admin/reports/working-time/*',
+                    '/admin/reports/statistics/*',
                 ],
                 'reportsAccess' => [
                     'title' => 'Доступ к разделу "Отчеты"',
@@ -40,6 +41,8 @@ class m241010_111545_add_reports_permissions extends PermissionsMigration
                         '/admin/reports/default/activity-list',
                         '/admin/reports/default/student-history',
                         '/admin/reports/default/student-history-excel',
+                        '/admin/reports/statistics/index',
+                        '/admin/reports/statistics/studyplan-stat',
                         '/admin/reports/summary-progress/index',
                         '/admin/reports/working-time/index',
                         '/admin/reports/working-time/summary',

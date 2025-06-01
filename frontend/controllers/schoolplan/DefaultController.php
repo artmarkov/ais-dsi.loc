@@ -597,11 +597,11 @@ class DefaultController extends MainController
     public function getMenu($id)
     {
         $model = $this->findModel($id);
-        $roleAvailable = User::hasRole(['teacher','department']);
+       // $roleAvailable = User::hasRole(['teacher','department']);
         return [
             ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/view', 'id' => $id]],
-            ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id], 'visible' => $model->category->perform_flag && $roleAvailable],
-            ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol', 'id' => $id], 'visible' => $model->category->protocol_flag && $roleAvailable],
+            ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id], 'visible' => $model->category->perform_flag /*&& $roleAvailable*/],// не пойму - роли не работают здесь
+            ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol', 'id' => $id], 'visible' => $model->category->protocol_flag /*&& $roleAvailable*/],
 //            ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id], 'visible' => $model->category->efficiency_flag],
         ];
     }
