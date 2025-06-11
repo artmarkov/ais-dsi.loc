@@ -4,6 +4,8 @@ use artsoft\grid\GridView;
 use artsoft\helpers\Schedule;
 use yii\helpers\Html;
 use yii\widgets\Pjax;
+use common\models\education\EducationProgramm;
+use common\models\education\SummaryProgress;
 
 /* @var $this yii\web\View */
 /* @var $model_date  */

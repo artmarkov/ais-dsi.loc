@@ -468,36 +468,55 @@ class Studyplan extends \artsoft\db\ActiveRecord
             $year_time_total += $modelDep->year_time;
         }
 
-            if($add_flag) {
-                $data[0]['cost_month_total'] = $cost_month_total;
-                $data[0]['cost_year_total_str'] = PriceHelper::num2str($cost_year_total);
-                $data[0]['year_time_total'] = $year_time_total;
-                $data[0]['cost_year_total'] = $cost_year_total;
-            }
+        if ($add_flag) {
+            $data[0]['cost_month_total'] = $cost_month_total;
+            $data[0]['cost_year_total_str'] = PriceHelper::num2str($cost_year_total);
+            $data[0]['year_time_total'] = $year_time_total;
+            $data[0]['cost_year_total'] = $cost_year_total;
+        }
 
 //        echo '<pre>' . print_r(ArtHelper::getMonthsInRange($model->doc_contract_start, $model->doc_contract_end), true) . '</pre>'; die();
         $month_range = ArtHelper::getMonthsInRange($model->doc_contract_start, $model->doc_contract_end, "m.Y");
+
+        $mStart = Yii::$app->formatter->asDate($model->doc_contract_start, 'php:m');
+        if ($mStart == 6) {
+            unset($month_range['1']);
+            unset($month_range['2']);
+        } elseif ($mStart == 7) {
+            unset($month_range['1']);
+        }
+        $month_range = array_values($month_range);
         $items_month = [];
         foreach ($month_range as $item => $month) {
+            if (in_array($mStart, [6, 7, 8]) && $item == 0) {
+                $rem = '100% оплата за ' . $month_range[$item+1];
+            } elseif(in_array($mStart, [6, 7, 8]) && $item == 1)  {
+                $rem = '100% оплата за ' . $month_range[count($month_range)-1];
+            } elseif($mStart == 9 && $item == 0)  {
+                $rem = '100% оплата за ' . $month_range[count($month_range)-1];
+            } else {
+                $rem = '';
+            }
             $items_month[$item] = [
                 'rank' => 'm',
                 'period' => $month,
                 'cost_month_total_item' => $model->cost_month_total,
+                'rem' => $rem,
             ];
         }
 
-            $month_total_item = $model->cost_month_total;
-            $n = count($month_range);
-            if(($month_total_item * $n) < $model->cost_year_total) {
-                $month_total_item = $model->cost_year_total - ($month_total_item * $n) + $month_total_item;
-            } else {
-                $month_total_item = $month_total_item - (($month_total_item * $n) - $model->cost_year_total);
-            }
+        $month_total_item = $model->cost_month_total;
+        $n = count($month_range);
+        if (($month_total_item * $n) < $model->cost_year_total) {
+            $month_total_item = $model->cost_year_total - ($month_total_item * $n) + $month_total_item;
+        } else {
+            $month_total_item = $month_total_item - (($month_total_item * $n) - $model->cost_year_total);
+        }
 
-            if($month_total_item < 0) {
-                $items_month[0]['cost_month_total_item'] = $month_total_item + $model->cost_month_total;
-                $items_month[$n-1]['cost_month_total_item'] = 0;
-            }
+        if ($month_total_item <= 0) {
+            $items_month[0]['cost_month_total_item'] = $month_total_item + $model->cost_month_total;
+            $items_month[$n - 1]['cost_month_total_item'] = 0;
+        }
 
         $output_file_name = str_replace('.', '_' . $save_as . '_' . $model->doc_date . '.', basename($template));
 
@@ -701,7 +720,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
                 ->all();
 //        echo '<pre>' . print_r($data, true) . '</pre>';die();
             foreach ($data as $modelSub) {
-                if(!$modelSub['teachers_id']) {
+                if (!$modelSub['teachers_id']) {
                     continue;
                 }
                 $model_subject = StudyplanSubject::find()
@@ -734,7 +753,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
                 } else {
                     $modelSect = SubjectSect::find()
                         ->where(['=', 'id', $modelSub['subject_sect_id']])
-                        ->andWhere(['OR', new \yii\db\Expression(":course = any (string_to_array(course_list, ',')::int[])", [':course' => $this->course  + $next]), ['IS', 'course_list', NULL]]) // есть ли ограничения по классам?
+                        ->andWhere(['OR', new \yii\db\Expression(":course = any (string_to_array(course_list, ',')::int[])", [':course' => $this->course + $next]), ['IS', 'course_list', NULL]])// есть ли ограничения по классам?
                         ->one();
                     if ($modelSect) {
                         $modelSect->setSubjectSect($newModel->plan_year);
@@ -788,7 +807,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
     protected function getLoadTime($direction_id, $week_time)
     {
-        if($direction_id == 1000) {
+        if ($direction_id == 1000) {
             return $week_time;
         }
         switch ($week_time) {
@@ -803,6 +822,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
                 return $week_time;
         }
     }
+
     /**
      * @param int $next
      * @throws \Throwable

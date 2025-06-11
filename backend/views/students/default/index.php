@@ -87,7 +87,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'hidden' => true,
                                 'hiddenFromExport'=> false,
                                 'value' => function (Student $model) {
-                                    return $model->user->last_name;
+                                    return $model->user->last_name ?? '';
                                 },
                             ],
                             [
@@ -95,7 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'hidden' => true,
                                 'hiddenFromExport'=> false,
                                 'value' => function (Student $model) {
-                                    return $model->user->first_name;
+                                    return $model->user->first_name ?? '';
                                 },
                             ],
                             [

@@ -123,7 +123,7 @@ $form = ActiveForm::begin([
                                     ],
                                 ])->label(Yii::t('art/studyplan', 'Course'));
                                 ?>
-                                <?= $form->field($model_date, 'finish_flag')->checkbox()->label('Только Выпускные классы');
+                                <?= $form->field($model_date, 'finish_flag')->checkbox()->label('Добавить оценки прошлых лет обучения');
                                 ?>
                             </div>
                         </div>

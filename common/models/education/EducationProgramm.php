@@ -199,8 +199,10 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             ->asArray()->all(), 'id', 'name');
     }
 
-    public static function getProgrammListByName($cat_id)
+    public static function getProgrammListByName($cat_id = false)
     {
+        if(!$cat_id) return [];
+
         return ArrayHelper::map(self::find()
             ->select('id, short_name as name')
             ->andFilterWhere(['=', 'education_cat_id', $cat_id])

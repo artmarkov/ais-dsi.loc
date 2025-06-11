@@ -13,9 +13,7 @@ class StudyplanReport
 
     public function __construct($model_date)
     {
-        // $this->model_date = $model_date;
         $this->plan_year = $model_date->plan_year;
-        // $timestamp = ArtHelper::getStudyYearParams($model_date->plan_year);
         $year = $this->plan_year + 1;
         $this->timestamp_in = mktime(0, 0, 0, 1, 1, $year);
         $this->timestamp_out = mktime(0, 0, 0, 6, 1, $year);

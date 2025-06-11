@@ -29,7 +29,7 @@ use yii\web\UploadedFile;
  */
 class DefaultController extends MainController
 {
-    public $freeAccessActions = ['groups','department', 'subject'];
+    public $freeAccessActions = ['groups', 'department', 'subject'];
 
     public $modelClass = 'common\models\entrant\EntrantComm';
     public $modelClassEntrant = 'common\models\entrant\Entrant';
@@ -235,10 +235,13 @@ class DefaultController extends MainController
                 return $this->getSubmitAction($model);
             }
         } elseif ('make_studyplan' == $mode && $objectId) {
-            if (Entrant::runMakeStudyplan($objectId)) {
+            $valid = Entrant::runMakeStudyplan($objectId);
+            if ($valid) {
                 Yii::$app->session->setFlash('success', 'Учебный план сформирован успешно.');
-                return $this->getSubmitAction($model);
+            } else {
+                Yii::$app->session->setFlash('warning', 'Учебный план уже был сформирован.');
             }
+            return $this->getSubmitAction($model);
         } elseif ($objectId) {
 
             if ('view' == $mode) {

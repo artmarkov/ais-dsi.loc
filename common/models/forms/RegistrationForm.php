@@ -109,27 +109,27 @@ class RegistrationForm extends Model
             [['parent_sert_num', 'parent_sert_organ', 'parent_sert_code', 'parent_sert_date'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_series != NULL && $model->parent_sert_name != 'password_foreign';
             }, 'whenClient' => "function (attribute, value) {
-                        return $('#registrationform-parent_sert_series').val() != NULL && $('#registrationform-sert_name').val() != 'pasport_foreign;
+                        return $('#registrationform-parent_sert_series').val() != NULL && $('#registrationform-sert_name').val() != 'pasport_foreign';
                     }"],
             [['parent_sert_series', 'parent_sert_organ', 'parent_sert_code', 'parent_sert_date'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_num != NULL && $model->parent_sert_name != 'password_foreign';
             }, 'whenClient' => "function (attribute, value) {
-                        return $('#registrationform-parent_sert_num').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign;
+                        return $('#registrationform-parent_sert_num').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign';
                     }"],
             [['parent_sert_series', 'parent_sert_num', 'parent_sert_code', 'parent_sert_date'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_organ != NULL && $model->parent_sert_name != 'password_foreign';
             }, 'whenClient' => "function (attribute, value) {
-                        return $('#registrationform-parent_sert_organ').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign;
+                        return $('#registrationform-parent_sert_organ').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign';
                     }"],
             [['parent_sert_series', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_date'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_code != NULL && $model->parent_sert_name != 'password_foreign';
             }, 'whenClient' => "function (attribute, value) {
-                        return $('#registrationform-parent_sert_code').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign;
+                        return $('#registrationform-parent_sert_code').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign';
                     }"],
             [['parent_sert_series', 'parent_sert_num', 'parent_sert_organ', 'parent_sert_code'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_date != NULL && $model->parent_sert_name != 'password_foreign';
             }, 'whenClient' => "function (attribute, value) {
-                        return $('#registrationform-parent_sert_date').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign;
+                        return $('#registrationform-parent_sert_date').val() != NULL && $('#registrationform-parent_sert_name').val() != 'pasport_foreign';
                     }"],
             [['parent_sert_num', 'parent_sert_country'], 'required', 'when' => function ($model) {
                 return $model->parent_sert_name == 'password_foreign';

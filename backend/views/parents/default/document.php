@@ -90,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttons' => [
                                     'update' => function ($url, $model, $key) use ($parents_id) {
                                         return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                                            Url::to(['/parents/default/document', 'id' => $parents_id, 'objectId' => $model->id, 'mode' => 'update']), [
+                                            ['/parents/default/document', 'id' => $parents_id, 'objectId' => $model->id, 'mode' => 'update'], [
                                                 'title' => Yii::t('art', 'Edit'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
@@ -99,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'view' => function ($url, $model, $key) use ($parents_id) {
                                         return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
-                                            Url::to(['/parents/default/document', 'id' => $parents_id, 'objectId' => $model->id, 'mode' => 'view']), [
+                                            ['/parents/default/document', 'id' => $parents_id, 'objectId' => $model->id, 'mode' => 'view'], [
                                                 'title' => Yii::t('art', 'View'),
                                                 'data-method' => 'post',
                                                 'data-pjax' => '0',
@@ -108,7 +108,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'delete' => function ($url, $model, $key) use ($parents_id) {
                                         return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                                            Url::to(['/parents/default/document', 'id' => $parents_id, 'objectId' => $model->id, 'mode' => 'delete']), [
+                                            ['/parents/default/document', 'id' => $parents_id, 'objectId' => $model->id, 'mode' => 'delete'], [
                                                 'title' => Yii::t('art', 'Delete'),
                                                 'aria-label' => Yii::t('art', 'Delete'),
                                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),

@@ -14,7 +14,7 @@ class DefaultController extends BaseController {
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-
+            ini_set('memory_limit', '2024M');
             $session = Yii::$app->session;
 
             $model = new DynamicModel(['plan_year', 'teachers_id', 'auditory_id', 'studyplan_id', 'subject_sect_studyplan_id']);

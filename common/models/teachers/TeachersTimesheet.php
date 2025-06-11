@@ -212,7 +212,7 @@ class TeachersTimesheet
         $day_out = !$this->is_avans ? date('j', $this->timestamp_out) : 15;
 
         $data['time_total'] = $data['time_total_15'] = null;
-
+        $summ = 0;
         for ($day = $day_in; $day <= $day_out; $day++) {
             $time_consult = $this->getTeachersConsultDay($day, $direction_id, $direction_vid_id, $teachers_id);
             $time_consult_15 += $day <= 15 ? $time_consult : null;
@@ -233,12 +233,14 @@ class TeachersTimesheet
             } elseif (($data['time'][$day] > 0)) {
                 $data['status'][$day] = self::WORKDAY;
             }
+            $summ += $data['time'][$day] != null ? $data['time'][$day] : 0;
+        }
+        if($summ > 0) {
             $data['time_total'] = $this->teachers_day_schedule_total[$direction_id][$direction_vid_id][$teachers_id] ?? null;
             $data['time_total_15'] = ($data['time_total'] / 2) + $time_consult_15;
             $data['time_total'] = !$this->is_avans ? $data['time_total'] + $time_consult_30 : null;
-
         }
-//        echo '<pre>' . print_r($data, true) . '</pre>';
+        //        echo '<pre>' . print_r($data, true) . '</pre>';
         return $data;
     }
 

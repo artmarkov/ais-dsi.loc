@@ -43,6 +43,7 @@ class m241010_111545_add_reports_permissions extends PermissionsMigration
                         '/admin/reports/default/student-history-excel',
                         '/admin/reports/statistics/index',
                         '/admin/reports/statistics/studyplan-stat',
+                        '/admin/reports/statistics/studyplan-progress-stat',
                         '/admin/reports/summary-progress/index',
                         '/admin/reports/working-time/index',
                         '/admin/reports/working-time/summary',

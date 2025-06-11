@@ -2,7 +2,6 @@
 
 namespace backend\controllers\reports;
 
-use common\models\education\EducationProgramm;
 use common\models\education\SummaryProgress;
 use Yii;
 use yii\base\DynamicModel;

@@ -57,6 +57,9 @@ foreach ($model['subjectKeys'] as $item => $val) {
 //echo '<pre>' . print_r($model['dataNeeds'], true) . '</pre>'; die();
     $columns[] = [
         'attribute' => $val,
+        'value' => function ($model) use($val) {
+            return $model['marks'][$val] ?? '';
+        },
         'label' => $model['attributes'][$val],
         'format' => 'raw',
         'contentOptions' => function ($models) use ($model, $val) {

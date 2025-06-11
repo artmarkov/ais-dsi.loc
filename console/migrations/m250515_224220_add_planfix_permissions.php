@@ -28,6 +28,7 @@ class m250515_224220_add_planfix_permissions extends PermissionsMigration
                     'roles' => [self::ROLE_ADMIN],
                     'links' => [
                         '/admin/planfix/default/index',
+                        '/admin/planfix/default/view',
                         '/admin/planfix/default/grid-sort',
                         '/admin/planfix/default/grid-page-size',
                     ],

@@ -299,7 +299,7 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/admin/studyplan/default/history',
                         '/admin/studyplan/default/bulk-next-class',
                         '/admin/studyplan/default/bulk-repeat-class',
-                        '/admin/studyplan/default/bulk-finish-all',
+                        '/admin/studyplan/default/bulk-finish-all-plan',
                         '/admin/studyplan/default/bulk-finish-plan',
                         '/admin/studyplan/default/bulk-dismiss-plan',
                         '/admin/studyplan/default/bulk-restore-plan',

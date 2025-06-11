@@ -15,25 +15,23 @@ class SummaryProgress
     protected $plan_year;
     protected $education_cat_id;
     protected $programm_id;
-//    protected $vid_sert;
     protected $subject_type_id;
     protected $subject_form_id;
     protected $course;
-    protected $lessonItemsProgress;
-    protected $protocolItemsProgress;
     protected $studyplanSubjectIds;
     protected $studyplanIds;
     protected $studyplan;
     protected $studyplanSubject;
     protected $studyplanSubjectAttr;
-    protected $studyplanSubjectMarkNeeds;
+    protected $finish_flag;
 
     public function __construct($model_date)
     {
+        ini_set('memory_limit', '512M');
         $this->plan_year = $model_date->plan_year;
         $this->education_cat_id = $model_date->education_cat_id;
         $this->programm_id = $model_date->programm_id;
-//        $this->vid_sert = $model_date->vid_sert ?: null;
+        $this->finish_flag = $model_date->finish_flag;
         $this->subject_type_id = $model_date->subject_type_id;
         $this->subject_form_id = $model_date->subject_form_id;
         $this->course = $model_date->course;
@@ -41,12 +39,7 @@ class SummaryProgress
         $this->studyplanIds = $this->getStudyplanIds();
         $this->studyplanSubject = $this->getStudyplanSubject();
         $this->studyplanSubjectIds = $this->getStudyplanSubjectIds();
-        $this->studyplanSubjectAttr = $this->getStudyplanSubjectAttr();
-        $this->lessonItemsProgress = $this->getLessonItemsProgress();
-        $this->protocolItemsProgress = $this->getProtocolItemsProgress();
-        $this->studyplanSubjectMarkNeeds = $this->getStudyplanSubjectMarkNeeds();
-      //  echo '<pre>' . print_r( $this->protocolItemsProgress, true) . '</pre>'; die();
-
+        //  echo '<pre>' . print_r( $this->protocolItemsProgress, true) . '</pre>'; die();
     }
 
     protected function getStudyplan()
@@ -54,31 +47,59 @@ class SummaryProgress
         if (!$this->programm_id) {
             return [];
         }
-        $models = (new \yii\db\Query())->from('studyplan_view')
-            ->select('student_id')
-            ->where(['programm_id' => $this->programm_id])
-            ->andWhere(['OR',
-                ['status' => Studyplan::STATUS_ACTIVE],
-                ['AND',
-                    ['status' => Studyplan::STATUS_INACTIVE],
-                    ['status_reason' => [1, 2, 4]]
-                ]
-            ])
-            ->andWhere(['plan_year' => $this->plan_year]);
+        if($this->finish_flag) {
+            $models = (new \yii\db\Query())->from('studyplan_view')
+                ->select('student_id')
+                ->where(['OR',
+                    ['status' => Studyplan::STATUS_ACTIVE],
+                    ['AND',
+                        ['status' => Studyplan::STATUS_INACTIVE],
+                        ['status_reason' => [1, 2, 4]]
+                    ]
+                ])
+                ->andWhere(['plan_year' => $this->plan_year]);
 
-        if ($this->subject_form_id) {
-            $models = $models->andWhere(['subject_form_id' => $this->subject_form_id]);
-        }
-        if ($this->course) {
-            $models = $models->andWhere(['course' => $this->course]);
-        }
-        $models = $models->column();
-        $studentIds = $models;
+            if ($this->programm_id) {
+                $models = $models->andWhere(['programm_id' => $this->programm_id]);
+            }
+            if ($this->subject_form_id) {
+                $models = $models->andWhere(['subject_form_id' => $this->subject_form_id]);
+            }
+            if ($this->course) {
+                $models = $models->andWhere(['course' => $this->course]);
+            }
 
-        $models = (new \yii\db\Query())->from('studyplan_view')
-            ->where(['programm_id' => $this->programm_id])
-            ->andWhere(['student_id' => $studentIds])
-            ->andWhere(['<=', 'plan_year', $this->plan_year]);
+            $models = $models->column();
+            $studentIds = $models;
+
+            $models = (new \yii\db\Query())->from('studyplan_view')
+                ->where(['student_id' => $studentIds])
+                ->andWhere(['<=', 'plan_year', $this->plan_year]);
+
+            if ($this->programm_id) {
+                $models = $models->andWhere(['programm_id' => $this->programm_id]);
+            }
+        } else {
+            $models = (new \yii\db\Query())->from('studyplan_view')
+                ->where(['OR',
+                    ['status' => Studyplan::STATUS_ACTIVE],
+                    ['AND',
+                        ['status' => Studyplan::STATUS_INACTIVE],
+                        ['status_reason' => [1, 2, 4]]
+                    ]
+                ])
+                ->andWhere(['=', 'plan_year', $this->plan_year]);
+
+            if ($this->programm_id) {
+                $models = $models->andWhere(['programm_id' => $this->programm_id]);
+            }
+            if ($this->subject_form_id) {
+                $models = $models->andWhere(['subject_form_id' => $this->subject_form_id]);
+            }
+            if ($this->course) {
+                $models = $models->andWhere(['course' => $this->course]);
+            }
+        }
         $models = $models->orderBy('course DESC, student_fio ASC')->all();
         return $models;
     }
@@ -114,6 +135,15 @@ class SummaryProgress
         return array_unique($models);
     }
 
+    protected function getStudyplanCert()
+    {
+        $studyplanIds = ArrayHelper::getColumn($this->studyplanSubject, 'studyplan_id');
+        $models = (new \yii\db\Query())->from('studyplan_view')
+            ->where(['id' => array_unique($studyplanIds)])
+            ->orderBy('course DESC, student_fio ASC')
+            ->all();
+        return $models;
+    }
 
     protected function getStudyplanSubjectAttr()
     {
@@ -136,12 +166,11 @@ class SummaryProgress
     {
         $models = LessonItemsProgressView::find()
             ->select([
-                'studyplan_id', 'mark_label', 'studyplan_subject_id', 'subject_sect_studyplan_id', 'test_category', 'med_cert', 'fin_cert',
+                'studyplan_id', 'mark_label', 'mark_value', 'studyplan_subject_id', 'subject_sect_studyplan_id', 'test_category', 'med_cert', 'fin_cert',
                 'lesson_test_id', 'lesson_mark_id', 'test_name', 'lesson_date', 'lesson_progress_id',
                 'concat(subject_id, \'|\', subject_vid_id, \'|\', subject_cat_id) as subject_key'
             ])
             ->where(['studyplan_subject_id' => $this->studyplanSubjectIds])
-            // ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['OR',
                 ['AND',
                     ['test_category' => LessonTest::MIDDLE_ATTESTATION],
@@ -156,21 +185,18 @@ class SummaryProgress
         return $models;
     }
 
-    /**
-     * @return array
-     */
     protected function getProtocolItemsProgress()
     {
         $models = (new Query())->from('schoolplan_protocol_items_view')
             ->select([
-                'studyplan_id', 'mark_label', 'studyplan_subject_id', 'med_cert', 'fin_cert',
-                 'lesson_mark_id', 'plan_year',
+                'studyplan_id', 'mark_label', 'mark_value', 'studyplan_subject_id', 'med_cert', 'fin_cert',
+                'lesson_mark_id', 'plan_year',
                 'concat(subject_id, \'|\', subject_vid_id, \'|\', subject_cat_id) as subject_key'
             ])
             ->where(['studyplan_subject_id' => $this->studyplanSubjectIds])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['fin_cert' => true])
-            ->andWhere(['IS NOT', 'lesson_mark_id' , NULL])
+            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
             ->all();
         return $models;
     }
@@ -221,9 +247,12 @@ class SummaryProgress
      */
     public function getData($readonly = false)
     {
-        $studyplanProgress = ArrayHelper::index($this->lessonItemsProgress, 'subject_key', 'studyplan_id');
-        $protocolProgress = ArrayHelper::index($this->protocolItemsProgress, 'subject_key', 'studyplan_id');
+        $this->studyplanSubjectAttr = $this->getStudyplanSubjectAttr();
+        $studyplanProgress = ArrayHelper::index($this->getLessonItemsProgress(), 'subject_key', 'studyplan_id');
+        $protocolProgress = ArrayHelper::index($this->getProtocolItemsProgress(), 'subject_key', 'studyplan_id');
         $subjectKeys = ArrayHelper::getColumn($this->studyplanSubjectAttr, 'subject_key');
+        $studyplanSubjectMarkNeeds = $this->getStudyplanSubjectMarkNeeds();
+
         $attributes = [
             'student_id' => 'ID',
             'student_fio' => 'ФИО ученика',
@@ -235,37 +264,36 @@ class SummaryProgress
         ];
         $attributes += ArrayHelper::map($this->studyplanSubjectAttr, 'subject_key', 'subject_slug');
         $data = $dataNeeds = [];
-//        echo '<pre>' . print_r($studyplanProgress, true) . '</pre>';
-//        echo '<pre>' . print_r($studyplanProgress, true) . '</pre>';
+//        echo '<pre>' . print_r($protocolProgress, true) . '</pre>';
 //        die();
-        $students = ArrayHelper::index($this->studyplan, 'id', ['student_id']);
+        $students = ArrayHelper::index($this->getStudyplanCert(), 'id', ['student_id']);
         foreach ($students as $id => $studyplans) {
             foreach ($studyplans as $studyplan_id => $model) {
                 $data[$id]['studyplan_id'] = isset($data[$id]['studyplan_id']) ? $data[$id]['studyplan_id'] : $model['id'];
                 $data[$id]['student_id'] = $model['student_id'];
                 $data[$id]['student_fio'] = $model['student_fio'];
                 $data[$id]['plan_year'] = $model['plan_year'];
+                $data[$id]['programm_id'] = $model['programm_id'];
                 $data[$id]['education_cat_short_name'] = $model['education_cat_short_name'];
                 $data[$id]['education_programm_short_name'] = $model['education_programm_short_name'];
                 $data[$id]['subject_form_name'] = $model['subject_form_name'];
-                if(!isset($data[$id]['course'])) {
+                if (!isset($data[$id]['course'])) {
                     $data[$id]['course'] = $model['course'];
                 }
 
                 foreach ($subjectKeys as $item => $subject_key) {
 //                    $data[$id][$subject_key] = null;
-                    if(!isset($dataNeeds[$id][$subject_key]) ) {
-                        $dataNeeds[$id][$subject_key] = isset($this->studyplanSubjectMarkNeeds[$studyplan_id][$subject_key]) ? true : false;
+                    if (!isset($dataNeeds[$id][$subject_key])) {
+                        $dataNeeds[$id][$subject_key] = isset($studyplanSubjectMarkNeeds[$studyplan_id][$subject_key]) ? true : false;
                     }
-                    if(!isset($data[$id][$subject_key])) {
+                    if (!isset($data[$id][$subject_key])) {
                         if (isset($protocolProgress[$studyplan_id][$subject_key])) {
-                            $data[$id][$subject_key] = '<span style="font-size:85%; " class="label label-success">' . $protocolProgress[$studyplan_id][$subject_key]['mark_label'] . '</span>';
-                        }
-                        // если в протоколе нет оценки, то берем из журнала(потом отключить)
-                        elseif (!isset($studyplanProgress[$studyplan_id][$subject_key]) && isset($this->studyplanSubjectMarkNeeds[$studyplan_id][$subject_key])) {  // только в случае если эта оценка недолжна быть в позднем плане
-                            $data[$id][$subject_key] = '';
-                        }elseif (isset($studyplanProgress[$studyplan_id][$subject_key])) {
-                            $data[$id][$subject_key] = !$readonly ? LessonProgressView::getEditableForm($studyplanProgress[$studyplan_id][$subject_key]) : $studyplanProgress[$studyplan_id][$subject_key]['mark_label'];
+                            $data[$id]['marks'][$subject_key] = '<span style="font-size:85%; " class="label label-success">' . $protocolProgress[$studyplan_id][$subject_key]['mark_label'] . '</span>';
+                        } // если в протоколе нет оценки, то берем из журнала(потом отключить)
+                        elseif (!isset($studyplanProgress[$studyplan_id][$subject_key]) && isset($studyplanSubjectMarkNeeds[$studyplan_id][$subject_key])) {  // только в случае если эта оценка недолжна быть в позднем плане
+                            $data[$id]['marks'][$subject_key] = '';
+                        } elseif (isset($studyplanProgress[$studyplan_id][$subject_key])) {
+                            $data[$id]['marks'][$subject_key] = !$readonly ? LessonProgressView::getEditableForm($studyplanProgress[$studyplan_id][$subject_key]) : $studyplanProgress[$studyplan_id][$subject_key]['mark_label'];
                         }
                     }
                 }

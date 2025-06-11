@@ -90,7 +90,7 @@ $columns = [
             'create' => function ($key, $model) {
                 if ($model->subject_sect_studyplan_id == null) {
                     return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                        Url::to(['/thematic/default/create', 'studyplan_subject_id' => $model->studyplan_subject_id]), [
+                        ['/thematic/default/create', 'studyplan_subject_id' => $model->studyplan_subject_id], [
                             'title' => Yii::t('art', 'Create'),
                             'data-method' => 'post',
                             'data-pjax' => '0',
@@ -99,7 +99,7 @@ $columns = [
                     );
                 } else {
                     return Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                        Url::to(['/thematic/default/create', 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id]), [
+                        ['/thematic/default/create', 'subject_sect_studyplan_id' => $model->subject_sect_studyplan_id], [
                             'title' => Yii::t('art', 'Create'),
                             'data-method' => 'post',
                             'data-pjax' => '0',
@@ -111,7 +111,7 @@ $columns = [
             },
             'view' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
-                    Url::to(['/thematic/default/view', 'id' => $model->studyplan_thematic_id]), [
+                    ['/thematic/default/view', 'id' => $model->studyplan_thematic_id], [
                         'title' => Yii::t('art', 'View'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -120,7 +120,7 @@ $columns = [
             },
             'update' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                    Url::to(['/thematic/default/update', 'id' => $model->studyplan_thematic_id]), [
+                    ['/thematic/default/update', 'id' => $model->studyplan_thematic_id], [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -129,7 +129,7 @@ $columns = [
             },
             'delete' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                    Url::to(['/thematic/default/delete', 'id' => $model->studyplan_thematic_id]), [
+                    ['/thematic/default/delete', 'id' => $model->studyplan_thematic_id], [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
