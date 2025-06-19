@@ -260,6 +260,7 @@ class DefaultController extends MainController
 
     public function actionPerform($id, $objectId = null, $mode = null, $readonly = false)
     {
+        ini_set('memory_limit', '2048M');
         $model = $this->findModel($id);
         $timestamp = Yii::$app->formatter->asTimestamp($model->datetime_in);
 

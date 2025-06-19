@@ -49,7 +49,7 @@ class TeachersTimesheet
         $this->timestamp_out = $timestamp[1];
         $this->mon = date('n', $this->timestamp_in);
         $this->year = date('Y', $this->timestamp_in);
-        $this->plan_year = ArtHelper::getStudyYearDefault(null, $this->timestamp_in);
+        $this->plan_year = ArtHelper::getStudyYearDefault(9, $this->timestamp_in);
         $this->subject_type_id = $model_date->subject_type_id;
         $this->activity_list = $model_date->activity_list;
         $this->progress_flag = $model_date->progress_flag ?? false;
@@ -62,7 +62,7 @@ class TeachersTimesheet
         $this->teachers_day_schedule_total = $this->subject_type_id == 1000 ? $this->getTeachersDayScheduleTotal() : []; // для бюджета
         $this->teachers_day_consult = $this->getTeachersDayConsult();
         $this->template_name = $this->subject_type_id == 1000 ? ($this->is_avans ? self::template_timesheet_budget_half : self::template_timesheet_budget) : ($this->is_avans ? self::template_timesheet_extra_budget_half : self::template_timesheet_extra_budget);
-//        echo '<pre>' . print_r($this->lesson_fact, true) . '</pre>';
+//        echo '<pre>' . print_r($this->plan_year, true) . '</pre>';
 //        die();
     }
 

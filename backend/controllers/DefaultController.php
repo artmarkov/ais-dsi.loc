@@ -1,11 +1,13 @@
 <?php
+
 namespace backend\controllers;
 
 use common\models\teachers\Teachers;
 use Yii;
 use yii\base\DynamicModel;
 
-class DefaultController  extends \artsoft\controllers\admin\BaseController {
+class DefaultController extends \artsoft\controllers\admin\BaseController
+{
 
     public $layout = '@artsoft/views/layouts/admin/main.php';
 
@@ -14,7 +16,7 @@ class DefaultController  extends \artsoft\controllers\admin\BaseController {
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-
+            ini_set('memory_limit', '2024M');
             $session = Yii::$app->session;
 
             $model = new DynamicModel(['date_in', 'date_out', 'subject_sect_studyplan_id', 'subject_key', 'plan_year', 'teachers_id', 'auditory_id', 'subject_type_id', 'activity_list', 'studyplan_id']);
@@ -40,7 +42,8 @@ class DefaultController  extends \artsoft\controllers\admin\BaseController {
         return $result;
     }
 
-    public function debug($arr){
+    public function debug($arr)
+    {
         echo '<pre>' . print_r($arr, true) . '</pre>';
     }
 }

@@ -8,6 +8,7 @@ use himiklab\sortablegrid\SortableGridBehavior;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -125,8 +126,11 @@ class LessonTest extends \artsoft\db\ActiveRecord
      * @param $model
      * @return array
      */
-    public static function getLessonTestList($model, $category = [1,2,3])
+    public static function getLessonTestList($model, $category = [1,2,3], $division_list = false)
     {
+        if(is_array($division_list)) {
+            $division_list = implode(',',$division_list);
+        }
         $query = self::find()->select(new \yii\db\Expression('
         id, test_name, test_category,
             CASE
@@ -138,6 +142,9 @@ class LessonTest extends \artsoft\db\ActiveRecord
 
         if ($model->isNewRecord) {
             $query = $query->andWhere(['=', 'status', self::STATUS_ACTIVE]);
+        }
+        if ($division_list) {
+            $query = $query->andWhere(new Expression("string_to_array(division_list, ','::text)::text[] && string_to_array('{$division_list}', ','::text)::text[]")); // сравнение массивов
         }
         return \yii\helpers\ArrayHelper::map($query->orderBy('test_category, sort_order')->asArray()->all(), 'id', 'test_name', 'test_category_name');
     }

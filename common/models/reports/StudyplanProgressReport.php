@@ -13,7 +13,7 @@ class StudyplanProgressReport
     protected $data_mark;
     protected $programm_list;
     protected $course_list = ['1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8];
-    protected $mark_list = ['5' => 5, '4' => 4, '3' => 3, 'НА' => 'НА', '0' => 'Нет оценки'];
+    protected $mark_list = ['5' => 'Отлично', '4' => 'Хорошо', '3' => 'Удовлетворительно', 'НА' => 'Неуд./Не аттестован', '0' => 'Нет оценки'];
     protected $programmIds;
 
     public function __construct($model_date)
@@ -47,20 +47,13 @@ class StudyplanProgressReport
     }
 
     /**
-     * @return array
+     * @return mixed
      * @throws \yii\base\InvalidConfigException
      */
     protected function getProgressData()
     {
-        $programmList = $this->getProgrammList($this->programmIds);
-
-        $dataProgress = [];
-        foreach ($programmList as $id => $name) {
-            $this->model_date->programm_id = $id;
-            $modelProgress = new SummaryProgress($this->model_date);
-            $dataProgress = array_merge($dataProgress, $modelProgress->getData(true)['data']);
-        }
-        return $dataProgress;
+        $dataProgress = new SummaryProgress($this->model_date);
+        return $dataProgress->getData(true)['data'];
     }
 
     /**
@@ -72,25 +65,30 @@ class StudyplanProgressReport
         $attributes = [
 //            'id' => 'Id',
             'name' => 'Программа',
+            'count_mark' => 'Кол-во',
             'mark' => 'Оценка',
         ];
         $attributes += $this->course_list;
 
         $data = [];
+        $all_summ = ['5' => 0, '4' => 0, '3' => 0, 'НА' => 0, '0' => 0];
+
         $i = 0;
         foreach ($this->programm_list as $programm_id => $programm_name) {
             foreach ($this->mark_list as $markId => $mark) {
                 foreach ($this->course_list as $courseId => $course) {
                     //  $data[$i]['id'] = $programm_id;
+                    $count = isset($this->data_mark[$programm_id][$markId][$courseId]) ? count($this->data_mark[$programm_id][$markId][$courseId]) : 0;
                     $data[$i]['name'] = $programm_name;
                     $data[$i]['mark'] = $mark;
-                    $data[$i][$courseId] = isset($this->data_mark[$programm_id][$markId][$courseId]) ? count($this->data_mark[$programm_id][$markId][$courseId]) . $this->getNotice($this->data_mark[$programm_id][$markId][$courseId], $markId) : '-';
-
+                    $data[$i][$courseId] =  $count != 0 ? $count . $this->getNotice($this->data_mark[$programm_id][$markId][$courseId], $markId) : '-';
+                    $data[$i]['count_mark'] = isset($data[$i]['count_mark']) ? $data[$i]['count_mark'] + $count : $count;
+                    $all_summ[$markId] += $count;
                 }
                 $i++;
             }
         }
-        return ['data' => $data, 'course_list' => $this->course_list, 'attributes' => $attributes];
+        return ['data' => $data, 'all_summ' => $all_summ, 'course_list' => $this->course_list, 'attributes' => $attributes];
     }
 
     /**

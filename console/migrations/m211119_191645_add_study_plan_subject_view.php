@@ -28,7 +28,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
         ])->execute();
 
         $this->db->createCommand()->createView('studyplan_subject_view', '
-    SELECT DISTINCT tmp_table.studyplan_subject_id,
+     SELECT DISTINCT tmp_table.studyplan_subject_id,
     tmp_table.subject_sect_studyplan_id,
     tmp_table.subject_sect_id,
     tmp_table.studyplan_id,
@@ -55,6 +55,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
     tmp_table.education_programm_id,
     tmp_table.education_programm_name,
     tmp_table.education_programm_short_name,
+    tmp_table.education_cat_id,
     tmp_table.education_cat_name,
     tmp_table.education_cat_short_name,
     tmp_table.status,
@@ -94,6 +95,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             education_programm.id AS education_programm_id,
             education_programm.name AS education_programm_name,
             education_programm.short_name AS education_programm_short_name,
+            guide_education_cat.id AS education_cat_id,
             guide_education_cat.name AS education_cat_name,
             guide_education_cat.short_name AS education_cat_short_name,
             studyplan.status,
@@ -148,6 +150,7 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             education_programm.id AS education_programm_id,
             education_programm.name AS education_programm_name,
             education_programm.short_name AS education_programm_short_name,
+            guide_education_cat.id AS education_cat_id,
             guide_education_cat.name AS education_cat_name,
             guide_education_cat.short_name AS education_cat_short_name,
             studyplan.status,

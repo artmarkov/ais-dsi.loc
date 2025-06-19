@@ -7,6 +7,7 @@ use artsoft\grid\GridQuickLinks;
 use common\models\education\EducationCat;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
+use artsoft\helpers\RefBook;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\education\search\EducationCatSearch */
@@ -27,10 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-6">
                             <?php
                             /* Uncomment this to activate GridQuickLinks */
-                             echo GridQuickLinks::widget([
-                                'model' => EducationCat::className(),
-                                'searchModel' => $searchModel,
-                            ])
+//                             echo GridQuickLinks::widget([
+//                                'model' => EducationCat::className(),
+//                                'searchModel' => $searchModel,
+//                            ])
                             ?>
                         </div>
 
@@ -68,6 +69,22 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                             ],
                             'short_name',
+                            [
+                                'attribute' => 'division_list',
+                                'filter' => RefBook::find('division_name')->getList(),
+                                'value' => function (EducationCat $model) {
+                                    $v = [];
+                                    foreach ($model->division_list as $id) {
+                                        if (!$id) {
+                                            continue;
+                                        }
+                                        $v[] = RefBook::find('division_name')->getValue($id);
+                                    }
+                                    return implode(';<br/> ', $v);
+                                },
+                                'options' => ['style' => 'width:350px'],
+                                'format' => 'raw',
+                            ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'status',

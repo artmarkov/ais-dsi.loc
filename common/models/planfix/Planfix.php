@@ -194,5 +194,9 @@ class Planfix extends ActiveRecord
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
-
+    public function sendPlanfixMessage($content)
+    {
+            $title = 'Сообщение модуля "Планировщик задач"';
+            return Yii::$app->mailbox->mailing($this->executors_list, $content, $title);
+    }
 }

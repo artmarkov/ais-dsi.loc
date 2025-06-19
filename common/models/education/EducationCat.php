@@ -2,6 +2,7 @@
 
 namespace common\models\education;
 
+use artsoft\behaviors\ArrayFieldBehavior;
 use common\models\subject\SubjectType;
 use Yii;
 
@@ -11,6 +12,7 @@ use Yii;
  * @property int $id
  * @property string|null $name
  * @property string $short_name
+ * @property string $division_list
  * @property int $status
  *
  * @property EducationProgramm[] $educationProgramms
@@ -30,6 +32,18 @@ class EducationCat extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => ArrayFieldBehavior::class,
+                'attributes' => ['division_list'],
+            ],
+        ];
+    }
+    /**
      * {@inheritdoc}
      */
     public function rules()
@@ -40,6 +54,7 @@ class EducationCat extends \artsoft\db\ActiveRecord
             [['status', /*'type_id'*/], 'integer'],
             [['name'], 'string', 'max' => 127],
             [['short_name'], 'string', 'max' => 64],
+            [['division_list'], 'safe'],
 
         ];
     }
@@ -55,6 +70,7 @@ class EducationCat extends \artsoft\db\ActiveRecord
             'short_name' => Yii::t('art', 'Short Name'),
 //            'type_id' => Yii::t('art/guide', 'Subject Type Name'),
             'status' => Yii::t('art', 'Status'),
+            'division_list' => Yii::t('art/guide', 'Division List'),
         ];
     }
 

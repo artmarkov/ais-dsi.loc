@@ -30,6 +30,18 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
 
+                    <?= $form->field($model, 'division_list')->widget(\kartik\select2\Select2::className(), [
+                        'data' => \common\models\own\Division::getDivisionList(),
+                        'options' => [
+                            'disabled' => false,
+                            'placeholder' => Yii::t('art/guide', 'Select Division...'),
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Division'));
+                    ?>
                     <?= $form->field($model, 'status')->dropDownList(EducationCat::getStatusList()) ?>
 
                 </div>

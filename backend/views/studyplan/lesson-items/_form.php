@@ -23,11 +23,15 @@ if ($model->subject_sect_studyplan_id != 0) {
 } else {
     $studyplanSubjectList = $model->studyplan_subject_id;
 }
-$modelsStudent = (new \yii\db\Query())->select('studyplan_subject_id,student_fio')->from('studyplan_subject_view')
+$modelsStudent = (new \yii\db\Query())->select('studyplan_subject_id,education_cat_id,student_fio')->from('studyplan_subject_view')
     ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$studyplanSubjectList}', ',')::int[])"))
     ->all();
+$programm_cat_list = \yii\helpers\ArrayHelper::getColumn($modelsStudent, 'education_cat_id');
 $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subject_id');
-//print_r($modelsStudent);die();
+$division_list = \common\models\education\EducationCat::find()->select('division_list')
+    ->where(['id' => $programm_cat_list])
+    ->column();
+//print_r($division_list);die();
 ?>
 <div class="lesson-items-form">
     <?php
@@ -88,7 +92,7 @@ $modelsStudent = \yii\helpers\ArrayHelper::index($modelsStudent, 'studyplan_subj
                 <div class="panel-body">
                     <div class="row">
                         <?= $form->field($model, "lesson_test_id")->widget(\kartik\select2\Select2::class, [
-                            'data' => \common\models\education\LessonTest::getLessonTestList($model,[1,2,3]),
+                            'data' => \common\models\education\LessonTest::getLessonTestList($model,[1,2], $division_list),
                             'options' => [
 //                                'disabled' => $readonly,
                                 'placeholder' => Yii::t('art', 'Select...'),

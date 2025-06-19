@@ -57,6 +57,8 @@ SettingsAsset::register($this);
 
                             <?= $form->field($model, 'confirm_progress_perform_doc')->checkbox()->hint('Поставьте флажок чтобы включить уведомления в модуле "Проверка журнала успеваемости".') ?>
 
+                            <?= $form->field($model, 'planfix_mailing')->checkbox()->hint('Поставьте флажок чтобы включить уведомления в модуле "Планировщик задач".') ?>
+
                         </div>
                     </div>
                 </div>

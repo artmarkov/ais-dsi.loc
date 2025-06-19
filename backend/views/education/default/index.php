@@ -22,6 +22,15 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
         </div>
         <div class="panel-body">
+            <?php echo \yii\bootstrap\Alert::widget([
+                'body' => '<i class="fa fa-info-circle"></i> Этим цветом отмечены программы с дополнительным годом обучения',
+                'options' => ['class' => 'alert-success'],
+            ]);
+            echo \yii\bootstrap\Alert::widget([
+                'body' => '<i class="fa fa-info-circle"></i> Этим цветом отмечены программы, в которых срок обучения не соответствует кол-ву этапов учебного плана',
+                'options' => ['class' => 'alert-warning'],
+            ]);
+            ?>
             <div class="panel panel-default">
                 <div class="panel-body">
                     <div class="row">
@@ -59,8 +68,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 Url::to(['bulk-delete']) => Yii::t('art', 'Delete'),
                             ] //Configure here you bulk actions
                         ],
-                        'rowOptions' => function(EducationProgramm $model) {
-                            if(count($model->programmLevel) != $model->term_mastering) {
+                        'rowOptions' => function (EducationProgramm $model) {
+                            if (count($model->programmLevel) == $model->term_mastering + 1) {
+                                return ['class' => 'success'];
+                            } elseif (count($model->programmLevel) != $model->term_mastering) {
                                 return ['class' => 'warning'];
                             }
                             return [];

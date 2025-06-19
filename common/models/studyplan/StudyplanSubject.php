@@ -76,7 +76,7 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_cat_id', 'subject_id', /*'subject_type_id',*/
+            [['subject_cat_id', 'subject_id', 'subject_type_id',
                 'subject_vid_id', 'week_time', 'year_time'], 'required'],
             [['studyplan_id', 'subject_cat_id', 'subject_id', 'subject_type_id', 'subject_vid_id', 'status', 'version'], 'integer'],
             [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'number'],

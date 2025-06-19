@@ -845,7 +845,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
     public static function getStudentStudyplanDefault($student_id)
     {
-        $plan_year = ArtHelper::getStudyYearDefault();
+        $plan_year = ArtHelper::getStudyYearDefault(6);
         return self::find()->where(['=', 'student_id', $student_id])
                 ->andWhere(['=', 'plan_year', $plan_year])
                 ->andWhere(['=', 'status', Studyplan::STATUS_ACTIVE])
@@ -855,7 +855,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
     public static function getParentStudyplanDefault($parents_id)
     {
-        $plan_year = ArtHelper::getStudyYearDefault();
+        $plan_year = ArtHelper::getStudyYearDefault(6);
         return self::find()
                 ->innerJoin('student_dependence', 'studyplan.student_id=student_dependence.student_id')
                 ->where(['=', 'student_dependence.parent_id', $parents_id])

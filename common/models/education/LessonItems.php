@@ -305,7 +305,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
      */
     public function getLessonProgress()
     {
-        print_r($this->subject_sect_studyplan_id);
+       // print_r($this->subject_sect_studyplan_id);
         $modelsItems = [];
         $i = 0;
         if ($this->subject_sect_studyplan_id != 0) {

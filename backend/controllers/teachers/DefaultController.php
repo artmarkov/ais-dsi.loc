@@ -40,6 +40,7 @@ use common\models\schedule\SubjectScheduleView;
 use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
 use common\models\subject\SubjectType;
+use common\models\teachers\PortfolioTeachers;
 use common\models\teachers\PortfolioView;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\search\TeachersPlanSearch;
@@ -1680,9 +1681,12 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
 
         $model_date = $this->modelDate;
-        $data = ArtHelper::getStudyYearParams($model_date->plan_year);
-        $dataProvider = new ActiveDataProvider(['query' => PortfolioView::find()->where(['teachers_id' => $id])->andWhere(['between', 'datetime_in', $data['timestamp_in'], $data['timestamp_out']])]);
-        return $this->renderIsAjax('portfolio', compact(['dataProvider', 'model_date', 'id']));
+        $data = new PortfolioTeachers($model_date, $id);
+        return $this->renderIsAjax('portfolio', [
+            'model_date' => $model_date,
+            'model' => $data->getData(),
+            'id' => $id
+        ]);
     }
 
     public function actionStudyplanList($id)

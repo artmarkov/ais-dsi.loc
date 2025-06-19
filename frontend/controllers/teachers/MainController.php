@@ -23,12 +23,4 @@ class MainController extends \frontend\controllers\DefaultController
         parent::init();
     }
 
-    public function beforeAction($action)
-    {
-        if (parent::beforeAction($action)) {
-            ini_set('memory_limit', '2024M');
-            return true;
-        }
-        return false;
-    }
 }

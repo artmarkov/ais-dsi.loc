@@ -1,5 +1,4 @@
 <?php
-ini_set('memory_limit', '1024M');
 
 use artsoft\helpers\RefBook;
 

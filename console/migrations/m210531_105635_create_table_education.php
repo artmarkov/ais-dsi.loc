@@ -13,6 +13,7 @@ class m210531_105635_create_table_education extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
             'name' => $this->string(127),
             'short_name' => $this->string(64)->notNull(),
+            'division_list' => $this->string(1024),
             'status' => $this->tinyInteger(2)->unsigned()->notNull(),
         ], $tableOptions);
 

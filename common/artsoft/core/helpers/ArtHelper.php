@@ -271,7 +271,7 @@ class ArtHelper
      */
     public static function getStudyYearDefault($month_dev = null, $timestamp = null)
     {
-        $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 7) : $month_dev;
+        $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 9) : $month_dev;
         $month = $timestamp == null ? date("n") : date("n", $timestamp);
         $year = $timestamp == null ? date("Y") : date("Y", $timestamp);
         return $month < $month_dev ? $year - 1 : $year;
@@ -280,7 +280,7 @@ class ArtHelper
     public static function getStudyYearParams($study_year = null, $month_dev = null)
     {
         $data = [];
-        $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 7) : $month_dev;
+        $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 9) : $month_dev;
         $year = $study_year == null ? self::getStudyYearDefault($month_dev) : $study_year;
 
         $data['timestamp_in'] = mktime(0, 0, 0, $month_dev, 1, $year);
@@ -460,7 +460,7 @@ class ArtHelper
     public static function getHalfYearParams($study_year = null, $month_dev = null, $half_year = 0)
     {
         $data = [];
-        $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 6) : $month_dev;
+        $month_dev = $month_dev == null ? Yii::$app->settings->get('module.study_plan_month_in', 9) : $month_dev;
         $year = $study_year == null ? self::getStudyYearDefault($month_dev) : $study_year;
 
         if ($half_year == 1) {

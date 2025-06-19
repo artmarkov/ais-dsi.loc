@@ -20,11 +20,15 @@ use common\models\education\LessonMark;
 
 $models_sch = \common\models\schedule\SubjectScheduleStudyplanView::getScheduleIndiv($subject_key, $modelTeachers->id, $timestamp_in);
 $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark::MARK,LessonMark::OFFSET_NONOFFSET,LessonMark::REASON_ABSENCE]);
-$subject = (new \yii\db\Query())->select('subject')
+$subject = (new \yii\db\Query())
     ->from('lesson_progress_view')
     ->where(['=', 'subject_key', $subject_key])
-    ->scalar();
-//print_r($model);
+    ->one();
+$division_list = \common\models\education\EducationCat::find()->select('division_list')
+    ->where(['id' => $subject['education_cat_id']])
+    ->column();
+
+//print_r($subject); die();
 $auditoryList = RefBook::find('auditory_memo_1')->getList();
 $studentFioList = RefBook::find('studyplan_subject-student_fio')->getList();
 ?>
@@ -39,7 +43,7 @@ $studentFioList = RefBook::find('studyplan_subject-student_fio')->getList();
         <div class="panel-heading">
             <div class="panel-heading">
                 Посещаемость и успеваемость:
-                <?php echo $subject; ?>
+                <?php echo $subject['subject']; ?>
 
                 <?php if (!$model->isNewRecord): ?>
                     <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
@@ -86,7 +90,7 @@ $studentFioList = RefBook::find('studyplan_subject-student_fio')->getList();
                         <div class="panel-body">
                             <div class="row">
                                 <?= $form->field($model, "lesson_test_id")->widget(\kartik\select2\Select2::class, [
-                                    'data' => \common\models\education\LessonTest::getLessonTestList($model,[1,2]),
+                                    'data' => \common\models\education\LessonTest::getLessonTestList($model,[1,2], $division_list),
                                     'options' => [
 //                                'disabled' => $readonly,
                                         'placeholder' => Yii::t('art', 'Select...'),

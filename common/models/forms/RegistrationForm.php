@@ -73,6 +73,7 @@ class RegistrationForm extends Model
             [['student_birth_date', 'parent_birth_date'], 'date'],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             [['student_snils', 'parent_snils'], 'string', 'max' => 16],
+            [['student_first_name', 'student_last_name', 'parent_first_name', 'parent_last_name'], 'string', 'min' => 3],
             // ['email', 'validateEmail'],
             // ['email', 'email'],
             [['student_sert_date'], 'date'],

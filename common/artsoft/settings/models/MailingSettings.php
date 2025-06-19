@@ -14,6 +14,8 @@ class MailingSettings extends BaseSettingsModel
     public $schoolplan_perform_doc;
     public $confirm_progress_perform_doc;
 
+    public $planfix_mailing;
+
     /**
      * @inheritdoc
      */
@@ -24,6 +26,7 @@ class MailingSettings extends BaseSettingsModel
 //                [['mailing_birthday'], 'required'],
                 [['mailing_birthday', 'mailing_birthday_period'], 'string'],
                 [['schoolplan_perform_doc','confirm_progress_perform_doc'], 'boolean'],
+                [['planfix_mailing'], 'boolean'],
             ]);
     }
 
@@ -35,6 +38,8 @@ class MailingSettings extends BaseSettingsModel
 
             'schoolplan_perform_doc' => 'Включить уведомления в модуле "Выполнение плана и участие в мероприятии"',
             'confirm_progress_perform_doc' => 'Включить уведомления в модуле "Проверка журнала успеваемости"',
+
+            'planfix_mailing' => 'Включить уведомления в модуле "Планировщик задач"',
         ];
     }
 
