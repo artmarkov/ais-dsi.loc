@@ -941,28 +941,31 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     /**
      * Нахождение всех элементов репертуарного плана для $studyplan_subject_id
      * @param $studyplan_subject_id
+     * @param $teachers_id
      * @return array
      * @throws \yii\db\Exception
      */
-    public function getStudyplanThematicItemsById($studyplan_subject_id)
+    public function getStudyplanThematicItemsById($studyplan_subject_id, $teachers_id)
     {
         $studyplan_subject_id = is_array($studyplan_subject_id) ? implode(',', $studyplan_subject_id) : $studyplan_subject_id;
 
-        return Yii::$app->db->createCommand(' select DISTINCT studyplan_thematic_items.id as id,
+        return Yii::$app->db->createCommand(' SELECT DISTINCT studyplan_thematic_items.id as id,
 		                  studyplan_thematic_items.topic AS name
                     FROM studyplan_thematic_view 
                     INNER JOIN studyplan_thematic_items ON studyplan_thematic_view.studyplan_thematic_id = studyplan_thematic_items.studyplan_thematic_id 
                     where  studyplan_subject_id = ANY (string_to_array(:studyplan_subject_id, \',\')::int[]) 
-                    AND studyplan_thematic_items.topic != \'\'',
+                    AND studyplan_thematic_items.topic != \'\'
+                    AND studyplan_thematic_view.teachers_id = :teachers_id',
             [
-                'studyplan_subject_id' => $studyplan_subject_id
+                'studyplan_subject_id' => $studyplan_subject_id,
+                'teachers_id' => $teachers_id
             ])->queryAll();
     }
 
 
-    public function getThematicItemsByStudyplanSubject($studyplan_subject_id)
+    public function getThematicItemsByStudyplanSubject($studyplan_subject_id, $teachers_id)
     {
-        return ArrayHelper::map($this->getStudyplanThematicItemsById($studyplan_subject_id), 'id', 'name');
+        return ArrayHelper::map($this->getStudyplanThematicItemsById($studyplan_subject_id, $teachers_id), 'id', 'name');
     }
 
     /**
@@ -1035,7 +1038,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 
         $studyplanSubjectIds = ArrayHelper::getColumn($modelsProtocol, 'studyplan_subject_id');
         $modelsStudent = (new \yii\db\Query())->from('studyplan_subject_view')->where(['studyplan_subject_id' => $studyplanSubjectIds])->all();
-        $modelsStudent = \yii\helpers\ArrayHelper::map($modelsStudent, 'studyplan_subject_id', 'memo_4');
+        $modelsStudent = \yii\helpers\ArrayHelper::map($modelsStudent, 'studyplan_subject_id', 'memo_5');
 
         $teachersIds = ArrayHelper::getColumn($modelsProtocol, 'teachers_id');
         $modelsTeachers = (new Query())->from('teachers_view')->where(['teachers_id' => $teachersIds])->all();

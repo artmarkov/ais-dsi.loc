@@ -86,17 +86,17 @@ class RegistrationForm extends Model
             }, 'whenClient' => "function (attribute, value) {
                         return $('#registrationform-student_sert_series').val() != NULL;
                     }"],
-            [['student_sert_series', 'student_sert_organ', 'student_sert_date'], 'required', 'when' => function ($model) {
+            [['student_sert_organ', 'student_sert_date'], 'required', 'when' => function ($model) {
                 return $model->student_sert_num != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#registrationform-student_sert_num').val() != NULL;
                     }"],
-            [['student_sert_num', 'student_sert_series', 'student_sert_date'], 'required', 'when' => function ($model) {
+            [['student_sert_num', 'student_sert_date'], 'required', 'when' => function ($model) {
                 return $model->student_sert_organ != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#registrationform-student_sert_organ').val() != NULL;
                     }"],
-            [['student_sert_num', 'student_sert_series', 'student_sert_organ'], 'required', 'when' => function ($model) {
+            [['student_sert_num', 'student_sert_organ'], 'required', 'when' => function ($model) {
                 return $model->student_sert_date != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#registrationform-student_sert_date').val() != NULL;

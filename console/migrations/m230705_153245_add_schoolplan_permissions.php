@@ -78,7 +78,7 @@ class m230705_153245_add_schoolplan_permissions extends PermissionsMigration
                 ],
                 'fullschoolplanAccess' => [
                     'title' => 'Администрирование Плана работы',
-                    'links' => [
+                    'linkАттестационная карточкаs' => [
                         '/admin/schoolplan/default/index',
                         '/admin/schoolplan/default/view',
                         '/admin/schoolplan/default/history',
@@ -100,6 +100,7 @@ class m230705_153245_add_schoolplan_permissions extends PermissionsMigration
                         '/admin/schoolplan/default/protocol?mode=update',
                         '/admin/schoolplan/default/protocol?mode=delete',
                         '/admin/schoolplan/default/protocol?mode=history',
+                        '/admin/schoolplan/default/protocol-bulk-delete',
                         '/admin/schoolplan/default/studyplan',
                         '/admin/schoolplan/default/studyplan-subject',
                         '/admin/schoolplan/default/studyplan-thematic',

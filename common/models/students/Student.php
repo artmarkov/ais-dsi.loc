@@ -33,6 +33,7 @@ class Student extends ActiveRecord
     const STUDENT_DOC = [
         'password' => 'Паспорт',
         'birth_cert' => 'Свидетельство о рождении',
+        'birth_cert_int' => 'Свидетельство о рождении иностранного образца',
         'birth_cert_egr' => 'Запись о рождении ЕГР ЗАГС',
     ];
 
@@ -86,22 +87,22 @@ class Student extends ActiveRecord
             [['sert_name', 'sert_series', 'sert_num'], 'string', 'max' => 32],
             [['sert_organ'], 'string', 'max' => 127],
             // при заполнении одного из полей, делаем обязательными остальные поля блока документа
-            [['sert_num',  'sert_date'], 'required', 'when' => function ($model) {
+            [['sert_num', 'sert_organ',  'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_series != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#student-sert_series').val() != NULL;
                     }"],
-            [['sert_series', 'sert_date'], 'required', 'when' => function ($model) {
+            [['sert_date', 'sert_organ'], 'required', 'when' => function ($model) {
                 return $model->sert_num != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#student-sert_num').val() != NULL;
                     }"],
-            [['sert_num', 'sert_series', 'sert_date'], 'required', 'when' => function ($model) {
+            [['sert_num', 'sert_date'], 'required', 'when' => function ($model) {
                 return $model->sert_organ != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#student-sert_organ').val() != NULL;
                     }"],
-            [['sert_num', 'sert_series'], 'required', 'when' => function ($model) {
+            [['sert_num', 'sert_organ'], 'required', 'when' => function ($model) {
                 return $model->sert_date != NULL;
             }, 'whenClient' => "function (attribute, value) {
                         return $('#student-sert_date').val() != NULL;

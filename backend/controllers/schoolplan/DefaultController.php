@@ -492,8 +492,9 @@ class DefaultController extends MainController
 
             if (!empty($parents)) {
                 $cat_id = $parents[0];
+                $teachers_id = $parents[1];
                 $model = Schoolplan::findOne($_GET['id']);
-                $out = $model->getStudyplanThematicItemsById($cat_id);
+                $out = $model->getStudyplanThematicItemsById($cat_id, $teachers_id);
 
                 return json_encode(['output' => $out, 'selected' => '']);
             }

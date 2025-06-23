@@ -87,7 +87,7 @@ $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark
                         <?php endif; ?>
                         <div id="thematicItemsList">
                             <?= $form->field($model, 'thematic_items_list')->widget(\kartik\depdrop\DepDrop::className(), [
-                                'data' => $modelSchoolplan->getThematicItemsByStudyplanSubject($model->studyplan_subject_id),
+                                'data' => $modelSchoolplan->getThematicItemsByStudyplanSubject($model->studyplan_subject_id, $model->teachers_id),
                                 'options' => [
 
                                     'disabled' => $readonly,
@@ -97,7 +97,7 @@ $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark
                                 'type' => \kartik\depdrop\DepDrop::TYPE_SELECT2,
                                 'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                                 'pluginOptions' => [
-                                    'depends' => ['studyplan_subject_id'],
+                                    'depends' => ['studyplan_subject_id', 'teachers_id'],
                                     'url' => Url::to(['/schoolplan/default/studyplan-thematic', 'id' => $model->schoolplan_id])
                                 ]
                             ]);
