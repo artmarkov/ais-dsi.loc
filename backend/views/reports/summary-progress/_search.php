@@ -92,7 +92,7 @@ $form = ActiveForm::begin([
                                     'options' => [
                                         'disabled' => false,
                                         'placeholder' => Yii::t('art', 'Select...'),
-                                        'multiple' => false,
+                                        'multiple' => true,
                                     ],
                                     'pluginOptions' => [
                                         'allowClear' => true

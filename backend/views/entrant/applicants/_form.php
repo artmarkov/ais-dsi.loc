@@ -136,9 +136,9 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                     ]);
                     ?>
 
-                    <?= $form->field($model, 'last_experience')->textInput(['maxlength' => true, 'disabled' => $readonlyBase]) ?>
+                    <?= $form->field($model, 'last_experience')->textInput(['maxlength' => true, 'disabled' => $readonly]) ?>
 
-                    <?= $form->field($model, 'remark')->textarea(['rows' => 3, 'disabled' => $readonlyBase]) ?>
+                    <?= $form->field($model, 'remark')->textarea(['rows' => 3, 'disabled' => $readonly]) ?>
 
                     <?= $form->field($model, 'status')->dropDownList(Entrant::getStatusList(), ['disabled' => !Yii::$app->user->isSuperadmin]) ?>
 

@@ -175,7 +175,7 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
         $this->addForeignKey('entrant_test_ibfk_5', 'entrant_test', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('entrant_view', '
- SELECT entrant.id,
+  SELECT entrant.id,
     entrant.student_id,
     entrant.comm_id,
     entrant.group_id,
@@ -206,12 +206,14 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
     concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name) AS fullname,
     concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS fio,
     user_common.birth_date,
-    date_part(\'year\'::text, age(to_timestamp(user_common.birth_date::double precision)::date::timestamp with time zone))::integer AS birth_date_age
+    date_part(\'year\'::text, age(to_timestamp(user_common.birth_date::double precision)::date::timestamp with time zone))::integer AS birth_date_age,
+	studyplan.id AS studyplan_id
    FROM entrant
      JOIN students ON students.id = entrant.student_id
      JOIN user_common ON user_common.id = students.user_common_id
      JOIN entrant_group ON entrant_group.id = entrant.group_id
      JOIN entrant_comm ON entrant_comm.id = entrant.comm_id
+	 LEFT JOIN studyplan ON (entrant.programm_id = studyplan.programm_id AND entrant.student_id = studyplan.student_id AND entrant.course = studyplan.course AND entrant_comm.plan_year = studyplan.plan_year)
   ORDER BY entrant.comm_id;
         ')->execute();
 

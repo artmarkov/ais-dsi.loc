@@ -16,6 +16,9 @@ use artsoft\grid\GridPageSize;
 /* @var $searchModel common\models\entrant\search\EntrantSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
+$subjectList = RefBook::find('subject_name')->getList();
+$programmList = RefBook::find('education_programm_short_name')->getList();
+$subjectFormList = RefBook::find('subject_form_name')->getList();
 ?>
 <div class="entrant-index">
     <div class="panel">
@@ -135,7 +138,7 @@ use artsoft\grid\GridPageSize;
                                 if (!$id) {
                                     continue;
                                 }
-                                $v[] = RefBook::find('subject_name')->getValue($id) ?? '';
+                                $v[] = $subjectList[$id] ?? '';
                             }
                             return implode('<br/> ', $v);
                         },
@@ -149,8 +152,16 @@ use artsoft\grid\GridPageSize;
                              return $model->last_experience;
                          },
                          'format' => 'raw',
-                         'label' => 'Прим.'
+                         'label' => 'Обуч.ранее.'
                      ],
+                    [
+                        'attribute' => 'remark',
+                        'value' => function (Entrant $model) {
+                            return $model->remark;
+                        },
+                        'format' => 'raw',
+                        'label' => 'Прим.'
+                    ],
                     [
                         'attribute' => 'mid_mark',
                         'value' => function (\common\models\entrant\EntrantView $model) {
@@ -165,14 +176,14 @@ use artsoft\grid\GridPageSize;
                         'contentOptions' => function (Entrant $model) {
                             return ['class' => $model->decision_id == 1 ? 'success' : 'default'];
                         },
-                        'filter' => RefBook::find('education_programm_short_name')->getList(),
+                        'filter' => $programmList,
 //                        'filterType' => GridView::FILTER_SELECT2,
 //                        'filterWidgetOptions' => [
 //                            'pluginOptions' => ['allowClear' => true],
 //                        ],
 //                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                        'value' => function (\common\models\entrant\EntrantView $model) {
-                            return RefBook::find('education_programm_short_name')->getValue($model->programm_id) ?? '';
+                        'value' => function (\common\models\entrant\EntrantView $model) use ($programmList) {
+                            return $programmList[$model->programm_id] ?? '';
                         },
                         'format' => 'raw',
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
@@ -189,8 +200,8 @@ use artsoft\grid\GridPageSize;
 //                            'pluginOptions' => ['allowClear' => true],
 //                        ],
 //                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                        'value' => function (\common\models\entrant\EntrantView $model) {
-                            return RefBook::find('subject_name')->getValue($model->subject_id) ?? '';
+                        'value' => function (\common\models\entrant\EntrantView $model) use ($subjectList) {
+                            return $subjectList[$model->subject_id] ?? '';
                         },
                         'format' => 'raw',
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
@@ -219,14 +230,14 @@ use artsoft\grid\GridPageSize;
                         'contentOptions' => function (Entrant $model) {
                             return ['class' => $model->decision_id == 1 ? 'success' : null];
                         },
-                        'filter' => RefBook::find('subject_form_name')->getList(),
+                        'filter' => $subjectFormList,
 //                        'filterType' => GridView::FILTER_SELECT2,
 //                        'filterWidgetOptions' => [
 //                            'pluginOptions' => ['allowClear' => true],
 //                        ],
 //                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
-                        'value' => function (\common\models\entrant\EntrantView $model) {
-                            return \common\models\subject\SubjectForm::getFormValue($model->subject_form_id) ?? '';
+                        'value' => function (\common\models\entrant\EntrantView $model) use ($subjectFormList) {
+                            return $subjectFormList[$model->subject_form_id] ?? '';
                         },
                         'format' => 'raw',
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
@@ -243,6 +254,20 @@ use artsoft\grid\GridPageSize;
                         'options' => ['style' => 'width:120px'],
                         'visible' => User::hasPermission('fullEntrantAccess') && \artsoft\Art::isBackend(),
                         'label' => 'Решение'
+                    ],
+                    [
+                        'label' => 'План создан',
+                        'visible' => \artsoft\Art::isBackend(),
+                        'value' => function (\common\models\entrant\EntrantView $model) {
+                            return $model->studyplan_id ? Html::a('<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да',
+                                ['/studyplan/default/view', 'id' => $model->studyplan_id],
+                                [
+                                    'target' => '_blank',
+                                    'data-pjax' => '0',
+                                ]) : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> Нет';
+                        },
+                        'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
+                        'format' => 'raw',
                     ],
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',

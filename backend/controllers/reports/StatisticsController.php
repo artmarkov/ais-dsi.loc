@@ -24,12 +24,12 @@ class StatisticsController extends \backend\controllers\DefaultController
             $mon = date('m');
             $year = date('Y');
 
-            $model_date->date_in = $session->get('_schoolplan_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:m.Y');
-            $model_date->date_out = $session->get('_schoolplan_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:m.Y');
+            $model_date->date_in = $session->get('_schoolplan_stat_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, $day_in, $year), 'php:m.Y');
+            $model_date->date_out = $session->get('_schoolplan_stat_date_out') ?? Yii::$app->formatter->asDate(mktime(23, 59, 59, $mon, $day_out, $year), 'php:m.Y');
         }
 
-        $session->set('_schoolplan_date_in', $model_date->date_in);
-        $session->set('_schoolplan_date_out', $model_date->date_out);
+        $session->set('_schoolplan_stat_date_in', $model_date->date_in);
+        $session->set('_schoolplan_stat_date_out', $model_date->date_out);
 
         $model = new SchoolplanReport($model_date);
         return $this->renderIsAjax('index', [

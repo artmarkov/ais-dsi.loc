@@ -30,6 +30,10 @@ use artsoft\helpers\Html;
 
                     <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
 
+                    <?= $form->field($model, 'programm_name')->textInput(['maxlength' => true]) ?>
+
+                    <?= $form->field($model, 'programm_short_name')->textInput(['maxlength' => true]) ?>
+
                     <?= $form->field($model, 'division_list')->widget(\kartik\select2\Select2::className(), [
                         'data' => \common\models\own\Division::getDivisionList(),
                         'options' => [

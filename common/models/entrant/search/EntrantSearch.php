@@ -15,6 +15,7 @@ use common\models\entrant\Entrant;
 class EntrantSearch extends EntrantView
 {
     use ParamsTrimable;
+
     /**
      * @inheritdoc
      */
@@ -22,7 +23,7 @@ class EntrantSearch extends EntrantView
     {
         return [
             [['id', 'student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'subject_id', 'course', 'subject_form_id', 'status', 'timestamp_in', 'birth_date'], 'integer'],
-            [['last_experience', 'reason', 'subject_list', 'group_name'], 'safe'],
+            [['last_experience', 'reason', 'subject_list', 'group_name', 'remark'], 'safe'],
             [['mid_mark', 'fullname', 'fio'], 'safe'],
         ];
     }
@@ -85,6 +86,7 @@ class EntrantSearch extends EntrantView
         ]);
 
         $query->andFilterWhere(['like', 'last_experience', $this->last_experience])
+            ->andFilterWhere(['like', 'remark', $this->remark])
             ->andFilterWhere(['like', 'subject_list', $this->subject_list])
             ->andFilterWhere(['like', 'reason', $this->reason])
             ->andFilterWhere(['like', 'group_name', $this->group_name])

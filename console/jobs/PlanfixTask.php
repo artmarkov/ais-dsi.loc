@@ -34,7 +34,7 @@ class PlanfixTask extends \yii\base\BaseObject implements \yii\queue\JobInterfac
                         if ($days > 0) {
                             $message .= '<p>До сдачи работы осталось ' . $days . ' дня(дней).</p>';
                         } elseif ($days < 0) {
-                            $message .= '<p>Вы просрочили выполнение работы на : ' . $days . ' дня(дней).</p>';
+                            $message .= '<p>Вы просрочили выполнение работы на : ' . abs($days) . ' дня(дней).</p>';
                         } elseif ($days == 0) {
                             $message .= '<p>Работу нужно сдать сегодня.</p>';
                         }
@@ -45,7 +45,6 @@ class PlanfixTask extends \yii\base\BaseObject implements \yii\queue\JobInterfac
                     }
                 }
             }
-
         }
     }
 }

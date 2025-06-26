@@ -12,6 +12,8 @@ use Yii;
  * @property int $id
  * @property string|null $name
  * @property string $short_name
+ * @property string $programm_name
+ * @property string $programm_short_name
  * @property string $division_list
  * @property int $status
  *
@@ -49,11 +51,11 @@ class EducationCat extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'short_name', /*'type_id',*/ 'status'], 'required'],
+            [['name', 'short_name', /*'type_id',*/ 'status', 'programm_short_name'], 'required'],
             [['status'], 'default', 'value' => null],
             [['status', /*'type_id'*/], 'integer'],
-            [['name'], 'string', 'max' => 127],
-            [['short_name'], 'string', 'max' => 64],
+            [['name', 'programm_name'], 'string', 'max' => 127],
+            [['short_name', 'programm_short_name'], 'string', 'max' => 64],
             [['division_list'], 'safe'],
 
         ];
@@ -68,6 +70,8 @@ class EducationCat extends \artsoft\db\ActiveRecord
             'id' => Yii::t('art', 'ID'),
             'name' => Yii::t('art', 'Name'),
             'short_name' => Yii::t('art', 'Short Name'),
+            'programm_name' => 'Название программы',
+            'programm_short_name' => 'Сокращенное название программы',
 //            'type_id' => Yii::t('art/guide', 'Subject Type Name'),
             'status' => Yii::t('art', 'Status'),
             'division_list' => Yii::t('art/guide', 'Division List'),

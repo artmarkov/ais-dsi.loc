@@ -16,8 +16,8 @@ class SummaryProgressController extends \backend\controllers\DefaultController
 
         $model_date = new DynamicModel(['plan_year', 'education_cat_id', 'programm_id', 'subject_type_id', 'subject_form_id', 'course'/*, 'vid_sert'*/]);
         $model_date->addRule(['plan_year', 'education_cat_id', 'programm_id'/*, 'vid_sert'*/], 'required')
-            ->addRule(['plan_year', 'education_cat_id', 'subject_form_id'/*, 'vid_sert'*/], 'integer')
-            ->addRule(['programm_id', 'subject_type_id', 'course', 'finish_flag'], 'safe');
+            ->addRule(['plan_year', 'education_cat_id'/*, 'vid_sert'*/], 'integer')
+            ->addRule(['programm_id', 'subject_form_id', 'subject_type_id', 'course', 'finish_flag'], 'safe');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
             $model_date->programm_id = $session->get('_summary_progress_programm_id') ?: ''/*EducationProgramm::getProgrammScalar()*/;

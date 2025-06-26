@@ -69,6 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                             ],
                             'short_name',
+                            'programm_short_name',
                             [
                                 'attribute' => 'division_list',
                                 'filter' => RefBook::find('division_name')->getList(),

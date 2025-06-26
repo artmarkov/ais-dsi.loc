@@ -68,6 +68,8 @@ use function morphos\Russian\inflectName;
 class Studyplan extends \artsoft\db\ActiveRecord
 {
 
+    const STATUS_ACTIVE_COND = 2;
+
 // Шаблоны документов
     const template_csf = 'document/contract_student_free_2.docx';
     const template_cs = 'document/contract_student_new.docx';
@@ -172,6 +174,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
     {
         return array(
             self::STATUS_ACTIVE => 'План открыт',
+            self::STATUS_ACTIVE_COND => 'План открыт условно',
             self::STATUS_INACTIVE => 'План закрыт',
         );
     }
@@ -489,11 +492,11 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $items_month = [];
         foreach ($month_range as $item => $month) {
             if (in_array($mStart, [6, 7, 8]) && $item == 0) {
-                $rem = '100% оплата за ' . $month_range[$item+1];
-            } elseif(in_array($mStart, [6, 7, 8]) && $item == 1)  {
-                $rem = '100% оплата за ' . $month_range[count($month_range)-1];
-            } elseif($mStart == 9 && $item == 0)  {
-                $rem = '100% оплата за ' . $month_range[count($month_range)-1];
+                $rem = '100% оплата за ' . $month_range[$item + 1];
+            } elseif (in_array($mStart, [6, 7, 8]) && $item == 1) {
+                $rem = '100% оплата за ' . $month_range[count($month_range) - 1];
+            } elseif ($mStart == 9 && $item == 0) {
+                $rem = '100% оплата за ' . $month_range[count($month_range) - 1];
             } else {
                 $rem = '';
             }

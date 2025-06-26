@@ -28,6 +28,15 @@ return [
         ],
     ],
     'components' => [
+        'i18n' => [
+            'translations' => [
+                'art*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'sourceLanguage' => 'en-US',
+                    'basePath' => '@common/artsoft/messages',
+                ],
+            ],
+        ],
         'log' => [
             'targets' => [
                 [

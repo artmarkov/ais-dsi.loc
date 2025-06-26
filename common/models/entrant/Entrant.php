@@ -4,7 +4,9 @@ namespace common\models\entrant;
 
 use artsoft\Art;
 use artsoft\behaviors\ArrayFieldBehavior;
+use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
+use common\models\education\EntrantProgramm;
 use common\models\students\Student;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
@@ -40,8 +42,8 @@ use yii\db\Query;
  *
  * @property EntrantComm $comm
  * @property EntrantGroup $group
- * @property Students $student
- * @property Studyplan $studyplan
+ * @property Student $student
+ * @property EducationProgramm $programm
  * @property EntrantMembers[] $entrantMembers
  */
 class Entrant extends \artsoft\db\ActiveRecord
@@ -172,9 +174,9 @@ class Entrant extends \artsoft\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getStudyplan()
+    public function getProgramm()
     {
-        return $this->hasOne(Studyplan::className(), ['id' => 'programm_id']);
+        return $this->hasOne(EducationProgramm::className(), ['id' => 'programm_id']);
     }
 
     /**

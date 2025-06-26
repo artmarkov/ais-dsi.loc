@@ -104,6 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'status',
                         'optionsArray' => [
                             [Studyplan::STATUS_ACTIVE, 'План открыт', 'info'],
+                            [Studyplan::STATUS_ACTIVE_COND, 'План открыт условно', 'warning'],
                             [Studyplan::STATUS_INACTIVE, 'План закрыт', 'danger'],
                         ],
                         'options' => ['style' => 'width:120px']
