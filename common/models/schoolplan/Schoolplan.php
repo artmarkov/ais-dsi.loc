@@ -213,10 +213,10 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['category_id'], 'default', 'value' => 17],
             [['partic_price', 'site_url', 'site_media'], 'string', 'max' => 255],
             ['description', 'string', 'max' => 4000, 'when' => function ($model) {
-                return $model->category->description_flag && !$model->isNewRecord;
+                return isset($model->category) && $model->category->description_flag && !$model->isNewRecord;
             }, 'enableClientValidation' => false, 'skipOnEmpty' => false, 'message' => 'Введите описание мероприятия минимум 1000 знаков, включая пробелы.'],
             ['description', 'string', 'max' => 4000, 'when' => function ($model) {
-                return !$model->category->description_flag && !$model->isNewRecord;
+                return isset($model->category) && !$model->category->description_flag && !$model->isNewRecord;
             }, 'enableClientValidation' => false, 'message' => 'Введите описание мероприятия минимум 500 знаков, включая пробелы.'],
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuidePlanTree::class, 'targetAttribute' => ['category_id' => 'id']],

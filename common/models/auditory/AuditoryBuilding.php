@@ -57,4 +57,8 @@ class AuditoryBuilding extends \artsoft\db\ActiveRecord
     {
         return \yii\helpers\ArrayHelper::map(AuditoryBuilding::find()->all(), 'id', 'name');
     }
+    public static function getAuditoryBuildingListByAddress()
+    {
+        return \yii\helpers\ArrayHelper::map(AuditoryBuilding::find()->all(), 'id', 'address');
+    }
 }

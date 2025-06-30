@@ -32,6 +32,7 @@ class DashboardController extends BaseController
                             'artsoft\user\widgets\dashboard\UsersVisitMap',
                             'backend\widgets\dashboard\Visits',
                             'artsoft\user\widgets\dashboard\UsersActive',
+                            'backend\widgets\dashboard\Birthday',
                         ],
                     ],
                     [

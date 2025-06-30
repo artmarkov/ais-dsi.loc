@@ -349,6 +349,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             $data = Subject::find()->select(['name', 'id']);
             $data = $data->andFilterWhere(['like', 'category_list', $category_id]);
             $data = $data->andFilterWhere(['=', 'status', Subject::STATUS_ACTIVE]);
+            $data = $data->orderBy('name');
             $data = $data->indexBy('id')->column();
         }
         return $data;
