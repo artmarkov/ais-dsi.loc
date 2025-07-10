@@ -25,8 +25,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ]) ?>
         </div>
         <div class="panel-body">
+            <?= \yii\bootstrap\Alert::widget([
+                'body' => '<i class="fa fa-info"></i> При нажатии на кнопку Импорт, дамп БД запишется(перезапишет) БД postgres_test.',
+                'options' => ['class' => 'alert-info'],
+            ]);
+            ?>
         <div class="row">
-
                 <div class="col-sm-12 text-right">
                     <?=  GridPageSize::widget(['pjaxId' => 'dbmanager-grid-pjax']) ?>
                 </div>
@@ -97,7 +101,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     'class' => 'btn btn-sm btn-warning',
                                 ]);
                         },
-                        'visible' => false,
+                        'visible' => true,
                     ],
                     [
                         'options' => ['style' => 'width:20px'],

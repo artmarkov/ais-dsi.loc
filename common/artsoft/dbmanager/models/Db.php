@@ -77,12 +77,9 @@ class Db extends Model
             if (!$db) {
                 Yii::$app->session->setFlash('info', Yii::t('art/dbmanager', 'No database connection.'));
             }
-            $db->password = str_replace("(", "\(", $db->password);
-            $command = "psql -u'" . $db->username . "' " . $this->getDsnAttribute('dbname', $db->dsn) . " -p'" . $db->password . "' < " . $path;
-            //$command = "pgsql -u'" . $db->username . "' " . $this->getDsnAttribute('dbname', $db->dsn) . " -p'" . $db->password . "' < " . $path;
-            //$command = 'pgsql --host=' . $this->getDsnAttribute('host', $db->dsn) . ' --user=' . $db->username . ' --password=' . $db->password . ' ' . $this->getDsnAttribute('dbname', $db->dsn) . ' < ' . $path;
-            //[2025-03-05 15:26:50] "/Applications/pgAdmin 4.app/Contents/SharedSupport/pg_dump" --dbname=ais_dshi_13062023 --file=/Users/markov-av/dump_ais_dshi_05-03-2025 --format=t --clean --create --if-exists --username=postgres --host=45.12.75.11 --port=5432
-            // exec($command);
+            $command = $this->makeImportComand($db, $path,'postgres_test');
+//                print_r($command); die();
+            exec($command);
             Yii::$app->session->setFlash('info', Yii::t('art/dbmanager', "Dump {path} successfully imported.", ['path' => $path]));
         } else {
             Yii::$app->session->setFlash('info', Yii::t('art/dbmanager', 'The specified path does not exist.'));
