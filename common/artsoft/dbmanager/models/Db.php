@@ -19,6 +19,16 @@ class Db extends Model
             $filePath);
     }
 
+    public function makeImportComand($db, $filePath, $dbName)
+    {
+        return sprintf("PGPASSWORD='%s' pg_restore -h %s -p 5432 -U %s -d %s -c %s",
+            $db->password,
+            $this->getDsnAttribute('host', $db->dsn),
+            $db->username,
+            $dbName,
+            $filePath);
+    }
+
     public function getFilesAllSize($files)
     {
         $data = ArrayHelper::getColumn($this->getFilesData($files), 'file_size');
@@ -98,9 +108,9 @@ class Db extends Model
                     return Yii::$app->response->redirect(['dbmanager/default/index']);
                 }
                 //Экранируем скобку которая есть в пароле
-               // $db->password = str_replace("(", "\(", $db->password);
+                // $db->password = str_replace("(", "\(", $db->password);
                 $command = $this->makeExportComand($db, $filePath);
-               // print_r($command); die();
+//                print_r($command); die();
                 exec($command);
                 Yii::$app->session->setFlash('info', Yii::t('art/dbmanager', "Export completed successfully. File {fileName} in the {path} folder.", ['fileName' => $fileName, 'path' => $path]));
             } else {

@@ -7,7 +7,7 @@ use Yii;
 use yii\helpers\FileHelper;
 
 /**
- * Class FlushCache.
+ * Class MakeDump.
  */
 class MakeDump extends \yii\base\BaseObject implements \yii\queue\JobInterface
 {
@@ -25,6 +25,8 @@ class MakeDump extends \yii\base\BaseObject implements \yii\queue\JobInterface
                     if ($db) {
                         $command = $model->makeExportComand($db, $filePath);
                         // print_r($command); die();
+                        exec($command);
+                        $command = $model->makeImportComand($db, $filePath, 'postgres_last');
                         exec($command);
                     }
                 }
