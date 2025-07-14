@@ -98,6 +98,7 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers', 'employee
                         'options' => ['style' => 'width:350px'],
                         'format' => 'raw',
                     ],
+                    'created_at:date',
                     'planfix_date:date',
                     [
                         'class' => 'artsoft\grid\columns\StatusColumn',

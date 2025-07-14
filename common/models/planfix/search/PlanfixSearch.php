@@ -18,7 +18,7 @@ class PlanfixSearch extends Planfix
     public function rules()
     {
         return [
-            [['id', 'category_id', 'planfix_author', 'importance', 'planfix_date'], 'integer'],
+            [['id', 'category_id', 'planfix_author', 'importance', 'planfix_date', 'created_at'], 'integer'],
             [['name', 'description', 'executors_list', 'status_reason'], 'safe'],
         ];
     }
@@ -66,6 +66,7 @@ class PlanfixSearch extends Planfix
         $query->andFilterWhere([
             'id' => $this->id,
             'category_id' => $this->category_id,
+            'created_at' => $this->created_at,
             'planfix_author' => $this->planfix_author,
             'importance' => $this->importance,
             'planfix_date' => $this->planfix_date,
