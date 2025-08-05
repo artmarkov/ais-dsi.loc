@@ -52,6 +52,7 @@ use function morphos\Russian\inflectName;
  * @property int $doc_signer
  * @property int $doc_received_flag
  * @property int $doc_sent_flag
+ * @property int $early_flag // Досрочное завершение - выпускник
  * @property int|null $created_by
  * @property int $updated_at
  * @property int|null $updated_by
@@ -113,7 +114,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 //                return !$model->isNewRecord;
 //            }],
             [['student_id', 'programm_id', 'course', 'plan_year', 'subject_form_id', 'status', 'version', 'status_reason', 'mat_capital_flag'], 'integer'],
-            [['doc_signer', 'doc_received_flag', 'doc_sent_flag'], 'integer'],
+            [['doc_signer', 'doc_received_flag', 'doc_sent_flag', 'early_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
             ['doc_date', 'default', 'value' => date('d.m.Y')],
             [['description'], 'string', 'max' => 1024],
@@ -150,6 +151,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'doc_signer' => Yii::t('art/guide', 'Doc Signer'),
             'doc_received_flag' => Yii::t('art/guide', 'Doc Received'),
             'doc_sent_flag' => Yii::t('art/guide', 'Doc Sent'),
+            'early_flag' => Yii::t('art/guide', 'Early_Education'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),

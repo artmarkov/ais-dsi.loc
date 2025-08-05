@@ -27,6 +27,7 @@ class m210824_115637_create_table_studyplan extends \artsoft\db\BaseMigration
             'doc_received_flag' => $this->integer(),
             'doc_sent_flag' => $this->integer(),
             'mat_capital_flag' => $this->integer()->defaultValue(0),
+            'early_flag' => $this->integer()->defaultValue(0),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

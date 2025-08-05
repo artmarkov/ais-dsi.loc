@@ -107,6 +107,7 @@ JS
                         ],
                     ])->label(Yii::t('art/guide', 'Course'));
                     ?>
+                    <?= $form->field($model, 'early_flag')->checkbox(['disabled' => $readonly]) ?>
 
                     <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                         [
