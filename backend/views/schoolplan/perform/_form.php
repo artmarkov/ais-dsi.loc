@@ -116,7 +116,8 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                         ]);
                         ?>
 
-                        <?= $form->field($model, 'lesson_mark_id')->widget(\kartik\select2\Select2::class, [
+                        <?php
+                       /* $form->field($model, 'lesson_mark_id')->widget(\kartik\select2\Select2::class, [
                             'data' => RefBook::find('lesson_mark')->getList(),
                             'showToggleAll' => false,
                             'options' => [
@@ -127,7 +128,7 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                             'pluginOptions' => [
                                 'allowClear' => true,
                             ],
-                        ]);
+                        ]);*/
                         ?>
 
                         <?= $form->field($model, 'winner_id')->widget(\kartik\select2\Select2::class, [

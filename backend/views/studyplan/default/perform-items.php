@@ -90,25 +90,25 @@ $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
                             return $studyplan_subject_list[$model->studyplan_subject_id] ?? null;
                         },
                     ],
-//                    [
-//                        'attribute' => 'thematic_items_list',
-//                        'value' => function ($model) {
-//                            if (!empty($model->thematic_items_list[0])) {
-//                                $thematic_items_list = StudyplanThematicItems::find()->select('topic')->where(['id' => $model->thematic_items_list])->column();
-//                                return implode(', ', $thematic_items_list);
-//                            } else {
-//                                return $model->task_ticket ?? '';
-//                            }
-//                        },
-//                        'label' => 'Задание',
-//                        'format' => 'raw'
-//                    ],
-                    [
+                   /* [
+                        'attribute' => 'thematic_items_list',
+                        'value' => function ($model) {
+                            if (!empty($model->thematic_items_list[0])) {
+                                $thematic_items_list = StudyplanThematicItems::find()->select('topic')->where(['id' => $model->thematic_items_list])->column();
+                                return implode(', ', $thematic_items_list);
+                            } else {
+                                return $model->task_ticket ?? '';
+                            }
+                        },
+                        'label' => 'Задание',
+                        'format' => 'raw'
+                    ],*/
+                   /* [
                         'attribute' => 'lesson_mark_id',
                         'value' => function ($model) {
                             return $model->lessonMark ? $model->lessonMark->mark_label : '';
                         },
-                    ],
+                    ],*/
                     [
                         'attribute' => 'winner_id',
                         'value' => function ($model) {

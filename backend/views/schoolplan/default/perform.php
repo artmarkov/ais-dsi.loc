@@ -94,12 +94,12 @@ $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
                         },
                         'format' => 'raw',
                     ],
-                    [
+                    /*[
                         'attribute' => 'lesson_mark_id',
                         'value' => function ($model) {
                             return $model->lessonMark ? $model->lessonMark->mark_label : '';
                         },
-                    ],
+                    ],*/
                     [
                         'attribute' => 'winner_id',
                         'value' => function ($model) {
