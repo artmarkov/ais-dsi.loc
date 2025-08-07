@@ -85,6 +85,7 @@ SettingsAsset::register($this);
                         <div class="col-md-12">
 
                             <?= $form->field($model, 'study_plan_month_in')->textInput(['maxlength' => true])->hint('Введите месяц') ?>
+                            <?= $form->field($model, 'study_plan_month_in_frontend')->textInput(['maxlength' => true])->hint('Введите месяц') ?>
                             <?= $form->field($model, 'thematic_template_author_flag')->radioList([0 => 'Доступны только авторам', 1 => 'Доступны всем']) ?>
 
                         </div>

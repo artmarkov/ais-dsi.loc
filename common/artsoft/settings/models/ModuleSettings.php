@@ -13,6 +13,7 @@ class ModuleSettings extends BaseSettingsModel
 
     public $student_delta_time;
     public $study_plan_month_in;
+    public $study_plan_month_in_frontend;
     public $thematic_template_author_flag;
 
     public $shelf_life_pass;
@@ -40,8 +41,8 @@ class ModuleSettings extends BaseSettingsModel
     {
         return ArrayHelper::merge(parent::rules(),
             [
-                [['day_in', 'day_out', 'student_delta_time', 'study_plan_month_in'], 'required'],
-                [['day_in', 'day_out', 'student_delta_time', 'study_plan_month_in'], 'string'],
+                [['day_in', 'day_out', 'student_delta_time', 'study_plan_month_in', 'study_plan_month_in_frontend'], 'required'],
+                [['day_in', 'day_out', 'student_delta_time', 'study_plan_month_in', 'study_plan_month_in_frontend'], 'string'],
 
                 [['shelf_life_pass', 'shelf_life_attendlog', 'shelf_life_sitelog', 'shelf_life_requestlog', 'shelf_life_dbdump'], 'required'],
                 [['shelf_life_pass', 'shelf_life_attendlog', 'shelf_life_sitelog', 'shelf_life_requestlog', 'shelf_life_dbdump'], 'string'],
@@ -63,6 +64,7 @@ class ModuleSettings extends BaseSettingsModel
             'student_delta_time' => 'Возможный допуск на отклонение от полного времени проведения занятия',
 
             'study_plan_month_in' => 'Месяц начала учебного года(расчетного периода)',
+            'study_plan_month_in_frontend' => 'Месяц начала учебного года(фронтенд)',
             'thematic_template_author_flag' => 'Шаблоны тематических планов',
 
 
