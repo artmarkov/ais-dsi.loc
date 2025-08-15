@@ -113,6 +113,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 //            [['doc_date', 'doc_contract_start', 'doc_contract_end', 'doc_signer'], 'required', 'when' => function ($model) {
 //                return !$model->isNewRecord;
 //            }],
+            ['doc_contract_start', 'compareDate'],
             [['student_id', 'programm_id', 'course', 'plan_year', 'subject_form_id', 'status', 'version', 'status_reason', 'mat_capital_flag'], 'integer'],
             [['doc_signer', 'doc_received_flag', 'doc_sent_flag', 'early_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
@@ -126,6 +127,18 @@ class Studyplan extends \artsoft\db\ActiveRecord
         ];
     }
 
+    /**
+     * сравнение даты начала и окончания/ дата окончания должна быть меньше даты начала
+     */
+    public function compareDate()
+    {
+        if (!$this->hasErrors() && $this->doc_contract_start && $this->doc_contract_end) {
+
+            if (Yii::$app->formatter->asTimestamp($this->doc_contract_end) < Yii::$app->formatter->asTimestamp($this->doc_contract_start)) {
+                $this->addError('doc_contract_start', 'Дата начала действия договора не может быть больше даты окончания.');
+            }
+        }
+    }
     /**
      * {@inheritdoc}
      */

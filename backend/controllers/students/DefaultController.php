@@ -634,7 +634,7 @@ class DefaultController extends MainController
             }
             if (Yii::$app->request->post('submitAction') == 'doc_contract' || Yii::$app->request->post('submitAction') == 'doc_statement') {
                 if (!isset($model->parent) || !$model->doc_date || !$model->doc_contract_start || !$model->doc_contract_end) {
-                    Yii::$app->session->setFlash('warning', 'Заполните поля раздела "Документы"');
+                    Yii::$app->session->setFlash('danger', 'Заполните поля раздела "Документы"');
                     return $this->getSubmitAction($model);
                 }
             }
