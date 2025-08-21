@@ -34,6 +34,7 @@ class RegistrationForm extends Model
     public $email;
     public $phone;
     public $phone_optional;
+    public $address;
 
     public $student_sert_name;
     public $student_sert_series;
@@ -57,7 +58,7 @@ class RegistrationForm extends Model
     {
         return [
             [['email'], 'required', 'on' => self::SCENARIO_FRONFEND],
-            [['phone'], 'required'],
+            [['phone', 'address'], 'required'],
             [['student_first_name', 'student_last_name', 'student_birth_date'], 'required'],
             ['student_last_name', 'validateStudent'],
             [['parent_first_name', 'parent_last_name'], 'required'],
@@ -72,6 +73,7 @@ class RegistrationForm extends Model
             [['parent_first_name', 'parent_middle_name', 'parent_last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             [['student_birth_date', 'parent_birth_date'], 'date'],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
+            [['address', 'email'], 'string', 'max' => 124],
             [['student_snils', 'parent_snils'], 'string', 'max' => 16],
             [['student_first_name', 'student_last_name', 'parent_first_name', 'parent_last_name'], 'string', 'min' => 3],
             // ['email', 'validateEmail'],
@@ -194,6 +196,7 @@ class RegistrationForm extends Model
             'student_snils' => Yii::t('art', 'Snils'),
             'parent_snils' => Yii::t('art', 'Snils'),
             'email' => Yii::t('art', 'E-mail'),
+            'address' => Yii::t('art/guide', 'Address'),
             'student_sert_name' => Yii::t('art/student', 'Sertificate Name'),
             'student_sert_series' => Yii::t('art/student', 'Sertificate Series'),
             'student_sert_num' => Yii::t('art/student', 'Sertificate Num'),
@@ -233,6 +236,7 @@ class RegistrationForm extends Model
             'phone_optional' => $this->phone_optional,
             'snils' => $this->student_snils,
             'email' => $this->email,
+            'address' => $this->address,
         ]);
         $modelStudent->setAttributes([
             'sert_name' => $this->student_sert_name,
@@ -252,6 +256,7 @@ class RegistrationForm extends Model
                 'phone_optional' => $this->phone_optional,
                 'snils' => $this->parent_snils,
                 'email' => $this->email,
+                'address' => $this->address,
             ]);
             $modelParent->setAttributes([
                 'sert_name' => $this->parent_sert_name,

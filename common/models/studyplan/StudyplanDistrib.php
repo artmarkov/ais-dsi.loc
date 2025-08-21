@@ -32,6 +32,31 @@ class StudyplanDistrib
         return $models;
     }
 
+    protected function getStudyplansOld()
+    {
+        $models = (new Query())->from('studyplan_stat_view')
+            ->where(['plan_year' => $this->plan_year - 1])
+            ->andWhere(['AND',
+                ['status' => Studyplan::STATUS_INACTIVE],
+                ['status_reason' => 4]
+            ])
+            ->all();
+        return $models;
+    }
+    protected function getEntrants()
+    {
+        $models = (new Query())->from('entrant')
+            ->select(['entrant.programm_id', 'guide_education_cat.programm_short_name', 'subject.name as speciality', 'entrant.subject_form_id'])
+            ->innerJoin('entrant_comm', 'entrant.comm_id = entrant_comm.id')
+            ->leftJoin('subject', 'entrant.subject_id = subject.id')
+            ->innerJoin( 'education_programm' , 'education_programm.id = entrant.programm_id')
+            ->innerJoin( 'guide_education_cat','guide_education_cat.id = education_programm.education_cat_id')
+            ->where(['entrant_comm.plan_year' => $this->plan_year])
+            ->andWhere(['entrant.course' => 1])
+            ->all();
+        return $models;
+    }
+
     public function getData()
     {
         $data = [];
@@ -81,6 +106,11 @@ class StudyplanDistrib
             '52' => [[], []],
         ];
         $st = $this->getStudyplans();
+        $ent = $this->getEntrants();
+        $sto = $this->getStudyplansOld();
+
+//        echo '<pre>' . print_r($sto, true) . '</pre>';
+//        die();
         $st_lim = array_filter(
             $st,
             function ($item) {
@@ -94,9 +124,9 @@ class StudyplanDistrib
             }
         );
         $st_ppb = array_filter(
-            $st,
+            $st_pp,
             function ($item) {
-                return $item['education_cat_programm_short_name'] == 'ПП' && $item['subject_form_id'] == 1000; // ПП Бюджет
+                return $item['subject_form_id'] != 1001; // ПП Бюджет
             }
         );
         $st_op = array_filter(
@@ -106,9 +136,75 @@ class StudyplanDistrib
             }
         );
         $st_opb = array_filter(
-            $st,
+            $st_op,
             function ($item) {
-                return $item['education_cat_programm_short_name'] == 'ОП' && $item['subject_form_id'] == 1000; // ОП Бюджет
+                return $item['subject_form_id'] != 1001; // ОП Бюджет
+            }
+        );
+        $ent_pp = array_filter(
+            $ent,
+            function ($item) {
+                return $item['programm_short_name'] == 'ПП'; // ПП Общая
+            }
+        );
+        $ent_ppb = array_filter(
+            $ent_pp,
+            function ($item) {
+                return $item['subject_form_id'] != 1001; // ПП Бюджет
+            }
+        );
+        $ent_pph = array_filter(
+            $ent_pp,
+            function ($item) {
+                return $item['subject_form_id'] == 1001; // ПП Хозрасчет
+            }
+        );
+        $ent_op = array_filter(
+            $ent,
+            function ($item) {
+                return $item['programm_short_name'] == 'ОП'; // ОП Общая
+            }
+        );
+        $ent_opb = array_filter(
+            $ent_op,
+            function ($item) {
+                return $item['subject_form_id'] != 1001; // ОП Бюджет
+            }
+        );
+        $ent_oph = array_filter(
+            $ent_op,
+            function ($item) {
+                return $item['subject_form_id'] == 1001; // ОП Хозрасчет
+            }
+        );
+        $sto_lim = array_filter(
+            $sto,
+            function ($item) {
+                return array_intersect(explode(',', $item['limited_status_list']), [1000, 2000]); // С ограничениями по здоровью
+            }
+        );
+        $sto_pp = array_filter(
+            $sto,
+            function ($item) {
+                return $item['education_cat_programm_short_name'] == 'ПП'; // ПП Общая
+            }
+        );
+        $sto_pp_lim = array_filter(
+            $sto_lim,
+            function ($item) {
+                return $item['education_cat_programm_short_name'] == 'ПП'; // ПП Общая с ограничениями
+            }
+        );
+        $sto_op = array_filter(
+            $sto,
+            function ($item) {
+                return $item['education_cat_programm_short_name'] == 'ОП'; // ОП Общая
+            }
+        );
+        $sto_op_lim = array_filter(
+            $sto_lim,
+            function ($item) {
+                return $item['education_cat_programm_short_name'] == 'ОП'; // ОП Общая с ограничениями
             }
         );
 //        echo '<pre>' . print_r($st_lim, true) . '</pre>';
@@ -116,6 +212,8 @@ class StudyplanDistrib
         foreach ($mask as $index => $array) {
             $data[$index . '_all'] = $data[$index . '_lim'] = $data[$index . '_pp'] = 0;
             $data[$index . '_ppb'] = $data[$index . '_op'] = $data[$index . '_opb'] = 0;
+            $data[$index . '_eppb'] = $data[$index . '_epph'] = $data[$index . '_eopb'] = $data[$index . '_eoph'] = 0;
+            $data[$index . '_ppall'] = $data[$index . '_pplim'] = $data[$index . '_opall'] = $data[$index . '_oplim'] = 0;
             if (!empty($array[0])) {
                 foreach ($array[0] as $value) {
                     $data[$index . '_all'] = $this->setColl($data[$index . '_all'], $array, $st, $value);
@@ -124,12 +222,27 @@ class StudyplanDistrib
                     $data[$index . '_ppb'] = $this->setColl($data[$index . '_ppb'], $array, $st_ppb, $value);
                     $data[$index . '_op'] = $this->setColl($data[$index . '_op'], $array, $st_op, $value);
                     $data[$index . '_opb'] = $this->setColl($data[$index . '_opb'], $array, $st_opb, $value);
+                    $data[$index . '_eppb'] = $this->setColl($data[$index . '_eppb'], $array, $ent_ppb, $value);
+                    $data[$index . '_epph'] = $this->setColl($data[$index . '_epph'], $array, $ent_pph, $value);
+                    $data[$index . '_eopb'] = $this->setColl($data[$index . '_eopb'], $array, $ent_opb, $value);
+                    $data[$index . '_eoph'] = $this->setColl($data[$index . '_eoph'], $array, $ent_oph, $value);
+                    $data[$index . '_ppall'] = $this->setColl($data[$index . '_ppall'], $array, $sto_pp, $value);
+                    $data[$index . '_pplim'] = $this->setColl($data[$index . '_pplim'], $array, $sto_pp_lim, $value);
+                    $data[$index . '_opall'] = $this->setColl($data[$index . '_opall'], $array, $sto_op, $value);
+                    $data[$index . '_oplim'] = $this->setColl($data[$index . '_oplim'], $array, $sto_op_lim, $value);
                 }
             }
         }
         return $data;
     }
 
+    /**
+     * @param $data
+     * @param $array
+     * @param $st
+     * @param $value
+     * @return int
+     */
     protected function setColl($data, $array, $st, $value)
     {
         $spec = ArrayHelper::index($st, null, ['speciality']);

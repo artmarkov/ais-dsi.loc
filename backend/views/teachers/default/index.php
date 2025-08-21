@@ -136,7 +136,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = Bonus::findOne($id)->name;
+                                        $v[] = Bonus::findOne($id) ? Bonus::findOne($id)->name : null;
                                     }
                                     return implode(',<br/> ', $v);
                                 },

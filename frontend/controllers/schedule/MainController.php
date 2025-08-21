@@ -13,7 +13,7 @@ class MainController extends \frontend\controllers\DefaultController
     {
         $this->viewPath = '@backend/views/schedule/default';
 
-        if(!User::hasRole(['employees', 'teacher','department', 'student','parents'])) {
+        if(!User::hasRole(['employees', 'teacher', 'department'/*, 'student', 'parents'*/])) {
             throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
         }
         parent::init();
