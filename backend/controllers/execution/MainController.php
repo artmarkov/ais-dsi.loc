@@ -11,5 +11,7 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Контроль заполнения индивидуальных планов', 'url' => ['/execution/default/thematic']],
         ['label' => 'Контроль заполнения журналов успеваемости', 'url' => ['/execution/default/progress']],
         ['label' => 'Контроль проверок журналов успеваемости', 'url' => ['/execution/default/progress-confirm']],
+        ['label' => 'Контроль заполнения нагрузки преподавателя', 'url' => ['/execution/default/load']],
+        ['label' => 'Контроль заполнения нагрузки индивидуальных планов', 'url' => ['/execution/default/load-studyplan']],
     ];
 }

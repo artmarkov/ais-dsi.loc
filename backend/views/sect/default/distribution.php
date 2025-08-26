@@ -74,9 +74,21 @@ $group = 0;
 
                                     }
                                     echo '<td>';
-                                    echo RefBook::find('sect_name_2')->getValue($modelSubjectSectStudyplan->id);
+                                    $class_name = RefBook::find('sect_name_2')->getValue($modelSubjectSectStudyplan->id);
                                     $items = $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
-                                    echo ' - ' . count($items) . ' уч-ся.';
+                                    $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($modelSubjectSectStudyplan->id, 0);
+                                    $class_name .= ' - ' . count($items) . ' уч-ся.';
+                                    ?>
+                                    <?php foreach ($models_sch as $itm => $m): ?>
+                                        <?php
+                                        $string = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
+                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out;
+
+                                        ?>
+                                    <?php endforeach; ?>
+                                    <?php
+                                    $class_name .= $string != '' ? ' ('. $string. ')' : '';
+                                    echo $class_name;
                                     // necessary for update action.
                                     if (!$modelSubjectSectStudyplan->isNewRecord) {
                                         echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]id");
@@ -151,37 +163,58 @@ $group = 0;
                                     <?php
                                     $class_name = RefBook::find('sect_name_2')->getValue($modelSubjectSectStudyplan->id);
                                     $items = $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
+                                    $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($modelSubjectSectStudyplan->id, 0);
                                     $class_name .= ' - ' . count($items) . ' уч-ся.';
-                                    echo '<tr>
-                            <td class="text-center" style="vertical-align: middle;">' . $class_name . '</td>';
+                                    ?>
+                                    <?php foreach ($models_sch as $itm => $m): ?>
+                                        <?php
+                                        $string = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
+                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out;
 
-                                    echo '<td>';
-                                    // necessary for update action.
-                                    if (!$modelSubjectSectStudyplan->isNewRecord) {
-                                        echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]id");
-                                    }
-                                    echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_sect_id");
-                                    echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]group_num");
-                                    echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]plan_year");
-                                    echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]subject_type_id");
+                                        ?>
+                                    <?php endforeach; ?>
+                                    <?php
+                                    $class_name .= $string != '' ? '<br/>('. $string. ')' : '';
 
-                                    echo SortableInput::widget([
-                                        'model' => $modelSubjectSectStudyplan,
-                                        'attribute' => "[{$index}]studyplan_subject_list",
-                                        'hideInput' => true,
-                                        'sortableOptions' => [
+                                    echo '
+                                    <tr>
+                                        <td class="text-center" style="vertical-align: middle;">' . $class_name . '</td>
+                                        ';
+
+                                        echo '
+                                        <td>';
+                                            // necessary for update action.
+                                            if (!$modelSubjectSectStudyplan->isNewRecord) {
+                                            echo Html::activeHiddenInput($modelSubjectSectStudyplan, "[{$index}]id");
+                                            }
+                                            echo Html::activeHiddenInput($modelSubjectSectStudyplan,
+                                            "[{$index}]subject_sect_id");
+                                            echo Html::activeHiddenInput($modelSubjectSectStudyplan,
+                                            "[{$index}]group_num");
+                                            echo Html::activeHiddenInput($modelSubjectSectStudyplan,
+                                            "[{$index}]plan_year");
+                                            echo Html::activeHiddenInput($modelSubjectSectStudyplan,
+                                            "[{$index}]subject_type_id");
+
+                                            echo SortableInput::widget([
+                                            'model' => $modelSubjectSectStudyplan,
+                                            'attribute' => "[{$index}]studyplan_subject_list",
+                                            'hideInput' => true,
+                                            'sortableOptions' => [
                                             'itemOptions' => ['class' => 'alert alert-success'],
                                             'options' => ['style' => 'min-height: 40px'],
                                             'connected' => true,
-                                        ],
-                                        'options' => ['class' => 'form-control', 'readonly' => true],
-                                        'delimiter' => ',',
-                                        'items' => $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly),
-                                    ]);
+                                            ],
+                                            'options' => ['class' => 'form-control', 'readonly' => true],
+                                            'delimiter' => ',',
+                                            'items' => $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly),
+                                            ]);
 
-                                    echo '<p class="help-block help-block-error"></p>
-                                </td>';
-                                    echo '</tr>';
+                                            echo '<p class="help-block help-block-error"></p>
+                                        </td>
+                                        ';
+                                        echo '
+                                    </tr>';
                                     ?>
                                 <?php endforeach; ?>
                                 <tr>

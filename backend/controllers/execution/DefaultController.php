@@ -2,28 +2,21 @@
 
 namespace backend\controllers\execution;
 
-use artsoft\helpers\ArtHelper;
-use common\models\education\LessonProgressView;
+use common\models\execution\ExecutionLoad;
+use common\models\execution\ExecutionLoadStudyplan;
 use common\models\execution\ExecutionProgress;
 use common\models\execution\ExecutionProgressConfirm;
 use common\models\execution\ExecutionSchedule;
 use common\models\execution\ExecutionScheduleConsult;
 use common\models\execution\ExecutionSchoolplanPerform;
 use common\models\execution\ExecutionThematic;
-use common\models\schoolplan\SchoolplanPerform;
-use common\models\studyplan\Studyplan;
-use common\models\teachers\PortfolioView;
 use Yii;
 use yii\base\DynamicModel;
-use yii\data\ActiveDataProvider;
-use common\models\teachers\Teachers;
-use yii\web\NotFoundHttpException;
 
 /**
  * Class DefaultController
  * @package backend\controllers\execution
  */
-
 class DefaultController extends MainController
 {
     /**
@@ -37,7 +30,7 @@ class DefaultController extends MainController
         $model_date = $this->modelDate;
         $models = ExecutionSchedule::getData($model_date);
         $model = $models->getDataTeachers();
-        return $this->renderIsAjax('index', compact('model','model_date'));
+        return $this->renderIsAjax('index', compact('model', 'model_date'));
     }
 
     public function actionConsult()
@@ -48,10 +41,11 @@ class DefaultController extends MainController
         $model_date = $this->modelDate;
         $models = ExecutionScheduleConsult::getData($model_date);
         $model = $models->getDataTeachers();
-        return $this->renderIsAjax('consult', compact('model','model_date'));
+        return $this->renderIsAjax('consult', compact('model', 'model_date'));
     }
 
-    public function actionPerform() {
+    public function actionPerform()
+    {
         $this->view->params['tabMenu'] = $this->tabMenu;
         $this->view->params['breadcrumbs'][] = 'Контроль выполнения планов и участия в мероприятиях';
 
@@ -69,7 +63,7 @@ class DefaultController extends MainController
         $model_date = $this->modelDate;
         $models = ExecutionThematic::getData($model_date);
         $model = $models->getDataTeachers();
-        return $this->renderIsAjax('thematic', compact('model','model_date'));
+        return $this->renderIsAjax('thematic', compact('model', 'model_date'));
     }
 
     public function actionProgress()
@@ -93,7 +87,7 @@ class DefaultController extends MainController
 
         $models = ExecutionProgress::getData($model_date);
         $model = $models->getDataTeachers();
-        return $this->renderIsAjax('progress', compact('model','model_date'));
+        return $this->renderIsAjax('progress', compact('model', 'model_date'));
     }
 
     public function actionProgressConfirm()
@@ -117,6 +111,40 @@ class DefaultController extends MainController
 
         $models = ExecutionProgressConfirm::getData($model_date);
         $model = $models->getDataTeachers();
-        return $this->renderIsAjax('progress-confirm', compact('model','model_date'));
+        return $this->renderIsAjax('progress-confirm', compact('model', 'model_date'));
+    }
+
+    public function actionLoad()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['breadcrumbs'][] = 'Контроль заполнения нагрузки преподавателя';
+        $model_date = $this->modelDate;
+        $models = ExecutionLoad::getData($model_date);
+        $model = $models->getDataTeachers();
+        return $this->renderIsAjax('load', compact('model', 'model_date'));
+    }
+
+    public function actionLoadStudyplan()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+        $this->view->params['breadcrumbs'][] = 'Контроль заполнения нагрузки индивидуальных планов';
+
+        $session = Yii::$app->session;
+        $model_date = $this->modelDate;
+        $model_date->addRule(['bad_flag'], 'boolean')
+            ->addRule(['education_cat_id'], 'integer')
+            ->addRule(['programm_id'], 'safe');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->education_cat_id = $session->get('_execution_education_cat_id') ?? false;
+            $model_date->programm_id = $session->get('_execution_programm_id') ?? false;
+            $model_date->bad_flag = $session->get('_execution_bad_flag') ?? false;
+        }
+        $session->set('_execution_education_cat_id', $model_date->education_cat_id);
+        $session->set('_execution_programm_id', $model_date->programm_id);
+        $session->set('_execution_bad_flag', $model_date->bad_flag);
+
+        $models = ExecutionLoadStudyplan::getData($model_date);
+        $model = $models->getDataTeachersStudyplan();
+        return $this->renderIsAjax('load-studyplan', compact('model', 'model_date'));
     }
 }
