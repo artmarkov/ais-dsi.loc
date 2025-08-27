@@ -62,6 +62,7 @@ class m230127_092207_add_subject_view extends Migration
     studyplan.doc_sent_flag,
     studyplan.status,
     studyplan.status_reason,
+    studyplan.cond_flag,
     education_programm.name AS education_programm_name,
     education_programm.short_name AS education_programm_short_name,
     guide_education_cat.id AS education_cat_id,
