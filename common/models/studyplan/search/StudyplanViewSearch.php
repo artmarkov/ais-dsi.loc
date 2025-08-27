@@ -28,6 +28,7 @@ class StudyplanViewSearch extends StudyplanView
             [['id', 'course', 'plan_year', 'status', 'status_reason', 'subject_form_id', 'student_id', 'education_cat_id', 'programm_id'], 'integer'],
             [['education_programm_name', 'education_programm_short_name', 'education_cat_name', 'education_cat_short_name', 'student_fio', 'subject_type_name'], 'safe'],
             [['description', 'speciality', 'user_phone'], 'safe'],
+            [['cond_flag'], 'boolean'],
         ];
     }
 
@@ -78,6 +79,7 @@ class StudyplanViewSearch extends StudyplanView
             'subject_form_id' => $this->subject_form_id,
             'status' => $this->status,
             'status_reason' => $this->status_reason,
+            'cond_flag' => $this->cond_flag,
             'student_id' => $this->student_id,
             'education_cat_id' => $this->education_cat_id,
             'programm_id' => $this->programm_id,

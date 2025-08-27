@@ -32,6 +32,7 @@ class StudyplanSearch extends Studyplan
         return [
             [['id', 'student_id', 'course', 'plan_year', 'status', 'status_reason', 'programm_id', 'subject_form_id', 'educationCatId'], 'integer'],
             [['description', 'programmName', 'studentFio'], 'safe'],
+            [['cond_flag'], 'boolean'],
         ];
     }
 
@@ -71,6 +72,7 @@ class StudyplanSearch extends Studyplan
                 'id',
                 'status',
                 'status_reason',
+                'cond_flag',
                 'plan_year',
                 'course',
                 'student_id',
@@ -110,6 +112,7 @@ class StudyplanSearch extends Studyplan
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
             'studyplan.status' => $this->status,
+            'studyplan.cond_flag' => $this->cond_flag,
             'version' => $this->version,
             'subject_form_id' => $this->subject_form_id,
             'studyplan.status' => $this->status,

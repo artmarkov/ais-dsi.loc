@@ -53,6 +53,7 @@ use function morphos\Russian\inflectName;
  * @property int $doc_received_flag
  * @property int $doc_sent_flag
  * @property int $early_flag // Досрочное завершение - выпускник
+ * @property int $cond_flag // Условное открытие плана
  * @property int|null $created_by
  * @property int $updated_at
  * @property int|null $updated_by
@@ -68,8 +69,6 @@ use function morphos\Russian\inflectName;
  */
 class Studyplan extends \artsoft\db\ActiveRecord
 {
-
-    const STATUS_ACTIVE_COND = 2;
 
 // Шаблоны документов
     const template_csf = 'document/contract_student_free_2.docx';
@@ -115,7 +114,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 //            }],
             ['doc_contract_start', 'compareDate'],
             [['student_id', 'programm_id', 'course', 'plan_year', 'subject_form_id', 'status', 'version', 'status_reason', 'mat_capital_flag'], 'integer'],
-            [['doc_signer', 'doc_received_flag', 'doc_sent_flag', 'early_flag'], 'integer'],
+            [['doc_signer', 'doc_received_flag', 'doc_sent_flag', 'early_flag', 'cond_flag'], 'integer'],
             [['doc_date', 'doc_contract_start', 'doc_contract_end'], 'safe'],
             ['doc_date', 'default', 'value' => date('d.m.Y')],
             [['description'], 'string', 'max' => 1024],
@@ -139,6 +138,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             }
         }
     }
+
     /**
      * {@inheritdoc}
      */
@@ -165,6 +165,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'doc_received_flag' => Yii::t('art/guide', 'Doc Received'),
             'doc_sent_flag' => Yii::t('art/guide', 'Doc Sent'),
             'early_flag' => Yii::t('art/guide', 'Early_Education'),
+            'cond_flag' => Yii::t('art/guide', 'Cond_Education'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
             'updated_at' => Yii::t('art', 'Updated'),
@@ -189,7 +190,6 @@ class Studyplan extends \artsoft\db\ActiveRecord
     {
         return array(
             self::STATUS_ACTIVE => 'План открыт',
-            self::STATUS_ACTIVE_COND => 'План открыт условно',
             self::STATUS_INACTIVE => 'План закрыт',
         );
     }
@@ -911,6 +911,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             }
             $this->status_reason = 0;
         } else {
+            $this->cond_flag = false;
             if ($this->status_reason == 1) {
                 $this->makeStadylan();
             } elseif ($this->status_reason == 2) {

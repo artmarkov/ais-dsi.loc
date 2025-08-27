@@ -432,6 +432,7 @@ JS
 
                             <?= $form->field($model, 'status_reason')->dropDownList(Studyplan::getStatusReasonList(), ['disabled' => true]) ?>
 
+                            <?= $form->field($model, 'cond_flag')->checkbox(['disabled' => $readonly]) ?>
                         </div>
 
                     </div>

@@ -78,11 +78,12 @@ $group = 0;
                                     $items = $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
                                     $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($modelSubjectSectStudyplan->id, 0);
                                     $class_name .= ' - ' . count($items) . ' уч-ся.';
+                                    $string = '';
                                     ?>
                                     <?php foreach ($models_sch as $itm => $m): ?>
                                         <?php
-                                        $string = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
-                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out;
+                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
+                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out . ' ';
 
                                         ?>
                                     <?php endforeach; ?>
@@ -165,11 +166,12 @@ $group = 0;
                                     $items = $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
                                     $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($modelSubjectSectStudyplan->id, 0);
                                     $class_name .= ' - ' . count($items) . ' уч-ся.';
+                                    $string = '';
                                     ?>
                                     <?php foreach ($models_sch as $itm => $m): ?>
                                         <?php
-                                        $string = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
-                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out;
+                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
+                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out . ' ';
 
                                         ?>
                                     <?php endforeach; ?>

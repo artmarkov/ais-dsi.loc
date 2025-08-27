@@ -104,10 +104,21 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'status',
                         'optionsArray' => [
                             [Studyplan::STATUS_ACTIVE, 'План открыт', 'info'],
-                            [Studyplan::STATUS_ACTIVE_COND, 'План открыт условно', 'warning'],
                             [Studyplan::STATUS_INACTIVE, 'План закрыт', 'danger'],
                         ],
                         'options' => ['style' => 'width:120px']
+                    ],
+                    [
+                        'attribute' => 'cond_flag',
+                        'label' => 'Условно',
+                        'filter' => [true => 'Да', false => 'Нет'],
+                        'visible' => \artsoft\Art::isBackend(),
+                        'value' => function (Studyplan $model) {
+                            return $model->cond_flag ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да' : '<i class="fa fa-thumbs-down" style="font-size: 1.5em;"></i> Нет';
+                        },
+                        'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
+                        'format' => 'raw',
+                        'options' => ['style' => 'width:50px']
                     ],
                     [
                         'class' => 'kartik\grid\ActionColumn',
