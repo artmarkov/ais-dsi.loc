@@ -78,12 +78,17 @@ class DefaultController extends \frontend\controllers\DefaultController
         if ($model->load(Yii::$app->request->post())) {
             $entrant_programm_id = $_POST['EntrantPreregistrations']['entrant_programm_id'];
             $model->reg_vid = EntrantProgramm::getEntrantRegVid($entrant_programm_id, $model->plan_year);
-            if ($model->save()) {
-                Notice::registerSuccess('Вы успешно прошли процедуру записи на обучение.');
-                if ($model->sendMessage($modelStudent->userEmail)) {
-                    Notice::registerInfo('Проверьте свою почту. Вам отправлено сообщение.');
+            if ($model->validate()) {
+                if ($model->save()) {
+                    $message_1 = 'Вы успешно прошли процедуру записи на обучение.';
+                    $message_2 = '';
+                    if ($model->sendMessage($modelStudent->userEmail)) {
+                        $message_2 = 'Проверьте свою почту. Вам отправлено сообщение с данными о записи на обучение.';
+                    }
+                    return $this->renderIsAjax('@frontend/views/preregistration/default/success', ['model' => $model, 'message_1' => $message_1, 'message_2' => $message_2]);
+                } else {
+                    return $this->renderIsAjax('@frontend/views/preregistration/default/warning', ['message' => 'Ошибка сохранения формы. Свяжитесь со службой поддержки через форму Обратной связи.']);
                 }
-                return $this->redirect(Yii::$app->homeUrl);
             }
         }
         return $this->renderIsAjax('@frontend/views/preregistration/default/_form',

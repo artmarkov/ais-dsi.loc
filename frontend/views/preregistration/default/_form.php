@@ -18,7 +18,12 @@ use artsoft\helpers\Html;
         'validateOnBlur' => false,
     ])
     ?>
-
+    <div class="alert alert-danger alert-dismissible fade in" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        Внимание! Система позволяет записаться только на одну программу.
+    </div>
     <div class="panel">
         <div class="panel-heading">
             Карточка предварительной записи
@@ -33,7 +38,8 @@ use artsoft\helpers\Html;
                     echo Html::activeHiddenInput($model, 'status');
                     ?>
 
-                    <?= $form->field($model, 'entrant_programm_id')->widget(\kartik\select2\Select2::class, [
+                    <?php
+                    /*echo $form->field($model, 'entrant_programm_id')->widget(\kartik\select2\Select2::class, [
                         'data' => \common\models\education\EntrantProgramm::getEntrantProgrammLimitList($age, $plan_year),
                         'options' => [
 //                            'disabled' => $readonly,
@@ -44,6 +50,10 @@ use artsoft\helpers\Html;
                             'allowClear' => true
                         ],
                     ])->hint('Необходимо выбрать программу для предварительной записи.');
+                    */
+                    ?>
+                    <?php
+                    echo $form->field($model, 'entrant_programm_id')->dropDownList(\common\models\education\EntrantProgramm::getEntrantProgrammLimitList($age, $plan_year))->hint('Необходимо выбрать программу для предварительной записи.');
                     ?>
                 </div>
             </div>
