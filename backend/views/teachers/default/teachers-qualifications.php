@@ -6,60 +6,50 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use artsoft\grid\GridQuickLinks;
-use common\models\efficiency\TeachersEfficiency;
+use common\models\teachers\TeachersQualifications;
 use artsoft\helpers\Html;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\efficiency\search\TeachersEfficiencySearch */
+/* @var $searchModel common\models\teachers\search\TeachersQualificationsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $modelTeachers */
 
 ?>
-<div class="teachers-efficiency-index">
+<div class="teachers-qualifications-index">
     <div class="panel">
         <div class="panel-heading">
-            Показатели эффективности: <?php echo RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
+            Показатели ППК: <?php echo RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
-            <?= $this->render('_search', compact('model_date')) ?>
-            <hr>
             <div class="row">
                 <div class="col-sm-6">
-                    <?= \artsoft\helpers\ButtonHelper::createButton(isset($modelTeachers->id) ? ['/teachers/default/efficiency', 'id' => $modelTeachers->id, 'mode' => 'create'] : ''); ?>
-                    <span class="pull-left">
-                        <?php
-                        if (\artsoft\Art::isBackend()) {
-                            Html::a('<i class="fa fa-bar-chart" aria-hidden="true"></i> График эффективности ', ['/teachers/default/efficiency', 'id' => $modelTeachers->id, 'mode' => 'bar'], ['class' => 'btn btn-sm btn-info']);
-                        } else {
-                            Html::a('<i class="fa fa-bar-chart" aria-hidden="true"></i> График эффективности ', ['/teachers/efficiency/bar'], ['class' => 'btn btn-sm btn-info']);
-                        }
-                        ?>
-                    </span>
+                    <?= \artsoft\helpers\ButtonHelper::createButton(\artsoft\Art::isBackend() ? ['/teachers/default/qualifications', 'id' => $modelTeachers->id, 'mode' => 'create'] : ['/teachers/qualifications/create']); ?>
+                    
                     <?php
                     /* Uncomment this to activate GridQuickLinks */
                     /* echo GridQuickLinks::widget([
-                        'model' => TeachersEfficiency::className(),
+                        'model' => TeachersQualifications::className(),
                         'searchModel' => $searchModel,
                     ])*/
                     ?>
                 </div>
                 <div class="col-sm-6 text-right">
-                    <?= GridPageSize::widget(['pjaxId' => 'teachers-efficiency-grid-pjax']) ?>
+                    <?= GridPageSize::widget(['pjaxId' => 'teachers-qualifications-grid-pjax']) ?>
                 </div>
             </div>
 
             <?php
             Pjax::begin([
-                'id' => 'teachers-efficiency-grid-pjax',
+                'id' => 'teachers-qualifications-grid-pjax',
             ])
             ?>
             <?= GridView::widget([
-                'id' => 'teachers-efficiency-grid',
+                'id' => 'teachers-qualifications-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
 //                'bulkActionOptions' => \artsoft\Art::isBackend() ? [
-//                    'gridId' => 'teachers-efficiency-grid',
+//                    'gridId' => 'teachers-qualifications-grid',
 //                    'actions' => [Url::to(['bulk-delete']) => Yii::t('art', 'Delete')] //Configure here you bulk actions
 //                ] : false,
                 'columns' => [
@@ -67,17 +57,11 @@ use artsoft\grid\GridPageSize;
                     [
                         'attribute' => 'id',
                         'options' => ['style' => 'width:10px'],
-                        'value' => function (TeachersEfficiency $model) {
+                        'value' => function (TeachersQualifications $model) {
                             return sprintf('#%06d', $model->id);
                         },
                     ],
-                    [
-                        'attribute' => 'efficiency_id',
-                        'value' => 'efficiencyName',
-                        'options' => ['style' => 'width:350px'],
-                        'label' => Yii::t('art/guide', 'Efficiency'),
-                        'filter' => \common\models\efficiency\EfficiencyTree::getEfficiencyList(),
-                    ],
+                    
 //                                [
 //                                    'attribute' => 'teachers_id',
 //                                    'value' => 'teachersName',
@@ -85,25 +69,33 @@ use artsoft\grid\GridPageSize;
 //                                    'filter' => \artsoft\helpers\RefBook::find('teachers_fullname')->getList(),
 //                                ],
                     [
-                        'attribute' => 'bonus',
-                        'value' => function (TeachersEfficiency $model) {
-                            return $model->bonus;
+                        'attribute' => 'name',
+                        'value' => function (TeachersQualifications $model) {
+                            return $model->name;
                         },
                     ],
                     [
-                        'attribute' => 'bonus_vid_id',
-                        'value' => function (TeachersEfficiency $model) {
-                            return \common\models\efficiency\EfficiencyTree::getBobusVidValue('short', $model->bonus_vid_id);
+                        'attribute' => 'place',
+                        'value' => function (TeachersQualifications $model) {
+                            return $model->place;
                         },
-                        'filter' => \common\models\efficiency\EfficiencyTree::getBobusVidList('short'),
                     ],
                     [
-                        'attribute' => 'date_in',
+                        'attribute' => 'date',
                         'filterInputOptions' => ['class' => 'form-control', 'id' => null, 'autocomplete' => 'off'],
                         'value' => function ($model) {
-                            return $model->date_in;
+                            return $model->date;
                         },
                         'options' => ['style' => 'width:150px'],
+                    ],
+                    [
+                        'class' => 'artsoft\grid\columns\StatusColumn',
+                        'attribute' => 'status',
+                        'optionsArray' => [
+                            [TeachersQualifications::STATUS_ACTIVE, 'Пройдена', 'success'],
+                            [TeachersQualifications::STATUS_INACTIVE, 'Планируется', 'info'],
+                        ],
+                        'options' => ['style' => 'width:100px']
                     ],
                     [
                         'class' => 'kartik\grid\ActionColumn',
@@ -113,7 +105,7 @@ use artsoft\grid\GridPageSize;
                         'buttons' => [
                             'update' => function ($key, $model) {
                                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                                    ['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update'], [
+                                    ['/teachers/default/qualifications', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'update'], [
                                         'title' => Yii::t('art', 'Edit'),
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
@@ -122,7 +114,7 @@ use artsoft\grid\GridPageSize;
                             },
                             'view' => function ($key, $model) {
                                 return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
-                                    ['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'view'], [
+                                    ['/teachers/default/qualifications', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'view'], [
                                         'title' => Yii::t('art', 'View'),
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
@@ -131,7 +123,7 @@ use artsoft\grid\GridPageSize;
                             },
                             'delete' => function ($key, $model) {
                                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                                    ['/teachers/default/efficiency', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'delete'], [
+                                    ['/teachers/default/qualifications', 'id' => $model->teachers_id, 'objectId' => $model->id, 'mode' => 'delete'], [
                                         'title' => Yii::t('art', 'Delete'),
                                         'aria-label' => Yii::t('art', 'Delete'),
                                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
@@ -147,14 +139,34 @@ use artsoft\grid\GridPageSize;
                         'urlCreator' => function ($action, $model, $key, $index) {
                             return [$action, 'id' => $model->id];
                         },
-                        'template' => '{view}',
+                        'template' => '{view} {update} {delete}',
                         'headerOptions' => ['class' => 'kartik-sheet-style'],
                         'visible' => \artsoft\Art::isFrontend(),
                         'buttons' => [
                             'view' => function ($key, $model) {
                                 return Html::a('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
-                                    ['/teachers/efficiency/view', 'id' => $model->id], [
+                                    ['/teachers/qualifications/view', 'id' => $model->id], [
                                         'title' => Yii::t('art', 'View'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                            'update' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                                    ['/teachers/qualifications/update', 'id' => $model->id], [
+                                        'title' => Yii::t('art', 'Edit'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                            'delete' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                                    ['/teachers/qualifications/delete', 'id' => $model->id], [
+                                        'title' => Yii::t('art', 'Delete'),
+                                        'aria-label' => Yii::t('art', 'Delete'),
+                                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                                         'data-method' => 'post',
                                         'data-pjax' => '0',
                                     ]
@@ -174,7 +186,7 @@ use artsoft\grid\GridPageSize;
 if ($searchModel) {
     DateRangePicker::widget([
         'model' => $searchModel,
-        'attribute' => 'date_in',
+        'attribute' => 'date',
         'format' => 'DD.MM.YYYY',
         'opens' => 'left',
     ]);
