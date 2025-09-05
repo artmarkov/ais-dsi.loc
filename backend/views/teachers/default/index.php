@@ -140,10 +140,23 @@ $this->params['breadcrumbs'][] = $this->title;
                                     }
                                     return implode(',<br/> ', $v);
                                 },
-                                'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
                             ],
-                            'bonus_summ',
+                            [
+                                'value' => function (Teachers $model) {
+
+                                    return $model->user ? ($model->user->phone ? $model->user->phone : $model->user->phone_optional) : null;
+                                },
+                                'label' => Yii::t('art', 'Phone'),
+                            ],
+                            [
+                                'attribute' => 'bonus_summ',
+                                'value' => function (Teachers $model) {
+                                    return $model->bonus_summ;
+                                },
+                                'label' => 'Надбавка %',
+                                'format' => 'raw',
+                            ],
                             'bonus_summ_abs',
                             'tab_num',
                             [
@@ -162,7 +175,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     [1, 'Да', 'success'],
                                     [0, 'Нет', 'danger'],
                                 ],
-                                'label' => 'Доступ к работе',
+                                'label' => 'Доступ',
                                 'options' => ['style' => 'width:150px']
                             ],
                             [

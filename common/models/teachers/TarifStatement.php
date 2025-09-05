@@ -195,7 +195,7 @@ class TarifStatement
                     'year_serv_spec' => $d->year_serv_spec,
                     'stake_slug' => $d->stake_slug,
                     'direction_slug' => $d->direction_slug,
-                    'slug' => $d->work_id == 1001 ? $d->work_slug : ($d->direction_vid_id == 1001 ? $d->direction_vid_slug : ''),
+                    'slug' => $d->work_id == 1001 ? $d->work_slug : ($d->direction_vid_id != 1000 ? $d->direction_vid_slug : ''),
                     'stake_teach' => $d->direction_id == 1000 ? $d->stake_value : '',
                     'stake_conс' => $d->direction_id == 1001 ? $d->stake_value : '',
                     'load_time_teach' => $load_time_teach,
