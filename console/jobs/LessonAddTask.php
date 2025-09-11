@@ -4,6 +4,7 @@ namespace console\jobs;
 
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
+use common\models\schedule\SubjectScheduleConfirm;
 use Yii;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
@@ -21,13 +22,23 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
 
         $timestamp_in = \Yii::$app->formatter->asTimestamp(mktime(0, 0, 0, $mon, $day, $year));
         $timestamp_out = $timestamp_in + 86399;
+        $plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault();
 
+        // находим только согласованные рассписания
+        $teachersIds = SubjectScheduleConfirm::find()
+            ->select('teachers_id')
+            ->where(['=', 'confirm_status', SubjectScheduleConfirm::STATUS_ACTIVE])
+            ->andWhere(['=', 'plan_year', $plan_year])
+            ->column();
+
+        // находим все занятия согласно согласованным расписаниям
         $active = (new Query())->from('activities_schedule_studyplan_view')
             ->select('studyplan_subject_id, subject_sect_studyplan_id')
             ->distinct()
             ->where(['between', 'datetime_in', $timestamp_in, $timestamp_out])
-            ->andWhere(['status' => 1])
+            ->andWhere(['teachers_id' => $teachersIds])
             ->andWhere(['direction_id' => 1000])
+            ->andWhere(['status' => 1])
             ->orderBy('subject_sect_studyplan_id')
             ->all();
         $active = ArrayHelper::index($active, null, ['subject_sect_studyplan_id']);

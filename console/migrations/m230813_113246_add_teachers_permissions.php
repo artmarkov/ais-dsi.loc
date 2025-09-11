@@ -16,7 +16,6 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
         $this->addRole('teachersConsultAdmin', 'Администратор Расписания консультаций');
         $this->addRole('teachersProgressAdmin', 'Администратор Журнала успеваемости');
         $this->addRole('teachersEfficiencyAdmin', 'Администратор Показателей эффективности');
-        $this->addRole('teachersQualificationsAdmin', 'Администратор ППК');
         $this->addRole('teachersСharacteristicAdmin', 'Администратор Характеристик по предмету');
         $this->addRole('teachersThematicAdmin', 'Администратор Тематических планов');
         $this->addRole('teachersInvoicesAdmin', 'Администратор Оплаты за обучение');
@@ -34,7 +33,6 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
         $this->deleteRole('teachersConsultAdmin');
         $this->deleteRole('teachersProgressAdmin');
         $this->deleteRole('teachersEfficiencyAdmin');
-        $this->deleteRole('teachersQualificationsAdmin');
         $this->deleteRole('teachersСharacteristicAdmin');
         $this->deleteRole('teachersThematicAdmin');
         $this->deleteRole('teachersInvoicesAdmin');
@@ -56,7 +54,6 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                     '/admin/teachers/default/studyplan-progress/*',
                     '/admin/teachers/default/studyplan-progress-indiv/*',
                     '/admin/teachers/default/efficiency/*',
-                    '/admin/teachers/default/qualifications/*',
                     '/admin/teachers/default/portfolio/*',
                     '/admin/studyplan/default/*',
                     '/admin/efficiency/default/*',
@@ -71,7 +68,6 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                     '/teachers/studyplan-progress/*',
                     '/teachers/studyplan-progress-indiv/*',
                     '/teachers/thematic-items/*',
-                    '/teachers/qualifications/*',
                     '/teachers/efficiency/*',
                     '/teachers/portfolio/*',
                     '/teachers/creative/*',
@@ -108,6 +104,9 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/teachers/studyplan/thematic-items/grid-sort',
                         '/teachers/studyplan/thematic-items/grid-page-size',
                         '/teachers/studyplan/thematic-items?mode=view',
+                        '/teachers/studyplan/thematic-items?mode=update',
+                        '/teachers/studyplan/thematic-items?mode=delete',
+                        '/teachers/studyplan/thematic-items?mode=create',
                         '/teachers/studyplan/studyplan-progress',
                         '/teachers/studyplan/studyplan-progress?mode=create',
                         '/teachers/studyplan/studyplan-progress?mode=update',
@@ -165,13 +164,6 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/teachers/thematic-items/create',
                         '/teachers/thematic-items/update',
                         '/teachers/thematic-items/delete',
-                        '/teachers/qualifications/index',
-                        '/teachers/qualifications/grid-sort',
-                        '/teachers/qualifications/grid-page-size',
-                        '/teachers/qualifications/view',
-                        '/teachers/qualifications/create',
-                        '/teachers/qualifications/update',
-                        '/teachers/qualifications/delete',
                         '/teachers/efficiency/index',
                         '/teachers/efficiency/view',
                         '/teachers/efficiency/grid-sort',
@@ -183,6 +175,8 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/teachers/creative/grid-sort',
                         '/teachers/creative/grid-page-size',
                         '/teachers/creative/view',
+                        '/teachers/creative/update',
+                        '/teachers/creative/delete',
                         '/studyplan/lesson-progress/set-mark',
                         '/invoices/default/index',
                         '/invoices/default/grid-sort',
@@ -219,10 +213,6 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                         '/admin/teachers/default/thematic-items',
                         '/admin/teachers/default/thematic-items/grid-sort',
                         '/admin/teachers/default/thematic-items/grid-page-size',
-                        '/admin/teachers/default/qualifications',
-                        '/admin/teachers/default/qualifications/grid-sort',
-                        '/admin/teachers/default/qualifications/grid-page-size',
-                        '/admin/teachers/default/qualifications?mode=view',
                         '/admin/teachers/default/studyplan-progress',
                         '/admin/teachers/default/studyplan-progress/grid-sort',
                         '/admin/teachers/default/studyplan-progress/grid-page-size',
@@ -454,21 +444,6 @@ class m230813_113246_add_teachers_permissions extends PermissionsMigration
                     ],
                     'roles' => [
                         'teachersEfficiencyAdmin',
-                    ],
-                    'childs' => [
-                        'accessTeachersBackend',
-                    ],
-                ],
-                'fullTeachersQualificationsAccess' => [
-                    'title' => 'Полный доступ к ППК преподавателя',
-                    'links' => [
-                        '/admin/teachers/default/qualifications?mode=create',
-                        '/admin/teachers/default/qualifications?mode=update',
-                        '/admin/teachers/default/qualifications?mode=delete',
-                        '/admin/teachers/default/qualifications?mode=history',
-                    ],
-                    'roles' => [
-                        'teachersQualificationsAdmin',
                     ],
                     'childs' => [
                         'accessTeachersBackend',

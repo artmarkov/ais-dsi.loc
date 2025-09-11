@@ -8,6 +8,7 @@ use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\PriceHelper;
 use artsoft\helpers\RefBook;
+use artsoft\helpers\Schedule;
 use common\models\education\CostEducation;
 use common\models\education\EducationProgramm;
 use common\models\education\EducationProgrammLevel;
@@ -27,6 +28,7 @@ use yii\behaviors\TimestampBehavior;
 use Yii;
 
 use yii\db\Exception;
+use yii\db\Expression;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
@@ -487,17 +489,12 @@ class Studyplan extends \artsoft\db\ActiveRecord
             $year_time_total += $modelDep->year_time;
         }
 
-        if ($add_flag) {
-            $data[0]['cost_month_total'] = $cost_month_total;
-            $data[0]['cost_year_total_str'] = PriceHelper::num2str($cost_year_total);
-            $data[0]['year_time_total'] = $year_time_total;
-            $data[0]['cost_year_total'] = $cost_year_total;
-        }
 
 //        echo '<pre>' . print_r(ArtHelper::getMonthsInRange($model->doc_contract_start, $model->doc_contract_end), true) . '</pre>'; die();
         $month_range = ArtHelper::getMonthsInRange($model->doc_contract_start, $model->doc_contract_end, "m.Y");
 
         $mStart = Yii::$app->formatter->asDate($model->doc_contract_start, 'php:m');
+        $yStart = Yii::$app->formatter->asDate($model->doc_contract_start, 'php:Y');
         if ($mStart == 6) {
             unset($month_range['1']);
             unset($month_range['2']);
@@ -506,24 +503,49 @@ class Studyplan extends \artsoft\db\ActiveRecord
         }
         $month_range = array_values($month_range);
         $items_month = [];
+        $discount_all = 0;
         foreach ($month_range as $item => $month) {
+            $cost_m_total = $model->cost_month_total;
             if (in_array($mStart, [6, 7, 8]) && $item == 0) {
                 $rem = '100% оплата за ' . $month_range[$item + 1];
             } elseif (in_array($mStart, [6, 7, 8]) && $item == 1) {
                 $rem = '100% оплата за ' . $month_range[count($month_range) - 1];
             } elseif ($mStart == 9 && $item == 0) {
-                $rem = '100% оплата за ' . $month_range[count($month_range) - 1];
+                $rem = '100% оплата за ' . $month_range[count($month_range) - 1] . ' + 100% оплата до начала занятий';
+                $timestamp_in = \Yii::$app->formatter->asTimestamp(mktime(0, 0, 0, $mStart, 1, $yStart));
+                $summ = (new Query())->from('activities_schedule_studyplan_view')
+                    ->select(new \yii\db\Expression('SUM(datetime_out-datetime_in)'))
+                    ->where(['between', 'datetime_in', $timestamp_in, Yii::$app->formatter->asTimestamp($model->doc_contract_start)])
+                    ->andWhere(['direction_id' => 1000])
+                    ->andWhere(['studyplan_id' => $this->id])
+                    ->scalar();
+                $discount = $model->year_time_total * Schedule::astr2academ($summ) != 0 ? round($model->cost_year_total / $model->year_time_total * Schedule::astr2academ($summ), 0) : 0;
+                $discount_all += $discount;
+                $cost_m_total = $model->cost_month_total * 2 - $discount;
+
             } else {
                 $rem = '';
             }
             $items_month[$item] = [
                 'rank' => 'm',
                 'period' => $month,
-                'cost_month_total_item' => $model->cost_month_total,
+                'cost_month_total_item' => $cost_m_total,
                 'rem' => $rem,
             ];
         }
 
+        if ($add_flag) {
+            $data[0]['cost_month_total'] = $cost_month_total;
+            $data[0]['cost_year_total_str'] = PriceHelper::num2str($cost_year_total);
+            $data[0]['year_time_total'] = $year_time_total;
+            $data[0]['cost_year_total'] = $cost_year_total;
+        } else {
+            $cost_year_total = $model->cost_year_total - $discount_all;
+            if($cost_year_total != 0) {
+                $data[0]['cost_year_total'] = $cost_year_total;
+                $data[0]['cost_year_total_str'] = PriceHelper::num2str($cost_year_total);
+            }
+        }
         $month_total_item = $model->cost_month_total;
         $n = count($month_range);
         if (($month_total_item * $n) < $model->cost_year_total) {
@@ -534,6 +556,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
         if ($month_total_item <= 0) {
             $items_month[0]['cost_month_total_item'] = $month_total_item + $model->cost_month_total;
+            $items_month[$n - 1]['cost_month_total_item'] = 0;
+        }
+        if ($mStart == 9) {
             $items_month[$n - 1]['cost_month_total_item'] = 0;
         }
 

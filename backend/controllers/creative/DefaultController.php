@@ -2,6 +2,7 @@
 
 namespace backend\controllers\creative;
 
+use common\models\creative\CreativeWorks;
 use Yii;
 use common\models\efficiency\TeachersEfficiency;
 use backend\models\Model;
@@ -103,6 +104,17 @@ class DefaultController extends MainController
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
+                    if (Yii::$app->request->post('submitAction') == 'approve') {
+                        $model->doc_status = CreativeWorks::DOC_STATUS_AGREED;
+                        if ($model->approveMessage()) {
+                            Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                        }
+                    } elseif (Yii::$app->request->post('submitAction') == 'modif') {
+                        $model->doc_status = CreativeWorks::DOC_STATUS_MODIF;
+                        if ($model->modifMessage()) {
+                            Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                        }
+                    }
                     if ($flag = $model->save(false)) {
                         if (!empty($deletedIDs)) {
                             TeachersEfficiency::deleteAll(['id' => $deletedIDs]);

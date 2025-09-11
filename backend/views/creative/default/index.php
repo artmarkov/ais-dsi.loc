@@ -1,5 +1,6 @@
 <?php
 
+use common\models\teachers\Teachers;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -16,6 +17,7 @@ use common\models\own\Department;
 
 $this->title = Yii::t('art/creative', 'Creative Works');
 $this->params['breadcrumbs'][] = $this->title;
+$author_id = CreativeWorks::getAuthorId();
 ?>
 <div class="creative-works-index">
     <div class="panel">
@@ -27,15 +29,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-6">
-                            <?= GridQuickLinks::widget([
-                                'model' => CreativeWorks::className(),
-                                'searchModel' => $searchModel,
-                                'labels' => [
-                                    'all' => Yii::t('art', 'All'),
-                                    'inactive' => Yii::t('art/creative', 'Closed'),
-                                    'active' => Yii::t('art/creative', 'Open'),
-                                ]
-                            ]) ?>
+                            <?php
+//                            GridQuickLinks::widget([
+//                                'model' => CreativeWorks::className(),
+//                                'searchModel' => $searchModel,
+//                                'labels' => [
+//                                    'all' => Yii::t('art', 'All'),
+//                                    'inactive' => Yii::t('art/creative', 'Closed'),
+//                                    'active' => Yii::t('art/creative', 'Open'),
+//                                ]
+//                            ])
+                            ?>
                         </div>
 
                         <div class="col-sm-6 text-right">
@@ -57,8 +61,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'bulkActionOptions' => \artsoft\Art::isBackend() ? [
                             'gridId' => 'creative-works-grid',
                             'actions' => [
-                                Url::to(['bulk-activate']) => Yii::t('art/creative', 'Оpen for viewing'),
-                                Url::to(['bulk-deactivate']) => Yii::t('art/creative', 'Close for viewing'),
+//                                Url::to(['bulk-activate']) => Yii::t('art/creative', 'Оpen for viewing'),
+//                                Url::to(['bulk-deactivate']) => Yii::t('art/creative', 'Close for viewing'),
                                 Url::to(['bulk-delete']) => Yii::t('yii', 'Delete'),
                             ]
                         ] : false,
@@ -124,11 +128,22 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                                 'visible' => \artsoft\Art::isBackend(),
                             ],
+//                            [
+//                                'class' => 'artsoft\grid\columns\StatusColumn',
+//                                'attribute' => 'status',
+//                                'optionsArray' => CreativeWorks::getStatusOptionsList(),
+//                                'options' => ['style' => 'width:180px'],
+//                            ],
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
-                                'attribute' => 'status',
-                                'optionsArray' => CreativeWorks::getStatusOptionsList(),
-                                'options' => ['style' => 'width:180px'],
+                                'attribute' => 'doc_status',
+                                'optionsArray' => [
+                                    [CreativeWorks::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
+                                    [CreativeWorks::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
+                                    [CreativeWorks::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
+                                    [CreativeWorks::DOC_STATUS_MODIF, Yii::t('art', 'Modif'), 'warning'],
+                                ],
+                                'options' => ['style' => 'width:150px']
                             ],
                             [
                                 'attribute' => 'created_at',
@@ -165,14 +180,42 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'class' => 'kartik\grid\ActionColumn',
-                                'urlCreator' => function ($action, $model, $key, $index) {
-                                    return [$action, 'id' => $model->id];
-                                },
-                                'controller' => '/teachers/creative',
-                                'template' => '{view}',
-                                'headerOptions' => ['class' => 'kartik-sheet-style'],
-                                'visible' => \artsoft\Art::isFrontend()
+                                'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
+                                'width' => '90px',
+                                'visible' => \artsoft\Art::isFrontend(),
+                                'template' => '{view} {update} {delete}',
+                                'buttons' => [
+                                    'update' => function ($key, $model) {
+                                        return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                                            ['/teachers/creative/update', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Edit'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                    'delete' => function ($key, $model) {
+                                        return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                                            ['/teachers/consult-creative/delete', 'id' => $model->id], [
+                                                'title' => Yii::t('art', 'Delete'),
+                                                'aria-label' => Yii::t('art', 'Delete'),
+                                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                                'data-method' => 'post',
+                                                'data-pjax' => '0',
+                                            ]
+                                        );
+                                    },
+                                ],
+                                'visibleButtons' => [
+                                    'update' => function ($model) use ($author_id) {
+                                        return $author_id == $model->author_id;
+                                    },
 
+                                    'delete' => function ($model) use ($author_id) {
+                                        return $author_id == $model->author_id;
+                                    },
+
+                                ],
                             ],
                         ],
                     ]);

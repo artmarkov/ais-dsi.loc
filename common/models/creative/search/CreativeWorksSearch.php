@@ -27,7 +27,7 @@ class CreativeWorksSearch extends CreativeWorks
     public function rules()
     {
         return [
-            [['id', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['id', 'status', 'created_by', 'updated_by', 'doc_status'], 'integer'],
             [['department_list', 'teachers_list', 'category_id', 'name', 'description', 'published_at', 'created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -78,6 +78,7 @@ class CreativeWorksSearch extends CreativeWorks
             'creative_works.id' => $this->id,
             'category_id' => $this->category_id,
             'status' => $this->status,
+            'doc_status' => $this->doc_status,
             'created_at' => ($this->created_at) ? strtotime($this->created_at) : null,
             ]);
 

@@ -166,7 +166,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
 
         $ids = StudyplanThematicView::find()
             ->select('studyplan_thematic_id')
-            ->where(['subject_id' => $subject_id])
+            ->where(['subject_id' => $subject_id ?: null])
             ->andWhere(['is not', 'studyplan_thematic_id', null])
             ->column();
         $models = self::find()->select(['id', 'template_name'])

@@ -406,6 +406,7 @@ class StudyplanController extends MainController
                             $this->getSubmitAction($model);
                         }
                     } catch (Exception $e) {
+                        print_r($e->errorInfo);
                         $transaction->rollBack();
                     }
                 }
@@ -444,7 +445,11 @@ class StudyplanController extends MainController
             $modelsItems = $model->studyplanThematicItems;
 
             if ($model->load(Yii::$app->request->post())) {
-
+                if (Yii::$app->request->post('submitAction') == 'send_approve') {
+                    $model->doc_status = StudyplanThematic::DOC_STATUS_WAIT;
+                } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
+                    $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
+                }
                 $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
                 $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());

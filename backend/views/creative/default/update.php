@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
 <div class="creative-works-update">
     <?= $this->render('_form', [
         'model' => $model,
-        'modelsEfficiency' => $modelsEfficiency,
+        'modelsEfficiency' => isset($modelsEfficiency) ? $modelsEfficiency : null,
         'readonly' => $readonly
     ]) ?>
 </div>

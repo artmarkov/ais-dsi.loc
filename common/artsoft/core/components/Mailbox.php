@@ -146,6 +146,9 @@ class Mailbox extends Component
             case 'ProgressConfirmIndiv':
                 $text = 'Журнал посещаемости и успеваемости индивидуальных занятий';
                 break;
+            case 'CreativeWorks':
+                $text = 'Творческие работы и сертификаты';
+                break;
         }
         return 'Сообщение модуля "' . $text . '"';
     }
@@ -179,6 +182,9 @@ class Mailbox extends Component
                 break;
             case 'ProgressConfirmIndiv':
                 $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/teachers/studyplan-progress-indiv' : '/admin/teachers/' . $this->model->teachers_id . '/studyplan-progress-indiv');
+                break;
+            case 'CreativeWorks':
+                $link = Yii::$app->urlManager->hostInfo . ($this->isAdmin != true ? '/teachers/creative/update?id=' : '/admin/creative/default/update?id=') . $this->model->id;
                 break;
         }
         return $link;
@@ -267,6 +273,15 @@ class Mailbox extends Component
                 break;
             case $this->module == 'ProgressConfirmIndiv' && $this->action == 'send_approve':
                 $htmlBody .= '<p><b>Прошу Вас утвердить журнал успеваемости индивидуальных занятий</b> за <b>' . strip_tags(ArtHelper::getMonthsNominativeValue(date('n', $this->model->timestamp_month))) . '</b> - месяц по дисциплине  <b>' . $this->model->getSubject() . '</b></p>';
+                break;
+            case  $this->module == 'CreativeWorks' && $this->action == 'modif':
+                $htmlBody .= '<p><b>Прошу Вас доработать Творческую работу</b>  ' . $this->model->name . '</p>';
+                break;
+            case  $this->module == 'CreativeWorks' && $this->action == 'approve':
+                $htmlBody .= '<p><b>Творческая работа</b> за ' . $this->model->name . ' <b> утверждена.</b></p>';
+                break;
+            case $this->module == 'CreativeWorks' && $this->action == 'send_approve':
+                $htmlBody .= '<p><b>Прошу Вас утвердить Творческую работу</b> ' . $this->model->name . '</p>';
                 break;
         }
 

@@ -27,7 +27,9 @@ class m210301_151052_create_table_creative extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 99999)',
             'category_id' => $this->integer()->unsigned()->notNull(),
             'name' => $this->string(1024)->notNull(),
-            'description' => $this->string(512),
+            'place' => $this->string(512),
+            'description' => $this->string(1024),
+            'date' => $this->integer(),
             'department_list' => $this->string(1024),
             'teachers_list' => $this->string(1024),
             'published_at' => $this->integer(),
@@ -36,6 +38,9 @@ class m210301_151052_create_table_creative extends \artsoft\db\BaseMigration
             'updated_at' => $this->integer()->notNull(),
             'updated_by' => $this->integer(),
             'status' => $this->integer()->notNull()->defaultValue(1),
+            'doc_status' => $this->integer()->notNull()->defaultValue(0),
+            'signer_id' => $this->integer(),
+            'author_id' => $this->integer(),
             'version' => $this->bigInteger()->notNull()->defaultValue(0),
         ], $tableOptions);
 

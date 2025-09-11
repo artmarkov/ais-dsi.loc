@@ -83,6 +83,7 @@ class ThematicItemsController extends MainController
                         $this->getSubmitAction($model);
                     }
                 } catch (Exception $e) {
+                    print_r($e->errorInfo);
                     $transaction->rollBack();
                 }
             }

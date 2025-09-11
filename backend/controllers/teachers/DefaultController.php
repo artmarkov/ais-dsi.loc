@@ -20,7 +20,6 @@ use common\models\efficiency\TeachersEfficiency;
 use common\models\guidejob\Bonus;
 use common\models\history\EfficiencyHistory;
 use common\models\history\LessonItemsHistory;
-use common\models\history\QualificationsHistory;
 use common\models\history\SubjectScheduleHistory;
 use common\models\history\TeachersLoadHistory;
 use common\models\history\TeachersPlanHistory;
@@ -45,14 +44,12 @@ use common\models\teachers\PortfolioTeachers;
 use common\models\teachers\PortfolioView;
 use common\models\teachers\search\TeachersLoadViewSearch;
 use common\models\teachers\search\TeachersPlanSearch;
-use common\models\teachers\search\TeachersQualificationsSearch;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersActivity;
 use common\models\teachers\TeachersCheetAccount;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadView;
 use common\models\teachers\TeachersPlan;
-use common\models\teachers\TeachersQualifications;
 use common\models\user\UserCommon;
 use yii\data\ActiveDataProvider;
 use yii\db\Exception;
@@ -1722,88 +1719,6 @@ class DefaultController extends MainController
 
     /**
      * @param $id
-     * @param null $objectId
-     * @param null $mode
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
-     */
-    public function actionQualifications($id, $objectId = null, $mode = null)
-    {
-        $modelTeachers = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['teachers/default/index']];
-        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
-        $this->view->params['tabMenu'] = $this->getMenu($id);
-
-        if ('create' == $mode) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Qualifications'), 'url' => ['teachers/default/qualifications', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = 'Добавление записи';
-            /* @var $model \artsoft\db\ActiveRecord */
-            $model = new TeachersQualifications();
-            $model->teachers_id = $id;
-
-            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                $this->getSubmitAction($model);
-            }
-            return $this->renderIsAjax('@backend/views/qualifications/default/_form.php', [
-                'model' => $model,
-                'modelTeachers' => $modelTeachers,
-                'readonly' => false
-            ]);
-
-        } elseif ('history' == $mode && $objectId) {
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Qualifications'), 'url' => ['teachers/default/qualifications', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['teachers/default/qualifications', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
-            $this->view->params['tabMenu'] = $this->getMenu($id);
-
-            $model = TeachersQualifications::findOne($objectId);
-            $data = new QualificationsHistory($objectId);
-            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
-        } elseif ('delete' == $mode && $objectId) {
-            $model = TeachersQualifications::findOne($objectId);
-            $model->delete();
-
-            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-            return $this->redirect($this->getRedirectPage('delete', $model));
-        } elseif ($objectId) {
-            $readonly = false;
-            if ('view' == $mode) {
-                $readonly = true;
-            }
-            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Qualifications'), 'url' => ['teachers/default/qualifications', 'id' => $id]];
-            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $model = TeachersQualifications::findOne($objectId);
-
-            if ($model->load(Yii::$app->request->post()) AND $model->save()) {
-                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction($model);
-            }
-
-            return $this->renderIsAjax('@backend/views/qualifications/default/_form.php', [
-                'model' => $model,
-                'modelTeachers' => $modelTeachers,
-                'readonly' => $readonly
-            ]);
-        } else {
-            $this->view->params['breadcrumbs'][] = Yii::t('art/guide', 'Qualifications');
-            $model_date = $this->modelDate;
-            if (!isset($model_date)) {
-                throw new NotFoundHttpException("The model_date was not found.");
-            }
-            $searchModel = new TeachersQualificationsSearch();
-            $searchName = StringHelper::basename($searchModel::className());
-            $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['teachers_id'] = $id;
-            $dataProvider = $searchModel->search($params);
-
-            return $this->renderIsAjax('teachers-qualifications', compact(['dataProvider', 'searchModel', 'modelTeachers', 'model_date']));
-        }
-    }
-
-    /**
-     * @param $id
      * @return array
      */
     public function getMenu($id)
@@ -1821,7 +1736,6 @@ class DefaultController extends MainController
             ['label' => 'Журнал успеваемости группы', 'url' => ['/teachers/default/studyplan-progress', 'id' => $id]],
             ['label' => 'Журнал успеваемости индивидуальных занятий', 'url' => ['/teachers/default/studyplan-progress-indiv', 'id' => $id]],
             ['label' => 'Показатели эффективности', 'url' => ['/teachers/default/efficiency', 'id' => $id]],
-            ['label' => 'Показатели ППК', 'url' => ['/teachers/default/qualifications', 'id' => $id]],
             ['label' => 'Портфолио', 'url' => ['/teachers/default/portfolio', 'id' => $id]],
             ['label' => 'Документы', 'url' => ['/teachers/default/document', 'id' => $id]],
             ['label' => 'Ученики и группы', 'url' => ['/teachers/default/studyplan-list', 'id' => $id]],
