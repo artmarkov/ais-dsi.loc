@@ -24,6 +24,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
+ * @property bool $social_card_flag Наличие социальной карты москвича или карты "Москвёнок"
  *
  * @property Users $createdBy0
  */
@@ -64,6 +65,7 @@ class UsersCard extends \artsoft\db\ActiveRecord
             [['key_hex'], 'match', 'pattern' =>'/^[0-9,A-Z]+$/', 'message' => 'Код пропуска должен содержать только символы [0-9,A-Z].', 'skipOnEmpty' => true],
             [['mode_main'], 'string', 'max' => 127],
             [['mode_list'], 'string', 'max' => 512],
+            ['social_card_flag', 'boolean'],
         ];
     }
 
@@ -86,6 +88,7 @@ class UsersCard extends \artsoft\db\ActiveRecord
             'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'social_card_flag' => Yii::t('art/guide', 'Social Card'),
         ];
     }
 

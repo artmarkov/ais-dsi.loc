@@ -18,6 +18,7 @@ use kartik\datetime\DateTimePicker;
 
                 <?= $form->field($model, 'timestamp_deny')->widget(DateTimePicker::class, ['disabled' => $readonly]); ?>
 
+                <?= $form->field($model, 'social_card_flag')->checkbox(['disabled' => $readonly]) ?>
             </div>
         </div>
     </div>
