@@ -172,6 +172,11 @@ class Student extends ActiveRecord
         return $this->user ? $this->user->address : null;
     }
 
+    public function getUserGender()
+    {
+        return $this->user ? $this->user->gender : null;
+    }
+
     public function getUserEmail()
     {
         return $this->user ? $this->user->email : null;

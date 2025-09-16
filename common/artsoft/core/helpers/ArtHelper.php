@@ -418,7 +418,7 @@ class ArtHelper
      * @param bool $timestamp
      * @return array
      */
-    public function age($sec_birthday, $timestamp = false)
+    public static function age($sec_birthday, $timestamp = false)
     {
         // Сегодняшняя дата или $timestamp
         $sec_now = $timestamp != false ? $timestamp : time();

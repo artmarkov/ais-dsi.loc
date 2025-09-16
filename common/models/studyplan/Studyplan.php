@@ -75,6 +75,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 // Шаблоны документов
     const template_csf = 'document/contract_student_free_2.docx';
     const template_cs = 'document/contract_student_new.docx';
+    const template_sr = 'document/studyplan_reference.docx';
     const template_cs_mk = 'document/contract_student_new-mk.docx';
     const template_ss = 'document/statement_student.docx';
 
@@ -411,16 +412,19 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'doc_student' => $model->student->fullName, // Полное имя ученика
             'doc_student_gen' => inflectName($model->student->fullName, 'родительный'), // Полное имя ученика родительный
             'doc_student_acc' => inflectName($model->student->fullName, 'винительный'), // Полное имя ученика винительный
+            'doc_student_dat' => inflectName($model->student->fullName, 'дательный'), // Полное имя ученика дательный
             'student_birth_date' => $model->student->userBirthDate, // День рождения ученика
             'student_relation' => mb_strtolower(RefBook::find('parents_dependence_relation_name', $model->student_id)->getValue($model->parent->id), 'UTF-8'),
             'doc_contract_start' => date('j', strtotime($model->doc_contract_start)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_start))] . ' ' . date('Y', strtotime($model->doc_contract_start)), // дата начала договора
             'doc_contract_end' => date('j', strtotime($model->doc_contract_end)) . ' ' . ArtHelper::getMonthsList()[date('n', strtotime($model->doc_contract_end))] . ' ' . date('Y', strtotime($model->doc_contract_end)), $model->doc_contract_end, // Дата окончания договора
             'programm_name' => $model->programm->name, // название программы
             'programm_level' => isset($modelProgrammLevel->level) ? $modelProgrammLevel->level->name : null, // уровень программы
-            'term_mastering' => 'срок обучения: ' . $model->programm->term_mastering . ' лет(года)', // Срок освоения образовательной программы
+            'term_mastering_pur' => $model->programm->term_mastering, // Срок обучения
+            'term_mastering' => 'срок обучения: ' . $model->programm->term_mastering . ' лет(года)', // Срок обучения
             'term_mastering_op' => $termMasteringGrand, // Срок освоения образовательной программы
             'term_mastering_grand' => 'срок обучения: ' . $termMasteringGrand . ' лет(года)', // Срок освоения образовательной программы с грантом
             'course' => $model->course . ' класс',
+            'course_pur' => $model->course,
             'year_time_total' => $model->year_time_total,
             'cost_grand' => $costGrandModel['standard_basic_ratio'],
             'cost_month_total' => $model->cost_month_total,
@@ -436,6 +440,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'cost_grand_total_str' => PriceHelper::num2str($costYearGrandTotal + $costTotalDecline),
             'student_address' => $model->student->userAddress,
             'student_phone' => $model->student->userPhone,
+            'student_gender' => $model->student->userGender == 1 ? 'он' : ($model->student->userGender == 2 ? 'она' : 'он(она)'),
             'student_sert_name' => Student::getDocumentValue($model->student->sert_name) ?: 'свидетельства о рождении',
             'student_sert_series' => $model->student->sert_series ?: '     ',
             'student_sert_num' => $model->student->sert_num ?: '      ',
@@ -463,17 +468,27 @@ class Studyplan extends \artsoft\db\ActiveRecord
             'bank_name' => $invoices->bank_name,
             'bik' => $invoices->bik,
             'kbk' => $invoices->kbk,
-            'student_fls' => sprintf('%06d', $model->student_id)
-
+            'student_fls' => sprintf('%06d', $model->student_id),
+            'plan_year' => $model->plan_year,
+            'plan_year_next' => $model->plan_year + 1,
         ];
 
         $items = [];
-        $cost_year_total = $cost_month_total = $year_time_total = 0;
+        $schedule = [];
+        $cost_year_total = $cost_month_total = $year_time_total = $week_time_total = 0;
+        $models_sch = $this->getStudyplanSchedule();
+        $models_sch = ArrayHelper::index($models_sch, null,['studyplan_subject_id']);
+         foreach ($models_sch as $studyplan_subject_id => $d) {
+             foreach ($d as $i => $m) {
+                 $schedule[$studyplan_subject_id][] = \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m['week_day']) . ' ' . $m['time_in'] . '-' . $m['time_out'];
+             }
+         }
         foreach ($modelsDependence as $item => $modelDep) {
             $items[] = [
                 'rank' => 'dep',
                 'item' => $item + 1,
                 'subject_cat_name' => $modelDep->subjectCat->name,
+                'subject_name_pur' => $modelDep->subject->name,
                 'subject_name' => '(' . $modelDep->subject->name . ')',
                 'subject_type_name' => $modelDep->subjectType->name,
                 'subject_vid_name' => $modelDep->subjectVid->name,
@@ -483,12 +498,13 @@ class Studyplan extends \artsoft\db\ActiveRecord
                 'cost_month_summ' => $modelDep->cost_month_summ,
                 'cost_year_summ' => $modelDep->cost_year_summ,
                 'year_time_consult' => $modelDep->year_time_consult,
+                'schedule' => isset($schedule[$modelDep->id]) ? implode(', ', $schedule[$modelDep->id]) : 'не задано',
             ];
             $cost_year_total += $modelDep->cost_year_summ;
             $cost_month_total += $modelDep->cost_month_summ;
             $year_time_total += $modelDep->year_time;
+            $week_time_total += $modelDep->week_time;
         }
-
 
 //        echo '<pre>' . print_r(ArtHelper::getMonthsInRange($model->doc_contract_start, $model->doc_contract_end), true) . '</pre>'; die();
         $month_range = ArtHelper::getMonthsInRange($model->doc_contract_start, $model->doc_contract_end, "m.Y");
@@ -539,8 +555,10 @@ class Studyplan extends \artsoft\db\ActiveRecord
             $data[0]['cost_year_total_str'] = PriceHelper::num2str($cost_year_total);
             $data[0]['year_time_total'] = $year_time_total;
             $data[0]['cost_year_total'] = $cost_year_total;
+            $data[0]['week_time_total'] = $week_time_total;
         } else {
             $cost_year_total = $model->cost_year_total - $discount_all;
+            $data[0]['week_time_total'] = $week_time_total;
             if($cost_year_total != 0) {
                 $data[0]['cost_year_total'] = $cost_year_total;
                 $data[0]['cost_year_total_str'] = PriceHelper::num2str($cost_year_total);
@@ -602,6 +620,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
         foreach ($models as $item => $modelSchedule) {
             $data[] = [
+                'studyplan_subject_id' => $modelSchedule->studyplan_subject_id,
                 'week_day' => $modelSchedule->week_day,
                 'time_in' => $modelSchedule->time_in,
                 'time_out' => $modelSchedule->time_out,

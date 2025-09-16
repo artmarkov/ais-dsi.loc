@@ -162,7 +162,10 @@ if (User::hasRole(['parents'])) {
             </div>
             <?php if (\artsoft\Art::isBackend()): ?>
                 <?= $this->render('@backend/views/user/_form_card', ['form' => $form, 'model' => $userCard, 'readonly' => $readonly]) ?>
+            <?php else: ?>
+                <?= $this->render('@backend/views/user/_form_card_social', ['form' => $form, 'model' => $userCard, 'readonly' => $readonlyStudent]) ?>
             <?php endif; ?>
+
             <?php DynamicFormWidget::begin([
                 'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items', // required: css class selector

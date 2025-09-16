@@ -33,7 +33,7 @@ class DefaultController extends MainController
         foreach ($modelsDependence as $m) {
             $m->scenario = StudentDependence::SCENARIO_STUDENT;
         }
-        if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
+        if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post()) && $userCard->load(Yii::$app->request->post())) {
             $oldIDs = ArrayHelper::map($modelsDependence, 'id', 'id');
             $modelsDependence = Model::createMultiple(StudentDependence::class, $modelsDependence);
             Model::loadMultiple($modelsDependence, Yii::$app->request->post());
@@ -70,6 +70,7 @@ class DefaultController extends MainController
                         $this->getSubmitAction($model);
                     }
                 } catch (\Exception $e) {
+                    print_r($e->getMessage());
                     $transaction->rollBack();
                 }
             }

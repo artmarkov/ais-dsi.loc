@@ -89,7 +89,7 @@ class m230127_092207_add_subject_view extends Migration
         ')->execute();
 
         $this->db->createCommand()->createView('studyplan_stat_view', '
- SELECT studyplan.id,
+  SELECT studyplan.id,
     studyplan.created_at AS studyplan_created_at,
     s.created_at AS student_created_at,
     studyplan.student_id,
@@ -113,6 +113,7 @@ class m230127_092207_add_subject_view extends Migration
     education_programm.short_name AS education_programm_short_name,
     guide_education_cat.name AS education_cat_name,
     guide_education_cat.short_name AS education_cat_short_name,
+    guide_education_cat.programm_short_name AS education_cat_programm_short_name,
     ( SELECT subject.name
            FROM studyplan_subject
              JOIN subject ON studyplan_subject.subject_id = subject.id
@@ -161,10 +162,15 @@ class m230127_092207_add_subject_view extends Migration
     parents.sert_code AS signer_sert_code,
     s.last_name AS student_last_name,
     s.first_name AS student_first_name,
-    s.middle_name AS student_middle_name
+    s.middle_name AS student_middle_name,
+    sc.social_card_flag AS student_social_card_flag,
+    pc.social_card_flag AS signer_social_card_flag,
+    sc.key_hex AS student_key_hex,
+    pc.key_hex AS signer_key_hex
    FROM studyplan
      JOIN students ON students.id = studyplan.student_id
      JOIN user_common s ON s.id = students.user_common_id
+     LEFT JOIN users_card sc ON sc.user_common_id::integer = s.id
      JOIN education_programm ON education_programm.id = studyplan.programm_id
      JOIN guide_education_cat ON guide_education_cat.id = education_programm.education_cat_id
      LEFT JOIN guide_subject_form ON guide_subject_form.id = studyplan.subject_form_id
@@ -173,6 +179,7 @@ class m230127_092207_add_subject_view extends Migration
           WHERE student_dependence.student_id = studyplan.student_id
          LIMIT 1))
      LEFT JOIN user_common p ON p.id = parents.user_common_id
+     LEFT JOIN users_card pc ON pc.user_common_id::integer = p.id
   ORDER BY studyplan.plan_year, (concat(s.last_name, \' \', s.first_name, \' \', s.middle_name, \' \'));
         ')->execute();
     }

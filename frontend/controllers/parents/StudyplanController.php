@@ -90,7 +90,7 @@ class StudyplanController extends MainController
         foreach ($modelsDependence as $m) {
             $m->scenario = StudentDependence::SCENARIO_PARENT;
         }
-        if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post())) {
+        if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post()) && $userCard->load(Yii::$app->request->post())) {
 
             $oldIDs = ArrayHelper::map($modelsDependence, 'id', 'id');
             $modelsDependence = Model::createMultiple(StudentDependence::class, $modelsDependence);
