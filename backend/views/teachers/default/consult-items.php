@@ -175,7 +175,7 @@ $columns = [
             },
             'update' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                    ['/teachers/consult-items/update', 'objectId' => $model->consult_schedule_id], [
+                    ['/teachers/consult-items/update', 'id' => $model->consult_schedule_id], [
                         'title' => Yii::t('art', 'Edit'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -184,7 +184,7 @@ $columns = [
             },
             'delete' => function ($key, $model) {
                 return Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                    ['/teachers/consult-items/delete', 'objectId' => $model->consult_schedule_id], [
+                    ['/teachers/consult-items/delete', 'id' => $model->consult_schedule_id], [
                         'title' => Yii::t('art', 'Delete'),
                         'aria-label' => Yii::t('art', 'Delete'),
                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),

@@ -2,11 +2,6 @@
 
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
-use common\models\guidejob\Direction;
-use common\models\teachers\TeachersPlan;
-use artsoft\helpers\Html;
-use common\models\user\UserCommon;
-use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\schedule\ConsultSchedule */

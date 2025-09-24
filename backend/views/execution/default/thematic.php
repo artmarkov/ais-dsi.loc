@@ -4,6 +4,7 @@
 
 use artsoft\grid\GridView;
 use artsoft\helpers\RefBook;
+use common\models\activities\Activities;
 use yii\helpers\Html;
 use yii\widgets\Pjax;
 $teachers_list = RefBook::find('teachers_fio')->getList();
@@ -45,6 +46,9 @@ $columns = [
     [
         'attribute' => 'scale_2',
         'label' => $model['attributes']['scale_2'],
+        'contentOptions' => function () {
+            return ['style' => 'background-color: #f2f2f2;'];
+        },
         'value' => function ($models) {
             return $models['scale_2'];
         },
@@ -54,6 +58,9 @@ $columns = [
     [
         'attribute' => 'scale_3',
         'label' => $model['attributes']['scale_3'],
+        'contentOptions' => function () {
+            return ['style' => 'background-color: #f2f2f2;'];
+        },
         'value' => function ($models) {
             return $models['scale_3'];
         },

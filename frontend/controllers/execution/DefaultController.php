@@ -35,7 +35,7 @@ class DefaultController extends MainController
         } else {
             $query = PortfolioView::find()
                 ->where(['in', 'teachers_id', Teachers::getTeachersForTeacher($this->teachers_id)])
-                ->andWhere(['!=', 'teachers_id', $this->teachers_id])
+               // ->andWhere(['!=', 'teachers_id', $this->teachers_id])
                 ->andWhere(['between', 'datetime_in', $data['timestamp_in'], $data['timestamp_out']]);
         }
         $dataProvider = new ActiveDataProvider(['query' => $query]);
@@ -84,7 +84,7 @@ class DefaultController extends MainController
             ->select('teachers.id')
             ->joinWith(['user'])
             ->where(['in', 'teachers.id', Teachers::getTeachersForTeacher($this->teachers_id)])
-            ->andWhere(['!=', 'teachers.id', $this->teachers_id])
+           // ->andWhere(['!=', 'teachers.id', $this->teachers_id])
             ->andWhere(['=', 'status', UserCommon::STATUS_ACTIVE])->column();
         $models = ExecutionProgress::getData($model_date);
         $model = $models->getDataTeachers();

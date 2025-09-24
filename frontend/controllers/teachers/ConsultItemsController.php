@@ -71,13 +71,12 @@ class ConsultItemsController extends MainController
         ]);
     }
 
-    public function actionUpdate($id = null)
+    public function actionUpdate($id)
     {
-        if (!Yii::$app->request->get('objectId')) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр GET objectId.");
-        }
-        $objectId = Yii::$app->request->get('objectId');
-        $model = ConsultSchedule::findOne($objectId);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['teachers/consult-items']];
+        $this->view->params['breadcrumbs'][] = 'Редактирование нагрузки';
+
+        $model = ConsultSchedule::findOne($id);
         $teachersLoadModel = TeachersLoad::findOne($model->teachers_load_id);
         if (!isset($model)) {
             throw new NotFoundHttpException("The SubjectSchedule was not found.");
@@ -95,13 +94,9 @@ class ConsultItemsController extends MainController
 
     }
 
-    public function actionDelete($id = null)
+    public function actionDelete($id)
     {
-        if (!Yii::$app->request->get('objectId')) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр GET objectId.");
-        }
-        $objectId = Yii::$app->request->get('objectId');
-        $model = ConsultSchedule::findOne($objectId);
+        $model = ConsultSchedule::findOne($id);
         $model->delete();
 
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));

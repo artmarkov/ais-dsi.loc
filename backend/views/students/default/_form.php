@@ -45,7 +45,7 @@ JS
     , \yii\web\View::POS_END);
 
 $readonlyStudent = $readonly;
-if (User::hasRole(['parents'])) {
+if (User::hasRole(['parents']) || User::hasRole(['student'])) {
     $readonlyStudent = false;
 }
 ?>
@@ -55,7 +55,7 @@ if (User::hasRole(['parents'])) {
     <?php
     $form = ActiveForm::begin([
         'fieldConfig' => [
-            'inputOptions' => ['readonly' => User::hasRole(['parents'], false) ? false : $readonly]
+            'inputOptions' => ['readonly' => User::hasRole(['parents'], false) || User::hasRole(['student']) ? false : $readonly]
         ],
         'id' => 'student-form',
         'validateOnBlur' => false,
@@ -254,7 +254,7 @@ if (User::hasRole(['parents'])) {
         <div class="form-group btn-group">
             <?php if (\artsoft\Art::isBackend()): ?>
                 <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::viewButtons($model); ?>
-            <?php elseif (User::hasRole(['parents'])): ?>
+            <?php elseif (User::hasRole(['parents']) || User::hasRole(['student'])): ?>
                 <?= \artsoft\helpers\ButtonHelper::saveButton(); ?>
             <?php endif; ?>
         </div>

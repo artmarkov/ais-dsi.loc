@@ -105,7 +105,7 @@ class TeachersController extends MainController
         $modelClass = $this->modelClass;
         $query = Teachers::find()
             ->where(['in', 'teachers.id', Teachers::getTeachersForTeacher($this->teachers_id)])
-            ->andWhere(['!=', 'teachers.id', $this->teachers_id])
+           // ->andWhere(['!=', 'teachers.id', $this->teachers_id])
             ->andWhere(['=', 'status', UserCommon::STATUS_ACTIVE]);
         $searchModel = new TeachersSearch($query);
         $params = $this->getParams();
