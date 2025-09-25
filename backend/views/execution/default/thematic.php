@@ -112,7 +112,7 @@ $columns = [
                         'panel' => [
                             'heading' => false,
                             'type' => '',
-                           // 'footer' => $hints,
+                            'footer' => \common\models\execution\ExecutionThematic::getCheckLabelHints(),
                         ],
                         'columns' => $columns,
                         'beforeHeader' => [
