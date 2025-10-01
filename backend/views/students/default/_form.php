@@ -135,9 +135,9 @@ if (User::hasRole(['parents']) || User::hasRole(['student'])) {
                         <div class="col-sm-12">
                             <?= $form->field($model, 'sert_name')->dropDownList(\common\models\students\Student::STUDENT_DOC, [
                                 'disabled' => $readonlyStudent,
-                                'options' => [
+                               /* 'options' => [
                                     'birth_cert' => ['selected' => true]
-                                ]
+                                ]*/
                             ]) ?>
                             <?= $form->field($model, 'sert_series')->textInput(['maxlength' => true, 'disabled' => $readonlyStudent]) ?>
                             <?= $form->field($model, 'sert_num')->textInput(['maxlength' => true, 'disabled' => $readonlyStudent]) ?>

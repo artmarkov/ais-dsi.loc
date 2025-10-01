@@ -34,16 +34,16 @@ class DefaultController extends MainController
             $m->scenario = StudentDependence::SCENARIO_STUDENT;
         }
         if ($userCommon->load(Yii::$app->request->post()) && $model->load(Yii::$app->request->post()) && $userCard->load(Yii::$app->request->post())) {
-            $oldIDs = ArrayHelper::map($modelsDependence, 'id', 'id');
+          /*  $oldIDs = ArrayHelper::map($modelsDependence, 'id', 'id');
             $modelsDependence = Model::createMultiple(StudentDependence::class, $modelsDependence);
             Model::loadMultiple($modelsDependence, Yii::$app->request->post());
-            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsDependence, 'id', 'id')));
+            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsDependence, 'id', 'id')));*/
 
             // validate all models
             $valid = $userCommon->validate();
             // $valid = $userCard->validate() && $valid;
             $valid = $model->validate() && $valid;
-            $valid = Model::validateMultiple($modelsDependence) && $valid;
+          //  $valid = Model::validateMultiple($modelsDependence) && $valid;
 
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
@@ -52,7 +52,7 @@ class DefaultController extends MainController
                         $userCard->user_common_id = $userCommon->id;
                         if ($flag && $flag = $userCard->save(false)) {
                             if ($flag = $model->save(false)) {
-                                if (!empty($deletedIDs)) {
+                               /* if (!empty($deletedIDs)) {
                                     StudentDependence::deleteAll(['id' => $deletedIDs]);
                                 }
                                 foreach ($modelsDependence as $modelDependence) {
@@ -61,7 +61,7 @@ class DefaultController extends MainController
                                         $transaction->rollBack();
                                         break;
                                     }
-                                }
+                                }*/
                             }
                         }
                     }

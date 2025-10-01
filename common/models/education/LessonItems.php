@@ -129,10 +129,10 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 }
             }
             if (!empty($res)) {
-                    $studentsFio = (new \yii\db\Query())->select('student_fio')->from('studyplan_subject_view')->distinct()
-                        ->where(['studyplan_subject_id' => $res])
-                        ->orderBy('student_fio')
-                        ->column();
+                $studentsFio = (new \yii\db\Query())->select('student_fio')->from('studyplan_subject_view')->distinct()
+                    ->where(['studyplan_subject_id' => $res])
+                    ->orderBy('student_fio')
+                    ->column();
                 $message = 'Данный вид занятия - "' . $test->test_name . '" недоступен в учебном плане ученика: ' . implode(',', $studentsFio);
                 // Notice::registerDanger($message);
                 $this->addError($attribute, $message);
@@ -294,7 +294,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
         } else {
             $m = new LessonProgress();
             $m->studyplan_subject_id = $this->studyplan_subject_id;
-            $modelsItems[1] = $m;
+            $modelsItems[] = $m;
         }
         return $modelsItems;
     }
@@ -305,7 +305,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
      */
     public function getLessonProgress()
     {
-       // print_r($this->subject_sect_studyplan_id);
+        // print_r($this->subject_sect_studyplan_id);
         $modelsItems = [];
         $i = 0;
         if ($this->subject_sect_studyplan_id != 0) {
@@ -313,7 +313,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             $models1 = LessonItemsProgressView::find()
                 ->where(['=', 'lesson_items_id', $this->id])
                 ->andWhere(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
-               // ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
+                // ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
                 ->andWhere(['OR',
                     ['status' => Studyplan::STATUS_ACTIVE],
                     ['AND',
@@ -333,7 +333,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             }
             $models2 = LessonProgressView::find()->select('studyplan_subject_id')
                 ->where(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
-               // ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
+                // ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
                 ->andWhere(['OR',
                     ['status' => Studyplan::STATUS_ACTIVE],
                     ['AND',
@@ -342,14 +342,15 @@ class LessonItems extends \artsoft\db\ActiveRecord
                     ]
                 ])
                 ->column();
+//            echo '<pre>' . print_r($models2, true) . '</pre>';die();
             foreach ($models2 as $item => $studyplan_subject_id) {
                 if (!in_array($studyplan_subject_id, $studyplan)) {
-                $m_new = new LessonProgress();
+                    $m_new = new LessonProgress();
                     $m_new->studyplan_subject_id = $studyplan_subject_id;
                     $m_new->lesson_items_id = $this->id;
                     $m_new->save(false);
-                $modelsItems[$i] = $m_new;
-                $i++;
+                    $modelsItems[$i] = $m_new;
+                    $i++;
                 }
             }
         } else {
@@ -357,171 +358,60 @@ class LessonItems extends \artsoft\db\ActiveRecord
         }
         return $modelsItems;
     }
-//    public function getLessonProgress()
-//    {
-//        if ($this->subject_sect_studyplan_id != 0) {
-//            // находим только оценки тех учеников, которые числяться в данной группе(переведенные игнорируются)
-//            $modelsItems = LessonProgress::find()
-//                ->innerJoin('lesson_items', 'lesson_items.id = lesson_progress.lesson_items_id and lesson_items.studyplan_subject_id = 0')
-//                ->innerJoin('subject_sect_studyplan', 'subject_sect_studyplan.id = lesson_items.subject_sect_studyplan_id')
-//                ->where(['=', 'lesson_items.id', $this->id])
-//                ->andWhere(new \yii\db\Expression("lesson_progress.studyplan_subject_id = any (string_to_array(subject_sect_studyplan.studyplan_subject_list, ',')::int[])"))
-//                ->all();
-//            // список учеников с оценками
-//            $list = LessonProgress::find()->select('studyplan_subject_id')->where(['=', 'lesson_items_id', $this->id])->distinct()->column();
-//            // список всех учеников группы
-//            $studyplanSubjectList = SubjectSectStudyplan::findOne($this->subject_sect_studyplan_id)->studyplan_subject_list;
-//            // добавляем новые модели вновь принятых учеников
-//            $list_new = array_unique(explode(',', $studyplanSubjectList));
-//
-//            foreach (array_diff($list_new, $list) as $item => $studyplan_subject_id) {
-//                $m = new LessonProgress();
-//                $m->studyplan_subject_id = $studyplan_subject_id;
-//                $modelsItems[] = $m;
-//            }
-//        } else {
-//            $modelsItems = $this->lessonProgresses;
-//        }
-//        return $modelsItems;
-//    }
 
     /**
-     * Инициация оценок для инд. занятий
+     * Инициация оценок для инд. занятий create/update
      * @param $teachers_id
      * @param $subject_key
-     * @param $timestamp_in
-     * @param $model
      * @return array
-     * @throws NotFoundHttpException
      */
-    public function getLessonProgressTeachersNew($teachers_id, $subject_key, $timestamp_in, $model)
+    public function getLessonProgressForTeachers($teachers_id, $subject_key)
     {
         $modelsItems = [];
-        if (!$subject_key && !$timestamp_in && !$teachers_id) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр teachers_id или subject_key или timestamp_in.");
-        }
-        $test_category = LessonTest::getLessonTestCategory($model->lesson_test_id);
-        $modelsProgress = LessonProgressView::find()
-            ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
-            ->andWhere(['=', 'subject_key', $subject_key])
-            ->andWhere(['=', 'plan_year', ArtHelper::getStudyYearDefault(null, $timestamp_in)])
-            ->andWhere(['OR',
-                ['status' => Studyplan::STATUS_ACTIVE],
-                ['AND',
-                    ['status' => Studyplan::STATUS_INACTIVE],
-                    ['status_reason' => [1, 2, 4]]
-                ]
-            ])
+        $timestamp_in = strtotime($this->lesson_date);
+        $timestamp_out = $timestamp_in + 86399;
+//        $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
+        $active = (new Query())->from('activities_schedule_studyplan_view')
+            ->select('studyplan_subject_id, subject_sect_studyplan_id')
+            ->distinct()
+            ->where(['between', 'datetime_in', $timestamp_in, $timestamp_out])
+            ->andWhere(['subject_key' => $subject_key])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->andWhere(['direction_id' => 1000])
+            ->andWhere(['status' => 1])
+            ->orderBy('subject_sect_studyplan_id')
             ->all();
-        $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress,'studyplan_subject_id');
-        $modelsSubjectSchedule = SubjectScheduleView::find()->where(
-            ['AND',
-                ['subject_sect_studyplan_id' => 0],
-                ['studyplan_subject_id' => $studyplanSubjectIds],
-                ['=', 'week_day', Schedule::timestamp2WeekDay(strtotime($model->lesson_date))],
-            ])->all();
-        $modelsSubjectSchedule = ArrayHelper::index($modelsSubjectSchedule, null, ['subject_sect_studyplan_id', 'studyplan_subject_id']);
 
-        foreach ($modelsProgress as $item => $modelProgress) {
-            if ($test_category == LessonTest::CURRENT_WORK && !isset($modelsSubjectSchedule[$modelProgress->subject_sect_studyplan_id][$modelProgress->studyplan_subject_id])) {
-                continue;
-            }
-            $m = new LessonProgress();
-            $m->studyplan_subject_id = $modelProgress->studyplan_subject_id;
-            $modelsItems[] = $m;
-
-        }
-//        echo '<pre>' . print_r($modelsItems, true) . '</pre>';
-        return $modelsItems;
-    }
-
-    /**
-     * Формирует список оценок для инд. занятий
-     * @param $teachers_id
-     * @param $subject_key
-     * @param $timestamp_in
-     * @return array
-     * @throws NotFoundHttpException
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getLessonProgressTeachers($teachers_id, $subject_key, $timestamp_in)
-    {
-        $modelsItems = [];
-        if (!$subject_key && !$timestamp_in && !$teachers_id) {
-            throw new NotFoundHttpException("Отсутствует обязательный параметр teachers_id или subject_key или timestamp_in.");
-        }
-        $modelsProgress = (new Query())->from('lesson_items_progress_studyplan_view')
+        $models = (new Query())->from('lesson_items_progress_studyplan_view')
             ->where(['teachers_id' => $teachers_id])
-            ->andWhere(['=', 'subject_key', $subject_key])
+            ->andWhere(['subject_key' => $subject_key])
             ->andWhere(['=', 'lesson_date', $timestamp_in])
-            ->andWhere(['OR',
-                ['status' => Studyplan::STATUS_ACTIVE],
-                ['AND',
-                    ['status' => Studyplan::STATUS_INACTIVE],
-                    ['status_reason' => [1, 2, 4]]
-                ]
-            ])
             ->all();
-        $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress,'studyplan_subject_id');
-        $modelsSubjectSchedule = SubjectScheduleView::find()->where(
-            ['AND',
-                ['subject_sect_studyplan_id' => 0],
-                ['studyplan_subject_id' => $studyplanSubjectIds],
-                ['=', 'week_day', Schedule::timestamp2WeekDay(strtotime(\Yii::$app->formatter->asDate($timestamp_in, 'php:d.m.Y')))],
-            ])->all();
-        $modelsSubjectSchedule = ArrayHelper::index($modelsSubjectSchedule, null, ['subject_sect_studyplan_id', 'studyplan_subject_id']);
-        foreach ($modelsProgress as $item => $model) {
-            if (!isset($modelsSubjectSchedule[$model['subject_sect_studyplan_id']][$model['studyplan_subject_id']])) {
-                continue;
+        $models = ArrayHelper::index($models, 'studyplan_subject_id');
+//        echo '<pre>' . print_r($models, true) . '</pre>';die();
+        $active = ArrayHelper::index($active, null, ['subject_sect_studyplan_id']);
+        foreach ($active as $subject_sect_studyplan_id => $data) {
+            if ($subject_sect_studyplan_id == 0) {
+                foreach ($data as $item => $dataItem) {
+                    if (isset($models[$dataItem['studyplan_subject_id']])) {
+                        $m = LessonProgress::find()
+                                ->where(['=', 'lesson_items_id', $models[$dataItem['studyplan_subject_id']]['lesson_items_id']])
+                                ->one() ?? new LessonProgress();
+                        $m->lesson_items_id = $models[$dataItem['studyplan_subject_id']]['lesson_items_id'];
+                        $m->studyplan_subject_id = $dataItem['studyplan_subject_id'];
+                        $modelsItems[] = $m;
+                    } else {
+                        $m = new LessonProgress();
+                        $m->studyplan_subject_id = $dataItem['studyplan_subject_id'];
+                        $modelsItems[] = $m;
+                    }
+//                    echo '<pre>' . print_r($modelLesson, true) . '</pre>';
+                }
             }
-            $modelProgress = LessonItemsProgressView::find()
-                ->where(
-                    ['AND',
-                        ['=', 'subject_sect_studyplan_id', $model['subject_sect_studyplan_id']],
-                        ['=', 'studyplan_subject_id', $model['studyplan_subject_id']],
-                        ['=', 'lesson_date', $timestamp_in],
-                    ])
-                ->one();
-            $m = LessonProgress::findOne(['id' => $modelProgress['lesson_progress_id']]) ?? new LessonProgress();
-            $m->studyplan_subject_id = $model['studyplan_subject_id'];
-            $m->lesson_items_id = $modelProgress['lesson_items_id'];
-            $m->save(false);
-            $modelsItems[] = $m;
         }
         return $modelsItems;
+
     }
-
-    /**
-     * Проверка, соответствует ли расписание выбранной дате
-     * @param $model
-     * @param $lesson_date
-     * @return bool
-     */
-   /* public static function checkLessonSchedule($model, $lesson_date)
-    {
-        return SubjectScheduleView::find()->where(
-            ['AND',
-                ['=', 'subject_sect_studyplan_id', $model->subject_sect_studyplan_id],
-                ['=', 'studyplan_subject_id', $model->studyplan_subject_id],
-                ['=', 'week_day', Schedule::timestamp2WeekDay(strtotime($lesson_date))],
-
-            ])->exists();
-    }*/
-
-    /**
-     * Проверка на существование урока для индивидуальных занятий
-     * @param $model
-     * @param $lesson_date
-     * @return bool
-     */
-   /* public static function checkLessonIndiv($modelProgress, $model)
-    {
-        return LessonItemsProgressView::find()
-            ->where(['=', 'subject_sect_studyplan_id', 0])
-            ->andWhere(['=', 'studyplan_subject_id', $modelProgress->studyplan_subject_id])
-            ->andWhere(['=', 'lesson_date', strtotime($model->lesson_date)])
-            ->exists();
-    }*/
 
     /**
      * Проверка всех уроков индивидуальных занятий и удаление существующих уроков
@@ -547,7 +437,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
                 unset($modelsProgress[$item]);
             }
         }
-        return $modelsProgress;
+        return array_values($modelsProgress);
     }
 
     public function beforeDelete()
