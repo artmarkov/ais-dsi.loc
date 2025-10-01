@@ -95,7 +95,7 @@ $columns = [
                         'panel' => [
                             'heading' => false,
                             'type' => '',
-                           // 'footer' => $hints,
+                            'footer' => \common\models\execution\ExecutionLoadStudyplan::getCheckLabelHints(),
                         ],
                         'columns' => $columns,
                     ]);

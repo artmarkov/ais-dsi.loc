@@ -267,7 +267,7 @@ class DefaultController extends MainController
         } elseif (Yii::$app->request->post('submitAction') == 'doc_contract_add') {
             $model->makeDocx(Studyplan::template_cs, true);
         } elseif (Yii::$app->request->post('submitAction') == 'doc_studyplan_reference') {
-            $model->makeDocx(Studyplan::template_sr, true);
+            $model->makeDocx(Studyplan::template_sr);
         }
         $model_date = $this->modelDate;
 
@@ -821,7 +821,7 @@ class DefaultController extends MainController
 //                    $this->redirect(Url::to(['/studyplan/default/studyplan-progress', 'id' => $id, 'objectId' => $model->checkLesson(), 'mode' => 'update']));
 //
 //                }
-                $modelsItems = Model::createMultiple(LessonProgress::class);
+                $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
 
                 // validate all models

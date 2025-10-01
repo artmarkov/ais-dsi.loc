@@ -164,5 +164,12 @@ class ExecutionProgress
 //
 //    }
 //
+    public static function getCheckLabelHints()
+    {
+        $check[] = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i> - Журнал заполнен';
+        $check[] = '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i> - Не заполнено';
 
+        return implode('<br/>', $check);
+
+    }
 }

@@ -105,7 +105,7 @@ $columns = [
                         'panel' => [
                             'heading' => false,
                             'type' => '',
-                           // 'footer' => $hints,
+                            'footer' => \common\models\execution\ExecutionSchedule::getCheckLabelHints(),
                         ],
                         'columns' => $columns,
                         'beforeHeader' => [

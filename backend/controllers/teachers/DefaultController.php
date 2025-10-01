@@ -18,6 +18,7 @@ use common\models\education\search\LessonProgressViewSearch;
 use common\models\efficiency\search\TeachersEfficiencySearch;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidejob\Bonus;
+use common\models\history\ConsultScheduleHistory;
 use common\models\history\EfficiencyHistory;
 use common\models\history\LessonItemsHistory;
 use common\models\history\SubjectScheduleHistory;
@@ -71,7 +72,7 @@ class DefaultController extends MainController
     /**
      * @var array
      */
-    public $freeAccessActions = ['direction','direction-vid', 'select'];
+    public $freeAccessActions = ['direction', 'direction-vid', 'select'];
 
     public $modelClass = 'common\models\teachers\Teachers';
     public $modelSearchClass = 'common\models\teachers\search\TeachersSearch';
@@ -900,7 +901,7 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['teachers/default/consult-items', 'id' => $modelTeachers->id]];
             $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['teachers/default/update', 'id' => $modelTeachers->id]];
             $data = new ConsultScheduleHistory($objectId);
-            return $this->renderIsAjax('/sect/default/history', compact(['model', 'data']));
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
             $model = ConsultSchedule::findOne($objectId);
@@ -1208,20 +1209,17 @@ class DefaultController extends MainController
             // предустановка учеников
             if (isset($_POST['submitAction']) && $_POST['submitAction'] == 'next') {
                 $model->load(Yii::$app->request->post());
-                // echo '<pre>' . print_r($model, true) . '</pre>'; die();
-               // $lessonTest = LessonTest::findOne($model->lesson_test_id);
-                $modelsItems = $model->getLessonProgressTeachersNew($id, $subject_key, $timestamp_in, $model);
-               // if ($lessonTest->test_category == LessonTest::CURRENT_WORK) {
+                $modelsItems = $model->getLessonProgressForTeachers($id, $subject_key);
+//                        echo '<pre>' . print_r($modelsItems, true) . '</pre>';die();
+                if (empty($modelsItems)) {
+                    Notice::registerDanger('Дата занятия не соответствует расписанию!');
+                    $model->addError('lesson_date', 'Дата занятия не соответствует расписанию!');
+                } else {
+                    $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model);
                     if (empty($modelsItems)) {
-                        Notice::registerDanger('Дата занятия не соответствует расписанию!');
-                        $model->addError('lesson_date', 'Дата занятия не соответствует расписанию!');
-                    } else {
-                        $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model);
-                        if (empty($modelsItems)) {
-                            Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
-                            $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
-                        }
-                   // }
+                        Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
+                        $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
+                    }
                 }
             } elseif ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class);
@@ -1229,18 +1227,13 @@ class DefaultController extends MainController
                 // validate all models
                 $valid = $model->validate();
                 $valid = Model::validateMultiple($modelsItems) && $valid;
-                // $valid = true;
+//                 $valid = true;
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
                         $flag = true;
                         foreach ($modelsItems as $modelItems) {
-                            $modelLesson = LessonItems::find()
-                                    ->where(['=', 'subject_sect_studyplan_id', 0])
-                                    ->andWhere(['=', 'studyplan_subject_id', $modelItems->studyplan_subject_id])
-                                    ->andWhere(['=', 'lesson_date', strtotime($model->lesson_date)])
-//                                    ->andWhere(['=', 'lesson_test_id', $model->lesson_test_id])
-                                    ->one() ?? new LessonItems();
+                            $modelLesson = $modelItems->lesson_items_id ? LessonItems::findOne($modelItems->lesson_items_id) : new LessonItems();
                             $modelLesson->studyplan_subject_id = $modelItems->studyplan_subject_id;
                             $modelLesson->lesson_date = $model->lesson_date;
                             $modelLesson->lesson_test_id = $model->lesson_test_id;
@@ -1260,6 +1253,7 @@ class DefaultController extends MainController
                             $transaction->commit();
                         }
                     } catch (Exception $e) {
+                        print_r($e->getMessage());
                         $transaction->rollBack();
                     }
                     $this->getSubmitAction($model);// пропускаем ошибку дублирования в lesson_progress
@@ -1313,8 +1307,8 @@ class DefaultController extends MainController
                 ])
                 ->one();
             $model = LessonItems::findOne($modelLesson['lesson_items_id']);
-            $modelsItems = $model->getLessonProgressTeachers($id, $subject_key, $timestamp_in);
-
+            $modelsItems = $model->getLessonProgressForTeachers($id, $subject_key);
+           // echo '<pre>' . print_r($modelsItems, true) . '</pre>';die();
             if ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
@@ -1328,11 +1322,7 @@ class DefaultController extends MainController
                     try {
                         $flag = true;
                         foreach ($modelsItems as $modelItems) {
-                            $modelLesson = LessonItems::find()
-                                    ->where(['=', 'subject_sect_studyplan_id', 0])
-                                    ->andWhere(['=', 'studyplan_subject_id', $modelItems->studyplan_subject_id])
-                                    ->andWhere(['=', 'lesson_date', strtotime($model->lesson_date)])
-                                    ->one() ?? new LessonItems();
+                            $modelLesson = $modelItems->lesson_items_id ? LessonItems::findOne($modelItems->lesson_items_id) : new LessonItems();
                             $modelLesson->studyplan_subject_id = $modelItems->studyplan_subject_id;
                             $modelLesson->lesson_date = $model->lesson_date;
                             $modelLesson->lesson_test_id = $model->lesson_test_id;

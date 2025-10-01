@@ -79,7 +79,7 @@ $columns = [
                         'panel' => [
                             'heading' => false,
                             'type' => '',
-                           // 'footer' => $hints,
+                            'footer' => \common\models\execution\ExecutionLoad::getCheckLabelHints(),
                         ],
                         'columns' => $columns,
                     ]);

@@ -31,11 +31,11 @@ class DefaultController extends MainController
         $session = Yii::$app->session;
         $this->view->params['tabMenu'] = $this->tabMenu;
 
-        $model_date = new DynamicModel(['date_in', 'is_avans', 'subject_type_id', 'activity_list', 'update_list_flag', 'progress_flag']);
+        $model_date = new DynamicModel(['date_in', 'is_avans', 'subject_type_id', 'activity_list', 'update_list_flag', 'progress_flag', 'is_consult_confirm']);
         $model_date->addRule(['date_in', 'subject_type_id', 'activity_list'], 'required')
             ->addRule(['date_in'], 'date', ['format' => 'php:m.Y'])
             ->addRule(['is_avans'], 'integer')
-            ->addRule(['update_list_flag', 'progress_flag'], 'boolean');
+            ->addRule(['update_list_flag', 'progress_flag', 'is_consult_confirm'], 'boolean');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $mon = date('m');
             $year = date('Y');
@@ -43,6 +43,7 @@ class DefaultController extends MainController
             $model_date->date_in = $session->get('_timesheet_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
             $model_date->subject_type_id = $session->get('_timesheet_subject_type_id') ?? SubjectType::find()->scalar();
             $model_date->activity_list = $model_date->subject_type_id == 1000 ? Yii::$app->user->getSetting('_timesheet_activity_list_0') : Yii::$app->user->getSetting('_timesheet_activity_list_1');
+            $model_date->is_consult_confirm =  true;
         }
         $session->set('_timesheet_date_in', $model_date->date_in);
         $session->set('_timesheet_subject_type_id', $model_date->subject_type_id);
@@ -226,7 +227,9 @@ class DefaultController extends MainController
             }
             $models->cliarTemp();
         return $this->render('teachers-consult', [
+            'models' => $models->getData(),
             'model_date' => $model_date,
+            'modelTeachers' => $modelTeachers,
         ]);
     }
 

@@ -65,10 +65,9 @@ $form = ActiveForm::begin([
                 ]
             )->label('Месяц и год');
             ?>
-            <?= $form->field($model_date, "is_avans")->checkbox()->label('Первая половина заработной платы');
-            ?>
-            <?= $form->field($model_date, "progress_flag")->checkbox()->label('Учесть посещаемость и успеваемость');
-            ?>
+            <?= $form->field($model_date, "is_avans")->checkbox()->label('Первая половина заработной платы');?>
+            <?= $form->field($model_date, "progress_flag")->checkbox()->label('Учесть посещаемость и успеваемость');?>
+            <?= $form->field($model_date, "is_consult_confirm")->checkbox()->label('Учесть только утвержденные консультации');?>
             <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
         </div>
     </div>

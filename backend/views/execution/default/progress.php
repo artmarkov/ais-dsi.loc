@@ -86,7 +86,7 @@ $columns = [
                         'panel' => [
                             'heading' => false,
                             'type' => '',
-                           // 'footer' => $hints,
+                            'footer' => \common\models\execution\ExecutionProgress::getCheckLabelHints(),
                         ],
                         'columns' => $columns,
 //                        'beforeHeader' => [

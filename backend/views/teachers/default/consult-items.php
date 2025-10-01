@@ -229,6 +229,20 @@ $columns = [
                 </div>
 
                 <div class="col-sm-6 text-right">
+                    <?php if (\artsoft\Art::isBackend()): ?>
+                        <?= Html::a('<i class="fa fa-calendar" aria-hidden="true"></i> Отчет по расписанию консультаций',
+                            ['/reports/default/teachers-consult', 'id' => $modelTeachers->id],
+                            [
+                                'target' => '_blank',
+                                'class' => 'btn btn-warning',
+                            ]); ?>
+                    <?php endif;?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                </div>
+                <div class="col-sm-6 text-right">
                     <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'consult-schedule-grid-pjax']) ?>
                 </div>
             </div>

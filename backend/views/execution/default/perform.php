@@ -77,7 +77,7 @@ $columns = [
                         'panel' => [
                             'heading' => false,
                             'type' => '',
-                            // 'footer' => $hints,
+                            'footer' => \common\models\execution\ExecutionSchoolplanPerform::getCheckLabelHints(),
                         ],
                         'columns' => $columns,
 //                        'beforeHeader' => [

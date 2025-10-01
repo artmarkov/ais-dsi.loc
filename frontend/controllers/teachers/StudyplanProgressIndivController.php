@@ -119,7 +119,7 @@ class StudyplanProgressIndivController extends MainController
             $model->load(Yii::$app->request->post());
             // echo '<pre>' . print_r($model, true) . '</pre>'; die();
             //$lessonTest = LessonTest::findOne($model->lesson_test_id);
-            $modelsItems = $model->getLessonProgressTeachersNew($this->teachers_id, $subject_key, $timestamp_in, $model);
+            $modelsItems = $model->getLessonProgressForTeachers($this->teachers_id, $subject_key);
             //if ($lessonTest->test_category == LessonTest::CURRENT_WORK) {
                 if (empty($modelsItems)) {
                     Notice::registerDanger('Дата занятия не соответствует расписанию!');
@@ -144,11 +144,7 @@ class StudyplanProgressIndivController extends MainController
                 try {
                     $flag = true;
                     foreach ($modelsItems as $modelItems) {
-                        $modelLesson = LessonItems::find()
-                                ->where(['=', 'subject_sect_studyplan_id', 0])
-                                ->andWhere(['=', 'studyplan_subject_id', $modelItems->studyplan_subject_id])
-                                ->andWhere(['=', 'lesson_date', strtotime($model->lesson_date)])
-                                ->one() ?? new LessonItems();
+                        $modelLesson = $modelItems->lesson_items_id ? LessonItems::findOne($modelItems->lesson_items_id) : new LessonItems();
                         $modelLesson->studyplan_subject_id = $modelItems->studyplan_subject_id;
                         $modelLesson->lesson_date = $model->lesson_date;
                         $modelLesson->lesson_test_id = $model->lesson_test_id;
@@ -205,8 +201,7 @@ class StudyplanProgressIndivController extends MainController
             ->one();
         $model = LessonItems::findOne($modelLesson['lesson_items_id']);
         // echo '<pre>' . print_r($model, true) . '</pre>';
-        $modelsItems = $model->getLessonProgressTeachers($this->teachers_id, $subject_key, $timestamp_in);
-
+        $modelsItems = $model->getLessonProgressForTeachers($this->teachers_id, $subject_key);
         if ($model->load(Yii::$app->request->post())) {
             $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
             Model::loadMultiple($modelsItems, Yii::$app->request->post());
@@ -220,11 +215,7 @@ class StudyplanProgressIndivController extends MainController
                 try {
                     $flag = true;
                     foreach ($modelsItems as $modelItems) {
-                        $modelLesson = LessonItems::find()
-                                ->where(['=', 'subject_sect_studyplan_id', 0])
-                                ->andWhere(['=', 'studyplan_subject_id', $modelItems->studyplan_subject_id])
-                                ->andWhere(['=', 'lesson_date', strtotime($model->lesson_date)])
-                                ->one() ?? new LessonItems();
+                        $modelLesson = $modelItems->lesson_items_id ? LessonItems::findOne($modelItems->lesson_items_id) : new LessonItems();
                         $modelLesson->studyplan_subject_id = $modelItems->studyplan_subject_id;
                         $modelLesson->lesson_date = $model->lesson_date;
                         $modelLesson->lesson_test_id = $model->lesson_test_id;

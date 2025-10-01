@@ -41,7 +41,7 @@ $form = ActiveForm::begin([
 //                                ],
                             ])->label(Yii::t('art/studyplan', 'Plan Year'));
                         ?>
-
+                        <?= Html::submitButton('<i class="fa fa-html5" aria-hidden="true"></i> Получить данные в Html', ['class' => 'btn btn-info', 'name' => 'submitAction', 'value' => 'send']); ?>
                         <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
                         <?= Html::submitButton('<i class="fa fa-copy" aria-hidden="true"></i> Создать документ в папке "Документы"', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'doc']); ?>
 

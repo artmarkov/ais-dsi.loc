@@ -8,6 +8,7 @@ use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use common\models\own\Department;
 use common\models\routine\Routine;
+use common\models\schedule\ConsultScheduleConfirm;
 use Yii;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
@@ -24,6 +25,7 @@ class TeachersTimesheet
     const DAYOFF = 'В'; // Выходной
 
     protected $is_lesson_mark = true; // учитывать выставление оценки
+    protected $is_consult_confirm; // true - учитывать только утвержденные консультации
     protected $template_name;
     protected $timestamp_in;
     protected $timestamp_out;
@@ -54,6 +56,7 @@ class TeachersTimesheet
         $this->activity_list = $model_date->activity_list;
         $this->progress_flag = $model_date->progress_flag ?? false;
         $this->is_avans = $model_date->is_avans ?? false;
+        $this->is_consult_confirm = $model_date->is_consult_confirm ?? false;
         $this->routine = $this->getRoutine();
         $this->activities = $this->getTeachersActivities();
         $this->teachers_list = $this->getTeachersList();
@@ -111,6 +114,22 @@ class TeachersTimesheet
     }
 
     /**
+     * Находим из выбранных преподавателей только с утвержденными расписаниями консультаций
+     * @return array
+     */
+    protected function getTeachersConsultConfirmList()
+    {
+        $teachers_list = ConsultScheduleConfirm::find()
+            ->select('teachers_id')
+                ->where(['teachers_id' => $this->teachers_list])
+                ->andWhere(['=', 'confirm_status', ConsultScheduleConfirm::DOC_STATUS_AGREED])
+                ->andWhere(['plan_year' => $this->plan_year])
+            ->column();
+
+        return $teachers_list;
+    }
+
+    /**
      * Запрос на календарь занятий преподавателя
      * @param $teachersIds
      * @return array
@@ -162,10 +181,11 @@ class TeachersTimesheet
     protected function getTeachersDayConsult()
     {
         $data_schedule = [];
+        $teachersList = $this->is_consult_confirm ? $this->getTeachersConsultConfirmList() : $this->teachers_list;
 
         $models = (new Query())->from('consult_schedule_view')
             ->select(new \yii\db\Expression('direction_id, direction_vid_id, teachers_id, (datetime_out-datetime_in) as time, date_part(\'day\'::text, to_timestamp(datetime_in+10800)) AS day'))
-            ->where(['teachers_id' => $this->teachers_list])
+            ->where(['teachers_id' => $teachersList])
             ->andWhere(['between', 'datetime_in', $this->timestamp_in, $this->timestamp_out])
             ->andWhere(['subject_type_id' => $this->subject_type_id])
             ->andWhere(['status' => 1])

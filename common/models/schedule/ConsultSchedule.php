@@ -3,6 +3,7 @@
 namespace common\models\schedule;
 
 use artsoft\behaviors\DateFieldBehavior;
+use artsoft\helpers\Schedule;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadTrait;
 use Yii;
@@ -125,5 +126,36 @@ class ConsultSchedule extends \yii\db\ActiveRecord
 
     public function getTeachersConsultNeed() {
         return true;
+    }
+    // Автоматическое добавление расписания для концертмейтера
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($insert) {
+                $model = TeachersLoad::find()
+                    ->where(['=', 'id', $this->teachers_load_id])
+                    ->andWhere(['=', 'direction_id', 1000])
+                    ->one();
+                if ($model) {
+                    $modelFind = TeachersLoad::find()
+                        ->where(['=', 'studyplan_subject_id', $model->studyplan_subject_id])
+                        ->andWhere(['=', 'subject_sect_studyplan_id', $model->subject_sect_studyplan_id])
+                        ->andWhere(['=', 'load_time', $model->load_time])
+                        ->andWhere(['=', 'direction_id', 1001])
+                        ->one();
+                    if ($modelFind) {
+                        $m = new ConsultSchedule();
+                        $m->teachers_load_id = $modelFind->id;
+                        $m->datetime_in = Yii::$app->formatter->asDatetime($this->datetime_in, 'php:d.m.Y H:i');
+                        $m->datetime_out = Yii::$app->formatter->asDatetime($this->datetime_out, 'php:d.m.Y H:i');
+                        $m->auditory_id = $this->auditory_id;
+                        $m->save(false);
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 }
