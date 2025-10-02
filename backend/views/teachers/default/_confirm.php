@@ -28,8 +28,13 @@ $form = ActiveForm::begin([
             <div class="panel-body">
                 <?php if (\artsoft\Art::isFrontend() && $readonly): ?>
                     <?php echo \yii\bootstrap\Alert::widget([
-                        'body' => '<i class="fa fa-info-circle"></i> Для отправки на утверждение заполните все поля расписания и устраните сообщения об ошибках.',
+                        'body' => '<i class="fa fa-info-circle"></i> Для отправки на согласование заполните все поля расписания и устраните сообщения об ошибках.',
                         'options' => ['class' => 'alert-danger'],
+                    ]);
+                    ?>
+                    <?php echo \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-info-circle"></i> Для отправки на согласование необходимо выбрать Подписанта документа из списка.',
+                        'options' => ['class' => 'alert-warning'],
                     ]);
                     ?>
                 <?php endif; ?>
