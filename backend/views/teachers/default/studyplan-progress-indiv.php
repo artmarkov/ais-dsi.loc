@@ -160,6 +160,13 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             <?= $this->render('_search-progress-indiv', compact('modelTeachers', 'model_date', 'plan_year')) ?>
             <?= $confirm_available ? $this->render('_confirm-progress-indiv', compact('model_confirm', 'readonly')) : null?>
             <div class="row">
+                <div class="col-sm-12">
+                    <?php echo \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-info-circle"></i> Совет: Для быстрого перемещения по строкам вправо, используйте колесико мышки и нажатую кнопку "Shift".',
+                        'options' => ['class' => 'alert-info'],
+                    ]);
+                    ?>
+                </div>
                 <div class="col-sm-6">
                     <?php
                     /* Uncomment this to activate GridQuickLinks */

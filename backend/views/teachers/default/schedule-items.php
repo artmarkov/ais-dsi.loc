@@ -246,6 +246,13 @@ $columns = [
                     <?php endif;?>
                     <?php /*\artsoft\grid\GridPageSize::widget(['pjaxId' => 'subject-schedule-grid-pjax']) */?>
                 </div>
+                <div class="col-sm-12">
+                    <?php echo \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-info-circle"></i> Совет: Для быстрого перемещения по строкам вправо, используйте колесико мышки и нажатую кнопку "Shift".',
+                        'options' => ['class' => 'alert-info'],
+                    ]);
+                    ?>
+                </div>
             </div>
 
             <?php

@@ -2,8 +2,10 @@
 
 namespace backend\controllers\reports;
 
+use common\models\reports\Mosticket;
 use common\models\reports\ProgressHistory;
 use common\models\reports\ProgressReport;
+use common\models\reports\CreativeStat;
 use common\models\studyplan\SchoolWorkload;
 use common\models\studyplan\StudyplanDistrib;
 use common\models\studyplan\StudyplanHistory;
@@ -20,11 +22,11 @@ use common\models\user\UserCommon;
 use Yii;
 use yii\base\DynamicModel;
 use yii\db\Query;
-use yii\helpers\ArrayHelper;
+use yii\web\UploadedFile;
 
 class DefaultController extends MainController
 {
-    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve', 'progress-history', 'teachers-consult'];
+    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve', 'progress-history', 'teachers-consult', 'creative', 'mosticket'];
 
     public function actionIndex()
     {
@@ -361,5 +363,41 @@ class DefaultController extends MainController
         ]);
     }
 
+    public function actionCreative()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model_date = $this->modelDate;
+        $model_date->addRule('options', 'safe');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+        }
+
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            $models = new CreativeStat($model_date);
+            $data = $models->getData();
+            $models->sendXlsx($data);
+        }
+
+        return $this->renderIsAjax('creative-stat', [
+            'model_date' => $model_date,
+        ]);
+    }
+
+    public function actionMosticket()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $modelImport = new Mosticket();
+
+        if ($modelImport->load(Yii::$app->request->post())) {
+            $modelImport->file = UploadedFile::getInstance($modelImport, 'file');
+            $data = $modelImport->getData();
+            $modelImport->sendXlsx($data);
+
+        }
+        return $this->renderIsAjax('mosticket', [
+            'model' => $modelImport,
+        ]);
+    }
 
 }

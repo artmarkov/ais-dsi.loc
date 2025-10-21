@@ -87,11 +87,12 @@ class UserCommon extends ActiveRecord
     public function rules()
     {
         return [
-            [['first_name', 'last_name'], 'required'],
+            [['first_name', 'last_name', 'gender', 'phone', 'snils', 'birth_date', 'address'], 'required'],
             [['birth_date'], 'required', 'on'=> self::SCENARIO_STUDENT, 'enableClientValidation' => false],
             [['gender', 'status', 'version'], 'integer'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
-            [['user_category', 'first_name', 'middle_name', 'last_name', 'address', 'email'], 'string', 'max' => 124],
+            [['user_category', 'first_name', 'middle_name', 'last_name', 'email'], 'string', 'max' => 124],
+            [['address'], 'string', 'max' => 1024],
             [['first_name', 'middle_name', 'last_name'], 'trim'],
             [['first_name', 'middle_name', 'last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
 //            [['last_name'], 'unique', 'targetAttribute' => ['last_name', 'first_name', 'middle_name'],

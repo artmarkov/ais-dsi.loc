@@ -30,11 +30,16 @@ class RegistrationForm extends Model
     public $parent_gender;
     public $parent_birth_date;
     public $parent_snils;
+    public $parent_address;
 
     public $email;
     public $phone;
     public $phone_optional;
     public $address;
+    public $city;
+    public $street;
+    public $house;
+    public $flat;
 
     public $student_sert_name;
     public $student_sert_series;
@@ -58,8 +63,10 @@ class RegistrationForm extends Model
     {
         return [
             [['email'], 'required', 'on' => self::SCENARIO_FRONFEND],
-            [['phone', 'address'], 'required'],
+            [['phone', 'city', 'street', 'house'], 'required'],
             [['student_first_name', 'student_last_name', 'student_birth_date'], 'required'],
+            [['student_snils', 'parent_snils'], 'required'],
+            [[ 'student_sert_num', 'parent_sert_num', 'parent_address'], 'required'],
             ['student_last_name', 'validateStudent'],
             [['parent_first_name', 'parent_last_name'], 'required'],
             [['relation_id'], 'required'],
@@ -73,7 +80,8 @@ class RegistrationForm extends Model
             [['parent_first_name', 'parent_middle_name', 'parent_last_name'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             [['student_birth_date', 'parent_birth_date'], 'date'],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
-            [['address', 'email'], 'string', 'max' => 124],
+            [['address'], 'string', 'max' => 1024],
+            [['city', 'street', 'house', 'flat', 'email'], 'string', 'max' => 124],
             [['student_snils', 'parent_snils'], 'string', 'max' => 16],
             [['student_first_name', 'student_last_name', 'parent_first_name', 'parent_last_name'], 'string', 'min' => 3],
             // ['email', 'validateEmail'],
@@ -196,7 +204,11 @@ class RegistrationForm extends Model
             'student_snils' => Yii::t('art', 'Snils'),
             'parent_snils' => Yii::t('art', 'Snils'),
             'email' => Yii::t('art', 'E-mail'),
-            'address' => Yii::t('art/guide', 'Address'),
+            'parent_address' => Yii::t('art/guide', 'Address'),
+            'city' => Yii::t('art/guide', 'City'),
+            'street' => Yii::t('art/guide', 'Street'),
+            'house' => Yii::t('art/guide', 'House'),
+            'flat' => Yii::t('art/guide', 'Flat'),
             'student_sert_name' => Yii::t('art/student', 'Sertificate Name'),
             'student_sert_series' => Yii::t('art/student', 'Sertificate Series'),
             'student_sert_num' => Yii::t('art/student', 'Sertificate Num'),
@@ -212,6 +224,11 @@ class RegistrationForm extends Model
             'student_gender' => Yii::t('art', 'Gender'),
             'parent_gender' => Yii::t('art', 'Gender'),
         ];
+    }
+
+    protected function setAddress()
+    {
+        return implode(', ', ['г. ' . $this->city, 'улица ' . $this->street, 'дом. ' . $this->house, 'кв. ' . $this->flat]);
     }
 
     public function registration()
@@ -236,7 +253,7 @@ class RegistrationForm extends Model
             'phone_optional' => $this->phone_optional,
             'snils' => $this->student_snils,
             'email' => $this->email,
-            'address' => $this->address,
+            'address' => $this->setAddress(),
         ]);
         $modelStudent->setAttributes([
             'sert_name' => $this->student_sert_name,
@@ -256,7 +273,7 @@ class RegistrationForm extends Model
                 'phone_optional' => $this->phone_optional,
                 'snils' => $this->parent_snils,
                 'email' => $this->email,
-                'address' => $this->address,
+                'address' => $this->parent_address,
             ]);
             $modelParent->setAttributes([
                 'sert_name' => $this->parent_sert_name,

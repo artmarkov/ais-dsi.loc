@@ -1,15 +1,7 @@
 <?php
 
 use artsoft\helpers\ButtonHelper;
-use artsoft\helpers\RefBook;
-use artsoft\models\User;
 use artsoft\widgets\ActiveForm;
-use common\models\entrant\Entrant;
-use artsoft\helpers\Html;
-use common\models\entrant\EntrantComm;
-use kartik\depdrop\DepDrop;
-use wbraganca\dynamicform\DynamicFormWidget;
-use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\entrant\Entrant */

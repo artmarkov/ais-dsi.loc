@@ -43,6 +43,7 @@ class TeachersConsult
             ->where(['=', 'teachers_id', $this->teachers_id])
             ->andWhere(['=', 'plan_year', $this->plan_year])
             ->andWhere(['IS NOT', 'consult_schedule_id', NULL])
+            ->orderBy('datetime_in')
             ->all();
         $this->models = $data;
         return $this->models;

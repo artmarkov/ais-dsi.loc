@@ -148,8 +148,14 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             <?php endif; ?>
             <?= $this->render('_search-progress', compact('modelTeachers', 'model_date', 'plan_year')) ?>
             <?= $confirm_available ? $this->render('_confirm-progress', compact('model_confirm', 'readonly')) : null ?>
-
             <div class="row">
+                <div class="col-sm-12">
+                    <?php echo \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-info-circle"></i> Совет: Для быстрого перемещения по строкам вправо, используйте колесико мышки и нажатую кнопку "Shift".',
+                        'options' => ['class' => 'alert-info'],
+                    ]);
+                    ?>
+                </div>
                 <div class="col-sm-6">
                     <?php
                     /* Uncomment this to activate GridQuickLinks */
@@ -163,6 +169,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                     <?= \artsoft\grid\GridPageSize::widget(['pjaxId' => 'studyplan-progress-grid-pjax']) ?>
                 </div>
             </div>
+
             <?php
             Pjax::begin([
                 'id' => 'studyplan-progress-grid-pjax',

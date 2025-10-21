@@ -70,7 +70,7 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
         $model_th = new LessonProgress();
         $model_th->lesson_items_id = $model->id;
         $model_th->studyplan_subject_id = $dataItem['studyplan_subject_id'];
-        $model_th->lesson_mark_id = 1017;
+       // $model_th->lesson_mark_id = 1017;
         return $model_th->save(false);
     }
 

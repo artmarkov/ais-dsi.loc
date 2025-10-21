@@ -62,7 +62,11 @@ class ConsultItemsController extends MainController
         $model->teachers_load_id = Yii::$app->request->get('load_id');
         if ($model->load(Yii::$app->request->post()) AND $model->save()) {
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-            $this->getSubmitAction($model);
+            if (Yii::$app->request->post('submitAction') == 'savenext') {
+                $this->redirect(['/teachers/consult-items/create', 'load_id' => $model->teachers_load_id]);
+            } else {
+                $this->getSubmitAction($model);
+            }
         }
 
         return $this->renderIsAjax('@backend/views/schedule/consult-schedule/_form.php', [
@@ -84,7 +88,11 @@ class ConsultItemsController extends MainController
 
         if ($model->load(Yii::$app->request->post()) AND $model->save()) {
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-            $this->getSubmitAction($model);
+            if (Yii::$app->request->post('submitAction') == 'savenext') {
+                $this->redirect(['/teachers/consult-items/create', 'load_id' => $model->teachers_load_id]);
+            } else {
+                $this->getSubmitAction($model);
+            }
         }
 
         return $this->renderIsAjax('@backend/views/schedule/consult-schedule/_form.php', [
