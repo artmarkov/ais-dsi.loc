@@ -227,7 +227,7 @@ $columns = [
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>
-            <?= \artsoft\models\User::hasRole('reestrFrontend', false) ? '' : $this->render('_confirm', compact('model_confirm', 'readonly')) ?>
+            <?= (\artsoft\Art::isFrontend() && \artsoft\models\User::hasRole('reestrFrontend', false)) ? '' : $this->render('_confirm', compact('model_confirm', 'readonly')) ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

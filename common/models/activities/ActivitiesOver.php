@@ -175,7 +175,6 @@ class ActivitiesOver extends \artsoft\db\ActiveRecord
     {
         $thereIsAnOverlapping = Schoolplan::find()->where(
             ['AND',
-                ['!=', 'activities_over_id', $this->id],
                 ['auditory_id' => $this->auditory_id],
                 ['OR',
                     ['AND',
