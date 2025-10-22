@@ -2,6 +2,7 @@
 
 namespace common\models\schedule;
 
+use artsoft\Art;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\Schedule;
 use common\models\teachers\TeachersLoad;
@@ -31,6 +32,9 @@ class ConsultSchedule extends \yii\db\ActiveRecord
 {
     use TeachersLoadTrait;
 
+    public $date_in;
+    public $time_in;
+    public $time_out;
     /**
      * {@inheritdoc}
      */
@@ -54,20 +58,51 @@ class ConsultSchedule extends \yii\db\ActiveRecord
             ]
         ];
     }
+
+    public function beforeValidate()
+    {
+        $this->datetime_in = $this->date_in . ' ' . $this->time_in;
+        $this->datetime_out = $this->date_in . ' ' . $this->time_out;
+        return parent::beforeValidate();
+    }
+
+    public function afterFind()
+    {
+        $this->date_in = Yii::$app->formatter->asDate($this->datetime_in);
+        $this->time_in = Yii::$app->formatter->asDatetime($this->datetime_in, 'php:H:i');
+        $this->time_out = Yii::$app->formatter->asDatetime($this->datetime_out, 'php:H:i');
+        parent::afterFind();
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['teachers_load_id', 'auditory_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
-            [['teachers_load_id', 'datetime_in', 'datetime_out', 'auditory_id'], 'required'],
+            [['teachers_load_id', 'auditory_id', 'version'], 'integer'],
+            [['teachers_load_id', 'auditory_id'], 'required'],
+            [['date_in', 'time_in', 'time_out'], 'required'],
             [['datetime_in', 'datetime_out', ], 'safe'],
             [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
-            [['datetime_out'], 'compareTimestamp', 'skipOnEmpty' => false],
+            [['date_in'], 'compareTimestamp', 'skipOnEmpty' => false],
+            /*[['date_in'], 'addNew', 'skipOnEmpty' => false, 'when' => function ($model) {
+                return Art::isFrontend() && $model->isNewRecord;
+            }, 'enableClientValidation' => false],*/
+            [['date_in', 'time_in', 'time_out'], 'safe'],
             [['description'], 'string', 'max' => 512],
             [['teachers_load_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeachersLoad::className(), 'targetAttribute' => ['teachers_load_id' => 'id']],
         ];
+    }
+
+    public function addNew($attribute, $params, $validator)
+    {
+        $timestamp_in = Yii::$app->formatter->asTimestamp($this->datetime_in);
+
+        if ($this->datetime_in && $timestamp_in < time()) {
+            $message = 'Нельзя веести мероприятие задним числом.';
+            $this->addError($attribute, $message);
+        }
     }
 
     public function checkFormatDateTime($attribute, $params)
@@ -106,6 +141,9 @@ class ConsultSchedule extends \yii\db\ActiveRecord
             'updated_at' => Yii::t('art', 'Updated'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'date_in' => 'Дата консультации',
+            'time_in' => 'Время начала',
+            'time_out' => 'Время окончания',
         ];
     }
 

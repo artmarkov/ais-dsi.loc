@@ -101,6 +101,7 @@ $this->params['breadcrumbs'][] = 'Регистрация';
                                 <?= $form->field($model, 'parent_sert_code')->textInput(['maxlength' => true]) ?>
                                 <?= $form->field($model, 'parent_sert_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
                                 <?= $form->field($model, 'parent_sert_country')->textInput(['maxlength' => true]) ?>
+                                <?= $form->field($model, 'parent_address')->textInput(['maxlength' => true])->hint('Заполните поле как в документе, удостоверяющем личность.') ?>
                             </div>
                         </div>
                     </div>
@@ -116,8 +117,11 @@ $this->params['breadcrumbs'][] = 'Регистрация';
                     <div class="col-sm-12">
                         <?= $form->field($model, 'phone')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                         <?= $form->field($model, 'phone_optional')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
-                        <?= $form->field($model, 'email')->textInput(['maxlength' => 124])->hint('Введите емайл, который будет использоваться для регистрации и востановления доступа.') ?>
-                        <?= $form->field($model, 'address')->textInput(['maxlength' => 124])->hint('Введите адрес регистрации.') ?>
+                        <?= $form->field($model, 'email')->textInput(['maxlength' => 124])->hint('Введите емайл, который будет использоваться для регистрации и восстановления доступа.') ?>
+                        <?= $form->field($model, 'city')->textInput(['maxlength' => 124])->hint('Введите город.') ?>
+                        <?= $form->field($model, 'street')->textInput(['maxlength' => 124])->hint('Введите улицу.') ?>
+                        <?= $form->field($model, 'house')->textInput(['maxlength' => 124])->hint('Введите дом.') ?>
+                        <?= $form->field($model, 'flat')->textInput(['maxlength' => 124])->hint('Введите квартиру.') ?>
                     </div>
                 </div>
             </div>

@@ -4,6 +4,7 @@ namespace common\models\education;
 
 use artsoft\Art;
 use artsoft\helpers\ArtHelper;
+use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use common\models\guidejob\Direction;
@@ -113,7 +114,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $data[$item]['studyplan_subject_id'] = $modelProgress->studyplan_subject_id;
             $data[$item]['studyplan_id'] = $modelProgress->studyplan_id;
             $data[$item]['student_id'] = $modelProgress->student_id;
-            $data[$item]['student_fio'] = $modelProgress->student_fio;
+            $data[$item]['student_fio'] = $modelProgress->student_fullname;
 
             if (isset($modelsMarks[$modelProgress->studyplan_subject_id])) {
                 foreach ($modelsMarks[$modelProgress->studyplan_subject_id] as $id => $mark) {
@@ -194,8 +195,13 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
             if (isset($modelsMarks[$modelProgress->subject_sect_studyplan_id][$modelProgress->studyplan_subject_id])) {
                 foreach ($modelsMarks[$modelProgress->subject_sect_studyplan_id][$modelProgress->studyplan_subject_id] as $id => $mark) {
+//                    echo '<pre>' . print_r($mark, true) . '</pre>';
                     $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
-                    $data[$item][$date_label] = !$readonly ? self::getEditableForm($mark_list, $mark) . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '') : $mark->mark_label . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '');
+//                    if (\artsoft\Art::isFrontend()) {
+//                        $data[$item][$date_label] = Html::a($mark->mark_label . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : ''), Url::to(['#']), ['id' => 'progress', 'value' => $mark->lesson_items_id, 'data-pjax' => '0', 'visible' => true]);
+//                    } else {
+                        $data[$item][$date_label] = !$readonly ? self::getEditableForm($mark_list, $mark) . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '') : $mark->mark_label . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '');
+//                    }
                 }
             }
 
@@ -233,17 +239,17 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $modelsProgress = self::find()
                 ->andWhere(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
                 ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id]);
-        if (!$history) {
-            $modelsProgress = $modelsProgress->andWhere(['OR',
-                ['status' => Studyplan::STATUS_ACTIVE],
-                ['AND',
-                    ['status' => Studyplan::STATUS_INACTIVE],
-                    ['status_reason' => [1, 2, 4]]
-                ]
-            ]);
-        }
-        $modelsProgress = $modelsProgress->andWhere(['plan_year' => $plan_year])
-            ->all();
+            if (!$history) {
+                $modelsProgress = $modelsProgress->andWhere(['OR',
+                    ['status' => Studyplan::STATUS_ACTIVE],
+                    ['AND',
+                        ['status' => Studyplan::STATUS_INACTIVE],
+                        ['status_reason' => [1, 2, 4]]
+                    ]
+                ]);
+            }
+            $modelsProgress = $modelsProgress->andWhere(['plan_year' => $plan_year])
+                ->all();
             $dates_load = 0;
             foreach ($lessonDates as $id => $lessonDate) {
                 $date = Yii::$app->formatter->asDate($lessonDate['lesson_date'], 'php:d.m.Y');
@@ -277,7 +283,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $data[$item]['studyplan_id'] = $modelProgress->studyplan_id;
             $data[$item]['student_id'] = $modelProgress->student_id;
             $data[$item]['sect_name'] = $modelProgress->sect_name;
-            $data[$item]['student_fio'] = $modelProgress->student_fio;
+            $data[$item]['student_fio'] = $modelProgress->student_fullname;
             $data[$item]['subject'] = $modelProgress->subject;
 //            $data[$item]['timestamp_in'] = $timestamp_in;
 
@@ -419,7 +425,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $data[$item]['studyplan_id'] = $modelProgress->studyplan_id;
             $data[$item]['student_id'] = $modelProgress->student_id;
             $data[$item]['sect_name'] = $modelProgress->sect_name;
-            $data[$item]['student_fio'] = $modelProgress->student_fio;
+            $data[$item]['student_fio'] = $modelProgress->student_fullname;
             $data[$item]['subject_key'] = $modelProgress->subject_key;
             $data[$item]['subject'] = $modelProgress->subject;
             $data[$item]['timestamp_in'] = $timestamp_in;
@@ -454,7 +460,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
 
     public static function getIndivListForTeachersQuery($teachers_id, $plan_year, $history = false)
     {
-        $models =self::find()
+        $models = self::find()
             ->select('subject_key, subject')
             ->distinct()
             ->where(['is not', 'subject_key', NULL]);

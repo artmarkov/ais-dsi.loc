@@ -255,4 +255,40 @@ $css = <<<CSS
 CSS;
 
 $this->registerCss($css);
+
+\yii\bootstrap\Modal::begin([
+    'header' => '<h4 class="lte-hide-title page-title">Карточка занятия</h4>',
+    'size' => 'modal-md',
+    'id' => 'progress-modal',
+]);
+\yii\bootstrap\Modal::end();
+?>
+<?php
+$js = <<<JS
+$('#progress').on('click', function (e) {
+         e.preventDefault();
+         var id = $(this).attr('value');
+        //console.log(id);
+        $.ajax({
+            url: 'init-progress-modal',
+            type: 'POST',
+            data: {
+                id: id, 
+            },
+            success: function (res) {
+                console.log(res);
+            showProgress(res);
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
+});
+function showProgress(res) {
+    $('#progress-modal .modal-body').html(res);
+    $('#progress-modal').modal();
+}
+JS;
+
+$this->registerJs($js);
 ?>

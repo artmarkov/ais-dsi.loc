@@ -1,7 +1,8 @@
 <?php
 
 use artsoft\helpers\RefBook;
-use common\models\teachers\Teachers;use yii\helpers\Url;
+use common\models\teachers\Teachers;
+use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\helpers\Html;
 use artsoft\grid\GridView;
@@ -81,6 +82,16 @@ $columns = [
     ],
     [
         'attribute' => 'datetime_in',
+        'value' => function ($model) {
+            return $model->datetime_in ? $model->date_in . '<br/>' . $model->time_in . '-' . $model->time_out : '';
+        },
+        'width' => '300px',
+        'format' => 'raw',
+        'footer' => $noteModel->getTotal('datetime_in'),
+        'label' => 'Дата консультации'
+    ],
+    /*[
+        'attribute' => 'datetime_in',
         'width' => '300px',
         'value' => function ($model) {
             return $model->datetime_in;
@@ -95,7 +106,7 @@ $columns = [
             return $model->datetime_out;
         },
         'format' => 'raw',
-    ],
+    ],*/
     [
         'attribute' => 'auditory_id',
         'width' => '350px',
@@ -145,7 +156,7 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-            'create' => function ($model) use($noteModel) {
+            'create' => function ($model) use ($noteModel) {
                 return $noteModel->getTeachersConsultScheduleNeed($model);
             },
             'delete' => function ($model) {
@@ -160,7 +171,7 @@ $columns = [
         'class' => 'kartik\grid\ActionColumn',
         'vAlign' => \kartik\grid\GridView::ALIGN_MIDDLE,
         'width' => '90px',
-        'visible' => \artsoft\Art::isFrontend()  && Teachers::isOwnTeacher($modelTeachers->id) && in_array($model_confirm->confirm_status, [0,3]),
+        'visible' => \artsoft\Art::isFrontend() && Teachers::isOwnTeacher($modelTeachers->id) && in_array($model_confirm->confirm_status, [0, 3]),
         'template' => '{create} {update} {delete}',
         'buttons' => [
             'create' => function ($key, $model) {
@@ -195,13 +206,13 @@ $columns = [
             },
         ],
         'visibleButtons' => [
-            'create' => function ($model) use($noteModel) {
+            'create' => function ($model) use ($noteModel) {
                 return $noteModel->getTeachersConsultScheduleNeed($model);
             },
-            'delete' => function ($model) use($model_confirm) {
+            'delete' => function ($model) use ($model_confirm) {
                 return $model->consult_schedule_id !== null;
             },
-            'update' => function ($model) use($model_confirm) {
+            'update' => function ($model) use ($model_confirm) {
                 return $model->consult_schedule_id !== null;
             }
         ],
@@ -236,7 +247,14 @@ $columns = [
                                 'target' => '_blank',
                                 'class' => 'btn btn-warning',
                             ]); ?>
-                    <?php endif;?>
+                    <?php endif; ?>
+                </div>
+                <div class="col-sm-12">
+                    <?php echo \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-info-circle"></i> Совет: Для быстрого перемещения по строкам вправо, используйте колесико мышки и нажатую кнопку "Shift".',
+                        'options' => ['class' => 'alert-info'],
+                    ]);
+                    ?>
                 </div>
             </div>
             <div class="row">
@@ -265,7 +283,7 @@ $columns = [
                         'columns' => [
                             ['content' => 'Учебный предмет', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
                             ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
-                            ['content' => 'Расписание консультаций', 'options' => ['colspan' => 4, 'class' => 'text-center danger']],
+                            ['content' => 'Расписание консультаций', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ]

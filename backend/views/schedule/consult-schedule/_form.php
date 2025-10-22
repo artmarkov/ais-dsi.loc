@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 
@@ -7,6 +8,8 @@ use artsoft\widgets\ActiveForm;
 /* @var $model common\models\schedule\ConsultSchedule */
 /* @var $teachersLoadModel common\models\teachers\TeachersLoad */
 /* @var $form artsoft\widgets\ActiveForm */
+
+$readonly = false;
 ?>
 
 <div class="teachers-plan-form">
@@ -28,13 +31,25 @@ use artsoft\widgets\ActiveForm;
             <?php endif; ?>
         </div>
         <div class="panel-body">
+            <div class="col-sm-12">
+                <?php echo \yii\bootstrap\Alert::widget([
+                    'body' => '<i class="fa fa-info-circle"></i> Совет: Если Вам необходимо заполнить несколько занятий для одного ученика, нажимайте кнопку "Сохранить и добавить".',
+                    'options' => ['class' => 'alert-info'],
+                ]);
+                ?>
+            </div>
             <div class="row">
                 <div class="col-sm-12">
 
-                    <?= $form->field($model, 'datetime_in')->widget(kartik\datetime\DateTimePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', /*'disabled' => $readonly*/]); ?>
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'date_in')->widget(\kartik\date\DatePicker::className(), ['pluginOptions' => [
+                            'orientation' => 'bottom', 'autoclose' => true,
+                        ]])->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
-                    <?= $form->field($model, 'datetime_out')->widget(kartik\datetime\DateTimePicker::classname())->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->textInput(['autocomplete' => 'off', /*'disabled' => $readonly*/]) ?>
+                        <?= $form->field($model, 'time_in')->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
+                        <?= $form->field($model, 'time_out')->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
+                    </div>
                     <?= $form->field($model, "auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList()) ?>
 
                     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
@@ -45,6 +60,7 @@ use artsoft\widgets\ActiveForm;
         <div class="panel-footer">
             <div class="form-group btn-group">
                 <?= \artsoft\helpers\ButtonHelper::submitButtons($model) ?>
+                <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'savenext', 'Save & Add', 'btn-md'); ?>
             </div>
             <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
         </div>

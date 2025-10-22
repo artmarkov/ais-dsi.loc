@@ -887,7 +887,11 @@ class DefaultController extends MainController
             $model->teachers_load_id = Yii::$app->request->get('load_id');
             if ($model->load(Yii::$app->request->post()) AND $model->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                $this->getSubmitAction($model);
+                if (Yii::$app->request->post('submitAction') == 'savenext') {
+                    $this->redirect(['/teachers/default/consult-items', 'id' => $id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']);
+                } else {
+                    $this->getSubmitAction($model);
+                }
             }
 
             return $this->renderIsAjax('@backend/views/schedule/consult-schedule/_form.php', [
@@ -899,7 +903,7 @@ class DefaultController extends MainController
         } elseif ('history' == $mode && $objectId) {
             $model = ConsultSchedule::findOne($objectId);
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Consult Schedule'), 'url' => ['teachers/default/consult-items', 'id' => $modelTeachers->id]];
-            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['teachers/default/update', 'id' => $modelTeachers->id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['teachers/default/consult-items', 'id' => $modelTeachers->id, 'objectId' => $model->id, 'mode' => 'update']];
             $data = new ConsultScheduleHistory($objectId);
             return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
 
@@ -922,7 +926,11 @@ class DefaultController extends MainController
 
             if ($model->load(Yii::$app->request->post()) AND $model->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                $this->getSubmitAction($model);
+                if (Yii::$app->request->post('submitAction') == 'savenext') {
+                    $this->redirect(['/teachers/default/consult-items', 'id' => $id, 'load_id' => $model->teachers_load_id, 'mode' => 'create']);
+                } else {
+                    $this->getSubmitAction($model);
+                }
             }
 
             return $this->renderIsAjax('@backend/views/schedule/consult-schedule/_form.php', [
@@ -1308,7 +1316,7 @@ class DefaultController extends MainController
                 ->one();
             $model = LessonItems::findOne($modelLesson['lesson_items_id']);
             $modelsItems = $model->getLessonProgressForTeachers($id, $subject_key);
-           // echo '<pre>' . print_r($modelsItems, true) . '</pre>';die();
+            // echo '<pre>' . print_r($modelsItems, true) . '</pre>';die();
             if ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());

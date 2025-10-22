@@ -13,7 +13,7 @@ use kartik\datetime\DateTimePicker;
     <div class="panel-body">
         <div class="row">
             <div class="col-sm-12">
-                <?= $form->field($model, 'social_card_flag')->checkbox(['disabled' => $readonly]) ?>
+                <?= $form->field($model, 'social_card_flag')->radioList([1 => 'Карта в наличии', 2 => 'Карты нет'], ['disabled' => $readonly]) ?>
             </div>
         </div>
     </div>

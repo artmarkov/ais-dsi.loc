@@ -39,8 +39,9 @@ class StudyplanStat
         'doc_contract_end' => 'Дата окончания действия договора',
         'status' => 'Статус учебного плана',
         'status_reason' => 'Причина закрытия учебного плана',
+        'date_close' => 'Дата закрытия плана',
         'subject_form_name' => 'Форма обучения',
-        'student_address' => 'Адрес ученика',
+        'student_address' => 'Адрес регистрации ученика',
         'student_birth_date' => 'Дата рождения ученика',
         'student_birth_age' => 'Возраст ученика',
         'student_gender' => 'Пол ученика',
@@ -57,7 +58,7 @@ class StudyplanStat
 //            'student_sert_date' => '',
         'limited_status_list' => 'Дополнительные сведения',
         'signer_fio' => 'Родитель (Подписант документов)',
-        'signer_address' => 'Адрес родителя',
+        'signer_address' => 'Адрес регистрации родителя',
         'signer_birth_date' => 'Дата рождения родителя',
         'signer_gender' => 'Пол родителя',
         'signer_phone' => 'Телефон родителя',
@@ -141,6 +142,7 @@ class StudyplanStat
             case 'signer_birth_date' :
             case 'doc_contract_start' :
             case 'doc_contract_end' :
+            case 'date_close' :
                 return $model[$option] ? Yii::$app->formatter->asDate($model[$option]) : null;
                 break;
             case 'student_id' :
