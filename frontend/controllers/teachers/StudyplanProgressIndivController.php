@@ -274,7 +274,7 @@ class StudyplanProgressIndivController extends MainController
             $modelLesson ? $modelLesson->delete() : null;
         }
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-        return $this->redirect($this->getRedirectPage('delete', $model));
+        return $this->redirect($this->getRedirectPage('delete'));
 
     }
 }
