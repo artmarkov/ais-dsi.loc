@@ -18,7 +18,7 @@ use kartik\datetime\DateTimePicker;
 
                 <?= $form->field($model, 'timestamp_deny')->widget(DateTimePicker::class, ['disabled' => $readonly]); ?>
 
-                <?= $form->field($model, 'social_card_flag')->checkbox(['disabled' => $readonly]) ?>
+                <?= $form->field($model, 'social_card_flag')->radioList([1 => 'Карта в наличии', 2 => 'Карты нет'], ['disabled' => $readonly]) ?>
             </div>
         </div>
     </div>

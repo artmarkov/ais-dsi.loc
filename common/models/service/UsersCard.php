@@ -65,7 +65,7 @@ class UsersCard extends \artsoft\db\ActiveRecord
             [['key_hex'], 'match', 'pattern' =>'/^[0-9,A-Z]+$/', 'message' => 'Код пропуска должен содержать только символы [0-9,A-Z].', 'skipOnEmpty' => true],
             [['mode_main'], 'string', 'max' => 127],
             [['mode_list'], 'string', 'max' => 512],
-            ['social_card_flag', 'boolean'],
+            ['social_card_flag', 'integer'],
         ];
     }
 

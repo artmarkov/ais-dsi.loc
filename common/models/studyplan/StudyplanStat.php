@@ -184,7 +184,7 @@ class StudyplanStat
                 break;
             case 'student_social_card_flag' :
             case 'signer_social_card_flag' :
-                return $model[$option] == true ? 'Да' : 'Нет';
+                return $model[$option] == 1 ? 'Да' : ($model[$option] == 2 ? 'Нет' : 'Не задано');
                 break;
             default :
                 return $model[$option];
