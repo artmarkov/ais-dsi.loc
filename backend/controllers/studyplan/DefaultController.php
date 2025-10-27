@@ -49,8 +49,6 @@ class DefaultController extends MainController
     public $modelClass = 'common\models\studyplan\Studyplan';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanSearch';
 
-    public $freeAccessActions = ['subject', 'init-progress-modal'];
-
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
@@ -1334,16 +1332,6 @@ class DefaultController extends MainController
         return $this->renderIsAjax('students_view', compact('modelStudent', 'studentDependence', 'model_date'));
     }
 
-    public function actionInitProgressModal()
-    {
-        $id = \Yii::$app->request->post('id');
-        $model = LessonItemsProgressView::find()
-            ->where(['lesson_items_id' => $id])
-            ->one();
-        return $this->renderAjax('progress-modal', [
-            'model' => $model,
-        ]);
-    }
     /**
      * @param $id
      * @return array

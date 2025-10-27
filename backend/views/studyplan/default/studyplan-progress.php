@@ -19,7 +19,8 @@ $columnsHeader = [];
 foreach ($model['columns'] as $my => $qty) {
     $columnsHeader[] = ['content' => $my, 'options' => ['colspan' => $qty, 'class' => 'text-center']];
 }
-//echo '<pre>' . print_r($columns, true) . '</pre>'; die();
+
+//echo '<pre>' . print_r($model, true) . '</pre>'; die();
 $editMarks = function ($model, $key, $index, $widget) {
     $content = [];
     if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
@@ -173,6 +174,15 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             </div>
             <div class="panel-body">
                 <div class="row">
+                    <div class="col-sm-12">
+                        <?php echo \yii\bootstrap\Alert::widget([
+                            'body' => '<i class="fa fa-info-circle"></i> Совет: Наведите мышкой на оценку, чтобы узнать задание к следующему уроку.',
+                            'options' => ['class' => 'alert-info'],
+                        ]);
+                        ?>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-sm-6">
                         <?php
                         /* Uncomment this to activate GridQuickLinks */
@@ -255,40 +265,4 @@ $css = <<<CSS
 CSS;
 
 $this->registerCss($css);
-
-\yii\bootstrap\Modal::begin([
-    'header' => '<h4 class="lte-hide-title page-title">Карточка занятия</h4>',
-    'size' => 'modal-md',
-    'id' => 'progress-modal',
-]);
-\yii\bootstrap\Modal::end();
-?>
-<?php
-$js = <<<JS
-$('#progress').on('click', function (e) {
-         e.preventDefault();
-         var id = $(this).attr('value');
-        //console.log(id);
-        $.ajax({
-            url: 'init-progress-modal',
-            type: 'POST',
-            data: {
-                id: id, 
-            },
-            success: function (res) {
-                console.log(res);
-            showProgress(res);
-            },
-            error: function () {
-                alert('Error!!!');
-            }
-        });
-});
-function showProgress(res) {
-    $('#progress-modal .modal-body').html(res);
-    $('#progress-modal').modal();
-}
-JS;
-
-$this->registerJs($js);
 ?>

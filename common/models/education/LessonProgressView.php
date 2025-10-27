@@ -7,6 +7,7 @@ use artsoft\helpers\ArtHelper;
 use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use artsoft\widgets\Tooltip;
 use common\models\guidejob\Direction;
 use common\models\studyplan\Studyplan;
 use common\models\teachers\Teachers;
@@ -197,11 +198,21 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 foreach ($modelsMarks[$modelProgress->subject_sect_studyplan_id][$modelProgress->studyplan_subject_id] as $id => $mark) {
 //                    echo '<pre>' . print_r($mark, true) . '</pre>';
                     $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
-//                    if (\artsoft\Art::isFrontend()) {
-//                        $data[$item][$date_label] = Html::a($mark->mark_label . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : ''), Url::to(['#']), ['id' => 'progress', 'value' => $mark->lesson_items_id, 'data-pjax' => '0', 'visible' => true]);
-//                    } else {
+                    if (\artsoft\Art::isFrontend()) {
+                        $helpIcon = \artsoft\helpers\Html::beginTag('span', [
+                            'title' => $mark->lesson_topic ? $mark->lesson_topic . ' ' . $mark->lesson_rem : "Задание не определено.",
+                            'data-content' => $mark->lesson_topic. ' ' . $mark->lesson_rem,
+                            'data-html' => 'true',
+                            'role' => 'button',
+                            'style' => 'margin-bottom: 5px; padding: 0 5px;',
+                            'class' => 'btn btn-sm role-help-btn',
+                        ]);
+                        $helpIcon .= $mark->mark_label . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '');
+                        $helpIcon .= \artsoft\helpers\Html::endTag('span');
+                        $data[$item][$date_label] = $helpIcon;
+                    } else {
                         $data[$item][$date_label] = !$readonly ? self::getEditableForm($mark_list, $mark) . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '') : $mark->mark_label . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '');
-//                    }
+                    }
                 }
             }
 

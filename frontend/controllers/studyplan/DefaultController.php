@@ -30,7 +30,6 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\studyplan\Studyplan';
     public $modelSearchClass = 'common\models\studyplan\search\StudyplanViewSearch';
-    public $freeAccessActions = ['init-progress-modal'];
 
     public function actionIndex()
     {
@@ -364,16 +363,6 @@ class DefaultController extends MainController
         return $model->makeDocx();
     }
 
-    public function actionInitProgressModal()
-    {
-        $id = \Yii::$app->request->post('id');
-        $model = LessonItemsProgressView::find()
-            ->where(['lesson_items_id' => $id])
-            ->one();
-        return $this->renderAjax('@backend/views/studyplan/default/progress-modal', [
-            'model' => $model,
-        ]);
-    }
     /**
      * @param $id
      * @return array
