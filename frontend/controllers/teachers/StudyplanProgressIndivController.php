@@ -11,6 +11,7 @@ use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
 use common\models\education\LessonTest;
 use common\models\education\ProgressConfirmIndiv;
+use common\models\routine\Routine;
 use common\models\studyplan\Studyplan;
 use common\models\teachers\Teachers;
 use Yii;
@@ -129,6 +130,10 @@ class StudyplanProgressIndivController extends MainController
                     if (empty($modelsItems)) {
                         Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
                         $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
+                    }
+                    if (Routine::isHolidays(strtotime($model->lesson_date))) {
+                        Notice::registerDanger('Каникулярное время. Ввод ограничен.');
+                        $model->addError('lesson_date', 'Каникулярное время. Ввод ограничен.');
                     }
               //  }
             }

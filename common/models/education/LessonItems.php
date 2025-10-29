@@ -2,11 +2,13 @@
 
 namespace common\models\education;
 
+use artsoft\Art;
 use artsoft\behaviors\DateFieldBehavior;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use artsoft\widgets\Notice;
+use common\models\routine\Routine;
 use common\models\schedule\SubjectScheduleView;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
@@ -78,11 +80,19 @@ class LessonItems extends \artsoft\db\ActiveRecord
             [['lesson_test_id'], 'checkLessonTestExist', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_date'], 'checkLessonExist', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_date'], 'checkLessonDate', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
+            [['lesson_date'], 'checkHolidays', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_test_id'], 'checkLessonTest', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_topic'], 'string', 'max' => 512],
             [['lesson_rem'], 'string', 'max' => 1024],
             [['lesson_test_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonTest::className(), 'targetAttribute' => ['lesson_test_id' => 'id']],
         ];
+    }
+
+    public function checkHolidays($attribute, $params)
+    {
+        if (Routine::isHolidays(strtotime($this->$attribute)) && Art::isFrontend()) {
+            $this->addError($attribute, 'Каникулярное время. Ввод ограничен.');
+        }
     }
 
     public function checkLessonTestExist($attribute, $params)

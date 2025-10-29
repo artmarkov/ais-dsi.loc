@@ -4,6 +4,7 @@ namespace console\jobs;
 
 use common\models\education\LessonItems;
 use common\models\education\LessonProgress;
+use common\models\routine\Routine;
 use common\models\schedule\SubjectScheduleConfirm;
 use Yii;
 use yii\db\Query;
@@ -21,17 +22,22 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
         $year = date('Y');
 
         $timestamp_in = \Yii::$app->formatter->asTimestamp(mktime(0, 0, 0, $mon, $day, $year));
+
+        if (Routine::isHolidays($timestamp_in)) { // ĞŸÑ€Ğ¾Ğ¿ÑƒÑĞºĞ°ĞµĞ¼ ĞºĞ°Ğ½Ğ¸ĞºÑƒĞ»Ñ‹
+            return true;
+        }
+
         $timestamp_out = $timestamp_in + 86399;
         $plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault();
 
-        // íàõîäèì òîëüêî ñîãëàñîâàííûå ğàññïèñàíèÿ
+        // Ğ½Ğ°Ñ…Ğ¾Ğ´Ğ¸Ğ¼ Ñ‚Ğ¾Ğ»ÑŒĞºĞ¾ ÑĞ¾Ğ³Ğ»Ğ°ÑĞ¾Ğ²Ğ°Ğ½Ğ½Ñ‹Ğµ Ñ€Ğ°ÑÑĞ¿Ğ¸ÑĞ°Ğ½Ğ¸Ñ
         $teachersIds = SubjectScheduleConfirm::find()
             ->select('teachers_id')
             ->where(['=', 'confirm_status', SubjectScheduleConfirm::STATUS_ACTIVE])
             ->andWhere(['=', 'plan_year', $plan_year])
             ->column();
 
-        // íàõîäèì âñå çàíÿòèÿ ñîãëàñíî ñîãëàñîâàííûì ğàñïèñàíèÿì
+        // Ğ½Ğ°Ñ…Ğ¾Ğ´Ğ¸Ğ¼ Ğ²ÑĞµ Ğ·Ğ°Ğ½ÑÑ‚Ğ¸Ñ ÑĞ¾Ğ³Ğ»Ğ°ÑĞ½Ğ¾ ÑĞ¾Ğ³Ğ»Ğ°ÑĞ¾Ğ²Ğ°Ğ½Ğ½Ñ‹Ğ¼ Ñ€Ğ°ÑĞ¿Ğ¸ÑĞ°Ğ½Ğ¸ÑĞ¼
         $active = (new Query())->from('activities_schedule_studyplan_view')
             ->select('studyplan_subject_id, subject_sect_studyplan_id')
             ->distinct()
@@ -70,7 +76,7 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
         $model_th = new LessonProgress();
         $model_th->lesson_items_id = $model->id;
         $model_th->studyplan_subject_id = $dataItem['studyplan_subject_id'];
-       // $model_th->lesson_mark_id = 1017;
+        // $model_th->lesson_mark_id = 1017;
         return $model_th->save(false);
     }
 
