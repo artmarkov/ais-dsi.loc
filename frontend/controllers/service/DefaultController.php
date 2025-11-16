@@ -2,15 +2,16 @@
 
 namespace frontend\controllers\service;
 
+use common\models\service\UsersCard;
 use Yii;
-use artsoft\controllers\admin\BaseController;
+use yii\helpers\StringHelper;
 
 /**
  * DefaultController implements the CRUD actions for common\models\service\UsersCard model.
  */
 class DefaultController extends \frontend\controllers\DefaultController
 {
-    public $modelClass       = 'common\models\service\UsersCard';
+    public $modelClass = 'common\models\service\UsersCard';
     public $modelSearchClass = 'common\models\service\search\ServiceCardViewSearch';
     public $modelHistoryClass = 'common\models\history\UsersCardHistory';
 
@@ -37,5 +38,16 @@ class DefaultController extends \frontend\controllers\DefaultController
         }
 
         return $this->renderIsAjax($this->createView, compact('model'));
+    }
+
+    public function actionIndex()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $searchModel = new $this->modelSearchClass();
+        $params = $this->getParams();
+        $dataProvider = $searchModel->search($params);
+
+        return $this->renderIsAjax($this->indexView, compact('dataProvider', 'searchModel'));
     }
 }

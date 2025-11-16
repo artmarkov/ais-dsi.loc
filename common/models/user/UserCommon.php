@@ -204,8 +204,8 @@ class UserCommon extends ActiveRecord
         return [
             self::USER_CATEGORY_EMPLOYEES => Yii::t('art', 'Staff'),
             self::USER_CATEGORY_TEACHERS => Yii::t('art', 'Teacher'),
-            self::USER_CATEGORY_STUDENTS => Yii::t('art', 'Student'),
-            self::USER_CATEGORY_PARENTS => Yii::t('art', 'Parent'),
+//            self::USER_CATEGORY_STUDENTS => Yii::t('art', 'Student'),
+//            self::USER_CATEGORY_PARENTS => Yii::t('art', 'Parent'),
         ];
     }
 

@@ -68,7 +68,7 @@ class StudyplanController extends MainController
     public function actionView($id, $readonly = true)
     {
         $model = $this->findModel($id);
-        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['studyplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/studyplan', 'Individual plans'), 'url' => ['reestr/studyplan/index']];
         $this->view->params['breadcrumbs'][] = sprintf('#%06d', $model->id);
         $this->view->params['tabMenu'] = $this->getMenu($id);
 

@@ -43,7 +43,7 @@ class ServiceCardViewSearch extends ServiceCardView
      */
     public function search($params)
     {
-        $query = ServiceCardView::find()->andWhere(['status' => UserCommon::STATUS_ACTIVE]);
+        $query = ServiceCardView::find()->where(['status' => UserCommon::STATUS_ACTIVE])->andWhere(['user_category' => ['employees', 'teachers']]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

@@ -218,6 +218,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                     ],
                     [
+                        'label' => 'карта Москвенок',
+                        'attribute' => 'social_card_flag',
+                        'filter' => [1 => 'Да', 2 => 'Нет', 0 => 'Не задано'],
+                        'value' => function (StudyplanView $model) {
+                            return $model->social_card_flag == 1 ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да' : ($model->social_card_flag == 2 ? '<i class="fa fa-thumbs-down" style="font-size: 1.5em;"></i> Нет' : 'Не задано');
+                        },
+                        'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
+                        'format' => 'raw',
+                    ],
+                    [
                         'class' => 'kartik\grid\ActionColumn',
                         'urlCreator' => function ($action, $model, $key, $index) {
                             return [$action, 'id' => $model->id];
