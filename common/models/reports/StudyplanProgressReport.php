@@ -15,15 +15,21 @@ class StudyplanProgressReport
     protected $course_list = ['1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8];
     protected $mark_list = ['5' => 'Отлично', '4' => 'Хорошо', '3' => 'Удовлетворительно', 'НА' => 'Неуд./Не аттестован', '0' => 'Нет оценки'];
     protected $programmIds;
+    protected $subject_info;
+    protected $subject_form_id;
+    protected $speciality_flag;
 
     public function __construct($model_date)
     {
         $this->model_date = $model_date;
         $this->programmIds = $model_date->programm_id;
+        $this->subject_form_id = $model_date->subject_form_id;
         $this->model_date->finish_flag = false;
+        $this->speciality_flag = $model_date->speciality_flag ?: false;
+        $this->subject_info = $this->getSubjects();
         $this->data_mark = $this->getDataMark();
         $this->programm_list = $this->getProgrammList(array_keys($this->data_mark));
-//        echo '<pre>' . print_r($this->getDataMark(), true) . '</pre>';
+//        echo '<pre>' . print_r($this->data_mark, true) . '</pre>';
 //        die();
     }
 
@@ -81,13 +87,14 @@ class StudyplanProgressReport
                     $count = isset($this->data_mark[$programm_id][$markId][$courseId]) ? count($this->data_mark[$programm_id][$markId][$courseId]) : 0;
                     $data[$i]['name'] = $programm_name;
                     $data[$i]['mark'] = $mark;
-                    $data[$i][$courseId] =  $count != 0 ? $count . $this->getNotice($this->data_mark[$programm_id][$markId][$courseId], $markId) : '-';
+                    $data[$i][$courseId] = $count != 0 ? $count . $this->getNotice($this->data_mark[$programm_id][$markId][$courseId], $markId) : '-';
                     $data[$i]['count_mark'] = isset($data[$i]['count_mark']) ? $data[$i]['count_mark'] + $count : $count;
                     $all_summ[$markId] += $count;
                 }
                 $i++;
             }
         }
+
         return ['data' => $data, 'all_summ' => $all_summ, 'course_list' => $this->course_list, 'attributes' => $attributes];
     }
 
@@ -97,6 +104,8 @@ class StudyplanProgressReport
     public function getDataMark()
     {
         $data = [];
+//        echo '<pre>' . print_r($this->getProgressData(), true) . '</pre>';
+//        die();
         foreach ($this->getProgressData() as $courseId => $model) {
             $data[] = [
                 'studyplan_id' => $model['studyplan_id'],
@@ -109,6 +118,7 @@ class StudyplanProgressReport
                 'subject_form_name' => $model['subject_form_name'],
                 'course' => $model['course'],
                 'mark' => $this->getMark($model['marks']),
+                'mark_info' => $this->getMarkInfo($model['marks']),
 
             ];
         }
@@ -160,11 +170,35 @@ class StudyplanProgressReport
         if (!isset($models)) return '';
 
         foreach ($models as $id => $model) {
-            $studentsFio[] = $model['student_fio'];
+
+            $studentsFio[] = $model['student_fio'] . ($model['mark_info'] ? '(' . $model['mark_info'] . ')' : '');
         }
         $message = implode(', ', $studentsFio);
         $tooltip = Tooltip::widget(['type' => $markId == 'Нет оценки' ? 'danger' : 'info', 'message' => $message]);
 
         return $tooltip;
+    }
+
+    protected function getSubjects()
+    {
+        $models = (new \yii\db\Query())->from('subject_view')
+            ->select([
+                'concat(subject_id, \'|\', vid_id, \'|\', category_id) as subject_key',
+                //'concat(subject_slug, \'-\', vid_slug) as subject_info'
+                'subject_slug as subject_info'
+            ])->all();
+        return ArrayHelper::index($models, 'subject_key');
+    }
+
+    protected function getMarkInfo($models)
+    {
+        $data = [];
+        foreach ($models as $subject_key => $mark) {
+            if ($mark == '') {
+//                $mark = 'нет';
+                $data[] = ($this->subject_info[$subject_key]['subject_info'] ?? $subject_key)  /*. '-' . strip_tags($mark)*/;
+            }
+        }
+        return implode(',', $data);
     }
 }

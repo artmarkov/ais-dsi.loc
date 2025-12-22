@@ -34,7 +34,7 @@ class Editable extends \kartik\editable\Editable
 
     public $size = PopoverX::SIZE_MEDIUM;
 
-    public $placement = PopoverX::ALIGN_AUTO;
+    public $placement = PopoverX::ALIGN_AUTO_LEFT;
 
     public $dataAttributes = [];
     /**

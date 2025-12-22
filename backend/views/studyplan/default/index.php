@@ -18,6 +18,7 @@ use common\models\studyplan\Studyplan;
 
 $this->title = Yii::t('art/studyplan', 'Individual plans');
 $this->params['breadcrumbs'][] = $this->title;
+$termList = \artsoft\helpers\ArtHelper::getTermList();
 ?>
 <div class="studyplan-index">
     <div class="panel">
@@ -111,6 +112,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filter' => RefBook::find('education_cat_short')->getList(),
                         'value' => function (StudyplanView $model) {
                             return $model->education_cat_short_name;
+                        },
+                        'options' => ['style' => 'width:100px'],
+                        'format' => 'raw',
+                    ],
+                    [
+                        'attribute' => 'education_programm_term_mastering',
+                        'filter' => \common\models\education\EducationProgramm::getTermMasteringList(),
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => ['allowClear' => true],
+                        ],
+                        'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
+                        'value' => function (StudyplanView $model) use ($termList) {
+                            return $termList[$model->education_programm_term_mastering] ?? '';
                         },
                         'options' => ['style' => 'width:100px'],
                         'format' => 'raw',

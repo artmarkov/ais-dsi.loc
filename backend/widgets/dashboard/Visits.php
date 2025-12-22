@@ -8,13 +8,10 @@ use yii\helpers\ArrayHelper;
 
 class Visits extends DashboardWidget
 {
-    public function run()
-    {
-        $day = date('d');
-        $mon = date('m');
-        $year = date('Y');
+    public $timestamp = null;
 
-        $timestamp_in = \Yii::$app->formatter->asTimestamp(mktime(0, 0, 0, $mon, $day, $year));
+    public function getActive($timestamp_in) {
+
         $timestamp_out = $timestamp_in + 86399;
 
         $active = (new Query())->from('activities_schedule_studyplan_view')
@@ -25,6 +22,19 @@ class Visits extends DashboardWidget
             ->groupBy('auditory.building_id')
             ->all();
         $active = ArrayHelper::index($active,'building_id');
+        return $active;
+    }
+
+    public function run()
+    {
+        $this->timestamp = $this->timestamp === null ? time() : $this->timestamp;
+        $day = date('d', $this->timestamp);
+        $mon = date('m', $this->timestamp);
+        $year = date('Y', $this->timestamp);
+
+        $timestamp_in =  \Yii::$app->formatter->asTimestamp(mktime(0, 0, 0, $mon, $day, $year));
+
+        $active = $this->getActive($timestamp_in);
 
         return $this->render('visits', [
             'active' => $active,

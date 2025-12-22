@@ -152,7 +152,8 @@ class TeachersScheduleGenerator
             ], $day);
             $i++;
         }
-
+//        echo '<pre>' . print_r($items, true) . '</pre>';
+//        die();
         $output_file_name = str_replace('.', '_' . Yii::$app->formatter->asDate(time(), 'php:Y_m_d H_i') . '.', basename(self::template_timesheet));
 
         $tbs = DocTemplate::get(self::template_timesheet)->setHandler(function ($tbs) use ($data, $items) {

@@ -90,8 +90,8 @@ class LessonItems extends \artsoft\db\ActiveRecord
 
     public function checkHolidays($attribute, $params)
     {
-        if (Routine::isHolidays(strtotime($this->$attribute)) && Art::isFrontend()) {
-            $this->addError($attribute, 'Каникулярное время. Ввод ограничен.');
+        if (Routine::isHolidays(strtotime($this->$attribute)) && Routine::isCelebrations(strtotime($this->$attribute)) && Art::isFrontend()) {
+            $this->addError($attribute, 'Каникулярное время или праздники. Ввод ограничен.');
         }
     }
 

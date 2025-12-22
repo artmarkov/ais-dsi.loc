@@ -47,7 +47,7 @@ $form = ActiveForm::begin([
                     echo $form->field($model_confirm, 'teachers_sign')->widget(\kartik\select2\Select2::class, [
                         'data' => Teachers::getTeachersByIds(User::getUsersByRole($modelName == 'SubjectScheduleConfirm' ? 'signerSchedule' : 'signerScheduleConsult')),
                         'options' => [
-                            'disabled' => false,
+                            'disabled' => (!in_array($model_confirm->confirm_status, [0,3]) && \artsoft\Art::isFrontend()) ? true : false ,
                             'placeholder' => Yii::t('art', 'Select...'),
                         ],
                         'pluginOptions' => [

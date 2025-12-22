@@ -118,7 +118,7 @@ use artsoft\widgets\Nav;
                     ['label' => 'Контроль выполнения планов отдела', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/perform']],
                     ['label' => 'Контроль заполнения журналов успеваемости', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/progress']],
                     ['label' => 'Отдел на контроле', 'icon' => 'fa fa-minus', 'url' => ['/execution/teachers/index']],
-//                    ['label' => 'Сводная успеваемость', 'icon' => 'fa fa-minus', 'url' => ['/summary-progress/default/index']],
+                    ['label' => 'Сводная успеваемость', 'icon' => 'fa fa-minus', 'url' => ['/execution/summary-progress/index']],
                 ],
             ],
             [

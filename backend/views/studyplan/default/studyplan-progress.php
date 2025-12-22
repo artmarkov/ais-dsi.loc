@@ -3,6 +3,7 @@
 use artsoft\helpers\RefBook;
 use common\models\education\LessonItems;
 use common\models\schedule\SubjectScheduleStudyplanView;
+use common\models\teachers\Teachers;
 use yii\helpers\Url;
 use artsoft\helpers\Html;
 use artsoft\grid\GridView;
@@ -48,6 +49,7 @@ $editMarks = function ($model, $key, $index, $widget) {
             )];
         }
     }
+    $item = 0;
     foreach ($model['lesson_timestamp'] as $id => $item) {
         if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
             $content += [$id + 3 => ($model['subject_sect_studyplan_id'] == 0 ? Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
@@ -76,8 +78,31 @@ $editMarks = function ($model, $key, $index, $widget) {
                 ) : null),
             ];
         }
+        $item = $id;
     }
-    foreach ($model['certif'] as $id => $item) {
+    $content += [$item + 4 => \yii\helpers\Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+                ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year']), 'mode' => 'update'], [
+//                'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
+                'disabled' => \common\models\education\AttestationItems::isAttestationNeeds($model['studyplan_subject_id'], $model['plan_year']) == false,
+                'title' => Yii::t('art', 'Update'),
+                'data-method' => 'post',
+                'data-pjax' => '0',
+                'class' => 'btn btn-xxs btn-link',
+            ])
+        . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+                ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year']), 'mode' => 'delete'], [
+                'disabled' => \common\models\education\AttestationItems::isAttestationNeeds($model['studyplan_subject_id'], $model['plan_year']) == false,
+                'title' => Yii::t('art', 'Delete'),
+                'class' => 'btn btn-xxs btn-link',
+                'data' => [
+                    'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                    'pjax' => '0',
+                    'method' => 'post',
+                ],
+            ]
+        ),
+    ];
+    /*foreach ($model['certif'] as $id => $item) {
         if ($lesson_items_id = LessonItems::isLessonCertifExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_test_id'])) {
             $content += [$id + 3 + count($model['lesson_timestamp']) => ($model['subject_sect_studyplan_id'] == 0 ? Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                     ['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'objectId' => $lesson_items_id, 'mode' => 'update'], [
@@ -105,7 +130,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                 ) : null),
             ];
         }
-    }
+    }*/
     return [
         'content' => $content,
         'contentOptions' => [      // content html attributes for each summary cell
@@ -144,7 +169,7 @@ foreach ($model['lessonDates'] as $id => $name) {
 //        'contentOptions' => ['style'=>'padding:0px 0px 0px 30px;vertical-align: middle;'],
     ];
 }
-foreach ($model['certif'] as $id => $name) {
+/*foreach ($model['certif'] as $id => $name) {
     $columns[] = [
         'attribute' => $name,
         'label' => $model['attributes'][$name],
@@ -152,7 +177,14 @@ foreach ($model['certif'] as $id => $name) {
 //        'headerOptions' => ['style' => 'height: 50px;'],
         'contentOptions' => ['style' => 'background-color: #ebebeb;'],
     ];
-}
+}*/
+$columns[] = [
+    'attribute' => 'pa',
+    'label' => $model['attributes']['pa'],
+    'format' => 'raw',
+//        'headerOptions' => ['style' => 'height: 50px;'],
+    'contentOptions' => ['style' => 'background-color: #ebebeb;'],
+];
 $hints = '<span class="panel-title"><b>Сокращения Вид занятия:</b></span><br/>';
 foreach (\common\models\education\LessonTest::getLessonTestHints() as $item => $hint) {
     $hints .= $item . ' - ' . $hint . '; ';
@@ -220,7 +252,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                             'columns' => [
                                 ['content' => 'Учебный предмет/Группа', 'options' => ['colspan' => 3, 'rowspan' => 2, 'class' => 'text-center warning', 'style' => 'vertical-align: middle;']],
                                 ['content' => 'Посещаемость/успеваемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
-                                ['content' => 'Аттестация', 'options' => ['colspan' => count($model['certif']), 'class' => 'text-center info']],
+                                ['content' => 'Аттестация', 'options' => [/*'colspan' => count($model['certif']),*/ 'class' => 'text-center info']],
                             ],
                             'options' => ['class' => 'skip-export'] // remove this row from export
                         ],

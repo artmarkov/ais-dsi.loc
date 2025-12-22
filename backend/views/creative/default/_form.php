@@ -85,75 +85,74 @@ $readonly_dep = \artsoft\Art::isFrontend() ? true : $readonly;
 
 ?>
 
-    <div class="creative-works-form">
+<div class="creative-works-form">
 
-        <?php
-        $form = ActiveForm::begin([
-            'fieldConfig' => [
-                'inputOptions' => ['readonly' => $readonly]
-            ],
-            'id' => 'creative-works-form',
-            'validateOnBlur' => false,
-            'options' => ['enctype' => 'multipart/form-data'],
-            'enableClientScript' => true, // default
-        ])
-        ?>
-        <?php $teachers_fio_list = RefBook::find('teachers_fio', !$readonly ? UserCommon::STATUS_ACTIVE : '')->getList(); ?>
+    <?php
+    $form = ActiveForm::begin([
+        'fieldConfig' => [
+            'inputOptions' => ['readonly' => $readonly]
+        ],
+        'id' => 'creative-works-form',
+        'validateOnBlur' => false,
+        'options' => ['enctype' => 'multipart/form-data'],
+        'enableClientScript' => true, // default
+    ])
+    ?>
+    <?php $teachers_fio_list = RefBook::find('teachers_fio', !$readonly ? UserCommon::STATUS_ACTIVE : '')->getList(); ?>
 
-        <div class="panel">
-            <div class="panel-heading">
-                Сведения о работе
-                <?php if (!$model->isNewRecord): ?>
-                    <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
-                <?php endif; ?>
-            </div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <?= $form->field($model, 'category_id')->dropDownList(CreativeCategory::getCreativeCategoryList(), ['prompt' => '', 'encodeSpaces' => true, 'disabled' => !$model->isNewRecord ? true : $readonly]) ?>
+    <div class="panel">
+        <div class="panel-heading">
+            Сведения о работе
+            <?php if (!$model->isNewRecord): ?>
+                <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
+            <?php endif; ?>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-12">
+                    <?= $form->field($model, 'category_id')->dropDownList(CreativeCategory::getCreativeCategoryList(), ['prompt' => '', 'encodeSpaces' => true, 'disabled' => $model->doc_status == 1 ?: $readonly]) ?>
 
-                        <?= $form->field($model, 'name')->textarea(['rows' => '3', 'maxlength' => true, 'disabled' => $readonly]) ?>
+                    <?= $form->field($model, 'name')->textarea(['rows' => '3', 'maxlength' => true, 'disabled' => $readonly]) ?>
 
-                        <?= $form->field($model, 'description')->textarea(['rows' => '3', 'maxlength' => true, 'disabled' => $readonly]) ?>
+                    <?= $form->field($model, 'description')->textarea(['rows' => '3', 'maxlength' => true, 'disabled' => $readonly]) ?>
 
-                        <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::class, [
-                            'data' => \common\models\own\Department::getDepartmentList(),
-                            'options' => [
-                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art/teachers', 'Select Department...'),
-                                'multiple' => true,
-                            ],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-                        ])->label(Yii::t('art/guide', 'Department'));
-                        ?>
-                        <?= $form->field($model, 'teachers_list')->widget(\kartik\select2\Select2::class, [
-                            'data' => $teachers_fio_list,
-                            'options' => [
-                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art/creative', 'Select performers...'),
-                                'multiple' => true,
-                            ],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-                        ])->label(Yii::t('art/creative', 'Аuthors-performers'));
-                        ?>
+                    <?= $form->field($model, 'department_list')->widget(\kartik\select2\Select2::class, [
+                        'data' => \common\models\own\Department::getDepartmentList(),
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/teachers', 'Select Department...'),
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Department'));
+                    ?>
+                    <?= $form->field($model, 'teachers_list')->widget(\kartik\select2\Select2::class, [
+                        'data' => $teachers_fio_list,
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art/creative', 'Select performers...'),
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/creative', 'Аuthors-performers'));
+                    ?>
 
-                        <?= $form->field($model, 'status')->radioList(CreativeWorks::getStatusList(), ['disabled' => $readonly]) ?>
+                    <?= $form->field($model, 'status')->radioList(CreativeWorks::getStatusList(), ['disabled' => $readonly]) ?>
 
-                        <?= $form->field($model, 'place')->textInput(['maxlength' => true, 'readonly' => $readonly])->hint('Напишите название учреждения и город, где Вы проходили обучение(повышение квалификации или перподготовку)') ?>
+                    <?= $form->field($model, 'place')->textInput(['maxlength' => true, 'readonly' => $readonly])->hint('Напишите название учреждения и город, где Вы проходили обучение(повышение квалификации или перподготовку)') ?>
 
-                        <?= $form->field($model, 'date')->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Укажите дату получения сертификата или оставьте поле пустым, если статус - Запланировано'); ?>
+                    <?= $form->field($model, 'date')->widget(DatePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly])->hint('Укажите дату получения сертификата или оставьте поле пустым, если статус - Запланировано'); ?>
 
+                    <?php /*$form->field($model, 'published_at')->widget(DatePicker::class, ['disabled' => $readonly])->textInput(['autocomplete' => 'off']); */ ?>
 
-                        <?php /*$form->field($model, 'published_at')->widget(DatePicker::class, ['disabled' => $readonly])->textInput(['autocomplete' => 'off']); */ ?>
-
-                    </div>
                 </div>
+            </div>
 
-                <?php if (!$model->isNewRecord) : ?>
+            <?php if (!$model->isNewRecord) : ?>
 
                 <div class="panel panel-info">
                     <div class="panel-heading">
@@ -167,7 +166,14 @@ $readonly_dep = \artsoft\Art::isFrontend() ? true : $readonly;
                         </div>
                     </div>
                 </div>
-                <?php endif; ?>
+
+            <?php endif; ?>
+            <div class="row">
+                <div class="col-sm-12">
+                    <?= $form->field($model, 'efficiency_flag')->checkbox(['disabled' => $readonly]) ?>
+                </div>
+            </div>
+            <div id="efficiencyOpen">
                 <?php if (isset($modelsEfficiency)): ?>
                 <?php if (!$model->isNewRecord) : ?>
                 <?php DynamicFormWidget::begin([
@@ -175,7 +181,7 @@ $readonly_dep = \artsoft\Art::isFrontend() ? true : $readonly;
                     'widgetBody' => '.container-items', // required: css class selector
                     'widgetItem' => '.item', // required: css class
                     'limit' => 15, // the maximum times, an element can be added (default 999)
-                    'min' => 0, // 0 or 1 (default 1)
+                    'min' => $model->efficiency_flag ? 1 : 0, // 0 or 1 (default 1)
                     'insertButton' => '.add-item', // css class
                     'deleteButton' => '.remove-item', // css class
                     'model' => $modelsEfficiency[0],
@@ -266,37 +272,38 @@ $readonly_dep = \artsoft\Art::isFrontend() ? true : $readonly;
                         <div class="panel-footer">
                             <div class="form-group btn-group">
 
-                                <button type="button" class="add-item btn btn-success btn-sm pull-right">
-                                    <i class="glyphicon glyphicon-plus"></i> Добавить
-                                </button>
-                            </div>
+                                        <button type="button" class="add-item btn btn-success btn-sm pull-right">
+                                            <i class="glyphicon glyphicon-plus"></i> Добавить
+                                        </button>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                            <?php DynamicFormWidget::end(); ?>
                         </div>
                     <?php endif; ?>
-                    <?php DynamicFormWidget::end(); ?>
-                </div>
-                    <?php endif; ?>
                 <?php endif; ?>
-                <div class="row"> <?php
-                    if (\artsoft\Art::isFrontend()) {
-                        echo Html::activeHiddenInput($model, 'author_id');
-                    }
-                    else {
-                        echo $form->field($model->loadDefaultValues(), 'author_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees']),
-                            'showToggleAll' => false,
-                            'options' => [
-                                'disabled' => $readonly,
-                                'placeholder' => Yii::t('art', 'Select...'),
-                                'multiple' => false,
-                            ],
-                            'pluginOptions' => [
-                                'allowClear' => false,
-                                //'minimumInputLength' => 3,
-                            ],
+            </div>
+            <hr>
+            <div class="row"> <?php
+                if (\artsoft\Art::isFrontend()) {
+                    echo Html::activeHiddenInput($model, 'author_id');
+                } else {
+                    echo $form->field($model->loadDefaultValues(), 'author_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees']),
+                        'showToggleAll' => false,
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => false,
+                            //'minimumInputLength' => 3,
+                        ],
 
-                        ]);
-                    }
-                    ?>
+                    ]);
+                }
+                ?>
                 <?= $form->field($model->loadDefaultValues(), 'doc_status')->widget(\kartik\select2\Select2::class, [
                     'data' => CreativeWorks::getDocStatusList(),
                     'showToggleAll' => false,
@@ -326,45 +333,45 @@ $readonly_dep = \artsoft\Art::isFrontend() ? true : $readonly;
 
                 ]);
                 ?>
-                </div>
-                <?php if (!$model->isNewRecord && \artsoft\Art::isBackend() && !$readonly) : ?>
-                    <div class="row">
-                        <hr>
-                        <div class="col-sm-12">
-                            <?= $form->field($model, 'admin_flag')->checkbox(['disabled' => $readonly])->label('Добавить сообщение') ?>
-                            <div id="send_admin_message">
-                                <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора работы и нажмите "Отправить на доработку"') ?>
-                            </div>
-
+            </div>
+            <?php if (!$model->isNewRecord && \artsoft\Art::isBackend() && !$readonly) : ?>
+                <div class="row">
+                    <hr>
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'admin_flag')->checkbox(['disabled' => $readonly])->label('Добавить сообщение') ?>
+                        <div id="send_admin_message">
+                            <?= $form->field($model, 'admin_message')->textInput()->hint('Введите сообщение для автора работы и нажмите "Отправить на доработку"') ?>
                         </div>
-                    </div>
-                    <div class="form-group btn-group">
-                        <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->doc_status == 1]); ?>
-                        <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-default pull-right', 'name' => 'submitAction', 'value' => 'modif']); ?>
-                    </div>
-                <?php endif; ?>
-                <?php if (!$model->isNewRecord && \artsoft\Art::isFrontend() && $model->isAuthor()): ?>
-                    <div class="form-group btn-group">
-                        <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => in_array($model->doc_status, [1, 2]) ? true : false]); ?>
-                        <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => in_array($model->doc_status, [0, 3]) ? true : false]); ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-            <div class="panel-footer">
-                <div class="form-group btn-group">
-                    <?php if (!$model->isNewRecord): ?>
 
-                        <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::exitButton(); ?>
-                    <?php else: ?>
-                        <?= \artsoft\helpers\ButtonHelper::exitButton(); ?>
-                        <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'next']); ?>
-                    <?php endif; ?>
+                    </div>
                 </div>
-                <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
-            </div>
+                <div class="form-group btn-group">
+                    <?= Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i> Согласовать', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'approve', 'disabled' => $model->doc_status == 1]); ?>
+                    <?= Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить на доработку', ['class' => 'btn btn-sm btn-default pull-right', 'name' => 'submitAction', 'value' => 'modif']); ?>
+                </div>
+            <?php endif; ?>
+            <?php if (!$model->isNewRecord && \artsoft\Art::isFrontend() && $model->isAuthor()): ?>
+                <div class="form-group btn-group">
+                    <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => in_array($model->doc_status, [1, 2]) ? true : false]); ?>
+                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => in_array($model->doc_status, [0, 3]) ? true : false]); ?>
+                </div>
+            <?php endif; ?>
         </div>
-        <?php ActiveForm::end(); ?>
+        <div class="panel-footer">
+            <div class="form-group btn-group">
+                <?php if (!$model->isNewRecord): ?>
+
+                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : \artsoft\helpers\ButtonHelper::exitButton(); ?>
+                <?php else: ?>
+                    <?= \artsoft\helpers\ButtonHelper::exitButton(); ?>
+                    <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Продолжить', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'next']); ?>
+                <?php endif; ?>
+            </div>
+            <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
+        </div>
     </div>
+    <?php ActiveForm::end(); ?>
+</div>
 <?php
 $js = <<<JS
 function toggle(value) {
@@ -392,6 +399,11 @@ $js = <<<JS
     $('input[type=checkbox][name="CreativeWorks[admin_flag]"]').prop('checked') ? $('#send_admin_message').show() : $('#send_admin_message').hide();
     $('input[type=checkbox][name="CreativeWorks[admin_flag]"]').click(function() {
        $(this).prop('checked') ? $('#send_admin_message').show() : $('#send_admin_message').hide();
+     });
+    // Показ модуля Поощрения за работу
+    $('input[type=checkbox][name="CreativeWorks[efficiency_flag]"]').prop('checked') ? $('#efficiencyOpen').show() : $('#efficiencyOpen').hide();
+    $('input[type=checkbox][name="CreativeWorks[efficiency_flag]"]').click(function() {
+       $(this).prop('checked') ? $('#efficiencyOpen').show() : $('#efficiencyOpen').hide();
      });
   
 JS;

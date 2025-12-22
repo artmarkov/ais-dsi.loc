@@ -7,6 +7,7 @@ use artsoft\helpers\RefBook;
 use artsoft\models\OwnerAccess;
 use artsoft\models\User;
 use artsoft\widgets\Notice;
+use common\models\education\AttestationItems;
 use common\models\education\LessonItems;
 use common\models\education\LessonItemsProgressView;
 use common\models\education\LessonProgress;
@@ -1433,6 +1434,180 @@ class DefaultController extends MainController
             }
 
             return $this->renderIsAjax('studyplan-progress-indiv', compact(['model', 'model_date', 'modelTeachers', 'plan_year', 'model_confirm']));
+        }
+    }
+
+    /**
+     * @param $id
+     * @param null $objectId
+     * @param null $mode
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function actionStudyplanProgressSertif($id, $objectId = null, $mode = null)
+    {
+        $modelTeachers = $this->findModel($id);
+
+        if ('delete' == $mode && $objectId) {
+            $subject_key = base64_decode($objectId);
+            $keyArray = explode('||', $subject_key);
+            $subject_sect_studyplan_id = $keyArray[0];
+            $plan_year = $keyArray[1];
+
+            $models = (new Query())->from('lesson_items_progress_studyplan_view')
+                ->where(['teachers_id' => $id])
+                ->andWhere(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])
+                ->andWhere(['=', 'plan_year', $plan_year])
+                ->all();
+            foreach ($models as $model) {
+                $modelSertif = AttestationItems::findOne(['studyplan_subject_id' => $model['studyplan_subject_id'], 'plan_year' => $model['plan_year']]);
+                $modelSertif ? $modelSertif->delete() : null;
+            }
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect(Yii::$app->request->referrer);
+
+        } elseif ($objectId) {
+            $subject_key = base64_decode($objectId);
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Group Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+
+            $model = new AttestationItems();
+            $modelsItems = AttestationItems::getAttestationsGroupForTeachers($id, $subject_key);
+//             echo '<pre>' . print_r($modelsItems, true) . '</pre>';die();
+            if ($model->load(Yii::$app->request->post())) {
+                //  $modelsItems = Model::createMultiple(AttestationItems::class, $modelsItems);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+
+                // validate all models
+                $valid = Model::validateMultiple($modelsItems);
+                //$valid = true;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        $flag = true;
+                        foreach ($modelsItems as $modelItems) {
+                            $modelAttestation = $modelItems->id ? AttestationItems::findOne($modelItems->id) : new AttestationItems();
+                            $modelAttestation->studyplan_subject_id = $modelItems->studyplan_subject_id;
+                            $modelAttestation->plan_year = $modelItems->plan_year;
+                            $modelAttestation->lesson_mark_id = $modelItems->lesson_mark_id;
+                            $modelAttestation->mark_rem = $modelItems->mark_rem;
+                            if (!($flag = $modelAttestation->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->redirect(['/teachers/default/studyplan-progress', 'id' => $id]);
+                        }
+                    } catch
+                    (Exception $e) {
+                        print_r($e->getMessage());
+                        $transaction->rollBack();
+                    }
+                }
+            }
+
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form-sertif.php', [
+                'model' => $model,
+                'modelTeachers' => $modelTeachers,
+                'modelsItems' => $modelsItems,
+                'subject_key' => $subject_key,
+            ]);
+
+        }
+    }
+
+    /**
+     * @param $id
+     * @param null $objectId
+     * @param null $mode
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function actionStudyplanProgressIndivSertif($id, $objectId = null, $mode = null)
+    {
+        $modelTeachers = $this->findModel($id);
+
+        if ('delete' == $mode && $objectId) {
+            $subject_key = base64_decode($objectId);
+            $keyArray = explode('||', $subject_key);
+            $subject_key = $keyArray[0];
+            $plan_year = $keyArray[1];
+
+            $models = (new Query())->from('lesson_items_progress_studyplan_view')
+                ->where(['teachers_id' => $id])
+                ->andWhere(['=', 'subject_key', $subject_key])
+                ->andWhere(['=', 'plan_year', $plan_year])
+                ->all();
+            foreach ($models as $model) {
+                $modelSertif = AttestationItems::findOne(['studyplan_subject_id' => $model['studyplan_subject_id'], 'plan_year' => $model['plan_year']]);
+                $modelSertif ? $modelSertif->delete() : null;
+            }
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect(Yii::$app->request->referrer);
+
+        } elseif ($objectId) {
+            $subject_key = base64_decode($objectId);
+           /* $keyArray = explode('||', $subject_key);
+            $subject_key = $keyArray[0];
+            $plan_year = $keyArray[1];*/
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/teachers', 'Teachers'), 'url' => ['teachers/default/index']];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['teachers/default/view', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Indiv Progress'), 'url' => ['teachers/default/studyplan-progress', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $this->view->params['tabMenu'] = $this->getMenu($id);
+
+            $model = new AttestationItems();
+            $modelsItems = AttestationItems::getAttestationsForTeachers($id, $subject_key);
+//             echo '<pre>' . print_r($modelsItems, true) . '</pre>';die();
+            if ($model->load(Yii::$app->request->post())) {
+              //  $modelsItems = Model::createMultiple(AttestationItems::class, $modelsItems);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+
+                // validate all models
+                $valid = Model::validateMultiple($modelsItems);
+                //$valid = true;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        $flag = true;
+                        foreach ($modelsItems as $modelItems) {
+                            $modelAttestation = $modelItems->id ? AttestationItems::findOne($modelItems->id) : new AttestationItems();
+                            $modelAttestation->studyplan_subject_id = $modelItems->studyplan_subject_id;
+                            $modelAttestation->plan_year = $modelItems->plan_year;
+                            $modelAttestation->lesson_mark_id = $modelItems->lesson_mark_id;
+                            $modelAttestation->mark_rem = $modelItems->mark_rem;
+                            if (!($flag = $modelAttestation->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->redirect(['/teachers/default/studyplan-progress-indiv', 'id' => $id]);
+                        }
+                    } catch
+                    (Exception $e) {
+                        print_r($e->getMessage());
+                        $transaction->rollBack();
+                    }
+                }
+            }
+
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form-indiv-sertif.php', [
+                'model' => $model,
+                'modelTeachers' => $modelTeachers,
+                'modelsItems' => $modelsItems,
+                'subject_key' => $subject_key,
+            ]);
+
         }
     }
 

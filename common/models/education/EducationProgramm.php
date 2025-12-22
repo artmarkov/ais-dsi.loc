@@ -199,6 +199,20 @@ class EducationProgramm extends \artsoft\db\ActiveRecord
             ->asArray()->all(), 'id', 'name');
     }
 
+    public static function getTermMasteringList()
+    {
+        return ArrayHelper::map(self::find()
+            ->select(['term_mastering as id', 'CONCAT(term_mastering,  
+            CASE WHEN term_mastering = 1 THEN \' год\' 
+            WHEN term_mastering = 0 OR term_mastering > 4 THEN \' лет\'  
+            WHEN term_mastering > 1 OR term_mastering < 5 THEN \' года\'   
+            ELSE \' лет\' END) as name'])
+            ->distinct()
+            ->where(['status' => self::STATUS_ACTIVE])
+            ->orderBy('term_mastering')
+            ->asArray()->all(), 'id', 'name');
+    }
+
     public static function getProgrammListByName($cat_id = false)
     {
         if(!$cat_id) return [];

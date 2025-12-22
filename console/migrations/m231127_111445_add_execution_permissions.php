@@ -32,6 +32,7 @@ class m231127_111445_add_execution_permissions extends PermissionsMigration
                         '/execution/default/thematic-sign',
                         '/execution/default/perform',
                         '/execution/default/progress',
+                        '/execution/summary-progress/index',
                     ],
                     'roles' => [
                         self::ROLE_DEPARTMENT,

@@ -27,6 +27,10 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
             return true;
         }
 
+        if (Routine::isCelebrations($timestamp_in)) { // Пропускаем праздники
+            return true;
+        }
+
         $timestamp_out = $timestamp_in + 86399;
         $plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault();
 

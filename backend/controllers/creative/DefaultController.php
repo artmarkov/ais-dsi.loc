@@ -91,7 +91,6 @@ class DefaultController extends MainController
         $modelsEfficiency = $model->teachersEfficiency;
 
         if ($model->load(Yii::$app->request->post())) {
-
             $oldIDs = ArrayHelper::map($modelsEfficiency, 'id', 'id');
             $modelsEfficiency = Model::createMultiple(TeachersEfficiency::class, $modelsEfficiency);
             Model::loadMultiple($modelsEfficiency, Yii::$app->request->post());

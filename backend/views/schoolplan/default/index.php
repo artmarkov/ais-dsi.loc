@@ -202,45 +202,6 @@ $author_id = Schoolplan::getAuthorId();
                                 'format' => 'raw',
                             ],
                             [
-                                'attribute' => 'result',
-                                'value' => function ($model) {
-                                    return mb_strlen($model->result, 'UTF-8') > 200 ? mb_substr($model->result, 0, 200, 'UTF-8') . '...' : $model->result;
-                                },
-                                'hidden' => false,
-                                'hiddenFromExport'=> true,
-                                'format' => 'raw',
-                            ],
-                            [
-                                'attribute' => 'result',
-                                'value' => function ($model) {
-                                    return $model->result;
-                                },
-                                'hidden' => true,
-                                'hiddenFromExport'=> false,
-                                'format' => 'raw',
-                            ],
-                            [
-                                'attribute' => 'num_users',
-                                'label' => 'Участ.',
-                                'value' => function ($model) {
-                                    return $model->num_users;
-                                },
-                            ],
-                            [
-                                'attribute' => 'num_winners',
-                                'label' => 'Поб.',
-                                'value' => function ($model) {
-                                    return $model->num_winners;
-                                },
-                            ],
-                            [
-                                'attribute' => 'num_visitors',
-                                'label' => 'Зрит.',
-                                'value' => function ($model) {
-                                    return $model->num_visitors;
-                                },
-                            ],
-                            [
                                 'class' => 'kartik\grid\ActionColumn',
                                 'urlCreator' => function ($action, $model, $key, $index) {
                                     return [$action, 'id' => $model->id];
@@ -284,7 +245,8 @@ $author_id = Schoolplan::getAuthorId();
                                     [Schoolplan::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
                                     [Schoolplan::DOC_STATUS_MODIF, Yii::t('art', 'Modif'), 'warning'],
                                 ],
-                                'options' => ['style' => 'width:150px']
+                                'options' => ['style' => 'width:150px'],
+                                'label' => 'Статус мер-я'
                             ],
                             [
                                 'attribute' => 'signer_id',
@@ -294,6 +256,46 @@ $author_id = Schoolplan::getAuthorId();
                                 'options' => ['style' => 'width:150px'],
                                 'contentOptions' => ['style' => "text-align:center; vertical-align: middle;"],
                                 'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'result',
+                                'value' => function ($model) {
+                                    return mb_strlen($model->result, 'UTF-8') > 200 ? mb_substr($model->result, 0, 200, 'UTF-8') . '...' : $model->result;
+                                },
+                                'hidden' => false,
+                                'hiddenFromExport'=> true,
+                                'format' => 'raw',
+                                'label' => 'Итоги'
+                            ],
+                            [
+                                'attribute' => 'result',
+                                'value' => function ($model) {
+                                    return $model->result;
+                                },
+                                'hidden' => true,
+                                'hiddenFromExport'=> false,
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'num_users',
+                                'label' => 'Участ.',
+                                'value' => function ($model) {
+                                    return $model->num_users;
+                                },
+                            ],
+                            [
+                                'attribute' => 'num_winners',
+                                'label' => 'Поб.',
+                                'value' => function ($model) {
+                                    return $model->num_winners;
+                                },
+                            ],
+                            [
+                                'attribute' => 'num_visitors',
+                                'label' => 'Зрит.',
+                                'value' => function ($model) {
+                                    return $model->num_visitors;
+                                },
                             ],
                             [
                                 'attribute' => 'bars_flag',
@@ -339,8 +341,8 @@ $author_id = Schoolplan::getAuthorId();
                             [
                                 'columns' => [
                                     ['content' => 'Мероприятие', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
-                                    ['content' => 'Итоги/Количество', 'options' => ['colspan' => 4, 'class' => 'text-center success']],
-                                    ['content' => 'Статус', 'options' => ['colspan' => 6, 'class' => 'text-center danger']],
+                                    ['content' => 'Статус', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
+                                    ['content' => 'Итоги/Количество', 'options' => ['colspan' => 7, 'class' => 'text-center success']],
                                 ],
 //                                'options' => ['class' => 'skip-export'] // remove this row from export
                             ]

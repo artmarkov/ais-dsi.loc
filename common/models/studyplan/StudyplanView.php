@@ -10,6 +10,7 @@ use Yii;
 /**
  * @property string|null $education_programm_name
  * @property string|null $education_programm_short_name
+ * @property string|null $education_programm_term_mastering
  * @property string|null $education_cat_name
  * @property string|null $education_cat_short_name
  * @property string|null $student_fio
@@ -38,6 +39,7 @@ class StudyplanView extends Studyplan
 
         $attr['education_programm_name'] = 'Программа';
         $attr['education_programm_short_name'] = 'Программа';
+        $attr['education_programm_term_mastering'] = Yii::t('art/guide', 'Term Mastering');
         $attr['education_cat_name'] = 'Категория программы';
         $attr['education_cat_short_name'] = 'Категория программы';
         $attr['education_cat_id'] = 'Категория программы';

@@ -29,7 +29,7 @@ class StudyplanViewSearch extends StudyplanView
             [['education_programm_name', 'education_programm_short_name', 'education_cat_name', 'education_cat_short_name', 'student_fio', 'subject_type_name'], 'safe'],
             [['description', 'speciality', 'user_phone'], 'safe'],
             [['cond_flag'], 'boolean'],
-            [['social_card_flag'], 'integer'],
+            [['social_card_flag', 'education_programm_term_mastering'], 'integer'],
         ];
     }
 
@@ -85,6 +85,7 @@ class StudyplanViewSearch extends StudyplanView
             'education_cat_id' => $this->education_cat_id,
             'programm_id' => $this->programm_id,
             'social_card_flag' => $this->social_card_flag,
+            'education_programm_term_mastering' => $this->education_programm_term_mastering,
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);

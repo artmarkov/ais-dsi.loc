@@ -67,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                             'num',
                             'name',
-                            //'catName',
+                            'capacity',
                             //'buildingName',
                             [
                                 'attribute' => 'cat_id',

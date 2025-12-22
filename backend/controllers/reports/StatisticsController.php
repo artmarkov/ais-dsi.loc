@@ -66,8 +66,8 @@ class StatisticsController extends \backend\controllers\DefaultController
 
         $model_date = new DynamicModel(['plan_year', 'education_cat_id', 'programm_id', 'subject_type_id', 'subject_form_id', 'course']);
         $model_date->addRule(['plan_year', 'education_cat_id', 'programm_id'], 'required')
-            ->addRule(['plan_year', 'education_cat_id', 'subject_form_id'], 'integer')
-            ->addRule(['programm_id', 'subject_type_id', 'course', 'finish_flag'], 'safe');
+            ->addRule(['plan_year', 'education_cat_id'], 'integer')
+            ->addRule(['programm_id', 'subject_type_id', 'course', 'finish_flag', 'speciality_flag', 'subject_form_id'], 'safe');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
 
             $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
@@ -87,9 +87,17 @@ class StatisticsController extends \backend\controllers\DefaultController
         ]);
     }
 
+    public function actionVisitsStat()
+    {
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        return $this->renderIsAjax('visits-stat');
+    }
+
     public $tabMenu = [
         ['label' => 'Статистика по плану работы', 'url' => ['/reports/statistics/index']],
         ['label' => 'Статистика по учебной работе', 'url' => ['/reports/statistics/studyplan-stat']],
         ['label' => 'Статистика по успеваемости', 'url' => ['/reports/statistics/studyplan-progress-stat']],
+        ['label' => 'Статистика по посещаемости', 'url' => ['/reports/statistics/visits-stat']],
     ];
 }

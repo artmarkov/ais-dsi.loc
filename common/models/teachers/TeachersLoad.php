@@ -4,6 +4,7 @@ namespace common\models\teachers;
 
 use common\models\guidejob\Direction;
 use common\models\guidejob\DirectionVid;
+use common\models\schedule\ConsultSchedule;
 use common\models\subjectsect\SubjectSectStudyplan;
 use common\models\studyplan\StudyplanSubject;
 use Yii;
@@ -146,4 +147,11 @@ class TeachersLoad extends \artsoft\db\ActiveRecord
         return $this->hasOne(Teachers::class, ['id' => 'teachers_id']);
     }
 
+    public function beforeDelete()
+    {
+        $consultIds = ConsultSchedule::find(['id'])->where(['=', 'teachers_load_id', $this->id])->column();
+        TeachersLoad::deleteAll(['id' => $consultIds]);
+
+        return parent::beforeDelete();
+    }
 }

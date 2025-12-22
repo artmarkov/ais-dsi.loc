@@ -3,11 +3,13 @@
 namespace backend\controllers\studyplan;
 
 use backend\models\Model;
+use common\models\education\AttestationItems;
 use common\models\education\EducationProgrammLevel;
 use common\models\education\LessonItems;
 use common\models\education\LessonItemsProgressView;
 use common\models\education\LessonProgress;
 use common\models\education\LessonProgressView;
+use common\models\history\AttestationItemsHistory;
 use common\models\history\ConsultScheduleHistory;
 use common\models\history\LessonItemsHistory;
 use common\models\history\SchoolplanPerformHistory;
@@ -39,6 +41,7 @@ use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadStudyplanView;
 use yii\base\DynamicModel;
 use yii\db\Exception;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use Yii;
 use yii\helpers\StringHelper;
@@ -249,7 +252,10 @@ class DefaultController extends MainController
                 }
             }
         }
-        if (Yii::$app->request->post('submitAction') == 'doc_contract' || Yii::$app->request->post('submitAction') == 'doc_statement') {
+        if (Yii::$app->request->post('submitAction') == 'doc_contract' ||
+            Yii::$app->request->post('submitAction') == 'doc_contract_add' ||
+            Yii::$app->request->post('submitAction') == 'doc_statement' ||
+            Yii::$app->request->post('submitAction') == 'doc_studyplan_reference') {
             if (!isset($model->parent) || !$model->doc_date || !$model->doc_contract_start || !$model->doc_contract_end) {
                 Yii::$app->session->setFlash('danger', 'Заполните поля раздела "Документы"');
                 return $this->getSubmitAction($model);
@@ -965,6 +971,63 @@ class DefaultController extends MainController
                 'model_date' => $model_date,
                 'modelStudent' => $model
             ]);
+        }
+    }
+
+    /**
+     * @param $id
+     * @param null $objectId
+     * @param null $mode
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function actionStudyplanProgressSertif($id, $objectId = null, $mode = null)
+    {
+        $model = $this->findModel($id);
+
+    if ('history' == $mode && $objectId) {
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Studyplan Progress'), 'url' => ['studyplan/default/studyplan-progress', 'id' => $id]];
+        $this->view->params['breadcrumbs'][] = 'Промежуточная аттестация';
+        $subject_key = base64_decode($objectId);
+        $keyArray = explode('||', $subject_key);
+        $studyplan_subject_id = $keyArray[0];
+        $plan_year = $keyArray[1];
+        $model = AttestationItems::findOne(['studyplan_subject_id' => $studyplan_subject_id, 'plan_year' => $plan_year]);
+        $data = new AttestationItemsHistory($model->id);
+        return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
+
+    } elseif ('delete' == $mode && $objectId) {
+            $subject_key = base64_decode($objectId);
+            $keyArray = explode('||', $subject_key);
+            $studyplan_subject_id = $keyArray[0];
+            $plan_year = $keyArray[1];
+
+            $modelSertif = AttestationItems::findOne(['studyplan_subject_id' => $studyplan_subject_id, 'plan_year' => $plan_year]);
+            $modelSertif ? $modelSertif->delete() : null;
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect(Yii::$app->request->referrer);
+
+        } elseif ($objectId) {
+            $subject_key = base64_decode($objectId);
+
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Studyplan Progress'), 'url' => ['studyplan/default/studyplan-progress', 'id' => $model->id]];
+            $this->view->params['breadcrumbs'][] = 'Промежуточная аттестация';
+
+            $modelAttestation = AttestationItems::getAttestationsForStudyplan($subject_key);
+            if ($modelAttestation->load(Yii::$app->request->post()) && $modelAttestation->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->redirect(['/studyplan/default/studyplan-progress', 'id' => $id]);
+            }
+
+            return $this->renderIsAjax('@backend/views/studyplan/lesson-items/_form-studyplan-sertif.php', [
+                'model' => $modelAttestation,
+                'modelStudyplan' => $model,
+                'subject_key' => $subject_key,
+            ]);
+
         }
     }
 

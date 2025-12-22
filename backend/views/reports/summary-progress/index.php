@@ -86,6 +86,11 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                 'options' => ['class' => 'alert-primary'],
             ]);
             ?>
+            <?= \yii\bootstrap\Alert::widget([
+                'body' => '<span style="font-size:85%; " class="label label-default">4</span> - Показаны оценки Промежуточной аттестации.',
+                'options' => ['class' => 'alert-default'],
+            ]);
+            ?>
             <div class="row">
                 <div class="col-sm-6">
                     <?php

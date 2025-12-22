@@ -1,13 +1,20 @@
 <?php
 
-namespace backend\controllers\reports;
+namespace frontend\controllers\execution;
 
 use common\models\education\SummaryProgress;
 use Yii;
 use yii\base\DynamicModel;
 
-class SummaryProgressController extends \backend\controllers\DefaultController
+class SummaryProgressController extends MainController
 {
+    public $freeAccessActions = ['index'];
+
+    public function init()
+    {
+        $this->viewPath = '@backend/views/reports/summary-progress';
+        parent::init();
+    }
 
     public function actionIndex()
     {
@@ -19,7 +26,7 @@ class SummaryProgressController extends \backend\controllers\DefaultController
             ->addRule(['plan_year', 'education_cat_id'/*, 'vid_sert'*/], 'integer')
             ->addRule(['programm_id', 'subject_form_id', 'subject_type_id', 'course', 'finish_flag', 'speciality_flag'], 'safe');
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-            $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            $model_date->plan_year = $session->get('__frontendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
             $model_date->programm_id = $session->get('_summary_progress_programm_id') ?: ''/*EducationProgramm::getProgrammScalar()*/;
             $model_date->education_cat_id = $session->get('_summary_progress_education_cat_id') ?: '';
             $model_date->subject_form_id = $session->get('_summary_progress_subject_form_id') ?: '';
@@ -29,7 +36,7 @@ class SummaryProgressController extends \backend\controllers\DefaultController
             $model_date->speciality_flag = false;
         }
 
-        $session->set('__backendPlanYear', $model_date->plan_year);
+        $session->set('__frontendPlanYear', $model_date->plan_year);
         $session->set('_summary_progress_programm_id', $model_date->programm_id);
         $session->set('_summary_progress_education_cat_id', $model_date->education_cat_id);
         $session->set('_summary_progress_subject_form_id', $model_date->subject_form_id);
@@ -39,7 +46,7 @@ class SummaryProgressController extends \backend\controllers\DefaultController
         $model = new SummaryProgress($model_date);
         return $this->renderIsAjax('index', [
             'model_date' => $model_date,
-            'model' => $model->getData(),
+            'model' => $model->getData(true),
         ]);
     }
 }

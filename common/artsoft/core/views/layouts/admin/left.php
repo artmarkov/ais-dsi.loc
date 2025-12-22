@@ -81,7 +81,7 @@ use artsoft\widgets\Nav;
                 'items' => [
                     ['label' => 'Отчеты', 'icon' => 'fa fa-minus', 'url' => ['/reports/default/index']],
                     ['label' => 'Статистика', 'icon' => 'fa fa-minus', 'url' => ['/reports/statistics/index']],
-                    ['label' => 'Показатели эфективности', 'icon' => 'fa fa-minus', 'url' => ['/efficiency/default/index']],
+                    ['label' => 'Показатели эффективности', 'icon' => 'fa fa-minus', 'url' => ['/efficiency/default/index']],
                     ['label' => 'Контроль исполнения', 'icon' => 'fa fa-minus', 'url' => ['/execution/default/index']],
                     ['label' => 'Сводная успеваемость', 'icon' => 'fa fa-minus', 'url' => ['/reports/summary-progress/index']],
                     ['label' => 'Журнал посещаемости', 'icon' => 'fa fa-minus', 'url' => ['/reports/working-time/index']],

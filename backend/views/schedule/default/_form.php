@@ -36,7 +36,8 @@ use yii\widgets\MaskedInput;
                     <?php endif; ?>
                     <?= $form->field($model, "week_day")->dropDownList(['' => Yii::t('art/guide', 'Select week day...')] + \artsoft\helpers\ArtHelper::getWeekdayList()) ?>
                     <?= $form->field($model, "time_in")->textInput()->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
-                    <?= $form->field($model, "time_out")->textInput()->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.time_mask')]) ?>
+                    <?= $form->field($model, "time_duration")->dropDownList(\common\models\schedule\SubjectSchedule::getDurationList()) ?>
+                    <?= $form->field($model, "time_out")->textInput(['maxlength' => true, 'disabled' => true]) ?>
                     <?= $form->field($model, 'auditory_id')->widget(\kartik\select2\Select2::class, [
                         'data' => RefBook::find('auditory_memo_1')->getList(),
                         'showToggleAll' => false,
@@ -68,3 +69,31 @@ use yii\widgets\MaskedInput;
         </div>
     </div>
 </div>
+
+<?php
+$script = <<< JS
+$("#subjectschedule-time_duration").on('change', function(event, key) {
+    let time_in = document.getElementById('subjectschedule-time_in').value;
+    let time_duration = document.getElementById('subjectschedule-time_duration').value;
+    //  console.log(time_duration);
+    $.ajax({
+            url: '/admin/schedule/default/select',
+            type: 'POST',
+            data: {
+                time_in: time_in,
+                time_duration: time_duration
+            },
+            success: function (val) {
+                   let  p = jQuery.parseJSON(val);
+                   // console.log(val);
+                   document.getElementById('subjectschedule-time_out').value = p.time_out;
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
+
+});
+JS;
+$this->registerJs($script, \yii\web\View::POS_END);
+?>

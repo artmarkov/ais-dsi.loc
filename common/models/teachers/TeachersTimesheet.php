@@ -152,6 +152,7 @@ class TeachersTimesheet
                 $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['day']] = isset($data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['day']]) ? Schedule::astr2academ($data['time']) + $data_schedule[$data['direction_id']][$data['direction_vid_id']][$data['teachers_id']][$data['day']] : Schedule::astr2academ($data['time']);
             }
         }
+//        echo '<pre>' . print_r($data_schedule, true) . '</pre>'; die();
         return $data_schedule;
     }
 

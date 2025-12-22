@@ -4,9 +4,7 @@ namespace common\models\schedule;
 
 use artsoft\behaviors\TimeFieldBehavior;
 use artsoft\helpers\ArtHelper;
-use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
-use artsoft\models\User;
 use artsoft\widgets\Notice;
 use common\models\auditory\Auditory;
 use common\models\guidejob\Direction;
@@ -18,7 +16,6 @@ use common\models\teachers\TeachersPlan;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "subject_schedule".
@@ -40,9 +37,36 @@ use yii\helpers\ArrayHelper;
  * @property TeachersLoad $teachersLoad
  * @property Direction $direction
  */
-class SubjectSchedule  extends \artsoft\db\ActiveRecord
+class SubjectSchedule extends \artsoft\db\ActiveRecord
 {
     use TeachersLoadTrait;
+
+    public $time_duration;
+
+    const DURATION = [
+        '20' => '20 мин',
+        '25' => '25 мин',
+        '30' => '30 мин',
+        '35' => '35 мин',
+        '40' => '40 мин',
+        '45' => '45 мин',
+        '50' => '50 мин',
+        '55' => '55 мин',
+        '60' => '60 мин',
+        '65' => '65 мин',
+        '70' => '70 мин',
+        '75' => '75 мин',
+        '80' => '80 мин',
+        '85' => '85 мин',
+        '90' => '90 мин',
+        '100' => '100 мин',
+        '110' => '110 мин',
+        '120' => '120 мин',
+        '135' => '135 мин',
+        '160' => '160 мин',
+        '180' => '180 мин',
+        '240' => '240 мин',
+    ];
 
     /**
      * {@inheritdoc}
@@ -67,14 +91,28 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
         ];
     }
 
+    public function beforeValidate()
+    {
+        if ($this->time_in) {
+            $this->time_out = Schedule::decodeTime(Schedule::encodeTime($this->time_in) + $this->time_duration * 60);
+        }
+        return parent::beforeValidate();
+    }
+
+    public function afterFind()
+    {
+        $this->time_duration = ($this->time_out - $this->time_in) / 60;
+        parent::afterFind();
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['teachers_load_id', 'week_num', 'week_day', 'auditory_id'], 'integer'],
-            [['teachers_load_id', 'week_day', 'auditory_id', 'time_in', 'time_out'], 'required'],
+            [['teachers_load_id', 'week_num', 'week_day', 'auditory_id', 'time_duration'], 'integer'],
+            [['teachers_load_id', 'week_day', 'auditory_id', 'time_in', 'time_out', 'time_duration'], 'required'],
             [['time_in', 'time_out', 'teachersLoadId'], 'safe'],
             [['week_num'], 'default', 'value' => 0],
             [['description'], 'string', 'max' => 512],
@@ -147,6 +185,7 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             'updated_at' => Yii::t('art', 'Updated'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'time_duration' => 'Продолжительность занятия',
         ];
     }
 
@@ -232,42 +271,43 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
             ->innerJoin('teachers_load', 'teachers_load.id = subject_schedule.teachers_load_id')
             ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = teachers_load.direction_id')
             ->where(
-            ['AND',
-                ['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id],
-                ['=', 'studyplan_subject_id', $studyplan_subject_id],
-            ])
+                ['AND',
+                    ['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id],
+                    ['=', 'studyplan_subject_id', $studyplan_subject_id],
+                ])
             ->andWhere(['is', 'guide_teachers_direction.parent', null])
             ->all();
     }
-   /* public function afterSave($insert, $changedAttributes)
-    {
-        parent::afterSave($insert, $changedAttributes);
+    /* public function afterSave($insert, $changedAttributes)
+     {
+         parent::afterSave($insert, $changedAttributes);
 
-        $model = TeachersLoad::find()
-            ->where(['=', 'id', $this->teachers_load_id])
-            ->andWhere(['=', 'direction_id', 1000])
-            ->one();
-        if ($model) {
-            $modelFind = TeachersLoad::find()
-                ->where(['=', 'studyplan_subject_id', $model->studyplan_subject_id])
-                ->andWhere(['=', 'load_time', $model->load_time])
-                ->andWhere(['=', 'direction_id', 1001])
-                ->one();
-            if ($modelFind) {
-                $m = new SubjectSchedule();
-                $m->teachers_load_id = $modelFind->id;
-                $m->week_num = $this->week_num;
-                $m->week_day = $this->week_day;
-                $m->time_in = $this->time_in;
-                $m->time_out = $this->time_out;
-                $m->auditory_id = $this->auditory_id;
-                $m->save(false);
-            }
-        }
-    }*/
-   // Автоматическое добавление расписания для концертмейтера
+         $model = TeachersLoad::find()
+             ->where(['=', 'id', $this->teachers_load_id])
+             ->andWhere(['=', 'direction_id', 1000])
+             ->one();
+         if ($model) {
+             $modelFind = TeachersLoad::find()
+                 ->where(['=', 'studyplan_subject_id', $model->studyplan_subject_id])
+                 ->andWhere(['=', 'load_time', $model->load_time])
+                 ->andWhere(['=', 'direction_id', 1001])
+                 ->one();
+             if ($modelFind) {
+                 $m = new SubjectSchedule();
+                 $m->teachers_load_id = $modelFind->id;
+                 $m->week_num = $this->week_num;
+                 $m->week_day = $this->week_day;
+                 $m->time_in = $this->time_in;
+                 $m->time_out = $this->time_out;
+                 $m->auditory_id = $this->auditory_id;
+                 $m->save(false);
+             }
+         }
+     }*/
+    // Автоматическое добавление расписания для концертмейтера
     public function beforeSave($insert)
     {
+        $this->time_out = Schedule::decodeTime(Schedule::encodeTime($this->time_in) + $this->time_duration * 60);
         if (parent::beforeSave($insert)) {
             if ($insert) {
                 $model = TeachersLoad::find()
@@ -297,5 +337,13 @@ class SubjectSchedule  extends \artsoft\db\ActiveRecord
         } else {
             return false;
         }
+    }
+
+    /**
+     * @return array
+     */
+    public static function getDurationList()
+    {
+        return self::DURATION;
     }
 }

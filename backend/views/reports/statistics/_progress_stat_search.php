@@ -62,6 +62,19 @@ $form = ActiveForm::begin([
                         ]
                     ])->label(Yii::t('art/studyplan', 'Education Programm')); ?>
 
+                    <?= $form->field($model_date, 'subject_form_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => RefBook::find('subject_form_name')->getList(),
+                        'options' => [
+                            'disabled' => false,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])->label(Yii::t('art/guide', 'Subject Form'));
+                    ?>
+                    <?= $form->field($model_date, 'speciality_flag')->checkbox()->label('Учесть только специальность'); ?>
                 </div>
             </div>
         </div>

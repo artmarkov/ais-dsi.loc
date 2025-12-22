@@ -6,6 +6,7 @@ use common\models\reports\Mosticket;
 use common\models\reports\ProgressHistory;
 use common\models\reports\ProgressReport;
 use common\models\reports\CreativeStat;
+use common\models\reports\ScheduleProject;
 use common\models\studyplan\SchoolWorkload;
 use common\models\studyplan\StudyplanDistrib;
 use common\models\studyplan\StudyplanHistory;
@@ -26,7 +27,7 @@ use yii\web\UploadedFile;
 
 class DefaultController extends MainController
 {
-    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve', 'progress-history', 'teachers-consult', 'creative', 'mosticket'];
+    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve', 'progress-history', 'teachers-consult', 'creative', 'mosticket', 'schedule-project'];
 
     public function actionIndex()
     {
@@ -397,6 +398,30 @@ class DefaultController extends MainController
         }
         return $this->renderIsAjax('mosticket', [
             'model' => $modelImport,
+        ]);
+    }
+
+    public function actionScheduleProject()
+    {
+        $session = Yii::$app->session;
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model_date = $this->modelDate;
+        $model_date->addRule(['subject_flag', 'count_flag', 'name_flag', 'programm_name_flag', 'programm_cat_flag'], 'boolean');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+            $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            $model_date->count_flag = true;
+        }
+        $session->set('__backendPlanYear', $model_date->plan_year);
+
+
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            $models = new ScheduleProject($model_date);
+            $models->sendXlsx();
+        }
+
+        return $this->renderIsAjax('schedule-project', [
+            'model_date' => $model_date,
         ]);
     }
 

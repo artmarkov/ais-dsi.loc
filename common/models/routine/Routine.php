@@ -166,4 +166,19 @@ class Routine extends ActiveRecord implements DataItem
             ])->andWhere(['cat_id' => 1000])
             ->exists();
     }
+
+    /**
+     * Праздники
+     * @param $timestamp
+     * @return bool
+     */
+    public static function isCelebrations($timestamp)
+    {
+        return self::find()
+            ->where(['AND',
+                ['<=', 'start_date', $timestamp],
+                ['>=', 'end_date', $timestamp - 86399],
+            ])->andWhere(['cat_id' => 1001])
+            ->exists();
+    }
 }

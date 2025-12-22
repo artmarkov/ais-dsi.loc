@@ -1,6 +1,6 @@
 <?php
 
-namespace  common\models\creative;
+namespace common\models\creative;
 
 use artsoft\Art;
 use artsoft\behaviors\ArrayFieldBehavior;
@@ -41,6 +41,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
 {
     public $admin_flag;
     public $admin_message;
+    public $efficiency_flag;
 
     /**
      * {@inheritdoc}
@@ -49,6 +50,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
     {
         return 'creative_works';
     }
+
     /**
      * @inheritdoc
      */
@@ -76,6 +78,16 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
             ],
         ];
     }
+
+
+    public function afterFind()
+    {
+        if (!empty($this->teachersEfficiency)) {
+            $this->efficiency_flag = true;
+        }
+        parent::afterFind();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -102,7 +114,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
             [['signer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['signer_id' => 'id']],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['author_id' => 'id']],
-
+            [['efficiency_flag', 'admin_flag'], 'boolean'],
 
         ];
     }
@@ -132,6 +144,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
             'signer_id' => 'Подписант',
             'admin_message' => Yii::t('art/guide', 'Sign Message'),
             'author_id' => 'Автор записи',
+            'efficiency_flag' => 'Раскрыть блок "Поощрения за работу"',
         ];
     }
 
@@ -139,6 +152,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
     {
         return 'version';
     }
+
     /**
      * Gets query for [[CreativeRevisions]].
      *

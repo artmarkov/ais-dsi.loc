@@ -179,7 +179,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //                                    return [$action, 'id' => $key];
 //                                },
                                 'controller' => '/sect/default',
-                                'template' => '{view} {update} {delete}', /*{clone}*/
+                                'template' => '{view} {update} ', /*{delete}{clone}*/
                                 'buttons' => [
                                     'clone' => function ($key, $model) {
                                         return Html::a('<span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>',

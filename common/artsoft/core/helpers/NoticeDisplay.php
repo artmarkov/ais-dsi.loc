@@ -259,14 +259,13 @@ class NoticeDisplay
         $thereIsAnOverlapping = \Yii::$app->db->createCommand('SELECT a.subject_schedule_id, b.week_num, b.week_day, 
                               b.time_plan_in, b.time_plan_out, b.auditory_id
 	                        FROM teachers_plan b, subject_schedule_view a 
-	                        WHERE a.auditory_id = b.auditory_id 
+	                        WHERE (a.auditory_id != b.auditory_id OR (a.auditory_id = b.auditory_id AND ((b.time_plan_in < a.time_out AND b.time_plan_in > a.time_in) OR (b.time_plan_out < a.time_out AND b.time_plan_out > a.time_in))))
 							AND a.direction_id = 1000
 							AND a.subject_sect_studyplan_id = 0
 							AND a.direction_id = b.direction_id
 							AND a.teachers_id = b.teachers_id
 							AND a.week_num = b.week_num
 							AND a.week_day = b.week_day
-							AND ((b.time_plan_in < a.time_out AND b.time_plan_in > a.time_in) OR (b.time_plan_out < a.time_out AND b.time_plan_out > a.time_in))
 							AND a.plan_year = :plan_year
 							AND b.plan_year = :plan_year
 							AND a.subject_schedule_id = ANY (string_to_array(:subject_schedule_ids, \',\')::int[])',

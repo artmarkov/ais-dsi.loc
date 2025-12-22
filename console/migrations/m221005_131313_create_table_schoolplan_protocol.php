@@ -86,28 +86,32 @@ class m221005_131313_create_table_schoolplan_protocol extends \artsoft\db\BaseMi
         $this->addForeignKey('schoolplan_protocol_items_ibfk_3', 'schoolplan_protocol_items', 'lesson_mark_id', 'guide_lesson_mark', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('schoolplan_protocol_items_view', '
-        SELECT schoolplan_protocol_items.id,
-                schoolplan_protocol_items.schoolplan_protocol_id,
-                schoolplan_protocol_items.studyplan_subject_id,
-                studyplan_subject.studyplan_id,
-                schoolplan_protocol_items.thematic_items_list,
-                schoolplan_protocol_items.lesson_mark_id,
-                schoolplan_protocol_items.winner_id,
-                schoolplan_protocol_items.resume,
-                schoolplan_protocol_items.status_exe,
-                schoolplan_protocol_items.status_sign,
-                schoolplan_protocol_items.signer_id,
-                schoolplan_protocol.schoolplan_id,
-                schoolplan_protocol.protocol_name,
-                schoolplan_protocol.protocol_date,
-                schoolplan.title,
-                schoolplan.datetime_in,
-                schoolplan.datetime_out
-	FROM schoolplan_protocol_items
-	INNER JOIN schoolplan_protocol ON schoolplan_protocol.id = schoolplan_protocol_items.schoolplan_protocol_id
-	INNER JOIN schoolplan ON schoolplan.id = schoolplan_protocol.schoolplan_id
-	INNER JOIN studyplan_subject ON studyplan_subject.id = schoolplan_protocol_items.studyplan_subject_id
-	ORDER BY studyplan_subject.studyplan_id
+         SELECT schoolplan_protocol.id AS schoolplan_protocol_id,
+    studyplan_subject.id AS studyplan_subject_id,
+    guide_lesson_mark.id AS lesson_mark_id,
+    guide_lesson_mark.mark_category,
+    guide_lesson_mark.mark_label,
+    guide_lesson_mark.mark_hint,
+    guide_lesson_mark.mark_value,
+    concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
+    studyplan.id AS studyplan_id,
+    studyplan.status,
+    studyplan.status_reason,
+    studyplan.plan_year,
+    studyplan_subject.subject_id,
+    studyplan_subject.subject_vid_id,
+    studyplan_subject.subject_type_id,
+    studyplan_subject.subject_cat_id,
+    studyplan_subject.med_cert,
+    studyplan_subject.fin_cert,
+    schoolplan_protocol.updated_at AS lesson_date
+   FROM schoolplan_protocol
+     JOIN studyplan_subject ON studyplan_subject.id = schoolplan_protocol.studyplan_subject_id
+     JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
+     JOIN subject ON subject.id = studyplan_subject.subject_id
+     JOIN education_programm ON education_programm.id = studyplan.programm_id
+     LEFT JOIN guide_lesson_mark ON guide_lesson_mark.id = schoolplan_protocol.lesson_mark_id
+  ORDER BY studyplan.plan_year;
         ')->execute();
     }
 

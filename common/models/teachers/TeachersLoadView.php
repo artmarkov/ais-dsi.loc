@@ -50,7 +50,7 @@ class TeachersLoadView extends TeachersLoad
     public static function getTotal($provider, $fieldName, $teachers_id)
     {
         $total = [0, 0];
-
+//        echo '<pre>' . print_r($provider, true) . '</pre>'; die();
         foreach ($provider as $item) {
             if ($item['teachers_id'] == $teachers_id) {
                 if ($item['direction_id'] == 1000) {

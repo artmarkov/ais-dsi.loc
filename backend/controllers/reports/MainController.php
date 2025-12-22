@@ -18,5 +18,6 @@ class MainController extends \backend\controllers\DefaultController
         ['label' => 'Выписка из журнала успеваемости', 'url' => ['/reports/default/progress-history'], 'visible' => true],
         ['label' => 'Отчет КПК', 'url' => ['/reports/default/creative'], 'visible' => true],
         ['label' => 'Встречная проверка "Мосбилет"', 'url' => ['/reports/default/mosticket'], 'visible' => true],
+        ['label' => 'Проект расписания занятий', 'url' => ['/reports/default/schedule-project'], 'visible' => true],
     ];
 }

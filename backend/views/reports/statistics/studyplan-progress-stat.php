@@ -55,7 +55,7 @@ foreach ($model['course_list'] as $item => $val) {
     ];
 }
 
-$hints = '<span class="panel-title"><b>Итого по запросу:</b></span><br/>';
+$hints = '<span class="panel-title"><b>Итого по запросу: ' . array_sum([$model['all_summ']['5'],$model['all_summ']['4'],$model['all_summ']['3'],$model['all_summ']['НА'],$model['all_summ']['0']]).'</b></span><br/>';
 $hints .= 'Отлично: ' . $model['all_summ']['5'];
 $hints .= '<br/>';
 $hints .= 'Хорошо: ' . $model['all_summ']['4'];

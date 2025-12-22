@@ -5,11 +5,13 @@ namespace common\models\studyplan;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\RefBook;
+use common\models\education\AttestationItems;
 use common\models\education\LessonItemsProgressView;
 use common\models\education\LessonProgressView;
 use common\models\schoolplan\SchoolplanPerform;
 use common\models\schoolplan\SchoolplanProtocol;
 use Yii;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 class StudyplanHistory
@@ -45,26 +47,78 @@ class StudyplanHistory
     protected function getProgressData()
     {
         $models = LessonProgressView::find()->where(['studyplan_id' => $this->studyplan_id])->asArray()->all();
+        $studyplanSubjectIds = ArrayHelper::getColumn($models, 'studyplan_subject_id');
 
-        $modelsMarksCertif = ArrayHelper::index(LessonItemsProgressView::find()
+        $modelsMarksCertif = ArrayHelper::index((new Query())->from('attestation_items_view')
+            ->where(['plan_year' => $this->plan_year])
+            ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+            ->all(), null, ['studyplan_subject_id']);
+
+        $modelsMarksProtocolOld = ArrayHelper::index(LessonItemsProgressView::find()
             ->where(['plan_year' => $this->plan_year])
             ->andWhere(['studyplan_id' => $this->studyplan_id])
-            ->andWhere(['!=', 'test_category', 1])
-            ->asArray()->all(), null, ['subject_sect_studyplan_id', 'studyplan_subject_id']);
+            ->andWhere(['=', 'test_category', 3])
+            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+            ->asArray()
+            ->all(), null, ['studyplan_subject_id']);
 
+        $modelsMarksCertifOld = ArrayHelper::index(LessonItemsProgressView::find()
+            ->where(['plan_year' => $this->plan_year])
+            ->andWhere(['studyplan_id' => $this->studyplan_id])
+            ->andWhere(['=', 'test_category', 2])
+            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+            ->asArray()
+            ->all(), null, ['studyplan_subject_id']);
+
+        $modelsMarksProtocol = ArrayHelper::index((new Query())->from('schoolplan_protocol_items_view')
+            ->where(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->andWhere(['plan_year' => $this->plan_year])
+            ->andWhere(['fin_cert' => true])
+            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+            ->all(), null, ['studyplan_subject_id']);
+        
         $data['progressdoc'] = [];
         foreach ($models as $ids => $model) {
-            if (isset($modelsMarksCertif[$model['subject_sect_studyplan_id']][$model['studyplan_subject_id']])) {
-                $teachers = [];
-                foreach (explode(',', $model['teachers_list']) as $teachers_id) {
-                    $teachers[] = isset($this->teachers_list[$teachers_id]) ? $this->teachers_list[$teachers_id] : null;
+            $teachers = [];
+            foreach (explode(',', $model['teachers_list']) as $teachers_id) {
+                $teachers[] = isset($this->teachers_list[$teachers_id]) ? $this->teachers_list[$teachers_id] : null;
+            }
+            $data['progressdoc'][$ids] = [
+                'subject' => $model['subject'],
+                'sect' => $model['sect_name'],
+                'teachers_list' => implode(',', $teachers),
+            ];
+            if (isset($modelsMarksProtocol[$model['studyplan_subject_id']])) {
+                foreach ($modelsMarksProtocol[$model['studyplan_subject_id']] as $item => $m) {
+                    $data['progressdoc'][$ids]['items'][] = [
+                        'item' => $item + 1,
+                        'lesson_date' => Yii::$app->formatter->asDate($m['lesson_date'], 'php:d.m.Y'),
+                        'test_name' => 'Итоговая аттестация',
+                        'mark_label' => $m['mark_label'],
+                    ];
                 }
-                $data['progressdoc'][$ids] = [
-                    'subject' => $model['subject'],
-                    'sect' => $model['sect_name'],
-                    'teachers_list' => implode(',', $teachers),
-                ];
-                foreach ($modelsMarksCertif[$model['subject_sect_studyplan_id']][$model['studyplan_subject_id']] as $item => $m) {
+            } elseif (isset($modelsMarksProtocolOld[$model['studyplan_subject_id']])) {
+                foreach ($modelsMarksProtocolOld[$model['studyplan_subject_id']] as $item => $m) {
+                    $data['progressdoc'][$ids]['items'][] = [
+                        'item' => $item + 1,
+                        'lesson_date' => Yii::$app->formatter->asDate($m['lesson_date'], 'php:d.m.Y'),
+                        'test_name' => $m['test_name'],
+                        'mark_label' => $m['mark_label'],
+                    ];
+                }
+            }
+            if (isset($modelsMarksCertif[$model['studyplan_subject_id']])) {
+                foreach ($modelsMarksCertif[$model['studyplan_subject_id']] as $item => $m) {
+                    $data['progressdoc'][$ids]['items'][] = [
+                        'item' => $item + 1,
+                        'lesson_date' => Yii::$app->formatter->asDate($m['lesson_date'], 'php:d.m.Y'),
+                        'test_name' => 'Промежуточная аттестация',
+                        'mark_label' => $m['mark_label'],
+                    ];
+                }
+            } elseif (isset($modelsMarksCertifOld[$model['studyplan_subject_id']])) {
+                foreach ($modelsMarksCertifOld[$model['studyplan_subject_id']] as $item => $m) {
                     $data['progressdoc'][$ids]['items'][] = [
                         'item' => $item + 1,
                         'lesson_date' => Yii::$app->formatter->asDate($m['lesson_date'], 'php:d.m.Y'),

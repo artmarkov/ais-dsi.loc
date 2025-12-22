@@ -3,8 +3,10 @@
 namespace backend\controllers\schedule;
 
 use artsoft\helpers\RefBook;
+use artsoft\helpers\Schedule;
 use common\models\auditory\Auditory;
 use common\models\schedule\SubjectScheduleView;
+use common\models\studyplan\Studyplan;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersPlan;
 use Yii;
@@ -14,7 +16,7 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\schedule\SubjectScheduleView';
     public $modelSearchClass = 'common\models\schedule\search\SubjectScheduleViewSearch';
-
+    public $freeAccessActions = ['select'];
 
     public function actionIndex()
     {
@@ -23,7 +25,13 @@ class DefaultController extends MainController
 
         $models = SubjectScheduleView::find()
             ->where(['=', 'plan_year', $model_date->plan_year])
-            ->andWhere(['=', 'status', 1])
+            ->andWhere(['OR',
+                ['status' => Studyplan::STATUS_ACTIVE],
+                ['AND',
+                    ['status' => Studyplan::STATUS_INACTIVE],
+                    ['status_reason' => [1, 2, 4]]
+                ]
+            ])
             ->andWhere(['IS NOT', 'auditory_id', null]);
         if ($model_date->teachers_id) {
             $models = $models->andWhere(['=', 'teachers_id', $model_date->teachers_id]);
@@ -49,6 +57,15 @@ class DefaultController extends MainController
         return $this->renderIsAjax('index', compact('model_date', 'data', 'modelsAuditory'));
 
     }
-
+    /**
+     * @return mixed
+     */
+    public function actionSelect()
+    {
+        $time_in = \Yii::$app->request->post('time_in');
+        $time_duration = \Yii::$app->request->post('time_duration');
+        $time_out = Schedule::decodeTime(Schedule::encodeTime($time_in) + $time_duration * 60);
+        return json_encode(['time_out' => $time_out]);
+    }
 
 }
