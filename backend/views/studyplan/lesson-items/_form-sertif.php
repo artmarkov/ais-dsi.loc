@@ -17,7 +17,7 @@ $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::MARK,LessonMark::OF
 $keyArray = explode('||', $subject_key);
 $subject_sect_studyplan_id = $keyArray[0];
 $plan_year = $keyArray[1];
-$studentFioList = RefBook::find('studyplan_subject-student_fio')->getList();
+$studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList();
 ?>
 <div class="lesson-items-form">
     <?php

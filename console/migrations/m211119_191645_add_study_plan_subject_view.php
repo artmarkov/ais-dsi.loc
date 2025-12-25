@@ -220,6 +220,10 @@ class m211119_191645_add_study_plan_subject_view extends \artsoft\db\BaseMigrati
             ['studyplan_subject-student_fio', 'studyplan_subject_view', 'studyplan_subject_id', 'student_fio', 'student_fio', null, null, 'Предмет плана-ученик'],
         ])->execute();
 
+        $this->db->createCommand()->batchInsert('refbooks', ['name', 'table_name', 'key_field', 'value_field', 'sort_field', 'ref_field', 'group_field', 'note'], [
+            ['studyplan_subject-student_fullname', 'studyplan_subject_view', 'studyplan_subject_id', 'student_fullname', 'student_fullname', null, null, 'Предмет плана-ученик полное имя'],
+        ])->execute();
+
         $this->db->createCommand()->createView('auditory_view', '
         SELECT auditory.id, auditory.sort_order, building_id, cat_id, 
                auditory.num, auditory.name as auditory_name, guide_auditory_cat.name as cat_name, 

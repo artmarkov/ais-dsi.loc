@@ -23,7 +23,7 @@ if ($model->subject_sect_studyplan_id != 0) {
 } else {
     $studyplanSubjectList = $model->studyplan_subject_id;
 }
-$modelsStudent = (new \yii\db\Query())->select('studyplan_subject_id,education_cat_id,student_fio')->from('studyplan_subject_view')
+$modelsStudent = (new \yii\db\Query())->select('studyplan_subject_id,education_cat_id,student_fio,student_fullname')->from('studyplan_subject_view')
     ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$studyplanSubjectList}', ',')::int[])"))
     ->all();
 $programm_cat_list = \yii\helpers\ArrayHelper::getColumn($modelsStudent, 'education_cat_id');
@@ -145,7 +145,7 @@ $division_list = \common\models\education\EducationCat::find()->select('division
                                     </td>
                                     <td>
                                         <?= Html::activeHiddenInput($modelItems, "[{$index}]studyplan_subject_id"); ?>
-                                        <?= isset($modelsStudent[$modelItems->studyplan_subject_id]) ? $modelsStudent[$modelItems->studyplan_subject_id]['student_fio'] : ''; ?>
+                                        <?= isset($modelsStudent[$modelItems->studyplan_subject_id]) ? $modelsStudent[$modelItems->studyplan_subject_id]['student_fullname'] : ''; ?>
                                     </td>
                                     <td>
                                         <?php

@@ -23,7 +23,7 @@ $subject = (new \yii\db\Query())
     ->one();
 
 //print_r($subject); die();
-$studentFioList = RefBook::find('studyplan_subject-student_fio')->getList();
+$studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList();
 ?>
 <div class="lesson-items-form">
     <?php

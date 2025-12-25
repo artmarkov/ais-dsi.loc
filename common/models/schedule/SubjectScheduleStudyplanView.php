@@ -64,7 +64,7 @@ class SubjectScheduleStudyplanView extends SubjectScheduleView
      */
     public static function getScheduleIndiv($subject_key, $teachers_id, $timestamp_in)
     {
-        return (new Query())->select(['week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'student_fio'])
+        return (new Query())->select(['week_num', 'week_day', 'time_in', 'time_out', 'auditory_id', 'student_fio', 'student_fullname'])
             ->distinct()
             ->from('subject_schedule_studyplan_view')
             ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = subject_schedule_studyplan_view.direction_id')

@@ -30,7 +30,7 @@ $division_list = \common\models\education\EducationCat::find()->select('division
 
 //print_r($subject); die();
 $auditoryList = RefBook::find('auditory_memo_1')->getList();
-$studentFioList = RefBook::find('studyplan_subject-student_fio')->getList();
+$studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList();
 ?>
 <div class="lesson-items-form">
     <?php
@@ -72,7 +72,7 @@ $studentFioList = RefBook::find('studyplan_subject-student_fio')->getList();
                             <span class="panel-title"><?= $index + 1 ?></span>
                         </td>
                         <td>
-                            <span class="panel-title"><?= $m['student_fio'] ?></span>
+                            <span class="panel-title"><?= $m['student_fullname'] ?></span>
                         </td>
                         <td>
                             <span class="panel-title"><?= $string ?></span>
