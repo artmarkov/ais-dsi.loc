@@ -15,6 +15,7 @@ class ModuleSettings extends BaseSettingsModel
     public $study_plan_month_in;
     public $study_plan_month_in_frontend;
     public $thematic_template_author_flag;
+    public $attestation_on;
 
     public $shelf_life_pass;
     public $shelf_life_attendlog;
@@ -66,6 +67,7 @@ class ModuleSettings extends BaseSettingsModel
             'study_plan_month_in' => 'Месяц начала учебного года(расчетного периода)',
             'study_plan_month_in_frontend' => 'Месяц начала учебного года(фронтенд)',
             'thematic_template_author_flag' => 'Шаблоны тематических планов',
+            'attestation_on' => 'Доступ к выставлению оценок ПА преподавателям',
 
 
             'shelf_life_pass' => 'Срок хранения проходов через СКУД (дней)',

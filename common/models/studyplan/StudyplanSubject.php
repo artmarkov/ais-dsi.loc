@@ -82,6 +82,7 @@ class StudyplanSubject extends \artsoft\db\ActiveRecord
             [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'number'],
             [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'default', 'value' => 0],
             [['med_cert', 'fin_cert'], 'boolean'],
+            ['status', 'default', 'value'=> 1],
             [['subject_cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectCategory::class, 'targetAttribute' => ['subject_cat_id' => 'id']],
             [['subject_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectType::class, 'targetAttribute' => ['subject_type_id' => 'id']],
             [['subject_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubjectVid::class, 'targetAttribute' => ['subject_vid_id' => 'id']],
@@ -326,7 +327,7 @@ SQL;
         $this->cost_hour = $modelSubTime->cost_hour;
         $this->cost_month_summ = $modelSubTime->cost_month_summ;
         $this->cost_year_summ = $modelSubTime->cost_year_summ;
-        $this->year_time_consult = $modelSubTime->year_time_consult;
+        $this->year_time_consult = $model->subject_form_id == 1001 ? 0 : $modelSubTime->year_time_consult;
         $this->med_cert = $modelSubTime->med_cert;
         $this->fin_cert = $modelSubTime->fin_cert;
     }

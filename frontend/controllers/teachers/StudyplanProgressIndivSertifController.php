@@ -2,27 +2,18 @@
 
 namespace frontend\controllers\teachers;
 
-use artsoft\helpers\ArtHelper;
 use backend\models\Model;
 use common\models\education\AttestationItems;
-use common\models\education\LessonItems;
-use common\models\education\LessonProgress;
-use common\models\education\LessonProgressView;
-use common\models\education\ProgressConfirm;
 use common\models\teachers\Teachers;
 use Yii;
-use yii\base\DynamicModel;
 use yii\db\Exception;
 use yii\db\Query;
-use yii\helpers\ArrayHelper;
-use yii\web\NotFoundHttpException;
 
 /**
  * StudyplanProgressIndivSertifController
  */
 class StudyplanProgressIndivSertifController extends MainController
 {
-    public $freeAccessActions = ['update', 'delete'];
 
     public function actionUpdate($objectId)
     {

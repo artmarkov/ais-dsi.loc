@@ -216,7 +216,7 @@ class NoticeConsultDisplay
     public function confirmIsAvailable()
     {
 //        print_r([$this->yearTimeConsultTotal , $this->loadTimeConsultTotal, $this->dateTimeTotal]);
-        return !empty($this->models) && empty($this->teachersLoadData)/* && empty($this->scheduleOverLapping) && empty($this->teachersOverLapping)*/  && ($this->loadTimeConsultTotal == $this->dateTimeTotal);
+        return !empty($this->models) && empty($this->teachersLoadData)/* && empty($this->scheduleOverLapping) && empty($this->teachersOverLapping)  && ($this->loadTimeConsultTotal == $this->dateTimeTotal)*/;
     }
 
     /**

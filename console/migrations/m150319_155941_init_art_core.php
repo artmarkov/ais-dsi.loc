@@ -35,7 +35,7 @@ class m150319_155941_init_art_core extends \yii\db\Migration
         $this->addCommentOnTable(self::AUTH_ITEM_GROUP_TABLE ,'Группы');
 
         $this->createTable(self::AUTH_ITEM_TABLE, [
-            'name' => $this->string(64)->notNull(),
+            'name' => $this->string(127)->notNull(),
             'type' => $this->integer()->notNull(),
             'description' => $this->text(),
             'rule_name' => $this->string(64),
@@ -52,7 +52,7 @@ class m150319_155941_init_art_core extends \yii\db\Migration
 
         $this->createTable(self::AUTH_ITEM_CHILD_TABLE, [
             'parent' => $this->string(64)->notNull(),
-            'child' => $this->string(64)->notNull(),
+            'child' => $this->string(127)->notNull(),
             'PRIMARY KEY (parent, child)',
         ], $tableOptions);
 

@@ -19,6 +19,8 @@ class NoticeDisplay
     protected $models;
     protected $plan_year;
     protected $teachersLoadIds;
+    protected $teachersIds;
+    protected $auditoryPlan;
     protected $subjectScheduleIds;
     protected $teachersLoadData;
     protected $scheduleOverLapping;
@@ -37,6 +39,9 @@ class NoticeDisplay
     {
         $this->models = $models;
         $this->plan_year = $plan_year;
+        $this->teachersIds = array_unique(\yii\helpers\ArrayHelper::getColumn($this->models, 'teachers_id'));
+        $this->auditoryPlan = $this->getAuditoryPlan($this->plan_year); // все аудитории планирования инд занятий
+       // echo '<pre>' . print_r( $this->teachersIds, true) . '</pre>'; die();
         $this->teachersLoadIds = array_unique(\yii\helpers\ArrayHelper::getColumn($this->models, 'teachers_load_id'));
         $this->subjectScheduleIds = array_filter(\yii\helpers\ArrayHelper::getColumn($this->models, 'subject_schedule_id'), function ($value) {
             return !is_null($value) && $value !== '';
@@ -149,6 +154,10 @@ class NoticeDisplay
             $message = 'Заданное расписание не соответствует планированию индивидуальных занятий!';
             $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
         }
+        if(!isset($this->auditoryPlan[$model->week_day][$model->auditory_id])){
+            $message = 'Аудитория не задана в планировании индивидуальных занятий!';
+            $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
+        }
 //
         $models = $this->studentScheduleOverLapping;
         if (isset($models[$model->subject_schedule_id])) {
@@ -259,7 +268,7 @@ class NoticeDisplay
         $thereIsAnOverlapping = \Yii::$app->db->createCommand('SELECT a.subject_schedule_id, b.week_num, b.week_day, 
                               b.time_plan_in, b.time_plan_out, b.auditory_id
 	                        FROM teachers_plan b, subject_schedule_view a 
-	                        WHERE (a.auditory_id != b.auditory_id OR (a.auditory_id = b.auditory_id AND ((b.time_plan_in < a.time_out AND b.time_plan_in > a.time_in) OR (b.time_plan_out < a.time_out AND b.time_plan_out > a.time_in))))
+	                        WHERE (a.auditory_id = b.auditory_id AND ((b.time_plan_in < a.time_out AND b.time_plan_in > a.time_in) OR (b.time_plan_out < a.time_out AND b.time_plan_out > a.time_in)))
 							AND a.direction_id = 1000
 							AND a.subject_sect_studyplan_id = 0
 							AND a.direction_id = b.direction_id
@@ -275,6 +284,26 @@ class NoticeDisplay
             ])->queryAll();
 
         return $thereIsAnOverlapping ? ArrayHelper::index($thereIsAnOverlapping, null, ['subject_schedule_id']) : [];
+    }
+
+    /**
+     * Все аудитории в плане преподавателей
+     * @param $plan_year
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    protected function getAuditoryPlan($plan_year)
+    {
+        $array = \Yii::$app->db->createCommand('SELECT DISTINCT auditory_id, week_day
+	                        FROM teachers_plan 
+	                        WHERE teachers_id = ANY (string_to_array(:teachers_ids, \',\')::int[])
+							AND plan_year = :plan_year',
+            [
+                'teachers_ids' => implode(',', $this->teachersIds),
+                'plan_year' => $plan_year,
+            ])->queryAll();
+       // echo '<pre>' . print_r(ArrayHelper::index($array, null, ['week_day', 'auditory_id'])) . '</pre>'; die();
+        return ArrayHelper::index($array, null, ['week_day', 'auditory_id']);
     }
 
     /**
@@ -398,6 +427,7 @@ class NoticeDisplay
      */
     public function getScheduleNotice($model)
     {
+       // echo '<pre>' . print_r( $model, true) . '</pre>'; die();
         $string = [];
         $string[] = $this->getTeachersOverLoadNotice($model);
         $string[] = $this->getItemScheduleNotice($model);

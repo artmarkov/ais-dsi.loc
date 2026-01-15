@@ -3,8 +3,7 @@
 use artsoft\grid\GridView;
 use artsoft\helpers\RefBook;
 use common\models\teachers\Teachers;
-use yii\helpers\Html;
-use yii\helpers\Url;
+use artsoft\helpers\Html;
 use common\models\schedule\SubjectScheduleStudyplanView;
 use common\models\education\LessonItems;
 use yii\widgets\Pjax;
@@ -19,12 +18,14 @@ $this->params['breadcrumbs'][] = $this->title;
 //echo '<pre>' . print_r($model['columns'], true) . '</pre>'; die();
 $readonly = (Teachers::isOwnTeacher($modelTeachers->id)) ? false : true;
 $confirm_available = ((count($model['columns']) == 1 && $model_date->subject_sect_studyplan_id  && \artsoft\Art::isFrontend() && $model_confirm->confirm_status != 0) || \artsoft\Art::isBackend()) && Yii::$app->settings->get('mailing.confirm_progress_perform_doc');
+$attestation_flag = Yii::$app->settings->get('module.attestation_on', 0) == 0 ? false : true; // открыт ли доступ к выставлению ПА
+
 $columnsHeader = [];
 foreach ($model['columns'] as $my => $qty) {
     $columnsHeader[] = ['content' => $my, 'options' => ['colspan' => $qty, 'class' => 'text-center']];
 }
 
-$editMarks = function ($model, $key, $index, $widget) use ($modelTeachers) {
+$editMarks = function ($model, $key, $index, $widget) use ($modelTeachers, $attestation_flag) {
     $content = [];
     if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], 0)) {
         $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
@@ -72,7 +73,7 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers) {
     $content += [$item + 5 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
             \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year']), 'mode' => 'update'] :
                 ['/teachers/studyplan-progress-sertif/update', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'])], [
-                'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
+                'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || !$attestation_flag),
                 'title' => Yii::t('art', 'Update'),
                 'data-method' => 'post',
                 'data-pjax' => '0',
@@ -81,7 +82,7 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers) {
         . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
             \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year']), 'mode' => 'delete'] :
                 ['/teachers/studyplan-progress-sertif/delete', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'])], [
-                'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
+                'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || !$attestation_flag),
                 'title' => Yii::t('art', 'Delete'),
                 'class' => 'btn btn-xxs btn-link',
                 'data' => [

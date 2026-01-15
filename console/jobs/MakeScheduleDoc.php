@@ -3,7 +3,6 @@
 namespace console\jobs;
 
 use artsoft\helpers\ArtHelper;
-use common\models\reports\ProgressReport;
 use common\models\teachers\TeachersConsult;
 use common\models\teachers\TeachersSchedule;
 use common\models\user\UserCommon;
@@ -12,7 +11,7 @@ use yii\base\DynamicModel;
 use yii\db\Query;
 
 /**
- * Class FlushCache.
+ * Class MakeScheduleDoc.
  */
 class MakeScheduleDoc extends \yii\base\BaseObject implements \yii\queue\JobInterface
 {
@@ -30,9 +29,11 @@ class MakeScheduleDoc extends \yii\base\BaseObject implements \yii\queue\JobInte
             $models = new TeachersSchedule($model_date);
             $models->saveXls();
             $models->makeDocument();
+            $models->cliarTemp();
             $models = new TeachersConsult($model_date);
             $models->saveXls();
             $models->makeDocument();
+            $models->cliarTemp();
         }
     }
 }

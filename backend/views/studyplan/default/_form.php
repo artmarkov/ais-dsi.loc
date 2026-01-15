@@ -15,7 +15,7 @@ use yii\widgets\MaskedInput;
 /* @var $model common\models\studyplan\Studyplan */
 /* @var $form artsoft\widgets\ActiveForm */
 /* @var $readonly */
-/* @var $modelsStudyplanSubject */
+/* @var $models StudyplanSubject */
 
 $this->registerJs(<<<JS
 function initSelect2Loading(a,b){ initS2Loading(a,b); }
@@ -149,6 +149,7 @@ JS
                                         'cost_month_summ',
                                         'cost_year_summ',
                                         'year_time_consult',
+                                        'status',
                                     ],
                                 ]); ?>
                                 <div class="table-responsive kv-grid-container">
@@ -174,8 +175,9 @@ JS
                                                 год
                                             </th>
                                             <!--                    --><?php //endif; ?>
-                                            <th class="text-center">Промежуточная</br>аттестация</th>
-                                            <th class="text-center">Итоговая</br>аттестация</th>
+                                            <th class="text-center">ПА</th>
+                                            <th class="text-center">ИА</th>
+                                            <th class="text-center">Активна</th>
                                             <th class="text-center">
                                                 <?php if (!$readonly): ?>
                                                     <button type="button" class="add-item btn btn-success btn-xs"><span
@@ -196,7 +198,7 @@ JS
                                             $sum_year_time += $modelStudyplanSubject->year_time;
                                             $sum_year_time_consult += $modelStudyplanSubject->year_time_consult;
                                             ?>
-                                            <tr class="item">
+                                            <tr class="item <?= $modelStudyplanSubject->status == false ? 'danger' : ''; ?>">
                                                 <?php
                                                 // necessary for update action.
                                                 if (!$modelStudyplanSubject->isNewRecord) {
@@ -376,6 +378,9 @@ JS
                                                 </td>
                                                 <td>
                                                     <?= $form->field($modelStudyplanSubject, "[{$index}]fin_cert")->checkbox(['disabled' => $readonly, 'label' => 'Да']) ?>
+                                                </td>
+                                                <td class="bg-warning">
+                                                    <?= $form->field($modelStudyplanSubject, "[{$index}]status")->checkbox(['disabled' => $readonly, 'label' => 'Да']) ?>
                                                 </td>
                                                 <td class="vcenter">
                                                     <?php if (!$readonly): ?>
