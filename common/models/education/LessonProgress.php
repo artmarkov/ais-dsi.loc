@@ -5,7 +5,6 @@ namespace common\models\education;
 use artsoft\helpers\RefBook;
 use artsoft\widgets\Notice;
 use common\models\studyplan\StudyplanSubject;
-use phpDocumentor\Reflection\Types\False_;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -29,6 +28,10 @@ use yii\behaviors\TimestampBehavior;
  */
 class LessonProgress extends \artsoft\db\ActiveRecord
 {
+    public $lesson_test_id;
+    public $lesson_topic;
+    public $lesson_rem;
+
     /**
      * {@inheritdoc}
      */
@@ -48,12 +51,28 @@ class LessonProgress extends \artsoft\db\ActiveRecord
         ];
     }
 
+    public function afterFind()
+    {
+        $this->lesson_test_id = $this->lessonItems ? $this->lessonItems->lesson_test_id : null;
+        $this->lesson_topic = $this->lessonItems ? $this->lessonItems->lesson_topic : null;
+        $this->lesson_rem = $this->lessonItems ? $this->lessonItems->lesson_rem : null;
+        parent::afterFind();
+    }
+
+    public function attributes()
+    {
+        return array_merge(parent::attributes(), ['lesson_test_id', 'lesson_topic', 'lesson_rem']);
+    }
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
+            [['lesson_test_id'], 'integer'],
+          //  [['lesson_test_id'], 'required'], TODO сделать сценарий для индивид
+            [['lesson_topic'], 'string', 'max' => 512],
+            [['lesson_rem'], 'string', 'max' => 1024],
             [['lesson_items_id', 'studyplan_subject_id', 'lesson_mark_id', 'version'], 'integer'],
             [['studyplan_subject_id'/*, 'lesson_mark_id'*/], 'required'],
 //            [['studyplan_subject_id'], 'checkProgressExist'],

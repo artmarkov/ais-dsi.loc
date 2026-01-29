@@ -120,6 +120,7 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
             'subject_sect_studyplan_id' => $this->integer()->defaultValue(0),
             'studyplan_subject_id' => $this->integer()->defaultValue(0),
             'lesson_test_id' => $this->integer()->notNull(),
+            'teachers_id' => $this->integer(),
             'lesson_date' => $this->integer()->notNull(),
             'lesson_topic' => $this->string(512),
             'lesson_rem' => $this->string(1024),
@@ -239,7 +240,7 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_view', '
-   SELECT 0 AS subject_sect_studyplan_id,
+    SELECT 0 AS subject_sect_studyplan_id,
     lesson_progress.studyplan_subject_id,
     studyplan_subject.studyplan_id,
     0 AS subject_sect_id,
@@ -263,13 +264,15 @@ UNION ALL
            FROM teachers_load
           WHERE teachers_load.studyplan_subject_id = lesson_items.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0), \',\'::text) AS teachers_list,
     concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
-    studyplan.status, 
-	studyplan.status_reason,
+    studyplan.status,
+    studyplan.status_reason,
     studyplan.plan_year,
     studyplan_subject.subject_id,
     studyplan_subject.subject_vid_id,
     studyplan_subject.subject_type_id,
-    studyplan_subject.subject_cat_id
+    studyplan_subject.subject_cat_id,
+    studyplan_subject.med_cert,
+    studyplan_subject.fin_cert
    FROM lesson_items
      JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.subject_sect_studyplan_id = 0
      JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
@@ -303,13 +306,15 @@ UNION ALL
            FROM teachers_load
           WHERE teachers_load.subject_sect_studyplan_id = lesson_items.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0), \',\'::text) AS teachers_list,
     NULL::text AS subject_key,
-    studyplan.status, 
-	studyplan.status_reason,
+    studyplan.status,
+    studyplan.status_reason,
     studyplan.plan_year,
     studyplan_subject.subject_id,
     studyplan_subject.subject_vid_id,
     studyplan_subject.subject_type_id,
-    studyplan_subject.subject_cat_id
+    studyplan_subject.subject_cat_id,
+    studyplan_subject.med_cert,
+    studyplan_subject.fin_cert
    FROM lesson_items
      LEFT JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.studyplan_subject_id = 0
      JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
@@ -322,7 +327,7 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_studyplan_view', '
-   SELECT 0 AS subject_sect_studyplan_id,
+    SELECT 0 AS subject_sect_studyplan_id,
     lesson_progress.studyplan_subject_id,
     studyplan_subject.studyplan_id,
     0 AS subject_sect_id,
@@ -346,10 +351,15 @@ UNION ALL
     concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
     studyplan.status,
     studyplan.status_reason,
-    studyplan.plan_year
+    studyplan.plan_year,
+    teachers_load.id AS teachers_load_id
    FROM lesson_items
      JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.subject_sect_studyplan_id = 0
-     JOIN teachers_load ON teachers_load.studyplan_subject_id = lesson_items.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0
+     JOIN teachers_load ON teachers_load.studyplan_subject_id = lesson_items.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0 AND
+        CASE
+            WHEN lesson_items.teachers_id IS NOT NULL THEN teachers_load.teachers_id = lesson_items.teachers_id
+            ELSE true
+        END
      JOIN studyplan_subject ON studyplan_subject.id = lesson_progress.studyplan_subject_id
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
      JOIN subject ON subject.id = studyplan_subject.subject_id
@@ -381,7 +391,8 @@ UNION ALL
     NULL::text AS subject_key,
     studyplan.status,
     studyplan.status_reason,
-    studyplan.plan_year
+    studyplan.plan_year,
+    teachers_load.id AS teachers_load_id
    FROM lesson_items
      JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.studyplan_subject_id = 0
      JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = lesson_items.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0

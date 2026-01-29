@@ -9,6 +9,7 @@ use artsoft\helpers\Schedule;
 use common\models\own\Department;
 use common\models\routine\Routine;
 use common\models\schedule\ConsultScheduleConfirm;
+use common\models\studyplan\StudyplanSubjectHist;
 use Yii;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
@@ -144,6 +145,7 @@ class TeachersTimesheet
             ->andWhere(['between', 'datetime_in', $this->timestamp_in, $this->timestamp_out])
             ->andWhere(['subject_type_id' => $this->subject_type_id])
             ->andWhere(['status' => 1])
+            ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass($this->timestamp_in)])
             ->orderBy('datetime_in')
             ->all();
         foreach ($models as $item => $data) {

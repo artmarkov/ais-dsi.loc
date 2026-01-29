@@ -36,6 +36,7 @@ use yii\web\NotFoundHttpException;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
+ * @property int $teachers_id
  *
  * @property LessonTest $lessonTest
  * @property LessonProgress[] $lessonProgresses
@@ -73,11 +74,11 @@ class LessonItems extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'version'], 'integer'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'version', 'teachers_id'], 'integer'],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'version'], 'default', 'value' => 0],
             [['lesson_test_id', 'lesson_date'], 'required'],
             [['lesson_date'], 'safe'],
-            [['lesson_test_id'], 'checkLessonTestExist', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
+//            [['lesson_test_id'], 'checkLessonTestExist', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_date'], 'checkLessonExist', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_date'], 'checkLessonDate', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_date'], 'checkHolidays', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
@@ -95,24 +96,23 @@ class LessonItems extends \artsoft\db\ActiveRecord
         }
     }
 
-    public function checkLessonTestExist($attribute, $params)
-    {
-        if ($this->isNewRecord) {
-            $test = LessonTest::findOne($this->lesson_test_id);
-            if ($test->test_category != 1) {
-                $checkLesson = self::find()->where(
-                    ['AND',
-                        ['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id],
-                        ['=', 'studyplan_subject_id', $this->studyplan_subject_id],
-                        ['=', 'lesson_test_id', $this->lesson_test_id],
-
-                    ]);
-                if ($checkLesson->exists() === true) {
-                    $this->addError($attribute, 'Данный вид занятия уже существует для дисциплины!');
-                }
-            }
-        }
-    }
+//    public function checkLessonTestExist($attribute, $params)
+//    {
+//        if ($this->isNewRecord) {
+//            $test = LessonTest::findOne($this->lesson_test_id);
+//            if ($test->test_category != 1) {
+//                $checkLesson = self::find()->where(
+//                    ['AND',
+//                        ['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id],
+//                        ['=', 'studyplan_subject_id', $this->studyplan_subject_id],
+//                        ['=', 'lesson_test_id', $this->lesson_test_id],
+//                    ]);
+//                if ($checkLesson->exists() === true) {
+//                    $this->addError($attribute, 'Данный вид занятия уже существует для дисциплины!');
+//                }
+//            }
+//        }
+//    }
 
     public function checkLessonTest($attribute, $params)
     {
@@ -160,10 +160,11 @@ class LessonItems extends \artsoft\db\ActiveRecord
                         ['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id],
                         ['=', 'studyplan_subject_id', $this->studyplan_subject_id],
                         ['=', 'lesson_date', strtotime($this->lesson_date)],
+                        ['OR', ['teachers_id' => $this->teachers_id], ['teachers_id' => NULL]],
 
                     ]);
                 if ($checkLesson->exists() === true) {
-                    $this->addError($attribute, 'Занятие уже добавлено для выбранной даты и дисциплины!');
+                    $this->addError($attribute, 'Занятие уже добавлено для выбранной даты, дисциплины и преподавателя!');
                 }
             }
         }
@@ -187,15 +188,41 @@ class LessonItems extends \artsoft\db\ActiveRecord
             ])->scalar();
     }
 
-    public static function isLessonExist($subject_sect_studyplan_id, $studyplan_subject_id, $lesson_timestamp)
+//    public static function isLessonExist($subject_sect_studyplan_id, $studyplan_subject_id, $lesson_timestamp)
+//    {
+//        return self::find()->joinWith('lessonTest')->where(
+//            ['AND',
+//                ['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id],
+//                ['=', 'studyplan_subject_id', $studyplan_subject_id],
+//                ['=', 'lesson_date', $lesson_timestamp],
+//                ['=', 'test_category', 1],
+//            ])->scalar();
+//    }
+
+    public static function isLessonExist($subject_sect_studyplan_id, $studyplan_subject_id, $lesson_timestamp, $teachers_id)
     {
+        $query = self::find()->joinWith('lessonTest')->where(
+            ['AND',
+                ['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id],
+                ['=', 'studyplan_subject_id', $studyplan_subject_id],
+                ['=', 'lesson_date', $lesson_timestamp],
+                ['=', 'test_category', 1],
+            ])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->scalar();
+        if ($query) {
+            return $query;
+        }
+
         return self::find()->joinWith('lessonTest')->where(
             ['AND',
                 ['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id],
                 ['=', 'studyplan_subject_id', $studyplan_subject_id],
                 ['=', 'lesson_date', $lesson_timestamp],
                 ['=', 'test_category', 1],
-            ])->scalar();
+            ])
+            ->andWhere(['teachers_id' => NULL])
+            ->scalar();
     }
 
     public static function isLessonCertifExist($subject_sect_studyplan_id, $studyplan_subject_id, $lesson_test_id)
@@ -413,6 +440,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
                     } else {
                         $m = new LessonProgress();
                         $m->studyplan_subject_id = $dataItem['studyplan_subject_id'];
+                        $m->lesson_test_id = $this->lesson_test_id;
                         $modelsItems[] = $m;
                     }
 //                    echo '<pre>' . print_r($modelLesson, true) . '</pre>';
@@ -433,7 +461,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
      */
     public static function checkLessonsIndiv($modelsProgress, $model)
     {
-        $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress,'studyplan_subject_id');
+        $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress, 'studyplan_subject_id');
         $modelsSubjectSchedule = LessonItemsProgressView::find()->where(
             ['AND',
                 ['subject_sect_studyplan_id' => 0],

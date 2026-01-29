@@ -28,6 +28,7 @@ use common\models\studyplan\search\StudyplanThematicViewSearch;
 use common\models\studyplan\search\StudyplanViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
 use common\models\studyplan\StudyplanInvoices;
+use common\models\studyplan\StudyplanSubjectHist;
 use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
 use common\models\studyplan\StudyplanView;
@@ -398,11 +399,12 @@ class DefaultController extends MainController
             if (!isset($model_date)) {
                 throw new NotFoundHttpException("The model_date was not found.");
             }
-            $searchModel = new TeachersLoadStudyplanViewSearch();
+            $query = TeachersLoadStudyplanView::find()->where(['studyplan_id' => $id])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()]);
+            $searchModel = new TeachersLoadStudyplanViewSearch($query);
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();
-            $params[$searchName]['studyplan_id'] = $id;
             $dataProvider = $searchModel->search($params);
 
             return $this->renderIsAjax('load-items', compact('dataProvider', 'searchModel', 'model', 'model_date'));
@@ -813,11 +815,13 @@ class DefaultController extends MainController
 
             $subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
             $studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
+            $teachers_id = Yii::$app->request->get('teachers_id') ?? null;
 
             $model = new LessonItems();
             $model->scenario = LessonItems::SCENARIO_COMMON;
             $model->studyplan_subject_id = $studyplan_subject_id;
             $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
+            $model->teachers_id = $teachers_id;
             // предустановка учеников
             $modelsItems = $model->getLessonProgressNew();
 
@@ -999,13 +1003,20 @@ class DefaultController extends MainController
         return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
 
     } elseif ('delete' == $mode && $objectId) {
-            $subject_key = base64_decode($objectId);
-            $keyArray = explode('||', $subject_key);
-            $studyplan_subject_id = $keyArray[0];
-            $plan_year = $keyArray[1];
+        $subject_key = base64_decode($objectId);
+        $keyArray = explode('||', $subject_key);
+        $studyplan_subject_id = $keyArray[0];
+        $plan_year = $keyArray[1];
+        $teachers_id = $keyArray[2];
 
-            $modelSertif = AttestationItems::findOne(['studyplan_subject_id' => $studyplan_subject_id, 'plan_year' => $plan_year]);
-            $modelSertif ? $modelSertif->delete() : null;
+        $modelSertif = AttestationItems::find()
+            ->where(['studyplan_subject_id' => $studyplan_subject_id])
+            ->andWhere(['plan_year' => $plan_year])
+            ->andWhere(new \yii\db\Expression("CASE
+                        WHEN attestation_items.teachers_id IS NOT NULL THEN attestation_items.teachers_id = :teachers_id
+                        ELSE true END", [':teachers_id' => $teachers_id]))
+            ->one();
+        $modelSertif ? $modelSertif->delete() : null;
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
             return $this->redirect(Yii::$app->request->referrer);

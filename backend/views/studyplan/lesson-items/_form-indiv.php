@@ -99,7 +99,7 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
                                     'pluginOptions' => [
                                         'allowClear' => true
                                     ]
-                                ]);
+                                ])->label('Вид занятия(по умолчанию)');
                                 ?>
                                 <?php
                                 if (!$model->getErrors() && $model->lesson_date) {
@@ -107,8 +107,6 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
                                 }
                                 ?>
                                 <?= $form->field($model, 'lesson_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['options' => ['disabled' => (!$model->getErrors() && $model->lesson_date)]]); ?>
-                                <?= $form->field($model, 'lesson_topic')->textInput() ?>
-                                <?= $form->field($model, 'lesson_rem')->textInput() ?>
                             </div>
                         </div>
                         <?php if ($model->lesson_date && !empty($modelsItems)): ?>
@@ -122,7 +120,10 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
                                         <tr>
                                             <th class="text-center">№</th>
                                             <th class="text-center">Ученик</th>
-                                            <th class="text-center">Оценка</th>
+                                            <th class="text-center">Вид занятия</th>
+                                            <th class="text-center" style="min-width: 100px">Оценка</th>
+                                            <th class="text-center">Тема занятия</th>
+                                            <th class="text-center">Задание</th>
                                             <th class="text-center">Примечание</th>
                                         </tr>
                                         </thead>
@@ -141,6 +142,31 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
                                                 <td>
                                                     <?= Html::activeHiddenInput($modelItems, "[{$index}]studyplan_subject_id"); ?>
                                                     <?= $studentFioList[$modelItems->studyplan_subject_id]; ?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    $field = $form->field($modelItems, "[{$index}]lesson_test_id");
+                                                    echo $field->begin();
+                                                    ?>
+                                                    <div class="col-sm-12">
+                                                        <?= \kartik\select2\Select2::widget(
+                                                            [
+                                                                'model' => $modelItems,
+                                                                'attribute' => "[{$index}]lesson_test_id",
+                                                                'data' => \common\models\education\LessonTest::getLessonTestList($model,[1], $division_list),
+                                                                'options' => [
+
+//                                                                'disabled' => $readonly,
+                                                                    'placeholder' => Yii::t('art', 'Select...'),
+                                                                ],
+                                                                'pluginOptions' => [
+                                                                    'allowClear' => true
+                                                                ],
+                                                            ]
+                                                        ) ?>
+                                                        <p class="help-block help-block-error"></p>
+                                                    </div>
+                                                    <?= $field->end(); ?>
                                                 </td>
                                                 <td>
                                                     <?php
@@ -167,7 +193,28 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
                                                     </div>
                                                     <?= $field->end(); ?>
                                                 </td>
-
+                                                <td>
+                                                    <?php
+                                                    $field = $form->field($modelItems, "[{$index}]lesson_topic");
+                                                    echo $field->begin();
+                                                    ?>
+                                                    <div class="col-sm-12">
+                                                        <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]lesson_topic", ['class' => 'form-control']); ?>
+                                                        <p class="help-block help-block-error"></p>
+                                                    </div>
+                                                    <?= $field->end(); ?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    $field = $form->field($modelItems, "[{$index}]lesson_rem");
+                                                    echo $field->begin();
+                                                    ?>
+                                                    <div class="col-sm-12">
+                                                        <?= \yii\helpers\Html::activeTextInput($modelItems, "[{$index}]lesson_rem", ['class' => 'form-control']); ?>
+                                                        <p class="help-block help-block-error"></p>
+                                                    </div>
+                                                    <?= $field->end(); ?>
+                                                </td>
                                                 <td>
                                                     <?php
                                                     $field = $form->field($modelItems, "[{$index}]mark_rem");

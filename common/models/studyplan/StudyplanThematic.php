@@ -162,7 +162,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
         $userId = Yii::$app->user->identity->getId();
         $author_flag = Yii::$app->settings->get('module.thematic_template_author_flag', 0);
 
-        $subject_id = $this->subject_sect_studyplan_id != null ? SubjectSectStudyplan::find()->select(['subject_sect.subject_id'])->joinWith('subjectSect')->where(['subject_sect_studyplan.id' => $this->subject_sect_studyplan_id])->scalar() : StudyplanSubject::find()->select(['subject_id'])->where(['id' => $this->studyplan_subject_id])->scalar();
+        $subject_id = $this->subject_sect_studyplan_id != 0 ? SubjectSectStudyplan::find()->select(['subject_sect.subject_id'])->joinWith('subjectSect')->where(['subject_sect_studyplan.id' => $this->subject_sect_studyplan_id])->scalar() : StudyplanSubject::find()->select(['subject_id'])->where(['id' => $this->studyplan_subject_id])->scalar();
 
         $ids = StudyplanThematicView::find()
             ->select('studyplan_thematic_id')
@@ -173,12 +173,33 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
             ->where(['is not', 'template_name', null])
             ->andWhere(['id' => array_unique($ids)]);
 
-        if ($author_flag == 0) {
+        if ($author_flag == 0 || ($author_flag == 2 && $this->subject_sect_studyplan_id == 0)) {
             $models = $models->andWhere(['=', 'author_id', $userId]);
         }
         $models = $models->orderBy('template_name')->all();
 
         return \yii\helpers\ArrayHelper::map($models, 'id', 'template_name');
+    }
+
+    public function isAuthor()
+    {
+        return $this->author_id == Yii::$app->user->identity->getId();
+    }
+
+    /**
+     * определение полугодия по умолчанию
+     * @param $subject_sect_studyplan_id
+     * @param $studyplan_subject_id
+     * @return int
+     */
+    public static function halfYearDefault($subject_sect_studyplan_id, $studyplan_subject_id)
+    {
+        $half_year = self::find()
+            ->select(new \yii\db\Expression('MAX(half_year)'))
+            ->where(['subject_sect_studyplan_id' => $subject_sect_studyplan_id])
+            ->andWhere(['studyplan_subject_id' => $studyplan_subject_id])
+            ->scalar();
+        return $half_year == 1 ? 2 : 1;
     }
 
     /**

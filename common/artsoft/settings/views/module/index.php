@@ -86,7 +86,7 @@ SettingsAsset::register($this);
 
                             <?= $form->field($model, 'study_plan_month_in')->textInput(['maxlength' => true])->hint('Введите месяц') ?>
                             <?= $form->field($model, 'study_plan_month_in_frontend')->textInput(['maxlength' => true])->hint('Введите месяц') ?>
-                            <?= $form->field($model, 'thematic_template_author_flag')->radioList([0 => 'Доступны только авторам', 1 => 'Доступны всем']) ?>
+                            <?= $form->field($model, 'thematic_template_author_flag')->radioList([0 => 'Доступны только авторам', 1 => 'Доступны всем', 2 => 'Групповые - Всем, Индивидуальные - Авторам']) ?>
                             <?= $form->field($model, 'attestation_on')->radioList([0 => 'Доступ закрыт', 1 => 'Доступ открыт']) ?>
 
                         </div>

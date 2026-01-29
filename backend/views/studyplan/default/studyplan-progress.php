@@ -14,6 +14,8 @@ use yii\widgets\Pjax;
 /* @var $model_date */
 /* @var $modelStudent */
 
+$teachers_list = RefBook::find('teachers_fio')->getList();
+
 $this->title = Yii::t('art/guide', 'Studyplan Progress');
 $this->params['breadcrumbs'][] = $this->title;
 $columnsHeader = [];
@@ -38,7 +40,7 @@ $editMarks = function ($model, $key, $index, $widget) {
             )];
         } else {
             $content += [2 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                ['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'studyplan_subject_id' => $model['studyplan_subject_id'], 'mode' => 'create'],
+                ['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'studyplan_subject_id' => $model['studyplan_subject_id'], 'teachers_id' => $model['teachers_id'], 'mode' => 'create'],
                 [
                     'title' => 'Добавить занятие',
                     'data-method' => 'post',
@@ -51,7 +53,7 @@ $editMarks = function ($model, $key, $index, $widget) {
     }
     $item = 0;
     foreach ($model['lesson_timestamp'] as $id => $item) {
-        if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'])) {
+        if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'], $model['teachers_id'])) {
             $content += [$id + 3 => ($model['subject_sect_studyplan_id'] == 0 ? Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                     ['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'objectId' => $lesson_items_id, 'mode' => 'update'], [
                         'title' => Yii::t('art', 'Update'),
@@ -81,7 +83,7 @@ $editMarks = function ($model, $key, $index, $widget) {
         $item = $id;
     }
     $content += [$item + 4 => \yii\helpers\Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year']), 'mode' => 'update'], [
+                ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year'] . '||' . $model['teachers_id']), 'mode' => 'update'], [
 //                'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
                 'disabled' => \common\models\education\AttestationItems::isAttestationNeeds($model['studyplan_subject_id'], $model['plan_year']) == false,
                 'title' => Yii::t('art', 'Update'),
@@ -90,7 +92,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                 'class' => 'btn btn-xxs btn-link',
             ])
         . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year']), 'mode' => 'delete'], [
+                ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year'] . '||' . $model['teachers_id']), 'mode' => 'delete'], [
                 'disabled' => \common\models\education\AttestationItems::isAttestationNeeds($model['studyplan_subject_id'], $model['plan_year']) == false,
                 'title' => Yii::t('art', 'Delete'),
                 'class' => 'btn btn-xxs btn-link',
@@ -144,8 +146,8 @@ $columns = [
     [
         'attribute' => 'studyplan_subject_id',
         'label' => $model['attributes']['studyplan_subject_id'],
-        'value' => function ($model) {
-            return $model['subject'];
+        'value' => function ($model) use ($teachers_list) {
+            return $model['subject'] . '<br/> [' . $teachers_list[$model['teachers_id']] . ']';
         },
         'format' => 'raw',
         'group' => true,

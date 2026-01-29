@@ -154,7 +154,7 @@ class NoticeDisplay
             $message = 'Заданное расписание не соответствует планированию индивидуальных занятий!';
             $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
         }
-        if(!isset($this->auditoryPlan[$model->week_day][$model->auditory_id])){
+        if(!isset($this->auditoryPlan[$model->week_day][$model->auditory_id]) && $model->subject_vid_id == 1000){
             $message = 'Аудитория не задана в планировании индивидуальных занятий!';
             $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
         }

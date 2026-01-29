@@ -4,6 +4,7 @@ namespace common\models\execution;
 
 use artsoft\helpers\ArtHelper;
 use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubjectHist;
 use common\models\studyplan\ThematicView;
 use common\models\teachers\TeachersLoadView;
 use yii\helpers\ArrayHelper;
@@ -19,6 +20,7 @@ class ExecutionThematic
     protected $teachers_id;
     protected $teachersIds;
     protected $teachersThemaric;
+    protected $studyplanSubjectHist;
 
     public static function getData($model_date)
     {
@@ -29,6 +31,7 @@ class ExecutionThematic
     {
         $this->teachers_id = $model_date->teachers_id;
         $this->plan_year = $model_date->plan_year;
+        $this->studyplanSubjectHist = StudyplanSubjectHist::getStudyplanSubjectPass(); // блокируем сообщения о незаполненных планах
         $this->teachersIds = !$model_date->teachers_id ? array_keys(\artsoft\helpers\RefBook::find('teachers_fio', 1)->getList()) : [$model_date->teachers_id];
         $this->teachersThemaric = $this->getTeachersThemaric();
 //        echo '<pre>' . print_r($this->teachersThemaric, true) . '</pre>';
@@ -117,8 +120,8 @@ class ExecutionThematic
 
     protected function getCheckLabel($value)
     {
+        $check = '';
         if (isset($value['studyplan_thematic_id'])) {
-
             if ($value['doc_status'] == 1) {
                 $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
             } elseif ($value['doc_status'] == 2) {
@@ -126,7 +129,7 @@ class ExecutionThematic
             } else {
                 $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: grey"></i>';
             }
-        } else {
+        } elseif (!in_array($value['studyplan_subject_id'], $this->studyplanSubjectHist)) {
             $check = '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>';
         }
         return $check;

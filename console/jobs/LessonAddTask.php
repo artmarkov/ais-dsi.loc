@@ -49,6 +49,7 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
             ->andWhere(['teachers_id' => $teachersIds])
             ->andWhere(['direction_id' => 1000])
             ->andWhere(['status' => 1])
+            ->andWhere(['studyplan_subject_status' => 1])
             ->orderBy('subject_sect_studyplan_id')
             ->all();
         $active = ArrayHelper::index($active, null, ['subject_sect_studyplan_id']);

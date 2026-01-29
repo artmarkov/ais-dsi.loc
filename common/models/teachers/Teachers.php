@@ -12,6 +12,7 @@ use common\models\guidejob\Position;
 use common\models\guidejob\Work;
 use common\models\schedule\SubjectScheduleView;
 use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubjectHist;
 use common\models\user\UserCommon;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -380,6 +381,7 @@ class Teachers extends ActiveRecord
                     ['status_reason' => [1, 2, 4]]
                 ],
             ])
+            ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
             ->orderBy('week_day, time_in')
             ->all();
     }

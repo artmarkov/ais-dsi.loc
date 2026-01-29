@@ -14,6 +14,7 @@ class m250520_131313_create_table_attestation extends \artsoft\db\BaseMigration
             'id' => $this->primaryKey(),
             'plan_year' => $this->integer(),
             'studyplan_subject_id' => $this->integer()->notNull()->comment('Учебный предмет ученика'),
+            'teachers_id' => $this->integer()->comment('Преподаватель, поставивший оценку'),
             'lesson_mark_id' => $this->integer()->comment('Оценка'),
             'mark_rem' => $this->string(127),
             'created_at' => $this->integer()->notNull(),
@@ -30,6 +31,7 @@ class m250520_131313_create_table_attestation extends \artsoft\db\BaseMigration
 
         $this->db->createCommand()->createView('attestation_items_view', '
          SELECT attestation_items.id,
+    attestation_items.teachers_id,
     studyplan_subject.id AS studyplan_subject_id,
     guide_lesson_mark.id AS lesson_mark_id,
     guide_lesson_mark.mark_category,

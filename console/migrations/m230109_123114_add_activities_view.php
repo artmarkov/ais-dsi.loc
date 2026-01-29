@@ -57,7 +57,7 @@ class m230109_123114_add_activities_view extends BaseMigration
         ')->execute();*/
 
         $this->db->createCommand()->createView('activities_schedule_view', '
-  SELECT data.subject_schedule_id,
+   SELECT data.subject_schedule_id,
     data.studyplan_subject_id,
     data.subject_sect_studyplan_id,
     data.subject_type_id,
@@ -71,7 +71,8 @@ class m230109_123114_add_activities_view extends BaseMigration
     data."timestamp" + data.time_in::double precision AS datetime_in,
     data."timestamp" + data.time_out::double precision AS datetime_out,
     data.status,
-    data.plan_year
+    data.plan_year,
+    data.subject_key
    FROM ( SELECT gen."timestamp",
             subject_schedule_view.subject_schedule_id,
             subject_schedule_view.studyplan_subject_id,
@@ -87,7 +88,8 @@ class m230109_123114_add_activities_view extends BaseMigration
             subject_schedule_view.plan_year,
             concat(subject_schedule_view.sect_name, \' - \', subject_schedule_view.subject) AS title,
             subject_schedule_view.subject_vid_id AS category_id,
-            subject_schedule_view.status
+            subject_schedule_view.status,
+            subject_schedule_view.subject_key
            FROM generator_date_view gen
              JOIN subject_schedule_view ON gen.week_day = subject_schedule_view.week_day::double precision AND
                 CASE

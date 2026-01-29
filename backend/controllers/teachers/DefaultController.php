@@ -39,6 +39,7 @@ use common\models\studyplan\search\ThematicViewSearch;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use common\models\schedule\SubjectScheduleView;
+use common\models\studyplan\StudyplanSubjectHist;
 use common\models\studyplan\StudyplanThematic;
 use common\models\studyplan\StudyplanThematicItems;
 use common\models\subject\SubjectType;
@@ -533,7 +534,9 @@ class DefaultController extends MainController
                 throw new NotFoundHttpException("The model_date was not found.");
             }
 
-            $query = TeachersLoadView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)])->andWhere(['=', 'plan_year', $model_date->plan_year]);
+            $query = TeachersLoadView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)])
+                ->andWhere(['=', 'plan_year', $model_date->plan_year])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()]);
             $searchModel = new TeachersLoadViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
             $dataProvider = $searchModel->search($params);
@@ -763,7 +766,9 @@ class DefaultController extends MainController
             if (!isset($model_date)) {
                 throw new NotFoundHttpException("The model_date was not found.");
             }
-            $query = SubjectScheduleView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)])->andWhere(['=', 'plan_year', $model_date->plan_year]);
+            $query = SubjectScheduleView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($id)])
+                ->andWhere(['=', 'plan_year', $model_date->plan_year])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()]);
             $searchModel = new SubjectScheduleViewSearch($query);
             $params = Yii::$app->request->getQueryParams();
             $dataProvider = $searchModel->search($params);
@@ -1117,6 +1122,15 @@ class DefaultController extends MainController
             if ($session->get('_progress_teachers_id') && $session->get('_progress_teachers_id') != $modelTeachers->id) {
                 $session->remove('_progress_subject_sect_studyplan_id');
             }
+            if(isset($_GET['subject_sect_studyplan_id'])) {
+                $subject_sect_studyplan_id = base64_decode($_GET['subject_sect_studyplan_id']);
+                $keyArray = explode('||', $subject_sect_studyplan_id);
+                $subject_sect_studyplan_id = $keyArray[0];
+                $timestamp_in = $keyArray[1];
+                $session->set('_progress_subject_sect_studyplan_id', $subject_sect_studyplan_id);
+                $session->remove('_progress_date_in');
+                $session->remove('_progress_date_out');
+            }
             $model_date = $this->modelDate;
             if (!isset($model_date)) {
                 throw new NotFoundHttpException("The model_date was not found.");
@@ -1132,10 +1146,10 @@ class DefaultController extends MainController
                 });
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $mon = date('m');
-                $year = date('Y');
+                $mon = date('m', isset($timestamp_in) ? $timestamp_in : time());
+                $year = date('Y', isset($timestamp_in) ? $timestamp_in : time());
                 $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
-                $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, date("t"), $year), 'php:m.Y');
+                $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, date("t", isset($timestamp_in) ? $timestamp_in : time()), $year), 'php:m.Y');
                 $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
                 $timestamp_in = $timestamp[0];
 
@@ -1248,6 +1262,7 @@ class DefaultController extends MainController
                             $modelLesson->lesson_test_id = $model->lesson_test_id;
                             $modelLesson->lesson_topic = $model->lesson_topic;
                             $modelLesson->lesson_rem = $model->lesson_rem;
+                            $modelLesson->teachers_id = $id;
                             if (!($flag = $modelLesson->save(false))) {
                                 $transaction->rollBack();
                                 break;
@@ -1289,7 +1304,7 @@ class DefaultController extends MainController
                 ->andWhere(['=', 'lesson_date', $timestamp_in])
                 ->all();
             foreach ($models as $model) {
-                $modelLesson = LessonItems::findOne(['id' => $model['lesson_items_id']]);
+                $modelLesson = LessonItems::findOne(['id' => $model['lesson_items_id'], 'teachers_id' => $id]);
                 $modelLesson ? $modelLesson->delete() : null;
             }
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
@@ -1334,9 +1349,11 @@ class DefaultController extends MainController
                             $modelLesson = $modelItems->lesson_items_id ? LessonItems::findOne($modelItems->lesson_items_id) : new LessonItems();
                             $modelLesson->studyplan_subject_id = $modelItems->studyplan_subject_id;
                             $modelLesson->lesson_date = $model->lesson_date;
-                            $modelLesson->lesson_test_id = $model->lesson_test_id;
-                            $modelLesson->lesson_topic = $model->lesson_topic;
-                            $modelLesson->lesson_rem = $model->lesson_rem;
+                            $modelLesson->lesson_test_id = $modelItems->lesson_test_id;
+                            $modelLesson->lesson_topic = $modelItems->lesson_topic;
+                            $modelLesson->lesson_rem = $modelItems->lesson_rem;
+                            $modelLesson->teachers_id = $id;
+                      //  echo '<pre>' . print_r($modelItems->lesson_test_id, true) . '</pre>';die();
                             if (!($flag = $modelLesson->save(false))) {
                                 $transaction->rollBack();
                                 break;
@@ -1371,6 +1388,15 @@ class DefaultController extends MainController
             if ($_GET['id'] != $id) {
                 $session->remove('_progress_subject_key');
             }
+            if(isset($_GET['subject_key'])) {
+                $subject_key = base64_decode($_GET['subject_key']);
+                $keyArray = explode('||', $subject_key);
+                $subject_key = $keyArray[0];
+                $timestamp_in = $keyArray[1];
+                $session->set('_progress_subject_key', $subject_key);
+                $session->remove('_progress_date_in');
+                $session->remove('_progress_date_out');
+            }
             $model_date = $this->modelDate;
             if (!isset($model_date)) {
                 throw new NotFoundHttpException("The model_date was not found.");
@@ -1386,11 +1412,11 @@ class DefaultController extends MainController
                 });
 
             if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
-                $mon = date('m');
-                $year = date('Y');
+                $mon = date('m', isset($timestamp_in) ? $timestamp_in : time());
+                $year = date('Y', isset($timestamp_in) ? $timestamp_in : time());
 
                 $model_date->date_in = $session->get('_progress_date_in') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, 1, $year), 'php:m.Y');
-                $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, date("t"), $year), 'php:m.Y');
+                $model_date->date_out = $session->get('_progress_date_out') ?? Yii::$app->formatter->asDate(mktime(0, 0, 0, $mon, date("t", isset($timestamp_in) ? $timestamp_in : time()), $year), 'php:m.Y');
                 $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
                 $timestamp_in = $timestamp[0];
                 $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
@@ -1546,7 +1572,14 @@ class DefaultController extends MainController
                 ->andWhere(['=', 'plan_year', $plan_year])
                 ->all();
             foreach ($models as $model) {
-                $modelSertif = AttestationItems::findOne(['studyplan_subject_id' => $model['studyplan_subject_id'], 'plan_year' => $model['plan_year']]);
+
+                $modelSertif = AttestationItems::find()
+                    ->where(['studyplan_subject_id' => $model['studyplan_subject_id']])
+                    ->andWhere(['plan_year' => $model['plan_year']])
+                    ->andWhere(new \yii\db\Expression("CASE
+                        WHEN attestation_items.teachers_id IS NOT NULL THEN attestation_items.teachers_id = :teachers_id
+                        ELSE true END", [':teachers_id' => $id]))
+                    ->one();
                 $modelSertif ? $modelSertif->delete() : null;
             }
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));

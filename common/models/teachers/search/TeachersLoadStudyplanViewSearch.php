@@ -12,6 +12,13 @@ use yii\data\ActiveDataProvider;
  */
 class TeachersLoadStudyplanViewSearch extends TeachersLoadStudyplanView
 {
+    public $query;
+
+    public function __construct($query = false)
+    {
+        $this->query = $query ?: TeachersLoadStudyplanView::find();
+        parent::__construct();
+    }
     /**
      * @inheritdoc
      */
@@ -42,7 +49,7 @@ class TeachersLoadStudyplanViewSearch extends TeachersLoadStudyplanView
      */
     public function search($params)
     {
-        $query = TeachersLoadStudyplanView::find();
+        $query = $this->query;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

@@ -126,6 +126,13 @@ class StudyplanHistory
                         'mark_label' => $m['mark_label'],
                     ];
                 }
+            } else {
+                $data['progressdoc'][$ids]['items'][] = [
+                    'item' =>  1,
+                    'lesson_date' => '',
+                    'test_name' => '',
+                    'mark_label' => '',
+                ];
             }
         }
 //        echo '<pre>' . print_r($data, true) . '</pre>';

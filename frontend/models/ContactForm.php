@@ -25,6 +25,7 @@ class ContactForm extends Model
             [['name', 'email', 'subject', 'body', 'verifyCode'], 'required'],
             [['name', 'email', 'subject', 'body'], 'string'],
             ['email', 'email'],
+            [['body', 'subject'], 'match', 'pattern' => Yii::$app->art->cyrillicRegexp, 'message' => Yii::t('art', 'Only need to enter Russian letters')],
             ['verifyCode', 'captcha'],
         ];
     }

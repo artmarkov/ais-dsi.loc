@@ -33,7 +33,7 @@ jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
 
 $this->registerJs($js);
 
-$readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? true : $readonly;
+$readonly = in_array($model->doc_status, [1, 2]) && \artsoft\Art::isFrontend() ? true : $readonly;
 ?>
 
     <div class="studyplan-thematic-form">
@@ -57,6 +57,7 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
                         <?php
                         echo Html::activeHiddenInput($model, 'subject_sect_studyplan_id');
                         echo Html::activeHiddenInput($model, 'studyplan_subject_id');
+                        $model->half_year = \common\models\studyplan\StudyplanThematic::halfYearDefault($model->subject_sect_studyplan_id, $model->studyplan_subject_id);
                         ?>
 
                         <?= $form->field($model, 'half_year')->dropDownList(\artsoft\helpers\ArtHelper::getHalfYearList(true), ['disabled' => $readonly]); ?>
@@ -78,7 +79,7 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
                             ])->label('Список шаблонов');
                         } else {
 
-                            echo $form->field($model, 'template_flag')->checkbox(['disabled' => $readonly]);
+                            echo $form->field($model, 'template_flag')->checkbox(['disabled' => !$model->isAuthor()]);
 
                             echo $form->field($model, 'template_name')->textInput(['maxlength' => true])->hint('Используйте уникальное название. Пример: Сольфеджио 5/8 ПП');
 
@@ -210,7 +211,7 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
                             </div>
                         </div>
                     </div>
-                <?php elseif(User::hasRole(['teacher', 'department'])): ?>
+                <?php elseif (User::hasRole(['teacher', 'department']) && $model->isAuthor()): ?>
                     <div class="row">
                         <div class="col-sm-12">
                             <?php echo \yii\bootstrap\Alert::widget([
@@ -221,8 +222,8 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
                         </div>
                         <div class="col-sm-12">
                             <div class="form-group btn-group pull-right">
-                                <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => !in_array($model->doc_status, [0,3]) || $model->isNewRecord ? true : false]); ?>
-                                <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => in_array($model->doc_status, [0,3]) ? true : false]); ?>
+                                <?= Html::submitButton('<i class="fa fa-arrow-up" aria-hidden="true"></i> Отправить на согласование', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'send_approve', 'disabled' => !in_array($model->doc_status, [0, 3]) || $model->isNewRecord ? true : false]); ?>
+                                <?= Html::submitButton('<i class="fa fa-arrow-right" aria-hidden="true"></i> Внести изменения', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'make_changes', 'disabled' => in_array($model->doc_status, [0, 3]) ? true : false]); ?>
                             </div>
                         </div>
                     </div>
@@ -230,7 +231,15 @@ $readonly = in_array($model->doc_status, [1,2]) && \artsoft\Art::isFrontend() ? 
             </div>
             <div class="panel-footer">
                 <div class="form-group btn-group">
-                    <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : (\artsoft\Art::isBackend() ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton()); ?>
+                    <?php
+                    if ($model->isAuthor() && \artsoft\Art::isFrontend()) {
+                        echo \artsoft\helpers\ButtonHelper::submitButtons($model);  //--Для сохранения шаблонов без внесения изменения
+                    } else {
+                        echo !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : (\artsoft\Art::isBackend() ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton());
+                    }
+                    ?>
+
+
                 </div>
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>

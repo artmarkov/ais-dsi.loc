@@ -16,6 +16,7 @@ use yii\helpers\ArrayHelper;
  * @property int $id
  * @property int|null $plan_year
  * @property int $studyplan_subject_id Учебный предмет ученика
+ * @property int $teachers_id Преподаватель, поставивший оценку
  * @property int|null $lesson_mark_id Оценка
  * @property string|null $mark_rem
  * @property int $created_at
@@ -54,9 +55,9 @@ class AttestationItems extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['plan_year', 'studyplan_subject_id', 'lesson_mark_id', 'version'], 'integer'],
+            [['plan_year', 'studyplan_subject_id', 'lesson_mark_id', 'version', 'teachers_id'], 'integer'],
             [['plan_year', 'studyplan_subject_id'], 'required'],
-            [['plan_year', 'studyplan_subject_id'], 'unique', 'targetAttribute' => ['plan_year', 'studyplan_subject_id']],
+            [['plan_year', 'studyplan_subject_id', 'teachers_id'], 'unique', 'targetAttribute' => ['plan_year', 'studyplan_subject_id', 'teachers_id']],
             [['mark_rem'], 'string', 'max' => 127],
             [['lesson_mark_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonMark::className(), 'targetAttribute' => ['lesson_mark_id' => 'id']],
             [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::className(), 'targetAttribute' => ['studyplan_subject_id' => 'id']],
@@ -72,6 +73,7 @@ class AttestationItems extends \artsoft\db\ActiveRecord
             'id' => 'ID',
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'studyplan_subject_id' => Yii::t('art/student', 'Student'),
+            'teachers_id' => Yii::t('art/teachers', 'Teachers'),
             'lesson_mark_id' => Yii::t('art/guide', 'Mark'),
             'mark_rem' => Yii::t('art/guide', 'Mark Rem'),
             'created_at' => Yii::t('art', 'Created'),
@@ -136,6 +138,7 @@ class AttestationItems extends \artsoft\db\ActiveRecord
         $models = self::find()
             ->where(['plan_year' => $plan_year])
             ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->andWhere(['teachers_id' => $teachers_id])
             ->all();
         $models = ArrayHelper::index($models, 'studyplan_subject_id');
         foreach ($active as $item => $dataItem) {
@@ -143,14 +146,17 @@ class AttestationItems extends \artsoft\db\ActiveRecord
                 $m = self::find()
                         ->where(['plan_year' => $plan_year])
                         ->andWhere(['studyplan_subject_id' => $dataItem['studyplan_subject_id']])
+                        ->andWhere(['teachers_id' => $teachers_id])
                         ->one() ?? new self();
                 $m->studyplan_subject_id = $dataItem['studyplan_subject_id'];
                 $m->plan_year = $dataItem['plan_year'];
+                $m->teachers_id = $teachers_id;
                 $modelsItems[] = $m;
             } else {
                 $m = new self;
                 $m->studyplan_subject_id = $dataItem['studyplan_subject_id'];
                 $m->plan_year = $dataItem['plan_year'];
+                $m->teachers_id = $teachers_id;
                 $modelsItems[] = $m;
             }
         }
@@ -180,6 +186,7 @@ class AttestationItems extends \artsoft\db\ActiveRecord
         $models = self::find()
             ->where(['plan_year' => $plan_year])
             ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->andWhere(['teachers_id' => $teachers_id])
             ->all();
         $models = ArrayHelper::index($models, 'studyplan_subject_id');
         foreach ($active as $item => $dataItem) {
@@ -187,14 +194,17 @@ class AttestationItems extends \artsoft\db\ActiveRecord
                 $m = self::find()
                         ->where(['plan_year' => $plan_year])
                         ->andWhere(['studyplan_subject_id' => $dataItem['studyplan_subject_id']])
+                        ->andWhere(['teachers_id' => $teachers_id])
                         ->one() ?? new self();
                 $m->studyplan_subject_id = $dataItem['studyplan_subject_id'];
                 $m->plan_year = $dataItem['plan_year'];
+                $m->teachers_id = $teachers_id;
                 $modelsItems[] = $m;
             } else {
                 $m = new self;
                 $m->studyplan_subject_id = $dataItem['studyplan_subject_id'];
                 $m->plan_year = $dataItem['plan_year'];
+                $m->teachers_id = $teachers_id;
                 $modelsItems[] = $m;
             }
         }
@@ -207,13 +217,16 @@ class AttestationItems extends \artsoft\db\ActiveRecord
         $keyArray = explode('||', $subject_key);
         $studyplan_subject_id = $keyArray[0];
         $plan_year = $keyArray[1];
+        $teachers_id = $keyArray[2];
 
         if (self::isAttestationNeeds($studyplan_subject_id, $plan_year)) {
             $model = self::find()
                     ->where(['plan_year' => $plan_year])
                     ->andWhere(['studyplan_subject_id' => $studyplan_subject_id])
+                    ->andWhere(['teachers_id' => $teachers_id])
                     ->one() ?? new self();
             $model->studyplan_subject_id = $studyplan_subject_id;
+            $model->teachers_id = $teachers_id;
             $model->plan_year = $plan_year;
         }
 

@@ -2,6 +2,7 @@
 
 namespace backend\controllers\activities;
 
+use common\models\studyplan\StudyplanSubjectHist;
 use common\widgets\fullcalendarscheduler\src\models\Resource;
 use common\widgets\fullcalendarscheduler\src\models\Event as BaseEvent;
 use common\models\auditory\Auditory;
@@ -44,6 +45,10 @@ class AuditoryScheduleController extends MainController
                     ":end_time" => $end_time
                 ]
             )
+            ->andFilterWhere(['OR',
+                ['AND', ['not in', 'id', StudyplanSubjectHist::getScheduleItemsPass($end_time)], ['resource' => 'subject_schedule']],
+                    ['!=', 'resource', 'subject_schedule']
+                ])
             ->orderBy('start_time')
             ->all();
         $tasks = [];

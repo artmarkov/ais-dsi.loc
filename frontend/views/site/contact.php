@@ -2,6 +2,7 @@
 
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
+
 /* @var $model \frontend\models\ContactForm */
 
 use artsoft\widgets\ActiveForm;
@@ -22,11 +23,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <?php $form = ActiveForm::begin(['id' => 'contact-form']); ?>
 
-                    <?= $form->field($model, 'name') ?>
+                    <?= $form->field($model, 'name')->textInput(['autocomplete' => 'off']) ?>
 
-                    <?= $form->field($model, 'email') ?>
+                    <?= $form->field($model, 'email')->textInput(['autocomplete' => 'off']) ?>
 
-                    <?= $form->field($model, 'subject') ?>
+                    <?= $form->field($model, 'subject')->textInput(['autocomplete' => 'off']) ?>
 
                     <?= $form->field($model, 'body')->textArea(['rows' => 6]) ?>
 
@@ -55,4 +56,11 @@ $css = <<<CSS
 CSS;
 
 $this->registerCss($css);
+
+$js = <<<JS
+$('body').bind('copy paste cut drag drop', function (e) {
+e.preventDefault();
+});
+JS;
+$this->registerJs($js, \yii\web\View::POS_LOAD);
 ?>

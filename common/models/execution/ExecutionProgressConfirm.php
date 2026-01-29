@@ -60,6 +60,7 @@ class ExecutionProgressConfirm
             ->where(['!=', 'load_time', 0])
             ->andWhere(['direction_id' => 1000])
             ->andWhere(['status' => 1])
+            ->andWhere(['plan_year' => $this->plan_year])
             ->asArray()
             ->all();
     }
@@ -115,13 +116,13 @@ class ExecutionProgressConfirm
             foreach ($dataTeachers[$teachers_id] ?? [] as $subject_sect_studyplan_id => $value) {
                 if ($subject_sect_studyplan_id == 0) continue;
                 $check = $this->getCheckLabel($this->teachersProgressConfirm[$teachers_id] ?? [], $value, 'subject_sect_studyplan_id');
-                $check = Html::a($check, ['/teachers/default/studyplan-progress', 'id' => $teachers_id, 'subject_sect_studyplan_id' => $value['subject_sect_studyplan_id'] . '||' . $this->timestamp_in], ['target' => '_blank', 'title' => $value['subject'] . ' ' . $value['sect_name']]);
+                $check = Html::a($check, ['/teachers/default/studyplan-progress', 'id' => $teachers_id, 'subject_sect_studyplan_id' => base64_encode($value['subject_sect_studyplan_id'] . '||' . $this->timestamp_in)], ['target' => '_blank', 'title' => $value['subject'] . ' ' . $value['sect_name']]);
                 $load_data[$teachers_id]['scale_0'] .= $check;
             }
             foreach ($dataTeachersInd[$teachers_id] ?? [] as $subject_key => $value) {
                 if ($subject_key == null) continue;
                 $check = $this->getCheckLabel($this->teachersProgressIndivConfirm[$teachers_id] ?? [], $value, 'subject_key');
-                $check = Html::a($check, ['/teachers/default/studyplan-progress-indiv', 'id' => $teachers_id, 'subject_key' => $value['subject_key'] . '||' . $this->timestamp_in], ['target' => '_blank', 'title' => $value['subject']]);
+                $check = Html::a($check, ['/teachers/default/studyplan-progress-indiv', 'id' => $teachers_id, 'subject_key' => base64_encode($value['subject_key'] . '||' . $this->timestamp_in)], ['target' => '_blank', 'title' => $value['subject']]);
                 $load_data[$teachers_id]['scale_1'] .= $check;
             }
         }
@@ -136,7 +137,9 @@ class ExecutionProgressConfirm
             if ($data[$value[$key]]['confirm_status'] == 1) {
                 $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
             } elseif ($data[$value[$key]]['confirm_status'] == 2) {
-                $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: darkorange"></i>';
+                $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: orange"></i>';
+            } elseif ($data[$value[$key]]['confirm_status'] == 3) {
+                $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: blue"></i>';
             } else {
                 $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: grey"></i>';
             }
@@ -149,7 +152,8 @@ class ExecutionProgressConfirm
     public static function getCheckLabelHints()
     {
         $check[] = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i> - Утверждено';
-        $check[] = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: darkorange"></i> - На согласовании';
+        $check[] = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: orange"></i> - На согласовании';
+        $check[] = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: blue"></i> - На доработке';
         $check[] = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: grey"></i> - Черновик';
         $check[] = '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i> - Не заполнено';
 

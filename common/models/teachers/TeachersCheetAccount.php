@@ -5,6 +5,7 @@ namespace common\models\teachers;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\Schedule;
 use artsoft\widgets\Notice;
+use common\models\studyplan\StudyplanSubjectHist;
 use Yii;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
@@ -98,6 +99,7 @@ class TeachersCheetAccount
             ->where(['in', 'teachers_id', $this->teachers_list])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['status' => 1])
+            ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass($this->timestamp_in)])
             ->all();
 
         foreach ($modelsLoad as $i => $items) {

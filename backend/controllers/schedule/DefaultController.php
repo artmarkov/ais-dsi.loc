@@ -7,6 +7,7 @@ use artsoft\helpers\Schedule;
 use common\models\auditory\Auditory;
 use common\models\schedule\SubjectScheduleView;
 use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubjectHist;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersPlan;
 use Yii;
@@ -32,7 +33,8 @@ class DefaultController extends MainController
                     ['status_reason' => [1, 2, 4]]
                 ]
             ])
-            ->andWhere(['IS NOT', 'auditory_id', null]);
+            ->andWhere(['IS NOT', 'auditory_id', null])
+            ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()]);
         if ($model_date->teachers_id) {
             $models = $models->andWhere(['=', 'teachers_id', $model_date->teachers_id]);
         }

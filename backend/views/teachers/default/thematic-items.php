@@ -28,7 +28,21 @@ $columns = [
         'attribute' => 'sect_name',
         'width' => '320px',
         'value' => function ($model) {
-            return $model->sect_name ? $model->sect_name : null;
+            $value = $model->sect_name ? $model->sect_name : null;
+            if (\artsoft\Art::isBackend()) {
+                if ($model->studyplan_id != null) {
+                    return Html::a($value,
+                        ['/studyplan/default/thematic-items', 'id' => $model->studyplan_id],
+                        [
+                            'target' => '_blank',
+                            'data-pjax' => '0',
+                        ]);
+                } else {
+                    return $value;
+                }
+            } else {
+                return $value;
+            }
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 1,
@@ -37,8 +51,22 @@ $columns = [
 
     [
         'attribute' => 'half_year',
-        'value' => function (StudyplanThematic $model) {
-            return \artsoft\helpers\ArtHelper::getHalfYearValue($model->half_year);
+        'value' => function ($model) {
+            $value = \artsoft\helpers\ArtHelper::getHalfYearValue($model->half_year);
+            if (\artsoft\Art::isBackend()) {
+                if ($model->studyplan_id != null) {
+                    return Html::a($value,
+                        ['/studyplan/default/thematic-items', 'id' => $model->studyplan_id, 'objectId' => $model->studyplan_thematic_id, 'mode' => 'view'],
+                        [
+                            'target' => '_blank',
+                            'data-pjax' => '0',
+                        ]);
+                } else {
+                    return $value;
+                }
+            } else {
+                return $value;
+            }
         },
         'options' => ['style' => 'width:150px'],
         'format' => 'raw',

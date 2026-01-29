@@ -6,6 +6,7 @@ use common\models\schedule\search\SubjectScheduleViewSearch;
 use common\models\schedule\SubjectScheduleConfirm;
 use common\models\schedule\SubjectScheduleView;
 use common\models\schedule\SubjectSchedule;
+use common\models\studyplan\StudyplanSubjectHist;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersLoad;
 use Yii;
@@ -26,7 +27,9 @@ class ScheduleItemsController extends MainController
         }
         $model_date = $this->modelDate;
 
-        $query = SubjectScheduleView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($this->teachers_id)])->andWhere(['=', 'plan_year', $model_date->plan_year]);
+        $query = SubjectScheduleView::find()->where(['in', 'teachers_load_id', TeachersLoad::getTeachersSubjectAll($this->teachers_id)])
+            ->andWhere(['=', 'plan_year', $model_date->plan_year])
+            ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()]);
         $searchModel = new SubjectScheduleViewSearch($query);
         $params = Yii::$app->request->getQueryParams();
         $dataProvider = $searchModel->search($params);

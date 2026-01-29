@@ -2,6 +2,7 @@
 
 namespace backend\controllers\activities;
 
+use common\models\studyplan\StudyplanSubjectHist;
 use common\models\user\UserCommon;
 use common\widgets\fullcalendarscheduler\src\models\Resource;
 use common\widgets\fullcalendarscheduler\src\models\Event as BaseEvent;
@@ -44,7 +45,10 @@ class TeachersScheduleController extends MainController
                 ]
             )
             ->orderBy('start_time')
-            ->all();
+            ->andFilterWhere(['OR',
+                ['AND', ['not in', 'id', StudyplanSubjectHist::getScheduleItemsPass($end_time)], ['resource' => 'subject_schedule']],
+                ['!=', 'resource', 'subject_schedule']
+            ])->all();
         $tasks = [];
         foreach ($events as $item) {
 

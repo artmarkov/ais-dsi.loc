@@ -24,7 +24,8 @@ use common\models\user\UserCommon;
                 <?= $form->field($model, 'first_name')->textInput(['maxlength' => 124]) ?>
                 <?= $form->field($model, 'middle_name')->textInput(['maxlength' => 124])->hint('Важно: Поле необходимо заполнить как в документе. При отсутствии Отчества заполнение не требуется.') ?>
                 <?= $form->field($model, 'gender')->dropDownList(UserCommon::getGenderList(), ['disabled' => false]) ?>
-                <?= $form->field($model, 'birth_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => false]); ?>
+                <?php $age = \artsoft\helpers\ArtHelper::age(Yii::$app->formatter->asTimestamp($model->birth_date));?>
+                    <?= $form->field($model, 'birth_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->widget(DatePicker::class, ['disabled' => false])->hint('Возраст: ' . $age['age_year'] . ' лет ' . $age['age_month'] . ' мес.'); ?>
                 <?= $form->field($model, 'snils')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
                 <?= $form->field($model, 'address')->textInput(['maxlength' => 1024])->hint('Заполните поле как в документе, удостоверяющем личность.') ?>
                 <?= $form->field($model, 'phone')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>

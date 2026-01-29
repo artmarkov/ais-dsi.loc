@@ -155,6 +155,7 @@ class StudyplanProgressIndivController extends MainController
                         $modelLesson->lesson_test_id = $model->lesson_test_id;
                         $modelLesson->lesson_topic = $model->lesson_topic;
                         $modelLesson->lesson_rem = $model->lesson_rem;
+                        $modelLesson->teachers_id = $this->teachers_id;
                         if (!($flag = $modelLesson->save(false))) {
                             $transaction->rollBack();
                             break;
@@ -223,9 +224,10 @@ class StudyplanProgressIndivController extends MainController
                         $modelLesson = $modelItems->lesson_items_id ? LessonItems::findOne($modelItems->lesson_items_id) : new LessonItems();
                         $modelLesson->studyplan_subject_id = $modelItems->studyplan_subject_id;
                         $modelLesson->lesson_date = $model->lesson_date;
-                        $modelLesson->lesson_test_id = $model->lesson_test_id;
-                        $modelLesson->lesson_topic = $model->lesson_topic;
-                        $modelLesson->lesson_rem = $model->lesson_rem;
+                        $modelLesson->lesson_test_id = $modelItems->lesson_test_id;
+                        $modelLesson->lesson_topic = $modelItems->lesson_topic;
+                        $modelLesson->lesson_rem = $modelItems->lesson_rem;
+                        $modelLesson->teachers_id = $this->teachers_id;
                         if (!($flag = $modelLesson->save(false))) {
                             $transaction->rollBack();
                             break;
@@ -275,7 +277,7 @@ class StudyplanProgressIndivController extends MainController
             ->all();
 //        echo '<pre>' . print_r($models, true) . '</pre>'; die();
         foreach ($models as $model) {
-            $modelLesson = LessonItems::findOne(['id' => $model['lesson_items_id']]);
+            $modelLesson = LessonItems::findOne(['id' => $model['lesson_items_id'], 'teachers_id' => $id]);
             $modelLesson ? $modelLesson->delete() : null;
         }
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));

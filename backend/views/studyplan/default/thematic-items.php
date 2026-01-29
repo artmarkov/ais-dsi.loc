@@ -181,7 +181,7 @@ $columns = [
                 return $model->studyplan_thematic_id;
             },
             'update' => function ($model) {
-                return User::hasRole(['teacher', 'department']) && $model->studyplan_thematic_id && !in_array($model->doc_status, [1,2]);
+                return User::hasRole(['teacher', 'department']) && $model->isAuthor();
             }
         ],
     ],

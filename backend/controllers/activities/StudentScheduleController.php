@@ -4,6 +4,7 @@ namespace backend\controllers\activities;
 
 use common\models\activities\ActivitiesStudyplanView;
 use common\models\auditory\Auditory;
+use common\models\studyplan\StudyplanSubjectHist;
 use common\widgets\fullcalendar\src\models\Event as BaseEvent;
 use yii\base\DynamicModel;
 use yii\web\Response;
@@ -65,7 +66,10 @@ class StudentScheduleController extends MainController
                     ":student_id" => $student_id
                 ]
             )
-            ->orderBy('start_time')
+            ->andFilterWhere(['OR',
+                ['AND', ['not in', 'id', StudyplanSubjectHist::getScheduleItemsPass($end_time)], ['resource' => 'subject_schedule']],
+                ['!=', 'resource', 'subject_schedule']
+            ])->orderBy('start_time')
             ->all();
         $tasks = [];
         foreach ($events as $item) {

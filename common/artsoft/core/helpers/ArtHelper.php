@@ -504,6 +504,16 @@ class ArtHelper
         return [$timestamp_in, $timestamp_out];
     }
 
+    public static function getMonYearParamsForTimestamp($timestamp)
+    {
+        $mon = date('n', $timestamp);
+        $year = date('Y', $timestamp);
+        $timestamp_in = mktime(0, 0, 0, $mon, 1, $year);
+        $day_out = date("t", $timestamp_in);
+        $timestamp_out = mktime(23, 59, 59, $mon, $day_out, $year);
+        return [$timestamp_in, $timestamp_out];
+    }
+
     /**
      * Обработчик списка дат типа 02.2024,04.2024,03.2024
      * @param string $date
