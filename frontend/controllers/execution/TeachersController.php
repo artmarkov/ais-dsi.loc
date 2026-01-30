@@ -838,10 +838,10 @@ class TeachersController extends MainController
                 if (empty($modelsItems)) {
                     Notice::registerDanger('Дата занятия не соответствует расписанию!');
                 } else {
-                    $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model);
-                    if (empty($modelsItems)) {
-                        Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
-                    }
+//                    $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model);
+//                    if (empty($modelsItems)) {
+//                        Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
+//                    }
                 }
             } elseif ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class);

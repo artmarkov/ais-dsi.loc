@@ -126,11 +126,11 @@ class StudyplanProgressIndivController extends MainController
                     Notice::registerDanger('Дата занятия не соответствует расписанию!');
                     $model->addError('lesson_date', 'Дата занятия не соответствует расписанию!');
                 } else {
-                    $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model);
-                    if (empty($modelsItems)) {
-                        Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
-                        $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
-                    }
+//                    $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model);
+//                    if (empty($modelsItems)) {
+//                        Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
+//                        $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
+//                    }
                     if (Routine::isHolidays(strtotime($model->lesson_date))) {
                         Notice::registerDanger('Каникулярное время. Ввод ограничен.');
                         $model->addError('lesson_date', 'Каникулярное время. Ввод ограничен.');
@@ -209,7 +209,7 @@ class StudyplanProgressIndivController extends MainController
         // echo '<pre>' . print_r($model, true) . '</pre>';
         $modelsItems = $model->getLessonProgressForTeachers($this->teachers_id, $subject_key);
         if ($model->load(Yii::$app->request->post())) {
-            $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
+          //  $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
             Model::loadMultiple($modelsItems, Yii::$app->request->post());
 
             // validate all models

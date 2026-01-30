@@ -74,7 +74,7 @@ class ExecutionProgress
     protected function getProgressData()
     {
         $models = (new Query())->from('lesson_items_progress_studyplan_view')
-            ->select(new \yii\db\Expression('teachers_id, subject_sect_studyplan_id,studyplan_subject_id,lesson_date, date_trunc(\'day\',to_timestamp(lesson_date+10800))::date AS date'))
+            ->select(new \yii\db\Expression('teachers_id, subject_sect_studyplan_id,studyplan_subject_id,lesson_date, lesson_mark_id, date_trunc(\'day\',to_timestamp(lesson_date+10800))::date AS date'))
             ->where(['teachers_id' => $this->teachersIds])
             ->andWhere(['direction_id' => 1000])
             ->andWhere(['between', 'lesson_date', $this->timestamp_in, $this->timestamp_out])
@@ -107,7 +107,7 @@ class ExecutionProgress
                         foreach ($values as $i => $value) {
 //                            echo '<pre>' . print_r($value, true) . '</pre>';
                             if ($subject_sect_studyplan_id == 0) {
-                                $check = !isset($this->teachersProgress[$teachers_id][$date][$subject_sect_studyplan_id][$studyplan_subject_id]) ? '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>' : '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
+                                $check = !isset($this->teachersProgress[$teachers_id][$date][$subject_sect_studyplan_id][$studyplan_subject_id]) ? '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>' : ($this->teachersProgress[$teachers_id][$date][$subject_sect_studyplan_id][$studyplan_subject_id][0]['lesson_mark_id'] == '' ? '<i class="fa fa-square-o" aria-hidden="true" style="color: orange"></i>' : '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>');
                                 $check = Html::a($check, [Art::isBackend() ? '/teachers/default/studyplan-progress-indiv' : '/execution/teachers/studyplan-progress-indiv', 'id' => $teachers_id, 'subject_key' => base64_encode($value['subject_key'] . '||' . $value['datetime_in'])], ['target' => '_blank', 'title' => $value['title'] . ': ' . Yii::$app->formatter->asDatetime($value['datetime_in']) . ' - ' . Yii::$app->formatter->asDatetime($value['datetime_out'])]);
                                 $load_data[$teachers_id]['scale_1'] .= $check;
                             } else {
@@ -167,7 +167,8 @@ class ExecutionProgress
     public static function getCheckLabelHints()
     {
         $check[] = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i> - Журнал заполнен';
-        $check[] = '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i> - Не заполнено';
+        $check[] = '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i> - Не заполнена дата';
+        $check[] = '<i class="fa fa-square-o" aria-hidden="true" style="color: orange"></i> - Нет оценки инд. занятия';
 
         return implode('<br/>', $check);
 

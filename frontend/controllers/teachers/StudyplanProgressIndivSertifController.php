@@ -43,6 +43,7 @@ class StudyplanProgressIndivSertifController extends MainController
                         $modelAttestation->plan_year = $modelItems->plan_year;
                         $modelAttestation->lesson_mark_id = $modelItems->lesson_mark_id;
                         $modelAttestation->mark_rem = $modelItems->mark_rem;
+                        $modelAttestation->teachers_id = $modelItems->teachers_id;
                         if (!($flag = $modelAttestation->save(false))) {
                             $transaction->rollBack();
                             break;
@@ -83,7 +84,14 @@ class StudyplanProgressIndivSertifController extends MainController
             ->andWhere(['=', 'plan_year', $plan_year])
             ->all();
         foreach ($models as $model) {
-            $modelSertif = AttestationItems::findOne(['studyplan_subject_id' => $model['studyplan_subject_id'], 'plan_year' => $model['plan_year']]);
+
+            $modelSertif = AttestationItems::find()
+                ->where(['studyplan_subject_id' => $model['studyplan_subject_id']])
+                ->andWhere(['plan_year' => $model['plan_year']])
+                ->andWhere(new \yii\db\Expression("CASE
+                        WHEN attestation_items.teachers_id IS NOT NULL THEN attestation_items.teachers_id = :teachers_id
+                        ELSE true END", [':teachers_id' => $this->teachers_id]))
+                ->one();
             $modelSertif ? $modelSertif->delete() : null;
         }
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));

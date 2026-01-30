@@ -1238,11 +1238,11 @@ class DefaultController extends MainController
                     Notice::registerDanger('Дата занятия не соответствует расписанию!');
                     $model->addError('lesson_date', 'Дата занятия не соответствует расписанию!');
                 } else {
-                    $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model);
-                    if (empty($modelsItems)) {
-                        Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
-                        $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
-                    }
+//                    $modelsItems = LessonItems::checkLessonsIndiv($modelsItems, $model, $id);
+//                    if (empty($modelsItems)) {
+//                        Notice::registerDanger('Занятие уже добавлено для выбранной даты и дисциплины!');
+//                        $model->addError('lesson_date', 'Занятие уже добавлено для выбранной даты и дисциплины!');
+//                    }
                 }
             } elseif ($model->load(Yii::$app->request->post())) {
                 $modelsItems = Model::createMultiple(LessonProgress::class);
@@ -1334,7 +1334,7 @@ class DefaultController extends MainController
             $modelsItems = $model->getLessonProgressForTeachers($id, $subject_key);
             // echo '<pre>' . print_r($modelsItems, true) . '</pre>';die();
             if ($model->load(Yii::$app->request->post())) {
-                $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
+              //  $modelsItems = Model::createMultiple(LessonProgress::class, $modelsItems);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
 
                 // validate all models
@@ -1370,6 +1370,7 @@ class DefaultController extends MainController
                         }
                     } catch
                     (Exception $e) {
+                        print_r($e->errorInfo);
                         $transaction->rollBack();
                     }
                 }
@@ -1617,6 +1618,7 @@ class DefaultController extends MainController
                             $modelAttestation->plan_year = $modelItems->plan_year;
                             $modelAttestation->lesson_mark_id = $modelItems->lesson_mark_id;
                             $modelAttestation->mark_rem = $modelItems->mark_rem;
+                            $modelAttestation->teachers_id = $modelItems->teachers_id;
                             if (!($flag = $modelAttestation->save(false))) {
                                 $transaction->rollBack();
                                 break;

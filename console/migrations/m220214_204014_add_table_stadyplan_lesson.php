@@ -327,7 +327,7 @@ UNION ALL
         ')->execute();
 
         $this->db->createCommand()->createView('lesson_items_progress_studyplan_view', '
-    SELECT 0 AS subject_sect_studyplan_id,
+     SELECT 0 AS subject_sect_studyplan_id,
     lesson_progress.studyplan_subject_id,
     studyplan_subject.studyplan_id,
     0 AS subject_sect_id,
@@ -352,7 +352,11 @@ UNION ALL
     studyplan.status,
     studyplan.status_reason,
     studyplan.plan_year,
-    teachers_load.id AS teachers_load_id
+    teachers_load.id AS teachers_load_id,
+    lesson_items.created_by,
+    lesson_items.created_at,
+    studyplan_subject.med_cert,
+    studyplan_subject.fin_cert
    FROM lesson_items
      JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.subject_sect_studyplan_id = 0
      JOIN teachers_load ON teachers_load.studyplan_subject_id = lesson_items.studyplan_subject_id AND teachers_load.subject_sect_studyplan_id = 0 AND
@@ -392,7 +396,11 @@ UNION ALL
     studyplan.status,
     studyplan.status_reason,
     studyplan.plan_year,
-    teachers_load.id AS teachers_load_id
+    teachers_load.id AS teachers_load_id,
+    lesson_items.created_by,
+    lesson_items.created_at,
+    studyplan_subject.med_cert,
+    studyplan_subject.fin_cert
    FROM lesson_items
      JOIN lesson_progress ON lesson_progress.lesson_items_id = lesson_items.id AND lesson_items.studyplan_subject_id = 0
      JOIN teachers_load ON teachers_load.subject_sect_studyplan_id = lesson_items.subject_sect_studyplan_id AND teachers_load.studyplan_subject_id = 0

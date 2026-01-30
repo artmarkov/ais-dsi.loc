@@ -199,7 +199,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
 //            ])->scalar();
 //    }
 
-    public static function isLessonExist($subject_sect_studyplan_id, $studyplan_subject_id, $lesson_timestamp, $teachers_id)
+    public static function isLessonExist($subject_sect_studyplan_id, $studyplan_subject_id, $lesson_timestamp, $teachers_id = null)
     {
         $query = self::find()->joinWith('lessonTest')->where(
             ['AND',
@@ -459,16 +459,23 @@ class LessonItems extends \artsoft\db\ActiveRecord
      * @param $lesson_date
      * @return mixed
      */
-    public static function checkLessonsIndiv($modelsProgress, $model)
+    public static function checkLessonsIndiv($modelsProgress, $model, $teachers_id)
     {
         $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress, 'studyplan_subject_id');
-        $modelsSubjectSchedule = LessonItemsProgressView::find()->where(
-            ['AND',
-                ['subject_sect_studyplan_id' => 0],
-                //['NOT IN', 'test_category', [2,3]],
-                ['studyplan_subject_id' => $studyplanSubjectIds],
-                ['=', 'lesson_date', strtotime($model->lesson_date)],
-            ])->all();
+        $modelsSubjectSchedule = (new Query())->from('lesson_items_progress_studyplan_view')
+            ->where(['teachers_id' => $teachers_id])
+            ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->andWhere(['=', 'subject_sect_studyplan_id', 0])
+            ->andWhere(['=', 'direction_id', 1000])
+            ->all();
+//        $modelsSubjectSchedule = LessonItemsProgressView::find()->where(
+//            ['AND',
+//                ['subject_sect_studyplan_id' => 0],
+//                //['NOT IN', 'test_category', [2,3]],
+//                ['studyplan_subject_id' => $studyplanSubjectIds],
+//                ['=', 'lesson_date', strtotime($model->lesson_date)],
+//                ['=', 'teachers_id', $teachers_id],
+//            ])->all();
         $modelsSubjectSchedule = ArrayHelper::index($modelsSubjectSchedule, null, ['subject_sect_studyplan_id', 'studyplan_subject_id']);
         foreach ($modelsProgress as $item => $modelProgress) {
             if (isset($modelsSubjectSchedule[0][$modelProgress->studyplan_subject_id])) {
