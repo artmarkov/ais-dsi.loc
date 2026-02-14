@@ -29,6 +29,8 @@ $form = ActiveForm::begin([
 //                                ],
                             ])->label(Yii::t('art/studyplan', 'Plan Year'));
                         ?>
+                        <?= $form->field($model_date, 'subject_type_flag')->radioList(\common\models\teachers\TeachersScheduleGenerator::getTypeList())->label('Тип занятий'); ?>
+
                         <?= $form->field($model_date, 'teachers_list')->widget(\kartik\select2\Select2::class, [
                             'data' => RefBook::find('teachers_fio',  UserCommon::STATUS_ACTIVE)->getList(),
                             'options' => [
@@ -40,7 +42,6 @@ $form = ActiveForm::begin([
                             ],
                         ])->label(Yii::t('art/teachers', 'Teachers'));
                         ?>
-                        <?= $form->field($model_date, 'subject_type_flag')->checkbox()->label('Учесть внебюджетные часы') ?>
 
                         <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
 

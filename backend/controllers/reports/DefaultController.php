@@ -242,10 +242,10 @@ class DefaultController extends MainController
         $this->view->params['tabMenu'] = $this->tabMenu;
 
         $model_date = new DynamicModel(['plan_year', 'teachers_list', 'subject_type_flag']);
-        $model_date->addRule(['plan_year', 'teachers_list'], 'required')
-            ->addRule(['plan_year'], 'integer')
-            ->addRule(['subject_type_flag'], 'boolean')
+        $model_date->addRule(['plan_year', 'teachers_list', 'subject_type_flag'], 'required')
+            ->addRule(['plan_year', 'subject_type_flag'], 'integer')
             ->addRule(['teachers_list'], 'safe');
+
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
             $model_date->teachers_list = Yii::$app->user->getSetting('_generator_schedule_teachers_list') ?? [];
