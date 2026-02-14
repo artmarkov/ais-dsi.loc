@@ -141,7 +141,11 @@ foreach ($model['lessonDates'] as $id => $name) {
         'attribute' => $name['date'],
         'label' => $model['attributes'][$name['date']],
         'format' => 'raw',
-        'footer' => $name['dates_load'],
+        'footer' =>$name['isDisorder'] ? 0 : $name['dates_load'],
+        /*'contentOptions' => function ($models) use ($name) {
+            return $name['isDisorder'] ? ['class' => 'warning'] : ['class' => ''];
+
+        },*/
     ];
 }
 $columns[] = [

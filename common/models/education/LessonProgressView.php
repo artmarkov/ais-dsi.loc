@@ -4,7 +4,9 @@ namespace common\models\education;
 
 use artsoft\Art;
 use artsoft\helpers\ArtHelper;
+use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
+use common\models\routine\Routine;
 use common\models\studyplan\Studyplan;
 use common\models\teachers\Teachers;
 use common\models\teachers\TeachersLoadStudyplanView;
@@ -159,19 +161,33 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         // echo '<pre>' . print_r($modelsProgress, true) . '</pre>'; die();
         $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress, 'studyplan_subject_id');
 
-        $modelsMarks = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l	        
-	        JOIN subject_schedule_hist ON subject_schedule_hist.teachers_load_id = l.teachers_load_id
-	            AND subject_schedule_hist.week_day = DATE_PART(\'dow\', to_timestamp(l.lesson_date+10800))
-	            AND subject_schedule_hist.version = (SELECT version WHERE subject_schedule_hist.updated_at <= l.created_at ORDER BY version DESC LIMIT 1)
-	        WHERE ("lesson_date" BETWEEN :timestamp_in AND :timestamp_out) 
-	        AND ("test_category" = 1) AND studyplan_id = :studyplan_id AND l.direction_id  = 1000
+//        $modelsMarks = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l
+//	        JOIN subject_schedule_hist ON subject_schedule_hist.teachers_load_id = l.teachers_load_id
+//	            AND subject_schedule_hist.week_day = DATE_PART(\'dow\', to_timestamp(l.lesson_date+10800))
+//	            AND subject_schedule_hist.version = (SELECT version WHERE subject_schedule_hist.updated_at <= l.created_at ORDER BY version DESC LIMIT 1)
+//	        WHERE ("lesson_date" BETWEEN :timestamp_in AND :timestamp_out)
+//	        AND ("test_category" = 1) AND studyplan_id = :studyplan_id AND l.direction_id  = 1000
+//	        ',
+//            [
+//                'timestamp_in' => $timestamp_in,
+//                'timestamp_out' => $timestamp_out,
+//                'studyplan_id' => $studyplan_id,
+//            ])->queryAll();
+        $modelsMarks = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l	     
+	    JOIN LATERAL (SELECT * FROM subject_schedule_hist h 
+		    JOIN (SELECT id, MAX(version) as version FROM subject_schedule_hist 
+		        WHERE updated_at <= l.created_at AND teachers_load_id = l.teachers_load_id GROUP BY id) i 
+		        ON h.id=i.id AND h.version=i.version) hh 
+		ON hh.teachers_load_id = l.teachers_load_id
+	        WHERE l.lesson_date BETWEEN :timestamp_in AND :timestamp_out  
+	        AND week_day = DATE_PART(\'dow\', to_timestamp(l.lesson_date+10800))
+	        AND l.test_category = 1 AND l.studyplan_id = :studyplan_id AND l.direction_id  = 1000
 	        ',
             [
                 'timestamp_in' => $timestamp_in,
                 'timestamp_out' => $timestamp_out,
                 'studyplan_id' => $studyplan_id,
             ])->queryAll();
-
         $modelsMarks = ArrayHelper::index($modelsMarks, null, ['teachers_id', 'studyplan_subject_id']);
 //         echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
 //        $modelsMarks = ArrayHelper::index(LessonItemsProgressView::find()
@@ -185,9 +201,9 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->select('attestation_items.id, attestation_items.plan_year, attestation_items.teachers_id, attestation_items.lesson_mark_id, attestation_items.studyplan_subject_id, guide_lesson_mark.mark_label as mark_label')
             ->where(['plan_year' => $plan_year])
             ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
-//            ->asArray()
+          //  ->asArray()
             ->all(), null, ['teachers_id', 'studyplan_subject_id']);
-       // echo '<pre>' . print_r($modelsMarksCertif, true) . '</pre>'; die();
+     //   echo '<pre>' . print_r($modelsMarksCertif, true) . '</pre>'; die();
         $attributes = ['studyplan_subject_id' => Yii::t('art/guide', 'Subject Name')];
         $attributes += ['subject_vid_id' => Yii::t('art/guide', 'Subject Vid')];
         $attributes += ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
@@ -417,38 +433,30 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $dates_load_total = 0;
 
         // Учитываем историю удаленных расписаний занятий для отображения оценок из истории удаленных расписаний
-        $modelsMarks = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l	        
-	        JOIN subject_schedule_hist ON subject_schedule_hist.teachers_load_id = l.teachers_load_id
-	            AND subject_schedule_hist.week_day = DATE_PART(\'dow\', to_timestamp(l.lesson_date+10800))
-	            AND subject_schedule_hist.version = (SELECT version WHERE subject_schedule_hist.updated_at <= l.created_at ORDER BY version DESC LIMIT 1)
-	        WHERE ("lesson_date" BETWEEN :timestamp_in AND :timestamp_out)  
-	            AND ("subject_key" = :subject_key) AND ("test_category" = 1) AND l.teachers_id = :teachers_id
-	        ORDER BY "lesson_date"',
+        $modelsMarks = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l	     
+	    JOIN LATERAL (SELECT * FROM subject_schedule_hist h 
+		    JOIN (SELECT id, MAX(version) as version FROM subject_schedule_hist 
+		        WHERE updated_at <= l.created_at AND teachers_load_id = l.teachers_load_id GROUP BY id) i 
+		        ON h.id=i.id AND h.version=i.version) hh 
+		ON hh.teachers_load_id = l.teachers_load_id
+	        WHERE l.lesson_date BETWEEN :timestamp_in AND :timestamp_out  
+	        AND hh.week_day = DATE_PART(\'dow\', to_timestamp(l.lesson_date+10800))
+	        AND l.subject_key = :subject_key AND l.test_category = 1 AND l.teachers_id = :teachers_id
+	        ORDER BY l.lesson_date',
             [
                 'timestamp_in' => $timestamp_in,
                 'timestamp_out' => $timestamp_out,
                 'subject_key' => $model_date->subject_key,
                 'teachers_id' => $teachers_id
             ])->queryAll();
-        $modelsMarks2 = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l	        
-	        JOIN subject_schedule ON subject_schedule.teachers_load_id = l.teachers_load_id
-	            AND subject_schedule.week_day = DATE_PART(\'dow\', to_timestamp(l.lesson_date+10800))
-	        WHERE ("lesson_date" BETWEEN :timestamp_in AND :timestamp_out)  
-	            AND ("subject_key" = :subject_key) AND ("test_category" = 1) AND l.teachers_id = :teachers_id
-	        ORDER BY "lesson_date"',
-            [
-                'timestamp_in' => $timestamp_in,
-                'timestamp_out' => $timestamp_out,
-                'subject_key' => $model_date->subject_key,
-                'teachers_id' => $teachers_id
-            ])->queryAll(); // TODO оптимизировать
-//        echo '<pre>' . print_r($modelsMarksLoad, true) . '</pre>'; die();
+
+//        echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
         $lessonDates = array_values(array_unique(ArrayHelper::getColumn($modelsMarks, 'lesson_date')));
-        $modelsMarksLoad = ArrayHelper::index($modelsMarks2, null,['lesson_date']);
-        $modelsMarksSubjectLoad = ArrayHelper::index($modelsMarks2, null,['studyplan_subject_id']);
 
        // echo '<pre>' . print_r($modelsMarksSubjectLoad, true) . '</pre>'; die();
         foreach ($lessonDates as $id => $lessonDate) {
+            $user_id = RefBook::find('teachers_users')->getValue($teachers_id);
+            $isDisorder = Routine::isDisorder($lessonDate, $user_id);
             $dates_load = 0;
             $date = Yii::$app->formatter->asDate($lessonDate, 'php:d.m.Y');
             $label = Yii::$app->formatter->asDate($lessonDate, 'php:d');
@@ -456,6 +464,20 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $columns[$my] = isset($columns[$my]) ? $columns[$my] + 1 : 1;
             $attributes += [$date => $label];
             if (Art::isBackend()) {
+                $modelsMarks2 = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l
+	        JOIN subject_schedule ON subject_schedule.teachers_load_id = l.teachers_load_id
+	            AND subject_schedule.week_day = DATE_PART(\'dow\', to_timestamp(l.lesson_date+10800))
+	        WHERE ("lesson_date" BETWEEN :timestamp_in AND :timestamp_out)
+	            AND ("subject_key" = :subject_key) AND ("test_category" = 1) AND l.teachers_id = :teachers_id
+	        ORDER BY "lesson_date"',
+                    [
+                        'timestamp_in' => $timestamp_in,
+                        'timestamp_out' => $timestamp_out,
+                        'subject_key' => $model_date->subject_key,
+                        'teachers_id' => $teachers_id
+                    ])->queryAll(); // TODO оптимизировать
+                $modelsMarksLoad = ArrayHelper::index($modelsMarks2, null, ['lesson_date']);
+                $modelsMarksSubjectLoad = ArrayHelper::index($modelsMarks2, null, ['studyplan_subject_id']);
                 if(isset($modelsMarksLoad[$lessonDate])) {
                     foreach ($modelsMarksLoad[$lessonDate] as $index => $m) {
                         $dates_load += $m['lesson_mark_id'] ? Schedule::astr2academ($m['time_out'] - $m['time_in']) : 0;
@@ -463,7 +485,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                     $dates_load_total += $dates_load;
                 }
             }
-            $dates[] = ['date' => $date, 'dates_load' => $dates_load];
+            $dates[] = ['date' => $date, 'dates_load' => $dates_load, 'isDisorder' => $isDisorder];
         }
         $attributes += ['pa' => 'ПА'];
 

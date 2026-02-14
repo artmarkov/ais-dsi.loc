@@ -3,6 +3,7 @@
 namespace common\models\studyplan;
 
 use artsoft\Art;
+use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\subjectsect\SubjectSect;
@@ -72,6 +73,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
             [['doc_status'], 'default', 'value' => self::DOC_STATUS_DRAFT],
             [['half_year'], 'default', 'value' => 0],
             [['template_name'], 'string', 'max' => 256],
+            [['half_year'], 'unique', 'targetAttribute' => ['half_year', 'subject_sect_studyplan_id', 'studyplan_subject_id'], 'message' => 'В одном полугодии может быть только один план.'],
             [['template_name'], 'unique'],
             [['thematic_list', 'thematic_flag'], 'safe'],
             [['template_name'], 'required', 'when' => function ($model) {
@@ -187,7 +189,7 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
     }
 
     /**
-     * ����������� ��������� �� ���������
+     * определение полугодия по умолчанию
      * @param $subject_sect_studyplan_id
      * @param $studyplan_subject_id
      * @return int
@@ -201,6 +203,22 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
             ->scalar();
         return $half_year == 1 ? 2 : 1;
     }
+
+    public static function getHalfYearList($subject_sect_studyplan_id = 0, $studyplan_subject_id)
+    {
+        if($subject_sect_studyplan_id != 0) {
+            $studyplan_subject_id = 0;
+        }
+        $halfYearList = ArtHelper::getHalfYearList(true);
+        $array = self::find()
+            ->select('half_year')
+            ->distinct()
+            ->where(['subject_sect_studyplan_id' => $subject_sect_studyplan_id])
+            ->andWhere(['studyplan_subject_id' => $studyplan_subject_id])
+            ->column();
+        return array_diff_key($halfYearList, array_combine(array_values($array), array_values($array)));
+    }
+
 
     /**
      * @param bool $insert

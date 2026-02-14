@@ -22,7 +22,7 @@ $form = ActiveForm::begin([
                         <?php
                         if(\artsoft\Art::isBackend()) {
                             echo $form->field($model_date, 'teachers_id')->widget(\kartik\select2\Select2::class, [
-                                'data' => \artsoft\helpers\RefBook::find('teachers_fio',1)->getList(),
+                                'data' => \artsoft\helpers\RefBook::find('teachers_fio')->getList(),
                                 'options' => [
 //                                    'onchange'=>'js: $(this).closest("form").submit()',
                                     'placeholder' => Yii::t('art', 'Select...'),

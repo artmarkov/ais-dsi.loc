@@ -25,6 +25,7 @@ class StudyplanStat
         'plan_year' => 'Учебный год',
         'education_programm_name' => 'Образовательная программа',
         'education_programm_short_name' => 'Образовательная программа сокр.',
+        'education_programm_term_mastering' => 'Образовательная программа срок обучения.',
         'education_cat_name' => 'Категория обр. программы',
         'education_cat_short_name' => 'Категория обр. программы сокр.',
         'speciality' => 'Специальность',
@@ -73,8 +74,10 @@ class StudyplanStat
 //            'signer_sert_organ'=> '',
 //            'signer_sert_date'=> '',
 //            'signer_sert_code'=> ''
-            'student_social_card_flag' => 'Социальная карта ученика(наличие)',
-            'signer_social_card_flag' => 'Социальная карта родителя(наличие)',
+        'student_social_card_flag' => 'Социальная карта ученика(наличие)',
+        'signer_social_card_flag' => 'Социальная карта родителя(наличие)',
+        'early_flag' => 'Досрочный выпуск',
+        'finish_flag' => 'Статус "Выпускник"',
     ];
 
     const OPTIONS_FIELDS_DEFAULT = ['student_created_at', 'studyplan_created_at', 'student_id', 'student_fio', 'plan_year', 'education_programm_short_name', 'education_cat_short_name', 'speciality', 'course', 'description', 'doc_contract_start', 'status', 'subject_form_name', 'student_birth_age', 'student_gender', 'limited_status_list'];
@@ -188,6 +191,12 @@ class StudyplanStat
             case 'signer_social_card_flag' :
                 return $model[$option] == 1 ? 'Да' : ($model[$option] == 2 ? 'Нет' : 'Не задано');
                 break;
+            case 'early_flag' :
+                return $model[$option] == 1 ? 'Да' : 'Нет';
+                break;
+            case 'finish_flag' :
+                return $model['course'] == $model['education_programm_term_mastering'] || $model['early_flag'] == 1 ? 'Да' : 'Нет';
+                break;
             default :
                 return $model[$option];
         }
@@ -211,7 +220,7 @@ class StudyplanStat
             \Yii::$app->response
                 ->sendContentAsFile($x, strtotime('now') . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '_studyplan-stat.xlsx', ['mimeType' => 'application/vnd.ms-excel'])
                 ->send();
-            exit;
+            return;
         } catch (\PhpOffice\PhpSpreadsheet\Exception | \yii\web\RangeNotSatisfiableHttpException $e) {
             \Yii::error('Ошибка формирования xlsx: ' . $e->getMessage());
             \Yii::error($e);

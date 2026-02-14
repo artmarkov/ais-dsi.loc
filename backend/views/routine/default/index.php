@@ -67,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'filter' => \common\models\routine\RoutineCat::getCatList(),
                                 'label' => Yii::t('art', 'Name'),
                                 'value' => function (Routine $model) {
-                                    return $model->cat->name;
+                                    return $model->getName();
                                 },
                             ],
                             'description',

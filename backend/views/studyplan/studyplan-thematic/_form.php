@@ -6,6 +6,7 @@ use artsoft\helpers\Html;
 use wbraganca\dynamicform\DynamicFormWidget;
 use common\models\teachers\Teachers;
 use artsoft\models\User;
+use common\models\studyplan\StudyplanThematic;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\studyplan\StudyplanThematic */
@@ -57,10 +58,14 @@ $readonly = in_array($model->doc_status, [1, 2]) && \artsoft\Art::isFrontend() ?
                         <?php
                         echo Html::activeHiddenInput($model, 'subject_sect_studyplan_id');
                         echo Html::activeHiddenInput($model, 'studyplan_subject_id');
-                        $model->half_year = \common\models\studyplan\StudyplanThematic::halfYearDefault($model->subject_sect_studyplan_id, $model->studyplan_subject_id);
+                        if ($model->isNewRecord) {
+                            $halfYearList = StudyplanThematic::getHalfYearList($model->subject_sect_studyplan_id, $model->studyplan_subject_id);
+                        } else {
+                            $halfYearList = \artsoft\helpers\ArtHelper::getHalfYearList(true);
+                        }
                         ?>
 
-                        <?= $form->field($model, 'half_year')->dropDownList(\artsoft\helpers\ArtHelper::getHalfYearList(true), ['disabled' => $readonly]); ?>
+                        <?= $form->field($model, 'half_year')->dropDownList($halfYearList, ['disabled' => $readonly]); ?>
 
                         <?php
                         if ($model->isNewRecord and \artsoft\Art::isFrontend()) {

@@ -4,7 +4,7 @@ namespace common\models\routine;
 
 use artsoft\Art;
 use artsoft\behaviors\DateFieldBehavior;
-use artsoft\helpers\Schedule;
+use common\models\user\UsersView;
 use Yii;
 use common\widgets\yearcalendar\data\DataItem;
 use common\widgets\yearcalendar\data\JsExpressionHelper;
@@ -15,7 +15,7 @@ use artsoft\db\ActiveRecord;
  *
  * @property int $id
  * @property string $description
- * @property string $color
+ * @property int $users_id
  * @property int $cat_id
  * @property int $start_date
  * @property int $end_date
@@ -58,10 +58,15 @@ class Routine extends ActiveRecord implements DataItem
             [[/*'description',*/ 'cat_id', 'start_date', 'end_date'], 'required'],
             [['start_date', 'end_date'], 'safe'],
             ['start_date', 'compareDate'],
-            [['cat_id'], 'integer'],
+            [['cat_id', 'users_id'], 'integer'],
             [['description'], 'string', 'max' => 1024],
             [['color'], 'string', 'max' => 127],
             [['cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => RoutineCat::class, 'targetAttribute' => ['cat_id' => 'id']],
+            [['users_id'], 'required', 'when' => function ($model) {
+                return $model->cat_id == '1005';
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#routine-cat_id').val() == '1005';
+                    }"],
         ];
     }
 
@@ -89,6 +94,7 @@ class Routine extends ActiveRecord implements DataItem
             'cat_id' => Yii::t('art/routine', 'Catеgory'),
             'start_date' => Yii::t('art/routine', 'Start Date'),
             'end_date' => Yii::t('art/routine', 'End Date'),
+            'users_id' => Yii::t('art', 'User'),
         ];
     }
 
@@ -104,7 +110,14 @@ class Routine extends ActiveRecord implements DataItem
 
     public function getName()
     {
-        return $this->cat->name;
+        $name = $this->cat->name;
+        if ($this->users_id) {
+            $user = UsersView::find()->where(['id' => $this->users_id])->one();
+            if ($user) {
+                $name .= ' (' . $user->user_name . ')';
+            }
+        }
+        return $name;
     }
 
     public function getColor()
@@ -130,11 +143,11 @@ class Routine extends ActiveRecord implements DataItem
     public static function isDayOff($timestamp)
     {
         return self::find()->joinWith('cat')
-            ->where(['AND',
-                ['<=', 'start_date', $timestamp],
-                ['>=', 'end_date', $timestamp - 86399],
-            ])->andWhere(['guide_routine_cat.dayoff_flag' => 1])
-            ->exists() || date("w", $timestamp) == 0;
+                ->where(['AND',
+                    ['<=', 'start_date', $timestamp],
+                    ['>=', 'end_date', $timestamp - 86399],
+                ])->andWhere(['guide_routine_cat.dayoff_flag' => 1])
+                ->exists() || date("w", $timestamp) == 0;
     }
 
     /**
@@ -180,5 +193,33 @@ class Routine extends ActiveRecord implements DataItem
                 ['>=', 'end_date', $timestamp - 86399],
             ])->andWhere(['cat_id' => 1001])
             ->exists();
+    }
+
+
+    /**
+     * Отпуск по болезни преподавателей и сотрудников
+     * @param $timestamp
+     * @param $users_id
+     * @return bool
+     */
+    public static function isDisorder($timestamp, $users_id)
+    {
+        return self::find()
+            ->where(['AND',
+                ['<=', 'start_date', $timestamp],
+                ['>=', 'end_date', $timestamp - 86399],
+            ])
+            ->andWhere(['users_id' => $users_id])
+            ->andWhere(['cat_id' => 1005])
+            ->exists();
+    }
+
+    public static function find()
+    {
+        $query = parent::find();
+        if(Art::isFrontend()) {
+            $query = $query->andWhere(['!=', 'cat_id', 1005]);
+        }
+        return $query;
     }
 }

@@ -160,7 +160,7 @@ $columns = [
         ],
         'visibleButtons' => [
             'create' => function ($model) {
-                return true;
+                return !empty(StudyplanThematic::getHalfYearList($model->subject_sect_studyplan_id, $model->studyplan_subject_id));
             },
             'delete' => function ($model) {
                 return $model->studyplan_thematic_id;
@@ -234,7 +234,7 @@ $columns = [
         ],
         'visibleButtons' => [
             'create' => function ($model) {
-                return true;
+                return !empty(StudyplanThematic::getHalfYearList($model->subject_sect_studyplan_id, $model->studyplan_subject_id));
             },
             'delete' => function ($model) {
                 return $model->studyplan_thematic_id;

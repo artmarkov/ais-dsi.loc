@@ -1,0 +1,8 @@
+.spinner_block {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 30vh;
+    margin: 10px;
+    background-image: url(../images/ajax-loader.gif);
+}

@@ -50,7 +50,7 @@ class StudyplanHistory extends BaseHistory
             case 'subject_form_id':
                 return isset($model->subject_form_id) ? $model->subjectForm->name : $value;
             case 'status':
-                return isset($model->status) ? Studyplan::getStatusList()[$value] : $value;
+                return isset($model->status) ? Studyplan::getStatusList()[$value] ?? $value : $value;
             case 'status_reason':
                 return isset($model->status_reason) ? Studyplan::getStatusReasonList()[$value] : $value;
             case 'plan_year':

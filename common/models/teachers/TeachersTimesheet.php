@@ -24,6 +24,7 @@ class TeachersTimesheet
     const WORKDAY = 'Ф'; // рабочий день
     const VOCATION = 'О'; // Отпуск
     const DAYOFF = 'В'; // Выходной
+    const DISORDER = 'Б'; // Больничный
 
     protected $is_lesson_mark = true; // учитывать выставление оценки
     protected $is_consult_confirm; // true - учитывать только утвержденные консультации
@@ -44,6 +45,7 @@ class TeachersTimesheet
     protected $teachers_day_consult;
     protected $teachers_day_schedule_total;
     protected $lesson_fact;
+    protected $disorder;
 
     public function __construct($model_date)
     {
@@ -66,8 +68,9 @@ class TeachersTimesheet
         $this->teachers_day_schedule_total = $this->subject_type_id == 1000 ? $this->getTeachersDayScheduleTotal() : []; // для бюджета
         $this->teachers_day_consult = $this->getTeachersDayConsult();
         $this->template_name = $this->subject_type_id == 1000 ? ($this->is_avans ? self::template_timesheet_budget_half : self::template_timesheet_budget) : ($this->is_avans ? self::template_timesheet_extra_budget_half : self::template_timesheet_extra_budget);
-//        echo '<pre>' . print_r($this->plan_year, true) . '</pre>';
-//        die();
+//        $this->disorder = $this->getRoutineDisorder();
+//        echo '<pre>' . print_r($this->getRoutineDisorder(), true) . '</pre>';
+        //die();
     }
 
     protected function getRoutine()
@@ -87,6 +90,19 @@ class TeachersTimesheet
         }
         return $routine;
     }
+
+//    protected function getRoutineDisorder()
+//    {
+//        return Routine::find()
+//            ->select(new \yii\db\Expression('users_id, date_part(\'day\'::text, to_timestamp(start_date+10800)) AS day'))
+////            ->where(['AND',
+////                ['<=', 'start_date', $this->timestamp_in],
+////                ['>=', 'end_date', $this->timestamp_out],
+////            ])
+//            ->andWhere(['cat_id' => 1005])
+//            ->asArray()
+//            ->all();
+//    }
 
     protected function getLessonsFact()
     {
@@ -244,6 +260,11 @@ class TeachersTimesheet
             $data['time'][$day] = $this->getTeachersScheduleDay($day, $direction_id, $direction_vid_id, $teachers_id) + $time_consult;
             $data['time'][$day] = $data['time'][$day] == 0 ? '' : $data['time'][$day];
             $data['status'][$day] = null;
+
+            $user_id = RefBook::find('teachers_users')->getValue($teachers_id);
+            $timestamp = mktime(12, 0, 0, $this->mon, $day, $this->year); // середина суток
+            $isDisorder = Routine::isDisorder($timestamp, $user_id);
+                //echo '<pre>' . print_r([$day, $user_id, $isDisorder], true) . '</pre>';
             $isVocation = $this->routine[$day]['isVocation'];
             $isDayOff = $this->routine[$day]['isDayOff'];
 
@@ -253,6 +274,9 @@ class TeachersTimesheet
             } elseif ($isDayOff) {
                 $data['time'][$day] = null;
                 $data['status'][$day] = self::DAYOFF;
+            }if ($isDisorder) {
+                $data['time'][$day] = null;
+                $data['status'][$day] = self::DISORDER;
             } elseif (($data['time'][$day] > 0)) {
                 $data['status'][$day] = self::WORKDAY;
             }
