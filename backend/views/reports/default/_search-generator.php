@@ -42,6 +42,7 @@ $form = ActiveForm::begin([
                             ],
                         ])->label(Yii::t('art/teachers', 'Teachers'));
                         ?>
+                        <?= $form->field($model_date, 'limit_up_flag')->checkbox()->label('Вывести превышение нагрузки в отчет.'); ?>
 
                         <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
 

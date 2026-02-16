@@ -241,9 +241,10 @@ class DefaultController extends MainController
         $session = Yii::$app->session;
         $this->view->params['tabMenu'] = $this->tabMenu;
 
-        $model_date = new DynamicModel(['plan_year', 'teachers_list', 'subject_type_flag']);
+        $model_date = new DynamicModel(['plan_year', 'teachers_list', 'subject_type_flag', 'limit_up_flag']);
         $model_date->addRule(['plan_year', 'teachers_list', 'subject_type_flag'], 'required')
             ->addRule(['plan_year', 'subject_type_flag'], 'integer')
+            ->addRule(['limit_up_flag'], 'boolean')
             ->addRule(['teachers_list'], 'safe');
 
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
