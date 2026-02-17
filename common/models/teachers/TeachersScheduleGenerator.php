@@ -5,6 +5,7 @@ namespace common\models\teachers;
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
 use artsoft\helpers\Schedule;
+use artsoft\helpers\StringHelper;
 use common\models\user\UserCommon;
 use Yii;
 use yii\db\Query;
@@ -135,9 +136,10 @@ class TeachersScheduleGenerator
     /**
      * Нормализация массива
      * @param $d
+     * @param $analiticArray
      * @return array
      */
-    protected function normaliseArray($d)
+    protected function normaliseArray($d, $analiticArray)
     {
         $array = [];
         foreach ($d as $item => $data) {
@@ -145,6 +147,12 @@ class TeachersScheduleGenerator
                 continue;
             }
             if ($this->subject_type_flag == 2 && $data['subject_type_id'] == 1000) { // Не выводим бюджет при флаге = внебюджет
+                continue;
+            }
+            if ($this->subject_type_flag == 1 && $data['subject_type_id'] == 0 && $analiticArray['pause_needs'][1000] == 0) { // Не выводим перерыв
+                continue;
+            }
+            if ($this->subject_type_flag == 2 && $data['subject_type_id'] == 0 && $analiticArray['pause_needs'][1001] == 0) { // Не выводим перерыв
                 continue;
             }
             $array[$item]['time_in'] = ceil($data['time_in'] / $this->period_time) * $this->period_time;   // Нормализуем к 5-мин периоду
@@ -217,27 +225,40 @@ class TeachersScheduleGenerator
     {
         $time_in = min(array_column($array, 'time_in'));
         $time_out = max(array_column($array, 'time_out'));
-        $auditory_time = [1000 => 0, 1001 => 0];
-        $auditory_time_summ = 0;
+        $auditory_up_time = $astr_time_summ = [1000 => 0, 1001 => 0];
+        $auditory_up_time_summ = 0;
+        $academ_time_summ = 0;
         // сумма аудиторных академ часов
         foreach ($array as $i => $item) {
-            $auditory_time[$item['subject_type_id']] += ($item['time_out'] - $item['time_in']);
-            $auditory_time_summ += ($item['time_out'] - $item['time_in']);
-        }
-        arsort($auditory_time); // отсортируем по меньшему времени
-        $auditory_up_time = $auditory_time_summ / 3; // время превышения при пересчете академ на астрономич аудиторного времени
-        $count_per = ($auditory_time_summ + $auditory_up_time) >= $this->time_limit ? 1 : 0;  // если больше 4-х часов, то 1 перерыв. Иначе - без перерыва
-        $auditory_reserv_time = $this->day_time - $auditory_time_summ - $auditory_up_time - ($this->time_per * $count_per); // оставшееся аудиторное время за вычетом перерывов
+            $time = $item['time_out'] - $item['time_in'];
+            $time_academ = Schedule::astr2academ($time);
+            $time_astr = $time_academ * 3600;
 
-        return $d = [
+            $auditory_up_time[$item['subject_type_id']] += $time_astr - $time;
+            $auditory_up_time_summ += $time_astr - $time;
+            $academ_time_summ += $time_academ;
+            $astr_time_summ[$item['subject_type_id']] += $time_astr;
+        }
+        arsort($auditory_up_time); // отсортируем по меньшему времени
+        $pause_needs = [
+                1000 => $astr_time_summ[1000] > $this->time_limit ? 1 : 0,
+                1001 => $astr_time_summ[1001] > $this->time_limit ? 1 : 0,
+            ];
+        $count_per = $pause_needs[1000] == 1 || $pause_needs[1001] == 1 ? 1 : 0;  // если больше 4-х часов, то 1 перерыв независимо от бюджета и внебюджета. Иначе - без перерыва
+        $auditory_reserv_time = $this->day_time - ($astr_time_summ[1000] + $astr_time_summ[1001]) - ($this->time_per * $count_per); // оставшееся аудиторное время за вычетом перерывов
+        $d = [
             'min_time' => $time_in,
             'max_time' => $time_out,
-            'auditory_time' => $auditory_time, // array
-            'auditory_up_time' => $auditory_up_time,
-            'pause_needs' => $count_per,
+            'auditory_up_time' => $auditory_up_time, // array дополнительное время при пересчете по типу занятий
+            'auditory_up_summ' => $auditory_up_time_summ, // Сумма времени при пересчете
+            'astr_time_summ' => $astr_time_summ, // array
+            'pause_needs' => $pause_needs,
+            'count_per' => $count_per,
             'auditory_reserv_time' => $auditory_reserv_time,
             'error_flag' => ($auditory_reserv_time + $this->error_time) < 0 ? true : false,
         ];
+       // echo '<pre>' . print_r($d, true) . '</pre>';
+        return $d;
     }
 
     /**
@@ -249,14 +270,15 @@ class TeachersScheduleGenerator
     {
         $analiticArray = $this->getScheduleAnalitic($arrayMaster);
         $freeArray = $this->getScheduleFreeItem($arrayMaster);
-
         if ($analiticArray['error_flag'] == true && $this->limit_up_flag) {
+            $time = StringHelper::secondsToHoursMinutes(abs($analiticArray['auditory_reserv_time']));
             $arrayMaster[] = [
-                'time_disp' => 'Превышение нагрузки на ' . round(abs($analiticArray['auditory_reserv_time']) / 3600, 2) . ' ч.',
+                'time_disp' => 'Превышение нагрузки на ' . $time,
             ];
             return $arrayMaster;
         }
-        if ($analiticArray['pause_needs'] == 1) {
+
+        if ($analiticArray['count_per'] == 1) {
             array_multisort(array_column($freeArray, 'priority'), SORT_ASC, $freeArray);
             $this->setLunchBreak($freeArray, $arrayMaster);
         }
@@ -264,7 +286,7 @@ class TeachersScheduleGenerator
         $d = $this->mergeMaster($arrayMaster);
 
         //  echo '<pre>' . print_r($freeArray, true) . '</pre>';
-        return $this->normaliseArray($d); // нормализация
+        return $this->normaliseArray($d, $analiticArray); // нормализация
     }
 
     /**
@@ -312,7 +334,7 @@ class TeachersScheduleGenerator
                 ];
             }
 
-            if ($time_in > $item['time_in']) {
+            if ($item['time'] > $this->time_per) {
                 array_splice($array, $i, 1, $free_update);
             } else {
                 array_splice($array, $i, 1);
@@ -331,9 +353,10 @@ class TeachersScheduleGenerator
      */
     protected function setUpTime(&$freeArray, &$arrayMaster, $analiticArray)
     {
-        foreach ($analiticArray['auditory_time'] as $subject_type_id => $time) {
+        foreach ($analiticArray['auditory_up_time'] as $subject_type_id => $time) {
             array_multisort(array_column($freeArray, 'priority'), SORT_ASC, $freeArray);
-            $t = ceil($time / 3);
+            // $t = ceil($time / 3);
+            $t = $time;
             $clone = $freeArray;
             foreach ($clone as $i => $item) {
                 if ($t <= 0) {

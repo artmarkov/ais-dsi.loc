@@ -32,6 +32,16 @@ class StringHelper
         return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
+    public static function secondsToHoursMinutes($seconds, $mode = 'string')
+    {
+        $hours = floor($seconds / 3600); // Рассчитать часы
+        $minutes = floor(($seconds % 3600) / 60); // Рассчитать оставшиеся секунды в минуты
+
+        $string = $hours != 0 ? ($hours . ' ч.') : '';
+        $string .= $minutes != 0 ? ($minutes . ' мин.') : '';
+
+        return $mode != 'string' ? ['hours' => $hours, 'minutes' => $minutes] : $string;
+    }
     /**
      * Генерация случайной строки
      *

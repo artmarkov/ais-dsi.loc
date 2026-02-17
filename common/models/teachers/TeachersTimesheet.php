@@ -354,7 +354,7 @@ class TeachersTimesheet
             'employee_iof' => RefBook::find('teachers_fio')->getValue($teachersId),
             'doc_data_mark' => Yii::$app->formatter->asDate(time(), 'php:d.m.Y'),
             'data_doc' => Yii::$app->formatter->asDate(time(), 'php:d.m.Y'),
-            'doc_accountant_post' => 'Бухгалтер',
+            'doc_accountant_post' => 'Начальник отдела',
             'doc_accountant_iof' => Yii::$app->settings->get('own.chief_accountant_post'),
         ];
 //        print_r($items); die();

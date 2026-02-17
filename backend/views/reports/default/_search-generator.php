@@ -21,6 +21,13 @@ $form = ActiveForm::begin([
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
+                        <?= \yii\bootstrap\Alert::widget([
+                            'body' => '<i class="fa fa-info"></i> График работы преподавателей формируется исходя из Расписания занятий. 
+                                                                 Академическое время переводится в астронамическое и добавляется перерыв при нагрузке более 4 часов. 
+                                                                <br/> Данный график максимально приближен к Расписанию занятий.',
+                            'options' => ['class' => 'alert-info'],
+                        ]);
+                        ?>
                         <?= $form->field($model_date, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                             [
                                 'disabled' => false,
