@@ -18,10 +18,11 @@ class TeachersScheduleGenerator
     protected $limit_up_flag; // сообщать о превышении нагрузки в шаблон
     protected $time_min;
     protected $time_max;
-    protected $day_time; // время в сек, доступное для учебы
+    protected $day_time;
     protected $time_limit;
     protected $time_per;
     protected $period_time = 300; // минимальный шаг периода сек.
+    protected $error_time = 60;   // погрешность сек.
     protected $teachers_list;
     protected $teachers_fullname;
     protected $teachers_direction;
@@ -33,11 +34,11 @@ class TeachersScheduleGenerator
     {
         $this->plan_year = $model_date->plan_year;
         $this->limit_up_flag = $model_date->limit_up_flag ?? true;
-        $this->time_max = Schedule::encodeTime(Yii::$app->settings->get('module.generator_time_max', 21) . ':00');
-        $this->time_min = Schedule::encodeTime(Yii::$app->settings->get('module.generator_time_min', 8) . ':00');
-        $this->day_time = $this->time_max - $this->time_min;
-        $this->time_limit = Yii::$app->settings->get('module.generator_time_limit', 4) * 60 * 60;
-        $this->time_per = Yii::$app->settings->get('module.generator_time_per', 30) * 60;
+        $this->time_max = Schedule::encodeTime(Yii::$app->settings->get('module.generator_time_max', 21) . ':00'); // Окончание работы (час)
+        $this->time_min = Schedule::encodeTime(Yii::$app->settings->get('module.generator_time_min', 8) . ':00'); // Начало работы (час)
+        $this->day_time = $this->time_max - $this->time_min; // время в сек, доступное для учебы
+        $this->time_limit = Yii::$app->settings->get('module.generator_time_limit', 4) * 60 * 60; // Время работы до перерыва (часов)
+        $this->time_per = Yii::$app->settings->get('module.generator_time_per', 30) * 60; // Время перерыва (мин)
         $this->teachers_list = $model_date->teachers_list;
         $this->subject_type_flag = $model_date->subject_type_flag;
         $this->getTeacherInfo();
@@ -55,6 +56,7 @@ class TeachersScheduleGenerator
             ->all();
         return ArrayHelper::index($models, null, ['teachers_id', 'week_day']);
     }
+
 
     protected function getTeacherInfo()
     {
@@ -107,7 +109,7 @@ class TeachersScheduleGenerator
     {
         array_multisort(array_column($array, 'time_in'), SORT_ASC, $array);
         // echo '<pre>' . print_r($array, true) . '</pre>'; die();
-        $const = 10;
+        $const = 0;
         $i = 0;
         $d = [];
         foreach ($array as $item => $data) {
@@ -127,7 +129,6 @@ class TeachersScheduleGenerator
             }
             $const = $data['subject_type_id'];
         }
-
         return $d;
     }
 
@@ -140,14 +141,14 @@ class TeachersScheduleGenerator
     {
         $array = [];
         foreach ($d as $item => $data) {
-            if ($this->subject_type_flag == 1 && $data['subject_type_id'] == 1001) {
+            if ($this->subject_type_flag == 1 && $data['subject_type_id'] == 1001) { // Не выводим внебюджет при флаге = бюджет
                 continue;
             }
-            if ($this->subject_type_flag == 2 && $data['subject_type_id'] == 1000) {
+            if ($this->subject_type_flag == 2 && $data['subject_type_id'] == 1000) { // Не выводим бюджет при флаге = внебюджет
                 continue;
             }
-            $array[$item]['time_in'] = ceil($data['time_in'] / $this->period_time) * $this->period_time;
-            $array[$item]['time_out'] = ceil($data['time_out'] / $this->period_time) * $this->period_time;
+            $array[$item]['time_in'] = ceil($data['time_in'] / $this->period_time) * $this->period_time;   // Нормализуем к 5-мин периоду
+            $array[$item]['time_out'] = ceil($data['time_out'] / $this->period_time) * $this->period_time; // Нормализуем к 5-мин периоду
             $array[$item]['subject_type_id'] = $data['subject_type_id'];
 
             $string = Schedule::decodeTime($array[$item]['time_in']) . '-' . Schedule::decodeTime($array[$item]['time_out']);
@@ -178,19 +179,19 @@ class TeachersScheduleGenerator
                 $time_in = $this->time_min;
                 $time_out = $array[$i]['time_in'];
                 $subject_type_down = $array[$i]['subject_type_id'];
-                $priority_all = 2;
+                $priority = 2;
             } elseif ($i == count($array)) {
                 $subject_type_up = $array[$i - 1]['subject_type_id'];
                 $time_in = $array[$i - 1]['time_out'];
                 $time_out = $this->time_max;
                 $subject_type_down = 0;
-                $priority_all = 3;
+                $priority = 3;
             } else {
                 $subject_type_up = $array[$i - 1]['subject_type_id'];
                 $time_in = $array[$i - 1]['time_out'];
                 $time_out = $array[$i]['time_in'];
                 $subject_type_down = $array[$i]['subject_type_id'];
-                $priority_all = 1;
+                $priority = 1;
             }
             if ($time_in != $time_out) {
                 $data[] = [
@@ -199,7 +200,7 @@ class TeachersScheduleGenerator
                     'time_out' => $time_out,
                     'time' => $time_out - $time_in,
                     'subject_type_down' => $subject_type_down,
-                    'priority' => $priority_all,
+                    'priority' => $priority,
                 ];
             }
         }
@@ -228,24 +229,22 @@ class TeachersScheduleGenerator
         $count_per = ($auditory_time_summ + $auditory_up_time) >= $this->time_limit ? 1 : 0;  // если больше 4-х часов, то 1 перерыв. Иначе - без перерыва
         $auditory_reserv_time = $this->day_time - $auditory_time_summ - $auditory_up_time - ($this->time_per * $count_per); // оставшееся аудиторное время за вычетом перерывов
 
-        $error_flag = false;
-        if ($auditory_reserv_time < 0) {
-            $error_flag = true;
-        }
-
-        $d = [
+        return $d = [
             'min_time' => $time_in,
             'max_time' => $time_out,
-            'auditory_time' => $auditory_time,
+            'auditory_time' => $auditory_time, // array
             'auditory_up_time' => $auditory_up_time,
             'pause_needs' => $count_per,
             'auditory_reserv_time' => $auditory_reserv_time,
-            'error_flag' => $error_flag,
+            'error_flag' => ($auditory_reserv_time + $this->error_time) < 0 ? true : false,
         ];
-
-        return $d;
     }
 
+    /**
+     * Генерация графика работы
+     * @param $arrayMaster
+     * @return array
+     */
     protected function generatorSchedule($arrayMaster)
     {
         $analiticArray = $this->getScheduleAnalitic($arrayMaster);
@@ -262,9 +261,9 @@ class TeachersScheduleGenerator
             $this->setLunchBreak($freeArray, $arrayMaster);
         }
         $this->setUpTime($freeArray, $arrayMaster, $analiticArray);
-        //  echo '<pre>' . print_r($freeArray, true) . '</pre>';
         $d = $this->mergeMaster($arrayMaster);
 
+        //  echo '<pre>' . print_r($freeArray, true) . '</pre>';
         return $this->normaliseArray($d); // нормализация
     }
 
@@ -393,7 +392,6 @@ class TeachersScheduleGenerator
             'type' => $this->subject_type_flag == 1 ? 'бюджет' : ($this->subject_type_flag == 2 ? 'внебюджет' : 'бюджет и внебюджет'),
             'plan_year' => ArtHelper::getStudyYearsValue($this->plan_year),
         ];
-//        echo '<pre>' . print_r($attributes, true) . '</pre>'; die();
         $items = [];
         $i = 0;
         $dada_sch = [];
@@ -434,7 +432,6 @@ class TeachersScheduleGenerator
         exit;
     }
 
-
     public static function getTypeList()
     {
         return [
@@ -443,7 +440,5 @@ class TeachersScheduleGenerator
             3 => 'Бюджет и Внебюджет',
         ];
     }
-
-
 }
 
