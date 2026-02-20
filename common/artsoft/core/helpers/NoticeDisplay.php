@@ -5,6 +5,7 @@ namespace artsoft\helpers;
 use artsoft\widgets\Notice;
 use common\models\schedule\SubjectScheduleView;
 use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubjectHist;
 use yii\helpers\ArrayHelper;
 use Yii;
 use artsoft\widgets\Tooltip;
@@ -43,9 +44,7 @@ class NoticeDisplay
         $this->auditoryPlan = $this->getAuditoryPlan($this->plan_year); // все аудитории планирования инд занятий
        // echo '<pre>' . print_r( $this->teachersIds, true) . '</pre>'; die();
         $this->teachersLoadIds = array_unique(\yii\helpers\ArrayHelper::getColumn($this->models, 'teachers_load_id'));
-        $this->subjectScheduleIds = array_filter(\yii\helpers\ArrayHelper::getColumn($this->models, 'subject_schedule_id'), function ($value) {
-            return !is_null($value) && $value !== '';
-        });
+        $this->getSubjectScheduleIds();
         $this->teachersLoadData = $this->getTeachersOverLoad(); // Запрос на полное время занятий расписания преподавателя данной нагрузки
         $this->scheduleOverLapping = $this->getScheduleOverLapping($this->plan_year); // В одной аудитории накладка по времени!
         $this->teachersOverLapping = $this->getTeachersOverLapping($this->plan_year); // Преподаватель не может работать в одно и тоже время в разных аудиториях!
@@ -54,6 +53,13 @@ class NoticeDisplay
         $this->studentScheduleOverPause = $this->getStudentScheduleOverPause($this->plan_year); // Ученик должен иметь перерыв в разных аудиториях 5 мин (300 сек)!
         $this->scheduleAccompLimit = $this->getScheduleAccompLimit($this->plan_year); // Концертмейстер может работать только в рамках расписания преподавателя
 
+    }
+
+    protected function getSubjectScheduleIds() {
+        $subjectScheduleIds = array_filter(\yii\helpers\ArrayHelper::getColumn($this->models, 'subject_schedule_id'), function ($value) {
+            return !is_null($value) && $value !== '';
+        });
+        $this->subjectScheduleIds = $subjectScheduleIds;
     }
 
     /**
@@ -195,7 +201,7 @@ class NoticeDisplay
      */
     public function getScheduleOverLapping($plan_year)
     {
-        $thereIsAnOverlapping = \Yii::$app->db->createCommand('SELECT b.subject_schedule_id, a.week_num, a.week_day, 
+        $thereIsAnOverlapping = \Yii::$app->db->createCommand('SELECT a.studyplan_subject_id, b.subject_schedule_id, a.week_num, a.week_day, 
                               a.time_in, a.time_out, a.auditory_id, a.sect_name, a.subject
 	                        FROM subject_schedule_view b, subject_schedule_view a 
 	                        WHERE a.subject_schedule_id != b.subject_schedule_id
@@ -217,10 +223,12 @@ class NoticeDisplay
                                     )
                                 )
 							    )
-							AND b.subject_schedule_id = ANY (string_to_array(:subject_schedule_ids, \',\')::int[])',
+							AND b.subject_schedule_id = ANY (string_to_array(:subject_schedule_ids, \',\')::int[])
+							AND a.studyplan_subject_id != ALL (string_to_array(:studyplan_subject_ids, \',\')::int[])',
             [
                 'plan_year' => $plan_year,
                 'subject_schedule_ids' => implode(',', $this->subjectScheduleIds),
+                'studyplan_subject_ids' => implode(',', StudyplanSubjectHist::getStudyplanSubjectPass()),
             ])->queryAll();
 
         return $thereIsAnOverlapping ? ArrayHelper::index($thereIsAnOverlapping, null, ['subject_schedule_id']) : [];

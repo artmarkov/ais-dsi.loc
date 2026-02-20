@@ -214,6 +214,22 @@ class Routine extends ActiveRecord implements DataItem
             ->exists();
     }
 
+    /**
+     * Отпуск по болезни преподавателей и сотрудников - получаем список
+     * @param $timestamp
+     * @return array
+     */
+    public static function isDisorderUsers($timestamp)
+    {
+        return self::find('users_id')
+            ->where(['AND',
+                ['<=', 'start_date', $timestamp],
+                ['>=', 'end_date', $timestamp - 86399],
+            ])
+            ->andWhere(['cat_id' => 1005])
+            ->column();
+    }
+
     public static function find()
     {
         $query = parent::find();

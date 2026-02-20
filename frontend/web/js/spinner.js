@@ -14,9 +14,9 @@ var spinner = (function () {
     return {
         start: function start() {
             spinnerHtml.modal('show');
-            setTimeout(function () {
-                spinnerHtml.modal('hide');
-            }, 30000);
+            // setTimeout(function () {
+            //     spinnerHtml.modal('hide');
+            // }, 30000);
         },
         stop: function stop() {
             spinnerHtml.modal('hide');

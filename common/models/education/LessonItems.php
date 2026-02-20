@@ -85,6 +85,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             [['lesson_test_id'], 'checkLessonTest', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_topic'], 'string', 'max' => 512],
             [['lesson_rem'], 'string', 'max' => 1024],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'lesson_date', 'teachers_id'], 'unique', 'on' => $this->isNewRecord],
             [['lesson_test_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonTest::className(), 'targetAttribute' => ['lesson_test_id' => 'id']],
         ];
     }

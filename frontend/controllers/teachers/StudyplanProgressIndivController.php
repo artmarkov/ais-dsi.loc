@@ -244,6 +244,7 @@ class StudyplanProgressIndivController extends MainController
                     }
                 } catch
                 (\Exception $e) {
+                    print_r($e->getMessage());
                     $transaction->rollBack();
                 }
             }

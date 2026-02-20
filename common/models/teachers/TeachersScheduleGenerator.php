@@ -20,7 +20,7 @@ class TeachersScheduleGenerator
     protected $teachers_list;
     protected $subject_type_flag;
     protected $limit_up_flag; // сообщать о превышении нагрузки в шаблон
-    protected $is_normalise_period = false; // Приводить даты к $period_time -мин периоду
+    protected $is_normalise_period = true; // Приводить даты к $period_time -мин периоду
     protected $period_time = 300; // минимальный шаг периода сек.
     protected $error_time = 60;   // погрешность при определении перерыва сек.
     protected $time_min; // Начало работы школы(час)
@@ -121,8 +121,8 @@ class TeachersScheduleGenerator
     protected function mergeMaster($array)
     {
         array_multisort(array_column($array, 'time_in'), SORT_ASC, $array);
-        // echo '<pre>' . print_r($array, true) . '</pre>'; die();
-        $const = 0;
+        //  echo '<pre>' . print_r($array, true) . '</pre>'; die();
+        $const = 1;
         $i = 0;
         $d = [];
         foreach ($array as $item => $data) {
@@ -131,12 +131,12 @@ class TeachersScheduleGenerator
                 $d[$i]['time_in'] = $data['time_in'];
                 $d[$i]['time_out'] = $data['time_out'];
             } else {
-                if ($data['subject_type_id'] == $const) {
+                if ($data['subject_type_id'] == $const && $d[$i]['time_out'] == $data['time_in']) {
                     $d[$i]['time_out'] = $d[$i]['time_out'] + ($data['time_out'] - $data['time_in']);
                 } else {
                     $i = $i + 1;
                     $d[$i]['subject_type_id'] = $data['subject_type_id'];
-                    $d[$i]['time_in'] = $d[$i - 1]['time_out'];
+                    $d[$i]['time_in'] = $data['time_in'];
                     $d[$i]['time_out'] = $data['time_out'];
                 }
             }
@@ -194,36 +194,38 @@ class TeachersScheduleGenerator
      */
     protected function normalisePeriod($time)
     {
-        return $this->is_normalise_period ? ceil($time / $this->period_time) * $this->period_time : $time;
+        return $this->is_normalise_period ? floor($time / $this->period_time) * $this->period_time : $time;
     }
 
     /**
      * Промежутки между занятиями
+     * $subject_type_up и $subject_type_down - переменные для притягивания уроков по типу сверху или снизу
      * @param $array
      * @param $analiticArray
      * @return array
      */
     protected function getScheduleFreeItem($array, $analiticArray)
     {
-       // $subject_type_up и $subject_type_down - переменные для притягивания уроков по типу сверху или снизу
         $data = [];
-        for ($i = 0; $i < count($array); $i++) {
-            $priority = abs(($analiticArray['min_time'] + $analiticArray['max_time']) - (2 * $array[$i]['time_in'])); // суть метода - В приоритете события в середине дня. По мере движения в начало или конец дня, приоритет снижается
+        for ($i = 0; $i < count($array) + 1; $i++) {
             if ($i == 0) { // берем первый промежуток от начала работы школы до первого занятия
                 $subject_type_up = 0;
                 $time_in = $this->time_min;
                 $time_out = $array[$i]['time_in'];
                 $subject_type_down = $array[$i]['subject_type_id'];
+                $priority = 100000;
             } elseif ($i == count($array)) { // берем последний промежуток от конца последнего занятия до конца работы школы
                 $subject_type_up = $array[$i - 1]['subject_type_id'];
                 $time_in = $array[$i - 1]['time_out'];
                 $time_out = $this->time_max;
                 $subject_type_down = 0;
+                $priority = 100100;
             } else { // вычисляем промежутки между занятиями
                 $subject_type_up = $array[$i - 1]['subject_type_id'];
                 $time_in = $array[$i - 1]['time_out'];
                 $time_out = $array[$i]['time_in'];
                 $subject_type_down = $array[$i]['subject_type_id'];
+                $priority = abs(($this->time_min + $this->time_max) - (2 * $time_in)); // суть метода - В приоритете события в середине дня. По мере движения в начало или конец дня, приоритет снижается
             }
             if ($time_in != $time_out) {
                 $data[] = [
@@ -250,7 +252,7 @@ class TeachersScheduleGenerator
         $time_out = max(array_column($array, 'time_out'));
 
         $auditory_up_time = $astr_time_summ = [1000 => 0, 1001 => 0];
-        $auditory_up_time_summ = $academ_time_summ = 0;
+        $academ_time_summ = 0;
 
         foreach ($array as $i => $item) {
             $time = $item['time_out'] - $item['time_in']; // длительность занятия (сек)
@@ -258,7 +260,6 @@ class TeachersScheduleGenerator
             $time_astr = $time_academ * 3600; // переводим академические часы в астронамические (суть - 1 академический час = 1 астронамический)
 
             $auditory_up_time[$item['subject_type_id']] += $time_astr - $time; // превышение астронамического времени над длительностью занятия (для добавления)
-            $auditory_up_time_summ += $time_astr - $time;
             $academ_time_summ += $time_academ;
             $astr_time_summ[$item['subject_type_id']] += $time_astr;
         }
@@ -273,8 +274,6 @@ class TeachersScheduleGenerator
             'min_time' => $time_in,
             'max_time' => $time_out,
             'auditory_up_time' => $auditory_up_time, // array дополнительное время при пересчете по типу занятий
-            'auditory_up_summ' => $auditory_up_time_summ, // Сумма времени при пересчете
-            'astr_time_summ' => $astr_time_summ, // array
             'pause_needs' => $pause_needs,
             'count_per' => $count_per,
             'auditory_reserv_time' => $auditory_reserv_time,
@@ -305,7 +304,7 @@ class TeachersScheduleGenerator
         }
 
         if ($analiticArray['count_per'] == 1) {
-            array_multisort(array_column($freeArray, 'priority'), SORT_ASC, $freeArray);
+            array_multisort(array_column($freeArray, 'priority'), SORT_ASC, $freeArray); // сортируем массив по приоритету. Добиваемся того, чтобы перерыв оказался как можно ближе к середине дня.
             $this->setLunchBreak($freeArray, $arrayMaster);
         }
         $this->setUpTime($freeArray, $arrayMaster, $analiticArray);
@@ -379,7 +378,7 @@ class TeachersScheduleGenerator
     protected function setUpTime(&$freeArray, &$arrayMaster, $analiticArray)
     {
         foreach ($analiticArray['auditory_up_time'] as $subject_type_id => $time) {
-            array_multisort(array_column($freeArray, 'priority'), SORT_ASC, $freeArray);
+            $this->sortFreeArrayForUpTime($freeArray);
             $t = $time;
             $clone = $freeArray;
             foreach ($clone as $i => $item) {
@@ -424,8 +423,31 @@ class TeachersScheduleGenerator
                 array_push($arrayMaster, $up_time);
 
                 $t = $t < $item['time'] ? 0 : $t - $item['time'];
+//                echo '<pre>' . print_r($arrayMaster, true) . '</pre>';
             }
         }
+    }
+
+    /**
+     * Добиваемся того, что середина сортируется по времени остатка и приоритету, а концы останутся только по приоритету.
+     * @param $freeArray
+     */
+    protected function sortFreeArrayForUpTime(&$freeArray)
+    {
+        $arrayA = [];
+        $arrayB = [];
+
+        array_map(function ($value) use (&$arrayA, &$arrayB) {
+            if ($value['subject_type_up'] == 0 || $value['subject_type_down'] == 0) {
+                $arrayA[] = $value;
+            } else {
+                $arrayB[] = $value;
+            }
+        }, $freeArray); // разделяем массивы : элементы по краям в один массив, середину в другой
+
+        array_multisort(array_column($arrayB, 'time'), SORT_ASC, array_column($arrayB, 'priority'), SORT_ASC, $arrayB); // сортируем середину по остатку времени
+        array_multisort(array_column($arrayA, 'priority'), SORT_ASC, $arrayA);
+        $freeArray = array_merge($arrayB, $arrayA); // кидаем первый массив в конец второго
     }
 
     /**
