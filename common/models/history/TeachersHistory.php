@@ -2,10 +2,14 @@
 
 namespace common\models\history;
 
+use artsoft\helpers\ArtHelper;
 use common\models\guidejob\Bonus;
 use common\models\own\Department;
 use common\models\teachers\Teachers;
+use common\models\user\UserCommon;
 use common\widgets\history\BaseHistory;
+use yii\db\Query;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 
 class TeachersHistory extends BaseHistory
@@ -97,5 +101,45 @@ class TeachersHistory extends BaseHistory
 
         krsort($selfHistory);
         return $selfHistory;
+    }
+
+    /** Получаем список преподавателей,уволенных в этом году
+     * @param bool $plan_year
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public static function getTeachersListHist($plan_year = null)
+    {
+        $timestamp = ArtHelper::getStudyYearParams($plan_year, $month_dev = null);
+        $date_in = $timestamp['timestamp_in'];
+        $date_out = $timestamp['timestamp_out'];
+
+        $ids = \Yii::$app->getDb()->createCommand('
+            select DISTINCT h.id
+            from teachers_hist h 
+            inner join user_common_hist u ON u.id = h.user_common_id
+            where u.updated_at between :timestamp_in AND :timestamp_out 
+            and u.status = 0
+            and u.version = (select MAX(version) from user_common_hist where id = u.id)
+            and u.op != \'D\'
+            ',
+            [
+                'timestamp_in' => $date_in,
+                'timestamp_out' => $date_out,
+            ])
+            ->queryColumn();
+        return $ids;
+    }
+
+    public static function getTeachersQuery($plan_year = null) {
+        return (new Query())->from('teachers_view')
+            ->select('teachers_id as id, fullname as name')
+            ->where(['teachers_id' => self::getTeachersListHist($plan_year)])
+            ->orWhere(['status' => UserCommon::STATUS_ACTIVE])
+            ->orderBy('fullname')->all();
+    }
+
+    public static function getTeachersList($plan_year = null) {
+        return ArrayHelper::map(self::getTeachersQuery($plan_year), 'id', 'name');
     }
 }

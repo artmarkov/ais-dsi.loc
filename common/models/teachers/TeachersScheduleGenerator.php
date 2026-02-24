@@ -75,8 +75,7 @@ class TeachersScheduleGenerator
     protected function getTeacherInfo()
     {
         $models = TeachersActivityView::find()
-            ->where(['user_common_status' => UserCommon::STATUS_ACTIVE])
-            ->andWhere(['in', 'teachers_id', $this->teachers_list])
+            ->where(['in', 'teachers_id', $this->teachers_list])
             ->orderBy('last_name, first_name, middle_name, direction_id, direction_vid_id')
             ->asArray()
             ->all();
@@ -504,9 +503,9 @@ class TeachersScheduleGenerator
     public static function getTypeList()
     {
         return [
-            1 => 'только Бюджет',
-            2 => 'только Внебюджет',
-            3 => 'Бюджет и Внебюджет',
+            1 => 'Бюджет',
+            2 => 'Внебюджет',
+            3 => 'Бюджет + Внебюджет',
         ];
     }
 }

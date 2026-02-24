@@ -30,10 +30,10 @@ class MakeScheduleDoc extends \yii\base\BaseObject implements \yii\queue\JobInte
             $models->saveXls();
             $models->makeDocument();
             $models->cliarTemp();
-            $models = new TeachersConsult($model_date);
-            $models->saveXls();
-            $models->makeDocument();
-            $models->cliarTemp();
+            $models2 = new TeachersConsult($model_date);
+            $models2->saveXls();
+            $models2->makeDocument();
+            $models2->cliarTemp();
         }
     }
 }

@@ -27,7 +27,7 @@ use yii\web\UploadedFile;
 
 class DefaultController extends MainController
 {
-    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve', 'progress-history', 'teachers-consult', 'creative', 'mosticket', 'schedule-project'];
+    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve', 'progress-history', 'teachers-consult', 'creative', 'mosticket', 'schedule-project', 'teachers-list'];
 
     public function actionIndex()
     {
@@ -100,6 +100,24 @@ class DefaultController extends MainController
                 $subject_type_id = $parents[0];
                 $sell = $subject_type_id == 1000 ? (Yii::$app->user->getSetting('_timesheet_activity_list_0') ?? []) : (Yii::$app->user->getSetting('_timesheet_activity_list_1') ?? []);
                 $data = (new Query())->from('teachers_activity_view')->select('teachers_activity_id as id, teachers_activity_memo as name')->andFilterWhere(['=', 'user_common_status', UserCommon::STATUS_ACTIVE])->orderBy('fullname')->all();
+                return json_encode(['output' => $data, 'selected' => $sell]);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
+
+    public function actionTeachersList()
+    {
+        $out = $sell = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $plan_year = $parents[0];
+                $subject_type_flag = $parents[1];
+                $sell = $subject_type_flag == 1 ? (Yii::$app->user->getSetting('_generator_schedule_teachers_list_1') ?? []) : ($subject_type_flag == 2 ? (Yii::$app->user->getSetting('_generator_schedule_teachers_list_2') ?? []) : (Yii::$app->user->getSetting('_generator_schedule_teachers_list_3') ?? []));
+
+                $data = \common\models\history\TeachersHistory::getTeachersQuery($plan_year);
                 return json_encode(['output' => $data, 'selected' => $sell]);
             }
         }
@@ -241,18 +259,22 @@ class DefaultController extends MainController
         $session = Yii::$app->session;
         $this->view->params['tabMenu'] = $this->tabMenu;
 
-        $model_date = new DynamicModel(['plan_year', 'teachers_list', 'subject_type_flag', 'limit_up_flag']);
+        $model_date = new DynamicModel(['plan_year', 'teachers_list', 'subject_type_flag', 'limit_up_flag', 'update_list_flag']);
         $model_date->addRule(['plan_year', 'teachers_list', 'subject_type_flag'], 'required')
             ->addRule(['plan_year', 'subject_type_flag'], 'integer')
-            ->addRule(['limit_up_flag'], 'boolean')
+            ->addRule(['limit_up_flag','update_list_flag'], 'boolean')
             ->addRule(['teachers_list'], 'safe');
 
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
             $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
-            $model_date->teachers_list = Yii::$app->user->getSetting('_generator_schedule_teachers_list') ?? [];
+            $model_date->teachers_list = $model_date->subject_type_flag == 1 ? Yii::$app->user->getSetting('_generator_schedule_teachers_list_1') : ($model_date->subject_type_flag == 2 ? Yii::$app->user->getSetting('_generator_schedule_teachers_list_2') : Yii::$app->user->getSetting('_generator_schedule_teachers_list_3'));
+            $model_date->subject_type_flag = $session->get('_generator_schedule_subject_type_flag') ?? 3;
         }
         $session->set('__backendPlanYear', $model_date->plan_year);
-        Yii::$app->user->setSetting('_generator_schedule_teachers_list', $model_date->teachers_list);
+        $session->set('_generator_schedule_subject_type_flag', $model_date->subject_type_flag);
+        if ($model_date->update_list_flag) {
+            $model_date->subject_type_flag == 1 ? Yii::$app->user->setSetting('_generator_schedule_teachers_list_1', $model_date->teachers_list) : ($model_date->subject_type_flag == 2 ? Yii::$app->user->setSetting('_generator_schedule_teachers_list_2', $model_date->teachers_list) : Yii::$app->user->setSetting('_generator_schedule_teachers_list_3', $model_date->teachers_list));
+        }
         if (Yii::$app->request->post('submitAction') == 'excel') {
             $models = new TeachersScheduleGenerator($model_date);
             $models->makeXlsx();

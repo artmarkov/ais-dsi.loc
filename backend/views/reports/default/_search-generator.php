@@ -4,6 +4,8 @@ use artsoft\helpers\Html;
 use artsoft\helpers\RefBook;
 use artsoft\widgets\ActiveForm;
 use common\models\user\UserCommon;
+use kartik\depdrop\DepDrop;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $form artsoft\widgets\ActiveForm */
@@ -28,27 +30,48 @@ $form = ActiveForm::begin([
                             'options' => ['class' => 'alert-info'],
                         ]);
                         ?>
-                        <?= $form->field($model_date, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
-                            [
-                                'disabled' => false,
-//                                'onchange'=>'js: $(this).closest("form").submit()',
-//                                'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' =>  true ],
-//                                ],
-                            ])->label(Yii::t('art/studyplan', 'Plan Year'));
-                        ?>
-                        <?= $form->field($model_date, 'subject_type_flag')->radioList(\common\models\teachers\TeachersScheduleGenerator::getTypeList())->label('Тип занятий'); ?>
-
-                        <?= $form->field($model_date, 'teachers_list')->widget(\kartik\select2\Select2::class, [
-                            'data' => RefBook::find('teachers_fio',  UserCommon::STATUS_ACTIVE)->getList(),
+                        <?= $form->field($model_date, 'plan_year')->widget(\kartik\select2\Select2::class, [
+                            'data' => \artsoft\helpers\ArtHelper::getStudyYearsList(),
                             'options' => [
+                                'id' => 'plan_year',
                                 'placeholder' => Yii::t('art', 'Select...'),
-                                'multiple' => true,
                             ],
                             'pluginOptions' => [
                                 'allowClear' => true
                             ],
+
+                        ])->label(Yii::t('art/studyplan', 'Plan Year'));
+                        ?>
+
+                        <?= $form->field($model_date, 'subject_type_flag')->widget(\kartik\select2\Select2::class, [
+                            'data' => \common\models\teachers\TeachersScheduleGenerator::getTypeList(),
+                            'options' => [
+                                'id' => 'subject_type_flag',
+                                'placeholder' => Yii::t('art', 'Select...'),
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+
+                        ])->label('Тип занятий'); ?>
+
+                        <?= $form->field($model_date, 'teachers_list')->widget(DepDrop::class, [
+                            'data' =>  \common\models\history\TeachersHistory::getTeachersList($model_date->plan_year),
+                            'type' => DepDrop::TYPE_SELECT2,
+                            'select2Options' => ['pluginOptions' => ['allowClear' => true]],
+                            'options' => [
+                                'id' => 'teachers_list',
+                                'placeholder' => Yii::t('art', 'Select...'),
+                                'multiple' => true,
+                            ],
+                            'pluginOptions' => [
+                                'depends' => ['plan_year', 'subject_type_flag'],
+                                'url' => Url::to(['/reports/default/teachers-list'])
+                            ]
                         ])->label(Yii::t('art/teachers', 'Teachers'));
                         ?>
+                        <?= $form->field($model_date, "update_list_flag")->checkbox()->label('Обновить список преподавателей'); ?>
+
                         <?= $form->field($model_date, 'limit_up_flag')->checkbox()->label('Вывести превышение нагрузки в отчет.'); ?>
 
                         <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>

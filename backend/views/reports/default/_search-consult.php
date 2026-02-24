@@ -22,7 +22,7 @@ $form = ActiveForm::begin([
                         <?php
                         if(\artsoft\Art::isBackend()) {
                             echo $form->field($model_date, 'teachers_id')->widget(\kartik\select2\Select2::class, [
-                                'data' => \artsoft\helpers\RefBook::find('teachers_fio', 1)->getList(),
+                                'data' => \common\models\history\TeachersHistory::getTeachersList($model_date->plan_year),
                                 'options' => [
 //                                    'onchange'=>'js: $(this).closest("form").submit()',
                                     'placeholder' => Yii::t('art', 'Select...'),
@@ -36,9 +36,9 @@ $form = ActiveForm::begin([
                         <?= $form->field($model_date, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                             [
                                 'disabled' => false,
-//                                'onchange'=>'js: $(this).closest("form").submit()',
-//                                'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' =>  true ],
-//                                ],
+                                'onchange'=>'js: $(this).closest("form").submit()',
+                                'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' =>  true ],
+                                ],
                             ])->label(Yii::t('art/studyplan', 'Plan Year'));
                         ?>
                         <?= Html::submitButton('<i class="fa fa-html5" aria-hidden="true"></i> Получить данные в Html', ['class' => 'btn btn-info', 'name' => 'submitAction', 'value' => 'send']); ?>
