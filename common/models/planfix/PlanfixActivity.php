@@ -58,7 +58,7 @@ class PlanfixActivity extends ActiveRecord
             [['planfix_activity_category'], 'required'],
             [['planfix_id', 'planfix_activity_category', 'activity_status'], 'default', 'value' => null],
             [['planfix_id', 'planfix_activity_category', 'activity_status', 'version'], 'integer'],
-            [['executor_comment', 'author_comment'], 'string', 'max' => 512],
+            [['executor_comment', 'author_comment'], 'string', 'max' => 1024],
             [['activity_status_reason'], 'string', 'max' => 1024],
            // [['planfix_id'], 'exist', 'skipOnError' => true, 'targetClass' => Planfix::className(), 'targetAttribute' => ['planfix_id' => 'id']],
            // [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
@@ -113,6 +113,11 @@ class PlanfixActivity extends ActiveRecord
         ];
     }
 
+    public static function getActivityCategoryValue($val)
+    {
+        $ar = self::getActivityCategoryList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
+    }
     /**
      * @return array
      */

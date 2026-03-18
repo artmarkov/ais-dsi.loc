@@ -30,11 +30,13 @@ use Yii;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
+ * @property int $subject_part
  *
  * @property EducationProgrammLevel $programmLevel
  */
 class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
 {
+
     /**
      * {@inheritdoc}
      */
@@ -61,7 +63,7 @@ class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
     {
         return [
             [['subject_cat_id', 'subject_vid_id', 'week_time', 'year_time'], 'required'],
-            [['programm_level_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version'], 'integer'],
+            [['programm_level_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'version', 'subject_part'], 'integer'],
             [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'number'],
             [['week_time', 'year_time', 'cost_hour', 'cost_month_summ', 'cost_year_summ', 'year_time_consult'], 'default', 'value' => 0],
             [['med_cert', 'fin_cert'], 'boolean'],
@@ -97,6 +99,7 @@ class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
             'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'subject_part' => Yii::t('art/guide', 'Subject Part'),
         ];
     }
 
@@ -131,6 +134,29 @@ class EducationProgrammLevelSubject extends \artsoft\db\ActiveRecord
     public function getSubjectVid()
     {
         return $this->hasOne(SubjectVid::class, ['id' => 'subject_vid_id']);
+    }
+
+    /**
+     * getPartList
+     * @return array
+     */
+    public static function getPartList()
+    {
+        return array(
+            1 => 'О',
+            2 => 'В',
+        );
+    }
+
+    /**
+     * getPartValue
+     * @param string $val
+     * @return string
+     */
+    public static function getPartValue($val)
+    {
+        $ar = self::getPartList();
+        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     /**

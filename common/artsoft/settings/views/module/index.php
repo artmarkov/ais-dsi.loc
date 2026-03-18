@@ -133,7 +133,8 @@ SettingsAsset::register($this);
                     <div class="row">
                         <div class="col-md-12">
 
-                            <?= $form->field($model, 'generator_time_limit')->textInput(['maxlength' => true])->hint('Введите колличество часов') ?>
+                            <?= $form->field($model, 'generator_time_limit')->textInput(['maxlength' => true])->hint('Введите колличество астронамических часов') ?>
+                            <?= $form->field($model, 'generator_time_limit_academ')->textInput(['maxlength' => true])->hint('Введите колличество академических часов') ?>
                             <?= $form->field($model, 'generator_time_per')->textInput(['maxlength' => true])->hint('Введите колличество минут') ?>
                             <?= $form->field($model, 'generator_time_min')->textInput(['maxlength' => true])->hint('Введите час начала работы. Например: 8 или 9.') ?>
                             <?= $form->field($model, 'generator_time_max')->textInput(['maxlength' => true])->hint('Введите час окончания работы. Например: 20 или 21.') ?>

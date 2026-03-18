@@ -1,6 +1,7 @@
 <?php
 
 use artsoft\auth\assets\AvatarAsset;
+use artsoft\mailbox\models\MailboxInbox;
 use frontend\assets\AppAsset;
 use frontend\assets\ThemeAsset;
 use artsoft\assets\MetisMenuAsset;
@@ -81,7 +82,11 @@ AvatarAsset::register($this);
                 'linkOptions' => ['title' => 'Профиль пользователя'],
                 'visible' => true
             ];
-
+            $menuItems[] = [
+                'label' => '<i class="fa fa-envelope-o" style="margin-right: 5px;"></i>' . MailboxInbox::getLabelNewMail(),
+                'url' => '/mailbox/default/index',
+                'visible' => true
+            ];
             if (!Yii::$app->session->has(DefaultController::ORIGINAL_USER_SESSION_KEY)) {
                 $menuItems[] = [
                     'label' => '<i class="fa fa-sign-out" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Logout'),

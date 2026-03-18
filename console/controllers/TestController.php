@@ -18,7 +18,7 @@ use yii\helpers\Console;
 /**
  * Description of ObjectController
  *
- * run  console command:  php yii test
+ * run  console command:  php7.3 yii test
  *
  * @author markov-av
  */
@@ -44,10 +44,10 @@ class TestController extends Controller
             $modelLesson = LessonItems::findOne(['id' => $model['lesson_items_id'], 'teachers_id' => NULL]);
             if($modelLesson && $model['teachers_id']) {
                 $teachers_id = RefBook::find('users_teachers')->getValue($model['created_by']);
-                if($teachers_id == $modelLesson->teachers_id) {
+                if($teachers_id == $model['teachers_id']) {
                 $modelLesson->teachers_id = $model['teachers_id'];
                 $modelLesson->save(false);
-                $this->stdout('Îê: ' . $modelLesson->id, Console::FG_BLUE);
+                $this->stdout('Îê: ' . $modelLesson->id . '-' . $modelLesson->teachers_id, Console::FG_BLUE);
                 $this->stdout("\n");
 
                 }

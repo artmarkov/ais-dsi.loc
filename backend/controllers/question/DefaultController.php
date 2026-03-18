@@ -37,7 +37,66 @@ class DefaultController extends MainController
 
         /* @var $model \artsoft\db\ActiveRecord */
         $model = new $this->modelClass;
+        if (Yii::$app->request->get('id') && !isset(Yii::$app->request->post()['Question'])) {
+            $id = Yii::$app->request->get('id');
+            $tmpModel = $this->findModel($id);
+            $attributes = $tmpModel->attributes;
+            unset($attributes['created_at']);
+            unset($attributes['created_by']);
+            unset($attributes['updated_at']);
+            unset($attributes['updated_by']);
+            unset($attributes['version']);
+//            echo '<pre>' . print_r($attributes, true) . '</pre>'; die();
+            $model->setAttributes($attributes);
+            $modelsItems = $tmpModel->questionAttributes;
+            $transaction = \Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = $model->save(false)) {
+                    foreach ($modelsItems as $modelItems) {
+                        $modelAttribute = new QuestionAttribute();
+                        $attributes = $modelItems->attributes;
+                        unset($attributes['created_at']);
+                        unset($attributes['created_by']);
+                        unset($attributes['updated_at']);
+                        unset($attributes['updated_by']);
+                        unset($attributes['version']);
+                        $modelAttribute->setAttributes($attributes);
+                        $modelAttribute->question_id = $model->id;
+                        if ($flag = $modelAttribute->save(false)) {
+                            if($flag) {
+                                $modelsItemsOptions = $modelItems->questionOptions;
+                                foreach ($modelsItemsOptions as $modelItemOption) {
+                                    $modelOption = new QuestionOptions();
+                                    $attributes = $modelItemOption->attributes;
+                                    unset($attributes['created_at']);
+                                    unset($attributes['created_by']);
+                                    unset($attributes['updated_at']);
+                                    unset($attributes['updated_by']);
+                                    unset($attributes['version']);
+                                    $modelOption->setAttributes($attributes);
+                                    $modelOption->attribute_id = $modelAttribute->id;
+                                    if (!($flag = $modelOption->save(false))) {
+                                        $transaction->rollBack();
+                                        break;
+                                    }
+                                }
+                            } else {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+                    }
+                }
 
+                if ($flag) {
+                    $transaction->commit();
+                    $this->getSubmitAction($model);
+                }
+            } catch (\Exception $e) {
+                print_r($e->getMessage());
+                $transaction->rollBack();
+            }
+        }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', Yii::t('art', 'Your item has been created.'));
             $this->getSubmitAction($model);

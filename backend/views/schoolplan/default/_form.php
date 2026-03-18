@@ -283,7 +283,7 @@ $form = ActiveForm::begin([
                                         <div class="row" id="file">
                                             <div class="col-sm-12">
                                                 <?= \yii\bootstrap\Alert::widget([
-                                                    'body' => '<i class="fa fa-info"></i> Максимальный размер файла: 1 Mb',
+                                                    'body' => '<i class="fa fa-info"></i> Максимальный размер файла: 5 Mb',
                                                     'options' => ['class' => 'alert-info'],
                                                 ]);
                                                 ?>

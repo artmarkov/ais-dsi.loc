@@ -23,7 +23,7 @@ class FileInput extends \yii\base\Widget
     public $pluginEvents = [];
     public $maxFileCount = 50;
     public $allowedFileExtensions = ['txt', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', 'pdf', 'jpg', 'png', 'mp4', 'mp3', 'jpeg'];
-    public $maxFileSize = 1024;
+    public $maxFileSize = 1024 * 5;
 
     private $rawWidgetHtml;
 
@@ -58,7 +58,7 @@ class FileInput extends \yii\base\Widget
                 'showUpload' => true,
                 'showRemove' => false,
                 'uploadAsync' => false,
-                'dropZoneEnabled' => false,
+                'dropZoneEnabled' => true,
                 'showCancel' => true,
                 'browseOnZoneClick' => false,
                 'maxFileCount' => $this->maxFileCount,

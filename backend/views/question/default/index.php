@@ -153,9 +153,34 @@ $this->params['breadcrumbs'][] = $this->title;
                             return [$action, 'id' => $model->id];
                         },
                         'controller' => '/question/default',
-                        'template' => '{view} {update} {delete}',
+                        'template' => '{view} {update} {clone} {delete}',
                         'headerOptions' => ['class' => 'kartik-sheet-style'],
-
+                        'buttons' => [
+                            'clone' => function ($key, $model) {
+                                return Html::a('<span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>',
+                                    ['/question/default/create', 'id' => $model->id], [
+                                        'title' => Yii::t('art', 'Clone'),
+                                        'data-method' => 'post',
+                                        'data-confirm' => Yii::t('art', 'Are you sure you want to clone this item?'),
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                        ],
+                        'visibleButtons' => [
+                            'update' => function ($model) {
+                                return true;
+                            },
+                            'clone' => function ($model) {
+                                return Yii::$app->user->isSuperadmin;
+                            },
+                            'delete' => function ($model) {
+                                return true;
+                            },
+                            'view' => function ($model) {
+                                return true;
+                            }
+                        ],
                     ],
                 ],
             ]);

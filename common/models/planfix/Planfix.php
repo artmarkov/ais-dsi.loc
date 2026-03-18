@@ -140,7 +140,7 @@ class Planfix extends ActiveRecord
      */
     public function getPlanfixActivities()
     {
-        return $this->hasMany(PlanfixActivity::className(), ['planfix_id' => 'id']);
+        return $this->hasMany(PlanfixActivity::className(), ['planfix_id' => 'id'])->orderBy('id ASC');
     }
 
     /**

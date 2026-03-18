@@ -7,14 +7,14 @@ use common\widgets\qrcode\widgets\Text;
 ?>
     <hr>
 <?php
-echo Text::widget([
-    'outputDir' => '@webroot/upload/qrcode',
-    'outputDirWeb' => '@web/upload/qrcode',
-    'ecLevel' => QRcode::QR_ECLEVEL_L,
-
-    'text' => 'ST00012|Name=Департамент финансов города Москвы (ГБУДО г. Москвы "ДШИ им. И.Ф.Стравинского", л/с 2605642000830080)|PersonalAcc=03224643450000007300|BankName=ГУ Банка России по ЦФО//УФК по г.Москве г.Москва|PersonalAcc=0322464345|BIC=004525988|CorrespAcc=40102810545370000003|Sum=1000000|Purpose=Пленэрная практика|PayeeINN=7733098705|KPP=773301001|CBC=05600000000131131022|ОКТМО=45367000',
-    'size' => 3,
-]);
+//echo Text::widget([
+//    'outputDir' => '@webroot/upload/qrcode',
+//    'outputDirWeb' => '@web/upload/qrcode',
+//    'ecLevel' => QRcode::QR_ECLEVEL_L,
+//
+//    'text' => 'ST00012|Name=Департамент финансов города Москвы (ГБУДО г. Москвы "ДШИ им. И.Ф.Стравинского", л/с 2605642000830080)|PersonalAcc=03224643450000007300|BankName=ГУ Банка России по ЦФО//УФК по г.Москве г.Москва|PersonalAcc=0322464345|BIC=004525988|CorrespAcc=40102810545370000003|Sum=1000000|Purpose=Пленэрная практика|PayeeINN=7733098705|KPP=773301001|CBC=05600000000131131022|ОКТМО=45367000',
+//    'size' => 3,
+//]);
 ?>
     <hr>
 <?php
@@ -22,30 +22,30 @@ echo Text::widget([
     'outputDir' => '@webroot/upload/qrcode',
     'outputDirWeb' => '@web/upload/qrcode',
     'ecLevel' => QRcode::QR_ECLEVEL_L,
-    'text' => 'ST00012|Name=Департамент финансов города Москвы (ГБУДО г. Москвы "ДШИ им. И.Ф.Стравинского", л/с 2605642000830080)|PersonalAcc=03224643450000007300|BankName=ГУ Банка России по ЦФО//УФК по г.Москве г.Москва|PersonalAcc=0322464345|BIC=004525988|CorrespAcc=40102810545370000003|Sum=300000|Purpose=Консультации для поступающих на художественное отделение|PayeeINN=7733098705|KPP=773301001|CBC=05600000000131131022|ОКТМО=45367000',
+    'text' => 'ST00012|Name=Департамент финансов города Москвы (ГБУДО г. Москвы "ДШИ им. И.Ф.Стравинского", л/с 2605642000830080)|PersonalAcc=03224643450000007300|BankName=ОКЦ №1 ГУ Банка России по ЦФО//УФК ПО Г. МОСКВЕ, г Москва|BIC=004525988|CorrespAcc=40102810545370000003|Sum=220000|Purpose=Оплата за консультацию МО|PayeeINN=7733098705|KPP=773301001|CBC=05600000000131131022|ОКТМО=45367000',
     'size' => 3,
 ]);
 ?>
     <hr>
 <?php
-echo Text::widget([
-    'outputDir' => '@webroot/upload/qrcode',
-    'outputDirWeb' => '@web/upload/qrcode',
-    'ecLevel' => QRcode::QR_ECLEVEL_L,
-    'text' => 'ST00012|Name=Департамент финансов города Москвы (ГБУДО г. Москвы "ДШИ им. И.Ф.Стравинского", л/с 2605642000830080)|PersonalAcc=03224643450000007300|BankName=ГУ Банка России по ЦФО//УФК по г.Москве г.Москва|PersonalAcc=0322464345|BIC=004525988|CorrespAcc=40102810545370000003|Sum=300000|Purpose=Консультации для поступающих на художественное отделение|PayeeINN=7733098705|KPP=773301001|CBC=05600000000131131022|ОКТМО=45367000',
-    'size' => 3,
-]);
+//echo Text::widget([
+//    'outputDir' => '@webroot/upload/qrcode',
+//    'outputDirWeb' => '@web/upload/qrcode',
+//    'ecLevel' => QRcode::QR_ECLEVEL_L,
+//    'text' => 'ST00012|Name=Департамент финансов города Москвы (ГБУДО г. Москвы "ДШИ им. И.Ф.Стравинского", л/с 2605642000830080)|PersonalAcc=03224643450000007300|BankName=ГУ Банка России по ЦФО//УФК по г.Москве г.Москва|PersonalAcc=0322464345|BIC=004525988|CorrespAcc=40102810545370000003|Sum=300000|Purpose=Консультации для поступающих на художественное отделение|PayeeINN=7733098705|KPP=773301001|CBC=05600000000131131022|ОКТМО=45367000',
+//    'size' => 3,
+//]);
 ?>
     <hr>
 <?php
 //Widget create a Action URL //QR Create by Action
-echo Text::widget([
-    'outputDir' => '@webroot/upload/qrcode',
-    'outputDirWeb' => '@web/upload/qrcode',
-    'ecLevel' => QRcode::QR_ECLEVEL_L,
-    'text' => 'ST00012|Name=АО "Мосэнергосбыт"|PersonalAcc=40702810338360027201|BankName=ПАО "Сбербанк России"|BIC=044525225|CorrespAcc=30101810400000000225|Purpose=Оплата электроэнергии|Sum=61069|persAcc=2287008779|paymPeriod=022021|regType=6|TechCode=02|PayeeINN=7736520080|KPP=997650001',
-    'size' => 3,
-]);
+//echo Text::widget([
+//    'outputDir' => '@webroot/upload/qrcode',
+//    'outputDirWeb' => '@web/upload/qrcode',
+//    'ecLevel' => QRcode::QR_ECLEVEL_L,
+//    'text' => 'ST00012|Name=АО "Мосэнергосбыт"|PersonalAcc=40702810338360027201|BankName=ПАО "Сбербанк России"|BIC=044525225|CorrespAcc=30101810400000000225|Purpose=Оплата электроэнергии|Sum=61069|persAcc=2287008779|paymPeriod=022021|regType=6|TechCode=02|PayeeINN=7736520080|KPP=997650001',
+//    'size' => 3,
+//]);
 
 ////other type
 ////Create EMAIL

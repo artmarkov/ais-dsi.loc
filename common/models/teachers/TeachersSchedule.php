@@ -21,6 +21,10 @@ class TeachersSchedule
     protected $plan_year;
     protected $plan_year_next;
     protected $teachers_id;
+    protected $direction_flag;
+    protected $direction_id;
+    protected $direction_vid_id;
+    protected $subject_type_id;
     protected $teachers_fio;
     protected $modelConfirm;
     protected $tmplName;
@@ -31,16 +35,21 @@ class TeachersSchedule
         $this->plan_year = $model_date->plan_year;
         $this->plan_year_next = $model_date->plan_year + 1;
         $this->teachers_id = $model_date->teachers_id;
+        $this->direction_flag = $model_date->direction_flag ?? false;
+        $this->direction_id = $this->direction_flag == true ? $model_date->direction_id : false;
+        $this->direction_vid_id = $this->direction_flag == true ? $model_date->direction_vid_id : false;
+        $this->subject_type_id = $this->direction_flag == true ? $model_date->subject_type_id : false;
         $this->teachers_fio = RefBook::find('teachers_fullname')->getValue($this->teachers_id);
         $this->modelTeachers = Teachers::findOne($this->teachers_id);
         $this->modelConfirm = $this->getConfirmData();
         $this->tmplName = ArtHelper::slug($this->teachers_fio) . '-' . Yii::$app->formatter->asDate(time(), 'php:YmdHis') . '.xlsx';
         $this->template = Yii::getAlias('@runtime/') . $this->tmplName;
+       // echo '<pre>' . print_r($this->direction_id, true) . '</pre>'; die();
     }
 
     public function getData()
     {
-        $data = $this->modelTeachers->getTeachersScheduleQuery($this->plan_year);
+        $data = $this->modelTeachers->getTeachersScheduleQuery($this->plan_year, $this->direction_id, $this->direction_vid_id, $this->subject_type_id);
         $this->models = ArrayHelper::index($data, null, ['week_day']);
         return $this->models;
     }
@@ -63,9 +72,15 @@ class TeachersSchedule
     {
         $auditory_list = RefBook::find('auditory_memo_1')->getList();
         $direction_list = \common\models\guidejob\Direction::getDirectionShortList();
+        $direction_list_full = \common\models\guidejob\Direction::getDirectionList();
+        $direction_vid_list = \common\models\guidejob\DirectionVid::getDirectionVidShortList();
+        $direction_vid_list_full = \common\models\guidejob\DirectionVid::getDirectionVidList();
 
         $data[] = [
             'rank' => 'doc',
+            'direction' => $direction_list_full[$this->direction_id] ?? 'Все',
+            'direction_vid' => $direction_vid_list_full[$this->direction_vid_id] ?? 'Все',
+            'subject_type' => $this->subject_type_id ? RefBook::find('subject_type_name')->getValue($this->subject_type_id) : 'Все',
             'plan_year' => ArtHelper::getStudyYearsValue($this->plan_year),
             'teachers_fio' => RefBook::find('teachers_fio')->getValue($this->teachers_id),
             'signer_fio' => $this->modelConfirm ? RefBook::find('teachers_fio')->getValue($this->modelConfirm->teachers_sign) : '',
@@ -89,6 +104,7 @@ class TeachersSchedule
                     'subject_type' => RefBook::find('subject_type_name_dev')->getValue($items->subject_type_id),
                     'subject' => $items->subject,
                     'direction' => $direction_list[$items->direction_id] ?? '',
+                    'direction_vid' => $direction_vid_list[$items->direction_vid_id] ?? '',
                     'auditory' => $auditory_list[$items->auditory_id] ?? '',
                 ];
             }

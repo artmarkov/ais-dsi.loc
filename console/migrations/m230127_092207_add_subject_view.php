@@ -65,6 +65,7 @@ class m230127_092207_add_subject_view extends Migration
     studyplan.cond_flag,
     education_programm.name AS education_programm_name,
     education_programm.short_name AS education_programm_short_name,
+    education_programm.term_mastering AS education_programm_term_mastering,
     guide_education_cat.id AS education_cat_id,
     guide_education_cat.name AS education_cat_name,
     guide_education_cat.short_name AS education_cat_short_name,
@@ -79,7 +80,16 @@ class m230127_092207_add_subject_view extends Migration
             WHEN user_common.phone IS NOT NULL THEN user_common.phone
             WHEN user_common.phone_optional IS NOT NULL THEN user_common.phone_optional
             ELSE NULL::character varying
-        END AS user_phone
+        END AS user_phone,
+    ( SELECT users_card.social_card_flag
+           FROM users_card
+          WHERE users_card.user_common_id::integer = user_common.id
+         LIMIT 1) AS social_card_flag,
+        CASE
+            WHEN studyplan.course = education_programm.term_mastering OR studyplan.early_flag = 1 THEN 1
+            ELSE 0
+        END AS finish_flag,
+    studyplan.early_flag
    FROM studyplan
      JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id

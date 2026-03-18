@@ -125,7 +125,7 @@ class MailboxInbox extends \artsoft\db\ActiveRecord
         $count = self::getCountNewMail();
         if ($count != 0)
         {
-            return '<span class="label label-success pull-right">' . $count . '</span>';
+            return '<span title="Перейти на внутреннюю почту" class="label label-success pull-right">' . $count . '</span>';
         }
     }
     /**

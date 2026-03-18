@@ -204,12 +204,32 @@ $termList = \artsoft\helpers\ArtHelper::getTermList();
                         'format' => 'raw',
                     ],
                     [
+                        'class' => 'kartik\grid\ActionColumn',
+                        'urlCreator' => function ($action, $model, $key, $index) {
+                            return [$action, 'id' => $model->id];
+                        },
+                        'controller' => '/studyplan/default',
+                        'template' => \artsoft\Art::isBackend() ? '{view} {update} {delete}' : '{view}',
+                        'headerOptions' => ['class' => 'kartik-sheet-style'],
+                    ],
+                    [
                         'label' => 'Условно',
                         'attribute' => 'cond_flag',
                         'filter' => [true => 'Да', false => 'Нет'],
                         'visible' => \artsoft\Art::isBackend(),
                         'value' => function (Studyplan $model) {
                             return $model->cond_flag ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да' : '<i class="fa fa-thumbs-down" style="font-size: 1.5em;"></i> Нет';
+                        },
+                        'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
+                        'format' => 'raw',
+                    ],
+                    [
+                        'label' => 'Выпускник?',
+                        'attribute' => 'finish_flag',
+                        'filter' => [1 => 'Да', 0 => 'Нет'],
+                        'visible' => \artsoft\Art::isBackend(),
+                        'value' => function (StudyplanView $model) {
+                            return $model->finish_flag ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да' : '<i class="fa fa-thumbs-down" style="font-size: 1.5em;"></i> Нет';
                         },
                         'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
                         'format' => 'raw',
@@ -242,15 +262,7 @@ $termList = \artsoft\helpers\ArtHelper::getTermList();
                         'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
                         'format' => 'raw',
                     ],
-                    [
-                        'class' => 'kartik\grid\ActionColumn',
-                        'urlCreator' => function ($action, $model, $key, $index) {
-                            return [$action, 'id' => $model->id];
-                        },
-                        'controller' => '/studyplan/default',
-                        'template' => \artsoft\Art::isBackend() ? '{view} {update} {delete}' : '{view}',
-                        'headerOptions' => ['class' => 'kartik-sheet-style'],
-                    ],
+
                 ],
             ]);
             ?>

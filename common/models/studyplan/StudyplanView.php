@@ -19,6 +19,7 @@ use Yii;
  * @property string|null $user_phone
  * @property string|null $education_cat_id
  * @property integer $social_card_flag
+ * @property integer $finish_flag
  */
 class StudyplanView extends Studyplan
 {
@@ -48,6 +49,7 @@ class StudyplanView extends Studyplan
         $attr['speciality'] = 'Специальность';
         $attr['user_phone'] = 'Телефон';
         $attr['social_card_flag'] = 'Карта "Москвенок"';
+        $attr['finish_flag'] = 'Выпускник?';
 
         return $attr;
     }

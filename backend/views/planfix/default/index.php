@@ -5,6 +5,7 @@ use yii\widgets\Pjax;
 use artsoft\grid\GridView;
 use common\models\planfix\Planfix;
 use common\models\planfix\PlanfixCategory;
+use common\models\planfix\PlanfixActivity;
 use artsoft\grid\GridPageSize;
 
 /* @var $this yii\web\View */
@@ -111,6 +112,15 @@ $users_list = artsoft\models\User::getUsersListByCategory(['teachers', 'employee
                         'attribute' => 'status',
                         'optionsArray' => Planfix::getStatusOptionsList(),
                         'options' => ['style' => 'width:120px']
+                    ],
+                    [
+                        'label' => 'Текущий этап',
+                        'value' => function (Planfix $model)  {
+                            $modelsItems = $model->getPlanfixActivities()->orderBy('id DESC')->one();
+                            return PlanfixActivity::getActivityCategoryValue($modelsItems['planfix_activity_category']);
+
+                        },
+                        'format' => 'raw',
                     ],
 //                    'status_reason',
                     [

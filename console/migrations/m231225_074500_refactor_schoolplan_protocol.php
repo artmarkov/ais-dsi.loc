@@ -122,8 +122,8 @@ class m231225_074500_refactor_schoolplan_protocol extends \artsoft\db\BaseMigrat
 
 
         $this->db->createCommand()->createView('schoolplan_protocol_items_view', '
- SELECT schoolplan_protocol.id AS schoolplan_protocol_id,
-studyplan_subject.id AS studyplan_subject_id,
+   SELECT schoolplan_protocol.id AS schoolplan_protocol_id,
+    studyplan_subject.id AS studyplan_subject_id,
     guide_lesson_mark.id AS lesson_mark_id,
     guide_lesson_mark.mark_category,
     guide_lesson_mark.mark_label,
@@ -131,7 +131,7 @@ studyplan_subject.id AS studyplan_subject_id,
     guide_lesson_mark.mark_value,
     concat(studyplan_subject.subject_id, \'|\', studyplan_subject.subject_vid_id, \'|\', studyplan_subject.subject_type_id, \'|\', education_programm.education_cat_id) AS subject_key,
     studyplan.id AS studyplan_id,
-	studyplan.status,
+    studyplan.status,
     studyplan.status_reason,
     studyplan.plan_year,
     studyplan_subject.subject_id,
@@ -139,14 +139,18 @@ studyplan_subject.id AS studyplan_subject_id,
     studyplan_subject.subject_type_id,
     studyplan_subject.subject_cat_id,
     studyplan_subject.med_cert,
-    studyplan_subject.fin_cert
+    studyplan_subject.fin_cert,
+    schoolplan_protocol.updated_at AS lesson_date,
+    studyplan.student_id,
+    studyplan.programm_id,
+    subject.name AS subject_name
    FROM schoolplan_protocol
      JOIN studyplan_subject ON studyplan_subject.id = schoolplan_protocol.studyplan_subject_id
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
      JOIN subject ON subject.id = studyplan_subject.subject_id
      JOIN education_programm ON education_programm.id = studyplan.programm_id
      LEFT JOIN guide_lesson_mark ON guide_lesson_mark.id = schoolplan_protocol.lesson_mark_id
-	 ORDER BY plan_year;
+  ORDER BY studyplan.plan_year;
    ')->execute();
     }
 

@@ -50,7 +50,7 @@ use artsoft\helpers\Html;
                             'allowClear' => false,
                         ],
 
-                    ])->hint('Укажите при выборе категории "Отпуск по болезни"');
+                    ]);
                     ?>
                 </div>
             </div>

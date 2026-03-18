@@ -61,7 +61,11 @@ $this->registerJs($js);
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-
+                    <?= \yii\bootstrap\Alert::widget([
+                        'body' => '<i class="fa fa-info"></i> Столбец "Часть" необходим для формирования Свидетельства об окончании школы. ОП - Обязательная часть, В - Вариативная часть.',
+                        'options' => ['class' => 'alert-info'],
+                    ]);
+                    ?>
                     <?= $form->field($model, 'education_cat_id')->dropDownList(RefBook::find('education_cat', $model->isNewRecord ? EducationCat::STATUS_ACTIVE : '')->getList(),
                         ['prompt' => '', 'encodeSpaces' => true, 'disabled' => $model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true]) ?>
 

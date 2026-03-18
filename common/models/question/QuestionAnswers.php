@@ -26,6 +26,7 @@ class QuestionAnswers extends DynamicModel
     private $attributes;
     private $attributesTypes;
     private $attributesUnique;
+    private $attributesListUnique;
     private $optionsValues;
     private $fileSize = 1024 * 1024; // Допустимый размер файла
     private $fileExt = 'txt, png, jpg, JPEG, doc, docx, xls, xlsx, ppt, pptx, ppsx, pdf, mp3, mp4'; // Допустимые расширения
@@ -50,6 +51,7 @@ class QuestionAnswers extends DynamicModel
         $this->attributes = array_merge(array_values($this->attributes()), ['question_users_id', 'users_id', 'read_flag']);
         $this->attributesTypes = $this->getAttributesType();
         $this->attributesUnique = $this->getAttributesUnique();
+        $this->attributesListUnique = $this->getAttributesListUnique();
         $this->optionsValues = $this->getOptionsValue();
         $this->addRules();
         $this->setAttributeLabels($this->labels());
@@ -91,7 +93,15 @@ class QuestionAnswers extends DynamicModel
 
     public function getAttributesUnique()
     {
-        return QuestionAttribute::find()->select('name')->where(['question_id' => $this->id])->where(['unique_flag' => 1])->column();
+        return QuestionAttribute::find()->select('name')->where(['question_id' => $this->id])->andWhere(['unique_flag' => 1])->column();
+    }
+
+    public function getAttributesListUnique()
+    {
+        return QuestionAttribute::find()->select('name')
+            ->where(['question_id' => $this->id])
+            ->andWhere(['type_id' => [QuestionAttribute::TYPE_CHECKLIST_UNIQUE, QuestionAttribute::TYPE_RADIOLIST_UNIQUE]])
+            ->column();
     }
 
     public function getOptionsValue()
@@ -395,6 +405,7 @@ class QuestionAnswers extends DynamicModel
     protected function validateAttribute($id, $attribute, $modelAttribute)
     {
         $flag = true;
+        // проверка атрибутов с пометкой "Уникальный"
         if (in_array($attribute, $this->attributesUnique)) {
             $query = QuestionValue::find()->where(['question_attribute_id' => $id, 'value_string' => $modelAttribute->value_string]);
             if (isset($modelAttribute->id)) {
@@ -402,7 +413,20 @@ class QuestionAnswers extends DynamicModel
             }
             if ($query->exists()) {
                 $flag = false;
-                $this->addError($attribute, 'Запись с такими данными уже была введена.');
+                $this->addError($attribute, 'Строка с такими данными уже была введена.');
+            }
+        }
+        // проверка уникальных списков
+        if (in_array($attribute, $this->attributesListUnique)) {
+            $query = QuestionValue::find()
+                ->where(['question_attribute_id' => $id])
+                ->andWhere(new \yii\db\Expression("string_to_array(\"question_option_list\", ',')::int[] <@ (string_to_array('{$modelAttribute->question_option_list}', ',')::int[])"));
+            if (isset($modelAttribute->id)) {
+                $query = $query->andWhere(['!=', 'id', $modelAttribute->id]);
+            }
+            if ($query->exists()) {
+                $flag = false;
+                $this->addError($attribute, 'Элемент с такими данными уже занял другой пользователь, пока Вы заполняли форму. Пожалуйста выберите другой вариант.');
             }
         }
         return $flag;
@@ -461,6 +485,7 @@ class QuestionAnswers extends DynamicModel
         $sender = false;
 
         if ($email) {
+            $labels = $this->attributeLabels();
             $sender = Yii::$app->mailqueue->compose();
 
             $textBody = 'Сообщение модуля "Формы и заявки" ' . PHP_EOL;
@@ -468,6 +493,17 @@ class QuestionAnswers extends DynamicModel
 
             $textBody .= 'Вы успешно заполнили форму: ' . strip_tags($this->model->name) . PHP_EOL;
             $htmlBody .= '<p>Вы успешно заполнили форму: ' . strip_tags($this->model->name) . '</p>';
+
+            $textBody .= '--------------------------' . PHP_EOL;
+            $htmlBody .= '<hr>';
+            foreach ($this->loadValue() as $model) {
+                if($model['type_id'] == QuestionAttribute::TYPE_FILE) {
+                    continue;
+                }
+                $name = $labels[$model['name']];
+                $textBody .= $name . ': ' . $this->getValueManager($model) . PHP_EOL;
+                $htmlBody .= '<p><b>' . $name . ':</b> ' . $this->getValueManager($model) . '</p>';
+            }
 
             if ($this->model->category_id == Question::CAT_TICKET) {
                 $textBody .= 'Распечатайте или покажите на телефоне QR-код при посещении мероприятия.';

@@ -41,7 +41,7 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
             ->andWhere(['=', 'plan_year', $plan_year])
             ->column();
         // убираем преподавателей на больничном
-        $usersDisorderIds = Routine::isDisorderUsers();
+        $usersDisorderIds = Routine::isDisorderUsers($timestamp_in);
         $teachersDisorderIds = (new Query())->from('teachers_view')
             ->select('teachers_id')
             ->where(['user_id' => $usersDisorderIds])
@@ -99,7 +99,9 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
             $model->studyplan_subject_id = $studyplan_subject_id;
             $model->lesson_test_id = 1000;
             $model->lesson_date = Yii::$app->formatter->asDate($timestamp_in, 'php:d.m.Y');
-            $model->teachers_id = $teachers_id;
+            if ($teachers_id != null) {
+                $model->teachers_id = $teachers_id;
+            }
             return $model->save(false) ? $model : false;
         }
         return false;

@@ -30,8 +30,7 @@ class m250520_131313_create_table_attestation extends \artsoft\db\BaseMigration
         $this->addForeignKey('attestation_items_ibfk_2', 'attestation_items', 'lesson_mark_id', 'guide_lesson_mark', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('attestation_items_view', '
-         SELECT attestation_items.id,
-    attestation_items.teachers_id,
+           SELECT attestation_items.id,
     studyplan_subject.id AS studyplan_subject_id,
     guide_lesson_mark.id AS lesson_mark_id,
     guide_lesson_mark.mark_category,
@@ -49,7 +48,12 @@ class m250520_131313_create_table_attestation extends \artsoft\db\BaseMigration
     studyplan_subject.subject_cat_id,
     studyplan_subject.med_cert,
     studyplan_subject.fin_cert,
-    attestation_items.updated_at AS lesson_date
+    attestation_items.updated_at AS lesson_date,
+    attestation_items.teachers_id,
+    studyplan.student_id,
+    studyplan.programm_id,
+    subject.name AS subject_name,
+    studyplan.course
    FROM attestation_items
      JOIN studyplan_subject ON studyplan_subject.id = attestation_items.studyplan_subject_id
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id

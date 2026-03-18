@@ -27,6 +27,7 @@ use common\models\studyplan\search\StudyplanInvoicesViewSearch;
 use common\models\studyplan\search\StudyplanThematicViewSearch;
 use common\models\studyplan\search\StudyplanViewSearch;
 use common\models\studyplan\search\SubjectCharacteristicViewSearch;
+use common\models\studyplan\StudyplanCertDoc;
 use common\models\studyplan\StudyplanInvoices;
 use common\models\studyplan\StudyplanSubjectHist;
 use common\models\studyplan\StudyplanThematic;
@@ -274,6 +275,9 @@ class DefaultController extends MainController
             $model->makeDocx(Studyplan::template_cs, true);
         } elseif (Yii::$app->request->post('submitAction') == 'doc_studyplan_reference') {
             $model->makeDocx(Studyplan::template_sr);
+        } elseif (Yii::$app->request->post('submitAction') == 'doc_studyplan_certificate') {
+            $modelDoc = StudyplanCertDoc::getData($model);
+            $modelDoc->makeDocx();
         }
         $model_date = $this->modelDate;
 

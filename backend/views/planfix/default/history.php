@@ -1,6 +1,4 @@
 <?php
-$this->params['breadcrumbs'][] = ['label' => Yii::t('art', 'Planfixes'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $model->id), 'url' => ['update', 'id' => $model->id]];
 $this->title = 'История изменений: ' . sprintf('#%06d', $model->id);
 $this->params['breadcrumbs'][] = $this->title;
 

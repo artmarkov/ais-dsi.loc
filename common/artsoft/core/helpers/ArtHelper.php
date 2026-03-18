@@ -422,8 +422,9 @@ class ArtHelper
     {
         // Сегодняшняя дата или $timestamp
         $sec_now = $timestamp != false ? $timestamp : time();
+        $rtime = 0;
         // Подсчитываем количество месяцев, лет
-        for($time = $sec_birthday, $month = 0;
+        for($time = (int) $sec_birthday, $month = 0;
             $time < $sec_now;
             $time = $time + date('t', $time) * 86400, $month++){
             $rtime = $time;

@@ -31,13 +31,15 @@ use wbraganca\dynamicform\DynamicFormWidget;
         'cost_year_summ',
         'year_time_consult',
         'med_cert',
-        'fin_cert'
+        'fin_cert',
+        'subject_part'
     ],
 ]); ?>
 <table class="table table-bordered table-striped">
     <thead class="bg-warning">
     <tr>
         <th class="text-center" style="min-width: 100px">Раздел<br>учебных<br>предметов</th>
+        <th class="text-center" style="min-width: 50px">Часть</th>
         <th class="text-center" style="min-width: 100px">Предмет</th>
         <th class="text-center" style="min-width: 100px">Вид<br>занятий</th>
         <th class="text-center">Часов<br>в неделю</th>
@@ -86,13 +88,41 @@ use wbraganca\dynamicform\DynamicFormWidget;
                             'attribute' => "[{$index}][{$indexTime}]subject_cat_id",
                             'id' => 'educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_cat_id',
                             'data' => $subject_category_name_list,
+                            'showToggleAll' => false,
+                            'hideSearch' => true,
                             'options' => [
-
                                 'disabled' => $readonly,
                                 'placeholder' => Yii::t('art', 'Select...'),
                             ],
                             'pluginOptions' => [
-                                'allowClear' => true
+                                'allowClear' => false
+                            ],
+                        ]
+                    ) ?>
+                    <p class="help-block help-block-error"></p>
+                </div>
+                <?= $field->end(); ?>
+            </td>
+            <td>
+                <?php
+                $field = $form->field($modelEducationProgrammLevelSubject, "[{$index}][{$indexTime}]subject_part");
+                echo $field->begin();
+                ?>
+                <div class="col-sm-12">
+                    <?= \kartik\select2\Select2::widget(
+                        [
+                            'model' => $modelEducationProgrammLevelSubject,
+                            'attribute' => "[{$index}][{$indexTime}]subject_part",
+                            'id' => 'educationprogrammlevelsubject-' . $index . '-' . $indexTime . '-subject_part',
+                            'data' => \common\models\education\EducationProgrammLevelSubject::getPartList(),
+                            'showToggleAll' => false,
+                            'hideSearch' => true,
+                            'options' => [
+                                'disabled' => $readonly,
+                                'placeholder' => '....',
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => false
                             ],
                         ]
                     ) ?>
@@ -138,13 +168,14 @@ use wbraganca\dynamicform\DynamicFormWidget;
                             'model' => $modelEducationProgrammLevelSubject,
                             'attribute' => "[{$index}][{$indexTime}]subject_vid_id",
                             'data' => $subject_vid_name_list,
+                            'showToggleAll' => false,
+                            'hideSearch' => true,
                             'options' => [
-
                                 'disabled' => $readonly,
                                 'placeholder' => Yii::t('art', 'Select...'),
                             ],
                             'pluginOptions' => [
-                                'allowClear' => true
+                                'allowClear' => false
                             ],
                         ]
                     ) ?>

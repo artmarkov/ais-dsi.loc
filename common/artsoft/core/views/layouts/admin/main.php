@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\mailbox\models\MailboxInbox;
 use backend\assets\AppAsset;
 use artsoft\assets\MetisMenuAsset;
 use artsoft\assets\ArtAsset;
@@ -58,20 +59,27 @@ MetisMenuAsset::register($this);
                 'label' => '<i class="fa fa-sign-in" style="margin-right: 5px;"></i>' . Yii::t('art', 'Login'),
                 'url' => Yii::$app->urlManager->hostInfo . '/auth/login'
             ];
-        } elseif (!Yii::$app->session->has(DefaultController::ORIGINAL_USER_SESSION_KEY)) {
-            $menuItems[] = [
-                'label' => '<i class="fa fa-sign-out" style="margin-right: 5px;"></i>' . Yii::t('art', 'Logout {username}', ['username' => Yii::$app->user->identity->username]),
-                'url' => '/auth/logout',
-                'linkOptions' => ['data-method' => 'post']
-            ];
         } else {
             $menuItems[] = [
-                'label' => '<span style="color: white;"><i class="fa fa-user-secret" style="margin-right: 5px;"></i>' . Yii::t('art', 'Logout {username}', ['username' => Yii::$app->user->identity->username]) . '</span>',
-                'url' => \yii\helpers\Url::to('/admin/user/default/impersonate'),
-                'linkOptions' => ['data-method' => 'post'],
-                'options' => ['style' => 'background-color: #e28b00;'],
+                'label' => '<i class="fa fa-envelope-o" style="margin-right: 5px;"></i>' . MailboxInbox::getLabelNewMail(),
+                'url' => '/mailbox/default/index',
                 'visible' => true
             ];
+            if (!Yii::$app->session->has(DefaultController::ORIGINAL_USER_SESSION_KEY)) {
+                $menuItems[] = [
+                    'label' => '<i class="fa fa-sign-out" style="margin-right: 5px;"></i>' . Yii::t('art', 'Logout {username}', ['username' => Yii::$app->user->identity->username]),
+                    'url' => '/auth/logout',
+                    'linkOptions' => ['data-method' => 'post']
+                ];
+            } else {
+                $menuItems[] = [
+                    'label' => '<span style="color: white;"><i class="fa fa-user-secret" style="margin-right: 5px;"></i>' . Yii::t('art', 'Logout {username}', ['username' => Yii::$app->user->identity->username]) . '</span>',
+                    'url' => \yii\helpers\Url::to('/admin/user/default/impersonate'),
+                    'linkOptions' => ['data-method' => 'post'],
+                    'options' => ['style' => 'background-color: #e28b00;'],
+                    'visible' => true
+                ];
+            }
         }
 
 

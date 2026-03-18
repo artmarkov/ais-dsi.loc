@@ -477,12 +477,12 @@ class Studyplan extends \artsoft\db\ActiveRecord
         $schedule = [];
         $cost_year_total = $cost_month_total = $year_time_total = $week_time_total = 0;
         $models_sch = $this->getStudyplanSchedule();
-        $models_sch = ArrayHelper::index($models_sch, null,['studyplan_subject_id']);
-         foreach ($models_sch as $studyplan_subject_id => $d) {
-             foreach ($d as $i => $m) {
-                 $schedule[$studyplan_subject_id][] = \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m['week_day']) . ' ' . $m['time_in'] . '-' . $m['time_out'];
-             }
-         }
+        $models_sch = ArrayHelper::index($models_sch, null, ['studyplan_subject_id']);
+        foreach ($models_sch as $studyplan_subject_id => $d) {
+            foreach ($d as $i => $m) {
+                $schedule[$studyplan_subject_id][] = \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m['week_day']) . ' ' . $m['time_in'] . '-' . $m['time_out'];
+            }
+        }
         foreach ($modelsDependence as $item => $modelDep) {
             $items[] = [
                 'rank' => 'dep',
@@ -559,7 +559,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
         } else {
             $cost_year_total = $model->cost_year_total - $discount_all;
             $data[0]['week_time_total'] = $week_time_total;
-            if($cost_year_total != 0) {
+            if ($cost_year_total != 0) {
                 $data[0]['cost_year_total'] = $cost_year_total;
                 $data[0]['cost_year_total_str'] = PriceHelper::num2str($cost_year_total);
             }
@@ -992,6 +992,17 @@ class Studyplan extends \artsoft\db\ActiveRecord
             if ($this->getStudyplanSubject()->andWhere(['subject_type_id' => 1001])->exists()) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    public function isStudyplanFinish()
+    {
+        if (in_array($this->programm->educationCat->id, [1006, 1007, 1008])) {
+            return false;
+        }
+        if ($this->early_flag == 1 || $this->course == $this->programm->term_mastering) {
+            return true;
         }
         return false;
     }

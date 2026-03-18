@@ -216,6 +216,8 @@ JS
                                                                 'model' => $modelStudyplanSubject,
                                                                 'attribute' => "[{$index}]subject_cat_id",
                                                                 'data' => \artsoft\helpers\RefBook::find('subject_category_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                                                                'showToggleAll' => false,
+                                                                'hideSearch' => true,
                                                                 'options' => [
                                                                     'id' => 'studyplansubject-' . $index . '-subject_cat_id',
 
@@ -223,7 +225,7 @@ JS
                                                                     'placeholder' => Yii::t('art', 'Select...'),
                                                                 ],
                                                                 'pluginOptions' => [
-                                                                    'allowClear' => true
+                                                                    'allowClear' => false
                                                                 ],
                                                             ]
                                                         ) ?>
@@ -268,13 +270,15 @@ JS
                                                                 'model' => $modelStudyplanSubject,
                                                                 'attribute' => "[{$index}]subject_type_id",
                                                                 'data' => \common\models\subject\SubjectType::getTypeList(),
+                                                                'showToggleAll' => false,
+                                                                'hideSearch' => true,
                                                                 'options' => [
 
                                                                     'disabled' => $readonly,
                                                                     'placeholder' => Yii::t('art', 'Select...'),
                                                                 ],
                                                                 'pluginOptions' => [
-                                                                    'allowClear' => true
+                                                                    'allowClear' => false
                                                                 ],
                                                             ]
                                                         ) ?>
@@ -293,13 +297,15 @@ JS
                                                                 'model' => $modelStudyplanSubject,
                                                                 'attribute' => "[{$index}]subject_vid_id",
                                                                 'data' => \artsoft\helpers\RefBook::find('subject_vid_name_dev', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList(),
+                                                                'showToggleAll' => false,
+                                                                'hideSearch' => true,
                                                                 'options' => [
 
                                                                     'disabled' => $readonly,
                                                                     'placeholder' => Yii::t('art', 'Select...'),
                                                                 ],
                                                                 'pluginOptions' => [
-                                                                    'allowClear' => true
+                                                                    'allowClear' => false
                                                                 ],
                                                             ]
                                                         ) ?>
@@ -522,6 +528,9 @@ JS
                                     <?php endif; ?>
                                     <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Скачать заявление', ['class' => 'btn btn-sm btn-info', 'name' => 'submitAction', 'value' => 'doc_statement']); ?>
                                     <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Скачать справку об обучении', ['class' => 'btn btn-sm btn-success', 'name' => 'submitAction', 'value' => 'doc_studyplan_reference']); ?>
+                                    <?php if ($model->isStudyplanFinish()): ?>
+                                        <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Свидетельство об окончании', ['class' => 'btn btn-sm btn-warning', 'name' => 'submitAction', 'value' => 'doc_studyplan_certificate']); ?>
+                                    <?php endif; ?>
                                     <?php /*Html::submitButton('<i class="fa fa-send-o" aria-hidden="true"></i> Отправить документы на электронную почту', ['class' => 'btn btn-sm btn-warning', 'name' => 'submitAction', 'value' => 'doc_send']);*/ ?>
                                 <?php endif; ?>
                             </div>
@@ -539,7 +548,7 @@ JS
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <?= \yii\bootstrap\Alert::widget([
-                                                'body' => '<i class="fa fa-info"></i> Максимальный размер файла: 1 Mb',
+                                                'body' => '<i class="fa fa-info"></i> Максимальный размер файла: 5 Mb',
                                                 'options' => ['class' => 'alert-info'],
                                             ]);
                                             ?>

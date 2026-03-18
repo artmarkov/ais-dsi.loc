@@ -32,6 +32,7 @@ class ModuleSettings extends BaseSettingsModel
     public $debtors_days;
 
     public $generator_time_limit;
+    public $generator_time_limit_academ;
     public $generator_time_per;
     public $generator_time_max;
     public $generator_time_min;
@@ -54,7 +55,7 @@ class ModuleSettings extends BaseSettingsModel
                 [['pre_date_in', 'pre_date_out', 'pre_date_start'], 'date'],
 
                 [['debtors_days'], 'string'],
-                [['generator_time_limit','generator_time_per','generator_time_max','generator_time_min'], 'string'],
+                [['generator_time_limit','generator_time_limit_academ','generator_time_per','generator_time_max','generator_time_min'], 'string'],
             ]);
     }
 
@@ -85,7 +86,8 @@ class ModuleSettings extends BaseSettingsModel
 
             'debtors_days' => 'Установить задолженность по оплате по истечении (дней)',
 
-            'generator_time_limit' => 'Время работы до перерыва (часов)',
+            'generator_time_limit' => 'Время работы до перерыва по бюджету(астр.часов)',
+            'generator_time_limit_academ' => 'Время работы до перерыва по внебюджету(акад.часов)',
             'generator_time_per' => 'Время перерыва (мин)',
             'generator_time_max' => 'Окончание работы (час)',
             'generator_time_min' => 'Начало работы (час)',

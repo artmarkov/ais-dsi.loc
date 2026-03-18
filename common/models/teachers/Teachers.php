@@ -268,7 +268,7 @@ class Teachers extends ActiveRecord
         if (!$department_list) {
             return [];
         }
-        if(is_array($department_list)) {
+        if (is_array($department_list)) {
             $department_list = implode(',', $department_list);
         }
         return (new \yii\db\Query())->select('teachers.id')->from('guide_department, teachers')
@@ -326,6 +326,7 @@ class Teachers extends ActiveRecord
             ->andWhere(['=', 'status', UserCommon::STATUS_ACTIVE])->asArray()->all();
         return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
     }
+
     /**
      * Проверка зашедшего преподавателя
      * @return bool
@@ -368,9 +369,17 @@ class Teachers extends ActiveRecord
         return \yii\helpers\ArrayHelper::map($query, 'id', 'name');
     }
 
-    public function getTeachersScheduleQuery($plan_year)
+    /**
+     * @param $plan_year
+     * @param $direction_id
+     * @param $direction_vid_id
+     * @param $subject_type_id
+     * @return array|SubjectScheduleView[]|\yii\db\ActiveQuery|\yii\db\ActiveRecord[]
+     * @throws \yii\db\Exception
+     */
+    public function getTeachersScheduleQuery($plan_year, $direction_id = false, $direction_vid_id = false, $subject_type_id = false)
     {
-        return $models = SubjectScheduleView::find()
+        $models = SubjectScheduleView::find()
             ->where(['teachers_id' => $this->id])
             ->andWhere(['not', ['subject_schedule_id' => null]])
             ->andWhere(['=', 'plan_year', $plan_year])
@@ -381,13 +390,25 @@ class Teachers extends ActiveRecord
                     ['status_reason' => [1, 2, 4]]
                 ],
             ])
-            ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
-            ->orderBy('week_day, time_in')
-            ->all();
+            ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()]);
+
+        if ($direction_id != false) {
+            $models = $models->andWhere(['direction_id' => $direction_id]);
+        }
+        if ($direction_vid_id != false) {
+            $models = $models->andWhere(['direction_vid_id' => $direction_vid_id]);
+        }
+        if ($subject_type_id != false) {
+            $models = $models->andWhere(['subject_type_id' => $subject_type_id]);
+        }
+        $models = $models->orderBy('week_day, time_in')->all();
+        return $models;
     }
 
     /**
+     * @param $plan_year
      * @return array
+     * @throws \yii\db\Exception
      */
     public function getTeachersSchedule($plan_year)
     {

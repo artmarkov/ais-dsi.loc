@@ -138,9 +138,9 @@ class TeachersTimesheet
     {
         $teachers_list = ConsultScheduleConfirm::find()
             ->select('teachers_id')
-                ->where(['teachers_id' => $this->teachers_list])
-                ->andWhere(['=', 'confirm_status', ConsultScheduleConfirm::DOC_STATUS_AGREED])
-                ->andWhere(['plan_year' => $this->plan_year])
+            ->where(['teachers_id' => $this->teachers_list])
+            ->andWhere(['=', 'confirm_status', ConsultScheduleConfirm::DOC_STATUS_AGREED])
+            ->andWhere(['plan_year' => $this->plan_year])
             ->column();
 
         return $teachers_list;
@@ -252,41 +252,49 @@ class TeachersTimesheet
         $day_out = !$this->is_avans ? date('j', $this->timestamp_out) : 15;
 
         $data['time_total'] = $data['time_total_15'] = null;
-        $summ = 0;
+        $summ = $summ_15 =0;
+        $summ_disorder_15 = 0;
+        $summ_disorder_30 = 0;
         for ($day = $day_in; $day <= $day_out; $day++) {
-            $time_consult = $this->getTeachersConsultDay($day, $direction_id, $direction_vid_id, $teachers_id);
-            $time_consult_15 += $day <= 15 ? $time_consult : null;
-            $time_consult_30 += $time_consult;
-
-            $data['time'][$day] = $this->getTeachersScheduleDay($day, $direction_id, $direction_vid_id, $teachers_id) + $time_consult;
-            $data['time'][$day] = $data['time'][$day] == 0 ? '' : $data['time'][$day];
-            $data['status'][$day] = null;
-
             $user_id = RefBook::find('teachers_users')->getValue($teachers_id);
             $timestamp = mktime(12, 0, 0, $this->mon, $day, $this->year); // середина суток
             $isDisorder = Routine::isDisorder($timestamp, $user_id);
-                //echo '<pre>' . print_r([$day, $user_id, $isDisorder], true) . '</pre>';
+            //echo '<pre>' . print_r([$day, $user_id, $isDisorder], true) . '</pre>';
+            $time_consult = $this->getTeachersConsultDay($day, $direction_id, $direction_vid_id, $teachers_id);
+            if (!$isDisorder) {
+                $time_consult_15 += $day <= 15 ? $time_consult : null;
+                $time_consult_30 += $time_consult;
+            }
+
+            $time_day = $this->getTeachersScheduleDay($day, $direction_id, $direction_vid_id, $teachers_id);
+            $data['time'][$day] = $time_day + $time_consult;
+            $data['time'][$day] = $data['time'][$day] == 0 ? '' : $data['time'][$day];
+            $data['status'][$day] = null;
+
             $isVocation = $this->routine[$day]['isVocation'];
             $isDayOff = $this->routine[$day]['isDayOff'];
 
-            if ($isVocation) {
+            if ($isDisorder) {
+                $summ_disorder_15 += $day <= 15 ? $time_day : null;
+                $summ_disorder_30 += $time_day;
+                $data['time'][$day] = null;
+                $data['status'][$day] = self::DISORDER;
+            } elseif ($isVocation) {
                 $data['time'][$day] = null;
                 $data['status'][$day] = self::VOCATION;
             } elseif ($isDayOff) {
                 $data['time'][$day] = null;
                 $data['status'][$day] = self::DAYOFF;
-            }if ($isDisorder) {
-                $data['time'][$day] = null;
-                $data['status'][$day] = self::DISORDER;
             } elseif (($data['time'][$day] > 0)) {
                 $data['status'][$day] = self::WORKDAY;
             }
             $summ += $data['time'][$day] != null ? $data['time'][$day] : 0;
+            $summ_15 += $day <= 15 ? $time_day : 0;
         }
-        if($summ > 0) {
-            $data['time_total'] = $this->teachers_day_schedule_total[$direction_id][$direction_vid_id][$teachers_id] ?? null;
-            $data['time_total_15'] = ($data['time_total'] / 2) + $time_consult_15;
-            $data['time_total'] = !$this->is_avans ? $data['time_total'] + $time_consult_30 : null;
+        if ($summ > 0) {
+            $time_total = $this->teachers_day_schedule_total[$direction_id][$direction_vid_id][$teachers_id] ?? null;
+            $data['time_total_15'] = $summ_disorder_15 > 0 ? $summ_15 - $summ_disorder_15 : ($time_total / 2) + $time_consult_15;
+            $data['time_total'] = !$this->is_avans ? $time_total + $time_consult_30 - $summ_disorder_30 : null;
         }
         //        echo '<pre>' . print_r($data, true) . '</pre>';
         return $data;
