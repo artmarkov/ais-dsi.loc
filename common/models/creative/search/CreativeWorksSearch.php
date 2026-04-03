@@ -2,6 +2,7 @@
 
 namespace common\models\creative\search;
 
+use common\models\creative\CreativeCategory;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -27,7 +28,7 @@ class CreativeWorksSearch extends CreativeWorks
     public function rules()
     {
         return [
-            [['id', 'status', 'created_by', 'updated_by', 'doc_status'], 'integer'],
+            [['id', 'status', 'created_by', 'updated_by', 'doc_status', 'signer_id', 'author_id'], 'integer'],
             [['department_list', 'teachers_list', 'category_id', 'name', 'description', 'published_at', 'created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -76,12 +77,15 @@ class CreativeWorksSearch extends CreativeWorks
 
         $query->andFilterWhere([
             'creative_works.id' => $this->id,
-            'category_id' => $this->category_id,
             'status' => $this->status,
+            'signer_id' => $this->signer_id,
+            'author_id' => $this->author_id,
             'doc_status' => $this->doc_status,
             'created_at' => ($this->created_at) ? strtotime($this->created_at) : null,
-            ]);
-
+        ]);
+        if ($this->category_id) {
+            $query->andFilterWhere(['category_id' => array_merge([$this->category_id], CreativeCategory::getCategoryListByParentId($this->category_id))]);
+        }
         $query->andFilterWhere([($this->published_at_operand) ? $this->published_at_operand : '=', 'published_at', ($this->published_at) ? strtotime($this->published_at) : null]);
 
         $query->andFilterWhere(['like', 'creative_works.name', $this->name])

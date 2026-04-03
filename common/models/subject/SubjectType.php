@@ -79,4 +79,13 @@ class SubjectType extends ActiveRecord
             ->asArray()->all(), 'id', 'name');
     }
 
+    public static function getTypeShortList()
+    {
+        return ArrayHelper::map(self::find()
+            ->andWhere(['status' => self::STATUS_ACTIVE])
+            ->select('id, slug')
+            ->orderBy('id')
+            ->asArray()->all(), 'id', 'slug');
+    }
+
 }

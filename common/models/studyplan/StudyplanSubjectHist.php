@@ -38,6 +38,7 @@ class StudyplanSubjectHist extends StudyplanSubject
 
     /**
      * Получаем список дисциплин со статусом 0 за заданный месяц
+     * Статус == 0 при условии, что и в последней версии редактирования статус равен 0 (в подзапросе отражаются и статус 0 и 1)
      * @param bool $timestamp_in
      * @param bool $timestamp_out
      * @return array
@@ -47,19 +48,19 @@ class StudyplanSubjectHist extends StudyplanSubject
     {
         $timestamp = $timestamp ? $timestamp : time();
         $timestamp = ArtHelper::getMonYearParamsForTimestamp($timestamp);
-        $date_in = $timestamp[0];
+//        $date_in = $timestamp[0];
         $date_out = $timestamp[1];
 
         $query = \Yii::$app->getDb()->createCommand('
             select id
             from studyplan_subject_hist h
-            where (updated_at <= :timestamp) 
+            where updated_at <= :date_out
             and status = 0
-            and version = (select MAX(version) from studyplan_subject_hist where id = h.id)
+            and version = (select MAX(version) from studyplan_subject_hist where id = h.id and updated_at <= :date_out)
             and op != \'D\'
             ',
             [
-                'timestamp' => $date_out,
+                'date_out' => $date_out,
             ])
             ->queryColumn();
         return $query;

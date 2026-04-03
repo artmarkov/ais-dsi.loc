@@ -5,6 +5,7 @@ namespace common\models\execution;
 use artsoft\Art;
 use artsoft\helpers\ArtHelper;
 use common\models\routine\Routine;
+use common\models\studyplan\StudyplanSubjectHist;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use Yii;
@@ -59,11 +60,12 @@ class ExecutionProgress
     protected function getTeachersActivities()
     {
         $models = (new Query())->from('activities_schedule_view')
-            ->select(new \yii\db\Expression('teachers_id, subject_sect_studyplan_id,studyplan_subject_id,title,datetime_in,datetime_out, date_trunc(\'day\',to_timestamp(datetime_in+10800))::date AS date, subject_key'))
+            ->select(new \yii\db\Expression('teachers_id, subject_sect_studyplan_id, studyplan_subject_id, title, datetime_in, datetime_out, date_trunc(\'day\',to_timestamp(datetime_in+10800))::date AS date, subject_key'))
             ->where(['teachers_id' => $this->teachersIds])
             ->andWhere(['direction_id' => 1000])
             ->andWhere(['between', 'datetime_in', $this->timestamp_in, $this->timestamp_out])
             ->andWhere(['status' => 1])
+            ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass($this->timestamp_in)])
             ->orderBy('datetime_in')
             ->all();
         $data = ArrayHelper::index($models, null, ['teachers_id', 'date', 'subject_sect_studyplan_id', 'studyplan_subject_id']);
@@ -101,7 +103,7 @@ class ExecutionProgress
             $load_data[$teachers_id]['scale_0'] = '';
             $load_data[$teachers_id]['scale_1'] = '';
             foreach ($dataTeachers as $date => $dataSect) {
-                if($this->routine[$date]['isDayOff'] || $this->routine[$date]['isHolidays']) continue;
+                if ($this->routine[$date]['isDayOff'] || $this->routine[$date]['isHolidays']) continue;
                 foreach ($dataSect as $subject_sect_studyplan_id => $dataSubject) {
                     foreach ($dataSubject as $studyplan_subject_id => $values) {
                         foreach ($values as $i => $value) {
@@ -135,7 +137,7 @@ class ExecutionProgress
 
         for ($day = $day_in; $day <= $day_out; $day++) {
             $timestamp = mktime(12, 0, 0, $mon, $day, $year); // середина суток
-            $date = Yii::$app->formatter->asDate($timestamp,'php:Y-m-d');
+            $date = Yii::$app->formatter->asDate($timestamp, 'php:Y-m-d');
             $isDayOff = Routine::isDayOff($timestamp);
             $isHolidays = Routine::isHolidays($timestamp);
             $routine[$date] = [

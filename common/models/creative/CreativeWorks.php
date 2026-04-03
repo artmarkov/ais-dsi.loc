@@ -29,19 +29,23 @@ use artsoft\models\User;
  * @property int $status
  * @property int $doc_status
  * @property int $signer_id Подписант
- * @property int $author_id' Автор
+ * @property int $author_id Автор
  * @property int $version
  *
  * @property CreativeRevision[] $creativeRevisions
  * @property CreativeCategory $category
+ * @property CreativeCategory $parentCategory
  * @property User $createdBy
  * @property User $updatedBy
+ * @property UserCommon $author
+ * @property User $signer
  */
 class CreativeWorks extends \artsoft\db\ActiveRecord
 {
     public $admin_flag;
     public $admin_message;
     public $efficiency_flag;
+    public $sub_category_id;
 
     /**
      * {@inheritdoc}
@@ -79,11 +83,24 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
         ];
     }
 
+    public function beforeValidate()
+    {
+        if($this->sub_category_id) {
+            $this->category_id = $this->sub_category_id;
+        }
+        return parent::beforeValidate();
+    }
+
 
     public function afterFind()
     {
         if (!empty($this->teachersEfficiency)) {
             $this->efficiency_flag = true;
+        }
+        $parent_id = CreativeCategory::find()->select('parent_id')->where(['id' => $this->category_id])->scalar();
+        if($parent_id != 0) {
+            $this->sub_category_id = $this->category_id;
+            $this->category_id = $parent_id;
         }
         parent::afterFind();
     }
@@ -95,7 +112,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
     {
         return [
             [['category_id', 'name', 'department_list', 'teachers_list', 'signer_id'], 'required'],
-            [['category_id', 'created_by', 'updated_by', 'status', 'version', 'doc_status', 'author_id'], 'integer'],
+            [['category_id', 'created_by', 'updated_by', 'status', 'version', 'doc_status', 'author_id', 'sub_category_id'], 'integer'],
             [['created_at', 'updated_at'], 'integer'],
             [['published_at', 'date'], 'safe'],
             [['doc_status'], 'default', 'value' => 0],
@@ -108,6 +125,12 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
             },
                 'whenClient' => "function (attribute, value) {
                                 return $('input[name=\"CreativeWorks[status]\"]:checked').val() === '1';
+                            }"],
+            [['sub_category_id'], 'required', 'when' => function ($model) {
+                return $model->category_id == 1003;
+            },
+                'whenClient' => "function (attribute, value) {
+                                return $('input[name=\"CreativeWorks[category_id]\"]:checked').val() === '1003';
                             }"],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => CreativeCategory::class, 'targetAttribute' => ['category_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
@@ -127,6 +150,7 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
         return [
             'id' => Yii::t('art/creative', 'ID'),
             'category_id' => Yii::t('art', 'Category'),
+            'sub_category_id' => 'Подкатегория',
             'name' => Yii::t('art/creative', 'Work topic'),
             'description' => Yii::t('art/creative', 'Description'),
             'department_list' => Yii::t('art/guide', 'Department'),
@@ -178,7 +202,8 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
      */
     public function getCategoryName()
     {
-        return $this->category->name;
+        $parent_name = CreativeCategory::find()->select('name')->where(['id' => $this->category->parent_id])->scalar();
+        return $parent_name ? $parent_name . '(' . $this->category->name . ')' : $this->category->name;
     }
 
     /**
@@ -218,6 +243,24 @@ class CreativeWorks extends \artsoft\db\ActiveRecord
     }
 
     public function getUserSign()
+    {
+        return $this->hasOne(User::class, ['id' => 'signer_id']);
+    }
+
+    /**
+     * Gets query for [[Author]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAuthor()
+    {
+        return $this->hasOne(UserCommon::class, ['id' => 'author_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSigner()
     {
         return $this->hasOne(User::class, ['id' => 'signer_id']);
     }

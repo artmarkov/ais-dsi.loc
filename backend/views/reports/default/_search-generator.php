@@ -43,10 +43,10 @@ $form = ActiveForm::begin([
                         ])->label(Yii::t('art/studyplan', 'Plan Year'));
                         ?>
 
-                        <?= $form->field($model_date, 'subject_type_flag')->widget(\kartik\select2\Select2::class, [
-                            'data' => \common\models\teachers\TeachersScheduleGenerator::getTypeList(),
+                        <?= $form->field($model_date, 'subject_type_id')->widget(\kartik\select2\Select2::class, [
+                            'data' => \artsoft\helpers\RefBook::find('subject_type_name')->getList(),
                             'options' => [
-                                'id' => 'subject_type_flag',
+                                'id' => 'subject_type_id',
                                 'placeholder' => Yii::t('art', 'Select...'),
                             ],
                             'pluginOptions' => [
@@ -55,21 +55,22 @@ $form = ActiveForm::begin([
 
                         ])->label('Тип занятий'); ?>
 
-                        <?= $form->field($model_date, 'teachers_list')->widget(DepDrop::class, [
-                            'data' =>  \common\models\history\TeachersHistory::getTeachersList($model_date->plan_year),
+                        <?= $form->field($model_date, 'activity_list')->widget(DepDrop::class, [
+                            'data' =>  \artsoft\helpers\RefBook::find('teachers_activity_memo', \common\models\user\UserCommon::STATUS_ACTIVE)->getList(),
                             'type' => DepDrop::TYPE_SELECT2,
                             'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                             'options' => [
-                                'id' => 'teachers_list',
+                                'id' => 'activity_list',
                                 'placeholder' => Yii::t('art', 'Select...'),
                                 'multiple' => true,
                             ],
                             'pluginOptions' => [
-                                'depends' => ['plan_year', 'subject_type_flag'],
-                                'url' => Url::to(['/reports/default/teachers-list'])
+                                'depends' => ['subject_type_id'],
+                                'url' => Url::to(['/reports/default/activity-list'])
                             ]
-                        ])->label(Yii::t('art/teachers', 'Teachers'));
+                        ])->label('Преподаватели по занимаемым должностям');
                         ?>
+
                         <?= $form->field($model_date, "update_list_flag")->checkbox()->label('Обновить список преподавателей'); ?>
 
                         <?= $form->field($model_date, 'limit_up_flag')->checkbox()->label('Вывести превышение нагрузки в отчет.'); ?>

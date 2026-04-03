@@ -1,5 +1,6 @@
 <?php
 
+use artsoft\models\User;
 use common\models\teachers\Teachers;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
@@ -93,7 +94,7 @@ $author_id = CreativeWorks::getAuthorId();
                                 'attribute' => 'category_id',
                                 'value' => 'categoryName',
                                 'label' => Yii::t('art/creative', 'Creative Category'),
-                                'filter' => \common\models\creative\CreativeCategory::getCreativeCategoryList(),
+                                'filter' => \common\models\creative\CreativeCategory::getParentCategoryList(),
                             ],
                             [
                                 'attribute' => 'department_list',
@@ -135,17 +136,6 @@ $author_id = CreativeWorks::getAuthorId();
 //                                'options' => ['style' => 'width:180px'],
 //                            ],
                             [
-                                'class' => 'artsoft\grid\columns\StatusColumn',
-                                'attribute' => 'doc_status',
-                                'optionsArray' => [
-                                    [CreativeWorks::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
-                                    [CreativeWorks::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
-                                    [CreativeWorks::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
-                                    [CreativeWorks::DOC_STATUS_MODIF, Yii::t('art', 'Modif'), 'warning'],
-                                ],
-                                'options' => ['style' => 'width:150px']
-                            ],
-                            [
                                 'attribute' => 'created_at',
                                 'filter' => false,
                                 'value' => function (CreativeWorks $model) {
@@ -155,6 +145,41 @@ $author_id = CreativeWorks::getAuthorId();
                                 'format' => 'raw',
                                 'options' => ['style' => 'width:150px;'],
                                 'contentOptions' => ['style'=>"text-align:center; vertical-align: middle;"],
+                            ],
+                            [
+                                'attribute' => 'author_id',
+                                'filter' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees']),
+                                'value' => function (CreativeWorks $model) {
+                                    return $model->author ? '<span style="font-size:85%; " class="label label-default">'
+                                        . $model->author->lastFM . '</span>' : $model->author_id;
+                                },
+                                'format' => 'raw',
+                                'options' => ['style' => 'width:150px;'],
+                                'contentOptions' => ['style'=>"text-align:center; vertical-align: middle;"],
+                                'visible' => \artsoft\Art::isBackend()
+                            ],
+                            [
+                                'attribute' => 'signer_id',
+                                'filter' => User::getUsersByIds(User::getUsersByRole('signerSchoolplan')),
+                                'value' => function (CreativeWorks $model) {
+                                    return $model->signer ? '<span style="font-size:85%; " class="label label-info">'
+                                        . $model->signer->userCommon->lastFM . '</span>' : $model->author_id;
+                                },
+                                'format' => 'raw',
+                                'options' => ['style' => 'width:150px;'],
+                                'contentOptions' => ['style'=>"text-align:center; vertical-align: middle;"],
+                                'visible' => \artsoft\Art::isBackend()
+                            ],
+                            [
+                                'class' => 'artsoft\grid\columns\StatusColumn',
+                                'attribute' => 'doc_status',
+                                'optionsArray' => [
+                                    [CreativeWorks::DOC_STATUS_DRAFT, Yii::t('art', 'Draft'), 'default'],
+                                    [CreativeWorks::DOC_STATUS_AGREED, Yii::t('art', 'Agreed'), 'success'],
+                                    [CreativeWorks::DOC_STATUS_WAIT, Yii::t('art', 'Wait'), 'warning'],
+                                    [CreativeWorks::DOC_STATUS_MODIF, Yii::t('art', 'Modif'), 'warning'],
+                                ],
+                                'options' => ['style' => 'width:150px']
                             ],
 //                            [
 //                                'class' => '\artsoft\grid\columns\DateFilterColumn',

@@ -29,6 +29,11 @@ class CreativeHistory extends BaseHistory
             'department_list',
             'teachers_list',
             'published_at',
+            'status',
+            'doc_status',
+            'signer_id',
+            'author_id',
+
         ];
     }
 
@@ -60,6 +65,14 @@ class CreativeHistory extends BaseHistory
                 }
             case 'category_id':
                 return isset($model->category_id) ? $model->category->name : $value;
+            case 'status':
+                return isset($model->status) ? CreativeWorks::getStatusValue($value) : $value;
+            case 'doc_status':
+                return isset($model->status) ? CreativeWorks::getDocStatusValue($value) : $value;
+            case 'author_id':
+                return isset($model->author) ? $model->author->fullName : $value;
+            case 'signer_id':
+                return isset($model->signer) ? $model->signer->userCommon->fullName : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }

@@ -35,6 +35,7 @@ class ConsultSchedule extends \yii\db\ActiveRecord
     public $date_in;
     public $time_in;
     public $time_out;
+
     /**
      * {@inheritdoc}
      */
@@ -83,9 +84,10 @@ class ConsultSchedule extends \yii\db\ActiveRecord
             [['teachers_load_id', 'auditory_id', 'version'], 'integer'],
             [['teachers_load_id', 'auditory_id'], 'required'],
             [['date_in', 'time_in', 'time_out'], 'required'],
-            [['datetime_in', 'datetime_out', ], 'safe'],
+            [['datetime_in', 'datetime_out',], 'safe'],
             [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['date_in'], 'compareTimestamp', 'skipOnEmpty' => false],
+            [['date_in'], 'scheduleOverLapping', 'skipOnEmpty' => false],
             /*[['date_in'], 'addNew', 'skipOnEmpty' => false, 'when' => function ($model) {
                 return Art::isFrontend() && $model->isNewRecord;
             }, 'enableClientValidation' => false],*/
@@ -100,7 +102,15 @@ class ConsultSchedule extends \yii\db\ActiveRecord
         $timestamp_in = Yii::$app->formatter->asTimestamp($this->datetime_in);
 
         if ($this->datetime_in && $timestamp_in < time()) {
-            $message = 'Нельзя веести мероприятие задним числом.';
+            $message = 'Нельзя ввести мероприятие задним числом.';
+            $this->addError($attribute, $message);
+        }
+    }
+
+    public function scheduleOverLapping($attribute, $params, $validator)
+    {
+        if ($this->getConsultScheduleOverLapping()) {
+            $message = 'В одной аудитории накладка по времени!';
             $this->addError($attribute, $message);
         }
     }
@@ -122,6 +132,29 @@ class ConsultSchedule extends \yii\db\ActiveRecord
             $message = 'Время окончания периода не может быть меньше или равно времени начала.';
             $this->addError($attribute, $message);
         }
+    }
+
+    public function getConsultScheduleOverLapping()
+    {
+        $thereIsAnOverlapping = self::find()
+            ->where(
+                ['AND',
+                    ['!=', 'id', $this->id],
+                    ['auditory_id' => $this->auditory_id],
+                    ['OR',
+                        ['AND',
+                            ['<', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                            ['>=', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                        ],
+                        ['AND',
+                            ['<=', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                            ['>', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                        ],
+                    ],
+                ])
+            ->exists();
+
+        return $thereIsAnOverlapping;
     }
 
     /**
@@ -162,9 +195,11 @@ class ConsultSchedule extends \yii\db\ActiveRecord
         return $this->hasOne(TeachersLoad::className(), ['id' => 'teachers_load_id']);
     }
 
-    public function getTeachersConsultNeed() {
+    public function getTeachersConsultNeed()
+    {
         return true;
     }
+
     // Автоматическое добавление расписания для концертмейтера
     public function beforeSave($insert)
     {

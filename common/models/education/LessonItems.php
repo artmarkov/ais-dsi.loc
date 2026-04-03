@@ -12,6 +12,7 @@ use common\models\routine\Routine;
 use common\models\schedule\SubjectScheduleView;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\studyplan\StudyplanSubjectHist;
 use common\models\subjectsect\SubjectSectStudyplan;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -82,6 +83,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             [['lesson_date'], 'checkLessonExist', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_date'], 'checkLessonDate', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_date'], 'checkHolidays', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
+            [['lesson_date'], 'checkDisorder', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_test_id'], 'checkLessonTest', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_topic'], 'string', 'max' => 512],
             [['lesson_rem'], 'string', 'max' => 1024],
@@ -92,8 +94,16 @@ class LessonItems extends \artsoft\db\ActiveRecord
 
     public function checkHolidays($attribute, $params)
     {
-        if (Routine::isHolidays(strtotime($this->$attribute)) && Routine::isCelebrations(strtotime($this->$attribute)) && Art::isFrontend()) {
+        if ((Routine::isHolidays(strtotime($this->$attribute)) || Routine::isCelebrations(strtotime($this->$attribute))) && Art::isFrontend()) {
             $this->addError($attribute, 'Каникулярное время или праздники. Ввод ограничен.');
+        }
+    }
+
+    public function checkDisorder($attribute, $params)
+    {
+        $user_id = Yii::$app->user->identity->getId();
+        if (Routine::isDisorder(strtotime($this->$attribute), $user_id) && Art::isFrontend()) {
+            $this->addError($attribute, 'Преподаватель на больничном. Ввод ограничен.');
         }
     }
 
@@ -322,6 +332,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
                         ['status_reason' => [1, 2, 4]]
                     ]
                 ])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
                 ->column();
             foreach ($studyplanSubjectList as $item => $studyplan_subject_id) {
                 $m = new LessonProgress();
@@ -359,6 +370,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
                         ['status_reason' => [1, 2, 4]]
                     ]
                 ])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
                 ->all();
 
             foreach ($models1 as $item => $modelItems) {
@@ -371,6 +383,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             }
             $models2 = LessonProgressView::find()->select('studyplan_subject_id')
                 ->where(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
                 // ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
                 ->andWhere(['OR',
                     ['status' => Studyplan::STATUS_ACTIVE],

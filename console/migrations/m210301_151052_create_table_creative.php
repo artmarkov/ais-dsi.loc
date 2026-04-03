@@ -11,16 +11,25 @@ class m210301_151052_create_table_creative extends \artsoft\db\BaseMigration
         
         $this->createTable('guide_creative_category', [
             'id' => $this->primaryKey() . ' constraint check_range check (id between 1000 and 9999)',
+            'parent_id' => $this->integer()->defaultValue(0),
             'name' => $this->string(256)->notNull(),
-            'description' => $this->string(1024)->notNull(),
+            'description' => $this->string(1024),
         ], $tableOptions);
 
         $this->addCommentOnTable('guide_creative_category' ,'Категории творческих работ');
         $this->db->createCommand()->resetSequence('guide_creative_category', 1000)->execute();
-        $this->db->createCommand()->batchInsert('guide_creative_category', ['id', 'name', 'description'], [
-            [1000, 'Творческие работы', ''],
-            [1001, 'Методические работы', ''],
-            [1002, 'Сертификаты', ''],
+        $this->db->createCommand()->batchInsert('guide_creative_category', ['id', 'parent_id', 'name', 'description'], [
+            [1000, 0, 'Творческие работы', ''],
+            [1001, 0, 'Методические работы', ''],
+            [1002, 0, 'Сертификаты', ''],
+            [1003, 0, 'Публикации', ''],
+            [1004, 1003, 'Печатное издание', ''],
+            [1005, 1003, 'Электронная публикация', ''],
+            [1006, 1003, 'Научная публикация', ''],
+            [1007, 1003, 'Исследовательская статья', ''],
+            [1008, 1003, 'Обзорная статья', ''],
+            [1009, 1003, 'Материалы конференции', ''],
+            [1010, 1003, 'Монография и сборник статей', ''],
         ])->execute();
 
         $this->createTableWithHistory('creative_works', [

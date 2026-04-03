@@ -6,6 +6,7 @@ use artsoft\helpers\RefBook;
 use common\models\education\LessonProgress;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
+use common\models\studyplan\StudyplanSubjectHist;
 use common\models\subject\SubjectType;
 use common\models\teachers\TeachersLoad;
 use Yii;
@@ -147,6 +148,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
                         ['status_reason' => [1, 2, 4]]
                     ]
                 ])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
                 ->orderBy('student_fio')
                 ->all();
            // print_r($this->studyplan_subject_list); die();

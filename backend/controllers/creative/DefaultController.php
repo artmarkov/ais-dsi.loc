@@ -2,6 +2,7 @@
 
 namespace backend\controllers\creative;
 
+use common\models\creative\CreativeCategory;
 use common\models\creative\CreativeWorks;
 use Yii;
 use common\models\efficiency\TeachersEfficiency;
@@ -17,6 +18,8 @@ class DefaultController extends MainController
     public $modelClass = 'common\models\creative\CreativeWorks';
     public $modelSearchClass = 'common\models\creative\search\CreativeWorksSearch';
     public $modelHistoryClass = 'common\models\history\CreativeHistory';
+
+    public $freeAccessActions = ['sub-category'];
 
     /**
      * @return mixed|string|\yii\web\Response
@@ -150,4 +153,19 @@ class DefaultController extends MainController
         return $this->actionUpdate($id, true);
     }
 
+    public function actionSubCategory()
+    {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+
+            if (!empty($parents)) {
+                $cat_id = $parents[0];
+                $out = CreativeCategory::getCategoryListByParentId($cat_id);
+
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
+        }
+        return json_encode(['output' => '', 'selected' => '']);
+    }
 }

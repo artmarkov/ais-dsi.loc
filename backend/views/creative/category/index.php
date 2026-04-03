@@ -68,6 +68,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return $model->name;
                                 },
                             ],
+                            [
+                                'attribute' => 'parent_id',
+                                'value' => 'parentCategoryName',
+                            ],
                             'description:ntext',
                             [
                                 'class' => 'kartik\grid\ActionColumn',

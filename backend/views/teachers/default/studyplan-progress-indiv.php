@@ -141,11 +141,11 @@ foreach ($model['lessonDates'] as $id => $name) {
         'attribute' => $name['date'],
         'label' => $model['attributes'][$name['date']],
         'format' => 'raw',
-        'footer' =>$name['isDisorder'] ? 0 : $name['dates_load'],
-        /*'contentOptions' => function ($models) use ($name) {
-            return $name['isDisorder'] ? ['class' => 'warning'] : ['class' => ''];
+        'footer' => $name['isDisorder'] ? 0 : $name['dates_load'],
+        'contentOptions' => function ($models) use ($name) {
+            return $name['isDisorder'] ? ['class' => 'danger'] : ['class' => ''];
 
-        },*/
+        },
     ];
 }
 $columns[] = [
@@ -175,8 +175,9 @@ $columns[] = [
         'contentOptions' => ['style' => 'background-color: #ebebeb;'],
     ];
 }*/
-
-$hints = '<span class="panel-title"><b>Сокращения Вид занятия:</b></span><br/>';
+$hints = '<i class="fa fa-square" aria-hidden="true" style="color: #f2dede;"></i> - Преподаватель на больничном';
+$hints .= '<br/><br/>';
+$hints .= '<span class="panel-title"><b>Сокращения Вид занятия:</b></span><br/>';
 foreach (\common\models\education\LessonTest::getLessonTestHints() as $item => $hint) {
     $hints .= $item . ' - ' . $hint . '; ';
 }

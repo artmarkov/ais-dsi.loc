@@ -2,6 +2,7 @@
 
 use artsoft\grid\GridView;
 use artsoft\helpers\RefBook;
+use common\models\routine\Routine;
 use common\models\teachers\Teachers;
 use artsoft\helpers\Html;
 use common\models\schedule\SubjectScheduleStudyplanView;
@@ -19,13 +20,13 @@ $this->params['breadcrumbs'][] = $this->title;
 $readonly = (Teachers::isOwnTeacher($modelTeachers->id)) ? false : true;
 $confirm_available = ((count($model['columns']) == 1 && $model_date->subject_sect_studyplan_id  && \artsoft\Art::isFrontend() && $model_confirm->confirm_status != 0) || \artsoft\Art::isBackend()) && Yii::$app->settings->get('mailing.confirm_progress_perform_doc');
 $attestation_flag = Yii::$app->settings->get('module.attestation_on', 0) == 0 ? false : true; // открыт ли доступ к выставлению ПА
-
+$user_id = RefBook::find('teachers_users')->getValue($modelTeachers->id);
 $columnsHeader = [];
 foreach ($model['columns'] as $my => $qty) {
     $columnsHeader[] = ['content' => $my, 'options' => ['colspan' => $qty, 'class' => 'text-center']];
 }
 
-$editMarks = function ($model, $key, $index, $widget) use ($modelTeachers, $attestation_flag) {
+$editMarks = function ($model, $key, $index, $widget) use ($modelTeachers, $attestation_flag, $user_id) {
     $content = [];
     if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], 0)) {
         $content += [3 => Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
@@ -47,7 +48,7 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers, $atte
             $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                     \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'update'] :
                         ['/teachers/studyplan-progress/update', 'id' => $model['teachers_id'], 'id' => $lesson_items_id], [
-                        'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
+                        'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || Routine::isDisorder($item['lesson_date'], $user_id)),
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
@@ -143,7 +144,11 @@ foreach ($model['lessonDates'] as $id => $name) {
         'attribute' => $name['date'],
         'label' => $model['attributes'][$name['date']],
         'format' => 'raw',
-        'footer' => $name['dates_load'],
+        'footer' =>$name['isDisorder'] ? 0 : $name['dates_load'],
+        'contentOptions' => function ($models) use ($name) {
+            return $name['isDisorder'] ? ['class' => 'danger'] : ['class' => ''];
+
+        },
     ];
 }
 $columns[] = [
@@ -154,7 +159,9 @@ $columns[] = [
     'contentOptions' => ['style' => 'background-color: #ebebeb;'],
 ];
 
-$hints = '<span class="panel-title"><b>Сокращения Вид занятия:</b></span><br/>';
+$hints = '<i class="fa fa-square" aria-hidden="true" style="color: #f2dede;"></i> - Преподаватель на больничном';
+$hints .= '<br/><br/>';
+$hints .= '<span class="panel-title"><b>Сокращения Вид занятия:</b></span><br/>';
 foreach (\common\models\education\LessonTest::getLessonTestHints() as $item => $hint) {
     $hints .= $item . ' - ' . $hint . '; ';
 }
