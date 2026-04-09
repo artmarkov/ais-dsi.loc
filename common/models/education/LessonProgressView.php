@@ -445,11 +445,15 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $dates_load_total = 0;
 
         // Учитываем историю удаленных расписаний занятий для отображения оценок из истории удаленных расписаний
-        $modelsMarks = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l	     
-	    JOIN LATERAL (SELECT * FROM subject_schedule_hist h 
-		    JOIN (SELECT id, MAX(version) as version FROM subject_schedule_hist 
-		        WHERE updated_at <= l.created_at AND teachers_load_id = l.teachers_load_id GROUP BY id) i 
-		        ON h.id=i.id AND h.version=i.version) hh 
+        $modelsMarks = \Yii::$app->db->createCommand('SELECT * 
+	FROM lesson_items_progress_studyplan_view l
+	    JOIN LATERAL (WITH ss AS ( 
+	SELECT id, MAX(hist_id) as hist_id FROM subject_schedule_hist 
+		        WHERE updated_at <= l.created_at AND teachers_load_id = l.teachers_load_id 
+	GROUP BY id	
+	) SELECT * FROM subject_schedule_hist h 
+	WHERE h.hist_id in (SELECT hist_id FROM ss))
+		   hh 
 		ON hh.teachers_load_id = l.teachers_load_id
 	        WHERE l.lesson_date BETWEEN :timestamp_in AND :timestamp_out  
 	        AND hh.week_day = DATE_PART(\'dow\', to_timestamp(l.lesson_date+10800))
@@ -477,7 +481,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $columns[$my] = isset($columns[$my]) ? $columns[$my] + 1 : 1;
             $attributes += [$date => $label];
             if (Art::isBackend()) {
-                $modelsMarks2 = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l
+               /* $modelsMarks2 = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l
 	        JOIN subject_schedule ON subject_schedule.teachers_load_id = l.teachers_load_id
 	            AND subject_schedule.week_day = DATE_PART(\'dow\', to_timestamp(l.lesson_date+10800))
 	        WHERE ("lesson_date" BETWEEN :timestamp_in AND :timestamp_out)
@@ -488,9 +492,10 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                         'timestamp_out' => $timestamp_out,
                         'subject_key' => $model_date->subject_key,
                         'teachers_id' => $teachers_id
-                    ])->queryAll(); // TODO оптимизировать
-                $modelsMarksLoad = ArrayHelper::index($modelsMarks2, null, ['lesson_date']);
-                $modelsMarksSubjectLoad = ArrayHelper::index($modelsMarks2, null, ['studyplan_subject_id']);
+                    ])->queryAll(); // TODO оптимизировать*/
+               // Убираем дубли индексом - остаются последние записи
+                $modelsMarksLoad = ArrayHelper::index($modelsMarks, 'studyplan_subject_id', ['lesson_date']);
+                $modelsMarksSubjectLoad = ArrayHelper::index($modelsMarks, 'lesson_date', ['studyplan_subject_id']);
                 if(isset($modelsMarksLoad[$lessonDate])) {
                     foreach ($modelsMarksLoad[$lessonDate] as $index => $m) {
                         $dates_load += $m['lesson_mark_id'] ? Schedule::astr2academ($m['time_out'] - $m['time_in']) : 0;
@@ -501,8 +506,9 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $dates[] = ['date' => $date, 'dates_load' => $dates_load, 'isDisorder' => $isDisorder];
         }
         $attributes += ['pa' => 'ПА'];
-
-        $modelsMarks = ArrayHelper::index($modelsMarks, null, ['subject_sect_studyplan_id', 'studyplan_subject_id']);
+        // Убираем дубли индексом - остаются последние записи
+        $modelsMarks = ArrayHelper::index($modelsMarks, 'lesson_date', ['subject_sect_studyplan_id', 'studyplan_subject_id']);
+                //echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
 
         $modelsMarksCertif = ArrayHelper::index(AttestationItems::find()
             ->joinWith('lessonMark')

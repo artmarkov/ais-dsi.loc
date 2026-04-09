@@ -612,6 +612,7 @@ class DefaultController extends MainController
             ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id], 'visible' => $model->category->perform_flag],
             ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol', 'id' => $id], 'visible' => $model->category->protocol_flag],
             ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id]/*, 'visible' => $model->category->efficiency_flag*/],
+            ['label' => 'Общие итоги мероприятия', 'url' => ['/schoolplan/default/resume', 'id' => $id], 'visible' => Yii::$app->user->isSuperadmin],
         ];
     }
 

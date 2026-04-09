@@ -2,6 +2,8 @@
 
 use artsoft\models\User;
 use common\models\teachers\Teachers;
+use yii\db\Query;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -19,6 +21,20 @@ use common\models\own\Department;
 $this->title = Yii::t('art/creative', 'Creative Works');
 $this->params['breadcrumbs'][] = $this->title;
 $author_id = CreativeWorks::getAuthorId();
+$department_list =  \yii\helpers\ArrayHelper::map(Department::find()->select('id, name')->asArray()->all(), 'id', 'name');
+$teachers_list =  RefBook::find('teachers_fio')->getList();
+$signer_list = ArrayHelper::map((new Query())->from('users_view')
+    ->select('id , user_fio as name')
+    ->where(['id' => User::getUsersByRole('signerSchoolplan')])
+    ->orderBy('name')
+    ->all(), 'id', 'name');
+$author_list = ArrayHelper::map(\common\models\user\UserCommon::find()->select([
+    'id',' concat(last_name, \' \', "left"(first_name::text, 1), \'.\', "left"(middle_name::text, 1), \'.\') as fio',
+])
+    ->where(['in', 'user_category', ['teachers', 'employees']])
+    ->andWhere(['=', 'status', \common\models\user\UserCommon::STATUS_ACTIVE])
+    ->orderBy('fio')
+    ->asArray()->all(), 'id', 'fio');
 ?>
 <div class="creative-works-index">
     <div class="panel">
@@ -99,13 +115,13 @@ $author_id = CreativeWorks::getAuthorId();
                             [
                                 'attribute' => 'department_list',
                                 'filter' => Department::getDepartmentList(),
-                                'value' => function (CreativeWorks $model) {
+                                'value' => function (CreativeWorks $model) use ($department_list) {
                                     $v = [];
                                     foreach ($model->department_list as $id) {
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = Department::findOne($id)->name;
+                                        $v[] = $department_list[$id] ?? '';
                                     }
                                     return implode('<br/> ', $v);
                                 },
@@ -114,16 +130,16 @@ $author_id = CreativeWorks::getAuthorId();
                             ],
                             [
                                 'attribute' => 'teachers_list',
-                                'filter' =>  RefBook::find('teachers_fullname')->getList(),
-                                'value' => function (CreativeWorks $model) {
+                                'filter' =>  $teachers_list,
+                                'value' => function (CreativeWorks $model) use ($teachers_list){
                                     $v = [];
                                     foreach ($model->teachers_list as $id) {
                                         if (!$id) {
                                             continue;
                                         }
-                                        $v[] = RefBook::find('teachers_fio')->getValue($id);
+                                        $v[] = $teachers_list[$id] ?? $id;
                                     }
-                                    return implode('<br/> ', $v);
+                                    return implode(',<br/> ', $v);
                                 },
                                 'options' => ['style' => 'width:350px'],
                                 'format' => 'raw',
@@ -148,10 +164,10 @@ $author_id = CreativeWorks::getAuthorId();
                             ],
                             [
                                 'attribute' => 'author_id',
-                                'filter' => \common\models\user\UserCommon::getUsersCommonListByCategory(['teachers', 'employees']),
-                                'value' => function (CreativeWorks $model) {
-                                    return $model->author ? '<span style="font-size:85%; " class="label label-default">'
-                                        . $model->author->lastFM . '</span>' : $model->author_id;
+                                'filter' => $author_list,
+                                'value' => function (CreativeWorks $model) use($author_list) {
+                                    return isset($author_list[$model->author_id]) ? '<span style="font-size:85%; " class="label label-default">'
+                                        . $author_list[$model->author_id] . '</span>' : $model->author_id;
                                 },
                                 'format' => 'raw',
                                 'options' => ['style' => 'width:150px;'],
@@ -160,10 +176,10 @@ $author_id = CreativeWorks::getAuthorId();
                             ],
                             [
                                 'attribute' => 'signer_id',
-                                'filter' => User::getUsersByIds(User::getUsersByRole('signerSchoolplan')),
-                                'value' => function (CreativeWorks $model) {
-                                    return $model->signer ? '<span style="font-size:85%; " class="label label-info">'
-                                        . $model->signer->userCommon->lastFM . '</span>' : $model->author_id;
+                                'filter' => $signer_list,
+                                'value' => function (CreativeWorks $model)  use($signer_list){
+                                    return isset($signer_list[$model->signer_id]) ? '<span style="font-size:85%; " class="label label-default">'
+                                        . $signer_list[$model->signer_id] . '</span>' : $model->signer_id;
                                 },
                                 'format' => 'raw',
                                 'options' => ['style' => 'width:150px;'],

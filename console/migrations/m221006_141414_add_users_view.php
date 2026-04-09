@@ -29,6 +29,7 @@ class m221006_141414_add_users_view extends BaseMigration
             ELSE NULL::text
         END AS user_category_name,		
     concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name) AS user_name,
+    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS user_fio,
 	user_common.last_name,
 	user_common.first_name,
 	user_common.middle_name,

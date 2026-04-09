@@ -28,17 +28,17 @@ class SchoolWorkload
     protected function getSchedules()
     {
         $models = (new Query())->from('subject_schedule_view')
-            ->select('auditory_id, programm_list, 
-            SUM(time_out-time_in) AS sum,
-            SUM(CASE WHEN time_in >= 21600 AND time_in < 36000 THEN time_out-time_in END) AS sum_9_13,
-            SUM(CASE WHEN time_in >= 36000  AND time_in < 54000 THEN time_out-time_in END) AS sum_13_18,
-            SUM(CASE WHEN time_in >= 54000  AND time_in <= 64800 THEN time_out-time_in END) AS sum_18_21
+            ->select('auditory_id, programm_list, subject_type_id,
+            CASE WHEN subject_type_id = 1000 THEN SUM(time_out-time_in)*1.333 ELSE SUM(time_out-time_in) END AS sum,
+            CASE WHEN subject_type_id = 1000 THEN SUM(CASE WHEN time_in >= 21600 AND time_in < 36000 THEN time_out-time_in END)*1.333 ELSE SUM(CASE WHEN time_in >= 21600 AND time_in < 36000 THEN time_out-time_in END) END AS sum_9_13,
+            CASE WHEN subject_type_id = 1000 THEN SUM(CASE WHEN time_in >= 36000  AND time_in < 54000 THEN time_out-time_in END)*1.333 ELSE SUM(CASE WHEN time_in >= 36000  AND time_in < 54000 THEN time_out-time_in END) END AS sum_13_18,
+            CASE WHEN subject_type_id = 1000 THEN SUM(CASE WHEN time_in >= 54000  AND time_in <= 64800 THEN time_out-time_in END)*1.333 ELSE SUM(CASE WHEN time_in >= 54000  AND time_in <= 64800 THEN time_out-time_in END) END AS sum_18_21
             ')
             ->where(['plan_year' => $this->plan_year])
             ->andWhere(['IS NOT', 'subject_schedule_id', NULL])
             ->andWhere(['status' => 1])
             ->andWhere(['direction_id' => 1000])
-            ->groupBy('auditory_id, programm_list')
+            ->groupBy('auditory_id, programm_list, subject_type_id')
             ->all();
 
         return $models;
@@ -75,7 +75,7 @@ class SchoolWorkload
 
         ];
         $dataSchedules = ArrayHelper::index($this->getSchedules(), null, ['auditory_id']);
-        //  echo '<pre>' . print_r(Schedule::encodeTime('18:00'), true) . '</pre>'; die();
+        //  echo '<pre>' . print_r($dataSchedules, true) . '</pre>'; die();
         $dataActivities = ArrayHelper::index($this->getActivities(), 'week_num', ['auditory_id']);
         //echo '<pre>' . print_r($dataActivities, true) . '</pre>';die();
         foreach ($mask as $index => $array) {

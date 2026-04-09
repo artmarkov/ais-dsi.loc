@@ -22,6 +22,8 @@ class DefaultController extends MainController
     public $modelSearchClass = 'common\models\efficiency\search\TeachersEfficiencySearch';
     public $modelHistoryClass = 'common\models\history\EfficiencyHistory';
 
+    public $freeAccessActions = ['select'];
+
     /**
      * @return mixed|string|\yii\web\Response
      */
