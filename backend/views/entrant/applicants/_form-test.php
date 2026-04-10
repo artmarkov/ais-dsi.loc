@@ -51,7 +51,7 @@ $modelComm = \common\models\entrant\EntrantComm::findOne($model->comm_id);
                         [
                             'model' => $modelTest,
                             'attribute' => "[{$index}][{$indexTest}]entrant_mark_id",
-                            'data' => \common\models\education\LessonMark::getMarkLabelForEntrant($modelComm->division_id == 1001 ?LessonMark::MARK_10 : LessonMark::MARK),
+                            'data' => \common\models\education\LessonMark::getMarkLabelForEntrant($modelComm->division_id == 1001 ? LessonMark::MARK_10 : ($modelComm->plan_year < 2026 ? LessonMark::MARK : LessonMark::MARK_ENTRANT)),
                             'options' => [
                                     'disabled' => $readonly,
                                 'placeholder' => Yii::t('art', 'Select...'),

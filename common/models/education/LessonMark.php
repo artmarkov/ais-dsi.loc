@@ -32,6 +32,7 @@ class LessonMark extends \artsoft\db\ActiveRecord
     const OFFSET_NONOFFSET = 2;
     const REASON_ABSENCE = 3;
     const MARK_10 = 4;
+    const MARK_ENTRANT = 5;
 
     /**
      * {@inheritdoc}
@@ -110,6 +111,7 @@ class LessonMark extends \artsoft\db\ActiveRecord
             self::MARK_10 => 'Оценка 10-ти бальная',
             self::OFFSET_NONOFFSET => 'Зачет/Незачет',
             self::REASON_ABSENCE => 'Причины отсутствия',
+            self::MARK_ENTRANT => 'Оценка приемных испытаний',
         );
     }
 

@@ -4,6 +4,7 @@ namespace common\models\studyplan;
 
 use artsoft\helpers\ArtHelper;
 use artsoft\helpers\DocTemplate;
+use common\models\user\UserCommon;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use function morphos\Russian\inflectName;
@@ -105,38 +106,53 @@ class StudyplanCertDoc
         return trim($text);
     }
 
+    /**
+     * @param $id
+     * @return array
+     */
     protected function getEducationName($id)
     {
+        $name = [];
         switch ($id) {
             case  1000:
-                $name = 'дополнительной предпрофессиональной программы в области музыкального искусства';
+                $name[0] = 'дополнительной предпрофессиональной программы в области искусств';
+                $name[1] = 'дополнительную предпрофессиональную программу в области музыкального искусства';
                 break;
             case  1001:
-                $name = 'дополнительной общеразвивающей программы в области музыкального искусства';
+                $name[0] = 'дополнительной общеразвивающей программы в области искусств';
+                $name[1] = 'дополнительную общеразвивающую программу в области музыкального искусства';
                 break;
             case  1002:
-                $name = 'дополнительной предпрофессиональной программы в области изобразительного искусства';
+                $name[0] = 'дополнительной предпрофессиональной программы в области искусств';
+                $name[1] = 'дополнительную предпрофессиональную программу в области изобразительного искусства';
                 break;
             case  1003:
-                $name = 'дополнительной общеразвивающей программы в области изобразительного искусства';
+                $name[0] = 'дополнительной общеразвивающей программы в области искусств';
+                $name[1] = 'дополнительную общеразвивающую программу в области изобразительного искусства';
                 break;
             case  1004:
-                $name = 'дополнительной общеразвивающей программы в области хореографического искусства';
+                $name[0] = 'дополнительной общеразвивающей программы в области искусств';
+                $name[1] = 'дополнительную общеразвивающую программу в области хореографического искусства';
                 break;
             case  1005:
-                $name = 'дополнительной общеразвивающей программы в области театрального искусства';
+                $name[0] = 'дополнительной общеразвивающей программы в области искусств';
+                $name[1] = 'дополнительную общеразвивающую программу в области театрального искусства';
                 break;
             case  1006:
-                $name = 'дополнительной общеразвивающей программы в области искусств';
+                $name[0] = 'дополнительной общеразвивающей программы в области искусств';
+                $name[1] = 'дополнительную общеразвивающую программу в области искусств';
                 break;
             case  1007:
-                $name = 'дополнительной общеразвивающей программы в области декоративно - прикладного искусства';
+                $name[0] = 'дополнительной общеразвивающей программы в области искусств';
+                $name[1] = 'дополнительную общеразвивающей программу в области декоративно - прикладного искусства';
                 break;
             case  1008:
-                $name = 'образовательного курса в области развития';
+                $name[0] = 'образовательного курса в области развития';
+                $name[1] = 'образовательный курс в области развития';
                 break;
             default  :
-                $name = '';
+                $name[0] = '';
+                $name[1] = '';
                 break;
 
         }
@@ -147,17 +163,21 @@ class StudyplanCertDoc
     {
         $model = $this->model;
         $save_as = str_replace(' ', '_', $model->student->fullName);
-        $studentFio = explode(' ', inflectName($model->student->fullName, 'дательный')); // Полное имя ученика дательный
+        $studentFio = explode(' ', $model->student->fullName); // Полное имя ученика именительный
+        //$studentFio = explode(' ', inflectName($model->student->fullName, 'дательный')); // Полное имя ученика дательный
         $spec = $model->getSpeciality();
         $term_mastering = $model->programm->term_mastering;
 
         $data[] = [
             'rank' => 'doc',
+            'text_top' => $model->student->userGender == UserCommon::GENDER_FEMALE ? 'освоила' : (UserCommon::GENDER_MALE ? 'освоил' : 'освоил(освоила)'),
+            'text' => $model->student->userGender == UserCommon::GENDER_FEMALE ? 'прошла'  : (UserCommon::GENDER_MALE ? 'прошел' : 'прошел(прошла)'),
             'student_first_name' => $studentFio[0],
             'student_last_name' => $studentFio[1] . ' ' . $studentFio[2],
             'speciality' => $spec ? '- ' . $spec : '',
             'programm_name' => $this->filterProgrammName($model->programm->name), // название программы
-            'programm_cat' => $this->getEducationName($model->programm->educationCat->id), // название категории программы
+            'programm_cat_top' => $this->getEducationName($model->programm->educationCat->id)[0], // название категории программы
+            'programm_cat' => $this->getEducationName($model->programm->educationCat->id)[1], // название категории программы
             'term_mastering_pur' => $term_mastering . ' ' . ArtHelper::per($term_mastering), // Срок обучения
         ];
 

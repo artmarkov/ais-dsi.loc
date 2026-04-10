@@ -481,6 +481,8 @@ class DefaultController extends MainController
 
             $searchName = StringHelper::basename($searchModel::className());
             $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['status'] = 1;
+            $params[$searchName]['direction_id'] = 1000;
             $params[$searchName]['subject_sect_id'] = $id;
             $params[$searchName]['plan_year'] = $model_date->plan_year;
             $dataProvider = $searchModel->search($params);

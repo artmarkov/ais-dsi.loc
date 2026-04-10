@@ -116,7 +116,7 @@ $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark
                                     'multiple' => false,
                                 ],
                                 'pluginOptions' => [
-                                    'allowClear' => false,
+                                    'allowClear' => true,
                                 ],
                             ]);
                             ?>
