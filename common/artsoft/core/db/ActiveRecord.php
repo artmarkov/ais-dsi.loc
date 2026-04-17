@@ -95,4 +95,12 @@ class ActiveRecord extends \yii\db\ActiveRecord
         $ar = self::getDocStatusList();
         return isset($ar[$val]) ? $ar[$val] : $val;
     }
+   /*
+    public function beforeDelete()
+    {
+        $this->updated_at = time();
+        $this->updated_by = Yii::$app->user->identity->getId();
+        $this->save();
+        return parent::beforeDelete();
+    }*/
 }

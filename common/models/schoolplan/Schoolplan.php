@@ -221,7 +221,8 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['auditory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditory::class, 'targetAttribute' => ['auditory_id' => 'id']],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => GuidePlanTree::class, 'targetAttribute' => ['category_id' => 'id']],
             [['activities_over_id'], 'exist', 'skipOnError' => true, 'targetClass' => ActivitiesOver::class, 'targetAttribute' => ['activities_over_id' => 'id']],
-            [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
+            [['time_in', 'time_out'], 'match', 'pattern' => '/^([01]?[0-9]|2[0-3])(:|\.)[0-5][0-9]$/'],
+//            [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['date_out'], 'compareTimestamp', 'skipOnEmpty' => false],
             [['date_in'], 'addNew', 'skipOnEmpty' => false, 'when' => function ($model) {
                 return Art::isFrontend() && $model->isNewRecord;
@@ -310,7 +311,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function validateOwnSchoolplan($attribute, $params, $validator)
     {
         $message = '';
-        if($this->auditory_id) {
+        if ($this->auditory_id) {
             if ($this->getOwnSchoolplanOverLapping()->exists() === true) {
                 $info = [];
                 foreach ($this->getOwnSchoolplanOverLapping()->all() as $itemModel) {
@@ -376,7 +377,6 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     }
 
     public function checkFormatDateTime($attribute, $params)
-
     {
         if (!preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])(-|\.)(0[1-9]|1[0-2])(-|\.)[0-9]{4}(\s)([01]?[0-9]|2[0-3])(:|\.)[0-5][0-9]$/", $this->$attribute)) {
             $this->addError($attribute, 'Формат ввода даты и времени не верен.');
@@ -719,9 +719,9 @@ class Schoolplan extends \artsoft\db\ActiveRecord
      */
     public function setActivitiesOver($id = null)
     {
-       // print_r($this->executor_over_id);die();
+        // print_r($this->executor_over_id);die();
         if ($this->period_over_flag) {
-            if(is_array($this->executor_over_id)) {
+            if (is_array($this->executor_over_id)) {
                 $this->executor_over_id = $this->executor_over_id[0];
             }
             $transaction = \Yii::$app->db->beginTransaction();
@@ -733,7 +733,8 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $model->title = $this->title_over;
             $model->over_category = 2;
             $model->department_list = $this->department_list;
-            $model->executors_list = [$this->executor_over_id] /*Art::isBackend() ? [$this->executor_over_id] : [$this->executor_over_id[0]]*/; // TODO не пойму в чем проблема костыль!
+            $model->executors_list = [$this->executor_over_id] /*Art::isBackend() ? [$this->executor_over_id] : [$this->executor_over_id[0]]*/
+            ; // TODO не пойму в чем проблема костыль!
             if ($model->save(false)) {
                 $this->activities_over_id = $model->id;
                 $transaction->commit();
@@ -1135,7 +1136,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 
     public static function getExecutorsListById($studyplan_id)
     {
-        if (!$studyplan_id ) return [];
+        if (!$studyplan_id) return [];
 
         $teachersList = TeachersLoadStudyplanView::find()
             ->select('teachers_id')

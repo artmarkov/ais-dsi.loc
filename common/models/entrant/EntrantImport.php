@@ -52,23 +52,18 @@ class EntrantImport extends Model
                 foreach ($sheet->getRowIterator() as $i => $row) {
                     /* @var $row Row */
                     $v = $row->toArray();
-                    if ($v[1] == 'Mos.ru') {
-                        $data[] = [
-                            'fullname' => $v[3],
-                            'snils' => $v[4],
-                            'subjects' => $v[5],
-                        ];
-                    } elseif ($v[1] == 'МПГУ') {
-                        if (is_a($v[6], 'DateTime')) { // если объект DateTime
-                            $v[6] = $v[6]->format('d.m.Y');
+                    if ($v[1] == 'МПГУ') {
+                        if (is_a($v[4], 'DateTime')) { // если объект DateTime
+                            $v[4] = $v[4]->format('d.m.Y');
                         }
                         $data[] = [
-                            'fullname' => $v[4],
-                            'snils' => $v[5],
-                            'subjects' => $v[3],
-                            'birth_date' => $v[6],
-                            'gender' => $v[7],
+                            'fullname' => $v[3],
+                            'birth_date' => $v[4],
+                            'gender' => $v[5],
+                            'snils' => $v[6],
+                            'email' => $v[8],
                             'phone' => $v[9],
+                            'subjects' => $v[13],
                         ];
                     } else {
                         if (1 == $i) {
@@ -80,7 +75,7 @@ class EntrantImport extends Model
                     }
                 }
             }
-            $data_array = ArrayHelper::index($data, null,'fullname');
+            $data_array = ArrayHelper::index($data, null, 'fullname');
             $data = ArrayHelper::index($data, 'fullname');
            // echo '<pre>' . print_r($data, true) . '</pre>'; die();
             foreach (array_unique($data, SORT_REGULAR) as $fullName => $val) {
@@ -97,9 +92,11 @@ class EntrantImport extends Model
                         $userCommon->middle_name = $array[2];
                         $userCommon->birth_date = $val['birth_date'] ?? null;
                         $userCommon->phone = $val['phone'] ?? null;
+                        $userCommon->email = $val['email'] ?? null;
                         $user->username = $userCommon->generateUsername();
                         $user->generateAuthKey();
                         $user->status = User::STATUS_INACTIVE;
+                        $user->email = $val['email'];
 
                         if ($flag = $user->save(false)) {
                             $user->assignRoles(['student']);
@@ -109,7 +106,7 @@ class EntrantImport extends Model
                             $userCommon->status = UserCommon::STATUS_ACTIVE;
                             $userCommon->snils = $val['snils'];
                             $userCommon->gender = $this->getGender($val['gender']);
-                           // echo '<pre>' . print_r($data, true) . '</pre>';
+                            // echo '<pre>' . print_r($data, true) . '</pre>';
                             if ($flag = $userCommon->save(false)) {
                                 $modelStudent->user_common_id = $userCommon->id;
                                 if (!($flag = $modelStudent->save(false))) {
@@ -137,6 +134,10 @@ class EntrantImport extends Model
                         $model->group_id = $this->getGroup($this->com_id);
                         $model->subject_list = $this->getSubjects($data_array[$fullName]);
                         $model->save(false);
+                    } else {
+                        $model->subject_list = array_unique(array_merge($model->subject_list, $this->getSubjects($data_array[$fullName])));
+                       // echo '<pre>' . print_r($model, true) . '</pre>'; die();
+                        $model->save(false);
                     }
                 }
             }
@@ -156,7 +157,7 @@ class EntrantImport extends Model
                 ['last_name' => $array[0]],
             ]);
 
-        if ($array[2] != null) {
+        if (isset($array[2]) && $array[2] != null) {
             $user = $user->andWhere(['like', 'middle_name', $array[2]]);
         }
 
@@ -168,9 +169,11 @@ class EntrantImport extends Model
         $subject = [];
         $array = ArrayHelper::getColumn($array, 'subjects');
         foreach ($array as $name) {
+            $name = str_replace('«ДШИ им. И.Ф.Стравинского» улица Митинская, д. 47, корп. 1', '', $name);
+            $name = trim($name);
             $subject[] = $this->getSubject($name);
         }
-        return $subject;
+        return array_unique($subject);
     }
 
     protected function getSubject($name)
@@ -181,13 +184,13 @@ class EntrantImport extends Model
 
     protected function getGender($name)
     {
-        return $name == 'Мужской' ? UserCommon::GENDER_MALE : ($name == 'Женский' ? UserCommon::GENDER_FEMALE : UserCommon::GENDER_NOT_SET);
+        return $name == 'М' ? UserCommon::GENDER_MALE : ($name == 'Ж' ? UserCommon::GENDER_FEMALE : UserCommon::GENDER_NOT_SET);
     }
 
     protected function getSubjectName($name)
     {
-        $array = explode(',', $name);
-        $name =  $array[0];
+        /*$array = explode(',', $name);
+        $name =  $array[0];*/
         switch ($name) {
             case 'Музыкальный фольклор' :
                 $name = 'Фольклорный ансамбль';
@@ -195,7 +198,16 @@ class EntrantImport extends Model
             case 'Хоровое пение' :
                 $name = 'Хор';
                 break;
-            case 'Ударные инструменты' :
+            case 'Народные инструменты' :
+                $name = 'Гитара';
+                break;
+            case 'Струнные инструменты' :
+                $name = 'Скрипка';
+                break;
+            case 'Инструменты эстрадного оркестра' :
+                $name = 'Электрогитара';
+                break;
+            case 'Духовые и ударные инструменты' :
                 $name = 'Ударные';
                 break;
         }
@@ -207,7 +219,7 @@ class EntrantImport extends Model
     {
         $model = EntrantGroup::find()->where(['comm_id' => $comm_id])->andWhere(['name' => 'Mos.ru'])->one() ?? new EntrantGroup();
         $model->name = 'Mos.ru';
-        $model->timestamp_in = \Yii::$app->formatter->asDatetime(time()-10800, 'php:d.m.Y H:i');
+        $model->timestamp_in = \Yii::$app->formatter->asDatetime(time() - 10800, 'php:d.m.Y H:i');
         $model->comm_id = $comm_id;
         $model->prep_flag = 0;
 

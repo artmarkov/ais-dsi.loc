@@ -66,6 +66,7 @@ class m230705_153245_add_schoolplan_permissions extends PermissionsMigration
                     'links' => [
                         '/schoolplan/default/create',
                         '/schoolplan/default/update',
+                        '/schoolplan/default/resume',
                         '/schoolplan/default/delete',
                         '/schoolplan/default/clone',
                     ],
@@ -84,6 +85,7 @@ class m230705_153245_add_schoolplan_permissions extends PermissionsMigration
                         '/admin/schoolplan/default/history',
                         '/admin/schoolplan/default/create',
                         '/admin/schoolplan/default/update',
+                        '/admin/schoolplan/default/resume',
                         '/admin/schoolplan/default/delete',
                         '/admin/schoolplan/default/clone',
                         '/admin/schoolplan/default/grid-sort',

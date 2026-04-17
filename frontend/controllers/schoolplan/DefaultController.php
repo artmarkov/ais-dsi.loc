@@ -12,6 +12,7 @@ use common\models\schoolplan\Schoolplan;
 use common\models\schoolplan\SchoolplanPerform;
 use common\models\schoolplan\SchoolplanProtocol;
 use common\models\schoolplan\SchoolplanProtocolConfirm;
+use common\models\schoolplan\SchoolplanResume;
 use common\models\schoolplan\SchoolplanView;
 use common\models\schoolplan\search\SchoolplanPerformSearch;
 use common\models\schoolplan\search\SchoolplanProtocolSearch;
@@ -589,6 +590,29 @@ class DefaultController extends MainController
         return json_encode(['output' => '', 'selected' => '']);
     }
 
+    public function actionResume($id, $readonly = false)
+    {
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        /* @var $model \artsoft\db\ActiveRecord */
+        $model = SchoolplanResume::findOne($id);
+        if (!$model->isAuthor()) {
+            $readonly == true;
+        }
+        if (!in_array($model->doc_status, [Schoolplan::DOC_STATUS_DRAFT, Schoolplan::DOC_STATUS_MODIF])) {
+            $readonly = true;
+        }
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            if ($model->save(false)) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($model);
+            }
+        }
+        return $this->render('_resume', [
+            'model' => $model,
+            'readonly' => $readonly
+        ]);
+    }
+
     /**
      * @param $id
      * @return array
@@ -602,7 +626,7 @@ class DefaultController extends MainController
             ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/view', 'id' => $id]],
             ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id], 'visible' => $model->category->perform_flag /*&& $roleAvailable*/],// не пойму - роли не работают здесь
             ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol', 'id' => $id], 'visible' => $model->category->protocol_flag /*&& $roleAvailable*/],
-//            ['label' => 'Показатели эффективности', 'url' => ['/schoolplan/default/teachers-efficiency', 'id' => $id], 'visible' => $model->category->efficiency_flag],
+            ['label' => 'Итоги мероприятия', 'url' => ['/schoolplan/default/resume', 'id' => $id], 'visible' => true],
         ];
     }
 }

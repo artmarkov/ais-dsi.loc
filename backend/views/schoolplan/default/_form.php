@@ -19,7 +19,6 @@ use yii\helpers\Url;
 <?php
 $subject_category_name_list = RefBook::find('subject_category_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList();
 $subject_vid_name_list = RefBook::find('subject_vid_name', $model->isNewRecord ? \common\models\subject\SubjectCategory::STATUS_ACTIVE : '')->getList();
-$readonlyResult = (\artsoft\Art::isFrontend() && $model->isAuthor() && Yii::$app->formatter->asTimestamp($model->datetime_out) < time()) ? false : $readonly; // для возможности редактировать результаты и добавлять файлы автору мероприятия
 ?>
     <div class="schoolplan-plan-form">
 
@@ -29,9 +28,7 @@ $form = ActiveForm::begin([
     'validateOnBlur' => false,
     'options' => ['enctype' => 'multipart/form-data'],
 ])
-
 ?>
-
     <div class="panel">
         <div class="panel-heading">
             Карточка мероприятия
@@ -40,14 +37,6 @@ $form = ActiveForm::begin([
             <?php endif; ?>
         </div>
         <div class="panel-body">
-            <?php if (!$model->isNewRecord): ?>
-                <?php $text = $readonlyResult ? 'Мероприятие завершено. Вы можете добавить информация в блоки "Загруженные материалы" и "Итоги мероприятия"' : 'После окончания мероприятия в любом статусе, Вы сможете добавить информацию в блоки "Загруженные материалы" и "Итоги мероприятия"' ?>
-    <?= (\artsoft\Art::isFrontend() && $model->isAuthor()) ? \yii\bootstrap\Alert::widget([
-                'body' => '<i class="fa fa-info"></i> ' . $text,
-                'options' => ['class' => 'alert-info'],
-            ]) : null;
-            ?>
-            <?php endif; ?>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="panel panel-info">
@@ -116,8 +105,6 @@ $form = ActiveForm::begin([
 
                                         ]);
                                         ?>
-
-
                                         <?= $form->field($model, 'category_id')->widget(\kartik\tree\TreeViewInput::class, [
                                             'id' => "schoolplan_category_tree",
                                             'options' => [
@@ -180,7 +167,6 @@ $form = ActiveForm::begin([
                         <?php endif; ?>
                     </div>
                 </div>
-
                 <div id="activitiesOver" class="row">
                     <div class="col-sm-12">
                         <div class="panel panel-info">
@@ -265,7 +251,6 @@ $form = ActiveForm::begin([
 
                                             <?php endif; ?>
 
-
                                         </div>
                                     </div>
                                 </div>
@@ -277,7 +262,7 @@ $form = ActiveForm::begin([
                             <div class="col-sm-12">
                                 <div class="panel panel-info">
                                     <div class="panel-heading">
-                                        Загруженные материалы
+                                        Загруженные материалы(афиша, программа)
                                     </div>
                                     <div class="panel-body">
                                         <div class="row" id="file">
@@ -288,7 +273,7 @@ $form = ActiveForm::begin([
                                                 ]);
                                                 ?>
                                                 <?= artsoft\fileinput\widgets\FileInput::widget(['model' => $model, 'options' => ['multiple' => true], /*'pluginOptions' => ['theme' => 'explorer'],*/
-                                                    'disabled' => $readonlyResult]) ?>
+                                                    'disabled' => $readonly]) ?>
                                             </div>
                                         </div>
                                     </div>
@@ -304,7 +289,7 @@ $form = ActiveForm::begin([
                                         Протокол мероприятия
                                     </div>
                                     <div class="panel-body">
-                                        <?= $form->field($model, 'protocolFlag')->checkbox(['disabled' => $readonly])->label('Раскрыть карточку комиссии для протокола мероприятия') ?>
+                                        <?= $form->field($model, 'protocolFlag')->checkbox(['disabled' => $readonly])->label('Раскрыть блок настройки аттестационной комиссии') ?>
                                         <div class="col-sm-12" id="protocol">
                                         <?php echo \yii\bootstrap\Alert::widget([
                                             'body' => '<i class="fa fa-info-circle"></i> Оценки в протоколе могут выставлять только Члены комиссии.',
@@ -327,9 +312,7 @@ $form = ActiveForm::begin([
                                                             'pluginOptions' => [
                                                                 'allowClear' => false,
                                                             ],
-
                                                         ]);
-
                                                         ?>
                                                     </div>
                                                     <div id="protocolLeaderName">
@@ -346,9 +329,7 @@ $form = ActiveForm::begin([
                                                         'pluginOptions' => [
                                                             'allowClear' => false,
                                                         ],
-
                                                     ]);
-
                                                     ?>
                                                     <?= $form->field($model, 'protocol_secretary_id')->widget(\kartik\select2\Select2::class, [
                                                         'data' => User::getUsersByIds(User::getUsersByRole('department,administrator,employees')),
@@ -363,7 +344,6 @@ $form = ActiveForm::begin([
                                                         ],
 
                                                     ]);
-
                                                     ?>
                                                     <?= $form->field($model, 'protocol_members_list')->widget(\kartik\select2\Select2::class, [
     //                                                    'data' => \common\models\teachers\Teachers::getUserTeachersForDepartment($model->department_list),
@@ -377,7 +357,6 @@ $form = ActiveForm::begin([
                                                         'pluginOptions' => [
                                                             'allowClear' => true,
                                                         ],
-
                                                     ]);
 
                                                     ?>
@@ -392,8 +371,8 @@ $form = ActiveForm::begin([
                                                             'disabled' => $readonly,
                                                             'allowClear' => true
                                                         ],
-
-                                                    ]); ?>
+                                                    ]);
+                                                    ?>
                                                     <?= $form->field($model, 'protocol_subject_id')->widget(\kartik\depdrop\DepDrop::class, [
                                                         'data' => \common\models\subject\Subject::getSubjectByCategory($model->protocol_subject_cat_id),
                                                         'options' => [
@@ -423,11 +402,8 @@ $form = ActiveForm::begin([
                                                         'pluginOptions' => [
                                                             'allowClear' => true,
                                                         ],
-
                                                     ]);
-
                                                     ?>
-
                                                     <?= $form->field($model, 'protocol_class_list')->widget(\kartik\select2\Select2::class, [
                                                         'data' => \artsoft\helpers\ArtHelper::getCourseList(),
                                                         'showToggleAll' => false,
@@ -439,11 +415,8 @@ $form = ActiveForm::begin([
                                                         'pluginOptions' => [
                                                             'allowClear' => true,
                                                         ],
-
                                                     ]);
-
                                                     ?>
-
                                                 </div>
                                             </div>
                                         </div>
@@ -452,29 +425,6 @@ $form = ActiveForm::begin([
                             </div>
                         </div>
                     <?php endif; ?>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="panel panel-info">
-                                <div class="panel-heading">
-                                    Итоги мероприятия
-                                </div>
-                                <div class="panel-body">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <?= $form->field($model, 'result')->textarea(['rows' => 6, 'disabled' => $readonlyResult])->hint('Введите данные о результатах мероприятия с указанием фамилии и имени учащихся, ФИО преподавателей и концертмейстеров в формате: Иванов Иван (преп. Петров П.П., конц. Сидоров С.С.) – лауреат I степени. В случае, если учащийся не получил награды по итогам мероприятия, он вносится как участник. Если участие в мероприятии не состоялось, укажите причину, по которой оно было отменено.') ?>
-
-                                            <?= $form->field($model, 'num_users')->textInput(['disabled' => $readonlyResult])->hint('Укажите, какое количество человек предположительно будет принимать участие в мероприятии. В случае, если Вы сами являетесь организатором, указывается точное количество участников, включая организаторов и преподавателей. Если вы не являетесь организатором указанного мероприятия, то в критерии учитываются только участники непосредственно от учреждения.') ?>
-
-                                            <?= $form->field($model, 'num_winners')->textInput(['disabled' => $readonlyResult]) ?>
-
-                                            <?= $form->field($model, 'num_visitors')->textInput(['disabled' => $readonlyResult]) ?>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 <?php endif; ?>
                 <div class="row">
                     <div class="col-sm-12">
@@ -497,7 +447,6 @@ $form = ActiveForm::begin([
                                                 'allowClear' => false,
                                                 //'minimumInputLength' => 3,
                                             ],
-
                                         ]);
                                         ?>
                                         <?= $form->field($model, 'signer_id')->widget(\kartik\select2\Select2::class, [
@@ -511,7 +460,6 @@ $form = ActiveForm::begin([
                                             'pluginOptions' => [
                                                 'allowClear' => false,
                                             ],
-
                                         ]);
                                         ?>
                                         <?= $form->field($model->loadDefaultValues(), 'doc_status')->widget(\kartik\select2\Select2::class, [
@@ -526,10 +474,8 @@ $form = ActiveForm::begin([
                                                 'allowClear' => false,
                                                 //'minimumInputLength' => 3,
                                             ],
-
                                         ]);
                                         ?>
-
                                         <?php if (!$model->isNewRecord && $model->category->bars_flag && \artsoft\Art::isBackend()) : ?>
                                             <?= $form->field($model, 'bars_flag')->checkbox(['disabled' => $readonly]) ?>
                                         <?php endif; ?>
@@ -564,7 +510,6 @@ $form = ActiveForm::begin([
             <div class="panel-footer">
                 <div class="form-group btn-group">
                     <?= !$readonly ? \artsoft\helpers\ButtonHelper::submitButtons($model) : ($model->isAuthor() && $model->doc_status == Schoolplan::DOC_STATUS_DRAFT ? \artsoft\helpers\ButtonHelper::viewButtons($model) : \artsoft\helpers\ButtonHelper::exitButton()); ?>
-                    <?= $readonly && !$readonlyResult ? \artsoft\helpers\ButtonHelper::saveButton() : ''; ?>
                 </div>
                 <?= \artsoft\widgets\InfoModel::widget(['model' => $model]); ?>
             </div>

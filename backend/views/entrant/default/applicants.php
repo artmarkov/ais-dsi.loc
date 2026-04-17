@@ -132,13 +132,13 @@ $subjectFormList = RefBook::find('subject_form_name')->getList();
                     [
                         'attribute' => 'subject_list',
                         'filter' => \common\models\subject\Subject::getSubjectByCategory(1000),
-                        'value' => function (Entrant $model) {
+                        'value' => function (Entrant $model) use($subjectList){
                             $v = [];
                             foreach ($model->subject_list as $id) {
                                 if (!$id) {
                                     continue;
                                 }
-                                $v[] = $subjectList[$id] ?? '';
+                                $v[] = $subjectList[$id] ?? $id;
                             }
                             return implode('<br/> ', $v);
                         },
