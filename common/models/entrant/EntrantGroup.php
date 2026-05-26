@@ -2,6 +2,7 @@
 
 namespace common\models\entrant;
 
+use artsoft\behaviors\ArrayFieldBehavior;
 use artsoft\behaviors\DateFieldBehavior;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -21,6 +22,10 @@ use yii\behaviors\TimestampBehavior;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
+ * @property int $group_secretary_id
+ * @property int $group_leader_id
+ * @property int $group_soleader_id
+ * @property string $group_members_list
  *
  * @property Entrant[] $entrants
  * @property EntrantComm $comm
@@ -42,11 +47,12 @@ class EntrantGroup extends \artsoft\db\ActiveRecord
     {
         return [
             [['comm_id', 'timestamp_in', 'prep_flag', 'name'], 'required'],
-            [['comm_id', 'prep_flag', 'version'], 'integer'],
+            [['comm_id', 'prep_flag', 'version', 'group_secretary_id', 'group_leader_id', 'group_soleader_id'], 'integer'],
             [['timestamp_in'], 'safe'],
             [['prep_flag'], 'default', 'value' => 0],
             [['name'], 'string', 'max' => 255],
             [['description'], 'string', 'max' => 1024],
+            [['group_members_list'], 'safe'],
             [['comm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantComm::className(), 'targetAttribute' => ['comm_id' => 'id']],
         ];
     }
@@ -59,6 +65,10 @@ class EntrantGroup extends \artsoft\db\ActiveRecord
         return [
             BlameableBehavior::class,
             TimestampBehavior::class,
+            [
+                'class' => ArrayFieldBehavior::class,
+                'attributes' => ['group_members_list'],
+            ],
             [
                 'class' => DateFieldBehavior::class,
                 'attributes' => ['timestamp_in'],
@@ -83,6 +93,10 @@ class EntrantGroup extends \artsoft\db\ActiveRecord
             'updated_at' => Yii::t('art', 'Updated'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'group_secretary_id' => Yii::t('art/guide', 'Secretary'),
+            'group_members_list' => Yii::t('art/guide', 'Members List'),
+            'group_leader_id' => Yii::t('art/guide', 'Leader'),
+            'group_soleader_id' => 'Заместитель председателя',
         ];
     }
 

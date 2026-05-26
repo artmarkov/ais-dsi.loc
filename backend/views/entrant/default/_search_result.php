@@ -22,6 +22,17 @@ use artsoft\widgets\ActiveForm;
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
+                        <?= $form->field($model_date, 'members_id')->widget(\kartik\select2\Select2::className(), [
+                            'data' => ['0' => '-- Все члены комиссии --'] + $model->getEntrantMembersList(),
+                            'options' => [
+//                                'placeholder' => Yii::t('art', 'Select...'),
+                                'multiple' => false,
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ])->label(Yii::t('art/guide', 'Members Item'));
+                        ?>
                         <?= $form->field($model_date, 'group_id')->widget(\kartik\select2\Select2::class, [
                             'data' => \common\models\entrant\Entrant::getCommGroupList($model->id),
                             'options' => [
@@ -33,9 +44,8 @@ use artsoft\widgets\ActiveForm;
                             ]
                         ])->label(Yii::t('art/guide', 'Entrant Groups'));
                         ?>
-<!--                        --><?php //echo $form->field($model_date, 'direction')->textInput(['maxlength' => true])->label('Направление')->hint('Например: Фортепиано'); ?>
-                        <?= $form->field($model_date, 'leader_name')->textInput(['maxlength' => true])->label('Председатель комиссии')->hint('Например: И.И. Иванов'); ?>
-                        <?= $form->field($model_date, 'soleader_name')->textInput(['maxlength' => true])->label('Заместитель председателя комиссии')->hint('Например: И.И. Петров'); ?>
+<!--                        --><?php //echo $form->field($model_date, 'prep_flag')->radioList(\common\models\entrant\EntrantGroup::getPrepList())->label(Yii::t('art/guide', 'Prep Flag')); ?>
+<!--                        --><?php //echo $form->field($model_date, 'free_flag')->checkbox()->label('Чистый бланк (очистить данные)'); ?>
                     </div>
                 </div>
             </div>

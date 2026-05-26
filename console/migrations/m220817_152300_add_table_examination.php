@@ -175,13 +175,14 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
         $this->addForeignKey('entrant_test_ibfk_5', 'entrant_test', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('entrant_view', '
-  SELECT entrant.id,
+   SELECT entrant.id,
     entrant.student_id,
     entrant.comm_id,
     entrant.group_id,
     concat(entrant_group.name, \' - \', to_char(to_timestamp(entrant_group.timestamp_in::double precision), \'DD.MM.YYYY HH24:mi\'::text)) AS group_name,
     entrant.subject_list,
     entrant.last_experience,
+    entrant.remark,
     entrant.decision_id,
     entrant.reason,
     entrant.programm_id,
@@ -191,6 +192,10 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
     entrant.status,
     entrant_group.timestamp_in,
     entrant_group.prep_flag,
+        CASE
+            WHEN entrant_group.group_members_list::text <> \'\'::text THEN entrant_group.group_members_list
+            ELSE entrant_comm.members_list
+        END AS members_list,
         CASE
             WHEN (( SELECT avg(guide_lesson_mark.mark_value) AS avg
                FROM entrant_members
@@ -207,13 +212,15 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
     concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS fio,
     user_common.birth_date,
     date_part(\'year\'::text, age(to_timestamp(user_common.birth_date::double precision)::date::timestamp with time zone))::integer AS birth_date_age,
-	studyplan.id AS studyplan_id
+    studyplan.id AS studyplan_id,
+    user_common.phone,
+    user_common.phone_optional
    FROM entrant
      JOIN students ON students.id = entrant.student_id
      JOIN user_common ON user_common.id = students.user_common_id
      JOIN entrant_group ON entrant_group.id = entrant.group_id
      JOIN entrant_comm ON entrant_comm.id = entrant.comm_id
-	 LEFT JOIN studyplan ON (entrant.programm_id = studyplan.programm_id AND entrant.student_id = studyplan.student_id AND entrant.course = studyplan.course AND entrant_comm.plan_year = studyplan.plan_year)
+     LEFT JOIN studyplan ON entrant.programm_id = studyplan.programm_id AND entrant.student_id = studyplan.student_id AND entrant.course = studyplan.course AND entrant_comm.plan_year = studyplan.plan_year
   ORDER BY entrant.comm_id;
         ')->execute();
 

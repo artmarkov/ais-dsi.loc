@@ -47,8 +47,60 @@ use yii\widgets\MaskedInput;
 
                     <?= $form->field($model, 'timestamp_in')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_time_mask')])->widget(DateTimePicker::class)->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
+                    <?= $form->field($model, 'group_secretary_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => \artsoft\models\User::getUsersByIds($modelComm->members_list),
+                        'showToggleAll' => false,
+                        'options' => [
+                            'disabled' => $readonly,
+                            'value' => $model->group_secretary_id,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => false,
+                        ],
+                    ]);
+                    ?>
+                    <?= $form->field($model, 'group_leader_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => \artsoft\models\User::getUsersByIds($modelComm->members_list),
+                        'showToggleAll' => false,
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => false,
+                        ],
+                    ]);
+                    ?>
+                    <?= $form->field($model, 'group_soleader_id')->widget(\kartik\select2\Select2::class, [
+                        'data' => \artsoft\models\User::getUsersByIds($modelComm->members_list),
+                        'showToggleAll' => false,
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'multiple' => false,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => false,
+                        ],
+                    ]);
+                    ?>
+                    <?= $form->field($model, 'group_members_list')->widget(\kartik\select2\Select2::class, [
+                        'data' => \artsoft\models\User::getUsersByIds($modelComm->members_list),
+                        'showToggleAll' => false,
+                        'options' => [
+                            'disabled' => $readonly,
+                            'placeholder' => Yii::t('art', 'Select...'),
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => false,
+                        ],
+                    ]);
+                    ?>
                     <?= $form->field($model, 'description')->textarea(['rows' => '3', 'maxlength' => true]) ?>
-
                 </div>
             </div>
         </div>

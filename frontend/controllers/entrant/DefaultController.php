@@ -183,6 +183,7 @@ class DefaultController extends \frontend\controllers\DefaultController
                 $params[$searchName][$modelClass::getOwnerField()] = Yii::$app->user->identity->id;
             }
             $params[$searchName]['comm_id'] = $id;
+            $params[$searchName]['members_list'] = Yii::$app->user->identity->id;
             $dataProvider = $searchModel->search($params);
 
             return $this->renderIsAjax('applicants', compact('dataProvider', 'searchModel', 'id'));

@@ -29,7 +29,7 @@ use yii\web\UploadedFile;
  */
 class DefaultController extends MainController
 {
-    public $freeAccessActions = ['groups', 'department', 'subject'];
+    public $freeAccessActions = ['groups', 'department', 'subject', 'result'];
 
     public $modelClass = 'common\models\entrant\EntrantComm';
     public $modelClassEntrant = 'common\models\entrant\Entrant';
@@ -376,22 +376,23 @@ class DefaultController extends MainController
         if ('create' == $mode) {
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Entrant Groups'), 'url' => ['/entrant/default/group', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = 'Добавление группы';
-            $model = new EntrantGroup();
-            $model->comm_id = Yii::$app->request->get('id') ?: null;
-            $model->prep_flag = 1;
+            $modelGroup = new EntrantGroup();
+            $modelGroup->comm_id = Yii::$app->request->get('id') ?: null;
+            $modelGroup->prep_flag = 1;
 
             if ($model->load(Yii::$app->request->post())) {
-                $valid = $model->validate();
+                $valid = $modelGroup->validate();
                 if ($valid) {
-                    if ($model->save()) {
+                    if ($modelGroup->save()) {
                         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
-                        $this->getSubmitAction($model);
+                        $this->getSubmitAction($modelGroup);
                     }
                 }
             }
 
             return $this->renderIsAjax('/entrant/group/_form', [
-                'model' => $model,
+                'modelComm' => $model,
+                'model' => $modelGroup,
                 'readonly' => $readonly
             ]);
 
@@ -404,11 +405,11 @@ class DefaultController extends MainController
             return $this->renderIsAjax('/history/index', compact(['model', 'data']));
 
         } elseif ('delete' == $mode && $objectId) {
-            $model = EntrantGroup::findOne($objectId);
-            $model->delete();
+            $modelGroup = EntrantGroup::findOne($objectId);
+            $modelGroup->delete();
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
-            return $this->redirect($this->getRedirectPage('delete', $model));
+            return $this->redirect($this->getRedirectPage('delete', $modelGroup));
 
         } elseif ($objectId) {
 
@@ -417,24 +418,25 @@ class DefaultController extends MainController
             }
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Entrant Groups'), 'url' => ['/entrant/default/group', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
-            $model = EntrantGroup::findOne($objectId);
+            $modelGroup = EntrantGroup::findOne($objectId);
 
-            if (!isset($model)) {
+            if (!isset($modelGroup)) {
                 throw new NotFoundHttpException("The EntrantGroup was not found.");
             }
 
-            if ($model->load(Yii::$app->request->post())) {
-                $valid = $model->validate();
+            if ($modelGroup->load(Yii::$app->request->post())) {
+                $valid = $modelGroup->validate();
                 if ($valid) {
-                    if ($model->save()) {
+                    if ($modelGroup->save()) {
                         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
-                        $this->getSubmitAction($model);
+                        $this->getSubmitAction($modelGroup);
                     }
                 }
             }
 
             return $this->renderIsAjax('/entrant/group/_form', [
-                'model' => $model,
+                'modelComm' => $model,
+                'model' => $modelGroup,
                 'readonly' => $readonly
             ]);
 
@@ -458,7 +460,7 @@ class DefaultController extends MainController
         }
     }
 
-    public function actionProtocol($id)
+    public function actionResult($id)
     {
         $model = $this->findModel($id);
         $this->view->params['tabMenu'] = $this->getMenu($id);
@@ -467,17 +469,41 @@ class DefaultController extends MainController
 
         $this->view->params['breadcrumbs'][] = Yii::t('art/guide', 'Entrant Result');
 
-        $model_date = new DynamicModel(['members_id', 'free_flag', 'prep_flag', 'group_id']);
-        $model_date->addRule(['members_id', 'prep_flag', 'group_id'], 'required')
+        $model_date = new DynamicModel(['members_id', /*'free_flag', 'prep_flag',*/ 'group_id']);
+        $model_date->addRule(['members_id', /*'prep_flag',*/ 'group_id'], 'required')
             ->addRule(['members_id'], 'integer')
-            ->addRule(['free_flag'], 'boolean')
-            ->addRule(['prep_flag'], 'integer')
+//            ->addRule(['free_flag'], 'boolean')
+           // ->addRule(['prep_flag'], 'integer')
             ->addRule(['group_id'], 'safe');
 
         if ($model_date->load(Yii::$app->request->post()) && $model_date->validate()) {
             if (Yii::$app->request->post('submitAction') == 'excel') {
                 $data = $model->getSummaryData($model_date);
                 $model->sendXlsx($data);
+            }
+        }
+
+        return $this->renderIsAjax('result', compact('model_date', 'model', 'id'));
+
+    }
+
+    public function actionProtocol($id)
+    {
+        $model = $this->findModel($id);
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Entrant Comms'), 'url' => ['index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['entrant/default/view', 'id' => $id]];
+
+        $this->view->params['breadcrumbs'][] = 'Протоколы испытаний';
+
+        $model_date = new DynamicModel(['leader_name', 'soleader_name',/* 'direction',*/ 'group_id']);
+        $model_date->addRule(['leader_name', 'soleader_name', /*'direction',*/ 'group_id'], 'required')
+            ->addRule(['leader_name', 'soleader_name'/*, 'direction'*/], 'string')
+            ->addRule(['group_id'], 'safe');
+
+        if ($model_date->load(Yii::$app->request->post()) && $model_date->validate()) {
+            if (Yii::$app->request->post('submitAction') == 'excel') {
+                $model->sendProtocolXlsx($model_date);
             }
         }
 
@@ -637,7 +663,8 @@ class DefaultController extends MainController
             ['label' => 'Карточка вступительных экзаменов', 'url' => ['/entrant/default/update', 'id' => $id]],
             ['label' => 'Экзаменационные группы', 'url' => ['/entrant/default/group', 'id' => $id]],
             ['label' => 'Экзаменационная ведомость', 'url' => ['/entrant/default/applicants', 'id' => $id]],
-            ['label' => 'Результаты испытаний', 'url' => ['/entrant/default/protocol', 'id' => $id]],
+            ['label' => 'Протоколы испытаний', 'url' => ['/entrant/default/protocol', 'id' => $id]],
+            ['label' => 'Результаты испытаний', 'url' => ['/entrant/default/result', 'id' => $id],'visible' => true],
         ];
 
     }

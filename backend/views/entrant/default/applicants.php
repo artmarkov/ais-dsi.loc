@@ -4,6 +4,7 @@ use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use common\models\education\EntrantProgramm;
 use common\models\subject\Subject;
+use yii\db\Query;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use artsoft\grid\GridView;
@@ -62,6 +63,12 @@ $subjectFormList = RefBook::find('subject_form_name')->getList();
                 'id' => 'entrant-grid',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
+                'rowOptions' => function (Entrant $model) {
+                    if (\artsoft\Art::isFrontend() && $model->isMembersMarkExists()) {
+                        return ['class' => 'success'];
+                    };
+                    return [];
+                },
                 'bulkActionOptions' =>  \artsoft\models\User::hasRole('entrantAdmin') ? [
                     'gridId' => 'entrant-grid',
                     'actions' => \artsoft\Art::isBackend() ? [

@@ -224,38 +224,50 @@ class EntrantComm extends \artsoft\db\ActiveRecord
     public function getSummaryData($model_date)
     {
         $members_id = $model_date->members_id;
-        $free_flag = $model_date->free_flag;
-        $prep_flag = $model_date->prep_flag;
+//        $free_flag = $model_date->free_flag;
+        $free_flag = false;
+//        $prep_flag = $model_date->prep_flag;
         $group_id = $model_date->group_id;
-        $prep_list = $prep_flag == 0 ? $this->prep_off_test_list : $this->prep_on_test_list;
-
-        $testsNames = \yii\helpers\ArrayHelper::map(GuideEntrantTest::find()
-            ->where(['in', 'id', $prep_list])
-            ->select(['id', 'name'])
-            ->orderBy('name')
-            ->asArray()->all(), 'id', 'name');
+       // $prep_list = $prep_flag == 0 ? $this->prep_off_test_list : $this->prep_on_test_list;
 
         $models = (new Query())->from('entrant_members_view')
             ->where(['=', 'comm_id', $this->id])
             ->andWhere(['in', 'members_id', $members_id != 0 ? $members_id : $this->members_list])
-            ->andWhere(['=', 'prep_flag', $prep_flag])
+           // ->andWhere(['=', 'prep_flag', $prep_flag])
             ->andWhere(['group_id' => $group_id])
             ->orderBy('mid_mark DESC')->all();
         $models = ArrayHelper::index($models, null, ['student_id', 'entrant_test_id']);
 //        echo '<pre>' . print_r($models, true) . '</pre>';
         $modelsEntrant = (new Query())->from('entrant_view')
             ->where(['=', 'comm_id', $this->id])
-            ->andWhere(['=', 'prep_flag', $prep_flag])
+//            ->andWhere(['=', 'prep_flag', $prep_flag])
             ->andWhere(['group_id' => $group_id])
-            ->orderBy('fullname ASC')
-//            ->orderBy('mid_mark DESC')
+//            ->orderBy('fullname ASC')
+            ->orderBy('mid_mark DESC')
             ->distinct()->all();
+        $prep_flagList = ArrayHelper::getColumn($modelsEntrant, 'prep_flag');
+        $prep_flagList = array_unique(explode(',', implode(',', $prep_flagList)));
+
+        $prep_list = [];
+        foreach ($prep_flagList as $item => $prep_flag) {
+            if($prep_flag == 0) {
+                $prep_list = array_merge($prep_list, $this->prep_off_test_list);
+            } else {
+                $prep_list = array_merge($prep_list, $this->prep_on_test_list);
+            }
+        }
+
+        $prep_list = array_unique($prep_list);
+        $testsNames = \yii\helpers\ArrayHelper::map(GuideEntrantTest::find()
+            ->where(['in', 'id', $prep_list])
+            ->select(['id', 'name'])
+            ->asArray()->all(), 'id', 'name');
 
         $attributes = ['name' => 'Фамилия И.О.'];
         $attributes += ['birth_date' => 'Дата рождения (возраст)'];
         $attributes += ['group' => 'Группа'];
         $attributes += $testsNames;
-        $attributes += ['mid_mark' => 'Средняя оценка'];
+        $attributes += ['mid_mark' => 'Средний балл'];
         $attributes += ['decision' => 'Решение комиссии'];
         $attributes += ['programm' => 'Назначен учебный план'];
         $attributes += ['subject' => 'Специальность'];
@@ -278,7 +290,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
                 if (isset($models[$model['student_id']][$ids])) {
                     $mark = [];
                     foreach ($models[$model['student_id']][$ids] as $item => $value) {
-                        if($value['mark_value']) {
+                        if ($value['mark_value']) {
                             $mark[] = $value['mark_value'];
                         }
                     }
@@ -292,14 +304,14 @@ class EntrantComm extends \artsoft\db\ActiveRecord
 //            return $b['total'] <=> $a['total'];
 //        });
 
-        $members = \yii\helpers\ArrayHelper::map(UserCommon::find()
+        /*$members = \yii\helpers\ArrayHelper::map(UserCommon::find()
             ->innerJoin('users', "user_common.user_id = users.id")
             ->andWhere(['in', 'users.id', $members_id != 0 ? $members_id : $this->members_list])
             ->select(['users.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
             ->orderBy('user_common.last_name')
-            ->asArray()->all(), 'id', 'name');
+            ->asArray()->all(), 'id', 'name');*/
 
-        return ['data' => $data, 'attributes' => $attributes, 'members' => $members];
+        return ['data' => $data, 'attributes' => $attributes/*, 'members' => $members*/];
     }
 
     /**
@@ -315,10 +327,120 @@ class EntrantComm extends \artsoft\db\ActiveRecord
             foreach ($data['data'] as $item) { // данные
                 $x->addData($item);
             }
-            foreach ($data['members'] as $id => $item) { // данные
+            /*foreach ($data['members'] as $id => $item) { // данные
                 $x->addData(['course' => 'Подписант:', 'subject_form' => $item]);
-            }
+            }*/
 //            $x->addData(['stake' => 'Итого', 'total' => $data['all_summ']]);
+
+            \Yii::$app->response
+                ->sendContentAsFile($x, strtotime('now') . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '_entrant_result.xlsx', ['mimeType' => 'application/vnd.ms-excel'])
+                ->send();
+            exit;
+        } catch (\PhpOffice\PhpSpreadsheet\Exception | \yii\web\RangeNotSatisfiableHttpException $e) {
+            \Yii::error('Ошибка формирования xlsx: ' . $e->getMessage());
+            \Yii::error($e);
+            Yii::$app->session->setFlash('error', 'Ошибка формирования xlsx-выгрузки');
+            return true;
+        }
+    }
+
+    /**
+     * @param $data
+     * @return bool
+     * @throws \yii\base\Exception
+     */
+    public function sendProtocolXlsx($model_date)
+    {
+        ini_set('memory_limit', '512M');
+        $group_id = $model_date->group_id;
+        $leader_name = $model_date->leader_name;
+        $soleader_name = $model_date->soleader_name;
+//        $direction = $model_date->direction;
+
+        $modelsEntrant = (new Query())->from('entrant_view')
+            ->where(['=', 'comm_id', $this->id])
+            ->andWhere(['group_id' => $group_id])
+            ->orderBy('mid_mark DESC')
+            ->distinct()->all();
+        $prep_flagList = ArrayHelper::getColumn($modelsEntrant, 'prep_flag');
+        $prep_flagList = array_unique(explode(',', implode(',', $prep_flagList)));
+        $prep_list = [];
+        foreach ($prep_flagList as $item => $prep_flag) {
+            if($prep_flag == 0) {
+                $prep_list = array_merge($prep_list, $this->prep_off_test_list);
+            } else {
+                $prep_list = array_merge($prep_list, $this->prep_on_test_list);
+            }
+        }
+//        echo '<pre>' . print_r($prep_list, true) . '</pre>';
+//        die();
+
+        $prep_list = array_unique($prep_list);
+        $testsNames = \yii\helpers\ArrayHelper::map(GuideEntrantTest::find()
+            ->where(['id' => $prep_list])
+            ->select(['id', 'name'])
+            ->asArray()->all(), 'id', 'name');
+//        echo '<pre>' . print_r($testsNames, true) . '</pre>';
+//        die();
+        $membersList = ArrayHelper::getColumn($modelsEntrant, 'members_list');
+        $membersList = array_unique(explode(',', implode(',', $membersList)));
+
+        $models = (new Query())->from('entrant_members_view')
+            ->where(['=', 'comm_id', $this->id])
+            ->andWhere(['members_id' => $membersList])
+            ->andWhere(['group_id' => $group_id])
+            ->orderBy('mid_mark DESC')->all();
+
+        $members = \yii\helpers\ArrayHelper::map(UserCommon::find()
+            ->innerJoin('users', "user_common.user_id = users.id")
+            ->andWhere(['users.id' => $membersList])
+            ->select(['users.id as id', "concat(\"left\"(user_common.first_name::text, 1), '.', \"left\"(user_common.middle_name::text, 1), '. ', user_common.last_name) AS name"])
+            ->orderBy('user_common.last_name')
+            ->asArray()->all(), 'id', 'name');
+
+        $models = ArrayHelper::index($models, null, ['student_id', 'entrant_test_id']);
+        $attributes = ['name' => 'Фамилия И.О.'];
+        $attributes += ['group' => 'Группа'];
+        $attributes += $testsNames;
+        $attributes += ['mid_mark' => 'Средний балл'];
+
+        $data = [];
+        foreach ($modelsEntrant as $id => $model) {
+            $mid_mark = [];
+            $data[$id]['name'] = $model['fullname'];
+            $data[$id]['group'] = $model['group_name'];
+            foreach ($testsNames as $ids => $name) {
+                if (isset($models[$model['student_id']][$ids])) {
+                    $mark = [];
+                    foreach ($models[$model['student_id']][$ids] as $item => $value) {
+                        if ($value['mark_value']) {
+                            $mark[] = $value['mark_value'];
+                        }
+                    }
+                    $data[$id][$ids] = !empty($mark) ? round((array_sum($mark) / count($mark)), 2) : '';
+                    $mid_mark[] = $data[$id][$ids];
+                }
+            }
+            $data[$id]['mid_mark'] = !empty($mid_mark) ? round((array_sum($mid_mark) / count($mid_mark)), 2) : '';
+        }
+        try {
+            $x = new ExcelObjectList($attributes);
+//                $x->addData(['name' => 'Протокол комиссии по индивидуальному отбору']);
+//                $x->addData(['name' => 'по направлению ' . $direction]);
+//                $x->addData(['name' => '']);
+            foreach ($data as $item) {
+                $x->addData($item);
+            }
+            $testsNames = array_keys($testsNames);
+//            echo '<pre>' . print_r($testsNames, true) . '</pre>';
+//        die();
+                $x->addData(['name' => '']);
+                $x->addData(['name' => 'Председатель комиссии', 'group' => '_______________________', $testsNames[0] => $leader_name]);
+                $x->addData(['name' => 'Заместитель председателя комиссии', 'group' => '_______________________', $testsNames[0] => $soleader_name]);
+                $x->addData(['name' => 'Члены комиссии:']);
+            foreach ($members as $id => $item) { // данные
+                $x->addData(['name' => '', 'group' => '_______________________', $testsNames[0] => $item]);
+            }
 
             \Yii::$app->response
                 ->sendContentAsFile($x, strtotime('now') . '_' . Yii::$app->getSecurity()->generateRandomString(6) . '_entrant_result.xlsx', ['mimeType' => 'application/vnd.ms-excel'])

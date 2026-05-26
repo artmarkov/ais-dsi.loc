@@ -15,6 +15,7 @@ use Yii;
  * @property int $studyplan_id
  * @property string $phone
  * @property string $phone_optional
+ * @property string $members_list
  */
 
 class EntrantView extends Entrant

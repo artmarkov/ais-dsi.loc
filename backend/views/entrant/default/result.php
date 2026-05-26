@@ -6,9 +6,9 @@
 <div class="protocol">
     <div class="panel">
         <div class="panel-heading">
-            Протоколы испытаний
+            Результаты испытаний
         </div>
-        <?= $this->render('_search_protocol', compact('model', 'model_date')) ?>
+        <?= $this->render('_search_result', compact('model', 'model_date')) ?>
         <div class="panel-body">
 
         </div>

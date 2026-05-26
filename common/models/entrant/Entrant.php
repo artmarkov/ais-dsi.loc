@@ -190,6 +190,18 @@ class Entrant extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Проставлена ли оценка текущим членом комиссии?
+     * @return bool
+     */
+    public function isMembersMarkExists()
+    {
+        return (new Query())->from('entrant_members_view')
+            ->where(['members_id' => Yii::$app->user->identity->id])
+            ->andWhere(['id' => $this->id])
+            ->exists();
+    }
+
+    /**
      * средняя оценка абитуриента
      * @return float|int
      */
@@ -213,21 +225,35 @@ class Entrant extends \artsoft\db\ActiveRecord
     }
 
     /**
+     * Проверка зашел ли секретарь группы данного абитуриента
+     * @return bool
+     */
+    public function isSecretaryGroup()
+    {
+        $modelGroup = $this->group;
+        if (in_array(Yii::$app->user->identity->id, $modelGroup->group_members_list)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @return array
      */
     public function getEntrantMembersDefault()
     {
-        $models = $modelsComm = [];
+        $models = $membersList = [];
         $modelComm = $this->comm;
+        $modelGroup = $this->group;
         $userId = Yii::$app->user->identity->getId();
-
+        $members_list = $modelGroup->group_members_list[0] != '' ? $modelGroup->group_members_list : $modelComm->members_list;
         if (\artsoft\models\User::hasPermission('fullEntrantAccess') && Art::isBackend()) {
-            $modelsComm = $modelComm->members_list;
-        } elseif (in_array($userId, $modelComm->members_list)) {
-            $modelsComm = [$userId];
+            $membersList = $members_list;
+        } elseif (in_array($userId, $members_list)) {
+            $membersList = [$userId];
         }
 
-        foreach ($modelsComm as $item => $members_id) {
+        foreach ($membersList as $item => $members_id) {
             $model = EntrantMembers::find()->andWhere(['members_id' => $members_id])->andWhere(['entrant_id' => $this->id])->one() ?: new EntrantMembers();
             $model->members_id = $members_id;
             $model->entrant_id = $this->id;
