@@ -114,23 +114,23 @@ class ExecutionThematic
                 }
             }
         }
-//        echo '<pre>' . print_r($load_data, true) . '</pre>';
         return ['data' => $load_data, 'attributes' => $attributes];
     }
 
     protected function getCheckLabel($value)
     {
         $check = '';
+        $title = $value['sect_name'] . ' ' . $value['subject'];
         if (isset($value['studyplan_thematic_id'])) {
             if ($value['doc_status'] == 1) {
-                $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
+                $check = '<i title = "' . $title . '" class="fa fa-check-square-o" aria-hidden="true" style="color: green"></i>';
             } elseif ($value['doc_status'] == 2) {
-                $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: darkorange"></i>';
+                $check = '<i title = "' . $title . '" class="fa fa-check-square-o" aria-hidden="true" style="color: darkorange"></i>';
             } else {
-                $check = '<i class="fa fa-check-square-o" aria-hidden="true" style="color: grey"></i>';
+                $check = '<i title = "' . $title . '" class="fa fa-check-square-o" aria-hidden="true" style="color: grey"></i>';
             }
         } elseif (!in_array($value['studyplan_subject_id'], $this->studyplanSubjectHist)) {
-            $check = '<i class="fa fa-square-o" aria-hidden="true" style="color: red"></i>';
+            $check = '<i title = "' . $title . '" class="fa fa-square-o" aria-hidden="true" style="color: red"></i>';
         }
         return $check;
 

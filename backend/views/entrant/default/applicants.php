@@ -120,6 +120,16 @@ $subjectFormList = RefBook::find('subject_form_name')->getList();
                         'headerOptions' => ['style' =>'white-space:pre-line;'],
                         'format' => 'raw'
                     ],
+                    [
+                        'attribute' => 'phone',
+                        'filter' => false,
+                        'value' => function (\common\models\entrant\EntrantView $model) {
+                            $age = \artsoft\helpers\ArtHelper::age($model->birth_date);
+                            return $model->phone ? $model->phone : ($model->phone_optional ? : '');
+                        },
+                        'headerOptions' => ['style' =>'white-space:pre-line;'],
+                        'format' => 'raw'
+                    ],
 //                    [
 //                        'attribute' => 'student_id',
 //                        'filter' => RefBook::find('students_fullname')->getList(),

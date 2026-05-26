@@ -4,6 +4,7 @@ use artsoft\helpers\RefBook;
 use artsoft\models\User;
 use artsoft\widgets\ActiveForm;
 use artsoft\helpers\Html;
+use common\models\schoolplan\Schoolplan;
 use common\models\studyplan\StudyplanView;
 use common\models\teachers\Teachers;
 use common\models\user\UserCommon;
@@ -15,7 +16,7 @@ use common\models\education\LessonMark;
 /* @var $modelSchoolplan common\models\schoolplan\Schoolplan */
 /* @var $form artsoft\widgets\ActiveForm */
 
-$mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark::MARK,LessonMark::OFFSET_NONOFFSET,LessonMark::REASON_ABSENCE]);
+$mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE, LessonMark::MARK, LessonMark::OFFSET_NONOFFSET, LessonMark::REASON_ABSENCE]);
 
 ?>
 
@@ -30,7 +31,7 @@ $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark
 
         <div class="panel">
             <div class="panel-heading">
-                Аттестационная карточка
+                Аттестационная карточка <?= Schoolplan::getFormCertValue($model->vid_cert) ?? ''; ?>
                 <?php if (!$model->isNewRecord): ?>
                     <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
                 <?php endif; ?>
@@ -50,6 +51,7 @@ $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark
                         <?php
                         if ($model->isNewRecord) {
                             echo Html::activeHiddenInput($model, "schoolplan_id");
+                            echo Html::activeHiddenInput($model, "vid_cert");
                         }
                         ?>
                         <?= $form->field($model, 'teachers_id')->widget(\kartik\select2\Select2::class, [
@@ -104,9 +106,9 @@ $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE,LessonMark
                             ?>
                         </div>
                         <?php if (!$model->isNewRecord): ?>
-                        <div id="taskTicket">
-                            <?= $form->field($model, 'task_ticket')->textInput(['disabled' => $readonly]) ?>
-                        </div>
+                            <div id="taskTicket">
+                                <?= $form->field($model, 'task_ticket')->textInput(['disabled' => $readonly]) ?>
+                            </div>
                             <?= $form->field($model, 'lesson_mark_id')->widget(\kartik\select2\Select2::class, [
                                 'data' => $mark_list,
                                 'showToggleAll' => false,

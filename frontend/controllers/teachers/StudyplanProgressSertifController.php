@@ -41,12 +41,12 @@ class StudyplanProgressSertifController extends MainController
                 try {
                     $flag = true;
                     foreach ($modelsItems as $modelItems) {
-                        $modelAttestation = $modelItems->id ? AttestationItems::findOne($modelItems->id) : new AttestationItems();
+                        /*$modelAttestation = $modelItems->id ? AttestationItems::findOne($modelItems->id) : new AttestationItems();
                         $modelAttestation->studyplan_subject_id = $modelItems->studyplan_subject_id;
                         $modelAttestation->plan_year = $modelItems->plan_year;
                         $modelAttestation->lesson_mark_id = $modelItems->lesson_mark_id;
-                        $modelAttestation->mark_rem = $modelItems->mark_rem;
-                        if (!($flag = $modelAttestation->save(false))) {
+                        $modelAttestation->mark_rem = $modelItems->mark_rem;*/
+                        if (!($flag = $modelItems->save(false))) {
                             $transaction->rollBack();
                             break;
                         }
@@ -81,6 +81,7 @@ class StudyplanProgressSertifController extends MainController
         $keyArray = explode('||', $subject_key);
         $subject_sect_studyplan_id = $keyArray[0];
         $plan_year = $keyArray[1];
+        $vid_cert = $keyArray[2];
 
         $models = (new Query())->from('lesson_items_progress_studyplan_view')
             ->where(['teachers_id' => $this->teachers_id])
@@ -88,7 +89,7 @@ class StudyplanProgressSertifController extends MainController
             ->andWhere(['=', 'plan_year', $plan_year])
             ->all();
         foreach ($models as $model) {
-            $modelSertif = AttestationItems::findOne(['studyplan_subject_id' => $model['studyplan_subject_id'], 'plan_year' => $model['plan_year']]);
+            $modelSertif = AttestationItems::findOne(['studyplan_subject_id' => $model['studyplan_subject_id'], 'vid_cert' => $vid_cert, 'plan_year' => $model['plan_year']]);
             $modelSertif ? $modelSertif->delete() : null;
         }
         Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));

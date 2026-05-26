@@ -17,6 +17,7 @@ use common\models\education\LessonMark;
 use common\models\efficiency\TeachersEfficiency;
 use common\models\guidesys\GuidePlanTree;
 use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubjectHist;
 use common\models\studyplan\StudyplanThematicItems;
 use common\models\teachers\TeachersLoadStudyplanView;
 use common\models\user\UserCommon;
@@ -81,6 +82,7 @@ use yii\web\NotFoundHttpException;
  * @property int $protocol_subject_cat_id Категория дисциплины
  * @property int $protocol_subject_id Дисциплина
  * @property int $protocol_subject_vid_id Вид дисциплины(групповое, инд)
+ * @property int $protocol_vid_cert Вид испытания(ПА, ИА)
  *
  * @property Auditory $auditory
  * @property Author $author
@@ -90,6 +92,7 @@ use yii\web\NotFoundHttpException;
  * @property TeachersEfficiency $teachersEfficiency
  * @property SchoolplanPerform $schoolplanPerform
  * @property SchoolplanProtocol $schoolplanProtocol
+ * @property SchoolplanActivity $schoolplanActivity
  */
 class Schoolplan extends \artsoft\db\ActiveRecord
 {
@@ -102,6 +105,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public $admin_flag;
     public $formPlaces;
     public $protocolFlag;
+    public $protocolGeneratorFlag;
     public $protocolLeaderFlag;
     public $date_in;
     public $time_in;
@@ -116,6 +120,10 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     const FORM_PLACES = [
         1 => 'Внутреннее',
         2 => 'Внешнее',
+    ];
+    const FORM_CERT = [
+        1 => 'Итоговая',
+        2 => 'Промежуточная',
     ];
 
     const PERIOD_OVER = [
@@ -162,7 +170,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ],
             [
                 'class' => ArrayFieldBehavior::class,
-                'attributes' => ['department_list', 'executors_list', 'protocol_members_list', 'protocol_class_list', 'protocol_subject_id'],
+                'attributes' => ['department_list', 'executors_list', 'protocol_members_list', 'protocol_class_list', 'protocol_subject_cat_id', 'protocol_subject_id'],
             ],
             'fileManager' => [
                 'class' => \artsoft\fileinput\behaviors\FileManagerBehavior::class,
@@ -184,6 +192,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         $this->time_in = Yii::$app->formatter->asDatetime($this->datetime_in, 'php:H:i');
         $this->date_out = Yii::$app->formatter->asDate($this->datetime_out);
         $this->time_out = Yii::$app->formatter->asDatetime($this->datetime_out, 'php:H:i');
+        $this->protocolFlag = $this->protocol_subject_id ? true : false;
         parent::afterFind();
     }
 
@@ -201,8 +210,9 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             }, 'enableClientValidation' => false],
             [['department_list', 'executors_list', 'datetime_in', 'datetime_out'], 'safe'],
             [['auditory_id', 'category_id', 'activities_over_id', 'form_partic', 'visit_poss', 'important_event', 'format_event', 'num_users', 'num_winners', 'num_visitors', 'author_id', 'signer_id'], 'integer'],
-            [['protocol_leader_id', 'protocol_soleader_id', 'protocol_secretary_id'], 'integer'],
-            [['protocol_subject_cat_id', 'protocol_subject_vid_id'], 'integer'],
+            [['protocol_leader_id', 'protocol_soleader_id', 'protocol_secretary_id', 'protocol_vid_cert'], 'integer'],
+            [['protocol_subject_cat_id'], 'safe'],
+            [['protocol_subject_vid_id'], 'integer'],
             [['visit_content', 'region_partners', 'rider', 'result'], 'string'],
             [['site_url', 'site_media'], 'url', 'defaultScheme' => 'http'],
             [['title'], 'string', 'max' => 512],
@@ -211,6 +221,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['description'], 'default', 'value' => null],
             [['doc_status'], 'default', 'value' => 0],
             [['category_id'], 'default', 'value' => 17],
+            [['protocol_vid_cert'], 'default', 'value' => 1],
             [['partic_price', 'site_url', 'site_media'], 'string', 'max' => 255],
             ['description', 'string', 'max' => 4000, 'when' => function ($model) {
                 return isset($model->category) && $model->category->description_flag && !$model->isNewRecord;
@@ -224,9 +235,9 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['time_in', 'time_out'], 'match', 'pattern' => '/^([01]?[0-9]|2[0-3])(:|\.)[0-5][0-9]$/'],
 //            [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['date_out'], 'compareTimestamp', 'skipOnEmpty' => false],
-            [['date_in'], 'addNew', 'skipOnEmpty' => false, 'when' => function ($model) {
-                return Art::isFrontend() && $model->isNewRecord;
-            }, 'enableClientValidation' => false],
+//            [['date_in'], 'addNew', 'skipOnEmpty' => false, 'when' => function ($model) {
+//                return Art::isFrontend() && $model->isNewRecord;
+//            }, 'enableClientValidation' => false],
             [['date_in', 'time_in', 'date_out', 'time_out'], 'safe'],
             ['bars_flag', 'boolean'],
             [['title_over', 'admin_message'], 'string'],
@@ -255,12 +266,12 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserCommon::class, 'targetAttribute' => ['author_id' => 'id']],
             [['signer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['signer_id' => 'id']],
             [['formPlaces'], 'safe'],
-            [['protocolLeaderFlag', 'protocolFlag'], 'boolean'],
+            [['protocolLeaderFlag', 'protocolFlag', 'protocolGeneratorFlag'], 'boolean'],
             [['protocol_members_list', 'protocol_class_list', 'protocol_subject_id'], 'safe'],
 //            [['protocol_leader_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_leader_id' => 'id']],
 //            [['protocol_soleader_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_leader_id' => 'id']],
             [['protocol_secretary_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['protocol_secretary_id' => 'id']],
-            [['protocol_members_list', 'protocol_class_list', 'protocol_subject_cat_id', 'protocol_subject_id', 'protocol_subject_vid_id'], 'required', 'when' => function ($model) {
+            [['protocol_members_list', 'protocol_class_list', 'protocol_subject_cat_id', 'protocol_subject_id', 'protocol_subject_vid_id', 'protocol_vid_cert'], 'required', 'when' => function ($model) {
                 return $model->protocolFlag == true;
             },
                 'whenClient' => "function (attribute, value) {
@@ -438,6 +449,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'protocol_subject_cat_id' => 'Категория дисциплины',
             'protocol_subject_id' => 'Дисциплина',
             'protocol_subject_vid_id' => 'Вид дисциплины',
+            'protocol_vid_cert' => 'Вид аттестации',
             'date_in' => 'Дата начала',
             'time_in' => 'Время начала',
             'date_out' => 'Дата окончания',
@@ -515,6 +527,12 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public function getTeachersEfficiency()
     {
         return $this->hasMany(TeachersEfficiency::class, ['item_id' => 'id'])->andWhere(['class' => StringHelper::basename(get_class($this))]);
+    }
+
+
+    public function getSchoolplanActivity()
+    {
+        return $this->hasMany(SchoolplanActivity::class, ['schoolplan_id' => 'id']);
     }
 
     /**
@@ -600,6 +618,18 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     public static function getFormPlacesList()
     {
         return self::FORM_PLACES;
+    }
+
+    public static function getFormCertList()
+    {
+        return self::FORM_CERT;
+    }
+
+    public static function getFormCertValue($val)
+    {
+        $ar = self::getFormCertList();
+
+        return isset($ar[$val]) ? $ar[$val] : $val;
     }
 
     /**
@@ -883,19 +913,25 @@ class Schoolplan extends \artsoft\db\ActiveRecord
     {
         $timestamp = Yii::$app->formatter->asTimestamp($this->datetime_in);
         $plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, $timestamp);
+        $departmentList = implode(',', $this->department_list);
         $data = TeachersLoadStudyplanView::find()
             ->select('studyplan_subject_id, teachers_id')
             ->distinct('studyplan_subject_id, teachers_id')
             ->where(['direction_id' => 1000])
+            ->andWhere(['is not', 'teachers_id', null])
             ->andWhere(['=', 'plan_year', $plan_year])
             ->andWhere(['subject_cat_id' => $this->protocol_subject_cat_id])
             ->andWhere(['subject_id' => $this->protocol_subject_id])
             ->andWhere(['subject_vid_id' => $this->protocol_subject_vid_id])
             ->andWhere(['course' => $this->protocol_class_list])
-            ->andWhere(['fin_cert' => true])
+            ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
+            ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
+            ->andWhere([$this->protocol_vid_cert == 1 ? 'fin_cert' : 'med_cert' => true])
+            ->andWhere(new Expression("string_to_array(department_list, ','::text)::text[] && string_to_array('{$departmentList}', ','::text)::text[]")) // сравнение массивов
             ->orderBy('teachers_id')
             ->asArray()
             ->all();
+       // echo '<pre>' . print_r($data, true) . '</pre>'; die();
         foreach ($data as $item => $value) {
             $exists = SchoolplanProtocol::find()
                 ->where(['schoolplan_id' => $this->id])
@@ -908,6 +944,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             $model->schoolplan_id = $this->id;
             $model->studyplan_subject_id = $value['studyplan_subject_id'];
             $model->teachers_id = $value['teachers_id'];
+            $model->vid_cert = $this->protocol_vid_cert;
             $model->save(false);
         }
 //        echo '<pre>' . print_r($data, true) . '</pre>';
@@ -933,7 +970,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         } else {
             $this->protocol_leader_name = null;
         }
-        if ($this->category->protocol_flag && $this->protocol_subject_vid_id == 1000) { // добавляем только для индивидуальных занятий, где требуется вводить программу для каждого ученика
+        if ($this->protocolGeneratorFlag /*&& $this->protocol_subject_vid_id == 1000*/) { // добавляем только для индивидуальных занятий, где требуется вводить программу для каждого ученика
             $this->setSchoolplanProtocols();
         }
         return parent::beforeSave($insert);
@@ -980,13 +1017,15 @@ class Schoolplan extends \artsoft\db\ActiveRecord
         $plan_year = \artsoft\helpers\ArtHelper::getStudyYearDefault(null, $timestamp);
 
         return TeachersLoadStudyplanView::find()
-            ->select('studyplan_subject_id as id,  student_fio as name')
-            ->distinct('studyplan_subject_id, student_fio')
+            ->select([
+                'studyplan_subject_id as id', 'concat(student_fio, \' - \', subject) as name'])
             ->where(['=', 'teachers_id', $teachers_id])
             ->andWhere(['direction_id' => 1000])
             ->andWhere(['=', 'plan_year', $plan_year])
             ->andWhere(['subject_cat_id' => $this->protocol_subject_cat_id])
             ->andWhere(['subject_id' => $this->protocol_subject_id])
+            ->andWhere([$this->protocol_vid_cert == 1 ? 'fin_cert' : 'med_cert' => true])
+            ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
 //            ->andWhere(['subject_vid_id' => $this->protocol_subject_vid_id])
 //            ->andWhere(['course' => $this->protocol_class_list])
             ->asArray()
@@ -1071,7 +1110,8 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'rank' => 'doc',
             'date' => Yii::$app->formatter->asDate($timestamp),
             'plan_year' => ArtHelper::getStudyYearsValue($plan_year),
-            'subject_name' => RefBook::find('subject_category_name')->getValue($this->protocol_subject_cat_id) . ': ' . implode(', ', $subjects),
+            'vid_cert' => $model->protocol_vid_cert == 1 ? 'итоговой аттестации' : 'промежуточной аттестации',
+            'subject_name' => implode(', ', $subjects),
             'protocol_leader_fullname' => $model->protocol_leader_name != null ? $model->protocol_leader_name : ($protocol_leader ? $protocol_leader->getFullName() : ''),
             'protocol_soleader_fullname' => $protocol_soleader ? $protocol_soleader->getFullName() : '',
             'protocol_secretary_fullname' => $protocol_secretary ? $protocol_secretary->getFullName() : '',

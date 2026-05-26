@@ -153,14 +153,20 @@ class SchoolplanProtocolConfirm extends \artsoft\db\ActiveRecord
     public function approveMessage()
     {
         $receiverId = $this->schoolplan->protocol_secretary_id;
-        Yii::$app->mailbox->send($receiverId, 'approve', $this, $this->sign_message);
+        if ($receiverId) {
+            Yii::$app->mailbox->send($receiverId, 'approve', $this, $this->sign_message);
+        }
     }
 
     public function sendApproveMessage()
     {
-        $receiverId =  RefBook::find('teachers_users')->getValue($this->teachers_sign);
-        Yii::$app->mailbox->send($receiverId, 'send_approve', $this, $this->sign_message);
+        $receiverId = RefBook::find('teachers_users')->getValue($this->teachers_sign);
+        if ($receiverId) {
+            Yii::$app->mailbox->send($receiverId, 'send_approve', $this, $this->sign_message);
+        }
+
     }
+
     public function afterFind()
     {
         $this->sign_message = '';

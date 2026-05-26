@@ -19,9 +19,9 @@ $form = ActiveForm::begin([
 ])
 ?>
     <div class="schoolplan-confirm-search">
-        <div class="panel panel-default">
+        <div class="panel panel-warning">
             <div class="panel-heading">
-                Статус подписи
+                Статус подписи протокола аттестационной комиссии
             </div>
             <div class="panel-body">
                 <?php if (\artsoft\Art::isFrontend() && $readonly): ?>
@@ -45,7 +45,7 @@ $form = ActiveForm::begin([
                         'pluginOptions' => [
                             'allowClear' => true
                         ],
-                    ])->hint($model_confirm->confirm_status == 1 ? 'Подписано: ' . Yii::$app->formatter->asDatetime($model_confirm->updated_at) : '');
+                    ])->label('Подписант протокола')->hint($model_confirm->confirm_status == 1 ? 'Подписано: ' . Yii::$app->formatter->asDatetime($model_confirm->updated_at) : '');
                     ?>
                     <?= $form->field($model_confirm->loadDefaultValues(), 'confirm_status')->widget(\kartik\select2\Select2::class, [
                         'data' => \common\models\schedule\SubjectScheduleConfirm::getDocStatusList(),

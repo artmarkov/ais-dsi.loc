@@ -226,6 +226,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
         $members_id = $model_date->members_id;
         $free_flag = $model_date->free_flag;
         $prep_flag = $model_date->prep_flag;
+        $group_id = $model_date->group_id;
         $prep_list = $prep_flag == 0 ? $this->prep_off_test_list : $this->prep_on_test_list;
 
         $testsNames = \yii\helpers\ArrayHelper::map(GuideEntrantTest::find()
@@ -238,13 +239,17 @@ class EntrantComm extends \artsoft\db\ActiveRecord
             ->where(['=', 'comm_id', $this->id])
             ->andWhere(['in', 'members_id', $members_id != 0 ? $members_id : $this->members_list])
             ->andWhere(['=', 'prep_flag', $prep_flag])
+            ->andWhere(['group_id' => $group_id])
             ->orderBy('mid_mark DESC')->all();
         $models = ArrayHelper::index($models, null, ['student_id', 'entrant_test_id']);
 //        echo '<pre>' . print_r($models, true) . '</pre>';
         $modelsEntrant = (new Query())->from('entrant_view')
             ->where(['=', 'comm_id', $this->id])
             ->andWhere(['=', 'prep_flag', $prep_flag])
-            ->orderBy('mid_mark DESC')->distinct()->all();
+            ->andWhere(['group_id' => $group_id])
+            ->orderBy('fullname ASC')
+//            ->orderBy('mid_mark DESC')
+            ->distinct()->all();
 
         $attributes = ['name' => 'Фамилия И.О.'];
         $attributes += ['birth_date' => 'Дата рождения (возраст)'];
@@ -254,7 +259,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
         $attributes += ['decision' => 'Решение комиссии'];
         $attributes += ['programm' => 'Назначен учебный план'];
         $attributes += ['subject' => 'Специальность'];
-        $attributes += ['course' => 'Назначен клвсс'];
+        $attributes += ['course' => 'Назначен класс'];
         $attributes += ['subject_form' => 'Форма обучения'];
 
         $data = [];
@@ -287,7 +292,14 @@ class EntrantComm extends \artsoft\db\ActiveRecord
 //            return $b['total'] <=> $a['total'];
 //        });
 
-        return ['data' => $data, 'attributes' => $attributes];
+        $members = \yii\helpers\ArrayHelper::map(UserCommon::find()
+            ->innerJoin('users', "user_common.user_id = users.id")
+            ->andWhere(['in', 'users.id', $members_id != 0 ? $members_id : $this->members_list])
+            ->select(['users.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
+            ->orderBy('user_common.last_name')
+            ->asArray()->all(), 'id', 'name');
+
+        return ['data' => $data, 'attributes' => $attributes, 'members' => $members];
     }
 
     /**
@@ -302,6 +314,9 @@ class EntrantComm extends \artsoft\db\ActiveRecord
             $x = new ExcelObjectList($data['attributes']);
             foreach ($data['data'] as $item) { // данные
                 $x->addData($item);
+            }
+            foreach ($data['members'] as $id => $item) { // данные
+                $x->addData(['course' => 'Подписант:', 'subject_form' => $item]);
             }
 //            $x->addData(['stake' => 'Итого', 'total' => $data['all_summ']]);
 

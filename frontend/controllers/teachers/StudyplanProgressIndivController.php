@@ -156,7 +156,7 @@ class StudyplanProgressIndivController extends MainController
                         $modelLesson->lesson_topic = $model->lesson_topic;
                         $modelLesson->lesson_rem = $model->lesson_rem;
                         $modelLesson->teachers_id = $this->teachers_id;
-                        if (!($flag = $modelLesson->save(false))) {
+                        if (!($flag = $modelLesson->save())) {
                             $transaction->rollBack();
                             break;
                         }

@@ -72,8 +72,8 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers, $atte
         $item = $id;
     }
     $content += [$item + 5 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year']), 'mode' => 'update'] :
-                ['/teachers/studyplan-progress-sertif/update', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'])], [
+            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'] . '||' . 2), 'mode' => 'update'] :
+                ['/teachers/studyplan-progress-sertif/update', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'] . '||' . 2)], [
                 'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || !$attestation_flag),
                 'title' => Yii::t('art', 'Update'),
                 'data-method' => 'post',
@@ -81,8 +81,31 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers, $atte
                 'class' => 'btn btn-xxs btn-link',
             ])
         . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year']), 'mode' => 'delete'] :
-                ['/teachers/studyplan-progress-sertif/delete', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'])], [
+            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'] . '||' . 2), 'mode' => 'delete'] :
+                ['/teachers/studyplan-progress-sertif/delete', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'] . '||' . 2)], [
+                'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || !$attestation_flag),
+                'title' => Yii::t('art', 'Delete'),
+                'class' => 'btn btn-xxs btn-link',
+                'data' => [
+                    'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                    'pjax' => '0',
+                    'method' => 'post',
+                ],
+            ]
+        ),
+    ];
+    $content += [$item + 6 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'] . '||' . 1), 'mode' => 'update'] :
+                ['/teachers/studyplan-progress-sertif/update', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'] . '||' . 1)], [
+                'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || !$attestation_flag),
+                'title' => Yii::t('art', 'Update'),
+                'data-method' => 'post',
+                'data-pjax' => '0',
+                'class' => 'btn btn-xxs btn-link',
+            ])
+        . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'] . '||' . 1), 'mode' => 'delete'] :
+                ['/teachers/studyplan-progress-sertif/delete', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_sect_studyplan_id'] . '||' . $model['plan_year'] . '||' . 1)], [
                 'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || !$attestation_flag),
                 'title' => Yii::t('art', 'Delete'),
                 'class' => 'btn btn-xxs btn-link',
@@ -158,7 +181,13 @@ $columns[] = [
 //        'headerOptions' => ['style' => 'height: 50px;'],
     'contentOptions' => ['style' => 'background-color: #ebebeb;'],
 ];
-
+$columns[] = [
+    'attribute' => 'ia',
+    'label' => $model['attributes']['ia'],
+    'format' => 'raw',
+//        'headerOptions' => ['style' => 'height: 50px;'],
+    'contentOptions' => ['style' => 'background-color: #ebebeb;'],
+];
 $hints = '<i class="fa fa-square" aria-hidden="true" style="color: #f2dede;"></i> - Преподаватель на больничном';
 $hints .= '<br/><br/>';
 $hints .= '<span class="panel-title"><b>Сокращения Вид занятия:</b></span><br/>';
@@ -237,7 +266,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                         'columns' => [
                             ['content' => 'Предмет/Группа/Ученик', 'options' => ['colspan' => 4, 'rowspan' => 2, 'class' => 'text-center warning', 'style' => 'vertical-align: middle;']],
                             ['content' => 'Посещаемость/успеваемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
-                            ['content' => 'Аттестация', 'options' => ['rowspan' => 2, 'class' => 'text-center info', 'style' => 'vertical-align: middle;']],
+                            ['content' => 'Аттестация', 'options' => ['colspan' => 2, 'rowspan' => 2, 'class' => 'text-center info', 'style' => 'vertical-align: middle;']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ],

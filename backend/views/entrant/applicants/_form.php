@@ -256,6 +256,11 @@ $readonlyBase = ($model->status != 0 && !$model->isNewRecord) || !User::hasPermi
                         <div class="row">
                             <div class="form-group btn-group">
                                 <?php if (\artsoft\models\User::hasPermission('adminEntrant')): ?>
+                                    <?php echo \yii\bootstrap\Alert::widget([
+                                        'body' => '<i class="fa fa-info-circle"></i> Прежде чем завершить испытания, нажмите на кнопку сохранить, чтобы не потерять введенные данные.',
+                                        'options' => ['class' => 'alert-warning'],
+                                    ]);
+                                    ?>
                                     <?php $Url = Yii::$app->request->resolve(); ?>
                                     <?= \artsoft\helpers\Html::a('<i class="fa fa-hourglass-start" aria-hidden="true"></i> Начать испытания',
                                         [$Url[0], 'id' => $Url[1]['id'], 'objectId' => $Url[1]['objectId'], 'mode' => 'activate'], [

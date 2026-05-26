@@ -104,9 +104,7 @@ class StudyplanProgressReport
     public function getDataMark()
     {
         $data = [];
-//        echo '<pre>' . print_r($this->getProgressData(), true) . '</pre>';
-//        die();
-        foreach ($this->getProgressData() as $courseId => $model) {
+        foreach ($this->getProgressData() as $student_id => $model) {
             $data[] = [
                 'studyplan_id' => $model['studyplan_id'],
                 'student_id' => $model['student_id'],
@@ -131,6 +129,10 @@ class StudyplanProgressReport
      */
     protected function getMark($marks)
     {
+        $marks = array_values($marks);
+        $marks = array_map(function ($mark) {
+            return strip_tags($mark);
+        }, $marks);
 
         switch ($marks) {
             case in_array('', $marks) :
@@ -154,6 +156,7 @@ class StudyplanProgressReport
             default :
                 $mark = '5';
         }
+
         return $mark;
     }
 

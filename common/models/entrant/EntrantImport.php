@@ -12,6 +12,7 @@ use Yii;
 use yii\base\Model;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
+use function morphos\Russian\detectGender;
 
 class EntrantImport extends Model
 {
@@ -52,25 +53,25 @@ class EntrantImport extends Model
                 foreach ($sheet->getRowIterator() as $i => $row) {
                     /* @var $row Row */
                     $v = $row->toArray();
-                    if ($v[1] == 'МПГУ') {
-                        if (is_a($v[4], 'DateTime')) { // если объект DateTime
-                            $v[4] = $v[4]->format('d.m.Y');
+                    if ($v[1] == 'МПГУ' || $v[1] == 'Оператор') {
+                        if (is_a($v[5], 'DateTime')) { // если объект DateTime
+                            $v[5] = $v[5]->format('d.m.Y');
                         }
                         $data[] = [
-                            'fullname' => $v[3],
-                            'birth_date' => $v[4],
-                            'gender' => $v[5],
+                            'fullname' => $v[4],
+                            'birth_date' => $v[5],
                             'snils' => $v[6],
-                            'email' => $v[8],
-                            'phone' => $v[9],
-                            'subjects' => $v[13],
+                            'address' => $v[7],
+                            'email' => $v[10],
+                            'phone' => $v[11],
+                            'subjects' => $v[17],
                         ];
                     } else {
                         if (1 == $i) {
                             continue;
                         }
                         $data[] = [
-                            'fullname' => $v[3],
+                            'fullname' => $v[4],
                         ];
                     }
                 }
@@ -89,23 +90,22 @@ class EntrantImport extends Model
                     try {
                         $userCommon->last_name = $array[0];
                         $userCommon->first_name = $array[1];
-                        $userCommon->middle_name = $array[2];
+                        $userCommon->middle_name = $array[2] ?? null;
                         $userCommon->birth_date = $val['birth_date'] ?? null;
-                        $userCommon->phone = $val['phone'] ?? null;
+                        $userCommon->address = $val['address'] ?? null;
+                        $userCommon->phone = isset($val['phone']) ? str_replace('-', ' ', $val['phone']) : null;
                         $userCommon->email = $val['email'] ?? null;
+                        $userCommon->snils = $val['snils'];
+                        $userCommon->gender = $this->getGender($fullName) ;
                         $user->username = $userCommon->generateUsername();
                         $user->generateAuthKey();
                         $user->status = User::STATUS_INACTIVE;
                         $user->email = $val['email'];
-
                         if ($flag = $user->save(false)) {
                             $user->assignRoles(['student']);
-
                             $userCommon->user_id = $user->id;
                             $userCommon->user_category = UserCommon::USER_CATEGORY_STUDENTS;
                             $userCommon->status = UserCommon::STATUS_ACTIVE;
-                            $userCommon->snils = $val['snils'];
-                            $userCommon->gender = $this->getGender($val['gender']);
                             // echo '<pre>' . print_r($data, true) . '</pre>';
                             if ($flag = $userCommon->save(false)) {
                                 $modelStudent->user_common_id = $userCommon->id;
@@ -168,8 +168,8 @@ class EntrantImport extends Model
     {
         $subject = [];
         $array = ArrayHelper::getColumn($array, 'subjects');
-        foreach ($array as $name) {
-            $name = str_replace('«ДШИ им. И.Ф.Стравинского» улица Митинская, д. 47, корп. 1', '', $name);
+        foreach ($array as $item => $name) {
+//            $name = str_replace('«ДШИ им. И.Ф.Стравинского» улица Митинская, д. 47, корп. 1', '', $name);
             $name = trim($name);
             $subject[] = $this->getSubject($name);
         }
@@ -184,7 +184,8 @@ class EntrantImport extends Model
 
     protected function getGender($name)
     {
-        return $name == 'М' ? UserCommon::GENDER_MALE : ($name == 'Ж' ? UserCommon::GENDER_FEMALE : UserCommon::GENDER_NOT_SET);
+        $name = detectGender($name);
+        return $name == 'm' ? UserCommon::GENDER_MALE : ($name == 'f' ? UserCommon::GENDER_FEMALE : UserCommon::GENDER_NOT_SET);
     }
 
     protected function getSubjectName($name)

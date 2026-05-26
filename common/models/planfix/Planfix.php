@@ -80,9 +80,9 @@ class Planfix extends ActiveRecord
             [['status_reason', 'description'], 'string', 'max' => 1024],
             [['name'], 'string', 'max' => 512],
             [['executors_list', 'planfix_date'], 'safe'],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => PlanfixCategory::className(), 'targetAttribute' => ['category_id' => 'id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => PlanfixCategory::class, 'targetAttribute' => ['category_id' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
         ];
     }
 
@@ -122,7 +122,7 @@ class Planfix extends ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(PlanfixCategory::className(), ['id' => 'category_id']);
+        return $this->hasOne(PlanfixCategory::class, ['id' => 'category_id']);
     }
 
     /**
@@ -140,7 +140,7 @@ class Planfix extends ActiveRecord
      */
     public function getPlanfixActivities()
     {
-        return $this->hasMany(PlanfixActivity::className(), ['planfix_id' => 'id'])->orderBy('id ASC');
+        return $this->hasMany(PlanfixActivity::class, ['planfix_id' => 'id'])->orderBy('id ASC');
     }
 
     /**

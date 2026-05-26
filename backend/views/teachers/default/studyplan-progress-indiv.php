@@ -69,8 +69,8 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers, $atte
         $item = $id;
     }
     $content += [$item + 6 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year']), 'mode' => 'update'] :
-                ['/teachers/studyplan-progress-indiv-sertif/update', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year'])], [
+            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year'] . '||' . 2), 'mode' => 'update'] :
+                ['/teachers/studyplan-progress-indiv-sertif/update', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year'] . '||' . 2)], [
                 'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || !$attestation_flag),
                 'title' => Yii::t('art', 'Update'),
                 'data-method' => 'post',
@@ -78,8 +78,8 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers, $atte
                 'class' => 'btn btn-xxs btn-link',
             ])
         . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year']), 'mode' => 'delete'] :
-                ['/teachers/studyplan-progress-indiv-sertif/delete', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year'])], [
+            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year'] . '||' . 2), 'mode' => 'delete'] :
+                ['/teachers/studyplan-progress-indiv-sertif/delete', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year'] . '||' . 2)], [
                 'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || !$attestation_flag),
                 'title' => Yii::t('art', 'Delete'),
                 'class' => 'btn btn-xxs btn-link',
@@ -91,6 +91,29 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers, $atte
             ]
         ),
     ];
+   /* $content += [$item + 7 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year'] . '||' . 1), 'mode' => 'update'] :
+                ['/teachers/studyplan-progress-indiv-sertif/update', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year'] . '||' . 1)], [
+                'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || !$attestation_flag),
+                'title' => Yii::t('art', 'Update'),
+                'data-method' => 'post',
+                'data-pjax' => '0',
+                'class' => 'btn btn-xxs btn-link',
+            ])
+        . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+            \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress-indiv-sertif', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year'] . '||' . 1), 'mode' => 'delete'] :
+                ['/teachers/studyplan-progress-indiv-sertif/delete', 'id' => $model['teachers_id'], 'objectId' => base64_encode($model['subject_key'] . '||' . $model['plan_year'] . '||' . 1)], [
+                'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || !$attestation_flag),
+                'title' => Yii::t('art', 'Delete'),
+                'class' => 'btn btn-xxs btn-link',
+                'data' => [
+                    'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                    'pjax' => '0',
+                    'method' => 'post',
+                ],
+            ]
+        ),
+    ];*/
     return [
         'content' => $content,
         'contentOptions' => [      // content html attributes for each summary cell
@@ -162,6 +185,13 @@ $columns[] = [
 $columns[] = [
     'attribute' => 'pa',
     'label' => $model['attributes']['pa'],
+    'format' => 'raw',
+//        'headerOptions' => ['style' => 'height: 50px;'],
+    'contentOptions' => ['style' => 'background-color: #ebebeb;'],
+];
+$columns[] = [
+    'attribute' => 'ia',
+    'label' => $model['attributes']['ia'],
     'format' => 'raw',
 //        'headerOptions' => ['style' => 'height: 50px;'],
     'contentOptions' => ['style' => 'background-color: #ebebeb;'],
@@ -252,7 +282,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                         'columns' => [
                             ['content' => 'Учебный предмет/Группа/Ученик', 'options' => ['colspan' => 4, 'rowspan' => 2, 'class' => 'text-center warning', 'style' => 'vertical-align: middle;']],
                             ['content' => 'Посещаемость/успеваемость за период', 'options' => ['colspan' => count($model['lessonDates']) + (\artsoft\Art::isBackend() ? 1 : 0), 'class' => 'text-center danger']],
-                            ['content' => 'Аттестация', 'options' => ['rowspan' => 2, 'class' => 'text-center info', 'style' => 'vertical-align: middle;']],
+                            ['content' => 'Аттестация', 'options' => ['colspan' => 2, 'rowspan' => 2, 'class' => 'text-center info', 'style' => 'vertical-align: middle;']],
                             ],
                         'options' => ['class' => 'skip-export'] // remove this row from export
                     ],

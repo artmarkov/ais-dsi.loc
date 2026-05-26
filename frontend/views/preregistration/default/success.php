@@ -33,8 +33,10 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-12">
-                    Вы записали ребенка на программу обучения: <?= strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($model->entrant_programm_id)) . '.'; ?>
-                    Просьба написать по телефону в whats app или Telegram 8-926-350-17-97 с 10:00 - 18:00 с понедельника по пятницу для уточнения информации по обучению и оплате.
+                    Вы зарегистрировали ребенка на программу обучения: <?= strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($model->entrant_programm_id)) . '. С вами свяжутся после 01 июня 2026 года. '; ?>
+                </div>
+                <div class="col-sm-12">
+                    Если есть вопросы, просьба связаться по телефонам:  8 926 350 17 97 Анастасия Владимировна, 8 926 822 37 26 Александр Александрович.
                 </div>
                 <div class="col-sm-12">
                     Если Вы ошибочно записали ребенка на программу или желаете записать ребенка на 2 или более программ, также свяжитесь по телефону, указанному выше(система позволяет зарегистрироваться только 1 раз).

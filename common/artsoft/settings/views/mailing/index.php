@@ -59,6 +59,8 @@ SettingsAsset::register($this);
 
                             <?= $form->field($model, 'planfix_mailing')->checkbox()->hint('Поставьте флажок чтобы включить уведомления в модуле "Планировщик задач".') ?>
 
+                            <?= $form->field($model, 'schoolplan_mailing')->checkbox()->hint('Поставьте флажок чтобы включить уведомления в модуле "Планировщик мероприятия".') ?>
+
                         </div>
                     </div>
                 </div>

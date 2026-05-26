@@ -7,6 +7,7 @@ use artsoft\helpers\ArtHelper;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use common\models\routine\Routine;
+use common\models\schoolplan\SchoolplanProtocol;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubjectHist;
 use common\models\teachers\Teachers;
@@ -59,21 +60,29 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         ];
     }
 
-    public static function getDataSect($model_date, $subject_sect_id)
+    public static function getDataSect($model_date, $subject_sect_id, $editTable = true, $history = false)
     {
         $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE, LessonMark::MARK, LessonMark::OFFSET_NONOFFSET, LessonMark::REASON_ABSENCE]);
+        $mark_list_sertif = LessonMark::getMarkLabelForStudent([LessonMark::MARK, LessonMark::OFFSET_NONOFFSET, LessonMark::REASON_ABSENCE]);
 
         $data = $dates = [];
         $timestamp = ArtHelper::getMonYearParams($model_date->date_in);
         $timestamp_in = $timestamp[0];
         $timestamp_out = $timestamp[1];
 
+        $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
+
         $attributes = ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
         $attributes += ['student_id' => Yii::t('art/student', 'Student')];
+        $attributes += ['pa' => 'ПА'];
+        $attributes += ['ia' => 'ИА'];
 
         if ($model_date->subject_sect_studyplan_id == '') {
             $lessonDates = [];
             $modelsProgress = [];
+            $modelsMarksProtocol = [];
+            $modelsMarksProtocol_2 = [];
+            $modelsMarksCertif = [];
             $modelsMarks = [];
         } else {
             $lessonDates = LessonItemsProgressView::find()->select('lesson_date, test_name_short')->distinct()
@@ -93,13 +102,41 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 ])
                 ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
                 ->orderBy('sect_name')->all();
+            $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress, 'studyplan_subject_id');
 
             $modelsMarks = ArrayHelper::index(LessonItemsProgressView::find()
                 ->where(['between', 'lesson_date', $timestamp_in, $timestamp_out])
                 ->andWhere(['subject_sect_id' => $subject_sect_id])
                 ->andWhere(['=', 'subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
                 ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
+                ->andWhere(['=', 'test_category', 1])
                 ->all(), null, 'studyplan_subject_id');
+
+            $modelsMarksProtocol = ArrayHelper::index((new Query())->from('schoolplan_protocol_items_view')
+                ->select(['mark_label', 'studyplan_subject_id'])
+                ->where(['studyplan_subject_id' => $studyplanSubjectIds])
+                ->andWhere(['plan_year' => $plan_year])
+                ->andWhere(['med_cert' => true])
+                ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
+                ->all(), 'studyplan_subject_id');
+
+            $modelsMarksCertif = ArrayHelper::index(AttestationItems::find()
+                ->joinWith('lessonMark')
+                ->select('attestation_items.id, attestation_items.plan_year, attestation_items.lesson_mark_id, attestation_items.studyplan_subject_id, guide_lesson_mark.mark_label')
+                ->where(['plan_year' => $plan_year])
+                ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
+                ->all(), 'studyplan_subject_id');
+
+            $modelsMarksProtocol_2 = ArrayHelper::index((new Query())->from('schoolplan_protocol_items_view')
+                ->select(['mark_label', 'studyplan_subject_id'])
+                ->where(['studyplan_subject_id' => $studyplanSubjectIds])
+                ->andWhere(['plan_year' => $plan_year])
+                ->andWhere(['fin_cert' => true])
+                ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
+                ->all(), 'studyplan_subject_id');
         }
 
         // echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
@@ -124,6 +161,18 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                     $date_label = Yii::$app->formatter->asDate($mark->lesson_date, 'php:d.m.Y');
                     $data[$item][$date_label] = self::getEditableForm($mark_list, $mark);
                 }
+            }
+            if (isset($modelsMarksProtocol[$modelProgress->studyplan_subject_id])) {
+                $mark_label = $modelsMarksProtocol[$modelProgress->studyplan_subject_id]['mark_label'];
+                $data[$item]['pa'] = '<span title="Оценка выставлена через протокол" style="color: #F23600;">' . $mark_label . '</span>';
+            } elseif (isset($modelsMarksCertif[$modelProgress->studyplan_subject_id])) {
+                $mark = $modelsMarksCertif[$modelProgress->studyplan_subject_id];
+                $data[$item]['pa'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : $mark->mark_label;
+            }
+
+            if (isset($modelsMarksProtocol_2[$modelProgress->studyplan_subject_id])) {
+                $mark_label = $modelsMarksProtocol_2[$modelProgress->studyplan_subject_id]['mark_label'];
+                $data[$item]['ia'] = '<span title="Оценка выставлена через протокол" style="color: #468847;">' . $mark_label . '</span>';
             }
         }
 
@@ -154,13 +203,13 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->andWhere(['!=', 'test_category', 1])
             ->asArray()->all();*/
 
-       // $modelsProgress = self::find()->where(['studyplan_id' => $studyplan_id])->asArray()->all();
+        // $modelsProgress = self::find()->where(['studyplan_id' => $studyplan_id])->asArray()->all();
         $modelsProgress = TeachersLoadStudyplanView::find()
             ->where(['direction_id' => 1000])
             ->andWhere(['=', 'plan_year', $plan_year])
             ->andWhere(['studyplan_id' => $studyplan_id])
-          //  ->orderBy('teachers_id')
-           // ->asArray()
+            //  ->orderBy('teachers_id')
+            // ->asArray()
             ->all();
         // echo '<pre>' . print_r($modelsProgress, true) . '</pre>'; die();
         $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress, 'studyplan_subject_id');
@@ -204,15 +253,41 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             ->joinWith('lessonMark')
             ->select('attestation_items.id, attestation_items.plan_year, attestation_items.teachers_id, attestation_items.lesson_mark_id, attestation_items.studyplan_subject_id, guide_lesson_mark.mark_label as mark_label')
             ->where(['plan_year' => $plan_year])
+            ->andWhere(['vid_cert' => 2])
             ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
-          //  ->asArray()
-            ->all(), null, ['teachers_id', 'studyplan_subject_id']);
-     //   echo '<pre>' . print_r($modelsMarksCertif, true) . '</pre>'; die();
+            ->all(), 'studyplan_subject_id', ['teachers_id']);
+
+        $modelsMarksProtocol = ArrayHelper::index((new Query())->from('schoolplan_protocol_items_view')
+            ->select(['teachers_id', 'mark_label', 'studyplan_subject_id'])
+            ->where(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->andWhere(['plan_year' => $plan_year])
+            ->andWhere(['med_cert' => true])
+            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+            ->all(), 'studyplan_subject_id', ['teachers_id']);
+
+        $modelsMarksProtocol_2 = ArrayHelper::index((new Query())->from('schoolplan_protocol_items_view')
+            ->select(['teachers_id', 'mark_label', 'studyplan_subject_id'])
+            ->where(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->andWhere(['plan_year' => $plan_year])
+            ->andWhere(['fin_cert' => true])
+            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+            ->all(), 'studyplan_subject_id', ['teachers_id']);
+
+        $modelsMarksCertif_2 = ArrayHelper::index(AttestationItems::find()
+            ->joinWith('lessonMark')
+            ->select('attestation_items.id, attestation_items.plan_year, attestation_items.teachers_id, attestation_items.lesson_mark_id, attestation_items.studyplan_subject_id, guide_lesson_mark.mark_label as mark_label')
+            ->where(['plan_year' => $plan_year])
+            ->andWhere(['vid_cert' => 1])
+            ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->all(), 'studyplan_subject_id', ['teachers_id']);
+
+//        echo '<pre>' . print_r($modelsMarksCertif, true) . '</pre>';        die();
         $attributes = ['studyplan_subject_id' => Yii::t('art/guide', 'Subject Name')];
         $attributes += ['subject_vid_id' => Yii::t('art/guide', 'Subject Vid')];
         $attributes += ['subject_sect_studyplan_id' => Yii::t('art/guide', 'Sect Name')];
         $attributes += ['teachers_id' => Yii::t('art/teachers', 'Teachers')];
         $attributes += ['pa' => 'ПА'];
+        $attributes += ['ia' => 'ИА'];
 
         $dates = $columns = [];
         foreach ($lessonDates as $id => $lessonDate) {
@@ -234,37 +309,53 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $data[$item]['subject_sect_studyplan_id'] = $modelProgress->subject_sect_studyplan_id;
             $data[$item]['sect_name'] = $modelProgress->sect_name;
             $data[$item]['subject'] = $modelProgress->subject;
-                $data[$item]['teachers_id'] = $modelProgress->teachers_id;
+            $data[$item]['teachers_id'] = $modelProgress->teachers_id;
 
             if (isset($modelsMarks[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id])) {
                 foreach ($modelsMarks[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id] as $id => $mark) {
 //                    echo '<pre>' . print_r($mark, true) . '</pre>';
-                        $date_label = Yii::$app->formatter->asDate($mark['lesson_date'], 'php:d.m.Y');
-                        if (\artsoft\Art::isFrontend()) {
-                            $helpIcon = \artsoft\helpers\Html::beginTag('span', [
-                                'title' => $mark['lesson_topic'] ? $mark['lesson_topic'] . ' ' . $mark['lesson_rem'] : "Задание не определено.",
-                                'data-content' => $mark['lesson_topic'] . ' ' . $mark['lesson_rem'],
-                                'data-html' => 'true',
-                                'role' => 'button',
-                                'style' => 'margin-bottom: 5px; padding: 0 5px;',
-                                'class' => 'btn btn-sm role-help-btn',
-                            ]);
-                            $helpIcon .= $mark['mark_label'] . ($mark['mark_label'] ? '<span style="font-size: 6pt;">' . $mark['test_name_short'] . '</span>' : '');
-                            $helpIcon .= \artsoft\helpers\Html::endTag('span');
-                            $data[$item][$date_label] = $helpIcon;
-                        } else {
-                            $data[$item][$date_label] = !$readonly ? self::getEditableForm($mark_list, $mark) . ($mark['mark_label'] ? '<span style="font-size: 6pt;">' . $mark['test_name_short'] . '</span>' : '') : $mark->mark_label . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '');
-                        }
+                    $date_label = Yii::$app->formatter->asDate($mark['lesson_date'], 'php:d.m.Y');
+                    if (\artsoft\Art::isFrontend()) {
+                        $helpIcon = \artsoft\helpers\Html::beginTag('span', [
+                            'title' => $mark['lesson_topic'] ? $mark['lesson_topic'] . ' ' . $mark['lesson_rem'] : "Задание не определено.",
+                            'data-content' => $mark['lesson_topic'] . ' ' . $mark['lesson_rem'],
+                            'data-html' => 'true',
+                            'role' => 'button',
+                            'style' => 'margin-bottom: 5px; padding: 0 5px;',
+                            'class' => 'btn btn-sm role-help-btn',
+                        ]);
+                        $helpIcon .= $mark['mark_label'] . ($mark['mark_label'] ? '<span style="font-size: 6pt;">' . $mark['test_name_short'] . '</span>' : '');
+                        $helpIcon .= \artsoft\helpers\Html::endTag('span');
+                        $data[$item][$date_label] = $helpIcon;
+                    } else {
+                        $data[$item][$date_label] = !$readonly ? self::getEditableForm($mark_list, $mark) . ($mark['mark_label'] ? '<span style="font-size: 6pt;">' . $mark['test_name_short'] . '</span>' : '') : $mark->mark_label . ($mark->mark_label ? '<span style="font-size: 6pt;">' . $mark->test_name_short . '</span>' : '');
                     }
-            }
-            if (isset($modelsMarksCertif[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id])) {
-                foreach ($modelsMarksCertif[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id] as $id => $mark) {
-                    $data[$item]['pa'] = !$readonly ? self::getEditableFormAttestation($mark_list_sertif, $mark) : ($mark->lessonMark->mark_label ?? '');
                 }
+            }
+            if (isset($modelsMarksProtocol[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id])) {
+                $mark_label = $modelsMarksProtocol[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id]['mark_label'];
+                $data[$item]['pa'] = '<span title="Оценка выставлена через протокол" style="color: #F23600;">' . $mark_label . '</span>';
+            } elseif (isset($modelsMarksCertif[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id])) {
+                $mark = $modelsMarksCertif[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id];
+                $data[$item]['pa'] = !$readonly ? self::getEditableFormAttestation($mark_list_sertif, $mark) : ($mark->lessonMark->mark_label ?? '');
+            } elseif (isset($modelsMarksCertif[''][$modelProgress->studyplan_subject_id])) {
+                $mark = $modelsMarksCertif[''][$modelProgress->studyplan_subject_id];
+                $data[$item]['pa'] = !$readonly ? self::getEditableFormAttestation($mark_list_sertif, $mark) : ($mark->lessonMark->mark_label ?? '');
+            }
+
+            if (isset($modelsMarksProtocol_2[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id])) {
+                $mark_label = $modelsMarksProtocol_2[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id]['mark_label'];
+                $data[$item]['ia'] = '<span title="Оценка выставлена через протокол" style="color: #468847;">' . $mark_label . '</span>';
+            }elseif (isset($modelsMarksCertif_2[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id])) {
+                $mark = $modelsMarksCertif_2[$modelProgress->teachers_id][$modelProgress->studyplan_subject_id];
+                $data[$item]['ia'] = !$readonly ? self::getEditableFormAttestation($mark_list_sertif, $mark) : ($mark->lessonMark->mark_label ?? '');
+            } elseif (isset($modelsMarksCertif_2[''][$modelProgress->studyplan_subject_id])) {
+                $mark = $modelsMarksCertif_2[''][$modelProgress->studyplan_subject_id];
+                $data[$item]['ia'] = !$readonly ? self::getEditableFormAttestation($mark_list_sertif, $mark) : ($mark->lessonMark->mark_label ?? '');
             }
 
         }
-       // echo '<pre>' . print_r($data, true) . '</pre>'; die();
+        // echo '<pre>' . print_r($data, true) . '</pre>'; die();
         return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes, 'columns' => $columns];
     }
 
@@ -283,6 +374,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $attributes += ['subject_sect_studyplan_id' => 'Название группы'];
         $attributes += ['student_id' => 'Ученик'];
         $attributes += ['pa' => 'ПА'];
+        $attributes += ['ia' => 'ИА'];
         $dates_load_total = 0;
         $disorder_data = [];
         if ($model_date->subject_sect_studyplan_id != 0) {
@@ -318,14 +410,41 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 ->andWhere(['=', 'test_category', 1])
                 ->all(), null, ['studyplan_subject_id']);
 
+            $modelsMarksProtocol = ArrayHelper::index((new Query())->from('schoolplan_protocol_items_view')
+                ->select(['mark_label', 'studyplan_subject_id'])
+                ->where(['studyplan_subject_id' => $studyplanSubjectIds])
+                ->andWhere(['plan_year' => $plan_year])
+                ->andWhere(['med_cert' => true])
+                ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
+                ->all(), 'studyplan_subject_id');
+
             $modelsMarksCertif = ArrayHelper::index(AttestationItems::find()
                 ->joinWith('lessonMark')
                 ->select('attestation_items.id, attestation_items.plan_year, attestation_items.lesson_mark_id, attestation_items.studyplan_subject_id, guide_lesson_mark.mark_label')
                 ->where(['plan_year' => $plan_year])
+                ->andWhere(['vid_cert' => 2])
                 ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
                 ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
-                ->all(), null, ['studyplan_subject_id']);
+                ->all(), 'studyplan_subject_id');
 
+            $modelsMarksProtocol_2 = ArrayHelper::index((new Query())->from('schoolplan_protocol_items_view')
+                ->select(['mark_label', 'studyplan_subject_id'])
+                ->where(['studyplan_subject_id' => $studyplanSubjectIds])
+                ->andWhere(['plan_year' => $plan_year])
+                ->andWhere(['fin_cert' => true])
+                ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
+                ->all(), 'studyplan_subject_id');
+
+            $modelsMarksCertif_2 = ArrayHelper::index(AttestationItems::find()
+                ->joinWith('lessonMark')
+                ->select('attestation_items.id, attestation_items.plan_year, attestation_items.lesson_mark_id, attestation_items.studyplan_subject_id, guide_lesson_mark.mark_label')
+                ->where(['plan_year' => $plan_year])
+                ->andWhere(['vid_cert' => 1])
+                ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
+                ->all(), 'studyplan_subject_id');
             $dates_load = 0;
             $user_id = RefBook::find('teachers_users')->getValue($teachers_id);
 
@@ -341,9 +460,9 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                     $datesArray = (new Query())->from('activities_schedule_view')
                         ->innerJoin('lesson_items', 'lesson_items.subject_sect_studyplan_id = activities_schedule_view.subject_sect_studyplan_id AND lesson_items.studyplan_subject_id = activities_schedule_view.studyplan_subject_id')
                         ->innerJoin('lesson_progress', 'lesson_progress.lesson_items_id = lesson_items.id')
-                        ->select(new \yii\db\Expression('DISTINCT activities_schedule_view.subject_schedule_id,datetime_in,datetime_out,lesson_date,lesson_test_id,lesson_mark_id'))
+                        ->select(new \yii\db\Expression('DISTINCT activities_schedule_view.subject_schedule_id,activities_schedule_view.datetime_in,activities_schedule_view.datetime_out,lesson_date,lesson_test_id,lesson_mark_id'))
                         ->where(['=', 'activities_schedule_view.subject_sect_studyplan_id', $model_date->subject_sect_studyplan_id])
-                        ->andWhere(['and', ['>=', 'datetime_in', $lessonDate['lesson_date']], ['<', 'datetime_in', $lessonDate['lesson_date'] + 86400]])
+                        ->andWhere(['and', ['>=', 'activities_schedule_view.datetime_in', $lessonDate['lesson_date']], ['<', 'activities_schedule_view.datetime_in', $lessonDate['lesson_date'] + 86400]])
                         ->andWhere(['=', 'lesson_date', $lessonDate['lesson_date']])
                         ->andWhere(['=', 'direction_id', 1000])
                         ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
@@ -374,11 +493,20 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                     $data[$item][$date_label] = $editTable && !(\artsoft\Art::isFrontend() && $disorder_data[$mark->lesson_date]) ? self::getEditableForm($mark_list, $mark, $teachers_id) : $mark->mark_label;
                 }
             }
+            if (isset($modelsMarksProtocol[$modelProgress->studyplan_subject_id])) {
+                $mark_label = $modelsMarksProtocol[$modelProgress->studyplan_subject_id]['mark_label'];
+                $data[$item]['pa'] = '<span title="Оценка выставлена через протокол" style="color: #F23600;">' . $mark_label . '</span>';
+            } elseif (isset($modelsMarksCertif[$modelProgress->studyplan_subject_id])) {
+                $mark = $modelsMarksCertif[$modelProgress->studyplan_subject_id];
+                $data[$item]['pa'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : $mark->mark_label;
+            }
 
-            if (isset($modelsMarksCertif[$modelProgress->studyplan_subject_id])) {
-                foreach ($modelsMarksCertif[$modelProgress->studyplan_subject_id] as $id => $mark) {
-                    $data[$item]['pa'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : $mark->mark_label;
-                }
+            if (isset($modelsMarksProtocol_2[$modelProgress->studyplan_subject_id])) {
+                $mark_label = $modelsMarksProtocol_2[$modelProgress->studyplan_subject_id]['mark_label'];
+                $data[$item]['ia'] = '<span title="Оценка выставлена через протокол" style="color: #468847;">' . $mark_label . '</span>';
+            } elseif (isset($modelsMarksCertif_2[$modelProgress->studyplan_subject_id])) {
+                $mark = $modelsMarksCertif_2[$modelProgress->studyplan_subject_id];
+                $data[$item]['ia'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : $mark->mark_label;
             }
         }
 
@@ -425,7 +553,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $attributes += ['student_id' => 'Ученик'];
         $attributes += ['subject_load' => 'Кол-во час.'];
 
-                $modelsProgress = self::find()
+        $modelsProgress = self::find()
             ->where(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->andWhere(['=', 'subject_key', $model_date->subject_key]);
 
@@ -440,7 +568,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         }
         $modelsProgress = $modelsProgress->andWhere(['plan_year' => $plan_year])
             ->all();
-       // echo '<pre>' . print_r($modelsProgress, true) . '</pre>'; die();
+        // echo '<pre>' . print_r($modelsProgress, true) . '</pre>'; die();
         $studyplanSubjectIds = ArrayHelper::getColumn($modelsProgress, 'studyplan_subject_id');
         $dates_load_total = 0;
 
@@ -470,7 +598,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
         $lessonDates = array_values(array_unique(ArrayHelper::getColumn($modelsMarks, 'lesson_date')));
         $disorder_data = [];
         $user_id = RefBook::find('teachers_users')->getValue($teachers_id);
-       // echo '<pre>' . print_r($modelsMarksSubjectLoad, true) . '</pre>'; die();
+        // echo '<pre>' . print_r($modelsMarksSubjectLoad, true) . '</pre>'; die();
         foreach ($lessonDates as $id => $lessonDate) {
             $isDisorder = Routine::isDisorder($lessonDate, $user_id);
             $disorder_data[$lessonDate] = $isDisorder;
@@ -481,22 +609,22 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $columns[$my] = isset($columns[$my]) ? $columns[$my] + 1 : 1;
             $attributes += [$date => $label];
             if (Art::isBackend()) {
-               /* $modelsMarks2 = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l
-	        JOIN subject_schedule ON subject_schedule.teachers_load_id = l.teachers_load_id
-	            AND subject_schedule.week_day = DATE_PART(\'dow\', to_timestamp(l.lesson_date+10800))
-	        WHERE ("lesson_date" BETWEEN :timestamp_in AND :timestamp_out)
-	            AND ("subject_key" = :subject_key) AND ("test_category" = 1) AND l.teachers_id = :teachers_id
-	        ORDER BY "lesson_date"',
+                $modelsMarks2 = \Yii::$app->db->createCommand('SELECT * FROM lesson_items_progress_studyplan_view l
+             JOIN subject_schedule ON subject_schedule.teachers_load_id = l.teachers_load_id
+                 AND subject_schedule.week_day = DATE_PART(\'dow\', to_timestamp(l.lesson_date+10800))
+             WHERE ("lesson_date" BETWEEN :timestamp_in AND :timestamp_out)
+                 AND ("subject_key" = :subject_key) AND ("test_category" = 1) AND l.teachers_id = :teachers_id
+             ORDER BY "lesson_date"',
                     [
                         'timestamp_in' => $timestamp_in,
                         'timestamp_out' => $timestamp_out,
                         'subject_key' => $model_date->subject_key,
                         'teachers_id' => $teachers_id
-                    ])->queryAll(); // TODO оптимизировать*/
-               // Убираем дубли индексом - остаются последние записи
-                $modelsMarksLoad = ArrayHelper::index($modelsMarks, 'studyplan_subject_id', ['lesson_date']);
-                $modelsMarksSubjectLoad = ArrayHelper::index($modelsMarks, 'lesson_date', ['studyplan_subject_id']);
-                if(isset($modelsMarksLoad[$lessonDate])) {
+                    ])->queryAll(); // TODO оптимизировать Если расписание в истории удалено, то будет 0. Нужно что-то решать.
+                // Убираем дубли индексом - остаются последние записи
+                $modelsMarksLoad = ArrayHelper::index($modelsMarks2, 'studyplan_subject_id', ['lesson_date']);
+                $modelsMarksSubjectLoad = ArrayHelper::index($modelsMarks2, 'lesson_date', ['studyplan_subject_id']);
+                if (isset($modelsMarksLoad[$lessonDate])) {
                     foreach ($modelsMarksLoad[$lessonDate] as $index => $m) {
                         $dates_load += $m['lesson_mark_id'] ? Schedule::astr2academ($m['time_out'] - $m['time_in']) : 0;
                     }
@@ -506,24 +634,54 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             $dates[] = ['date' => $date, 'dates_load' => $dates_load, 'isDisorder' => $isDisorder];
         }
         $attributes += ['pa' => 'ПА'];
+        $attributes += ['ia' => 'ИА'];
         // Убираем дубли индексом - остаются последние записи
         $modelsMarks = ArrayHelper::index($modelsMarks, 'lesson_date', ['subject_sect_studyplan_id', 'studyplan_subject_id']);
-                //echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
+        //echo '<pre>' . print_r($modelsMarks, true) . '</pre>'; die();
+
+        $modelsMarksProtocol = ArrayHelper::index((new Query())->from('schoolplan_protocol_items_view')
+            ->select(['teachers_id', 'mark_label', 'studyplan_subject_id'])
+            ->where(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->andWhere(['plan_year' => $plan_year])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->andWhere(['med_cert' => true])
+            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+            ->all(), 'studyplan_subject_id');
 
         $modelsMarksCertif = ArrayHelper::index(AttestationItems::find()
             ->joinWith('lessonMark')
             ->select('attestation_items.id, attestation_items.plan_year, attestation_items.lesson_mark_id, attestation_items.studyplan_subject_id, guide_lesson_mark.mark_label')
             ->where(['plan_year' => $plan_year])
             ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->andWhere(['vid_cert' => 2])
             ->andWhere(new \yii\db\Expression("CASE
                         WHEN attestation_items.teachers_id IS NOT NULL THEN attestation_items.teachers_id = :teachers_id
                         ELSE true END", [':teachers_id' => $teachers_id]))
-            ->all(), null, ['studyplan_subject_id']);
+            ->all(), 'studyplan_subject_id');
 
+        $modelsMarksProtocol_2 = ArrayHelper::index((new Query())->from('schoolplan_protocol_items_view')
+            ->select(['teachers_id', 'mark_label', 'studyplan_subject_id'])
+            ->where(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->andWhere(['plan_year' => $plan_year])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->andWhere(['fin_cert' => true])
+            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+            ->all(), 'studyplan_subject_id');
+
+        $modelsMarksCertif_2 = ArrayHelper::index(AttestationItems::find()
+            ->joinWith('lessonMark')
+            ->select('attestation_items.id, attestation_items.plan_year, attestation_items.lesson_mark_id, attestation_items.studyplan_subject_id, guide_lesson_mark.mark_label')
+            ->where(['plan_year' => $plan_year])
+            ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
+            ->andWhere(['vid_cert' => 1])
+            ->andWhere(new \yii\db\Expression("CASE
+                        WHEN attestation_items.teachers_id IS NOT NULL THEN attestation_items.teachers_id = :teachers_id
+                        ELSE true END", [':teachers_id' => $teachers_id]))
+            ->all(), 'studyplan_subject_id');
         foreach ($modelsProgress as $item => $modelProgress) {
             $dates_subject_load = null;
             if (Art::isBackend()) {
-                if(isset($modelsMarksSubjectLoad[$modelProgress->studyplan_subject_id])) {
+                if (isset($modelsMarksSubjectLoad[$modelProgress->studyplan_subject_id])) {
                     foreach ($modelsMarksSubjectLoad[$modelProgress->studyplan_subject_id] as $index => $m) {
                         $dates_subject_load += $m['lesson_mark_id'] ? Schedule::astr2academ($m['time_out'] - $m['time_in']) : 0;
                     }
@@ -549,11 +707,19 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                     $data[$item][$date_label] = $editTable && !(\artsoft\Art::isFrontend() && $disorder_data[$mark['lesson_date']]) ? self::getEditableForm($mark_list, $mark, $teachers_id) . ($mark['mark_label'] ? '<span style="font-size: 6pt;">' . $mark['test_name_short'] . '</span>' : '') : ($mark['mark_label'] ?? '');
                 }
             }
-
-            if (isset($modelsMarksCertif[$modelProgress->studyplan_subject_id])) {
-                foreach ($modelsMarksCertif[$modelProgress->studyplan_subject_id] as $id => $mark) {
-                    $data[$item]['pa'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark, $teachers_id) : ($mark->mark_label ?? '');
-                }
+            if (isset($modelsMarksProtocol[$modelProgress->studyplan_subject_id])) {
+                $mark_label = $modelsMarksProtocol[$modelProgress->studyplan_subject_id]['mark_label'];
+                $data[$item]['pa'] = '<span title="Оценка выставлена через протокол" style="color: #F23600;">' . $mark_label . '</span>';
+            } elseif (isset($modelsMarksCertif[$modelProgress->studyplan_subject_id])) {
+                $mark = $modelsMarksCertif[$modelProgress->studyplan_subject_id];
+                $data[$item]['pa'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark, $teachers_id) : ($mark->mark_label ?? '');
+            }
+            if (isset($modelsMarksProtocol_2[$modelProgress->studyplan_subject_id])) {
+                $mark_label = $modelsMarksProtocol_2[$modelProgress->studyplan_subject_id]['mark_label'];
+                $data[$item]['ia'] = '<span title="Оценка выставлена через протокол" style="color: #468847;">' . $mark_label . '</span>';
+            } elseif (isset($modelsMarksCertif_2[$modelProgress->studyplan_subject_id])) {
+                $mark = $modelsMarksCertif_2[$modelProgress->studyplan_subject_id];
+                $data[$item]['ia'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark, $teachers_id) : ($mark->mark_label ?? '');
             }
         }
         return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes, 'dates_load_total' => $dates_load_total, 'columns' => $columns];

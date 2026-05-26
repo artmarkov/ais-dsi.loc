@@ -38,6 +38,9 @@ use yii\web\NotFoundHttpException;
  * @property int|null $updated_by
  * @property int $version
  * @property int $teachers_id
+ * @property int $datetime_in
+ * @property int $datetime_out
+ * @property int $auditory_id
  *
  * @property LessonTest $lessonTest
  * @property LessonProgress[] $lessonProgresses
@@ -64,9 +67,35 @@ class LessonItems extends \artsoft\db\ActiveRecord
             TimestampBehavior::class,
             [
                 'class' => DateFieldBehavior::class,
-                'attributes' => ['lesson_date'],
+                'attributes' => ['lesson_date', 'datetime_in', 'datetime_out'],
             ],
         ];
+    }
+
+    public function beforeValidate()
+    {
+        if ($this->isNewRecord) {
+            $model = SubjectScheduleView::find()->where(
+                ['AND',
+                    ['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id != null ? $this->subject_sect_studyplan_id : 0],
+                    ['=', 'studyplan_subject_id', $this->studyplan_subject_id != null ? $this->studyplan_subject_id : 0],
+                    ['=', 'week_day', Schedule::timestamp2WeekDay(strtotime($this->lesson_date))],
+                ]);
+            if ($this->teachers_id != null) {
+                $model = $model->andWhere(['=', 'teachers_id', $this->teachers_id]);
+            }
+            $model = $model->one();
+
+            if ($model) {
+                $this->datetime_in = $this->lesson_date . ' ' . $model->time_in;
+                $this->datetime_out = $this->lesson_date . ' ' . $model->time_out;
+                $this->auditory_id = $model->auditory_id;
+                if ($this->teachers_id == null) {
+                    $this->teachers_id = $model->teachers_id;
+                }
+            }
+        }
+        return parent::beforeValidate();
     }
 
     /**
@@ -75,10 +104,10 @@ class LessonItems extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'version', 'teachers_id'], 'integer'],
+            [['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'version', 'teachers_id', 'auditory_id'], 'integer'],
             [['subject_sect_studyplan_id', 'studyplan_subject_id', 'version'], 'default', 'value' => 0],
             [['lesson_test_id', 'lesson_date'], 'required'],
-            [['lesson_date'], 'safe'],
+            [['lesson_date', 'datetime_in', 'datetime_out'], 'safe'],
 //            [['lesson_test_id'], 'checkLessonTestExist', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_date'], 'checkLessonExist', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],
             [['lesson_date'], 'checkLessonDate', 'skipOnEmpty' => false, 'on' => self::SCENARIO_COMMON],

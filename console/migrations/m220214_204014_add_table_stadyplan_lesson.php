@@ -122,6 +122,9 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
             'lesson_test_id' => $this->integer()->notNull(),
             'teachers_id' => $this->integer(),
             'lesson_date' => $this->integer()->notNull(),
+            'datetime_in' => $this->integer(),
+            'datetime_out' => $this->integer(),
+            'auditory_id' => $this->integer(),
             'lesson_topic' => $this->string(512),
             'lesson_rem' => $this->string(1024),
             'created_at' => $this->integer()->notNull(),
@@ -137,7 +140,7 @@ class m220214_204014_add_table_stadyplan_lesson extends \artsoft\db\BaseMigratio
         $this->createIndex('lesson_items_studyplan_subject_id', 'lesson_items', ['studyplan_subject_id']);
         $this->createIndex('lesson_items_lesson_test_id', 'lesson_items', ['lesson_test_id']);
         $this->createIndex('lesson_items_lesson_date', 'lesson_items', ['lesson_date']);
-        $this->createIndex('lesson_items_subject_sect_studyplan_id_studyplan_subject_id_key', 'lesson_items', ['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'lesson_date'], true);
+        $this->createIndex('lesson_items_subject_sect_studyplan_id_studyplan_subject_id_key', 'lesson_items', ['subject_sect_studyplan_id', 'studyplan_subject_id', 'lesson_test_id', 'lesson_date', 'teachers_id'], true);
 
         $this->addForeignKey('lesson_items_ibfk_1', 'lesson_items', 'lesson_test_id', 'guide_lesson_test', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('lesson_items_ibfk_2', 'lesson_items', 'created_by', 'users', 'id', 'NO ACTION', 'NO ACTION');

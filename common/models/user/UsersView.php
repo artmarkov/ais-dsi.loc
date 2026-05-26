@@ -19,6 +19,9 @@ use Yii;
  * @property int|null $user_common_id
  * @property string|null $user_category_name
  * @property string|null $user_name
+ * @property string|null $last_name
+ * @property string|null $first_name
+ * @property string|null $middle_name
  * @property string|null $phone
  * @property string|null $phone_optional
  * @property int|null $user_common_status

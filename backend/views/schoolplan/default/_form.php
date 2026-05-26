@@ -310,7 +310,7 @@ $form = ActiveForm::begin([
                                                                 'multiple' => false,
                                                             ],
                                                             'pluginOptions' => [
-                                                                'allowClear' => false,
+                                                                'allowClear' => true,
                                                             ],
                                                         ]);
                                                         ?>
@@ -327,10 +327,18 @@ $form = ActiveForm::begin([
                                                             'multiple' => false,
                                                         ],
                                                         'pluginOptions' => [
-                                                            'allowClear' => false,
+                                                            'allowClear' => true,
+                                                            'placeholder' => Yii::t('art', 'Select...'),
                                                         ],
                                                     ]);
                                                     ?>
+                                                    <div class="col-sm-12">
+                                                        <?php echo \yii\bootstrap\Alert::widget([
+                                                            'body' => '<i class="fa fa-info-circle"></i> Если указан секретарь комиссии, то он будет получать уведомления по действиям, связанным с утверждением протокола.',
+                                                            'options' => ['class' => 'alert-info'],
+                                                        ]);
+                                                        ?>
+                                                    </div>
                                                     <?= $form->field($model, 'protocol_secretary_id')->widget(\kartik\select2\Select2::class, [
                                                         'data' => User::getUsersByIds(User::getUsersByRole('department,administrator,employees')),
                                                         'showToggleAll' => false,
@@ -340,14 +348,14 @@ $form = ActiveForm::begin([
                                                             'multiple' => false,
                                                         ],
                                                         'pluginOptions' => [
-                                                            'allowClear' => false,
+                                                            'allowClear' => true,
                                                         ],
 
                                                     ]);
                                                     ?>
                                                     <?= $form->field($model, 'protocol_members_list')->widget(\kartik\select2\Select2::class, [
     //                                                    'data' => \common\models\teachers\Teachers::getUserTeachersForDepartment($model->department_list),
-                                                        'data' => User::getUsersByIds(User::getUsersByRole('department,teachers,administrator')),
+                                                        'data' => artsoft\models\User::getUsersListByCategory(['teachers', 'employees']),
                                                         'showToggleAll' => false,
                                                         'options' => [
                                                             'disabled' => $readonly,
@@ -360,12 +368,14 @@ $form = ActiveForm::begin([
                                                     ]);
 
                                                     ?>
+                                                    <?= $form->field($model->loadDefaultValues(), 'protocol_vid_cert')->radioList(Schoolplan::getFormCertList(), ['itemOptions' => ['disabled' => $readonly]]) ?>
 
                                                     <?= $form->field($model, 'protocol_subject_cat_id')->widget(\kartik\select2\Select2::class, [
                                                         'data' => $subject_category_name_list,
                                                         'options' => [
                                                             'id' => 'protocol_subject_cat_id',
                                                             'placeholder' => Yii::t('art', 'Select...'),
+                                                            'multiple' => true,
                                                         ],
                                                         'pluginOptions' => [
                                                             'disabled' => $readonly,
@@ -406,7 +416,7 @@ $form = ActiveForm::begin([
                                                     ?>
                                                     <?= $form->field($model, 'protocol_class_list')->widget(\kartik\select2\Select2::class, [
                                                         'data' => \artsoft\helpers\ArtHelper::getCourseList(),
-                                                        'showToggleAll' => false,
+                                                        'showToggleAll' => true,
                                                         'options' => [
                                                             'disabled' => $readonly,
                                                             'placeholder' => Yii::t('art', 'Select...'),
@@ -417,6 +427,16 @@ $form = ActiveForm::begin([
                                                         ],
                                                     ]);
                                                     ?>
+                                                    <div class="col-sm-12">
+                                                        <?php echo \yii\bootstrap\Alert::widget([
+                                                            'body' => '<i class="fa fa-info-circle"></i> Генерацию карточек рекомендуется делать для индивидуальных занятий, где требуется вводить программу для каждого ученика. Для групповых занятий можно выбрать учеников списком на вкладке "Протокол аттестационной комиссии" и для всего списка в этой же форме добавить репертуар.',
+                                                            'options' => ['class' => 'alert-warning'],
+                                                        ]);
+                                                        ?>
+                                                    </div>
+
+                                                    <?= $form->field($model, 'protocolGeneratorFlag')->checkbox(['disabled' => $readonly])->label('Сгенерировать карточки для протокола(после сохранения добавятся новые ученики в протокол)') ?>
+
                                                 </div>
                                             </div>
                                         </div>

@@ -31,9 +31,10 @@ class m231225_074500_refactor_schoolplan_protocol extends \artsoft\db\BaseMigrat
         $this->addColumnWithHistory('schoolplan', 'protocol_secretary_id', $this->integer()->comment('Секретарь комиссии user_id'));
         $this->addColumnWithHistory('schoolplan', 'protocol_members_list', $this->string(1024)->comment('Члены комиссии user_id'));
         $this->addColumnWithHistory('schoolplan', 'protocol_class_list', $this->string(1024)->comment('Классы'));
-        $this->addColumnWithHistory('schoolplan', 'protocol_subject_cat_id', $this->integer()->comment('Категория дисциплины'));
+        $this->addColumnWithHistory('schoolplan', 'protocol_subject_cat_id', $this->string(1024)->comment('Категория дисциплины'));
         $this->addColumnWithHistory('schoolplan', 'protocol_subject_id', $this->string(1024)->comment('Дисциплины'));
         $this->addColumnWithHistory('schoolplan', 'protocol_subject_vid_id', $this->integer()->comment('Вид дисциплины(групповое, инд)'));
+        $this->addColumnWithHistory('schoolplan', 'protocol_vid_cert', $this->integer()->comment('Вид испытания(ПА, ИА)'));
 
         $this->addForeignKey('schoolplan_ibfk_7', 'schoolplan', 'protocol_leader_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('schoolplan_ibfk_8', 'schoolplan', 'protocol_secretary_id', 'users', 'id', 'NO ACTION', 'NO ACTION');
@@ -48,6 +49,7 @@ class m231225_074500_refactor_schoolplan_protocol extends \artsoft\db\BaseMigrat
             'task_ticket' => $this->string(127)->comment('Билет-задание'),
             'lesson_mark_id' =>  $this->integer()->comment('Оценка'),
             'resume' => $this->string(1024)->comment('Отзыв комиссии/Результат'),
+            'vid_cert' => $this->integer()->notNull()->defaultValue(0)->comment('Вид испытания'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -122,7 +124,7 @@ class m231225_074500_refactor_schoolplan_protocol extends \artsoft\db\BaseMigrat
 
 
         $this->db->createCommand()->createView('schoolplan_protocol_items_view', '
-   SELECT schoolplan_protocol.id AS schoolplan_protocol_id,
+     SELECT schoolplan_protocol.id AS schoolplan_protocol_id,
     studyplan_subject.id AS studyplan_subject_id,
     guide_lesson_mark.id AS lesson_mark_id,
     guide_lesson_mark.mark_category,
@@ -141,16 +143,19 @@ class m231225_074500_refactor_schoolplan_protocol extends \artsoft\db\BaseMigrat
     studyplan_subject.med_cert,
     studyplan_subject.fin_cert,
     schoolplan_protocol.updated_at AS lesson_date,
+    schoolplan_protocol.teachers_id,
     studyplan.student_id,
     studyplan.programm_id,
-    subject.name AS subject_name
+    subject.name AS subject_name,
+    schoolplan_protocol.vid_cert,
+    studyplan.course
    FROM schoolplan_protocol
      JOIN studyplan_subject ON studyplan_subject.id = schoolplan_protocol.studyplan_subject_id
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
      JOIN subject ON subject.id = studyplan_subject.subject_id
      JOIN education_programm ON education_programm.id = studyplan.programm_id
      LEFT JOIN guide_lesson_mark ON guide_lesson_mark.id = schoolplan_protocol.lesson_mark_id
-  ORDER BY studyplan.plan_year;
+  ORDER BY studyplan.plan_year;;
    ')->execute();
     }
 

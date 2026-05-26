@@ -2,6 +2,7 @@
 
 namespace common\models\education;
 
+use artsoft\Art;
 use artsoft\helpers\ArtHelper;
 use artsoft\models\User;
 use artsoft\widgets\Notice;
@@ -73,7 +74,7 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
-            [['entrant_programm_id'], 'unique', 'targetAttribute' => [/*'entrant_programm_id',*/ 'plan_year', 'student_id'],
+            [['entrant_programm_id'], 'unique', 'targetAttribute' => Yii::$app->user->isGuest ? ['plan_year', 'student_id'] : ['entrant_programm_id', 'plan_year', 'student_id'],
                 'message' => 'Ученик уже записан на программу в рамках предварительной записи.'],
         ];
     }
@@ -169,11 +170,11 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
             $textBody = 'Сообщение модуля "Предварительная регистрация на обучение" ' . PHP_EOL;
             $htmlBody = '<p><b>Сообщение модуля "Предварительная регистрация на обучение"</b></p>';
 
-            $textBody .= 'Вы записали ребенка на программу обучения: ' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . PHP_EOL;
-            $htmlBody .= '<p>Вы записали ребенка на программу обучения:' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . '</p>';
+            $textBody .= 'Вы зарегистрировали ребенка на программу обучения: ' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . '. С вами свяжутся после 01 июня 2026 года. ' . PHP_EOL;
+            $htmlBody .= '<p>Вы зарегистрировали ребенка на программу обучения:' . strip_tags(\common\models\education\EntrantProgramm::getEntrantProgrammValue($this->entrant_programm_id)) . '. С вами свяжутся после 01 июня 2026 года. </p>';
 
-            $textBody .= 'Просьба написать по телефону в whats app или Telegram 8-926-350-17-97 с 10:00 - 18:00 с понедельника по пятницу для уточнения информации по обучению и оплате.' . PHP_EOL;
-            $htmlBody .= '<p>Просьба написать по телефону в whats app или Telegram 8-926-350-17-97 с 10:00 - 18:00 с понедельника по пятницу для уточнения информации по обучению и оплате.' . '</p>';
+            $textBody .= 'Если есть вопросы, просьба связаться по телефонам:  8 926 350 17 97 Анастасия Владимировна, 8 926 822 37 26 Александр Александрович' . PHP_EOL;
+            $htmlBody .= '<p>Если есть вопросы, просьба связаться по телефонам:  8 926 350 17 97 Анастасия Владимировна, 8 926 822 37 26 Александр Александрович' . '</p>';
 
             $textBody .= '--------------------------' . PHP_EOL;
             $textBody .= 'Сообщение создано автоматически. Отвечать на него не нужно.';

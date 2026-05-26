@@ -172,7 +172,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 return true;
                             },
                             'clone' => function ($model) {
-                                return Yii::$app->user->isSuperadmin;
+                                return true/*Yii::$app->user->isSuperadmin*/;
                             },
                             'delete' => function ($model) {
                                 return true;

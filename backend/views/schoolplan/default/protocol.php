@@ -16,6 +16,7 @@ use artsoft\grid\GridPageSize;
 $teachers_list = RefBook::find('teachers_fio')->getList();
 $studyplan_subject_list = RefBook::find('subject_memo_4')->getList();
 $schoolplan = \common\models\schoolplan\Schoolplan::findOne($id);
+$lessonMarks = \common\models\education\LessonMark::getMarkLabelForStudent();
 ?>
 <div class="protocol-index">
     <div class="panel">
@@ -129,8 +130,8 @@ $schoolplan = \common\models\schoolplan\Schoolplan::findOne($id);
                             ],
                             [
                                 'attribute' => 'lesson_mark_id',
-                                'value' => function ($model) {
-                                    return $model->lessonMark ? $model->lessonMark->mark_label : '';
+                                'value' => function ($model) use ($lessonMarks) {
+                                    return isset($lessonMarks[$model->lesson_mark_id]) ? $model->lessonMark->mark_label : $model->lesson_mark_id;
                                 },
                             ],
 
@@ -177,10 +178,10 @@ $schoolplan = \common\models\schoolplan\Schoolplan::findOne($id);
                                         return \artsoft\Art::isBackend() ? true : in_array($model_confirm->confirm_status, [0, 3]);
                                     },
                                     'update' => function ($model) use ($model_confirm) {
-                                        return \artsoft\Art::isBackend() ? true : (($model->isAuthor() || $model->schoolplan->isProtocolMembers()) && in_array($model_confirm->confirm_status, [0, 3]));
+                                        return \artsoft\Art::isBackend() ? true : (($model->isAuthor() || $model->schoolplan->isProtocolMembers()) /*&& in_array($model_confirm->confirm_status, [0, 3])*/);
                                     },
                                     'delete' => function ($model) use ($model_confirm) {
-                                        return \artsoft\Art::isBackend() ? true : (($model->isAuthor() || $model->schoolplan->isProtocolMembers()) && in_array($model_confirm->confirm_status, [0, 3]));
+                                        return \artsoft\Art::isBackend() ? true : (($model->isAuthor() || $model->schoolplan->isProtocolMembers()) /*&& in_array($model_confirm->confirm_status, [0, 3])*/);
                                     },
                                 ]
                             ],

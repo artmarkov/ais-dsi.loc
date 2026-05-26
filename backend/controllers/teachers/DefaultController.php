@@ -1011,6 +1011,7 @@ class DefaultController extends MainController
             $model->scenario = LessonItems::SCENARIO_COMMON;
             $model->studyplan_subject_id = 0;
             $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
+            $model->teachers_id = $id;
             // предустановка учеников
             $modelsItems = $model->getLessonProgressNew();
 
@@ -1263,7 +1264,7 @@ class DefaultController extends MainController
                             $modelLesson->lesson_topic = $model->lesson_topic;
                             $modelLesson->lesson_rem = $model->lesson_rem;
                             $modelLesson->teachers_id = $id;
-                            if (!($flag = $modelLesson->save(false))) {
+                            if (!($flag = $modelLesson->save())) {
                                 $transaction->rollBack();
                                 break;
                             }
@@ -1482,6 +1483,7 @@ class DefaultController extends MainController
             $keyArray = explode('||', $subject_key);
             $subject_sect_studyplan_id = $keyArray[0];
             $plan_year = $keyArray[1];
+            $vid_cert = $keyArray[2];
 
             $models = (new Query())->from('lesson_items_progress_studyplan_view')
                 ->where(['teachers_id' => $id])
@@ -1489,7 +1491,7 @@ class DefaultController extends MainController
                 ->andWhere(['=', 'plan_year', $plan_year])
                 ->all();
             foreach ($models as $model) {
-                $modelSertif = AttestationItems::findOne(['studyplan_subject_id' => $model['studyplan_subject_id'], 'plan_year' => $model['plan_year']]);
+                $modelSertif = AttestationItems::findOne(['studyplan_subject_id' => $model['studyplan_subject_id'], 'vid_cert' => $vid_cert, 'plan_year' => $model['plan_year']]);
                 $modelSertif ? $modelSertif->delete() : null;
             }
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
@@ -1516,12 +1518,12 @@ class DefaultController extends MainController
                     try {
                         $flag = true;
                         foreach ($modelsItems as $modelItems) {
-                            $modelAttestation = $modelItems->id ? AttestationItems::findOne($modelItems->id) : new AttestationItems();
+                           /* $modelAttestation = $modelItems->id ? AttestationItems::findOne($modelItems->id) : new AttestationItems();
                             $modelAttestation->studyplan_subject_id = $modelItems->studyplan_subject_id;
                             $modelAttestation->plan_year = $modelItems->plan_year;
                             $modelAttestation->lesson_mark_id = $modelItems->lesson_mark_id;
-                            $modelAttestation->mark_rem = $modelItems->mark_rem;
-                            if (!($flag = $modelAttestation->save(false))) {
+                            $modelAttestation->mark_rem = $modelItems->mark_rem;*/
+                            if (!($flag = $modelItems->save(false))) {
                                 $transaction->rollBack();
                                 break;
                             }
@@ -1566,6 +1568,7 @@ class DefaultController extends MainController
             $keyArray = explode('||', $subject_key);
             $subject_key = $keyArray[0];
             $plan_year = $keyArray[1];
+            $vid_cert = $keyArray[2];
 
             $models = (new Query())->from('lesson_items_progress_studyplan_view')
                 ->where(['teachers_id' => $id])
@@ -1577,6 +1580,7 @@ class DefaultController extends MainController
                 $modelSertif = AttestationItems::find()
                     ->where(['studyplan_subject_id' => $model['studyplan_subject_id']])
                     ->andWhere(['plan_year' => $model['plan_year']])
+                    ->andWhere(['vid_cert' => $vid_cert])
                     ->andWhere(new \yii\db\Expression("CASE
                         WHEN attestation_items.teachers_id IS NOT NULL THEN attestation_items.teachers_id = :teachers_id
                         ELSE true END", [':teachers_id' => $id]))
@@ -1613,13 +1617,7 @@ class DefaultController extends MainController
                     try {
                         $flag = true;
                         foreach ($modelsItems as $modelItems) {
-                            $modelAttestation = $modelItems->id ? AttestationItems::findOne($modelItems->id) : new AttestationItems();
-                            $modelAttestation->studyplan_subject_id = $modelItems->studyplan_subject_id;
-                            $modelAttestation->plan_year = $modelItems->plan_year;
-                            $modelAttestation->lesson_mark_id = $modelItems->lesson_mark_id;
-                            $modelAttestation->mark_rem = $modelItems->mark_rem;
-                            $modelAttestation->teachers_id = $modelItems->teachers_id;
-                            if (!($flag = $modelAttestation->save(false))) {
+                            if (!($flag = $modelItems->save(false))) {
                                 $transaction->rollBack();
                                 break;
                             }
@@ -1868,7 +1866,7 @@ class DefaultController extends MainController
 
         $session->set('_cheet_date_in', $model_date->date_in);
 
-        $model_date->activity_list = TeachersActivity::find()->where(['=', 'teachers_id', $id])->column();
+        $model_date->teachers_id = $id;
         $model_date->subject_type_id = SubjectType::find()->column();
 
 //        echo '<pre>' . print_r($model_date, true) . '</pre>'; die();

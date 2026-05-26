@@ -203,6 +203,7 @@ return [
     'Protocol Event' => 'Протокол мероприятия',
     'Schoolplan Protocol' => 'Протокол аттестационной комиссии',
     'Schoolplan Perform' => 'Выполнение плана и участие в мероприятии',
+    'Schoolplan Activity' => 'Планировщик мероприятия',
     'Prep On Test List' => 'Испытания с подготовкой',
     'Prep Off Test List' => 'Испытания без подготовки',
     'Applicants' => 'Поступающие',

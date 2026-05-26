@@ -4,6 +4,7 @@ namespace common\models\history;
 
 use artsoft\helpers\RefBook;
 use common\models\education\LessonProgress;
+use common\models\schoolplan\Schoolplan;
 use common\models\schoolplan\SchoolplanProtocol;
 use common\models\studyplan\StudyplanThematicItems;
 use common\models\user\UserCommon;
@@ -32,6 +33,7 @@ class SchoolplanProtocolHistory extends BaseHistory
             'task_ticket',
             'lesson_mark_id',
             'resume',
+            'vid_cert',
         ];
     }
 
@@ -53,6 +55,8 @@ class SchoolplanProtocolHistory extends BaseHistory
                     }
                     return implode(', ', $v);
                 }
+            case 'vid_cert':
+                return isset($model->vid_cert) ? Schoolplan::getFormCertValue($value) : $value;
         }
         return parent::getDisplayValue($model, $name, $value);
     }

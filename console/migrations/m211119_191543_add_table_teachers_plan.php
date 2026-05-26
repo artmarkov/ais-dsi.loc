@@ -46,7 +46,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
     0 AS subject_sect_id,
     studyplan.id AS studyplan_id,
     studyplan.student_id,
-    concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS student_fio,
+    concat(user_common.last_name, \' \', user_common.first_name, \' \', user_common.middle_name) AS student_fio,
     studyplan.plan_year,
     studyplan.course,
     studyplan.status,
@@ -63,7 +63,7 @@ class m211119_191543_add_table_teachers_plan extends \artsoft\db\BaseMigration
     studyplan_subject.subject_id,
     \'Индивидуально\'::text AS sect_name,
     subject.name AS subject_name,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', guide_education_cat.short_name) AS subject,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', education_programm.short_name, \' \', studyplan.course, \' класс\') AS subject,
     subject.department_list,
     studyplan_subject.med_cert,
     studyplan_subject.fin_cert
@@ -108,7 +108,7 @@ UNION ALL
             ELSE \'\'::text
         END, to_char(subject_sect_studyplan.group_num, \'fm00\'::text), \') \') AS sect_name,
     subject.name AS subject_name,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', education_programm.short_name, \' \', studyplan.course, \' класс\') AS subject,
     subject.department_list,
     studyplan_subject.med_cert,
     studyplan_subject.fin_cert
@@ -121,6 +121,7 @@ UNION ALL
      JOIN students ON students.id = studyplan.student_id
      JOIN user_common ON user_common.id = students.user_common_id
      JOIN subject ON subject.id = studyplan_subject.subject_id
+     JOIN education_programm ON education_programm.id = studyplan.programm_id
      LEFT JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
      JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id
 UNION ALL
@@ -149,7 +150,7 @@ UNION ALL
     studyplan_subject.subject_id,
     NULL::text AS sect_name,
     subject.name AS subject_name,
-    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \') AS subject,
+    concat(subject.name, \'(\', guide_subject_vid.slug, \' \', guide_subject_type.slug, \') \', education_programm.short_name, \' \', studyplan.course, \' класс\') AS subject,
     subject.department_list,
     studyplan_subject.med_cert,
     studyplan_subject.fin_cert
@@ -157,6 +158,7 @@ UNION ALL
      JOIN guide_subject_category ON guide_subject_category.id = studyplan_subject.subject_cat_id
      JOIN studyplan ON studyplan.id = studyplan_subject.studyplan_id
      JOIN subject ON subject.id = studyplan_subject.subject_id
+     JOIN education_programm ON education_programm.id = studyplan.programm_id
      LEFT JOIN guide_subject_type ON guide_subject_type.id = studyplan_subject.subject_type_id
      JOIN guide_subject_vid ON guide_subject_vid.id = studyplan_subject.subject_vid_id
   WHERE NOT (studyplan_subject.id IN ( SELECT studyplan_subject_1.id

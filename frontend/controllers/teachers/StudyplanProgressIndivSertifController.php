@@ -38,13 +38,7 @@ class StudyplanProgressIndivSertifController extends MainController
                 try {
                     $flag = true;
                     foreach ($modelsItems as $modelItems) {
-                        $modelAttestation = $modelItems->id ? AttestationItems::findOne($modelItems->id) : new AttestationItems();
-                        $modelAttestation->studyplan_subject_id = $modelItems->studyplan_subject_id;
-                        $modelAttestation->plan_year = $modelItems->plan_year;
-                        $modelAttestation->lesson_mark_id = $modelItems->lesson_mark_id;
-                        $modelAttestation->mark_rem = $modelItems->mark_rem;
-                        $modelAttestation->teachers_id = $modelItems->teachers_id;
-                        if (!($flag = $modelAttestation->save(false))) {
+                        if (!($flag = $modelItems->save(false))) {
                             $transaction->rollBack();
                             break;
                         }
@@ -77,6 +71,7 @@ class StudyplanProgressIndivSertifController extends MainController
         $keyArray = explode('||', $subject_key);
         $subject_key = $keyArray[0];
         $plan_year = $keyArray[1];
+        $vid_cert = $keyArray[2];
 
         $models = (new Query())->from('lesson_items_progress_studyplan_view')
             ->where(['teachers_id' => $this->teachers_id])
@@ -88,6 +83,7 @@ class StudyplanProgressIndivSertifController extends MainController
             $modelSertif = AttestationItems::find()
                 ->where(['studyplan_subject_id' => $model['studyplan_subject_id']])
                 ->andWhere(['plan_year' => $model['plan_year']])
+                ->andWhere(['vid_cert' => $vid_cert])
                 ->andWhere(new \yii\db\Expression("CASE
                         WHEN attestation_items.teachers_id IS NOT NULL THEN attestation_items.teachers_id = :teachers_id
                         ELSE true END", [':teachers_id' => $this->teachers_id]))

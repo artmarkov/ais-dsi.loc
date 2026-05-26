@@ -29,7 +29,7 @@ $editMarks = function ($model, $key, $index, $widget) {
     if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
         if ($model['subject_sect_studyplan_id'] != 0) {
             $content += [2 => \yii\helpers\Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
-                ['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'mode' => 'create'],
+                ['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'teachers_id' => $model['teachers_id'], 'mode' => 'create'],
                 [
                     'title' => 'Добавить занятие',
                     'data-method' => 'post',
@@ -85,7 +85,7 @@ $editMarks = function ($model, $key, $index, $widget) {
     $content += [$item + 4 => \yii\helpers\Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                 ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year'] . '||' . $model['teachers_id']), 'mode' => 'update'], [
 //                'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
-                'disabled' => \common\models\education\AttestationItems::isAttestationNeeds($model['studyplan_subject_id'], $model['plan_year']) == false,
+                'disabled' => \common\models\education\AttestationItems::isAttestationNeeds($model['studyplan_subject_id'], $model['plan_year'], $model['teachers_id']) == false,
                 'title' => Yii::t('art', 'Update'),
                 'data-method' => 'post',
                 'data-pjax' => '0',
@@ -93,7 +93,7 @@ $editMarks = function ($model, $key, $index, $widget) {
             ])
         . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
                 ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year'] . '||' . $model['teachers_id']), 'mode' => 'delete'], [
-                'disabled' => \common\models\education\AttestationItems::isAttestationNeeds($model['studyplan_subject_id'], $model['plan_year']) == false,
+                'disabled' => \common\models\education\AttestationItems::isAttestationNeeds($model['studyplan_subject_id'], $model['plan_year'], $model['teachers_id']) == false,
                 'title' => Yii::t('art', 'Delete'),
                 'class' => 'btn btn-xxs btn-link',
                 'data' => [
@@ -187,6 +187,13 @@ $columns[] = [
 //        'headerOptions' => ['style' => 'height: 50px;'],
     'contentOptions' => ['style' => 'background-color: #ebebeb;'],
 ];
+$columns[] = [
+    'attribute' => 'ia',
+    'label' => $model['attributes']['ia'],
+    'format' => 'raw',
+//        'headerOptions' => ['style' => 'height: 50px;'],
+    'contentOptions' => ['style' => 'background-color: #ebebeb;'],
+];
 $hints = '<span class="panel-title"><b>Сокращения Вид занятия:</b></span><br/>';
 foreach (\common\models\education\LessonTest::getLessonTestHints() as $item => $hint) {
     $hints .= $item . ' - ' . $hint . '; ';
@@ -254,7 +261,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                             'columns' => [
                                 ['content' => 'Учебный предмет/Группа', 'options' => ['colspan' => 3, 'rowspan' => 2, 'class' => 'text-center warning', 'style' => 'vertical-align: middle;']],
                                 ['content' => 'Посещаемость/успеваемость за период', 'options' => ['colspan' => count($model['lessonDates']), 'class' => 'text-center danger']],
-                                ['content' => 'Аттестация', 'options' => [/*'colspan' => count($model['certif']),*/ 'class' => 'text-center info']],
+                                ['content' => 'Аттестация', 'options' => ['colspan' => 2, 'class' => 'text-center info']],
                             ],
                             'options' => ['class' => 'skip-export'] // remove this row from export
                         ],

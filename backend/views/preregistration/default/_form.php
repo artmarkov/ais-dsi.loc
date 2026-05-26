@@ -70,7 +70,7 @@ $readonly = $model->status == EntrantPreregistrations::REG_STATUS_STUDENT;
                     <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                         [
                              'disabled' => $readonly,
-                            'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' => $model->isNewRecord ? true : false]
+                            'options' => [Yii::$app->settings->get('module.pre_plan_year', \artsoft\helpers\ArtHelper::getStudyYearDefault()) => ['Selected' => $model->isNewRecord ? true : false]
                             ]
                         ]);
                     ?>

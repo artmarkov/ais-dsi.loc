@@ -67,6 +67,7 @@ $form = ActiveForm::begin([
             ?>
             <?= $form->field($model_date, "is_avans")->checkbox()->label('Первая половина заработной платы');?>
             <?= $form->field($model_date, "progress_flag")->checkbox()->label('Учесть посещаемость и успеваемость');?>
+            <?= $form->field($model_date, "holidays_flag")->checkbox()->label('Не учитывать период каникул');?>
             <?= $form->field($model_date, "is_consult_confirm")->checkbox()->label('Учесть только утвержденные консультации');?>
             <?= Html::submitButton('<i class="fa fa-file-excel-o" aria-hidden="true"></i> Выгрузить в Excel', ['class' => 'btn btn-default', 'name' => 'submitAction', 'value' => 'excel']); ?>
         </div>
@@ -76,9 +77,21 @@ $form = ActiveForm::begin([
 
 <?php
 $js = <<<JS
-$("select[name='DynamicModel[subject_type_id]']").find(":selected").val() === '1001' ? $('.field-dynamicmodel-progress_flag').show() : $('.field-dynamicmodel-progress_flag').hide();
+if($("select[name='DynamicModel[subject_type_id]']").find(":selected").val() === '1001'){
+    $('.field-dynamicmodel-progress_flag').show();
+    $('.field-dynamicmodel-holidays_flag').show();
+} else {
+     $('.field-dynamicmodel-progress_flag').hide();
+     $('.field-dynamicmodel-holidays_flag').hide();
+}
 document.getElementById("subject_type_id").onchange = function () {
- $(this).val() === '1001' ? $('.field-dynamicmodel-progress_flag').show() : $('.field-dynamicmodel-progress_flag').hide();
+ if($(this).val() === '1001'){
+    $('.field-dynamicmodel-progress_flag').show();
+    $('.field-dynamicmodel-holidays_flag').show();
+} else {
+     $('.field-dynamicmodel-progress_flag').hide();
+     $('.field-dynamicmodel-holidays_flag').hide();
+}
 }
 JS;
 

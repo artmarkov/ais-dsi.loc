@@ -31,6 +31,7 @@ use yii\helpers\ArrayHelper;
  * @property string|null $task_ticket
  * @property int $lesson_mark_id Оцкнка
  * @property string $resume Отзыв комиссии/Результат
+ * @property int $vid_cert
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -81,8 +82,8 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
     {
         return [
             [['lesson_mark_id'], 'default', 'value' => null],
-            [['schoolplan_id', 'teachers_id', 'lesson_mark_id', 'version'], 'integer'],
-            [['teachers_id', 'studyplan_subject_id'], 'required'],
+            [['schoolplan_id', 'teachers_id', 'lesson_mark_id', 'version', 'vid_cert'], 'integer'],
+            [['teachers_id', 'studyplan_subject_id', 'vid_cert'], 'required'],
             [['resume'], 'string', 'max' => 1024],
             [['task_ticket'], 'string', 'max' => 127],
             [['thematic_items_list', 'studyplan_subject_id'], 'safe'],
@@ -140,6 +141,7 @@ class SchoolplanProtocol extends \artsoft\db\ActiveRecord
             'created_by' => Yii::t('art', 'Created By'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'version' => Yii::t('art', 'Version'),
+            'vid_cert' => 'Вид испытания',
         ];
     }
 

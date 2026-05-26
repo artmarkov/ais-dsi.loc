@@ -133,7 +133,7 @@ class Auditory extends ActiveRecord
     }
 
     public static function getAuditoryScalar() {
-        return self::find()->scalar();
+        return self::find()->orderBy('sort_order')->scalar();
     }
 
 }

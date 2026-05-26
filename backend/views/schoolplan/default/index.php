@@ -83,22 +83,22 @@ $author_id = Schoolplan::getAuthorId();
                         },
                         'columns' => [
 //                            ['class' => 'artsoft\grid\CheckboxColumn', 'options' => ['style' => 'width:10px']],
-//                            [
-//                                'attribute' => 'id',
-//                                'value' => function (Schoolplan $model) {
-//                                    return sprintf('#%06d', $model->id);
-//                                },
-//                                'contentOptions' => function (Schoolplan $model) {
-//                                    switch ($model->doc_status) {
-//                                        case Schoolplan::DOC_STATUS_DRAFT:
-//                                            return ['class' => 'default'];
-//                                        case Schoolplan::DOC_STATUS_AGREED:
-//                                            return ['class' => 'success'];
-//                                        case Schoolplan::DOC_STATUS_WAIT:
-//                                            return ['class' => 'warning'];
-//                                    }
-//                                },
-//                            ],
+                            [
+                                'attribute' => 'id',
+                                'value' => function (Schoolplan $model) {
+                                    return sprintf('#%06d', $model->id);
+                                },
+                                'contentOptions' => function (Schoolplan $model) {
+                                    switch ($model->doc_status) {
+                                        case Schoolplan::DOC_STATUS_DRAFT:
+                                            return ['class' => 'default'];
+                                        case Schoolplan::DOC_STATUS_AGREED:
+                                            return ['class' => 'success'];
+                                        case Schoolplan::DOC_STATUS_WAIT:
+                                            return ['class' => 'warning'];
+                                    }
+                                },
+                            ],
                         // столбцы только на экпорт
                             [
                                 'value' => function (Schoolplan $model) {

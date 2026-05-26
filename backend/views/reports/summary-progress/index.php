@@ -82,12 +82,22 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
             <?= $this->render('_search', compact('model_date')) ?>
         <div class="panel-body">
             <?= \yii\bootstrap\Alert::widget([
-                'body' => '<span style="font-size:85%; " class="label label-success">5</span> - Показаны оценки из Протокола аттестационной комиссии.',
+                'body' => '<span style="font-size:85%; " class="label label-success">5</span> - Показаны оценки Итоговой аттестации из Протокола аттестационной комиссии.',
                 'options' => ['class' => 'alert-primary'],
             ]);
             ?>
             <?= \yii\bootstrap\Alert::widget([
-                'body' => '<span style="font-size:85%; " class="label label-default">4</span> - Показаны оценки Промежуточной аттестации.',
+                'body' => '<span style="font-size:85%; " class="label label-info">5</span> - Показаны оценки Итоговой аттестации без протокола.',
+                'options' => ['class' => 'alert-primary'],
+            ]);
+            ?>
+            <?= \yii\bootstrap\Alert::widget([
+                'body' => '<span style="font-size:85%; " class="label label-danger">5</span> - Показаны оценки Промежуточной аттестации из Протокола аттестационной комиссии.',
+                'options' => ['class' => 'alert-default'],
+            ]);
+            ?>
+            <?= \yii\bootstrap\Alert::widget([
+                'body' => '<span style="font-size:85%; " class="label label-default">5</span> - Показаны оценки Промежуточной аттестации без протокола.',
                 'options' => ['class' => 'alert-default'],
             ]);
             ?>

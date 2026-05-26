@@ -126,7 +126,7 @@ class TeachersScheduleGenerator
             foreach ($teachersInfo as $item => $value) {
                 if (isset($value['direction_id'])) {
                     $teachers_direction[$value['direction_id']] = $value['direction_slug'];
-                    $teachers_level[$value['direction_id']] = $value['level_slug'];
+//                    $teachers_level[$value['direction_id']] = $value['level_slug'];
                 }
             }
             $this->teachers_direction[$teachers_id] = implode('/', $teachers_direction);
@@ -561,7 +561,7 @@ class TeachersScheduleGenerator
                 'rank' => 'a',
                 'item' => $i + 1,
                 'fullname' => $fullname,
-                'level_slug' => $this->teachers_level[$teachers_id],
+//                'level_slug' => $this->teachers_level[$teachers_id],
                 'direction_slug' => $this->teachers_direction[$teachers_id],
                 'tab_num' => $this->teachers_tab_num[$teachers_id],
             ], $day);

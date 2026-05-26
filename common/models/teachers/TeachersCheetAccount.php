@@ -3,8 +3,10 @@
 namespace common\models\teachers;
 
 use artsoft\helpers\ArtHelper;
+use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use artsoft\widgets\Notice;
+use common\models\routine\Routine;
 use common\models\studyplan\StudyplanSubjectHist;
 use Yii;
 use yii\db\Query;
@@ -14,10 +16,11 @@ class TeachersCheetAccount
 {
     protected $timestamp_in;
     protected $timestamp_out;
-    protected $activity_list;
-    protected $teachers_list;
-    protected $activities;
+    protected $teachers_id;
     protected $plan_year;
+    protected $disorder_teach;
+    protected $disorder_cons;
+    protected $is_disorder = [];
 
     public function __construct($model_date)
     {
@@ -25,25 +28,62 @@ class TeachersCheetAccount
         $this->timestamp_in = $timestamp[0];
         $this->timestamp_out = $timestamp[1];
         $this->plan_year = ArtHelper::getStudyYearDefault(null, $this->timestamp_in);
-        $this->activity_list = $model_date->activity_list;
-        $this->activities = $this->getTeachersActivities();
-        $this->teachers_list = $this->getTeachersList();
+        $this->teachers_id = $model_date->teachers_id;
+        $this->disorder_teach = $this->getTeacherDisorders();
+        $this->disorder_cons = $this->getConsultDisorders();
 //        print_r($model_date);
     }
 
-    protected function getTeachersActivities()
+    protected function getTeacherDisorders()
     {
-        $models = TeachersActivityView::find()
-            ->where(['in', 'teachers_activity_id', $this->activity_list])
-            ->orderBy('last_name, first_name, middle_name, direction_id, direction_vid_id')
+        $data = [];
+        $user_id = RefBook::find('teachers_users')->getValue($this->teachers_id);
+        $models = (new Query())->from('activities_schedule_view')
+            ->select(['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'teachers_id', 'subject_type_id', 'datetime_in', 'datetime_out'])
+            ->where(['teachers_id' => $this->teachers_id])
+            ->andWhere(['plan_year' => $this->plan_year])
+            ->andWhere(['between', 'datetime_in', $this->timestamp_in, $this->timestamp_out])
+            ->andWhere(['status' => 1])
             ->all();
-        return $models;
+        foreach ($models as $i => $model) {
+            $isDisorder = Routine::isDisorder($model['datetime_in'], $user_id);
+            if ($isDisorder) {
+                $this->is_disorder[] = date('j', $model['datetime_in']) . ' ' . ArtHelper::getMonthsList()[date('n', $model['datetime_in'])];
+                if (isset($data[$model['studyplan_subject_id']][$model['subject_sect_studyplan_id']][$model['direction_id']][$model['direction_vid_id']][$model['subject_type_id']])) {
+                    $data[$model['studyplan_subject_id']][$model['subject_sect_studyplan_id']][$model['direction_id']][$model['direction_vid_id']][$model['subject_type_id']] += Schedule::astr2academ($model['datetime_out'] - $model['datetime_in']);
+                } else {
+                    $data[$model['studyplan_subject_id']][$model['subject_sect_studyplan_id']][$model['direction_id']][$model['direction_vid_id']][$model['subject_type_id']] = Schedule::astr2academ($model['datetime_out'] - $model['datetime_in']);
+                }
+            }
+        }
+        // echo '<pre>' . print_r($data, true) . '</pre>'; die();
+        return $data;
     }
 
-    protected function getTeachersList()
+    protected function getConsultDisorders()
     {
-        $teachers_list = ArrayHelper::getColumn($this->activities, 'teachers_id');
-        return array_unique($teachers_list);
+        $data = [];
+        $user_id = RefBook::find('teachers_users')->getValue($this->teachers_id);
+        $models = (new Query())->from('consult_schedule_view')
+            ->select(['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'teachers_id', 'subject_type_id', 'datetime_in', 'datetime_out'])
+            ->where(['teachers_id' => $this->teachers_id])
+            ->andWhere(['plan_year' => $this->plan_year])
+            ->andWhere(['between', 'datetime_in', $this->timestamp_in, $this->timestamp_out])
+            ->andWhere(['status' => 1])
+            ->all();
+        foreach ($models as $i => $model) {
+            $isDisorder = Routine::isDisorder($model['datetime_in'], $user_id);
+            if ($isDisorder) {
+                $this->is_disorder[] = date('j', $model['datetime_in']) . ' ' . ArtHelper::getMonthsList()[date('n', $model['datetime_in'])];
+                if (isset($data[$model['studyplan_subject_id']][$model['subject_sect_studyplan_id']][$model['direction_id']][$model['direction_vid_id']][$model['subject_type_id']])) {
+                    $data[$model['studyplan_subject_id']][$model['subject_sect_studyplan_id']][$model['direction_id']][$model['direction_vid_id']][$model['subject_type_id']] += Schedule::astr2academ($model['datetime_out'] - $model['datetime_in']);
+                } else {
+                    $data[$model['studyplan_subject_id']][$model['subject_sect_studyplan_id']][$model['direction_id']][$model['direction_vid_id']][$model['subject_type_id']] = Schedule::astr2academ($model['datetime_out'] - $model['datetime_in']);
+                }
+            }
+        }
+        // echo '<pre>' . print_r($data, true) . '</pre>'; die();
+        return $data;
     }
 
     public function getTeachersCheetData()
@@ -63,7 +103,7 @@ class TeachersCheetAccount
         // Бюджет - по нагрузке за неделю
         $models0 = (new Query())->from('teachers_load_view')
             ->select('studyplan_subject_id, subject_sect_studyplan_id, direction_id, direction_vid_id, teachers_id, subject_type_id, SUM(load_time) as time')
-            ->where(['in', 'teachers_id', $this->teachers_list])
+            ->where(['teachers_id' => $this->teachers_id])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['subject_type_id' => 1000])
             ->andWhere(['status' => 1])
@@ -75,7 +115,7 @@ class TeachersCheetAccount
         // Внебюджет
         $models1 = (new Query())->from('activities_schedule_view')
             ->select(['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'teachers_id', 'subject_type_id', 'datetime_in', 'datetime_out'])
-            ->where(['in', 'teachers_id', $this->teachers_list])
+            ->where(['teachers_id' => $this->teachers_id])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['subject_type_id' => 1001])
             ->andWhere(['between', 'datetime_in', $this->timestamp_in, $this->timestamp_out])
@@ -86,7 +126,7 @@ class TeachersCheetAccount
 
         $modelsConsult = (new Query())->from('consult_schedule_view')
             ->select(['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'teachers_id', 'subject_type_id', 'datetime_in', 'datetime_out'])
-            ->where(['in', 'teachers_id', $this->teachers_list])
+            ->where(['teachers_id' => $this->teachers_id])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['between', 'datetime_in', $this->timestamp_in, $this->timestamp_out])
             ->andWhere(['status' => 1])
@@ -96,7 +136,7 @@ class TeachersCheetAccount
         $modelsLoad = (new Query())->from('subject_schedule_view')
             ->select(['studyplan_subject_id', 'subject_sect_studyplan_id', 'direction_id', 'direction_vid_id', 'subject_type_id', 'sect_name', 'subject'])
             ->distinct()
-            ->where(['in', 'teachers_id', $this->teachers_list])
+            ->where(['teachers_id' => $this->teachers_id])
             ->andWhere(['plan_year' => $this->plan_year])
             ->andWhere(['status' => 1])
             ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass($this->timestamp_in)])
@@ -141,8 +181,17 @@ class TeachersCheetAccount
                 }
                 $data[$i][$items['direction_id'] . $items['direction_vid_id']]['title'] = implode(',', $label);
             }
+            // корректировка нагрузки в связи с больничным листом
+            if (isset($this->disorder_teach[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
+                $data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'] -= $this->disorder_teach[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']];
+                if ($data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'] < 0) $data[$i][$items['direction_id'] . $items['direction_vid_id']]['teach'] = 0;
+            }
+            if (isset($this->disorder_cons[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']])) {
+                $data[$i][$items['direction_id'] . $items['direction_vid_id']]['cons'] -= $this->disorder_cons[$items['studyplan_subject_id']][$items['subject_sect_studyplan_id']][$items['direction_id']][$items['direction_vid_id']][$items['subject_type_id']];
+                if ($data[$i][$items['direction_id'] . $items['direction_vid_id']]['cons'] < 0) $data[$i][$items['direction_id'] . $items['direction_vid_id']]['cons'] = 0;
+            }
         }
-        return ['data' => $data, 'attributes' => $attributes, 'directions' => $directions];
+        return ['data' => $data, 'attributes' => $attributes, 'directions' => $directions, 'is_disorder' => implode(', ', array_unique($this->is_disorder))];
     }
 
     public static function getTotal($provider, $fieldName)

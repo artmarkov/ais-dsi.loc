@@ -33,6 +33,17 @@ use artsoft\widgets\ActiveForm;
                             ],
                         ])->label(Yii::t('art/guide', 'Members Item'));
                         ?>
+                        <?= $form->field($model_date, 'group_id')->widget(\kartik\select2\Select2::class, [
+                            'data' => \common\models\entrant\Entrant::getCommGroupList($model->id),
+                            'options' => [
+                                'placeholder' => Yii::t('art', 'Select...'),
+                                'multiple' => true,
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ]
+                        ])->label(Yii::t('art/guide', 'Entrant Groups'));
+                        ?>
                         <?= $form->field($model_date, 'prep_flag')->radioList(\common\models\entrant\EntrantGroup::getPrepList())->label(Yii::t('art/guide', 'Prep Flag')); ?>
                         <?= $form->field($model_date, 'free_flag')->checkbox()->label('Чистый бланк (очистить данные)'); ?>
                     </div>

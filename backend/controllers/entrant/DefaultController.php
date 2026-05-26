@@ -467,11 +467,12 @@ class DefaultController extends MainController
 
         $this->view->params['breadcrumbs'][] = Yii::t('art/guide', 'Entrant Result');
 
-        $model_date = new DynamicModel(['members_id', 'free_flag', 'prep_flag']);
-        $model_date->addRule(['members_id', 'prep_flag'], 'required')
+        $model_date = new DynamicModel(['members_id', 'free_flag', 'prep_flag', 'group_id']);
+        $model_date->addRule(['members_id', 'prep_flag', 'group_id'], 'required')
             ->addRule(['members_id'], 'integer')
             ->addRule(['free_flag'], 'boolean')
-            ->addRule(['prep_flag'], 'integer');
+            ->addRule(['prep_flag'], 'integer')
+            ->addRule(['group_id'], 'safe');
 
         if ($model_date->load(Yii::$app->request->post()) && $model_date->validate()) {
             if (Yii::$app->request->post('submitAction') == 'excel') {

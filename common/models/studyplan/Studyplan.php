@@ -998,9 +998,9 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
     public function isStudyplanFinish()
     {
-        if (in_array($this->programm->educationCat->id, [1006, 1007, 1008])) {
+        /*if (in_array($this->programm->educationCat->id, [1006, 1007, 1008])) {
             return false;
-        }
+        }*/
         if ($this->early_flag == 1 || $this->course == $this->programm->term_mastering) {
             return true;
         }

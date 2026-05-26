@@ -146,7 +146,7 @@ class SummaryProgress
         $studyplanIds = ArrayHelper::getColumn($this->studyplanSubject, 'studyplan_id');
         $models = (new \yii\db\Query())->from('studyplan_view')
             ->where(['id' => array_unique($studyplanIds)])
-            ->orderBy('course DESC, student_fio ASC')
+            ->orderBy('plan_year ASC, course DESC, student_fio ASC')
             ->all();
         return $models;
     }
@@ -195,13 +195,12 @@ class SummaryProgress
     {
         $models = (new Query())->from('attestation_items_view')
             ->select([
-                'id', 'studyplan_id', 'mark_label', 'mark_value', 'teachers_id',
-                'studyplan_subject_id', 'med_cert', 'fin_cert', 'lesson_mark_id', 'plan_year',
+                'id', 'studyplan_id', 'mark_label', 'mark_value', 'teachers_id', 'vid_cert',
+                'studyplan_subject_id', 'lesson_mark_id', 'plan_year',
                 'concat(subject_id, \'|\', subject_vid_id, \'|\', subject_cat_id) as subject_key'
             ])
             ->where(['studyplan_subject_id' => $this->studyplanSubjectIds])
             ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['med_cert' => true])
             ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
             ->all();
 
@@ -213,13 +212,12 @@ class SummaryProgress
     {
         $models = (new Query())->from('schoolplan_protocol_items_view')
             ->select([
-                'studyplan_id', 'mark_label', 'mark_value', 'studyplan_subject_id', 'med_cert', 'fin_cert',
+                'studyplan_id', 'mark_label', 'mark_value', 'studyplan_subject_id', 'vid_cert',
                 'lesson_mark_id', 'plan_year',
                 'concat(subject_id, \'|\', subject_vid_id, \'|\', subject_cat_id) as subject_key'
             ])
             ->where(['studyplan_subject_id' => $this->studyplanSubjectIds])
             ->andWhere(['plan_year' => $this->plan_year])
-            ->andWhere(['fin_cert' => true])
             ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
             ->all();
 
@@ -267,15 +265,16 @@ class SummaryProgress
     }
 
     /**
+     * @param bool $readonly
      * @return array
-     * @throws \yii\base\InvalidConfigException
+     * @throws \Exception
      */
     public function getData($readonly = false)
     {
         $this->studyplanSubjectAttr = $this->getStudyplanSubjectAttr();
         $studyplanProgress = ArrayHelper::index($this->getLessonItemsProgress(), 'subject_key', 'studyplan_id');
-        $protocolProgress = ArrayHelper::index($this->getProtocolItemsProgress(), 'subject_key', 'studyplan_id');
-        $attestationProgress = ArrayHelper::index($this->getAttestationItemsProgress(), NULL, ['studyplan_id', 'subject_key']);
+        $protocolProgress = ArrayHelper::index($this->getProtocolItemsProgress(), 'subject_key', ['vid_cert', 'studyplan_id']);
+        $attestationProgress = ArrayHelper::index($this->getAttestationItemsProgress(), 'subject_key', ['vid_cert', 'studyplan_id']);
         $subjectKeys = ArrayHelper::getColumn($this->studyplanSubjectAttr, 'subject_key');
         $studyplanSubjectMarkNeeds = $this->getStudyplanSubjectMarkNeeds();
         $mark_list_sertif = LessonMark::getMarkLabelForStudent([LessonMark::MARK, LessonMark::OFFSET_NONOFFSET, LessonMark::REASON_ABSENCE]);
@@ -291,7 +290,7 @@ class SummaryProgress
         ];
         $attributes += ArrayHelper::map($this->studyplanSubjectAttr, 'subject_key', 'subject_slug');
         $data = $dataNeeds = [];
-//        echo '<pre>' . print_r($protocolProgress, true) . '</pre>';
+//        echo '<pre>' . print_r($attestationProgress, true) . '</pre>';
 //        die();
         $students = ArrayHelper::index($this->getStudyplanCert(), 'id', ['student_id']);
         foreach ($students as $id => $studyplans) {
@@ -314,14 +313,16 @@ class SummaryProgress
                         $dataNeeds[$id][$subject_key] = isset($studyplanSubjectMarkNeeds[$studyplan_id][$subject_key]) ? true : false;
                     }
                     if (!isset($data[$id][$subject_key])) {
-                        if (isset($protocolProgress[$studyplan_id][$subject_key])) {
-                            $data[$id]['marks'][$subject_key] = '<span style="font-size:85%; " class="label label-success">' . $protocolProgress[$studyplan_id][$subject_key]['mark_label'] . '</span>';
-                        } elseif (isset($attestationProgress[$studyplan_id][$subject_key])) {
-                            $data[$id]['marks'][$subject_key] = '';
-                            foreach ($attestationProgress[$studyplan_id][$subject_key] as $i => $attestationMark) {
-                                $data[$id]['marks'][$subject_key] .= '<span style="font-size:85%; " class="label label-default">' . $attestationMark['mark_label'] . '</span>';
-                            }
-                        } // если в протоколе и в журнале промежуточной аттестации нет оценки, то берем из журнала(потом отключить)
+                        if (isset($protocolProgress[1][$studyplan_id][$subject_key])) {
+                            $data[$id]['marks'][$subject_key] = '<span style="font-size:85%; " class="label label-success">' . $protocolProgress[1][$studyplan_id][$subject_key]['mark_label'] . '</span>';
+                        } elseif (isset($protocolProgress[2][$studyplan_id][$subject_key])) {
+                            $data[$id]['marks'][$subject_key] = '<span style="font-size:85%; " class="label label-danger">' . $protocolProgress[2][$studyplan_id][$subject_key]['mark_label'] . '</span>';
+                        } elseif (isset($attestationProgress[1][$studyplan_id][$subject_key])) {
+                            $data[$id]['marks'][$subject_key] = '<span style="font-size:85%; " class="label label-info">' . $attestationProgress[1][$studyplan_id][$subject_key]['mark_label'] . '</span>';
+                        } elseif (isset($attestationProgress[2][$studyplan_id][$subject_key])) {
+                            $data[$id]['marks'][$subject_key] = '<span style="font-size:85%; " class="label label-default">' . $attestationProgress[2][$studyplan_id][$subject_key]['mark_label'] . '</span>';
+                        }
+                        // если в протоколе и в журнале промежуточной аттестации нет оценки, то берем из журнала(потом отключить)
                         elseif (!isset($studyplanProgress[$studyplan_id][$subject_key]) && isset($studyplanSubjectMarkNeeds[$studyplan_id][$subject_key])) {  // только в случае если эта оценка недолжна быть в позднем плане
                             $data[$id]['marks'][$subject_key] = '';
                         } elseif (isset($studyplanProgress[$studyplan_id][$subject_key])) {

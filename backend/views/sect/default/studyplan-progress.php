@@ -91,7 +91,20 @@ foreach ($models['lessonDates'] as $id => $name) {
         'format' => 'raw',
     ];
 }
-
+$columns[] = [
+    'attribute' => 'pa',
+    'label' => $models['attributes']['pa'],
+    'format' => 'raw',
+//        'headerOptions' => ['style' => 'height: 50px;'],
+    'contentOptions' => ['style' => 'background-color: #ebebeb;'],
+];
+$columns[] = [
+    'attribute' => 'ia',
+    'label' => $models['attributes']['ia'],
+    'format' => 'raw',
+//        'headerOptions' => ['style' => 'height: 50px;'],
+    'contentOptions' => ['style' => 'background-color: #ebebeb;'],
+];
 $hints = '<span class="panel-title"><b>Сокращения Вид занятия:</b></span><br/>';
 foreach (\common\models\education\LessonTest::getLessonTestHints() as $item => $hint) {
     $hints .= $item . ' - ' . $hint . '; ';
@@ -151,6 +164,7 @@ foreach (\common\models\education\LessonMark::getMarkHints() as $item => $hint) 
                                 'columns' => [
                                     ['content' => 'Группа/Ученик', 'options' => ['colspan' => 3, 'class' => 'text-center warning']],
                                     ['content' => 'Посещаемость/успеваемость за период', 'options' => ['colspan' => count($models['lessonDates']), 'class' => 'text-center danger']],
+                                    ['content' => 'Аттестация', 'options' => ['colspan' => 2, 'class' => 'text-center info']],
                                 ],
                                 'options' => ['class' => 'skip-export'] // remove this row from export
                             ]

@@ -144,7 +144,7 @@ class LessonMark extends \artsoft\db\ActiveRecord
         return ArrayHelper::map(self::find()
             ->select('id, mark_label')
             ->where(['mark_category' => $mark_category])
-            ->orderBy('mark_label')
+            ->orderBy('sort_order')
             ->asArray()->all(), 'id', 'mark_label');
     }
 }

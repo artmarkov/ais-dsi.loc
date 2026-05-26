@@ -107,17 +107,24 @@ class Subject extends ActiveRecord
      * @return \yii\db\ActiveQuery
      */
     public static function getSubjectById($category_id = null) {
-        $data = self::find()->select(['id','name'])->orderBy('name');
-             $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
-        $data = $data->asArray()->all();
+        $data = (new \yii\db\Query())->from('subject_view')
+            ->select(['subject_id as id', 'subject_name as name'])
+            ->distinct()
+            ->orderBy('subject_name');
+        $data = $category_id ? $data->where(['category_id' => $category_id]) : $data;
+        $data = $data->all();
 
         return $data;
     }
 
     public static function getSubjectByCategory($category_id = null)
     {
-        $data = self::find()->select(['name', 'id'])->orderBy('name');
-        $data = $category_id ? $data->where(['like', 'category_list', $category_id]) : $data;
+        if($category_id == '' || $category_id == null) $category_id = [];
+        $data = (new \yii\db\Query())->from('subject_view')
+            ->select(['subject_name as name', 'subject_id as id'])
+            ->distinct()
+            ->orderBy('subject_name');
+        $data = empty($category_id) ? $data->where(['category_id' => $category_id]) : $data;
         $data = $data->indexBy('id')->column();
 
         return $data;

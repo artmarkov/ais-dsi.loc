@@ -108,6 +108,7 @@ class StudyplanProgressController extends MainController
         $model->scenario = LessonItems::SCENARIO_COMMON;
         $model->studyplan_subject_id = 0;
         $model->subject_sect_studyplan_id = $subject_sect_studyplan_id;
+        $model->teachers_id = $this->teachers_id;
         // предустановка учеников
         $modelsItems = $model->getLessonProgressNew();
 

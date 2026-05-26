@@ -2,6 +2,7 @@
 
 namespace common\models\education;
 
+use artsoft\widgets\Notice;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
 use Yii;
@@ -15,6 +16,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property int|null $plan_year
+ * @property int $vid_cert
  * @property int $studyplan_subject_id Учебный предмет ученика
  * @property int $teachers_id Преподаватель, поставивший оценку
  * @property int|null $lesson_mark_id Оценка
@@ -57,13 +59,29 @@ class AttestationItems extends \artsoft\db\ActiveRecord
         return [
             [['plan_year', 'studyplan_subject_id', 'lesson_mark_id', 'version', 'teachers_id'], 'integer'],
             [['plan_year', 'studyplan_subject_id'], 'required'],
-            [['plan_year', 'studyplan_subject_id', 'teachers_id'], 'unique', 'targetAttribute' => ['plan_year', 'studyplan_subject_id', 'teachers_id']],
+            [['vid_cert'], 'default', 'value' => 2], // по умолчанию ПА
+            ['lesson_mark_id', 'isProtocolMarkExists', 'skipOnEmpty' => false],
+            [['plan_year', 'studyplan_subject_id', 'teachers_id'], 'unique', 'targetAttribute' => ['plan_year', 'studyplan_subject_id', 'teachers_id'], 'on' => $this->teachers_id != null],
+            [['plan_year', 'studyplan_subject_id'], 'unique', 'targetAttribute' => ['plan_year', 'studyplan_subject_id'], 'on' => $this->teachers_id == null],
             [['mark_rem'], 'string', 'max' => 127],
-            [['lesson_mark_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonMark::className(), 'targetAttribute' => ['lesson_mark_id' => 'id']],
-            [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::className(), 'targetAttribute' => ['studyplan_subject_id' => 'id']],
+            [['lesson_mark_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonMark::class, 'targetAttribute' => ['lesson_mark_id' => 'id']],
+            [['studyplan_subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => StudyplanSubject::class, 'targetAttribute' => ['studyplan_subject_id' => 'id']],
         ];
     }
 
+    public function isProtocolMarkExists($attribute, $params, $validator)
+    {
+        $exists = (new Query())->from('schoolplan_protocol_items_view')
+            ->where(['studyplan_subject_id' => $this->studyplan_subject_id])
+            ->andWhere(['teachers_id' => $this->teachers_id])
+            ->andWhere(['med_cert' => true])
+            ->exists();
+        if ($exists) {
+            $message = 'Оценка уже проставлена в протоколе мероприятия.';
+            $this->addError($attribute, $message);
+            Notice::registerDanger($message);
+        }
+    }
     /**
      * {@inheritdoc}
      */
@@ -71,6 +89,7 @@ class AttestationItems extends \artsoft\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'vid_cert' => 'Вид испытания',
             'plan_year' => Yii::t('art/studyplan', 'Plan Year'),
             'studyplan_subject_id' => Yii::t('art/student', 'Student'),
             'teachers_id' => Yii::t('art/teachers', 'Teachers'),
@@ -96,7 +115,7 @@ class AttestationItems extends \artsoft\db\ActiveRecord
      */
     public function getLessonMark()
     {
-        return $this->hasOne(LessonMark::className(), ['id' => 'lesson_mark_id']);
+        return $this->hasOne(LessonMark::class, ['id' => 'lesson_mark_id']);
     }
 
     /**
@@ -106,7 +125,7 @@ class AttestationItems extends \artsoft\db\ActiveRecord
      */
     public function getStudyplanSubject()
     {
-        return $this->hasOne(StudyplanSubject::className(), ['id' => 'studyplan_subject_id']);
+        return $this->hasOne(StudyplanSubject::class, ['id' => 'studyplan_subject_id']);
     }
 
     /**
@@ -121,6 +140,17 @@ class AttestationItems extends \artsoft\db\ActiveRecord
         $keyArray = explode('||', $subject_key);
         $subject_key = $keyArray[0];
         $plan_year = $keyArray[1];
+        $vid_cert = $keyArray[2];
+        // находим ПА в протоколе
+        $protocolSubjectIds = (new Query())->from('schoolplan_protocol_items_view')
+            ->select(['studyplan_subject_id'])
+            ->where(['plan_year' => $plan_year])
+            ->andWhere(['teachers_id' => $teachers_id])
+            //->andWhere(['med_cert' => true])
+            ->andWhere([$vid_cert == 1 ? 'fin_cert' : 'med_cert' => true])
+            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+            ->column();
+
         $active = LessonProgressView::find()
             ->where(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->andWhere(['=', 'subject_key', $subject_key])
@@ -132,9 +162,11 @@ class AttestationItems extends \artsoft\db\ActiveRecord
                     ['status_reason' => [1, 2, 4]]
                 ]
             ])
-            ->andWhere(['med_cert' => true])
+            ->andWhere(['NOT IN', 'studyplan_subject_id', $protocolSubjectIds]) // отсеиваем тех, у кого уже есть оценка через протокол
+            ->andWhere([$vid_cert == 1 ? 'fin_cert' : 'med_cert' => true])
             ->all();
         $studyplanSubjectIds = ArrayHelper::getColumn($active, 'studyplan_subject_id');
+
         $models = self::find()
             ->where(['plan_year' => $plan_year])
             ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
@@ -147,16 +179,19 @@ class AttestationItems extends \artsoft\db\ActiveRecord
                         ->where(['plan_year' => $plan_year])
                         ->andWhere(['studyplan_subject_id' => $dataItem['studyplan_subject_id']])
                         ->andWhere(['teachers_id' => $teachers_id])
+                        ->andWhere(['vid_cert' => $vid_cert])
                         ->one() ?? new self();
                 $m->studyplan_subject_id = $dataItem['studyplan_subject_id'];
                 $m->plan_year = $dataItem['plan_year'];
                 $m->teachers_id = $teachers_id;
+                $m->vid_cert = $vid_cert;
                 $modelsItems[] = $m;
             } else {
                 $m = new self;
                 $m->studyplan_subject_id = $dataItem['studyplan_subject_id'];
                 $m->plan_year = $dataItem['plan_year'];
                 $m->teachers_id = $teachers_id;
+                $m->vid_cert = $vid_cert;
                 $modelsItems[] = $m;
             }
         }
@@ -169,6 +204,16 @@ class AttestationItems extends \artsoft\db\ActiveRecord
         $keyArray = explode('||', $subject_key);
         $subject_sect_studyplan_id = $keyArray[0];
         $plan_year = $keyArray[1];
+        $vid_cert = $keyArray[2];
+        // находим ПА в протоколе
+        $protocolSubjectIds = (new Query())->from('schoolplan_protocol_items_view')
+            ->select(['studyplan_subject_id'])
+            ->where(['plan_year' => $plan_year])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->andWhere([$vid_cert == 1 ? 'fin_cert' : 'med_cert' => true])
+            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
+            ->column();
+
         $active = LessonProgressView::find()
             ->where(new \yii\db\Expression(":teachers_id = any (string_to_array(teachers_list, ',')::int[])", [':teachers_id' => $teachers_id]))
             ->andWhere(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])
@@ -180,13 +225,13 @@ class AttestationItems extends \artsoft\db\ActiveRecord
                     ['status_reason' => [1, 2, 4]]
                 ]
             ])
-            ->andWhere(['med_cert' => true])
+            ->andWhere(['NOT IN', 'studyplan_subject_id', $protocolSubjectIds]) // отсеиваем тех, у кого уже есть оценка через протокол
+            ->andWhere([$vid_cert == 1 ? 'fin_cert' : 'med_cert' => true])
             ->all();
         $studyplanSubjectIds = ArrayHelper::getColumn($active, 'studyplan_subject_id');
         $models = self::find()
             ->where(['plan_year' => $plan_year])
             ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
-            ->andWhere(['teachers_id' => $teachers_id])
             ->all();
         $models = ArrayHelper::index($models, 'studyplan_subject_id');
         foreach ($active as $item => $dataItem) {
@@ -194,17 +239,18 @@ class AttestationItems extends \artsoft\db\ActiveRecord
                 $m = self::find()
                         ->where(['plan_year' => $plan_year])
                         ->andWhere(['studyplan_subject_id' => $dataItem['studyplan_subject_id']])
-                        ->andWhere(['teachers_id' => $teachers_id])
                         ->one() ?? new self();
                 $m->studyplan_subject_id = $dataItem['studyplan_subject_id'];
                 $m->plan_year = $dataItem['plan_year'];
                 $m->teachers_id = $teachers_id;
+                $m->vid_cert = $vid_cert;
                 $modelsItems[] = $m;
             } else {
                 $m = new self;
                 $m->studyplan_subject_id = $dataItem['studyplan_subject_id'];
                 $m->plan_year = $dataItem['plan_year'];
                 $m->teachers_id = $teachers_id;
+                $m->vid_cert = $vid_cert;
                 $modelsItems[] = $m;
             }
         }
@@ -213,13 +259,11 @@ class AttestationItems extends \artsoft\db\ActiveRecord
 
     public static function getAttestationsForStudyplan($subject_key)
     {
-        $model = [];
         $keyArray = explode('||', $subject_key);
         $studyplan_subject_id = $keyArray[0];
         $plan_year = $keyArray[1];
         $teachers_id = $keyArray[2];
 
-        if (self::isAttestationNeeds($studyplan_subject_id, $plan_year)) {
             $model = self::find()
                     ->where(['plan_year' => $plan_year])
                     ->andWhere(['studyplan_subject_id' => $studyplan_subject_id])
@@ -228,17 +272,21 @@ class AttestationItems extends \artsoft\db\ActiveRecord
             $model->studyplan_subject_id = $studyplan_subject_id;
             $model->teachers_id = $teachers_id;
             $model->plan_year = $plan_year;
-        }
 
         return $model;
     }
 
-    public static function isAttestationNeeds($studyplan_subject_id, $plan_year)
+    public static function isAttestationNeeds($studyplan_subject_id, $plan_year, $teachers_id)
     {
-        return LessonProgressView::find()
+        $exists = (new Query())->from('schoolplan_protocol_items_view')
+            ->where(['studyplan_subject_id' => $studyplan_subject_id])
+            ->andWhere(['teachers_id' => $teachers_id])
+            ->andWhere(['med_cert' => true])
+            ->exists();
+        return !$exists ? LessonProgressView::find()
             ->where(['=', 'studyplan_subject_id', $studyplan_subject_id])
             ->andWhere(['plan_year' => $plan_year])
             ->andWhere(['med_cert' => true])
-            ->exists();
+            ->exists() : false;
     }
 }

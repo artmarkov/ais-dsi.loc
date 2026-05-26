@@ -49,7 +49,7 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
         $teachersIds = array_diff($teachersIds, $teachersDisorderIds);
         // находим все занятия согласно согласованным расписаниям
         $active = (new Query())->from('activities_schedule_studyplan_view')
-            ->select('teachers_id, studyplan_subject_id, subject_sect_studyplan_id')
+            ->select('teachers_id, studyplan_subject_id, subject_sect_studyplan_id, datetime_in, datetime_out, auditory_id')
             ->distinct()
             ->where(['between', 'datetime_in', $timestamp_in, $timestamp_out])
             ->andWhere(['teachers_id' => $teachersIds])
@@ -67,14 +67,14 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
 
         foreach ($active as $subject_sect_studyplan_id => $data) {
             if ($subject_sect_studyplan_id != 0) {
-                if ($model = $this->setLesson($lesson_items, 0, $subject_sect_studyplan_id, $timestamp_in)) {
+                if ($model = $this->setLesson($data[0], $lesson_items, 0, $subject_sect_studyplan_id, $timestamp_in)) {
                     foreach ($data as $item => $dataItem) {
                         $this->setProgress($model, $dataItem);
                     }
                 }
             } else {
                 foreach ($data as $item => $dataItem) {
-                    if ($model = $this->setLesson($lesson_items, $dataItem['studyplan_subject_id'], 0, $timestamp_in, $dataItem['teachers_id'])) {
+                    if ($model = $this->setLesson($dataItem, $lesson_items, $dataItem['studyplan_subject_id'], 0, $timestamp_in, $dataItem['teachers_id'])) {
                         $this->setProgress($model, $dataItem);
                     }
                 }
@@ -91,7 +91,7 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
         return $model_th->save(false);
     }
 
-    protected function setLesson($lesson_items, $studyplan_subject_id, $subject_sect_studyplan_id, $timestamp_in, $teachers_id = null)
+    protected function setLesson($data, $lesson_items, $studyplan_subject_id, $subject_sect_studyplan_id, $timestamp_in, $teachers_id = null)
     {
         if (!isset($lesson_items[$subject_sect_studyplan_id][$studyplan_subject_id])) {
             $model = new LessonItems();
@@ -99,6 +99,9 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
             $model->studyplan_subject_id = $studyplan_subject_id;
             $model->lesson_test_id = 1000;
             $model->lesson_date = Yii::$app->formatter->asDate($timestamp_in, 'php:d.m.Y');
+            $model->datetime_in = $data['datetime_in'] ?? null;
+            $model->datetime_out = $data['datetime_out'] ?? null;
+            $model->auditory_id = $data['auditory_id'] ?? null;
             if ($teachers_id != null) {
                 $model->teachers_id = $teachers_id;
             }

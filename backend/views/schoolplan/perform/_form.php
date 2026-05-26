@@ -201,7 +201,6 @@ $readonly = (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && in_arra
                             'pluginOptions' => [
                                 'allowClear' => false,
                             ],
-
                         ]);
                         ?>
                         <?php endif; ?>

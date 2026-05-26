@@ -45,7 +45,7 @@ class TeachersTimesheet
     protected $teachers_day_consult;
     protected $teachers_day_schedule_total;
     protected $lesson_fact;
-    protected $disorder;
+    protected $holidays_flag;
 
     public function __construct($model_date)
     {
@@ -58,6 +58,7 @@ class TeachersTimesheet
         $this->subject_type_id = $model_date->subject_type_id;
         $this->activity_list = $model_date->activity_list;
         $this->progress_flag = $model_date->progress_flag ?? false;
+        $this->holidays_flag = $model_date->holidays_flag ?? false;
         $this->is_avans = $model_date->is_avans ?? false;
         $this->is_consult_confirm = $model_date->is_consult_confirm ?? false;
         $this->routine = $this->getRoutine();
@@ -81,9 +82,11 @@ class TeachersTimesheet
 
         for ($day = $day_in; $day <= $day_out; $day++) {
             $timestamp = mktime(12, 0, 0, $this->mon, $day, $this->year); // середина суток
+            $isHolidays = $this->holidays_flag ? Routine::isHolidays($timestamp) : false;
             $isVocation = Routine::isVocation($timestamp);
             $isDayOff = Routine::isDayOff($timestamp);
             $routine[$day] = [
+                'isHolidays' => $isHolidays,
                 'isVocation' => $isVocation,
                 'isDayOff' => $isDayOff
             ];
@@ -271,10 +274,14 @@ class TeachersTimesheet
             $data['time'][$day] = $data['time'][$day] == 0 ? '' : $data['time'][$day];
             $data['status'][$day] = null;
 
+            $isHolidays = $this->routine[$day]['isHolidays'];
             $isVocation = $this->routine[$day]['isVocation'];
             $isDayOff = $this->routine[$day]['isDayOff'];
 
-            if ($isDisorder) {
+            if ($isHolidays) {
+                $data['time'][$day] = null;
+                $data['status'][$day] = null;
+            } elseif ($isDisorder) {
                 $summ_disorder_15 += $day <= 15 ? $time_day : null;
                 $summ_disorder_30 += $time_day;
                 $data['time'][$day] = null;
@@ -359,7 +366,7 @@ class TeachersTimesheet
             'org_briefname' => Yii::$app->settings->get('own.shortname'),
             'departments' => $this->getDepartmentsString($departmentsIds),
             'leader_iof' => Yii::$app->settings->get('own.head'),
-            'employee_post' => isset($teachersModel->position) ? $teachersModel->position->name : '',
+            'employee_post' => isset($teachersModel->position) ? 'Исполнитель - ' . $teachersModel->position->name : '',
             'employee_iof' => RefBook::find('teachers_fio')->getValue($teachersId),
             'doc_data_mark' => Yii::$app->formatter->asDate(time(), 'php:d.m.Y'),
             'data_doc' => Yii::$app->formatter->asDate(time(), 'php:d.m.Y'),

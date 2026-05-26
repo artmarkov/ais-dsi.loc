@@ -9,11 +9,13 @@ use common\models\efficiency\TeachersEfficiency;
 use common\models\history\EfficiencyHistory;
 use common\models\history\SchoolplanProtocolHistory;
 use common\models\schoolplan\Schoolplan;
+use common\models\schoolplan\SchoolplanActivity;
 use common\models\schoolplan\SchoolplanPerform;
 use common\models\schoolplan\SchoolplanProtocol;
 use common\models\schoolplan\SchoolplanProtocolConfirm;
 use common\models\schoolplan\SchoolplanResume;
 use common\models\schoolplan\SchoolplanView;
+use common\models\schoolplan\search\SchoolplanActivitySearch;
 use common\models\schoolplan\search\SchoolplanPerformSearch;
 use common\models\schoolplan\search\SchoolplanProtocolSearch;
 use common\models\schoolplan\search\SchoolplanViewSearch;
@@ -277,6 +279,8 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = Yii::t('art', 'Create');
             $modelProtocol = new SchoolplanProtocol();
             $modelProtocol->schoolplan_id = $id;
+            $modelProtocol->vid_cert = $model->protocol_vid_cert;
+            $modelProtocol->teachers_id = $this->teachers_id;
             $flag = true;
             if ($modelProtocol->load(Yii::$app->request->post())) {
                 $valid = $modelProtocol->validate();
@@ -292,6 +296,7 @@ class DefaultController extends MainController
                                     'teachers_id' => $modelProtocol->teachers_id,
                                     'thematic_items_list' => $modelProtocol->thematic_items_list,
                                     'studyplan_subject_id' => $studyplan_subject_id,
+                                    'vid_cert' => $modelProtocol->vid_cert,
                                 ]
                             );
                             if (!($flag = $m->save())) {
@@ -325,6 +330,9 @@ class DefaultController extends MainController
 
         } elseif ('delete' == $mode && $objectId) {
             $modelProtocol = SchoolplanProtocol::findOne($objectId);
+            if (!$modelProtocol->isAuthor() && $readonly == false) {
+                throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
+            }
             $modelProtocol->delete();
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
@@ -424,6 +432,9 @@ class DefaultController extends MainController
 
         } elseif ('delete' == $mode && $objectId) {
             $modelPerform = SchoolplanPerform::findOne($objectId);
+            if (!$modelPerform->isAuthor() && $readonly == false) {
+                throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
+            }
             $modelPerform->delete();
 
             Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
@@ -480,6 +491,80 @@ class DefaultController extends MainController
         }
     }
 
+
+    public function actionActivity($id, $objectId = null, $mode = null, $readonly = false)
+    {
+        $model = $this->findModel($id);
+
+        $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'School Plans'), 'url' => ['schoolplan/default/index']];
+        $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $id), 'url' => ['schoolplan/default/view', 'id' => $id]];
+
+        $this->view->params['tabMenu'] = $this->getMenu($id);
+
+        if ('create' == $mode) {
+            if (!$model->isAuthor() && $readonly == false) {
+                throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
+            }
+            $this->view->params['breadcrumbs'][] = Yii::t('art', 'Create');
+            $modelActivity = new SchoolplanActivity();
+            $modelActivity->schoolplan_id = $id;
+            $modelActivity->author_id = SchoolplanActivity::getAuthorId();
+
+            if ($modelActivity->load(Yii::$app->request->post()) && $modelActivity->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
+                $this->getSubmitAction($modelActivity);
+            }
+
+            return $this->renderIsAjax('@backend/views/schoolplan/activity/_form.php', [
+                'model' => $modelActivity,
+                'readonly' => false
+            ]);
+        } elseif ('history' == $mode && $objectId) {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Activity'), 'url' => ['schoolplan/default/activity-event', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = ['label' => sprintf('#%06d', $objectId), 'url' => ['schoolplan/default/activity-event', 'id' => $id, 'objectId' => $objectId, 'mode' => 'update']];
+            $model = SchoolplanActivity::findOne($objectId);
+            $data = new SchoolplanActivityHistory($objectId);
+            return $this->renderIsAjax('@backend/views/history/index.php', compact(['model', 'data']));
+
+        } elseif ('delete' == $mode && $objectId) {
+            $modelActivity = SchoolplanActivity::findOne($objectId);
+            if (!$modelActivity->isAuthor() && $readonly == false) {
+                throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
+            }
+            $modelActivity->delete();
+
+            Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been deleted.'));
+            return $this->redirect($this->getRedirectPage('delete', $modelActivity));
+
+        } elseif ($objectId) {
+            if ('view' == $mode) {
+                $readonly = true;
+            }
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Activity'), 'url' => ['schoolplan/default/activity', 'id' => $id]];
+            $this->view->params['breadcrumbs'][] = sprintf('#%06d', $objectId);
+            $modelActivity = SchoolplanActivity::findOne($objectId);
+
+            if ($modelActivity->load(Yii::$app->request->post()) && $modelActivity->save()) {
+                Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been updated.'));
+                $this->getSubmitAction($modelActivity);
+            }
+            return $this->renderIsAjax('@backend/views/schoolplan/activity/_form.php', [
+                'model' => $modelActivity,
+                'readonly' => $readonly
+            ]);
+
+        } else {
+            $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Schoolplan Activity')];
+            $searchModel = new SchoolplanActivitySearch();
+            $searchName = StringHelper::basename($searchModel::className());
+            $params = Yii::$app->request->getQueryParams();
+            $params[$searchName]['class'] = \yii\helpers\StringHelper::basename(get_class($model));
+            $params[$searchName]['schoolplan_id'] = $id;
+            $dataProvider = $searchModel->search($params);
+
+            return $this->renderIsAjax('activity', ['dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'modelScoolplan' => $model]);
+        }
+    }
 
     public function actionStudyplan()
     {
@@ -624,6 +709,7 @@ class DefaultController extends MainController
        // $roleAvailable = User::hasRole(['teacher','department']);
         return [
             ['label' => 'Карточка мероприятия', 'url' => ['/schoolplan/default/view', 'id' => $id]],
+            ['label' => 'Планировщик мероприятия', 'url' => ['/schoolplan/default/activity', 'id' => $id], 'visible' => true],
             ['label' => 'Выполнение плана и участие в мероприятии', 'url' => ['/schoolplan/default/perform', 'id' => $id], 'visible' => $model->category->perform_flag /*&& $roleAvailable*/],// не пойму - роли не работают здесь
             ['label' => 'Протокол аттестационной комиссии', 'url' => ['/schoolplan/default/protocol', 'id' => $id], 'visible' => $model->category->protocol_flag /*&& $roleAvailable*/],
             ['label' => 'Итоги мероприятия', 'url' => ['/schoolplan/default/resume', 'id' => $id], 'visible' => true],

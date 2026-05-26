@@ -57,7 +57,7 @@ class RoutineSearch extends Routine
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'start_date' => SORT_ASC,
+                    'start_date' => SORT_DESC,
                 ],
             ],
         ]);

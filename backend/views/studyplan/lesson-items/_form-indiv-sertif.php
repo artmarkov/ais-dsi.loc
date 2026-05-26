@@ -17,6 +17,7 @@ $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::MARK,LessonMark::OF
 $keyArray = explode('||', $subject_key);
 $subject_key = $keyArray[0];
 $plan_year = $keyArray[1];
+$vid_cert = $keyArray[2];
 $subject = (new \yii\db\Query())
     ->from('lesson_progress_view')
     ->where(['=', 'subject_key', $subject_key])
@@ -35,7 +36,7 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
     <div class="panel">
         <div class="panel-heading">
             <div class="panel-heading">
-                Промежуточная аттестация: <?php echo $subject['subject']; ?> за <?php echo $plan_year . '/' . ($plan_year + 1); ?> учебный год.
+                <?php echo $vid_cert == 2 ? 'Промежуточная аттестация' : 'Итоговая аттестация'; ?>: <?php echo $subject['subject']; ?> за <?php echo $plan_year . '/' . ($plan_year + 1); ?> учебный год.
             </div>
         </div>
         <div class="panel-body">
@@ -43,9 +44,9 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
                 <div class="panel-body">
                     <div class="panel">
                         <?php if (!empty($modelsItems)): ?>
-                            <div class="panel panel-info">
+                            <div class="panel <?php echo $vid_cert == 2 ? 'panel-info' : 'panel-danger'; ?>">
                                 <div class="panel-heading">
-                                    Список оценок промежуточной аттестации
+                                    Список оценок <?php echo $vid_cert == 2 ? 'промежуточной аттестации' : 'итоговой аттестации'; ?>
                                 </div>
                                 <div class="panel-body">
                                     <table class="table table-bordered table-striped">
@@ -117,6 +118,12 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
                                     </table>
                                 </div>
                             </div>
+                        <?php else: ?>
+                            <?php echo \yii\bootstrap\Alert::widget([
+                                'body' => '<i class="fa fa-info-circle"></i> Допуски на аттестацию в индивидуальных планах учащихся не найдены. Обратитесь к заведующему по учебной работе.',
+                                'options' => ['class' => 'alert-warning'],
+                            ]);
+                            ?>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -124,8 +131,8 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
+                    <?= \artsoft\helpers\ButtonHelper::exitButton(['/teachers/studyplan-progress-indiv', 'id' => $modelTeachers->id]);?>
                 <?php if (!empty($modelsItems)): ?>
-                    <?= \artsoft\helpers\ButtonHelper::exitButton(['/teachers/default/studyplan-progress-indiv', 'id' => $modelTeachers->id]);?>
                     <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit');?>
                 <?php endif; ?>
             </div>

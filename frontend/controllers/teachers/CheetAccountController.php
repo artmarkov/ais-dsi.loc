@@ -21,7 +21,7 @@ class CheetAccountController extends MainController
 
         $session = Yii::$app->session;
 
-        $model_date = new DynamicModel(['date_in', 'subject_type_id', 'activity_list', 'teachers_id']);
+        $model_date = new DynamicModel(['date_in', 'subject_type_id', 'teachers_id']);
         $model_date->addRule(['date_in'], 'required')
             ->addRule(['date_in'], 'date', ['format' => 'php:m.Y']);
         if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
@@ -32,7 +32,7 @@ class CheetAccountController extends MainController
         }
         $session->set('_timesheet_date_in', $model_date->date_in);
 
-        $model_date->activity_list = TeachersActivity::find()->where(['=', 'teachers_id', $this->teachers_id])->column();
+        $model_date->teachers_id = $this->teachers_id;
         $model_date->subject_type_id = SubjectType::find()->column();
 //        echo '<pre>' . print_r($model_date->activity_list, true) . '</pre>'; die();
         $model = [];

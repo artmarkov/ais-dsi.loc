@@ -50,11 +50,11 @@ $columns = [
 foreach ($model['directions'] as $id => $name) {
     $columns[] = [
         'attribute' => $id['teach'],
-        'value' => function ($model) use($id, $modelTeachers) {
-        $summ_teach = $model[$id]['teach'] ?? 0;
-        $summ_cons = $model[$id]['cons'] ?? 0;
-        $label_cons = $model[$id]['title'] ?? '';
-            return  $summ_cons != 0 ? $summ_teach . '/' . \artsoft\helpers\Html::a($summ_cons, ['/teachers/default/consult-items', 'id' => $modelTeachers->id],['title' => $label_cons]) : $summ_teach;
+        'value' => function ($model) use ($id, $modelTeachers) {
+            $summ_teach = $model[$id]['teach'] ?? 0;
+            $summ_cons = $model[$id]['cons'] ?? 0;
+            $label_cons = $model[$id]['title'] ?? '';
+            return $summ_cons != 0 ? $summ_teach . '/' . \artsoft\helpers\Html::a($summ_cons, ['/teachers/default/consult-items', 'id' => $modelTeachers->id], ['title' => $label_cons]) : $summ_teach;
 
         },
         'label' => $model['attributes'][$id]['name'],
@@ -78,6 +78,15 @@ foreach ($model['directions'] as $id => $name) {
         <div class="panel-body">
             <?= $this->render('_search-cheet', compact('modelTeachers', 'model_date', 'plan_year')) ?>
             <div class="row">
+                <div class="col-sm-12">
+                    <?php if (!empty($model['is_disorder'])): ?>
+                        <?php echo \yii\bootstrap\Alert::widget([
+                            'body' => '<i class="fa fa-info-circle"></i> Внимание! В табеле учтены дни нетрудоспособности: ' . $model['is_disorder'],
+                            'options' => ['class' => 'alert-info'],
+                        ]);
+                        ?>
+                    <?php endif; ?>
+                </div>
                 <div class="col-sm-6">
                     <?php
                     /* Uncomment this to activate GridQuickLinks */
