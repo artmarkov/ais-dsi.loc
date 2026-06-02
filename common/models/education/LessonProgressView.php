@@ -540,7 +540,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
     public static function getDataIndivTeachers($model_date, $teachers_id, $plan_year, $editTable = true, $history = false)
     {
         $mark_list = LessonMark::getMarkLabelForStudent([LessonMark::PRESENCE, LessonMark::MARK, LessonMark::OFFSET_NONOFFSET, LessonMark::REASON_ABSENCE]);
-        $mark_list_sertif = LessonMark::getMarkLabelForStudent([LessonMark::MARK, LessonMark::OFFSET_NONOFFSET, LessonMark::REASON_ABSENCE]);
+        $mark_list_sertif = LessonMark::getMarkLabelForStudent([LessonMark::MARK]);
 
         $data = $dates = $dates_load = $certif = [];
         $columns = [];
