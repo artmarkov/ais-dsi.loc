@@ -67,7 +67,7 @@ $this->registerJs($js);
                     ]);
                     ?>
                     <?= $form->field($model, 'education_cat_id')->dropDownList(RefBook::find('education_cat', $model->isNewRecord ? EducationCat::STATUS_ACTIVE : '')->getList(),
-                        ['prompt' => '', 'encodeSpaces' => true, 'disabled' => $model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true]) ?>
+                        ['prompt' => '', 'encodeSpaces' => true, 'disabled' => $readonly /*$model->isNewRecord || Yii::$app->user->isSuperadmin ? $readonly : true*/]) ?>
 
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true])->hint('Укажите название образовательной программы') ?>
 

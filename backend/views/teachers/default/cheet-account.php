@@ -50,6 +50,7 @@ $columns = [
 foreach ($model['directions'] as $id => $name) {
     $columns[] = [
         'attribute' => $id['teach'],
+        'options' => ['style' => 'width:350px'],
         'value' => function ($model) use ($id, $modelTeachers) {
             $summ_teach = $model[$id]['teach'] ?? 0;
             $summ_cons = $model[$id]['cons'] ?? 0;

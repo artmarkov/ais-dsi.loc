@@ -148,7 +148,6 @@ class AttestationItems extends \artsoft\db\ActiveRecord
             ->andWhere(['teachers_id' => $teachers_id])
             //->andWhere(['med_cert' => true])
             ->andWhere([$vid_cert == 1 ? 'fin_cert' : 'med_cert' => true])
-            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
             ->column();
 
         $active = LessonProgressView::find()
@@ -211,7 +210,6 @@ class AttestationItems extends \artsoft\db\ActiveRecord
             ->where(['plan_year' => $plan_year])
             ->andWhere(['teachers_id' => $teachers_id])
             ->andWhere([$vid_cert == 1 ? 'fin_cert' : 'med_cert' => true])
-            ->andWhere(['IS NOT', 'lesson_mark_id', NULL])
             ->column();
 
         $active = LessonProgressView::find()

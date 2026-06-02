@@ -24,7 +24,7 @@ class EntrantSearch extends EntrantView
         return [
             [['id', 'student_id', 'comm_id', 'group_id', 'decision_id', 'programm_id', 'subject_id', 'course', 'subject_form_id', 'status', 'timestamp_in', 'birth_date'], 'integer'],
             [['last_experience', 'reason', 'subject_list', 'group_name', 'remark'], 'safe'],
-            [['mid_mark', 'fullname', 'fio', 'members_list'], 'safe'],
+            [['mid_mark', 'fullname', 'fio', 'members_list', 'secretary_id'], 'safe'],
         ];
     }
 
@@ -91,8 +91,14 @@ class EntrantSearch extends EntrantView
             ->andFilterWhere(['like', 'reason', $this->reason])
             ->andFilterWhere(['like', 'group_name', $this->group_name])
             ->andFilterWhere(['like', 'fullname', $this->fullname])
-            ->andFilterWhere(['like', 'fio', $this->fio])
-            ->andFilterWhere(['like', 'members_list', $this->members_list]);
+            ->andFilterWhere(['like', 'fio', $this->fio]);
+
+        if ($this->members_list) {
+            $query->andWhere(['OR', new \yii\db\Expression("{$this->members_list} = any (string_to_array(members_list::text, ',')::int[])"), ['secretary_id' => $this->members_list]]);
+        }
+//        if($this->members_list) {
+//            $query->andWhere(new \yii\db\Expression("members_list LIKE '%" . $this->members_list . "%'"));
+//        }
 
         return $dataProvider;
     }

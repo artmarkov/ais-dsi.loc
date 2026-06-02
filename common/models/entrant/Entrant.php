@@ -15,6 +15,7 @@ use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Exception;
+use yii\db\Expression;
 use yii\db\Query;
 
 /**
@@ -191,14 +192,29 @@ class Entrant extends \artsoft\db\ActiveRecord
 
     /**
      * Проставлена ли оценка текущим членом комиссии?
-     * @return bool
+     * @return array()
      */
     public function isMembersMarkExists()
     {
-        return (new Query())->from('entrant_members_view')
-            ->where(['members_id' => Yii::$app->user->identity->id])
-            ->andWhere(['id' => $this->id])
-            ->exists();
+        $query = (new Query())->from('entrant_members_view')
+            ->select(new \yii\db\Expression('count(*) as count_rows, cardinality(string_to_array(group_members_list::text, \',\'::text)) as count_members, cardinality(string_to_array(test_list::text, \',\'::text)) as count_test'))
+            ->where(['id' => $this->id]);
+
+        if (Art::isFrontend()) {
+            $query = $query->andWhere(['members_id' => Yii::$app->user->identity->id]);
+        }
+        $query = $query->groupBy('group_members_list, test_list')->one();
+//        echo '<pre>' . print_r($query, true) . '</pre>';
+        if (!$query) {
+            return 0;
+        }
+        if ($query['count_members'] == 0) {
+            return 0;
+        }
+        if ((Art::isFrontend() && $query['count_rows'] == $query['count_test']) || (Art::isBackend() && $query['count_rows'] == ($query['count_test'] * $query['count_members']))) {
+            return 1;
+        }
+        return 2;
     }
 
     /**
@@ -231,7 +247,7 @@ class Entrant extends \artsoft\db\ActiveRecord
     public function isSecretaryGroup()
     {
         $modelGroup = $this->group;
-        if (in_array(Yii::$app->user->identity->id, $modelGroup->group_members_list)) {
+        if (!in_array(Yii::$app->user->identity->id, $modelGroup->group_members_list) && $modelGroup->group_secretary_id == Yii::$app->user->identity->id) {
             return true;
         }
         return false;

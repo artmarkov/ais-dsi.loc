@@ -1606,7 +1606,7 @@ class DefaultController extends MainController
             $modelsItems = AttestationItems::getAttestationsForTeachers($id, $subject_key);
 //             echo '<pre>' . print_r($modelsItems, true) . '</pre>';die();
             if ($model->load(Yii::$app->request->post())) {
-              //  $modelsItems = Model::createMultiple(AttestationItems::class, $modelsItems);
+                $modelsItems = Model::createMultiple(AttestationItems::class, $modelsItems);
                 Model::loadMultiple($modelsItems, Yii::$app->request->post());
 
                 // validate all models

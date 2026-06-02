@@ -64,12 +64,15 @@ $subjectFormList = RefBook::find('subject_form_name')->getList();
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'rowOptions' => function (Entrant $model) {
-                    if (\artsoft\Art::isFrontend() && $model->isMembersMarkExists()) {
+                    $ret = $model->isMembersMarkExists();
+                    if ($ret == 1) {
                         return ['class' => 'success'];
-                    };
+                    } elseif ($ret == 2) {
+                        return ['class' => 'warning'];
+                    }
                     return [];
                 },
-                'bulkActionOptions' =>  \artsoft\models\User::hasRole('entrantAdmin') ? [
+                'bulkActionOptions' => \artsoft\models\User::hasRole('entrantAdmin') ? [
                     'gridId' => 'entrant-grid',
                     'actions' => \artsoft\Art::isBackend() ? [
                         Url::to(['applicants-bulk-waiting']) => 'Перевести в статус "В ожидании испытаний"',
@@ -124,7 +127,7 @@ $subjectFormList = RefBook::find('subject_form_name')->getList();
                             $age = \artsoft\helpers\ArtHelper::age($model->birth_date);
                             return $model->birth_date ? Yii::$app->formatter->asDate($model->birth_date) . ' (' . $age['age_year'] . ' лет ' . $age['age_month'] . ' мес.)' : '';
                         },
-                        'headerOptions' => ['style' =>'white-space:pre-line;'],
+                        'headerOptions' => ['style' => 'white-space:pre-line;'],
                         'format' => 'raw'
                     ],
                     [
@@ -132,9 +135,9 @@ $subjectFormList = RefBook::find('subject_form_name')->getList();
                         'filter' => false,
                         'value' => function (\common\models\entrant\EntrantView $model) {
                             $age = \artsoft\helpers\ArtHelper::age($model->birth_date);
-                            return $model->phone ? $model->phone : ($model->phone_optional ? : '');
+                            return $model->phone ? $model->phone : ($model->phone_optional ?: '');
                         },
-                        'headerOptions' => ['style' =>'white-space:pre-line;'],
+                        'headerOptions' => ['style' => 'white-space:pre-line;'],
                         'format' => 'raw'
                     ],
 //                    [
@@ -149,7 +152,7 @@ $subjectFormList = RefBook::find('subject_form_name')->getList();
                     [
                         'attribute' => 'subject_list',
                         'filter' => \common\models\subject\Subject::getSubjectByCategory(1000),
-                        'value' => function (Entrant $model) use($subjectList){
+                        'value' => function (Entrant $model) use ($subjectList) {
                             $v = [];
                             foreach ($model->subject_list as $id) {
                                 if (!$id) {
@@ -160,17 +163,17 @@ $subjectFormList = RefBook::find('subject_form_name')->getList();
                             return implode('<br/> ', $v);
                         },
                         'format' => 'raw',
-                        'headerOptions' => ['style' =>'white-space:pre-line;'],
+                        'headerOptions' => ['style' => 'white-space:pre-line;'],
                         'label' => 'Выбранные дисциплины'
                     ],
-                     [
-                         'attribute' => 'last_experience',
-                         'value' => function (Entrant $model) {
-                             return $model->last_experience;
-                         },
-                         'format' => 'raw',
-                         'label' => 'Обуч.ранее.'
-                     ],
+                    [
+                        'attribute' => 'last_experience',
+                        'value' => function (Entrant $model) {
+                            return $model->last_experience;
+                        },
+                        'format' => 'raw',
+                        'label' => 'Обуч.ранее.'
+                    ],
                     [
                         'attribute' => 'remark',
                         'value' => function (Entrant $model) {
@@ -330,6 +333,17 @@ $subjectFormList = RefBook::find('subject_form_name')->getList();
                                         'data-pjax' => '0',
                                     ]
                                 );
+                            },
+                        ],
+                        'visibleButtons' => [
+                            'view' => function ($model) {
+                                return true;
+                            },
+                            'update' => function ($model) {
+                                return \artsoft\Art::isFrontend() && $model->isSecretaryGroup() ? false : true;
+                            },
+                            'delete' => function ($model) {
+                                return true;
                             },
                         ],
                     ],

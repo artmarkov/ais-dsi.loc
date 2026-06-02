@@ -175,11 +175,11 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
         $this->addForeignKey('entrant_test_ibfk_5', 'entrant_test', 'updated_by', 'users', 'id', 'NO ACTION', 'NO ACTION');
 
         $this->db->createCommand()->createView('entrant_view', '
-   SELECT entrant.id,
+    SELECT entrant.id,
     entrant.student_id,
     entrant.comm_id,
     entrant.group_id,
-    concat(entrant_group.name, \' - \', to_char(to_timestamp(entrant_group.timestamp_in::double precision), \'DD.MM.YYYY HH24:mi\'::text)) AS group_name,
+    concat(entrant_group.name, \' - \', to_char(to_timestamp(entrant_group.timestamp_in::double precision + 10800::double precision), \'DD.MM.YYYY HH24:mi\'::text)) AS group_name,
     entrant.subject_list,
     entrant.last_experience,
     entrant.remark,
@@ -214,7 +214,11 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
     date_part(\'year\'::text, age(to_timestamp(user_common.birth_date::double precision)::date::timestamp with time zone))::integer AS birth_date_age,
     studyplan.id AS studyplan_id,
     user_common.phone,
-    user_common.phone_optional
+    user_common.phone_optional,
+        CASE
+            WHEN entrant_group.prep_flag = 0 THEN entrant_comm.prep_off_test_list
+            ELSE entrant_comm.prep_on_test_list
+        END AS test_list
    FROM entrant
      JOIN students ON students.id = entrant.student_id
      JOIN user_common ON user_common.id = students.user_common_id
@@ -225,10 +229,10 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
         ')->execute();
 
         $this->db->createCommand()->createView('entrant_members_view', '
- SELECT entrant.id,
+  SELECT entrant.id,
     entrant.comm_id,
     entrant.group_id,
-    concat(entrant_group.name, \' - \', to_char(to_timestamp(entrant_group.timestamp_in::double precision), \'DD.MM.YYYY HH24:mi\'::text)) AS group_name,
+    concat(entrant_group.name, \' - \', to_char(to_timestamp(entrant_group.timestamp_in::double precision + 10800::double precision), \'DD.MM.YYYY HH24:mi\'::text)) AS group_name,
     entrant.subject_list,
     entrant.last_experience,
     entrant_group.timestamp_in,
@@ -248,9 +252,15 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
     entrant.decision_id,
     entrant.reason,
     entrant.programm_id,
+    entrant.subject_id,
     entrant.course,
     entrant.subject_form_id,
-    entrant.status
+    entrant.status,
+        CASE
+            WHEN entrant_group.prep_flag = 0 THEN entrant_comm.prep_off_test_list
+            ELSE entrant_comm.prep_on_test_list
+        END AS test_list,
+    entrant_group.group_members_list
    FROM entrant
      JOIN students ON students.id = entrant.student_id
      JOIN user_common ON user_common.id = students.user_common_id
@@ -259,8 +269,7 @@ class m220817_152300_add_table_examination extends \artsoft\db\BaseMigration
      JOIN entrant_members ON entrant_members.entrant_id = entrant.id
      JOIN entrant_test ON entrant_test.entrant_members_id = entrant_members.id
      JOIN guide_lesson_mark ON guide_lesson_mark.id = entrant_test.entrant_mark_id
-  ORDER BY entrant_members.members_id, entrant.student_id, entrant_test.entrant_test_id;
-        ')->execute();
+  ORDER BY entrant_members.members_id, entrant.student_id, entrant_test.entrant_test_id;')->execute();
     }
 
     public function down()

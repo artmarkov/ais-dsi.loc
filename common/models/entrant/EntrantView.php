@@ -2,6 +2,7 @@
 
 namespace common\models\entrant;
 
+use artsoft\behaviors\ArrayFieldBehavior;
 use Yii;
 
 /**
@@ -16,6 +17,7 @@ use Yii;
  * @property string $phone
  * @property string $phone_optional
  * @property string $members_list
+ * @property int $secretary_id
  */
 
 class EntrantView extends Entrant
