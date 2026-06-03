@@ -15,6 +15,7 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -223,6 +224,8 @@ class EntrantComm extends \artsoft\db\ActiveRecord
      */
     public function getSummaryData($model_date)
     {
+        ini_set('memory_limit', '4096M');
+        $subject_list = RefBook::find('subject_name')->getList();
         $members_id = $model_date->members_id;
 //        $free_flag = $model_date->free_flag;
         $free_flag = false;
@@ -244,7 +247,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
             ->andWhere(['group_id' => $group_id])
 //            ->orderBy('fullname ASC')
             ->orderBy('mid_mark DESC')
-            ->distinct()->all();
+            ->all();
         $prep_flagList = ArrayHelper::getColumn($modelsEntrant, 'prep_flag');
         $prep_flagList = array_unique(explode(',', implode(',', $prep_flagList)));
 
@@ -265,6 +268,8 @@ class EntrantComm extends \artsoft\db\ActiveRecord
 
         $attributes = ['name' => 'Фамилия И.О.'];
         $attributes += ['birth_date' => 'Дата рождения (возраст)'];
+        $attributes += ['subject_list' => 'Выбранные дисциплины'];
+        $attributes += ['last_experience' => 'Обучался ранее'];
         $attributes += ['group' => 'Группа'];
         $attributes += $testsNames;
         $attributes += ['mid_mark' => 'Средний балл'];
@@ -277,9 +282,19 @@ class EntrantComm extends \artsoft\db\ActiveRecord
         $data = [];
         foreach ($modelsEntrant as $id => $model) {
             $mid_mark = [];
+            $subjectList = '';
+            if (isset($model['subject_list'])) {
+                $v = [];
+                foreach (explode(',', $model['subject_list']) as $id_sub) {
+                    $v[] = $subject_list[$id_sub] ?? null;
+                }
+                $subjectList = implode(', ', $v);
+            }
             $age = \artsoft\helpers\ArtHelper::age($model['birth_date']);
             $data[$id]['name'] = $model['fullname'];
             $data[$id]['birth_date'] = Yii::$app->formatter->asDate($model['birth_date']) . ' (' . $age['age_year'] . ' лет ' . $age['age_month'] . ' мес.)';
+            $data[$id]['subject_list'] = $subjectList;
+            $data[$id]['last_experience'] = $model['last_experience'];
             $data[$id]['group'] = $model['group_name'];
             $data[$id]['decision'] = !$free_flag ? Entrant::getDecisionValue($model['decision_id']) : null;
             $data[$id]['programm'] = !$free_flag ? RefBook::find('education_programm_name')->getValue($model['programm_id']) : null;
@@ -321,7 +336,6 @@ class EntrantComm extends \artsoft\db\ActiveRecord
      */
     public function sendXlsx($data)
     {
-        ini_set('memory_limit', '512M');
         try {
             $x = new ExcelObjectList($data['attributes']);
             foreach ($data['data'] as $item) { // данные
@@ -366,7 +380,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
         $prep_flagList = array_unique(explode(',', implode(',', $prep_flagList)));
         $prep_list = [];
         foreach ($prep_flagList as $item => $prep_flag) {
-            if($prep_flag == 0) {
+            if ($prep_flag == 0) {
                 $prep_list = array_merge($prep_list, $this->prep_off_test_list);
             } else {
                 $prep_list = array_merge($prep_list, $this->prep_on_test_list);
@@ -434,10 +448,10 @@ class EntrantComm extends \artsoft\db\ActiveRecord
             $testsNames = array_keys($testsNames);
 //            echo '<pre>' . print_r($testsNames, true) . '</pre>';
 //        die();
-                $x->addData(['name' => '']);
-                $x->addData(['name' => 'Председатель комиссии', 'group' => '_______________________', $testsNames[0] => $leader_name]);
-                $x->addData(['name' => 'Заместитель председателя комиссии', 'group' => '_______________________', $testsNames[0] => $soleader_name]);
-                $x->addData(['name' => 'Члены комиссии:']);
+            $x->addData(['name' => '']);
+            $x->addData(['name' => 'Председатель комиссии', 'group' => '_______________________', $testsNames[0] => $leader_name]);
+            $x->addData(['name' => 'Заместитель председателя комиссии', 'group' => '_______________________', $testsNames[0] => $soleader_name]);
+            $x->addData(['name' => 'Члены комиссии:']);
             foreach ($members as $id => $item) { // данные
                 $x->addData(['name' => '', 'group' => '_______________________', $testsNames[0] => $item]);
             }

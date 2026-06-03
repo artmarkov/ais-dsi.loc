@@ -300,9 +300,22 @@ $author_id = Schoolplan::getAuthorId();
                             [
                                 'attribute' => 'bars_flag',
                                 'label' => 'БАРС',
+                                'filter' => [true => 'Да', false => 'Нет'],
                                 'visible' => \artsoft\Art::isBackend(),
                                 'value' => function (Schoolplan $model) {
                                     return $model->bars_flag == 1 ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да'
+                                        : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> Нет';
+                                },
+                                'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'ideolog_flag',
+                                'label' => 'Антитеррор',
+                                'filter' => [true => 'Да', false => 'Нет'],
+                                'visible' => \artsoft\Art::isBackend(),
+                                'value' => function (Schoolplan $model) {
+                                    return $model->ideolog_flag == 1 ? '<i class="fa fa-thumbs-up text-success" style="font-size: 1.5em;"></i> Да'
                                         : '<i class="fa fa-thumbs-down text-danger" style="font-size: 1.5em;"></i> Нет';
                                 },
                                 'contentOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
@@ -342,7 +355,7 @@ $author_id = Schoolplan::getAuthorId();
                                 'columns' => [
                                     ['content' => 'Мероприятие', 'options' => ['colspan' => 6, 'class' => 'text-center warning']],
                                     ['content' => 'Статус', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
-                                    ['content' => 'Итоги/Количество', 'options' => ['colspan' => 7, 'class' => 'text-center success']],
+                                    ['content' => 'Итоги/Количество', 'options' => ['colspan' => 9, 'class' => 'text-center success']],
                                 ],
 //                                'options' => ['class' => 'skip-export'] // remove this row from export
                             ]

@@ -129,6 +129,7 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
             'num_winners' => $this->integer()->comment('Количество победителей'),
             'num_visitors' => $this->integer()->comment('Количество зрителей'),
             'bars_flag' => $this->boolean()->defaultValue(false)->comment('Отправлено в БАРС'),
+            'ideolog_flag' => $this->boolean()->defaultValue(false)->comment('Мероприятие в рамках противодействия идеологии терроризма и экстремизма'),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),
@@ -171,46 +172,61 @@ class m220412_213940_create_table_schoolplan extends \artsoft\db\BaseMigration
         $this->addForeignKey('schoolplan_ibfk_6', 'schoolplan', 'activities_over_id', 'activities_over', 'id', 'SET DEFAULT', 'NO ACTION');
 
         $this->db->createCommand()->createView('schoolplan_view', '
-        SELECT id, 
-                author_id, 
-                signer_id, 
-                title, 
-                datetime_in, 
-                datetime_out, 
-                places,
-                auditory_id,
-                CASE
-                      WHEN (places IS NOT NULL) THEN places
-                      WHEN (auditory_id  IS NOT NULL) THEN (SELECT concat(auditory.num, \' - \', auditory.name) FROM auditory WHERE id = auditory_id)
-                      ELSE NULL
-                    END AS auditory_places,
-                department_list, 
-                executors_list, 
-                category_id, 
-                activities_over_id, 
-                form_partic, 
-                partic_price, 
-                visit_poss, 
-                visit_content, 
-                format_event, 
-                important_event, 
-                region_partners, 
-                site_url, 
-                site_media, 
-                description, 
-                rider, 
-                result, 
-                num_users, 
-                num_winners, 
-                num_visitors, 
-                bars_flag, 
-                created_at, 
-                created_by, 
-                updated_at, 
-                updated_by, 
-                version, 
-                doc_status
-	FROM schoolplan;
+         SELECT schoolplan.id,
+    schoolplan.author_id,
+    schoolplan.signer_id,
+    schoolplan.title,
+    schoolplan.datetime_in,
+    schoolplan.datetime_out,
+    schoolplan.places,
+    schoolplan.auditory_id,
+        CASE
+            WHEN schoolplan.places IS NOT NULL THEN schoolplan.places
+            WHEN schoolplan.auditory_id IS NOT NULL THEN (( SELECT concat(auditory.num, \' - \', auditory.name) AS concat
+               FROM auditory
+              WHERE auditory.id = schoolplan.auditory_id))::character varying
+            ELSE NULL::character varying
+        END AS auditory_places,
+    schoolplan.department_list,
+    schoolplan.executors_list,
+    schoolplan.category_id,
+    schoolplan.activities_over_id,
+    schoolplan.form_partic,
+    schoolplan.partic_price,
+    schoolplan.visit_poss,
+    schoolplan.visit_content,
+    schoolplan.format_event,
+    schoolplan.important_event,
+    schoolplan.region_partners,
+    schoolplan.site_url,
+    schoolplan.site_media,
+    schoolplan.description,
+    schoolplan.rider,
+    schoolplan.result,
+    schoolplan.num_users,
+    schoolplan.num_winners,
+    schoolplan.num_visitors,
+        CASE
+            WHEN schoolplan.bars_flag = true THEN 1
+            ELSE 0
+        END AS bars_flag,
+    schoolplan.created_at,
+    schoolplan.created_by,
+    schoolplan.updated_at,
+    schoolplan.updated_by,
+    schoolplan.version,
+    schoolplan.doc_status,
+    schoolplan.protocol_leader_id,
+    schoolplan.protocol_leader_name,
+    schoolplan.protocol_soleader_id,
+    schoolplan.protocol_secretary_id,
+    schoolplan.protocol_members_list,
+    schoolplan.protocol_class_list,
+    schoolplan.protocol_subject_cat_id,
+    schoolplan.protocol_subject_id,
+    schoolplan.protocol_subject_vid_id,
+    schoolplan.ideolog_flag
+   FROM schoolplan;;
         ')->execute();
     }
 

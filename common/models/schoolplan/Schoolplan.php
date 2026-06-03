@@ -83,6 +83,7 @@ use yii\web\NotFoundHttpException;
  * @property int $protocol_subject_id Дисциплина
  * @property int $protocol_subject_vid_id Вид дисциплины(групповое, инд)
  * @property int $protocol_vid_cert Вид испытания(ПА, ИА)
+ * @property int $ideolog_flag Мероприятие в рамках противодействия идеологии терроризма и экстремизма
  *
  * @property Auditory $auditory
  * @property Author $author
@@ -239,7 +240,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
 //                return Art::isFrontend() && $model->isNewRecord;
 //            }, 'enableClientValidation' => false],
             [['date_in', 'time_in', 'date_out', 'time_out'], 'safe'],
-            ['bars_flag', 'boolean'],
+            [['bars_flag', 'ideolog_flag'], 'boolean'],
             [['title_over', 'admin_message'], 'string'],
             ['period_over', 'integer'],
             [['period_over_flag', 'admin_flag'], 'boolean'],
@@ -428,6 +429,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             'num_winners' => 'Количество победителей',
             'num_visitors' => 'Количество зрителей',
             'bars_flag' => 'Отправлено в БАРС',
+            'ideolog_flag' => 'Мероприятие в рамках противодействия идеологии терроризма и экстремизма',
             'created_at' => Yii::t('art', 'Created'),
             'updated_at' => Yii::t('art', 'Updated'),
             'created_by' => Yii::t('art', 'Created By'),

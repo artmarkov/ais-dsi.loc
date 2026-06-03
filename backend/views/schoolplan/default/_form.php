@@ -251,6 +251,7 @@ $form = ActiveForm::begin([
 
                                             <?php endif; ?>
 
+                                            <?= $form->field($model, 'ideolog_flag')->checkbox(['disabled' => $readonly]) ?>
                                         </div>
                                     </div>
                                 </div>

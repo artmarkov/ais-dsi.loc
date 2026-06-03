@@ -60,6 +60,7 @@ class SchoolplanHistory extends BaseHistory
             'protocol_subject_cat_id',
             'protocol_subject_id',
             'protocol_subject_vid_id',
+            'ideolog_flag',
         ];
     }
 
@@ -114,6 +115,9 @@ class SchoolplanHistory extends BaseHistory
                 break;
             case 'bars_flag':
                 return isset($model->bars_flag) ? ($model->bars_flag ? 'Да' : 'Нет') : $value;
+                break;
+            case 'ideolog_flag':
+                return isset($model->ideolog_flag) ? ($model->ideolog_flag ? 'Да' : 'Нет') : $value;
                 break;
             case 'doc_status':
                 return isset($model->doc_status) ? Schoolplan::getDocStatusValue($value) : $value;
