@@ -270,6 +270,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
         $attributes += ['birth_date' => 'Дата рождения (возраст)'];
         $attributes += ['subject_list' => 'Выбранные дисциплины'];
         $attributes += ['last_experience' => 'Обучался ранее'];
+        $attributes += ['remark' => 'Примечание'];
         $attributes += ['group' => 'Группа'];
         $attributes += $testsNames;
         $attributes += ['mid_mark' => 'Средний балл'];
@@ -295,6 +296,7 @@ class EntrantComm extends \artsoft\db\ActiveRecord
             $data[$id]['birth_date'] = Yii::$app->formatter->asDate($model['birth_date']) . ' (' . $age['age_year'] . ' лет ' . $age['age_month'] . ' мес.)';
             $data[$id]['subject_list'] = $subjectList;
             $data[$id]['last_experience'] = $model['last_experience'];
+            $data[$id]['remark'] = $model['remark'];
             $data[$id]['group'] = $model['group_name'];
             $data[$id]['decision'] = !$free_flag ? Entrant::getDecisionValue($model['decision_id']) : null;
             $data[$id]['programm'] = !$free_flag ? RefBook::find('education_programm_name')->getValue($model['programm_id']) : null;
