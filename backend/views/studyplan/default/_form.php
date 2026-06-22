@@ -39,7 +39,7 @@ JS
 
     <div class="panel">
         <div class="panel-heading">
-            Основные данные
+            Основные данные <?php echo $model->student_id ? ' ФЛС: ' . sprintf('%06d', $model->student_id) : ''; ?>
             <?php if (!$model->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
             <?php endif; ?>

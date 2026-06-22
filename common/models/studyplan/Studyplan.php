@@ -845,7 +845,6 @@ class Studyplan extends \artsoft\db\ActiveRecord
                                         ->where(['=', 'studyplan_subject_id', 0])
                                         ->andWhere(['=', 'subject_sect_studyplan_id', $model_sect->id])
                                         ->andWhere(['=', 'direction_id', $modelSub['direction_id']])
-                                        ->andWhere(['=', 'direction_vid_id', $modelSub['direction_vid_id']])
                                         ->andWhere(['=', 'teachers_id', $modelSub['teachers_id']])
                                         ->one() ?? new TeachersLoad();
                                 $model_load->subject_sect_studyplan_id = $model_sect->id;

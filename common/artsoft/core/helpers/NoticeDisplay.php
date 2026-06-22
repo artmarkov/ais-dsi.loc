@@ -50,7 +50,7 @@ class NoticeDisplay
         $this->teachersOverLapping = $this->getTeachersOverLapping($this->plan_year); // Преподаватель не может работать в одно и тоже время в разных аудиториях!
         $this->teachersPlanScheduleOverLapping = $this->getTeachersPlanScheduleOverLapping($this->plan_year); // Заданное расписание не соответствует планированию индивидуальных занятий!
         $this->studentScheduleOverLapping = $this->getStudentScheduleOverLapping($this->plan_year); // Ученик не может в одно и то же время находиться в разных аудиториях!
-        $this->studentScheduleOverPause = $this->getStudentScheduleOverPause($this->plan_year); // Ученик должен иметь перерыв в разных аудиториях 5 мин (300 сек)!
+        $this->studentScheduleOverPause = $this->getStudentScheduleOverPause($this->plan_year); // Ученик должен иметь перерыв в разных аудиториях 10 мин (600 сек)!
         $this->scheduleAccompLimit = $this->getScheduleAccompLimit($this->plan_year); // Концертмейстер может работать только в рамках расписания преподавателя
 
     }
@@ -183,7 +183,7 @@ class NoticeDisplay
 //                echo '<pre>' . print_r($itemModel, true) . '</pre>'; die();
                     $info[] = $itemModel['student_fio'] . '(' . $itemModel['sect_name'] . ' ' . $itemModel['subject'] . ') - ' . $this->getScheduleDisplay($itemModel) . ' ' . RefBook::find('auditory_memo_1')->getValue($itemModel['auditory_id']);
                 }
-                $message = 'Ученик должен иметь перерыв не менее 5 мин! ' . implode(', ', $info);
+                $message = 'Ученик должен иметь перерыв не менее 10 мин! ' . implode(', ', $info);
                 //  Notice::registerDanger($message);
                 $tooltip[] = Tooltip::widget(['type' => 'warning', 'message' => $message]);
             }
@@ -349,7 +349,7 @@ class NoticeDisplay
     }
 
     /**
-     * Ученик должен иметь перерыв в разных аудиториях 5 мин (300 сек)!
+     * Ученик должен иметь перерыв в разных аудиториях 10 мин (600 сек)!
      * @param $plan_year
      * @return array
      * @throws \yii\db\Exception
@@ -370,7 +370,7 @@ class NoticeDisplay
 							AND a.status = :status
 							AND b.status = :status
 							AND a.student_id = b.student_id
-							AND NOT(a.time_in >= b.time_out+300 OR b.time_in >= a.time_out+300)
+							AND NOT(a.time_in >= b.time_out+600 OR b.time_in >= a.time_out+600)
 							AND b.subject_schedule_id = ANY (string_to_array(:subject_schedule_ids, \',\')::int[])',
             [
                 'plan_year' => $plan_year,

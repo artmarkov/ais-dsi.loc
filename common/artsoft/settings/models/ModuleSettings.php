@@ -69,7 +69,7 @@ class ModuleSettings extends BaseSettingsModel
             'study_plan_month_in' => 'Месяц начала учебного года(расчетного периода)',
             'study_plan_month_in_frontend' => 'Месяц начала учебного года(фронтенд)',
             'thematic_template_author_flag' => 'Шаблоны тематических планов',
-            'attestation_on' => 'Доступ к выставлению оценок ПА преподавателям',
+            'attestation_on' => 'Доступ к выставлению оценок ПА и ИА преподавателям без комиссии',
 
 
             'shelf_life_pass' => 'Срок хранения проходов через СКУД (дней)',

@@ -8,5 +8,6 @@ return [
     'Sertificate Date' => 'Дата выдачи',
     'Sertificate Code' => 'Код подразделения',
     'Sertificate Country' => 'Страна',
+    'INN' => 'ИНН',
     'Select Parents...' => 'Выберите родителя...',
     ];

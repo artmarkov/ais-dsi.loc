@@ -60,7 +60,7 @@ class StudyplanProgressController extends MainController
         $timestamp = ArtHelper::getMonYearParamsFromList($model_date->date_in);
         $timestamp_in = $timestamp[0];
         $plan_year = ArtHelper::getStudyYearDefault(null, $timestamp_in);
-        $model = LessonProgressView::getDataTeachers($model_date, $this->teachers_id, $plan_year);
+        $model = LessonProgressView::getDataTeachers($model_date, $this->teachers_id, $plan_year, false);
         $model_confirm = [];
         if($model_date->subject_sect_studyplan_id) {
             $model_confirm = ProgressConfirm::find()->where(['=', 'teachers_id', $modelTeachers->id])

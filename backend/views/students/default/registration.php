@@ -31,9 +31,10 @@ $this->params['breadcrumbs'][] = 'Регистрация';
             <div class="panel-body">
                 <div class="panel">
                     <div class="panel-body">
-                        <?= $form->field($model, 'student_last_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124]) ?>
+                        <?= $form->field($model, 'student_last_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Важно: Поля необходимо заполнить как в документе.') ?>
                         <?= $form->field($model, 'student_first_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124]) ?>
-                        <?= $form->field($model, 'student_middle_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Важно: Поле необходимо заполнить как в документе. При отсутствии Отчества заполнение не требуется.') ?>
+                        <?= $form->field($model, 'student_middle_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124]) ?>
+                        <?= $form->field($model, 'middle_name_flag')->checkbox()->label('Нет Отчества') ?>
                         <?= $form->field($model, 'student_gender')->dropDownList(UserCommon::getGenderList()/*, ['disabled' => $readonly]*/) ?>
                         <?= $form->field($model, 'student_birth_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
                         <?= $form->field($model, 'student_snils')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
@@ -74,12 +75,14 @@ $this->params['breadcrumbs'][] = 'Регистрация';
                             'prompt' => Yii::t('art/student', 'Select Relations...'),
                         ])->label(Yii::t('art/student', 'Relation'));
                         ?>
-                        <?= $form->field($model, 'parent_last_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124]) ?>
+                        <?= $form->field($model, 'parent_last_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Важно: Поля необходимо заполнить как в документе.') ?>
                         <?= $form->field($model, 'parent_first_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124]) ?>
-                        <?= $form->field($model, 'parent_middle_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124])->hint('Важно: Поле необходимо заполнить как в документе. При отсутствии Отчества заполнение не требуется.') ?>
+                        <?= $form->field($model, 'parent_middle_name')->textInput(['autocomplete' => 'off', 'maxlength' => 124]) ?>
+
                         <?= $form->field($model, 'parent_gender')->dropDownList(UserCommon::getGenderList()) ?>
                         <?= $form->field($model, 'parent_birth_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
                         <?= $form->field($model, 'parent_snils')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.snils_mask')])->textInput() ?>
+                        <?= $form->field($model, 'parent_inn')->textInput(['maxlength' => true])->hint('Введите ИНН, если Вы планируете в дальнейшем оформить налоговый вычет за обучение ребенка.') ?>
                     </div>
                 </div>
                 <div class="panel panel-info">
@@ -101,7 +104,25 @@ $this->params['breadcrumbs'][] = 'Регистрация';
                                 <?= $form->field($model, 'parent_sert_code')->textInput(['maxlength' => true]) ?>
                                 <?= $form->field($model, 'parent_sert_date')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.date_mask')])->textInput(); ?>
                                 <?= $form->field($model, 'parent_sert_country')->textInput(['maxlength' => true]) ?>
-                                <?= $form->field($model, 'parent_address')->textInput(['maxlength' => true])->hint('Заполните поле как в документе, удостоверяющем личность.') ?>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="panel">
+                                <div class="panel-heading">
+                                    Адрес регистрации(как в документе)
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <?= $form->field($model, 'city')->textInput(['maxlength' => 124])->hint('Введите город.') ?>
+                                            <?= $form->field($model, 'street')->textInput(['maxlength' => 124])->hint('Введите улицу.') ?>
+                                            <?= $form->field($model, 'house')->textInput(['maxlength' => 124])->hint('Введите дом.') ?>
+                                            <?= $form->field($model, 'corps')->textInput(['maxlength' => 124])->hint('Введите корпус дома.') ?>
+                                            <?= $form->field($model, 'flat')->textInput(['maxlength' => 124])->hint('Введите квартиру.') ?>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -118,10 +139,7 @@ $this->params['breadcrumbs'][] = 'Регистрация';
                         <?= $form->field($model, 'phone')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                         <?= $form->field($model, 'phone_optional')->widget(MaskedInput::class, ['mask' => Yii::$app->settings->get('reading.phone_mask')])->textInput() ?>
                         <?= $form->field($model, 'email')->textInput(['maxlength' => 124])->hint('Введите емайл, который будет использоваться для регистрации и восстановления доступа.') ?>
-                        <?= $form->field($model, 'city')->textInput(['maxlength' => 124])->hint('Введите город.') ?>
-                        <?= $form->field($model, 'street')->textInput(['maxlength' => 124])->hint('Введите улицу.') ?>
-                        <?= $form->field($model, 'house')->textInput(['maxlength' => 124])->hint('Введите дом.') ?>
-                        <?= $form->field($model, 'flat')->textInput(['maxlength' => 124])->hint('Введите квартиру.') ?>
+
                     </div>
                 </div>
             </div>
@@ -129,10 +147,10 @@ $this->params['breadcrumbs'][] = 'Регистрация';
     </div>
     <div class="panel-footer">
         <?php if (Yii::$app->user->isGuest): ?>
-        <?= \yii\bootstrap\Alert::widget([
-            'body' => '<i class="fa fa-info-circle"></i> Нажимая кнопку "Продолжить" Вы соглашаетесь на обработку персональных данных.',
-            'options' => ['class' => 'alert-info'],
-        ]);?>
+            <?= \yii\bootstrap\Alert::widget([
+                'body' => '<i class="fa fa-info-circle"></i> Нажимая кнопку "Продолжить" Вы соглашаетесь на обработку персональных данных.',
+                'options' => ['class' => 'alert-info'],
+            ]); ?>
         <?php endif; ?>
         <div class="form-group btn-group">
             <div class="form-group btn-group">
@@ -192,5 +210,15 @@ $this->params['breadcrumbs'][] = 'Регистрация';
 
     <?php ActiveForm::end() ?>
 </div>
+<?php
 
+$js = <<<JS
+     // Показ модуля сообщения
+    $('input[type=checkbox][name="RegistrationForm[middle_name_flag]"]').prop('checked') ? $('.field-registrationform-student_middle_name').hide() : $('.field-registrationform-student_middle_name').show();
+    $('input[type=checkbox][name="RegistrationForm[middle_name_flag]"]').click(function() {
+       $(this).prop('checked') ? $('.field-registrationform-student_middle_name').hide() : $('.field-registrationform-student_middle_name').show();
+     });
+  
+JS;
+$this->registerJs($js, \yii\web\View::POS_LOAD);
 

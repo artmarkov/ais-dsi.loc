@@ -6,6 +6,7 @@ use artsoft\helpers\ExcelObjectList;
 use common\models\schoolplan\SchoolplanProtocol;
 use common\models\students\Student;
 use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanSubjectHist;
 use Yii;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
@@ -129,6 +130,7 @@ class SummaryProgress
 //        if ($this->vid_sert == LessonTest::FINISH_ATTESTATION) {
 //            $models = $models->andWhere(['fin_cert' => true]);
 //        }
+        $models = $models->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()]);
         $models = $models->andWhere(['OR', ['med_cert' => true], ['fin_cert' => true]]);
         $models = $models->orderBy('subject_category_id, subject_vid_id, subject_id')->all();
 

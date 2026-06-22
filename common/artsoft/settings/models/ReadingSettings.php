@@ -19,6 +19,7 @@ class ReadingSettings extends BaseSettingsModel
     public $date_time_mask;
     public $snils_mask;
     public $coordinate_mask;
+    public $inn_mask;
 
     /**
      * @inheritdoc
@@ -29,7 +30,7 @@ class ReadingSettings extends BaseSettingsModel
             [
                 ['page_size', 'required'],
                 [['page_size'], 'integer'],
-                [['phone_mask', 'date_mask', 'time_mask', 'date_time_mask', 'snils_mask', 'coordinate_mask'], 'string'],
+                [['phone_mask', 'date_mask', 'time_mask', 'date_time_mask', 'snils_mask', 'coordinate_mask', 'inn_mask'], 'string'],
                 ['page_size', 'default', 'value' => 10],
                 ['phone_mask', 'default', 'value' => '+7 (999) 999 99 99'],
                 ['date_mask', 'default', 'value' => '99.99.9999'],
@@ -37,6 +38,7 @@ class ReadingSettings extends BaseSettingsModel
                 ['date_time_mask', 'default', 'value' => '99.99.9999 99:99'],
                 ['snils_mask', 'default', 'value' => '999.999.999 99'],
                 ['coordinate_mask', 'default', 'value' => '99.99999'],
+                ['inn_mask', 'default', 'value' => '999999999999'],
         ]);
     }
 
@@ -51,6 +53,7 @@ class ReadingSettings extends BaseSettingsModel
             'date_time_mask' => Yii::t('art/settings', 'Date & Time Mask'),
             'snils_mask' => Yii::t('art/settings', 'Snils Mask'),
             'coordinate_mask' => Yii::t('art/settings', 'Coordinate Mask'),
+            'inn_mask' => Yii::t('art/settings', 'INN Mask'),
         ];
     }
 

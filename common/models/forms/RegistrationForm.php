@@ -31,6 +31,7 @@ class RegistrationForm extends Model
     public $parent_birth_date;
     public $parent_snils;
     public $parent_address;
+    public $parent_inn;
 
     public $email;
     public $phone;
@@ -38,6 +39,7 @@ class RegistrationForm extends Model
     public $address;
     public $city;
     public $street;
+    public $corps;
     public $house;
     public $flat;
 
@@ -55,6 +57,8 @@ class RegistrationForm extends Model
     public $parent_sert_date;
     public $parent_sert_country;
 
+    public $middle_name_flag;
+
 
     /**
      * @inheritdoc
@@ -65,11 +69,18 @@ class RegistrationForm extends Model
             [['email'], 'required', 'on' => self::SCENARIO_FRONFEND],
             [['phone', 'city', 'street', 'house'], 'required'],
             [['student_first_name', 'student_last_name', 'student_birth_date'], 'required'],
+            [['student_middle_name'], 'required', 'when' => function ($model) {
+                return $model->middle_name_flag == false;
+            }, 'whenClient' => "function (attribute, value) {
+                        return $('#registrationform-middle_name_flag').val() == false;
+                    }"],
             [['student_snils', 'parent_snils'], 'required'],
-            [[ 'student_sert_num', 'parent_sert_num', 'parent_address'], 'required'],
+            [['student_sert_num', 'parent_sert_num',/* 'parent_address', 'parent_inn'*/], 'required'],
+            ['parent_inn', 'string', 'max' => 12, 'min' => 10],
             ['student_last_name', 'validateStudent'],
-            [['parent_first_name', 'parent_last_name'], 'required'],
+            [['parent_first_name', 'parent_last_name', 'parent_middle_name'], 'required'],
             [['relation_id'], 'required'],
+            [['middle_name_flag'], 'boolean'],
             [['parent_birth_date'], 'required', 'on' => self::SCENARIO_FRONFEND],
             [['student_snils', 'parent_snils'], 'required', 'on' => self::SCENARIO_FRONFEND],
             [['student_first_name', 'student_middle_name', 'student_last_name'], 'trim'],
@@ -81,9 +92,11 @@ class RegistrationForm extends Model
             [['student_birth_date', 'parent_birth_date'], 'date'],
             [['phone', 'phone_optional'], 'string', 'max' => 24],
             [['address'], 'string', 'max' => 1024],
-            [['city', 'street', 'house', 'flat', 'email'], 'string', 'max' => 124],
+            [['corps'], 'default', 'value' => ''],
+            [['city', 'street', 'house', 'flat', 'email', 'corps'], 'string', 'max' => 124],
             [['student_snils', 'parent_snils'], 'string', 'max' => 16],
             [['student_first_name', 'student_last_name', 'parent_first_name', 'parent_last_name'], 'string', 'min' => 3],
+            [['phone', 'phone_optional'], 'validatePhone'],
             // ['email', 'validateEmail'],
             // ['email', 'email'],
             [['student_sert_date'], 'date'],
@@ -187,6 +200,13 @@ class RegistrationForm extends Model
         }
     }
 
+    public function validatePhone($attribute, $params)
+    {
+        if (!preg_match("/^\+7 \((?!8)\d{3}\) \d{3} \d{2} \d{2}$/", $this->$attribute)) {
+            $this->addError($attribute, 'Неправильный номер телефона.');
+        }
+    }
+
     public function attributeLabels()
     {
         return [
@@ -208,6 +228,7 @@ class RegistrationForm extends Model
             'city' => Yii::t('art/guide', 'City'),
             'street' => Yii::t('art/guide', 'Street'),
             'house' => Yii::t('art/guide', 'House'),
+            'corps' => Yii::t('art/guide', 'Corps'),
             'flat' => Yii::t('art/guide', 'Flat'),
             'student_sert_name' => Yii::t('art/student', 'Sertificate Name'),
             'student_sert_series' => Yii::t('art/student', 'Sertificate Series'),
@@ -221,6 +242,7 @@ class RegistrationForm extends Model
             'parent_sert_date' => Yii::t('art/parents', 'Sertificate Date'),
             'parent_sert_code' => Yii::t('art/parents', 'Sertificate Code'),
             'parent_sert_country' => Yii::t('art/parents', 'Sertificate Country'),
+            'parent_inn' => Yii::t('art/parents', 'INN'),
             'student_gender' => Yii::t('art', 'Gender'),
             'parent_gender' => Yii::t('art', 'Gender'),
         ];
@@ -228,7 +250,18 @@ class RegistrationForm extends Model
 
     protected function setAddress()
     {
-        return implode(', ', ['г. ' . $this->city, 'улица ' . $this->street, 'дом. ' . $this->house, 'кв. ' . $this->flat]);
+        $address = [];
+        $address[] = 'г. ' . $this->city;
+        $address[] = 'улица ' . $this->street;
+        $address[] = 'дом ' . $this->house;
+        if ($this->corps != '') {
+            $address[] = 'корпус. ' . $this->corps;
+        }
+        if ($this->flat != '') {
+            $address[] = 'кв. ' . $this->flat;
+        }
+
+        return implode(', ', $address);
     }
 
     public function registration()
@@ -273,7 +306,7 @@ class RegistrationForm extends Model
                 'phone_optional' => $this->phone_optional,
                 'snils' => $this->parent_snils,
                 'email' => $this->email,
-                'address' => $this->parent_address,
+                'address' => $this->setAddress(),
             ]);
             $modelParent->setAttributes([
                 'sert_name' => $this->parent_sert_name,
@@ -282,6 +315,7 @@ class RegistrationForm extends Model
                 'sert_organ' => $this->parent_sert_organ,
                 'sert_code' => $this->parent_sert_code,
                 'sert_date' => $this->parent_sert_date,
+                'inn' => $this->parent_inn,
             ]);
         }
         $modelDependence->relation_id = $this->relation_id;

@@ -343,6 +343,24 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             if (!empty($info)) {
                 $this->addError($attribute, 'В одной аудитории накладка по времени!' . ' ' . $message);
             }
+            if (in_array($this->auditory_id, [1000,1001])) {
+                if ($this->getReportingConcertLimit()->exists() === true) {
+                    $info = [];
+                    foreach ($this->getReportingConcertLimit()->all() as $itemModel) {
+                        $info[] = ' ' . $itemModel->datetime_in . ' - ' . $itemModel->datetime_out . ' (' . $itemModel->title . ')';
+                    }
+                    $message = 'Академические концерты и зачеты можно проводить только через сутки: ' . implode('; ', $info);
+                    Notice::registerDanger($message);
+                }
+                if ($this->getReportingConcertOverLapping()->exists() === true) {
+                    $info = [];
+                    foreach ($this->getReportingConcertOverLapping()->all() as $itemModel) {
+                        $info[] = ' ' . $itemModel->datetime_in . ' - ' . $itemModel->datetime_out . ' (' . $itemModel->title . ')';
+                    }
+                    $message = 'Академические концерты и зачеты нельзя проводить одновременно в большом и малом зале: ' . implode('; ', $info);
+                    Notice::registerDanger($message);
+                }
+            }
         }
     }
 
@@ -352,6 +370,54 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ['AND',
                 ['!=', 'id', $this->id],
                 ['auditory_id' => $this->auditory_id],
+                ['OR',
+                    ['AND',
+                        ['<', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>=', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                    ['AND',
+                        ['<=', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_out)],
+                        ['>', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_in)],
+                    ],
+                ],
+            ]);
+
+        return $thereIsAnOverlapping;
+    }
+
+    /**
+     * Академические концерты и зачеты можно проводить только через сутки
+     * @return \yii\db\ActiveQuery
+     */
+    public function getReportingConcertLimit()
+    {
+        $thereIsAnOverlapping = self::find()->where(
+            ['AND',
+                ['!=', 'id', $this->id],
+                ['category_id' => 4], // Академические концерты и зачеты
+                ['auditory_id' => [1000, 1001]], // Большой, малый зал
+                ['OR',
+                    ['AND',
+                        ['<', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_out) + 86400],
+                        ['>=', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_in) + 86400],
+                    ],
+                    ['AND',
+                        ['<=', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_out) + 86400],
+                        ['>', 'datetime_out', Yii::$app->formatter->asTimestamp($this->datetime_in) + 86400],
+                    ],
+                ],
+            ]);
+
+        return $thereIsAnOverlapping;
+    }
+
+    public function getReportingConcertOverLapping()
+    {
+        $thereIsAnOverlapping = self::find()->where(
+            ['AND',
+                ['!=', 'id', $this->id],
+                ['category_id' => 4], // Академические концерты и зачеты
+                ['auditory_id' => [1000, 1001]], // Большой, малый зал
                 ['OR',
                     ['AND',
                         ['<', 'datetime_in', Yii::$app->formatter->asTimestamp($this->datetime_out)],
@@ -933,7 +999,7 @@ class Schoolplan extends \artsoft\db\ActiveRecord
             ->orderBy('teachers_id')
             ->asArray()
             ->all();
-       // echo '<pre>' . print_r($data, true) . '</pre>'; die();
+        // echo '<pre>' . print_r($data, true) . '</pre>'; die();
         foreach ($data as $item => $value) {
             $exists = SchoolplanProtocol::find()
                 ->where(['schoolplan_id' => $this->id])

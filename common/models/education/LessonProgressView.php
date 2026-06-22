@@ -420,8 +420,6 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 ->all(), 'studyplan_subject_id');
 
             $modelsMarksCertif = ArrayHelper::index(AttestationItems::find()
-                ->joinWith('lessonMark')
-                ->select('attestation_items.id, attestation_items.plan_year, attestation_items.lesson_mark_id, attestation_items.studyplan_subject_id, guide_lesson_mark.mark_label')
                 ->where(['plan_year' => $plan_year])
                 ->andWhere(['vid_cert' => 2])
                 ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
@@ -438,8 +436,6 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 ->all(), 'studyplan_subject_id');
 
             $modelsMarksCertif_2 = ArrayHelper::index(AttestationItems::find()
-                ->joinWith('lessonMark')
-                ->select('attestation_items.id, attestation_items.plan_year, attestation_items.lesson_mark_id, attestation_items.studyplan_subject_id, guide_lesson_mark.mark_label')
                 ->where(['plan_year' => $plan_year])
                 ->andWhere(['vid_cert' => 1])
                 ->andWhere(['studyplan_subject_id' => $studyplanSubjectIds])
@@ -498,7 +494,8 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 $data[$item]['pa'] = '<span title="Оценка выставлена через протокол" style="color: #F23600;">' . $mark_label . '</span>';
             } elseif (isset($modelsMarksCertif[$modelProgress->studyplan_subject_id])) {
                 $mark = $modelsMarksCertif[$modelProgress->studyplan_subject_id];
-                $data[$item]['pa'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : $mark->mark_label;
+              //  echo '<pre>' . print_r($mark, true) . '</pre>'; die();
+                $data[$item]['pa'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : $mark->lessonMark->mark_label;
             }
 
             if (isset($modelsMarksProtocol_2[$modelProgress->studyplan_subject_id])) {
@@ -506,7 +503,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 $data[$item]['ia'] = '<span title="Оценка выставлена через протокол" style="color: #468847;">' . $mark_label . '</span>';
             } elseif (isset($modelsMarksCertif_2[$modelProgress->studyplan_subject_id])) {
                 $mark = $modelsMarksCertif_2[$modelProgress->studyplan_subject_id];
-                $data[$item]['ia'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : $mark->mark_label;
+                $data[$item]['ia'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : $mark->lessonMark->mark_label;
             }
         }
 

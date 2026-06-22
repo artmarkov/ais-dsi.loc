@@ -5,6 +5,7 @@ namespace common\models\parents;
 use artsoft\behaviors\DateFieldBehavior;
 use common\models\students\StudentDependence;
 use common\models\user\UserCommon;
+use phpDocumentor\Reflection\PseudoTypes\NumericString;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -21,6 +22,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $sert_date
  * @property string|null $sert_code
  * @property string|null $sert_country
+ * @property int $inn
  * @property int $created_at
  * @property int|null $created_by
  * @property int $updated_at
@@ -71,6 +73,7 @@ class Parents extends \artsoft\db\ActiveRecord
     {
         return [
             [['user_common_id', 'version'], 'integer'],
+            ['inn', 'string', 'max' => 12, 'min' => 10],
             [['created_at', 'created_by', 'updated_at', 'updated_by', 'sert_date'], 'safe'],
             [['sert_name', 'sert_series', 'sert_num', 'sert_code'], 'string', 'max' => 32],
             [['sert_organ', 'sert_country'], 'string', 'max' => 127],
@@ -123,6 +126,7 @@ class Parents extends \artsoft\db\ActiveRecord
             'sert_date' => Yii::t('art/parents', 'Sertificate Date'),
             'sert_code' => Yii::t('art/parents', 'Sertificate Code'),
             'sert_country' => Yii::t('art/parents', 'Sertificate Country'),
+            'inn' => Yii::t('art/parents', 'INN'),
             'fullName' => Yii::t('art', 'Full Name'),
             'created_at' => Yii::t('art', 'Created'),
             'created_by' => Yii::t('art', 'Created By'),
